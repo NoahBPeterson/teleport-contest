@@ -898,26 +898,48 @@ if (timedOut) {
 const report = JSON.parse(fs.readFileSync(resultFile, 'utf8'));
 
 if (multigame) {
-    // What is being checked is that game 2 is hosted by something OTHER than
-    // the spent page realm — a worker transport, a ReplayEngine realm, or a
-    // refusal that says why — and never by the arena game 1 left behind.
+    // What is being checked is that game 2 does not start in the arena game 1
+    // left behind.
+    //
+    // That used to mean "game 2 must be hosted by something OTHER than the page
+    // realm" — a worker transport, a ReplayEngine realm, or a refusal that says
+    // why — because a page realm that had run transpiled C could never run it
+    // again. It can now: js/boot/main-thread-engine.mjs owns the page realm's
+    // graph through js/boot/reset-realm.mjs and puts it back at game end, so
+    // `mode=main` twice in one page is the *good* outcome in a workerless
+    // browser, not the forbidden one. What replaces the old rule is the
+    // observable it was standing in for: two games with two seeds must produce
+    // two different characters. A game 2 that resumed game 1's dungeon shows
+    // game 1's status line — which is exactly what the old failure looked like
+    // before "init_blstats called more than once" arrived to make it obvious.
+    //
+    // The rigorous version of this claim is on the scored path, where it can be
+    // byte-exact: tools/judge-sim/reset-diff-browser.mjs.
     const gs = report.games || [];
     process.stderr.write('\n=== Two interactive games, one page, no reload ===\n');
     for (const g of gs) {
         process.stderr.write(`  game ${g.n}: ${g.error ? 'ERROR ' + g.error : `mode=${g.mode} moves=${g.moves} `
             + `start->frame=${g.start_to_frame_ms}ms status=${JSON.stringify(g.status)}`}\n`);
     }
-    // Game 1 must play. Game 2 must either play in a realm of its own or say,
-    // in words, that it could not get one — the one forbidden outcome is a
-    // game 2 that "succeeds" in game 1's arena, which shows up as a second
-    // main-thread mode or as NetHack's own "called more than once" garbage.
+    // Game 1 must play. Game 2 must either play a DIFFERENT game — its own
+    // character, from its own seed — or say, in words, that it could not get a
+    // graph. The forbidden outcome is a game 2 that "succeeds" on top of game
+    // 1's arena, which shows up as game 1's status line, or as NetHack's own
+    // "called more than once" garbage on the top line.
     const g1 = gs[0] || {};
     const g2 = gs[1] || {};
     const bad = [];
     if (g1.error || !g1.moves) bad.push('game 1 did not play: ' + (g1.error || 'no moves'));
-    if (!g2.error && g2.mode === 'main') bad.push('game 2 was hosted by the spent page realm');
     if (!g2.error && !g2.moves) bad.push('game 2 neither played nor explained itself');
-    if (g2.error && !/realm|transport|Worker|reload/i.test(g2.error)) {
+    if (!g2.error && g2.moves && g2.status && g2.status === g1.status) {
+        bad.push('game 2 produced game 1\'s status line — it resumed game 1\'s character');
+    }
+    for (const g of gs) {
+        if (/more than once|panic|Segmentation|assertion/i.test(String(g.top || ''))) {
+            bad.push(`game ${g.n} printed engine wreckage on the top line: ${g.top}`);
+        }
+    }
+    if (g2.error && !/realm|transport|Worker|reload|reset/i.test(g2.error)) {
         bad.push('game 2 failed without an explanation: ' + g2.error);
     }
     for (const b of bad) process.stderr.write(`  FAIL: ${b}\n`);

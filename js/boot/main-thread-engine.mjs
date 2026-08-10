@@ -51,6 +51,17 @@
 //     70 MB, and byte-identical to a fresh realm — which is a claim, and
 //     tools/reset-diff.mjs is why it can be believed. The fork stays as the
 //     fallback for a build without C2JS_RESET=1, heap ceiling and all.
+//
+//     AND IN A BROWSER TOO, which is what makes the first sentence of this
+//     bullet obsolete rather than merely qualified. A page cannot fork, so
+//     "one game per page" was not a policy there, it was the only thing that
+//     could be true — and it is what a human met after their first death: a
+//     refusal in words and a reload. It is now a reset. The evidence is
+//     tools/judge-sim/reset-diff-browser.mjs, which builds the fresh-realm
+//     reference a page CAN have (a module Worker is a fresh realm) and shows
+//     `A, reset, B` byte-identical to it, 10/10 pairs and 0/10 with the reset
+//     forced to a no-op. The refusal below survives for the realm that still
+//     has to have it: one with no reset barrel at all.
 //   - It cannot be retired cheaply. A worker can be terminated; a module graph
 //     in the page realm cannot be unloaded. So this engine must never be
 //     started speculatively alongside a transport that might win — it is
@@ -59,15 +70,16 @@
 
 import { makeFrameReader } from './frames.mjs';
 
-// Am I in Node? Not "is there a process.versions.node", which is a question a
-// page can answer for us — the judge's pages install a `process` stub that
-// claims to be Node. Ask what the realm *is* instead. Same three lines in
-// js/jsmain.js, js/boot/interactive.mjs and js/boot/isolation.mjs; keep them in
-// step.
+// Am I in a browser? Not "is there no process.versions.node", which is a
+// question a page can answer for us — the judge's pages install a `process`
+// stub that claims to be Node. Ask what the realm *is* instead. Same two lines
+// in js/jsmain.js, js/boot/interactive.mjs, js/boot/isolation.mjs and
+// js/boot/reset-realm.mjs; keep them in step. (Those files also derive an
+// IS_NODE from it; this one has no use for the other side of the question any
+// more — every rung here is now reached in both, and what differs is which
+// graph they can have.)
 const IS_BROWSER = typeof globalThis.window !== 'undefined'
     || typeof globalThis.WorkerGlobalScope !== 'undefined';
-const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
-    && !!(process.versions && process.versions.node);
 
 /** A realm that can only offer the one shared graph can host exactly one game. */
 let claimed = false;
@@ -163,8 +175,11 @@ async function roomForAnotherGraph() {
         // file is a *browser* module and a literal `node:v8` is something a
         // bundler would try to resolve and the judge's import map would aim at
         // a shim of theirs. Nothing here runs outside Node — forkGraph() is the
-        // only caller and it is behind IS_NODE — but the specifier must not be
-        // visible to a resolver either.
+        // only caller, and it has already returned by the time a browser gets
+        // this far, because enableSegmentIsolation() is false there — but the
+        // specifier must not be visible to a resolver either. (And if one ever
+        // did get here, the catch below is what it meets: no node:v8 to ask,
+        // carry on.)
         const v8 = await import('node:' + 'v8');
         const s = v8.getHeapStatistics();
         const freeMb = (s.heap_size_limit - s.used_heap_size) / 1048576;
@@ -208,29 +223,57 @@ let residentBusy = false;
 /**
  * Acquire (once) the resettable graph, or null if this build/runtime has none.
  *
- * Node only, and never speculative: the acquisition instantiates all 176
- * generated modules and snapshots them, which is precisely the cost the first
- * game was going to pay anyway.
+ * Never speculative: the acquisition instantiates all 176 generated modules and
+ * snapshots them, which is precisely the cost the first game was going to pay
+ * anyway.
+ *
+ * IN NODE it forks a graph to own. IN A BROWSER it takes the page realm's own
+ * graph (`fork: false` is reset-realm.mjs's browser default), which is the only
+ * graph a page has — and the whole point: the page realm stops being a
+ * one-shot. Two things have to be true for that to be sound and both are
+ * checked rather than assumed:
+ *
+ *   - nothing may have run transpiled C in this realm yet, or the snapshot
+ *     would record a spent graph as pristine. That is exactly what
+ *     `__c2jsEngineRealmUsed` has always meant, so it is asked here and set
+ *     here: from this point the page realm is this rung's, and js/jsmain.js's
+ *     runSegment finds it taken and runs its segments in Worker realms.
+ *   - a realm hands out at most ONE unforked graph (reset-realm.mjs's
+ *     `unforked`), because the sync and yield graphs sit on one js/cptr.js.
+ *     A page where runSegment got there first therefore gets a throw here,
+ *     which lands in the catch and leaves this rung with the shared-graph
+ *     path — refusing in words, as it did before any of this.
  *
  * Silent in every failure branch, like everything else on the interactive path.
- * The two ways to get null are a Node without `module.registerHooks` (acquire()
- * refuses to take the shared graph rather than lie about isolation) and a build
- * without C2JS_RESET=1 (no barrel, `resettable` false) — and both are answered
- * by the per-game fork below, which is what this file did before.
+ * The ways to get null are a Node without `module.registerHooks` (acquire()
+ * refuses to take the shared graph rather than lie about isolation), a build
+ * without C2JS_RESET=1 (no barrel, `resettable` false), and the two above —
+ * all answered by the per-game fork below, or, where there is no fork either,
+ * by the one-game-per-page contract this file has always kept.
  */
 async function resettableGraph() {
     if (residentRealmTried) return residentRealm;
     residentRealmTried = true;
     try {
+        // A game has already run here. In Node that says nothing about a graph
+        // this call would FORK, so it is only a bar in a browser, where the
+        // graph on offer is this realm's own.
+        if (IS_BROWSER && globalThis.__c2jsEngineRealmUsed === true) return null;
         // Arming snapshots the graph's top-level state, so whatever the modules
-        // evaluate against has to be installed first. A no-op in Node, where
-        // this is the only caller — but the invariant is stated here rather
-        // than assumed, exactly as prewarmMainThread() states it.
+        // evaluate against has to be installed first. A no-op when
+        // prewarmMainThread() got here first — but the invariant is stated
+        // here rather than assumed, exactly as it states it.
         const { installBrowserGlobals } = await import('./browser-env.mjs');
         installBrowserGlobals();
         const { acquire } = await import('./reset-realm.mjs');
         const realm = await acquire({ build: 'yield' });
         if (realm.resettable) residentRealm = realm;
+        // The page realm's graph is now this rung's for the life of the page.
+        // Said where the rest of the tree looks, for the same reason the shared
+        // branch of start() says it: js/cptr.js's fd table and pointer registry
+        // are under BOTH module graphs, so a scored segment or a replay realm
+        // must go somewhere else — or say why it cannot.
+        if (IS_BROWSER && residentRealm) globalThis.__c2jsEngineRealmUsed = true;
     } catch { /* no realm to be had; forkGraph() is the rung */ }
     return residentRealm;
 }
@@ -423,25 +466,41 @@ export class MainThreadEngine {
     /**
      * Boot, and run to the first park — which is the first painted frame.
      *
-     * `cancelled` is asked between the two halves of that (instantiate the
-     * graph; run newgame). Both halves block the page's event loop outright —
-     * they are transpiled C and 13.6 MB of module evaluation, neither of which
-     * can be interleaved with anything — and while the thread is blocked no
-     * transport's `ready`, no service worker's probe answer and no timer can be
-     * serviced. So there is exactly one seam here, and it is used for two
-     * things at once: give the race a chance to say the second half is no
-     * longer wanted, and give every message queued behind the first half a turn
-     * of the event loop in which to be delivered. It is the only point in a
-     * main-thread boot where anything else in the page can run at all.
+     * `cancelled` is asked BEFORE the first of the two halves of that
+     * (instantiate the graph; run newgame) and again between them. Both halves
+     * block the page's event loop outright — they are transpiled C and 13.6 MB
+     * of module evaluation, neither of which can be interleaved with anything —
+     * and while the thread is blocked no transport's `ready`, no service
+     * worker's probe answer and no timer can be serviced. So the seams are the
+     * only points in a main-thread boot where anything else in the page can run
+     * at all, and they are used for two things at once: give the race a chance
+     * to say the rest is no longer wanted, and give every message queued behind
+     * the previous half a turn of the event loop in which to be delivered.
+     *
+     * The FIRST of them is new with the browser reset, and it restores a
+     * property the second one used to provide on its own. In a browser the
+     * graph used to be instantiated lazily by js/boot/harness-y.mjs, i.e.
+     * inside the second half; arming a realm evaluates it in the first half
+     * instead, so without a seam in front of that, entering start() would
+     * commit the page to ~600 ms a winning transport could no longer call off.
      */
     async start(cancelled) {
         const tGraph = performance.now();
-        // Ask for a graph of this game's own first. In Node that is a fork of
-        // the module map and costs nothing but the instantiation; in a browser
-        // the expression below is synchronous and this whole clause is `null`,
-        // so the `claimed` refusal that follows still happens in the same
-        // microtask a second game's start() was called in, exactly as before.
-        const own = IS_NODE ? await acquireGraph() : null;
+        if (cancelled && cancelled()) throw this._abandon('fallback cancelled before the graph');
+        // Ask for a graph this game may reset when it is done. In Node that is
+        // a fork of the module map; in a browser it is the page realm's own
+        // graph, armed — the thing that turns "one game per page" into "one
+        // graph per page".
+        //
+        // In a browser this used to be a synchronous `null`, so the `claimed`
+        // refusal below happened in the same microtask a second game's start()
+        // was called in. It no longer does, and the thing that took over that
+        // job is better suited to it: `residentBusy` is set by acquireGraph()
+        // before it returns, so a second *concurrent* game gets no realm and
+        // falls to the refusal anyway — and gets it for the true reason, which
+        // is that one graph cannot hold two live games, not that it cannot
+        // hold two games.
+        const own = await acquireGraph();
         let harness = own && own.harness;
         // Only a graph of this game's own has anything to give back; the page
         // realm's one graph is going to be there whatever this game does.
@@ -452,11 +511,25 @@ export class MainThreadEngine {
         // realm's hand before the game asked for it. A fork never is — it is
         // instantiated for this game and by definition was not there before.
         // (`generation` counts games already run: run() increments it below.)
-        if (this._realm) this.warmed = this._realm.generation > 0;
+        // In a browser the realm IS the page realm, so `graphReady` — the
+        // prewarm's own answer, and what this rung reported before it had a
+        // realm at all — still applies to its first game and is kept, so the
+        // column does not change meaning under a browser reader.
+        if (this._realm) this.warmed = this._realm.generation > 0 || (IS_BROWSER && graphReady);
         // Neither: this realm has one graph and it can run one game.
         const shared = !harness;
         if (shared) {
             if (claimed) throw new Error('the page realm has already hosted a resident engine');
+            // ...and the same question the rest of the tree asks, which
+            // `claimed` alone does not answer: transpiled C may have run in
+            // this realm through somebody ELSE's graph. js/jsmain.js's
+            // runSegment spends the page realm on the sync build, and
+            // js/cptr.js underneath the two graphs is one module. Without this,
+            // a page that scored a session and then played one would boot game
+            // 1 on top of the scorer's pointer registry.
+            if (globalThis.__c2jsEngineRealmUsed === true) {
+                throw new Error('the page realm has already run transpiled C and cannot be reset');
+            }
             // `claimed` is set below, not here, and that is the point: neither
             // the refusal above nor a rejection out of the import below is a
             // claim on this realm. Both mean "this rung is unavailable", the

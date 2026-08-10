@@ -21,10 +21,16 @@
 //
 //   - a fresh worker transport takes game 2 (a page with workers), or
 //   - ReplayEngine takes it in throwaway worker realms (no transport), or
-//   - a clean, explained error (no workers at all),
+//   - the page realm's own graph is RESET and takes it (no workers at all,
+//     js/boot/reset-realm.mjs), or
+//   - a clean, explained error (no workers and no reset).
 //
-// and never a game booted on top of a spent arena. `claimed` in
-// main-thread-engine.mjs is the guard; this page is the proof.
+// The third of those is new, and it is what ?workerless=1 now exercises: a
+// browser with no Worker constructor at all used to reach the fourth. The
+// forbidden outcome is unchanged — a game booted on top of a spent arena — and
+// the check for it moved from "which rung hosted game 2" to "is game 2 a
+// different character than game 1", which is the thing the rung question was
+// standing in for. See playability.mjs's --multigame assertions.
 //
 //   ?games=2&seed=8000&seed2=4500&keys=...   driven by playability.mjs --multigame
 //
