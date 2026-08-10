@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Is_candle, canspotmon, ignitable, release_data, u_at, update_file } from './nhmacrofn.js';
+import { DEADMONSTER, Is_candle, canspotmon, ignitable, release_data, update_file } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
@@ -209,7 +209,7 @@ export function do_light_sources(cs_rows) {
             if (get_mon_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
         }
-        if (u_at(cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y))) {
+        if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
             if (at_hero_range >= cptr.ldI16o(ls, $light_source_range))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -2);
             else
@@ -228,7 +228,7 @@ export function do_light_sources(cs_rows) {
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16o(ls, $light_source_x) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
-                if (u_at(cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y))) {
+                if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);

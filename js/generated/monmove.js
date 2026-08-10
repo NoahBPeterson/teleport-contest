@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ACCESSIBLE, DEADMONSTER, In_endgame, Is_candle, Is_container, Is_rogue_level, MON_AT, M_AP_TYPE, OBJ_AT, SURFACE_AT, amorphous, can_teleport, cansee, canspotmon, corpse_eater, couldsee, distu, engulfing_u, has_edog, helpless, hides_under, is_animal, is_axe, is_clinger, is_cloak, is_covetous, is_demon, is_floater, is_flyer, is_gloves, is_mercenary, is_mind_flayer, is_mines_prize, is_minion, is_organic, is_pick, is_pit, is_rider, is_shirt, is_soko_prize, is_vampshifter, is_wanderer, is_watch, likes_gems, likes_gold, likes_magic, m_cansee, m_next2u, metallivorous, mon_offmap, needspick, next2u, nohands, nolimbs, passes_walls, perceives, regenerates, telepathic, throws_rocks, touch_petrifies, tunnels, u_at, unique_corpstat, verysmall, webmaker } from './nhmacrofn.js';
+import { ACCESSIBLE, DEADMONSTER, In_endgame, Is_candle, Is_container, MON_AT, M_AP_TYPE, OBJ_AT, SURFACE_AT, amorphous, can_teleport, cansee, canspotmon, corpse_eater, couldsee, distu, engulfing_u, has_edog, helpless, hides_under, is_animal, is_axe, is_clinger, is_cloak, is_covetous, is_demon, is_floater, is_flyer, is_gloves, is_mercenary, is_mind_flayer, is_mines_prize, is_minion, is_organic, is_pick, is_pit, is_rider, is_shirt, is_soko_prize, is_vampshifter, is_wanderer, is_watch, likes_gems, likes_gold, likes_magic, m_cansee, m_next2u, metallivorous, mon_offmap, needspick, next2u, nohands, nolimbs, passes_walls, perceives, regenerates, telepathic, throws_rocks, touch_petrifies, tunnels, u_at, unique_corpstat, verysmall, webmaker } from './nhmacrofn.js';
 import { Aggravate_monster, Blind_telepat, Conflict, Deaf, Displaced, Half_spell_damage, Hallucination, Invis, Protection_from_shape_changers, Sokoban, Stealth, U_AP_TYPE, Underwater, Upolyd, display_nhwindow } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, flags, gb, gi, gk, gm, gn, go, gv, gy, svc, svd, svl, svm, u, uarm, uball, uchain, uwep } from './decl.js';
 import { canseemon, newsym, sensemon, swallowed } from './display.js';
@@ -850,7 +850,7 @@ export function should_displace(mtmp, data, ggx, ggy) {
 export function m_digweapon_check(mtmp, nix, niy) {
     let can_tunnel = 0;
     let mw_tmp = (cptr.ldPtro((mtmp), $monst_mw));
-    if (!Is_rogue_level(cptr.add(u, $you_uz)))
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
         can_tunnel = schar(tunnels(cptr.ldPtro(mtmp, $monst_data)));
     if (can_tunnel && needspick(cptr.ldPtro(mtmp, $monst_data)) && !mwelded(mw_tmp) && (may_dig(nix, niy) || closed_door(nix, niy))) {
         if (closed_door(nix, niy)) {
@@ -1280,7 +1280,7 @@ export function m_move(mtmp, after) {
             return NHM.MMOVE_NOTHING;
         seenflgs = ((canseemon(mtmp) ? 1 : 0) | (canspotmon(mtmp) ? 2 : 0)) >>> 0;
         set_apparxy(mtmp);
-        if (!Is_rogue_level(cptr.add(u, $you_uz)))
+        if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             can_tunnel = schar(tunnels(ptr));
         can_open = schar((!(nohands(ptr) || verysmall(ptr))));
         can_unlock = schar(((can_open && monhaskey(mtmp, 1)) || (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || is_rider(ptr) ? 1 : 0));
@@ -1362,7 +1362,7 @@ export function m_move(mtmp, after) {
             }
         }
     }
-    if ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 1891, __sl75), rn2(10)) : rn2(10))) && (!Is_rogue_level(cptr.add(u, $you_uz)))) {
+    if ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 1891, __sl75), rn2(10)) : rn2(10))) && (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))) {
         let in_line = schar((lined_up(mtmp) && (distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= (throws_rocks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 20 : (((((acurrstr()) / 2) | 0) + 1) | 0))) ? 1 : 0));
         if (appr.v != 1 || !in_line) {
             getitems = 1;

@@ -36,24 +36,11 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NhRegion_player_flags = FLD.NhRegion_play
     $Race_attrmin = FLD.Race_attrmin, $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD.Role_mnum,
     $achievement_tracking_soko_prize_oid = FLD.achievement_tracking_soko_prize_oid,
     $context_info_achieveo = FLD.context_info_achieveo, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
     $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_bigroom_level = FLD.dgn_topology_d_bigroom_level,
     $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
-    $dgn_topology_d_fire_level = FLD.dgn_topology_d_fire_level,
-    $dgn_topology_d_juiblex_level = FLD.dgn_topology_d_juiblex_level,
     $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
-    $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
-    $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
-    $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
-    $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
-    $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
     $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $dgn_topology_d_sanctum_level = FLD.dgn_topology_d_sanctum_level,
-    $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
     $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
-    $dgn_topology_d_valley_level = FLD.dgn_topology_d_valley_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
     $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level,
     $dgn_topology_d_wiz2_level = FLD.dgn_topology_d_wiz2_level,
     $dgn_topology_d_wiz3_level = FLD.dgn_topology_d_wiz3_level, $dlevel_t_flags = FLD.dlevel_t_flags,
@@ -233,15 +220,6 @@ export function IS_WATERWALL(typ) { return ((typ) == NHC.WATER); }
 /** C: include/dungeon.h — the `In_endgame(x)` macro body */
 export function In_endgame(x) { return (cptr.ldI16((x)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))); }
 
-/** C: include/dungeon.h — the `Is_airlevel(x)` macro body */
-export function Is_airlevel(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_astralevel(x)` macro body */
-export function Is_astralevel(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_bigroom(x)` macro body */
-export function Is_bigroom(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)) ? 1 : 0)); }
-
 /** C: include/obj.h — the `Is_box(o)` macro body */
 export function Is_box(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((o), $obj_otyp) == NHC.CHEST ? 1 : 0); }
 
@@ -260,56 +238,20 @@ export function Is_dragon_scales(obj) { return (cptr.ldI16o((obj), $obj_otyp) >=
 /** C: include/dungeon.h — the `Is_earthlevel(x)` macro body */
 export function Is_earthlevel(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)) ? 1 : 0)); }
 
-/** C: include/dungeon.h — the `Is_firelevel(x)` macro body */
-export function Is_firelevel(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_juiblex_level(x)` macro body */
-export function Is_juiblex_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)) ? 1 : 0)); }
-
 /** C: include/dungeon.h — the `Is_knox(x)` macro body */
 export function Is_knox(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)) ? 1 : 0)); }
 
 /** C: include/obj.h — the `Is_mbag(o)` macro body */
 export function Is_mbag(o) { return (cptr.ldI16o((o), $obj_otyp) == NHC.BAG_OF_HOLDING || cptr.ldI16o((o), $obj_otyp) == NHC.BAG_OF_TRICKS ? 1 : 0); }
 
-/** C: include/dungeon.h — the `Is_medusa_level(x)` macro body */
-export function Is_medusa_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_mineend_level(x)` macro body */
-export function Is_mineend_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_nemesis(x)` macro body */
-export function Is_nemesis(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_oracle_level(x)` macro body */
-export function Is_oracle_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology)) ? 1 : 0)); }
-
 /** C: include/obj.h — the `Is_pudding(o)` macro body */
 export function Is_pudding(o) { return (cptr.ldI16o(o, $obj_otyp) == NHC.GLOB_OF_GRAY_OOZE || cptr.ldI16o(o, $obj_otyp) == NHC.GLOB_OF_BROWN_PUDDING || cptr.ldI16o(o, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME || cptr.ldI16o(o, $obj_otyp) == NHC.GLOB_OF_BLACK_PUDDING ? 1 : 0); }
-
-/** C: include/dungeon.h — the `Is_qlocate(x)` macro body */
-export function Is_qlocate(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_qstart(x)` macro body */
-export function Is_qstart(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)) ? 1 : 0)); }
 
 /** C: include/dungeon.h — the `Is_rogue_level(x)` macro body */
 export function Is_rogue_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)) ? 1 : 0)); }
 
-/** C: include/dungeon.h — the `Is_sanctum(x)` macro body */
-export function Is_sanctum(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_sokoend_level(x)` macro body */
-export function Is_sokoend_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)) ? 1 : 0)); }
-
 /** C: include/dungeon.h — the `Is_stronghold(x)` macro body */
 export function Is_stronghold(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_valley(x)` macro body */
-export function Is_valley(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)) ? 1 : 0)); }
-
-/** C: include/dungeon.h — the `Is_waterlevel(x)` macro body */
-export function Is_waterlevel(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)) ? 1 : 0)); }
 
 /** C: include/dungeon.h — the `Is_wiz1_level(x)` macro body */
 export function Is_wiz1_level(x) { return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && on_level(x, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)) ? 1 : 0)); }

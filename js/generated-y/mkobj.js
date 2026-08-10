@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, Is_airlevel, Is_candle, Is_container, Is_dragon_scales, Is_mbag, Is_pudding, Is_rogue_level, Is_waterlevel, OMID, bimanual, cansee, carried, has_omailcmd, has_omonst, has_oname, is_corrodeable, is_crackable, is_female, is_human, is_male, is_mines_prize, is_multigen, is_neuter, is_poisonable, is_rider, is_rustprone, is_soko_prize, ismnum, mcarried, verysmall } from './nhmacrofn.js';
+import { DEADMONSTER, Has_contents, Is_candle, Is_container, Is_dragon_scales, Is_mbag, Is_pudding, OMID, bimanual, cansee, carried, has_omailcmd, has_omonst, has_oname, is_corrodeable, is_crackable, is_female, is_human, is_male, is_mines_prize, is_multigen, is_neuter, is_poisonable, is_rider, is_rustprone, is_soko_prize, ismnum, mcarried, verysmall } from './nhmacrofn.js';
 import { Blind, Hallucination } from './nhprop.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { c_common_strings, cg, flags, gb, gc, gi, gk, gm, go, gt, gu, gv, gz, hands_obj, iflags, program_state, svb, svc, svd, svl, svm, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
@@ -599,7 +599,7 @@ export function* mkobj(oclass, artif) {
     let i;
     let prob;
     if (oclass == NHC.RANDOM_CLASS) {
-        let iprobs = Is_rogue_level(cptr.add(u, $you_uz)) ? rogueprobs : (In_hell(cptr.add(u, $you_uz)) ? hellprobs : mkobjprobs);
+        let iprobs = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? rogueprobs : (In_hell(cptr.add(u, $you_uz)) ? hellprobs : mkobjprobs);
         for (tprob = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 280, __sl2), rnd(100)) : rnd(100)); (tprob = (tprob - cptr.ldI32(iprobs)) | 0) > 0; iprobs = cptr.add(iprobs, 1, 8))
             continue;
         oclass = cptr.ld1so(iprobs, $icp_iclass);
@@ -2418,7 +2418,7 @@ export function* hornoplenty(horn, tipping, targetbox) {
             (yield* addtobill(obj, 0, 0, tipping));
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
         if (!tipping) {
-            obj = (yield* hold_another_object(obj, (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl104 : ((Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl105 : __sl106), (yield* The((yield* aobjnam(obj, __sl107)))), null));
+            obj = (yield* hold_another_object(obj, (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl104 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl105 : __sl106), (yield* The((yield* aobjnam(obj, __sl107)))), null));
             (void (obj));
         } else if (targetbox) {
             (yield* add_to_container(targetbox, obj));

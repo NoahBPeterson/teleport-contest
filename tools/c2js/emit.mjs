@@ -1827,6 +1827,20 @@ export class Emitter {
     return { safe, hasCall, why };
   }
 
+  /**
+   * An argument that cannot fail however often it is evaluated: a name or a
+   * constant. Everything else — a load, an index, a deref, arithmetic on them
+   * — can, so it only moves to the call when C was going to evaluate it anyway.
+   */
+  macroFnArgTotal(node) {
+    let x = node;
+    while (x && (x.kind === 'ParenExpr' || x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr')) {
+      x = (x.inner || [])[0];
+    }
+    return !!x && (x.kind === 'DeclRefExpr' || x.kind === 'IntegerLiteral'
+      || x.kind === 'CharacterLiteral' || x.kind === 'FloatingLiteral' || x.kind === 'StringLiteral');
+  }
+
   /** the functions an argument sub-tree calls */
   macroFnCallees(node) {
     const out = new Set();
@@ -1884,13 +1898,19 @@ export class Emitter {
       const { safe, hasCall } = this.macroFnArgSafe(groups[i].nodes[0]);
       if (!safe) { tally(hasCall ? 'refusedImpureArg' : 'refusedRepeat'); return null; }
       if (groups[i].nodes.length > 1) repeats++;
+      // C may reach an occurrence only behind a short circuit; a helper
+      // evaluates every argument before the body runs either way. That is only
+      // free for an argument that cannot fail — a bare identifier or a
+      // constant. A LOAD is not free: `M(p, p->fld)` under a body of
+      // `((a) && (b))` never dereferences p in C when p is null, and a helper
+      // would. So anything that is not trivially total needs an occurrence C
+      // was always going to reach.
+      if (!this.macroFnArgTotal(groups[i].nodes[0]) && !unconditional.has(i)) {
+        tally('refusedConditional');
+        return null;
+      }
       if (hasCall) {
         anyCall = true;
-        // C may reach an occurrence only behind a short circuit; a helper
-        // evaluates the argument before the body runs either way. For a load
-        // that is unobservable, for a call it is not — unless C was always
-        // going to make it.
-        if (!unconditional.has(i)) { tally('refusedConditional'); return null; }
         if (groups[i].nodes.length > 1) {
           tally('hoisted');
           for (const c of this.macroFnCallees(groups[i].nodes[0])) {

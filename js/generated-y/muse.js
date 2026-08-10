@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DIR_LEFT2, DIR_RIGHT2, Has_contents, IS_DOOR, In_endgame, Is_container, Is_dragon_mail, Is_dragon_scales, Is_earthlevel, Is_knox, Is_mbag, Is_rogue_level, NODIAG, OBJ_AT, SchroedingersBox, ZAP_POS, acidic, amorphous, bimanual, cansee, canspotmon, couldsee, flaming, haseyes, hates_light, helpless, is_Vlad, is_animal, is_bat, is_floater, is_flyer, is_golem, is_hole, is_mercenary, is_pit, is_plural, is_undead, is_vampshifter, ismnum, likes_gems, m_next2u, mon_offmap, monsndx, needspick, nohands, noncorporeal, passes_walls, random_monster, throws_rocks, touch_petrifies, u_at, unsolid, verysmall } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_LEFT2, DIR_RIGHT2, Has_contents, IS_DOOR, In_endgame, Is_container, Is_dragon_mail, Is_dragon_scales, Is_mbag, NODIAG, OBJ_AT, SchroedingersBox, ZAP_POS, acidic, amorphous, bimanual, cansee, canspotmon, couldsee, flaming, haseyes, hates_light, helpless, is_Vlad, is_animal, is_bat, is_floater, is_flyer, is_golem, is_hole, is_mercenary, is_pit, is_plural, is_undead, is_vampshifter, ismnum, likes_gems, m_next2u, mon_offmap, monsndx, needspick, nohands, noncorporeal, passes_walls, random_monster, throws_rocks, touch_petrifies, u_at, unsolid, verysmall } from './nhmacrofn.js';
 import { Antimagic, Blind, BlindedTimeout, Deaf, EReflecting, Half_spell_damage, Hallucination, See_invisible, Sokoban, Teleport_control, U_AP_TYPE, Ugender, Upolyd, cliparound, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, c_color_names, c_common_strings, cg, flags, gb, gc, gm, gn, gt, gu, gv, gy, gz, hands_obj, iflags, svc, svd, svl, svm, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uskin, uswapwep, uwep } from './decl.js';
 import { discover_object, objdescr_is, observe_object } from './o_init.js';
@@ -606,7 +606,7 @@ export function* find_defensive(mtmp, tryescape) {
             return 0;
         if (!tryescape && dist2(x, y, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) > 25)
             return 0;
-        if (tryescape && Is_knox(cptr.add(u, $you_uz)) && !m_next2u(mtmp) && m_next2m(mtmp))
+        if (tryescape && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && !m_next2u(mtmp) && m_next2m(mtmp))
             return 0;
         if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && stuck)
             return 0;
@@ -1473,7 +1473,7 @@ export function* find_offensive(mtmp) {
         if (cptr.ldI32o(gm, $instance_globals_m_m + $musable_has_offense) == 17)
             continue;
         ;
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_EARTH && (hard_helmet(mtmp_helmet) || (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || amorphous(cptr.ldPtro(mtmp, $monst_data)) || passes_walls(cptr.ldPtro(mtmp, $monst_data)) || noncorporeal(cptr.ldPtro(mtmp, $monst_data)) || unsolid(cptr.ldPtro(mtmp, $monst_data)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1558, __sl89), rn2(10)) : rn2(10))) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 2 && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && haseyes(cptr.ldPtro(mtmp, $monst_data)) && !Is_rogue_level(cptr.add(u, $you_uz)) && (!In_endgame(cptr.add(u, $you_uz)) || Is_earthlevel(cptr.add(u, $you_uz)))) {
+        if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_EARTH && (hard_helmet(mtmp_helmet) || (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || amorphous(cptr.ldPtro(mtmp, $monst_data)) || passes_walls(cptr.ldPtro(mtmp, $monst_data)) || noncorporeal(cptr.ldPtro(mtmp, $monst_data)) || unsolid(cptr.ldPtro(mtmp, $monst_data)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1558, __sl89), rn2(10)) : rn2(10))) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 2 && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && haseyes(cptr.ldPtro(mtmp, $monst_data)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && (!In_endgame(cptr.add(u, $you_uz)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))) {
             cptr.stPtro(gm, $instance_globals_m_m, obj);
             cptr.stI32o(gm, $instance_globals_m_m + $musable_has_offense, 17);
         }
@@ -1626,7 +1626,7 @@ function* mbhit(mon, range, fhitm, fhito, obj) {
             cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - ddy);
             break;
         }
-        if (u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+        if (((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             (yield* Y.icall((fhitm)(cptr.add(gy, $instance_globals_y_youmonst), obj)));
             range = (range - 3) | 0;
         } else if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 168, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
@@ -1881,7 +1881,7 @@ export function* find_misc(mtmp) {
         }
         if (cptr.ldI32o(gm, $instance_globals_m_m + $musable_has_misc) == 8)
             continue;
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.BULLWHIP && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && uwep.v && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2182, __sl106), rn2(5)) : rn2(5)) && cptr.eq(obj, (cptr.ldPtro((mtmp), $monst_mw))) && u_at(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) && m_next2u(mtmp) && !(cptr.ldI32o(u, $you_uswallow) & 1) && ((yield* canletgo(uwep.v, __sl17)) || (cptr.ld1so(u, $you_twoweap) && (yield* canletgo(uswapwep.v, __sl17))))) {
+        if (cptr.ldI16o(obj, $obj_otyp) == NHC.BULLWHIP && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && uwep.v && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2182, __sl106), rn2(5)) : rn2(5)) && cptr.eq(obj, (cptr.ldPtro((mtmp), $monst_mw))) && ((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy)) && m_next2u(mtmp) && !(cptr.ldI32o(u, $you_uswallow) & 1) && ((yield* canletgo(uwep.v, __sl17)) || (cptr.ld1so(u, $you_twoweap) && (yield* canletgo(uswapwep.v, __sl17))))) {
             cptr.stPtro(gm, $instance_globals_m_m + $musable_misc, obj);
             cptr.stI32o(gm, $instance_globals_m_m + $musable_has_misc, 8);
         }

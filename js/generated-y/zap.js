@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DIR_CLAMP, DIR_LEFT, DIR_RIGHT, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_ROOM, IS_SINK, IS_WATERWALL, Is_airlevel, Is_box, Is_container, Is_qstart, Is_rogue_level, Is_waterlevel, MCORPSENM, MON_AT, M_AP_TYPE, OBJ_AT, OMID, P_SKILL, SURFACE_AT, SchroedingersBox, ZAP_POS, amphibious, bimanual, breathless, cansee, canspotmon, carnivorous, carried, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, completelyburns, couldsee, distu, engulfing_u, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_warning, has_omonst, has_oname, haseyes, hides_under, is_cmap_door, is_corrodeable, is_crackable, is_demon, is_golem, is_hole, is_magical_trap, is_metallic, is_mplayer, is_pick, is_pit, is_poisonable, is_rider, is_rustprone, is_swimmer, is_undead, is_vampshifter, is_weptool, is_whirly, ismnum, min, nohands, noncorporeal, obj_is_generic, perceives, random_monster, random_object, type_is_pname, u_at, undestroyable_trap, unique_corpstat, unpolyable } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_CLAMP, DIR_LEFT, DIR_RIGHT, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_ROOM, IS_SINK, IS_WATERWALL, Is_box, Is_container, MCORPSENM, MON_AT, M_AP_TYPE, OBJ_AT, OMID, P_SKILL, SURFACE_AT, SchroedingersBox, ZAP_POS, amphibious, bimanual, breathless, cansee, canspotmon, carnivorous, carried, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, completelyburns, couldsee, distu, engulfing_u, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_warning, has_omonst, has_oname, haseyes, hides_under, is_cmap_door, is_corrodeable, is_crackable, is_demon, is_golem, is_hole, is_magical_trap, is_metallic, is_mplayer, is_pick, is_pit, is_poisonable, is_rider, is_rustprone, is_swimmer, is_undead, is_vampshifter, is_weptool, is_whirly, ismnum, min, nohands, noncorporeal, obj_is_generic, perceives, random_monster, random_object, type_is_pname, u_at, undestroyable_trap, unique_corpstat, unpolyable } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, BInvis, Blind, Cold_resistance, Deaf, Disint_resistance, Drain_resistance, Fire_resistance, Fumbling, HFast, HStun, Half_physical_damage, Half_spell_damage, Hallucination, Invis, Levitation, Luck, Passes_walls, Punished, Reflecting, SYSOPT_SEDUCE, Shock_resistance, Sleep_resistance, Stoned, Teleport_control, Unchanging, Underwater, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, putstr, sokoban_dnum, start_menu, wizard } from './nhprop.js';
 import { objects } from './objects.js';
 import { discover_object, observe_object } from './o_init.js';
@@ -2973,7 +2973,7 @@ function* zap_updown(obj) {
             else
                 (yield* destroy_drawbridge(xx.v, yy.v));
             disclose.v = 1;
-        } else if (striking && cptr.ldI32o(u, $you_dz) < 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3307, __sl168), rn2(3)) : rn2(3)) && !Is_airlevel(cptr.add(u, $you_uz)) && !Is_waterlevel(cptr.add(u, $you_uz)) && !Underwater() && !Is_qstart(cptr.add(u, $you_uz))) {
+        } else if (striking && cptr.ldI32o(u, $you_dz) < 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3307, __sl168), rn2(3)) : rn2(3)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Underwater() && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
             let dmg;
             (yield* pline(__sl169, (yield* ceiling(x, y)), (yield* body_part(NHC.HEAD))));
             dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3314, __sl168), rnd(hard_helmet(uarmh.v) ? 2 : 6)) : rnd(hard_helmet(uarmh.v) ? 2 : 6));
@@ -3013,7 +3013,7 @@ function* zap_updown(obj) {
         }
         break;
         case NHC.SPE_STONE_TO_FLESH:
-        if (Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (Is_qstart(cptr.add(u, $you_uz)) && cptr.ldI32o(u, $you_dz) < 0)) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && cptr.ldI32o(u, $you_dz) < 0)) {
             (yield* pline(__sl123, cptr.ldPtr(c_common_strings)));
         } else if (cptr.ldI32o(u, $you_dz) < 0) {
             (yield* pline(__sl178, (yield* body_part(NHC.FACE))));
@@ -3291,7 +3291,7 @@ function* zap_map(x, y, obj) {
             if (cansee(x, y)) {
                 (yield* pline(__sl199));
                 learn_it.v = 1;
-            } else if (Is_rogue_level(cptr.add(u, $you_uz))) {
+            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 (yield* draft_message(0));
             }
         } else if (ltyp == NHC.SCORR) {
@@ -3593,7 +3593,7 @@ export function* boomhit(obj, dx, dy) {
             cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - dy);
             break;
         }
-        if (u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+        if (((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (Fumbling() || (rng_log_enabled() ? (rng_log_set_caller(__sl21, 4203, __sl213), rn2(20)) : rn2(20)) >= (acurr(NHC.A_DEX))) {
                 let dam = (yield* dmgval(obj.v, cptr.add(gy, $instance_globals_y_youmonst)));
                 void (yield* thitu((10 + cptr.ld1so(obj.v, $obj_spe)) | 0, ((Half_physical_damage()) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), obj, __sl214));
@@ -4296,7 +4296,7 @@ export function* dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         __pc = 30; continue;
         }
         case 31: {
-        if (Is_airlevel(cptr.add(u, $you_uz))) { __pc = 33; continue; }
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) { __pc = 33; continue; }
         __pc = 34; continue;
         }
         case 33: {
@@ -4447,7 +4447,7 @@ export function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wan
         if (is_ice(x, y)) {
             (yield* melt_ice(x, y, null));
         } else if (is_pool(x, y)) {
-            let on_water_level = schar(Is_waterlevel(cptr.add(u, $you_uz)));
+            let on_water_level = schar((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)) ? 1 : 0)));
             let msggiven = 0;
             let msgtxt = (!Deaf()) ? __sl271 : ((type >= 0) ? __sl272 : null);
             if (!on_water_level) {
@@ -4619,7 +4619,7 @@ export function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wan
         (yield* newsym(x, y));
         if (see_it)
             (yield* pline(__sl294, yourzap ? __sl295 : __sl296, zapverb));
-        else if (Is_rogue_level(cptr.add(u, $you_uz)))
+        else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             (yield* draft_message(0));
     }
     if (closed_door(x, y)) {
@@ -5367,8 +5367,8 @@ export function* makewish() {
             (yield* livelog_printf((1n | maybe_LL_arti), __sl381, cptr.decay(wish)));
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && !u_safe_from_fatal_corpse(otmp, NHC.st_all))
             cptr.stI32o(otmp, $obj_usecount, 1);
-        let verb = ((Is_airlevel(cptr.add(u, $you_uz)) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __sl382 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl383 : __sl384));
-        let oops_msg = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl385 : ((Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl386 : (!(cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl387 : __sl388)));
+        let verb = (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __sl382 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl383 : __sl384));
+        let oops_msg = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl385 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl386 : (!(cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl387 : __sl388)));
         void (yield* hold_another_object(otmp, oops_msg, (yield* The((yield* aobjnam(otmp, verb)))), null));
         cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + (((rng_log_enabled() ? (rng_log_set_caller(__sl21, 6421, __sl377), rn2(100)) : rn2(100)) + 50) | 0)) | 0);
         break __lbl_retry;

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { CAN_OVERWRITE_TERRAIN, DEADMONSTER, DIR_180, Has_contents, IS_AIR, IS_DOOR, IS_FURNITURE, IS_ROOM, IS_STWALL, IS_TREE, IS_WALL, IS_WATERWALL, In_endgame, Is_airlevel, Is_box, Is_container, Is_qlocate, Is_stronghold, Is_waterlevel, M_AP_TYPE, OBJ_AT, P_SKILL, ZAP_POS, acidic, amorphous, bigmonst, bimanual, breathless, can_teleport, cansee, canspotmon, carried, completelyrusts, couldsee, distu, dunlev_reached, extra_nasty, fixed_tele_trap, flaming, has_mgivenname, has_omonst, has_oname, helpless, hides_under, is_animal, is_blade, is_clinger, is_corrodeable, is_crackable, is_floater, is_flyer, is_golem, is_hider, is_hole, is_neuter, is_organic, is_pit, is_plural, is_rustprone, is_undead, is_vampshifter, is_wet_towel, is_whirly, ismnum, likes_gems, likes_lava, m_next2u, mcarried, metallivorous, min, next2u, nohands, nolimbs, obj_is_generic, passes_walls, pm_invisible, random_monster, random_object, stone_missile, strongmonst, throws_rocks, touch_petrifies, u_at, u_wield_art, undestroyable_trap, unique_corpstat, unsolid, webmaker } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_180, Has_contents, IS_AIR, IS_DOOR, IS_FURNITURE, IS_ROOM, IS_STWALL, IS_TREE, IS_WALL, IS_WATERWALL, In_endgame, Is_box, Is_container, M_AP_TYPE, OBJ_AT, P_SKILL, ZAP_POS, acidic, amorphous, bigmonst, bimanual, breathless, can_teleport, cansee, canspotmon, carried, completelyrusts, couldsee, distu, dunlev_reached, extra_nasty, fixed_tele_trap, flaming, has_mgivenname, has_omonst, has_oname, helpless, hides_under, is_animal, is_blade, is_clinger, is_corrodeable, is_crackable, is_floater, is_flyer, is_golem, is_hider, is_hole, is_neuter, is_organic, is_pit, is_plural, is_rustprone, is_undead, is_vampshifter, is_wet_towel, is_whirly, ismnum, likes_gems, likes_lava, m_next2u, mcarried, metallivorous, min, next2u, nohands, nolimbs, obj_is_generic, passes_walls, pm_invisible, random_monster, random_object, stone_missile, strongmonst, throws_rocks, touch_petrifies, u_at, u_wield_art, undestroyable_trap, unique_corpstat, unsolid, webmaker } from './nhmacrofn.js';
 import { Amphibious, Antimagic, BFlying, BLevitation, Blind, Breathless, Deaf, Drain_resistance, EInvis, Fire_resistance, Flying, Free_action, Fumbling, HConfusion, HHallucination, HInvis, HStun, Half_physical_damage, Half_spell_damage, Halluc_resistance, Hallucination, Invis, Lev_at_will, Levitation, Lifesaved, Luck, Passes_walls, Punished, Role_switch, See_invisible, Shock_resistance, Sleep_resistance, Slimed, Sokoban, Stone_resistance, Swimming, Teleport_control, Teleportation, Unchanging, Underwater, Upolyd, clear_nhwindow, discover, display_nhwindow, nh_delay_output, sokoban_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, cg, disp, flags, ga, gb, gf, gi, gk, gl, gm, gn, go, gs, gt, gu, gv, gx, gy, iflags, materialnm, svc, svd, svk, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uswapwep, uwep, vowels, xdir, ydir, ynqchars } from './decl.js';
 import { carrying, consume_obj_charge, currency, delobj, getobj, nxtobj, prinv, sobj_at, stackobj, update_inventory, useup, useupall } from './invent.js';
@@ -1249,7 +1249,7 @@ export function maketrap(x, y, typ) {
         oldplace = 1;
         if (cptr.ldI32o(u, $you_utrap) && u_at(x, y) && ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP && typ != NHC.BEAR_TRAP) || (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB && typ != NHC.WEB) || (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT && !((typ) == NHC.PIT || (typ) == NHC.SPIKED_PIT)) || (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA && !is_lava(x, y))))
             reset_utrap(0);
-    } else if (!CAN_OVERWRITE_TERRAIN(cptr.ld1so(lev, $rm_typ)) || is_pool_or_lava(x, y) || (IS_FURNITURE(cptr.ld1so(lev, $rm_typ)) && (typ != NHC.PIT && typ != NHC.HOLE)) || (cptr.ld1so(lev, $rm_typ) == NHC.DRAWBRIDGE_UP && typ == NHC.MAGIC_PORTAL) || (IS_AIR(cptr.ld1so(lev, $rm_typ)) && typ != NHC.MAGIC_PORTAL) || (typ == NHC.LEVEL_TELEP && single_level_branch(cptr.add(u, $you_uz)))) {
+    } else if (!(cptr.ld1so(iflags, $instance_flags_debug_overwrite_stairs) || !((cptr.ld1so(lev, $rm_typ)) == NHC.LADDER || (cptr.ld1so(lev, $rm_typ)) == NHC.STAIRS)) || is_pool_or_lava(x, y) || (IS_FURNITURE(cptr.ld1so(lev, $rm_typ)) && (typ != NHC.PIT && typ != NHC.HOLE)) || (cptr.ld1so(lev, $rm_typ) == NHC.DRAWBRIDGE_UP && typ == NHC.MAGIC_PORTAL) || (IS_AIR(cptr.ld1so(lev, $rm_typ)) && typ != NHC.MAGIC_PORTAL) || (typ == NHC.LEVEL_TELEP && single_level_branch(cptr.add(u, $you_uz)))) {
         return null;
     } else {
         oldplace = 0;
@@ -1384,7 +1384,7 @@ export function fall_through(td, ftflags) {
     }
     if (cptr.ld1so(u, $you_ushops))
         shopdig(1);
-    if (Is_stronghold(cptr.add(u, $you_uz))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
         find_hell(dtmp);
     } else {
         let dist;
@@ -2318,7 +2318,7 @@ function trapeffect_pit(mtmp, trap, trflags) {
             if (cptr.ld1s(cptr.decay(verbbuf)))
                 You(__sl182, cptr.decay(verbbuf), cptr.ldPtro(a_your, (cptr.ldI32o(trap, $trap_madeby_u) & 1), 8));
         }
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && !(cptr.ldI32o(trap, $trap_madeby_u) & 1) && !(cptr.ldI32o(trap, $trap_once) & 1) && In_quest(cptr.add(u, $you_uz)) && Is_qlocate(cptr.add(u, $you_uz))) {
+        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && !(cptr.ldI32o(trap, $trap_madeby_u) & 1) && !(cptr.ldI32o(trap, $trap_once) & 1) && In_quest(cptr.add(u, $you_uz)) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level))))) {
             pline(__sl183);
             cptr.stI32o(trap, $trap_once, 1);
         } else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_PIT_VIPER || cptr.ldI32o(u, $you_umonnum) == NHC.PM_PIT_FIEND) {
@@ -3260,7 +3260,7 @@ export function blow_up_landmine(trap) {
     }
     trap = t_at(x, y);
     if (trap) {
-        if (Is_waterlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
             deltrap(trap);
         } else {
             typ = fillholetyp(x, y, 0);
@@ -3879,7 +3879,7 @@ export function float_up() {
             You(__sl336, mon_nam(cptr.ldPtro(u, $you_ustuck)));
     } else if (Hallucination()) {
         pline(__sl337);
-    } else if (Is_airlevel(cptr.add(u, $you_uz))) {
+    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
         You(__sl338);
     } else {
         You(__sl339);
@@ -3967,9 +3967,9 @@ export function float_down(hmask, emask) {
     }
     if (!trap) {
         trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        if (Is_airlevel(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
             You(__sl355);
-        } else if (Is_waterlevel(cptr.add(u, $you_uz)) && !no_msg) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !no_msg) {
             You_feel(__sl356);
         } else if (!(cptr.ldI32o(u, $you_uinwater) & 1) && !no_msg) {
             if (!(emask & 1048576n)) {
@@ -4009,7 +4009,7 @@ export function float_down(hmask, emask) {
                 dotrap(trap, NHM.NO_TRAP_FLAGS);
         }
     }
-    if (!Is_airlevel(cptr.add(u, $you_uz)) && !Is_waterlevel(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uswallow) & 1) && on_level(cptr.add(u, $you_uz), current_dungeon_level))
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !(cptr.ldI32o(u, $you_uswallow) & 1) && on_level(cptr.add(u, $you_uz), current_dungeon_level))
         void pickup(1);
     return 1;
 }
@@ -4622,10 +4622,10 @@ export function rescued_from_terrain(how) {
     switch (how) {
         case NHC.DROWNING:
         if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-            You(__sl456, cptr.decay(__static_rescued_from_terrain_find_yourself), (Is_waterlevel(cptr.add(u, $you_uz)) || IS_WATERWALL(cptr.ld1so(lev, $rm_typ))) ? __sl457 : __sl458, hliquid(__sl435));
+            You(__sl456, cptr.decay(__static_rescued_from_terrain_find_yourself), ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || IS_WATERWALL(cptr.ld1so(lev, $rm_typ))) ? __sl457 : __sl458, hliquid(__sl435));
             mesggiven = 1;
         } else if (IS_AIR(cptr.ld1so(lev, $rm_typ))) {
-            You(__sl459, cptr.decay(__static_rescued_from_terrain_find_yourself), Is_waterlevel(cptr.add(u, $you_uz)) ? __sl460 : __sl461);
+            You(__sl459, cptr.decay(__static_rescued_from_terrain_find_yourself), (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? __sl460 : __sl461);
             mesggiven = 1;
         }
         break;
@@ -4689,7 +4689,7 @@ export function drown() {
         if (Amphibious() || Breathless()) {
             if (cptr.ld1so(flags, $flag_verbose))
                 pline(__sl472);
-            if (!Is_waterlevel(cptr.add(u, $you_uz))) {
+            if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
                 if (Hallucination())
                     Your(__sl473);
                 else
@@ -4727,7 +4727,7 @@ export function drown() {
     x.v = cptr.ldI16(u), y.v = cptr.ldI16o(u, $you_uy);
     if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mmove) && rnd_nextto_goodpos(x, y, cptr.add(gy, $instance_globals_y_youmonst))) {
         let lost = cptr.box(0);
-        let succ = schar((Is_waterlevel(cptr.add(u, $you_uz)) ? 1 : emergency_disrobe(lost)));
+        let succ = schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : emergency_disrobe(lost)));
         You(__sl478, hliquid(__sl435));
         if (lost.v)
             You(__sl479);
@@ -4872,7 +4872,7 @@ export function cnv_trap_obj(otyp, cnt, ttmp, bury_it) {
         stackobj(otmp);
     }
     newsym(cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty));
-    if (cptr.ldI32o(u, $you_utrap) && u_at(cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty)))
+    if (cptr.ldI32o(u, $you_utrap) && ((cptr.ldI16o(ttmp, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(ttmp, $trap_ty)) == cptr.ldI16o(u, $you_uy)))
         reset_utrap(1);
     if (((mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(ttmp, $trap_tx), 168, cptr.ldI16o(ttmp, $trap_ty), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
         cptr.stI32o(mtmp, $monst_mtrapped, 0);
@@ -5812,19 +5812,19 @@ function adj_nonconjoined_pit(adjtrap) {
 
 /** C ref: trap.c:6648 — @param {CPtr} trap @returns {CInt} */
 export function uteetering_at_seen_pit(trap) {
-    return schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && u_at(cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty)) && !(cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) ? 1 : 0));
+    return schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && ((cptr.ldI16o(trap, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(trap, $trap_ty)) == cptr.ldI16o(u, $you_uy)) && !(cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) ? 1 : 0));
 }
 
 /** C ref: trap.c:6660 — @param {CPtr} trap @returns {CInt} */
 export function uescaped_shaft(trap) {
-    return schar((trap && is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && u_at(cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty)) ? 1 : 0));
+    return schar((trap && is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && ((cptr.ldI16o(trap, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(trap, $trap_ty)) == cptr.ldI16o(u, $you_uy)) ? 1 : 0));
 }
 
 /** C ref: trap.c:6668 — @param {CPtr} ttmp @returns {CInt} */
 export function delfloortrap(ttmp) {
     if (ttmp && ((((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.SQKY_BOARD) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP) || is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LEVEL_TELEP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.WEB) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.ANTI_MAGIC))) {
         let mtmp;
-        if (u_at(cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty))) {
+        if (((cptr.ldI16o(ttmp, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(ttmp, $trap_ty)) == cptr.ldI16o(u, $you_uy))) {
             if (cptr.ldI32o(u, $you_utraptype) != NHC.TT_BURIEDBALL)
                 reset_utrap(1);
         } else if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(ttmp, $trap_tx), 168, cptr.ldI16o(ttmp, $trap_ty), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {

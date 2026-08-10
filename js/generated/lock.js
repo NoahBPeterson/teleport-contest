@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_DOOR, Is_box, Is_rogue_level, M_AP_TYPE, OBJ_AT, any_quest_artifact, breathless, cansee, canspotmon, carried, distu, greatest_erosion, haseyes, is_blade, is_pick, is_weptool, nohands, u_at, verysmall } from './nhmacrofn.js';
+import { IS_DOOR, Is_box, M_AP_TYPE, OBJ_AT, any_quest_artifact, breathless, cansee, canspotmon, carried, distu, greatest_erosion, haseyes, is_blade, is_pick, is_weptool, nohands, u_at, verysmall } from './nhmacrofn.js';
 import { BBlinded, Blind, Deaf, HBlinded, HConfusion, HStun, Levitation, Passes_walls, Protection_from_shape_changers, Underwater } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gu, gv, gx, gy, svc, svd, svl, svm, u, uwep, ynchars, ynqchars } from './decl.js';
 import { There, You, You_cant, You_hear, impossible, pline, pline_The, set_msg_xy, verbalize } from './pline.js';
@@ -560,7 +560,7 @@ export function pick_lock(pick, rx, ry, container) {
     } else if (!get_adjacent_loc(null, __sl40, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc)) {
         return 0;
     }
-    if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         let verb;
         let qsfx = new Uint8Array(128);
         let it;
@@ -840,7 +840,7 @@ export function doopen_indir(x, y) {
     } else if (!get_adjacent_loc(dirprompt, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc)) {
         return NHM.ECMD_OK;
     }
-    if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) && (cptr.ldI32o(u, $you_dz) > 0 || !closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) && (cptr.ldI32o(u, $you_dz) > 0 || !closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
         return doloot();
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
         You_cant(__sl62);
@@ -1109,7 +1109,7 @@ export function doorlock(otmp, x, y) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
-        if (Is_rogue_level(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             let vis = schar(cansee(x, y));
             if (vis) {
                 pline(__sl125, dustcloud);

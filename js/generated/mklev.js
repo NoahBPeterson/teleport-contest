@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, DIR_180, IS_DOOR, IS_STWALL, In_endgame, Is_oracle_level, Is_rogue_level, Is_waterlevel } from './nhmacrofn.js';
+import { Align2amask, DIR_180, IS_DOOR, IS_STWALL, In_endgame } from './nhmacrofn.js';
 import { display_nhwindow, mines_dnum, nh_delay_output, tutorial_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { WIN_MESSAGE, flags, gc, gd, gi, gl, gm, gn, gs, gt, gu, gv, gx, gy, iflags, nhcb_counts, nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir } from './decl.js';
@@ -693,7 +693,7 @@ function dosdoor(x, y, aroom, type) {
         } else {
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, (shdoor ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
         }
-        if (Is_rogue_level(cptr.add(u, $you_uz)))
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
         if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
             let mtmp;
@@ -1005,7 +1005,7 @@ function fill_ordinary_room(croom, bonus_items) {
             mktrap(0, NHM.MKTRAP_NOFLAGS, croom, null);
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 986, __sl21), rn2(3)) : rn2(3)) && somexyspace(croom, pos))
             void mkgold(0n, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y));
-        if (Is_rogue_level(cptr.add(u, $you_uz)))
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             break __lbl_skip_nonrogue;
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 990, __sl21), rn2(10)) : rn2(10)))
             mkfount(croom);
@@ -1176,7 +1176,7 @@ function makelevel() {
     oinit();
     clear_level_structures();
     slev = Is_special(cptr.add(u, $you_uz));
-    if (slev && !Is_rogue_level(cptr.add(u, $you_uz))) {
+    if (slev && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         makemaz(cptr.add(slev, $s_level_proto));
     } else if (cptr.ld1so3(svd, cptr.ldI16o(u, $you_uz), 112, 0, 1, $dungeon_proto)) {
         makemaz(__sl28);
@@ -1195,7 +1195,7 @@ function makelevel() {
     } else {
         let u_depth = depth(cptr.add(u, $you_uz));
         __lbl_skip0: {
-            if (Is_rogue_level(cptr.add(u, $you_uz))) {
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 makeroguerooms();
                 makerogueghost();
             } else {
@@ -1206,7 +1206,7 @@ function makelevel() {
             generate_stairs();
             branchp = Is_branchlev(cptr.add(u, $you_uz));
             room_threshold = branchp ? 4 : 3;
-            if (Is_rogue_level(cptr.add(u, $you_uz)))
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
                 break __lbl_skip0;
             makecorridors();
             make_niches();
@@ -1301,7 +1301,7 @@ function makelevel() {
 
 /** C ref: mklev.c:1432 — @param {CInt} x @param {CInt} y @param {CInt} kelp_pool @param {CInt} kelp_moat @returns {CInt} */
 function water_has_kelp(x, y, kelp_pool, kelp_moat) {
-    if ((kelp_pool && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !Is_waterlevel(cptr.add(u, $you_uz)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1436, __sl38), rn2(kelp_pool)) : rn2(kelp_pool))) || (kelp_moat && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1437, __sl38), rn2(kelp_moat)) : rn2(kelp_moat))))
+    if ((kelp_pool && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1436, __sl38), rn2(kelp_pool)) : rn2(kelp_pool))) || (kelp_moat && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1437, __sl38), rn2(kelp_moat)) : rn2(kelp_moat))))
         return 1;
     return 0;
 }
@@ -1323,7 +1323,7 @@ export function mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_che
         for (y = 1; y < 20; y++)
             if (water_has_kelp(x, y, kelp_pool, kelp_moat))
                 void mksobj_at(NHC.KELP_FROND, x, y, 1, 0);
-    if (!skip_lvl_checks && (In_hell(cptr.add(u, $you_uz)) || In_V_tower(cptr.add(u, $you_uz)) || Is_rogue_level(cptr.add(u, $you_uz)) || (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 || ((sp = Is_special(cptr.add(u, $you_uz))) !== null && !Is_oracle_level(cptr.add(u, $you_uz)) && (!In_mines(cptr.add(u, $you_uz)) || (cptr.ldI32o(sp, $s_level_flags) & 1) | 0))))
+    if (!skip_lvl_checks && (In_hell(cptr.add(u, $you_uz)) || In_V_tower(cptr.add(u, $you_uz)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) || (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 || ((sp = Is_special(cptr.add(u, $you_uz))) !== null && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && (!In_mines(cptr.add(u, $you_uz)) || (cptr.ldI32o(sp, $s_level_flags) & 1) | 0))))
         return;
     if (goldprob < 0)
         goldprob = (20 + ((depth(cptr.add(u, $you_uz)) / 3) | 0)) | 0;
@@ -1746,7 +1746,7 @@ export function mktrap(num, mktrapflags, croom, tm) {
         return;
     if (num > NHC.NO_TRAP && num < NHC.TRAPNUM) {
         kind = num;
-    } else if (Is_rogue_level(cptr.add(u, $you_uz))) {
+    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         kind = traptype_roguelvl();
     } else if (In_hell(cptr.add(u, $you_uz)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2070, __sl48), rn2(5)) : rn2(5))) {
         kind = NHC.FIRE_TRAP;

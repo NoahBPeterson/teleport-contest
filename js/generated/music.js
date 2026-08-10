@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { BZ_U_WAND, DEADMONSTER, In_endgame, Is_astralevel, Is_sanctum, Is_stronghold, M_AP_TYPE, cansee, has_mgivenname, humanoid, is_clinger, is_flyer, is_hider, is_mercenary, is_pit, nolimbs, slithy, u_at, unique_corpstat } from './nhmacrofn.js';
+import { BZ_U_WAND, DEADMONSTER, In_endgame, M_AP_TYPE, cansee, has_mgivenname, humanoid, is_clinger, is_flyer, is_hider, is_mercenary, is_pit, nolimbs, slithy, u_at, unique_corpstat } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Unchanging, Underwater, Upolyd, sokoban_dnum } from './nhprop.js';
 import { flash_str, resist, ubuzz, zapyourself } from './zap.js';
 import { monflee, onscary } from './monmove.js';
@@ -514,11 +514,11 @@ function do_earthquake(force) {
 
 /** C ref: music.c:478 @returns {CPtr} */
 function generic_lvl_desc() {
-    if (Is_astralevel(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return __sl40;
     else if (In_endgame(cptr.add(u, $you_uz)))
         return __sl41;
-    else if (Is_sanctum(cptr.add(u, $you_uz)))
+    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))))
         return __sl42;
     else if ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()))
         return __sl43;
@@ -774,7 +774,7 @@ export function do_play_instrument(instr) {
         }
         You(!Deaf() ? __sl105 : __sl106, the(xname(instr)));
         ;
-        if (Is_stronghold(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
             exercise(NHC.A_WIS, 1);
             if (!strcmp(cptr.decay(buf), svt)) {
                 for (y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y.v++)

@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, Is_box, Is_rogue_level, MCORPSENM, M_AP_TYPE, OBJ_AT, SchroedingersBox, cansee, canspotmon, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_unexplored, glyph_is_warning, helpless, hides_under, is_cmap_furniture, is_hider, monsndx, monsym, random_monster, random_object, trap_to_defsym, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, Is_box, MCORPSENM, M_AP_TYPE, OBJ_AT, SchroedingersBox, cansee, canspotmon, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_unexplored, glyph_is_warning, helpless, hides_under, is_cmap_furniture, is_hider, monsndx, monsym, random_monster, random_object, trap_to_defsym, u_at } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Clairvoyant, Deaf, EDetect_monsters, HConfusion, HHallucination, HStun, Half_physical_damage, Hallucination, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, c_common_strings, cg, flags, ga, gd, gf, gi, gk, gm, gn, gs, gu, gv, gy, iflags, quitchars, svd, svl, u, ublindf, uwep } from './decl.js';
 import { back_to_glyph, canseemon, cls, docrt, feel_location, feel_newsym, flash_glyph_at, flush_screen, glyph_at, magic_map_background, map_background, map_engraving, map_invisible, map_object, map_trap, mon_visible, newsym, see_monsters, sensemon, show_glyph, swallowed, under_ground, under_water, unmap_invisible, unmap_object, warning_of, xy_set_wall_state } from './display.js';
@@ -543,7 +543,7 @@ export function* gold_detect(sobj) {
             }
             (yield* map_object(temp, 1));
         }
-        if (temp && u_at(cptr.ldI16o(temp, $obj_ox), cptr.ldI16o(temp, $obj_oy)))
+        if (temp && ((cptr.ldI16o(temp, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(temp, $obj_oy)) == cptr.ldI16o(u, $you_uy)))
             ugold = 1;
     }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
@@ -572,7 +572,7 @@ export function* gold_detect(sobj) {
                     break;
                 }
         }
-        if (temp && u_at(cptr.ldI16o(temp, $obj_ox), cptr.ldI16o(temp, $obj_oy)))
+        if (temp && ((cptr.ldI16o(temp, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(temp, $obj_oy)) == cptr.ldI16o(u, $you_uy)))
             ugold = 1;
     }
     if (!ugold) {
@@ -601,7 +601,7 @@ export function* food_detect(sobj) {
         cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)), cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_my, cptr.ldI16o(u, $you_uy));
     for (obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); obj; obj = cptr.ldPtr(obj))
         if (o_in(obj, oclass)) {
-            if (u_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
+            if (((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy)))
                 ctu++;
             else
                 ct++;
@@ -611,7 +611,7 @@ export function* food_detect(sobj) {
             continue;
         for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             if (o_in(obj, oclass)) {
-                if (u_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
+                if (((cptr.ldI16o(mtmp, $monst_mx)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_my)) == cptr.ldI16o(u, $you_uy)))
                     ctu++;
                 else
                     ct++;
@@ -726,7 +726,7 @@ export function* object_detect(detector, class$) {
             (yield* observe_recursively(obj));
     for (obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); obj; obj = cptr.ldPtr(obj)) {
         if ((!class$ && !boulder) || o_in(obj, schar(class$)) || o_in(obj, schar(boulder))) {
-            if (u_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
+            if (((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy)))
                 ctu++;
             else
                 ct++;
@@ -736,7 +736,7 @@ export function* object_detect(detector, class$) {
     }
     for (obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); obj; obj = cptr.ldPtr(obj)) {
         if (!class$ || o_in(obj, schar(class$))) {
-            if (u_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
+            if (((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy)))
                 ctu++;
             else
                 ct++;
@@ -1429,7 +1429,7 @@ export function* do_vicinity_map(sobj) {
 /** C ref: detect.c:1589 — @param {CPtr} lev */
 export function cvt_sdoor_to_door(lev) {
     let newmask = ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -8;
-    if (Is_rogue_level(cptr.add(u, $you_uz))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         newmask = NHM.D_NODOOR;
     } else {
         if (!(newmask & NHM.D_LOCKED))

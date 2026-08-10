@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { C, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_SINK, IS_STWALL, IS_THRONE, IS_TREE, IS_WATERWALL, Is_container, Is_mineend_level, Is_sokoend_level, M, NODIAG, OBJ_AT, cansee, canspotmon, glyph_is_cmap, glyph_is_invisible, has_mgivenname, hides_under, is_hider, is_mind_flayer, is_vampire, is_vampshifter, is_were, likes_gems, next2u, u_at, unmeta, webmaker } from './nhmacrofn.js';
+import { C, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_SINK, IS_STWALL, IS_THRONE, IS_TREE, IS_WATERWALL, Is_container, M, NODIAG, OBJ_AT, cansee, canspotmon, glyph_is_cmap, glyph_is_invisible, has_mgivenname, hides_under, is_hider, is_mind_flayer, is_vampire, is_vampshifter, is_were, likes_gems, next2u, u_at, unmeta, webmaker } from './nhmacrofn.js';
 import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
@@ -1499,11 +1499,11 @@ export function* makemap_prepost(pre, wiztower) {
         (yield* makemap_remove_mons());
         rm_mapseen(ledger_no(cptr.add(u, $you_uz)));
         {
-            if (Is_mineend_level(cptr.add(u, $you_uz))) {
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
                 if (remove_achievement(NHC.ACH_MINE_PRIZE))
                     (yield* pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl48));
                 cptr.stI32o(svc, $context_info_achieveo, 0);
-            } else if (Is_sokoend_level(cptr.add(u, $you_uz))) {
+            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level))))) {
                 if (remove_achievement(NHC.ACH_SOKO_PRIZE))
                     (yield* pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl49));
                 cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
@@ -5707,7 +5707,7 @@ function* dotravel_target() {
     if (!isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
         (yield* pline(__sl645));
         return NHM.ECMD_OK;
-    } else if (u_at(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
+    } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         (yield* You(__sl646));
         cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
         return NHM.ECMD_OK;

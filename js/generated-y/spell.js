@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DIR_LEFT, DIR_RIGHT2, IS_STWALL, IS_TREE, Is_waterlevel, P_SKILL, cansee, canspotmon, haseyes, is_animal, is_metallic, is_undead, is_vampshifter, is_whirly, spellid, spellknow, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_LEFT, DIR_RIGHT2, IS_STWALL, IS_TREE, P_SKILL, cansee, canspotmon, haseyes, is_animal, is_metallic, is_undead, is_vampshifter, is_whirly, spellid, spellknow, u_at } from './nhmacrofn.js';
 import { Antimagic, BClairvoyant, Blind, BlindedTimeout, HConfusion, HStun, Half_physical_damage, Hallucination, Poison_resistance, Sick, Sleep_resistance, Slimed, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, start_menu, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
@@ -1430,7 +1430,7 @@ function* throwspell() {
     if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
         (yield* pline(__sl129));
         return 0;
-    } else if (Is_waterlevel(cptr.add(u, $you_uz))) {
+    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
         (yield* You(__sl130));
         return 0;
     }

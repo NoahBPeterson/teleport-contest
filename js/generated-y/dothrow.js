@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, IS_DOOR, IS_OBSTRUCTED, IS_TREE, Is_airlevel, Is_waterlevel, M_AP_TYPE, P_SKILL, bigmonst, breathless, cansee, canspotmon, carried, engulfing_u, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, greatest_erosion, has_mgivenname, has_oname, haseyes, helpless, is_ammo, is_animal, is_axe, is_blade, is_crackable, is_domestic, is_elf, is_hole, is_missile, is_orc, is_pick, is_pit, is_pole, is_spear, is_sword, is_weptool, is_wet_towel, is_whirly, ismnum, likes_gems, matching_launcher, min, next2u, nohands, notake, obj_is_generic, passes_walls, random_monster, random_object, stone_missile, throws_rocks, touch_petrifies, u_at, unsolid } from './nhmacrofn.js';
+import { DEADMONSTER, Has_contents, IS_DOOR, IS_OBSTRUCTED, IS_TREE, M_AP_TYPE, P_SKILL, bigmonst, breathless, cansee, canspotmon, carried, engulfing_u, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, greatest_erosion, has_mgivenname, has_oname, haseyes, helpless, is_ammo, is_animal, is_axe, is_blade, is_crackable, is_domestic, is_elf, is_hole, is_missile, is_orc, is_pick, is_pit, is_pole, is_spear, is_sword, is_weptool, is_wet_towel, is_whirly, ismnum, likes_gems, matching_launcher, min, next2u, nohands, notake, obj_is_generic, passes_walls, random_monster, random_object, stone_missile, throws_rocks, touch_petrifies, u_at, unsolid } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Deaf, EWwalking, Flying, Fumbling, HConfusion, HStun, Half_gas_damage, Half_physical_damage, Hallucination, Levitation, Luck, Passes_walls, Punished, Race_switch, Role_switch, Sokoban, Stone_resistance, Underwater, Upolyd, nh_delay_output } from './nhprop.js';
 import { objects } from './objects.js';
 import { c_common_strings, flags, gb, gc, gh, gi, gk, gm, gn, go, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svq, u, uarm, uarmc, uarmg, uarmh, uarmu, uball, ublindf, uchain, uquiver, uswapwep, uwep } from './decl.js';
@@ -893,7 +893,7 @@ export function* hurtle_step(arg, x, y) {
             cptr.stI64o(gm, $instance_globals_m_multi, 0n);
             void (yield* drown());
             return 0;
-        } else if (!Is_waterlevel(cptr.add(u, $you_uz)) && !stopping_short) {
+        } else if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !stopping_short) {
             (yield* Norep(__sl50, (yield* an(is_moat(x, y) ? __sl51 : __sl52))));
         }
     } else if (is_lava(x, y) && !stopping_short) {
@@ -1337,7 +1337,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             impaired = 1;
         }
     }
-    if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || (cptr.ldI32o(u, $you_dz) < 1)) && calc_capacity(cptr.ldI32o(obj.v, $obj_owt) | 0) > NHC.SLT_ENCUMBER && (Upolyd() ? (cptr.ldI32o(u, $you_mh) < 5 && cptr.ldI32o(u, $you_mh) != cptr.ldI32o(u, $you_mhmax) ? 1 : 0) : (cptr.ldI32o(u, $you_uhp) < 10 && cptr.ldI32o(u, $you_uhp) != cptr.ldI32o(u, $you_uhpmax) ? 1 : 0)) && cptr.ldI32o(obj.v, $obj_owt) > (Math.imul((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)), 2)) >>> 0 && !Is_airlevel(cptr.add(u, $you_uz))) {
+    if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || (cptr.ldI32o(u, $you_dz) < 1)) && calc_capacity(cptr.ldI32o(obj.v, $obj_owt) | 0) > NHC.SLT_ENCUMBER && (Upolyd() ? (cptr.ldI32o(u, $you_mh) < 5 && cptr.ldI32o(u, $you_mh) != cptr.ldI32o(u, $you_mhmax) ? 1 : 0) : (cptr.ldI32o(u, $you_uhp) < 10 && cptr.ldI32o(u, $you_uhp) != cptr.ldI32o(u, $you_uhpmax) ? 1 : 0)) && cptr.ldI32o(obj.v, $obj_owt) > (Math.imul((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)), 2)) >>> 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
         (yield* You(__sl96, (yield* the((yield* xname(obj.v))))));
         (yield* exercise(NHC.A_CON, 0));
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
@@ -1370,7 +1370,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         throwit_return(1);
         return;
     } else if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.BOOMERANG && !Underwater()) {
-        if (Is_airlevel(cptr.add(u, $you_uz)) || Levitation())
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
             (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1));
         mon = (yield* boomhit(obj.v, cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy)));
         cptr.stPtro(iflags, $instance_flags_returning_missile, null);
@@ -1406,7 +1406,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                 (yield* pline(__sl98, (yield* an(skill_name(weapon_type(obj.v)))), (yield* weapon_descr(obj.v)), (yield* body_part(NHC.HAND))));
             }
         }
-        if (Is_airlevel(cptr.add(u, $you_uz)) || Levitation()) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) {
             urange = (urange - range) | 0;
             if (urange < 1)
                 urange = 1;
@@ -1426,7 +1426,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             range = 1;
         mon = (yield* bhit(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), range, tethered_weapon ? NHC.THROWN_TETHERED_WEAPON : NHC.THROWN_WEAPON, null, null, obj));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, obj.v);
-        if (Is_airlevel(cptr.add(u, $you_uz)) || Levitation())
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
             (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), urange, 1));
         if (!obj.v) {
             if (tethered_weapon)
@@ -2093,7 +2093,7 @@ function* throw_gold(obj) {
         return NHM.ECMD_TIME;
     }
     if (cptr.ldI32o(u, $you_dz)) {
-        if (cptr.ldI32o(u, $you_dz) < 0 && !Is_airlevel(cptr.add(u, $you_uz)) && !Underwater() && !Is_waterlevel(cptr.add(u, $you_uz))) {
+        if (cptr.ldI32o(u, $you_dz) < 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !Underwater() && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
             (yield* pline_The(__sl148, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
             if (uarmh.v)
                 (yield* pline(__sl149, (yield* an(helm_simple_name(uarmh.v)))));

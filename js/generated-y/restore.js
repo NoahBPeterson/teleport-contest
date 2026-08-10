@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, Is_rogue_level, OMID, age_is_relative, has_omonst, hides_under, ismnum, likes_gems } from './nhmacrofn.js';
+import { Has_contents, OMID, age_is_relative, has_omonst, hides_under, ismnum, likes_gems } from './nhmacrofn.js';
 import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
@@ -812,7 +812,7 @@ export function* dorecover(nhfp) {
     cptr.stI32o(program_state, $sinfo_something_worth_saving, 1);
     if (!wizard() && !discover())
         void (yield* delete_savefile());
-    if (Is_rogue_level(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
         assign_graphics(NHC.ROGUESET);
     reset_glyphmap(NHC.gm_levelchange);
     max_rank_sz();

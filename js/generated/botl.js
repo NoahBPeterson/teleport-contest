@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { In_endgame, Is_knox, bimanual, humanoid, is_sword, is_weptool } from './nhmacrofn.js';
+import { In_endgame, bimanual, humanoid, is_sword, is_weptool } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Glib, HConfusion, HStun, Hallucination, Levitation, Role_switch, Sick, Slimed, Stoned, Strangled, Ugender, Underwater, Upolyd, Wounded_legs, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed, putstr, start_menu, status_enablefield, status_update, tutorial_dnum } from './nhprop.js';
 import { acurr } from './attrib.js';
 import { WIN_STATUS, cg, disp, flags, gb, gc, gi, gm, gn, gs, gu, gv, gy, iflags, svc, svd, svl, svm, svp, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uleft, uright, uswapwep, uwep } from './decl.js';
@@ -869,7 +869,7 @@ export function describe_level(buf, dflgs) {
     let addspace = schar(((dflgs & 1) != 0));
     let addbranch = schar(((dflgs & 2) != 0));
     let ret = 1;
-    if (Is_knox(cptr.add(u, $you_uz))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))) {
         void cptr.sprintf(buf, __sl15, cptr.add(svd, cptr.ldI16o(u, $you_uz), 112));
         addbranch = 0;
     } else if (In_quest(cptr.add(u, $you_uz))) {

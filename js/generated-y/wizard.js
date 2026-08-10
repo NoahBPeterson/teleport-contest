@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, In_endgame, Is_astralevel, Is_rogue_level, MON_AT, any_quest_artifact, cansee, distu, helpless, is_covetous, is_minion, m_next2u, min, monsym, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, In_endgame, MON_AT, any_quest_artifact, cansee, distu, helpless, is_covetous, is_minion, m_next2u, min, monsym, u_at } from './nhmacrofn.js';
 import { Blind, Deaf, Protection_from_shape_changers } from './nhprop.js';
 import { c_color_names, gf, gm, gs, gv, svc, svd, svl, svm, u, uamul, uwep } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -576,7 +576,7 @@ export function* clonewiz() {
 export function pick_nasty(difcap) {
     let alt;
     let res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 541, __sl11), rn2(44)) : rn2(44)), 4);
-    if (Is_rogue_level(cptr.add(u, $you_uz)) && !(65 <= monsym(cptr.add(mons, res, 96)) && monsym(cptr.add(mons, res, 96)) <= 90))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= monsym(cptr.add(mons, res, 96)) && monsym(cptr.add(mons, res, 96)) <= 90))
         res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 551, __sl11), rn2(44)) : rn2(44)), 4);
     alt = res;
     if ((cptr.ld1uo2(svm, res, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, 96, $permonst_difficulty) >= difcap) || (cptr.ldU16o2(mons, res, 96, $permonst_geno) & (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0)
@@ -708,7 +708,7 @@ export function* resurrect() {
 
 /** C ref: wizard.c:785 */
 export function* intervene() {
-    let which = Is_astralevel(cptr.add(u, $you_uz)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rnd(4)) : rnd(4)) : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rn2(6)) : rn2(6));
+    let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rnd(4)) : rnd(4)) : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rn2(6)) : rn2(6));
     switch (which) {
         case 0:
         case 1:

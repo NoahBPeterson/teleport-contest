@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_waterlevel, MON_AT, carried, is_hole, is_pit } from './nhmacrofn.js';
+import { MON_AT, carried, is_hole, is_pit } from './nhmacrofn.js';
 import { Blind, Half_physical_damage, Levitation, Luck, Punished } from './nhprop.js';
 import { flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep } from './decl.js';
 import { setuqwep, setuswapwep, setuwep, welded } from './wield.js';
@@ -170,7 +170,7 @@ function placebc_core() {
 /** C ref: ball.c:147 */
 function unplacebc_core() {
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        if (Is_waterlevel(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
             if (!carried(uball.v))
                 obj_extract_self(uball.v);
             obj_extract_self(uchain.v);

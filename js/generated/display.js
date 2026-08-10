@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ACCESSIBLE, DEADMONSTER, IS_DOOR, IS_OBSTRUCTED, IS_POOL, IS_ROOM, IS_SDOOR, IS_STWALL, Is_rogue_level, Is_waterlevel, MCORPSENM, M_AP_TYPE, altar_to_glyph, cansee, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, engraving_to_defsym, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_trap, glyph_is_unexplored, infravisible, is_cmap_furniture, is_cmap_room, is_cmap_wall, mindless, monnum_to_glyph, monsndx, next2u, obj_is_generic, random_monster, spot_shows_engravings, trap_to_defsym, u_at, warning_to_glyph } from './nhmacrofn.js';
+import { ACCESSIBLE, DEADMONSTER, IS_DOOR, IS_OBSTRUCTED, IS_POOL, IS_ROOM, IS_SDOOR, IS_STWALL, MCORPSENM, M_AP_TYPE, altar_to_glyph, cansee, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, engraving_to_defsym, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_trap, glyph_is_unexplored, infravisible, is_cmap_furniture, is_cmap_room, is_cmap_wall, mindless, monnum_to_glyph, monsndx, next2u, obj_is_generic, random_monster, spot_shows_engravings, trap_to_defsym, u_at, warning_to_glyph } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Detect_monsters, HConfusion, HStun, HTelepat, Hallucination, Infravision, Invisible, Protection_from_shape_changers, Punished, See_invisible, U_AP_TYPE, Ugender, Unblind_telepat, Underwater, Upolyd, Warn_of_mon, Warning, clear_nhwindow, curs, display_nhwindow, nh_delay_output, print_glyph, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, a11y, cg, disp, flags, gc, gd, gf, gg, gi, go, gs, gu, gv, gw, gy, iflags, program_state, shield_static, svc, svd, svl, svm, u, uball, uchain } from './decl.js';
 import { dist2, sgn } from './hacklib.js';
@@ -533,7 +533,7 @@ export function feel_location(x, y) {
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     if (glyph_is_invisible(cptr.ldI32(lev)) && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)))
         return;
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Is_waterlevel(cptr.add(u, $you_uz)) && !is_pool_or_lava(x, y) && !is_ice(x, y))
+    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_pool_or_lava(x, y) && !is_ice(x, y))
         return;
     set_seenv(lev, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y);
     if (!can_reach_floor(0)) {
@@ -555,7 +555,7 @@ export function feel_location(x, y) {
                 do_room_glyph = 1;
             }
             if (do_room_glyph) {
-                cptr.stI32(lev, (cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color) && !Is_rogue_level(cptr.add(u, $you_uz))) ? (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : ((cptr.ldI32o(lev, $rm_waslit) & 1) | 0 ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : NHC.GLYPH_CMAP_STONE_OFF));
+                cptr.stI32(lev, (cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) ? (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : ((cptr.ldI32o(lev, $rm_waslit) & 1) | 0 ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : NHC.GLYPH_CMAP_STONE_OFF));
                 show_glyph(x, y, cptr.ldI32(lev));
             }
         } else {
@@ -625,7 +625,7 @@ export function newsym(x, y) {
             show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
         return;
     }
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Is_waterlevel(cptr.add(u, $you_uz))) {
+    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
         if (!(is_pool_or_lava(x, y) || is_ice(x, y)) || !next2u(x, y))
             return;
     }
@@ -730,7 +730,7 @@ export function newsym(x, y) {
                 display_monster(x, y, mon, see_it ? 0 : 2, schar((((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my)))) ? 1 : 0)));
             } else if (mon && (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel))) && !((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my))))) {
                 display_warning(mon);
-            } else if (Is_rogue_level(cptr.add(u, $you_uz))) {
+            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 if (cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                     show_glyph(x, y, cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)));
                 else if (cptr.ldI32(lev) == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && cptr.ld1so(lev, $rm_typ) == NHC.ROOM && !(cptr.ldI32o(lev, $rm_waslit) & 1))
@@ -959,7 +959,7 @@ let __static_under_water_dela = 0; /** C ref: display.c:1398 — signed char (fu
 export function under_water(mode) {
     let x;
     let y;
-    if (Is_waterlevel(cptr.add(u, $you_uz)) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
     if (mode == 1 || __static_under_water_dela) {
         cls();
@@ -1163,7 +1163,7 @@ export function docrt_flags(refresh_flags) {
             swallowed(1);
             break __lbl_post_map;
         }
-        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Is_waterlevel(cptr.add(u, $you_uz))) {
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
             under_water(1);
             break __lbl_post_map;
         }
@@ -1221,7 +1221,7 @@ export function reglyph_darkroom() {
                 if (cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && !cansee(x, y))
                     cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0));
             }
-            if (!cptr.ld1so(flags, $flag_dark_room) || !cptr.ld1so(iflags, $instance_flags_wc_color) || Is_rogue_level(cptr.add(u, $you_uz))) {
+            if (!cptr.ld1so(flags, $flag_dark_room) || !cptr.ld1so(iflags, $instance_flags_wc_color) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 if (cptr.ldI32(lev) == (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
                     cptr.stI32(lev, (cptr.ldI32o(lev, $rm_waslit) & 1) | 0 ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : NHC.GLYPH_NOTHING_OFF);
             } else {
@@ -1816,7 +1816,7 @@ export function reset_glyphmap(trigger) {
         cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, 0n);
     if (!cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags)) {
         cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) | 1n);
-        if (Is_rogue_level(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) | 2n);
         }
     }

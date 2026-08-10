@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, IS_DRAWBRIDGE, Is_juiblex_level, Is_stronghold, OBJ_AT, cansee, canspotmon, distu, helpless, is_floater, is_flyer, is_swimmer, likes_lava, noncorporeal, passes_walls, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, IS_DRAWBRIDGE, OBJ_AT, cansee, canspotmon, distu, helpless, is_floater, is_flyer, is_swimmer, likes_lava, noncorporeal, passes_walls, u_at } from './nhmacrofn.js';
 import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
@@ -211,7 +211,7 @@ export function is_moat(x, y) {
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (!Is_juiblex_level(cptr.add(u, $you_uz)) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
         return 1;
     return 0;
 }
@@ -907,7 +907,7 @@ export function* open_drawbridge(x, y) {
     (yield* newsym(x, y));
     (yield* newsym(x2.v, y2.v));
     unblock_point(x2.v, y2.v);
-    if (Is_stronghold(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     nokiller();
 }
@@ -979,7 +979,7 @@ export function* destroy_drawbridge(x, y) {
     if (!(yield* does_block(x2.v, y2.v, lev2)))
         unblock_point(x2.v, y2.v);
     (yield* vision_recalc(0));
-    if (Is_stronghold(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     set_entity(x2.v, y2.v, etmp2);
     if (cptr.ldPtro(etmp2, $entity_edata)) {
@@ -1035,7 +1035,7 @@ export function* destroy_drawbridge(x, y) {
         }
     }
     nokiller();
-    if (Is_stronghold(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 3);
 }
 

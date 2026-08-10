@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, IS_FURNITURE, IS_LAVA, IS_POOL, Is_box, Is_candle, Is_container, Is_mbag, MON_AT, OBJ_AT, P_SKILL, SURFACE_AT, SchroedingersBox, age_is_relative, bigmonst, canspotmon, carried, distu, has_omonst, hides_under, is_pick, is_pit, is_rider, min, monsndx, nohands, nolimbs, notake, obj_is_generic, random_monster, random_object, throws_rocks, touch_petrifies, u_at } from './nhmacrofn.js';
+import { Has_contents, IS_FURNITURE, IS_LAVA, IS_POOL, Is_box, Is_candle, Is_container, Is_mbag, MON_AT, OBJ_AT, P_SKILL, SURFACE_AT, SchroedingersBox, age_is_relative, bigmonst, canspotmon, carried, distu, has_omonst, hides_under, is_pick, is_pit, is_rider, min, monsndx, nohands, nolimbs, notake, obj_is_generic, random_monster, random_object, throws_rocks, touch_petrifies } from './nhmacrofn.js';
 import { Blind, HConfusion, HFumbling, HStun, Half_physical_damage, Hallucination, ParanoidAutoAll, Stone_resistance, Underwater, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { Norep, There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The, urgent_pline, verbalize } from './pline.js';
 import { Doname2, The, Tobjnam, Yname2, Ysimple_name2, an, ansimpleoname, corpse_xname, doname, doname_with_price, killer_xname, makesingular, otense, safe_qbuf, the, thesimpleoname, vtense, xname, yname, ysimple_name } from './objnam.js';
@@ -1992,7 +1992,7 @@ function doloot_core() {
         looted_mon = 0;
         if (!get_adjacent_loc(__sl120, __sl121, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc))
             return NHM.ECMD_OK;
-        underfoot = schar(u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
+        underfoot = schar(((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
         if (underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) { __pc = 9; continue; }
         __pc = 8; continue;
         }

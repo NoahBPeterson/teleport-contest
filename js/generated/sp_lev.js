@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, IS_DOOR, IS_DRAWBRIDGE, IS_LAVA, IS_OBSTRUCTED, IS_POOL, IS_STWALL, IS_WALL, In_endgame, Is_medusa_level, Is_mineend_level, Is_sokoend_level, Is_waterlevel, MON_AT, SPACE_POS, SP_COORD_PACK, SP_COORD_X, SP_COORD_Y, amphibious, carried, emits_light, glyph_is_cmap, is_female, is_floater, is_flyer, is_hole, is_male, is_pit, is_swimmer, is_vampshifter, ismnum, likes_lava, max, min, monsym, noncorporeal, passes_walls, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
+import { Align2amask, IS_DOOR, IS_DRAWBRIDGE, IS_LAVA, IS_OBSTRUCTED, IS_POOL, IS_STWALL, IS_WALL, In_endgame, MON_AT, SPACE_POS, SP_COORD_PACK, SP_COORD_X, SP_COORD_Y, amphibious, carried, emits_light, glyph_is_cmap, is_female, is_floater, is_flyer, is_hole, is_male, is_pit, is_swimmer, is_vampshifter, ismnum, likes_lava, max, min, monsym, noncorporeal, passes_walls, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
 import { Protection_from_shape_changers, Punished } from './nhprop.js';
 import { cg, emptystr, gc, gd, gf, gi, gl, gm, gn, gr, gs, gt, gu, gx, gy, head_engr, iflags, svc, svd, sve, svi, svl, svm, svn, svr, u, uball, uchain } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
@@ -1568,7 +1568,7 @@ function set_ok_location_func(func) {
 /** C ref: sp_lev.c:1280 — @param {CInt} x @param {CInt} y @param {CUInt} humidity @returns {CInt} */
 function is_ok_location(x, y, humidity) {
     let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (Is_waterlevel(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
         return 1;
     if (is_ok_location_func)
         return is_ok_location_func(x, y);
@@ -2415,7 +2415,7 @@ function create_object(o, croom) {
         } else
             impossible(__sl35);
     }
-    if (cptr.ldI16o(o, $object_id) == NHC.STATUE && Is_medusa_level(cptr.add(u, $you_uz)) && cptr.ldI32o(o, $object_corpsenm) == NHC.NON_PM) {
+    if (cptr.ldI16o(o, $object_id) == NHC.STATUE && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && cptr.ldI32o(o, $object_corpsenm) == NHC.NON_PM) {
         let was = null;
         let obj;
         let wastyp;
@@ -2444,7 +2444,7 @@ function create_object(o, croom) {
         }
     }
     if (cptr.ldI16o(o, $object_achievement)) {
-        if (Is_mineend_level(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
             if (!cptr.ldI32o(svc, $context_info_achieveo)) {
                 cptr.stI32o(svc, $context_info_achieveo, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stI16o(svc, $context_info_achieveo + $achievement_tracking_mines_prize_otyp, cptr.ldI16o(otmp, $obj_otyp));
@@ -2452,7 +2452,7 @@ function create_object(o, croom) {
             } else {
                 impossible(cptr.decay(__static_create_object_prize_warning), __sl36);
             }
-        } else if (Is_sokoend_level(cptr.add(u, $you_uz))) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level))))) {
             if (!cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid)) {
                 cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stI16o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_otyp, cptr.ldI16o(otmp, $obj_otyp));

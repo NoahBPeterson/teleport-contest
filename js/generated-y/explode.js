@@ -798,7 +798,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
                             cptr.st1o(stmp, $scatter_chain_stopped, 1);
                         }
                     }
-                } else if (u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+                } else if (((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
                     if ((scflags & NHM.MAY_HITYOU) >>> 0) {
                         let dam;
                         let hitvalu;

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, In_endgame, Is_astralevel, Is_container, M_AP_TYPE, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min, release_data, type_is_pname, update_file } from './nhmacrofn.js';
+import { Has_contents, In_endgame, Is_container, M_AP_TYPE, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min, release_data, type_is_pname, update_file } from './nhmacrofn.js';
 import { Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr, raw_print, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg, gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uchain, urealtime, ynchars, ynqchars } from './decl.js';
 import { dump_close_log, dump_forward_putstr, dump_open_log, windowprocs } from './windows.js';
@@ -1094,7 +1094,7 @@ function really_done(how) {
     if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         void cptr.strcat(cptr.add(svk, $kinfo_name), __sl105);
     } else if (how == NHC.ESCAPED) {
-        if (Is_astralevel(cptr.add(u, $you_uz)))
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
             void cptr.strcat(cptr.add(svk, $kinfo_name), __sl106);
         else if (carrying(NHC.FAKE_AMULET_OF_YENDOR))
             void cptr.strcat(cptr.add(svk, $kinfo_name), __sl107);
@@ -1173,7 +1173,7 @@ function really_done(how) {
             void cptr.sprintf(cptr.decay(pbuf), __sl121, (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0) ? __sl122 : cptr.ldPtro(ends, how, 8));
         } else {
             let where = cptr.add(svd, cptr.ldI16o(u, $you_uz), 112);
-            if (Is_astralevel(cptr.add(u, $you_uz)))
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
                 where = __sl123;
             void cptr.sprintf(cptr.decay(pbuf), __sl124, cptr.ldPtro(ends, how, 8), where);
             if (!In_endgame(cptr.add(u, $you_uz)) && !single_level_branch(cptr.add(u, $you_uz)))

@@ -852,7 +852,7 @@ export function* m_throw(mon, x, y, dx, dy, range, obj) {
         } else if (mtmp) {
             if ((yield* ohitmon(mtmp, singleobj.v, range, 1)))
                 break;
-        } else if (u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
+        } else if (((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (cptr.ldI64o(gm, $instance_globals_m_multi))
                 nomul(0);
             if (cptr.ld1so(singleobj.v, $obj_oclass) == NHC.GEM_CLASS && (yield* ucatchgem(singleobj.v, mon)))

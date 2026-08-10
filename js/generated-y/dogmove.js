@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DIR_LEFT, DIR_LEFT2, DIR_RIGHT, DIR_RIGHT2, Is_qstart, Is_rogue_level, MON_AT, M_AP_TYPE, cansee, canspotmon, carnivorous, couldsee, distu, has_edog, has_head, haseyes, helpless, herbivorous, is_animal, is_floater, is_flyer, is_mines_prize, is_pick, is_soko_prize, is_swimmer, is_vampshifter, likes_lava, m_cansee, mon_offmap, needspick, nohands, nolimbs, passes_walls, perceives, throws_rocks, touch_petrifies, tunnels, u_at, unsolid, verysmall } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_LEFT, DIR_LEFT2, DIR_RIGHT, DIR_RIGHT2, MON_AT, M_AP_TYPE, cansee, canspotmon, carnivorous, couldsee, distu, has_edog, has_head, haseyes, helpless, herbivorous, is_animal, is_floater, is_flyer, is_mines_prize, is_pick, is_soko_prize, is_swimmer, is_vampshifter, likes_lava, m_cansee, mon_offmap, needspick, nohands, nolimbs, passes_walls, perceives, throws_rocks, touch_petrifies, tunnels, unsolid, verysmall } from './nhmacrofn.js';
 import { Conflict, Deaf, Hallucination, Protection_from_shape_changers, Underwater, display_nhwindow } from './nhprop.js';
 import { WIN_MAP, c_common_strings, cg, flags, gb, gf, gg, gi, gn, gv, gy, iflags, svc, svd, svl, svm, u } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -547,7 +547,7 @@ function* dog_goal(mtmp, edog, after, udist, whappr) {
     if (cptr.ldI16o(gg, $instance_globals_g_gtyp) == NHC.UNDEF || (cptr.ldI16o(gg, $instance_globals_g_gtyp) != NHC.DOGFOOD && cptr.ldI16o(gg, $instance_globals_g_gtyp) != NHC.APPORT && cptr.ldI64o(svm, $instance_globals_saved_m_moves) < cptr.ldI64o(edog, $edog_hungrytime))) {
         cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(u));
         cptr.stI16o(gg, $instance_globals_g_gy, cptr.ldI16o(u, $you_uy));
-        if (after && udist <= 4 && u_at(cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy)))
+        if (after && udist <= 4 && ((cptr.ldI16o(gg, $instance_globals_g_gx)) == cptr.ldI16(u) && (cptr.ldI16o(gg, $instance_globals_g_gy)) == cptr.ldI16o(u, $you_uy)))
             return -2;
         appr = (udist >= 9) ? 1 : (((cptr.ldI32o(mtmp, $monst_mflee) & 1)) | 0 ? -1 : 0);
         if (udist > 1) {
@@ -578,7 +578,7 @@ function* dog_goal(mtmp, edog, after, udist, whappr) {
         appr = 1;
     if ((cptr.ldI32o(mtmp, $monst_mconf) & 1))
         appr = 0;
-    if (u_at(cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy)) && !in_masters_sight) {
+    if (((cptr.ldI16o(gg, $instance_globals_g_gx)) == cptr.ldI16(u) && (cptr.ldI16o(gg, $instance_globals_g_gy)) == cptr.ldI16o(u, $you_uy)) && !in_masters_sight) {
         let cp;
         cp = gettrack(omx, omy);
         if (cp) {
@@ -668,7 +668,7 @@ function find_friends(mtmp, mtarg, maxdist) {
 /** C ref: dogmove.c:738 — @param {CPtr} mtmp @param {CPtr} mtarg @returns {CLongLong} */
 function score_targ(mtmp, mtarg) {
     let score = 0n;
-    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl16, 748, __sl20), rn2(3)) : rn2(3)) || Is_qstart(cptr.add(u, $you_uz))) {
+    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl16, 748, __sl20), rn2(3)) : rn2(3)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
         let mtmp_lev;
         let align1 = -128;
         let align2 = -128;
@@ -1068,7 +1068,7 @@ function can_reach_location(mon, mx, my, fx, fy) {
                 continue;
             if (dist2(i16(i), i16(j), fx, fy) >= dist)
                 continue;
-            if (((cptr.ld1so3(svl, i, 756, j, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && !passes_walls(cptr.ldPtro(mon, $monst_data)) && (!may_dig(i16(i), i16(j)) || !tunnels(cptr.ldPtro(mon, $monst_data)) || Is_rogue_level(cptr.add(u, $you_uz))))
+            if (((cptr.ld1so3(svl, i, 756, j, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && !passes_walls(cptr.ldPtro(mon, $monst_data)) && (!may_dig(i16(i), i16(j)) || !tunnels(cptr.ldPtro(mon, $monst_data)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))))
                 continue;
             if (((cptr.ld1so3(svl, i, 756, j, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, i, 756, j, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))
                 continue;

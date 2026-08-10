@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, AMAX, ATEMP, ATTRMIN, DEADMONSTER, Has_contents, Is_airlevel, Is_astralevel, Is_waterlevel, M_AP_TYPE, acidic, can_teleport, canspotmon, carnivorous, carried, control_teleport, distu, flaming, herbivorous, humanoid, is_clinger, is_dwarf, is_elf, is_giant, is_metallic, is_orc, is_organic, is_rider, is_rustprone, is_undead, is_were, ismnum, metallivorous, nohands, noncorporeal, ofood, perceives, poisonous, telepathic, touch_petrifies, type_is_pname, u_at, verysmall } from './nhmacrofn.js';
+import { ABASE, AMAX, ATEMP, ATTRMIN, DEADMONSTER, Has_contents, M_AP_TYPE, acidic, can_teleport, canspotmon, carnivorous, carried, control_teleport, distu, flaming, herbivorous, humanoid, is_clinger, is_dwarf, is_elf, is_giant, is_metallic, is_orc, is_organic, is_rider, is_rustprone, is_undead, is_were, ismnum, metallivorous, nohands, noncorporeal, ofood, perceives, poisonous, telepathic, touch_petrifies, type_is_pname, verysmall } from './nhmacrofn.js';
 import { Acid_resistance, BInvis, Blind, BlindedTimeout, Breathless, Deaf, Displaced, EConflict, EInvis, EProtection, ERegeneration, ESee_invisible, Fixed_abil, Flying, Glib, HCold_resistance, HConflict, HConfusion, HDisint_resistance, HFast, HFire_resistance, HHallucination, HInvis, HPoison_resistance, HRegeneration, HShock_resistance, HSleep_resistance, HSleepy, HStun, HTelepat, HTeleport_control, HTeleportation, Hallucination, Hunger, Invis, Levitation, Lifesaved, Poison_resistance, See_invisible, Sick, Sleep_resistance, Slimed, Slow_digestion, Stone_resistance, Stoned, Strangled, U_AP_TYPE, Ugender, Unchanging, Upolyd, Vomiting, display_nhwindow } from './nhprop.js';
 import { objects } from './objects.js';
 import { WIN_MAP, c_color_names, c_common_strings, disp, flags, ga, gc, ge, gf, gm, gn, go, gu, gy, hands_obj, iflags, sa_victual, svc, svd, svk, svl, svm, u, uamul, uball, uchain, uleft, uquiver, uright, uswapwep, uwep, ynchars, ynqchars } from './decl.js';
@@ -2170,7 +2170,7 @@ function* rottenfood(obj) {
         let duration = (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1832, __sl199), rnd(10)) : rnd(10));
         if (!Blind())
             what = __sl203, where = __sl204;
-        else if (Levitation() || Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)))
+        else if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
             what = __sl205, where = __sl206;
         else
             what = __sl207, where = (cptr.ldPtro(u, $you_usteed)) ? __sl208 : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -3372,7 +3372,7 @@ function offer_ok(obj) {
         return NHC.GETOBJ_EXCLUDE;
     if (cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR && cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR)
         return NHC.GETOBJ_EXCLUDE_SELECTABLE;
-    if (Is_astralevel(cptr.add(u, $you_uz)) ^ (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)) ? 1 : 0)) ^ (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
         return NHC.GETOBJ_DOWNPLAY;
     return NHC.GETOBJ_SUGGEST;
 }
@@ -3431,7 +3431,7 @@ export function* floorfood(verb, corpsecheck) {
                 if (nodig || cptr.ldI32o(u, $you_uhunger) > 1500) {
                     (yield* pline(__sl416, cptr.decay(qbuf), nodig ? __sl417 : __sl418));
                 } else {
-                    void cptr.strcat(cptr.decay(qbuf), (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) || !u_at(cptr.ldI16o(svc, $context_info_digging + $dig_info_pos), cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz))) ? __sl419 : __sl420);
+                    void cptr.strcat(cptr.decay(qbuf), (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) || !((cptr.ldI16o(svc, $context_info_digging + $dig_info_pos)) == cptr.ldI16(u) && (cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz))) ? __sl419 : __sl420);
                     c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1));
                 }
                 if (c == 121)

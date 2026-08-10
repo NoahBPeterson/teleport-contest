@@ -3993,7 +3993,7 @@ export function shk_move(shkp) {
         if (Invis() || cptr.ldPtro(u, $you_usteed)) {
             avoid = 0;
         } else {
-            uondoor = schar(u_at(cptr.ldI16o(eshkp, $eshk_shd), cptr.ldI16o(eshkp, $eshk_shd + $nhcoord_y)));
+            uondoor = schar(((cptr.ldI16o(eshkp, $eshk_shd)) == cptr.ldI16(u) && (cptr.ldI16o(eshkp, $eshk_shd + $nhcoord_y)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
             if (uondoor) {
                 badinv = schar((carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || (Fast() && (sobj_at(NHC.PICK_AXE, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || sobj_at(NHC.DWARVISH_MATTOCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) ? 1 : 0));
                 if (satdoor && badinv)

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, CAN_OVERWRITE_TERRAIN, DEADMONSTER, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_GRAVE, IS_SINK, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, Is_rogue_level, M_AP_TYPE, bimanual, cansee, carried, distu, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_female, is_gloves, is_human, is_male, is_missile, is_neuter, is_plural, is_poisonable, is_rustprone, is_shield, is_weptool, is_were, is_wet_towel, ismnum, type_is_pname, verysmall } from './nhmacrofn.js';
+import { Align2amask, CAN_OVERWRITE_TERRAIN, DEADMONSTER, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_GRAVE, IS_SINK, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, M_AP_TYPE, bimanual, cansee, carried, distu, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_female, is_gloves, is_human, is_male, is_missile, is_neuter, is_plural, is_poisonable, is_rustprone, is_shield, is_weptool, is_were, is_wet_towel, ismnum, type_is_pname, verysmall } from './nhmacrofn.js';
 import { Blind, EHalluc_resistance, EWarn_of_mon, Flying, Glib, Levitation, Luck, URIGHTY, wizard } from './nhprop.js';
 import { impossible, pline } from './pline.js';
 import { copynchars, digit, dist2, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, ordin, s_suffix, str_start_is, strcasecpy, strncmpi, strstri, strsubst, upstart } from './hacklib.js';
@@ -3800,7 +3800,7 @@ function wizterrainwish(d) {
             old_wall_info = ((cptr.ld1so(lev, $rm_typ) != NHC.DOOR) ? (cptr.ldI32o(lev, $rm_flags) & 31) | 0 : 0) >>> 0;
             cptr.st1o(lev, $rm_typ, schar((secret ? NHC.SDOOR : NHC.DOOR)));
             cptr.stI32o(lev, $rm_flags, 0);
-            if (Is_rogue_level(cptr.add(u, $you_uz))) {
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 cptr.stI32o(d, $_readobjnam_data_doorless, 1);
                 cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_broken, 0))));
             }

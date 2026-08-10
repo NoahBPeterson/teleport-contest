@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, IS_DOOR, IS_ROOM, IS_WALL, In_endgame, Is_knox, Is_stronghold, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mgivenname, is_golem, is_undead, next2u, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, IS_DOOR, IS_ROOM, IS_WALL, In_endgame, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mgivenname, is_golem, is_undead, next2u, u_at } from './nhmacrofn.js';
 import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
@@ -523,7 +523,7 @@ export function* wiz_kill() {
         if (ans < 0 || cptr.ldI16(cc) < 1)
             break;
         mtmp = null;
-        if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+        if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (cptr.ldPtro(u, $you_usteed)) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl6, (yield* mon_nam(cptr.ldPtro(u, $you_usteed))));
                 if ((c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1))) == 113)
@@ -692,7 +692,7 @@ export function* wiz_telekinesis() {
         ans = (yield* getpos(cc, 1, __sl5));
         if (ans < 0 || cptr.ldI16(cc) < 1)
             return NHM.ECMD_CANCEL;
-        if ((((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && canspotmon(mtmp)) || u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+        if ((((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && canspotmon(mtmp)) || ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (!(yield* getdir(__sl32)))
                 return NHM.ECMD_CANCEL;
             if (mtmp) {
@@ -937,7 +937,7 @@ export function* wiz_map_levltyp() {
             void cptr.strcat(cptr.decay(dsc), __sl73);
         else if (cptr.ldI16o(u, $you_uz) == quest_dnum())
             void cptr.strcat(cptr.decay(dsc), __sl74);
-        else if (Is_knox(cptr.add(u, $you_uz)))
+        else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))))
             void cptr.strcat(cptr.decay(dsc), __sl75);
         else if (cptr.ldI16o(u, $you_uz) == 1)
             void cptr.strcat(cptr.decay(dsc), __sl76);
@@ -1015,7 +1015,7 @@ export function* wiz_smell() {
             return NHM.ECMD_CANCEL;
         }
         is_you = 0;
-        if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+        if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             if (cptr.ldPtro(u, $you_usteed)) {
                 mptr = cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data);
             } else {
@@ -1792,7 +1792,7 @@ export function* wiz_migrate_mons() {
     let use_random_mon = 1;
     let mongen_saved = cptr.ld1so(iflags, $instance_flags_debug_mongen);
     let tolevel = cptr.alloc(4);
-    if (Is_stronghold(cptr.add(u, $you_uz)))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         assign_level(tolevel, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level));
     else if (!Is_botlevel(cptr.add(u, $you_uz)))
         (yield* get_level(tolevel, (depth(cptr.add(u, $you_uz)) + 1) | 0));

@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, ABON, ATEMP, Is_airlevel, Is_waterlevel, amphibious, bimanual, breathless, cantweararm, greatest_erosion, has_head, has_horns, humanoid, is_boots, is_clinger, is_cloak, is_corrodeable, is_crackable, is_flimsy, is_gloves, is_helmet, is_metallic, is_rustprone, is_shield, is_shirt, is_suit, is_swimmer, is_sword, nohands, nolimbs, noncorporeal, slithy, touch_petrifies, verysmall } from './nhmacrofn.js';
+import { ABASE, ABON, ATEMP, amphibious, bimanual, breathless, cantweararm, greatest_erosion, has_head, has_horns, humanoid, is_boots, is_clinger, is_cloak, is_corrodeable, is_crackable, is_flimsy, is_gloves, is_helmet, is_metallic, is_rustprone, is_shield, is_shirt, is_suit, is_swimmer, is_sword, nohands, nolimbs, noncorporeal, slithy, touch_petrifies, verysmall } from './nhmacrofn.js';
 import { BInvis, BLevitation, BStealth, Blind, Blind_telepat, Breathless, Detect_monsters, EInvis, ESleepy, EStealth, Fast, Flying, Glib, HFast, HFumbling, HInvis, HLevitation, HProtection, HSee_invisible, HSleepy, HStealth, Hallucination, Invis, Invisible, Levitation, ParanoidRemove, Protection_from_shape_changers, Punished, See_invisible, Slimed, Stone_resistance, Strangled, Swimming, ULEFTY, URIGHTY, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, ga, gi, gm, gn, gu, gw, gy, iflags, program_state, rightleftchars, svc, svd, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { Tobjnam, Yname2, an, ansimpleoname, boots_simple_name, cloak_simple_name, corpse_xname, doname, erosion_matters, gloves_simple_name, helm_simple_name, killer_xname, makeplural, makesingular, obj_is_pname, otense, safe_typename, shield_simple_name, shirt_simple_name, simpleonames, suit_simple_name, the, thesimpleoname, vtense, xname, yname } from './objnam.js';
@@ -1195,7 +1195,7 @@ export function* Amulet_off() {
             float_vs_flight();
             if (was_flying && !Flying()) {
                 cptr.st1(disp, 1);
-                (yield* You(__sl34, (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || Is_waterlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(u, $you_uz))) ? __sl68 : __sl69));
+                (yield* You(__sl34, (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __sl68 : __sl69));
                 mkn = 1;
                 (yield* spoteffects(1));
             }

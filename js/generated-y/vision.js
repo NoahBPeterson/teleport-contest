@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_DOOR, IS_OBSTRUCTED, IS_WALL, IS_WATERWALL, Is_airlevel, Is_rogue_level, Is_waterlevel, M_AP_TYPE, cansee, couldsee, max, min } from './nhmacrofn.js';
+import { IS_DOOR, IS_OBSTRUCTED, IS_WALL, IS_WATERWALL, M_AP_TYPE, cansee, couldsee, max, min } from './nhmacrofn.js';
 import { Blind, Detect_monsters, See_invisible, Warn_of_mon, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
@@ -467,12 +467,12 @@ export function* vision_recalc(control) {
                         (yield* newsym(i16(col), i16(row)));
             }
             break __lbl_skip;
-        } else if (Is_rogue_level(cptr.add(u, $you_uz))) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             (yield* rogue_vision(next_array.v, next_rmin.v, next_rmax.v));
         } else {
             let lo_col;
             let has_night_vision = 1;
-            if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Is_waterlevel(cptr.add(u, $you_uz))) {
+            if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
                 has_night_vision = 0;
                 lo_col = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
                 for (row = (cptr.ldI16o(u, $you_uy) - 1) | 0; row <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); row++)
@@ -1686,7 +1686,7 @@ export function* do_clear_area(scol, srow, range, func, arg) {
         let offset;
         let limits;
         let override_vision;
-        override_vision = schar((detecting(func) && (Is_waterlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(u, $you_uz))) ? 1 : 0));
+        override_vision = schar((detecting(func) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? 1 : 0));
         if (range > NHM.MAX_RADIUS || range < 1)
             (yield* panic(__sl9, range));
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))

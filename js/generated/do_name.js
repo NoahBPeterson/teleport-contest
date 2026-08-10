@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { In_endgame, Is_astralevel, M_AP_TYPE, cansee, canspotmon, carried, engulfing_u, glyph_is_body_piletop, glyph_is_fem_statue_piletop, glyph_is_male_statue_piletop, glyph_is_normal_generic_obj, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, hides_under, humanoid, is_animal, is_mplayer, is_plural, is_rider, ismnum, m_next2u, type_is_pname, u_at } from './nhmacrofn.js';
+import { In_endgame, M_AP_TYPE, cansee, canspotmon, carried, engulfing_u, glyph_is_body_piletop, glyph_is_fem_statue_piletop, glyph_is_male_statue_piletop, glyph_is_normal_generic_obj, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, hides_under, humanoid, is_animal, is_mplayer, is_plural, is_rider, ismnum, m_next2u, type_is_pname, u_at } from './nhmacrofn.js';
 import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
@@ -877,7 +877,7 @@ function namefloorobj() {
     void cptr.sprintf(cptr.decay(buf), __sl50, ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? __sl51 : __sl52);
     if (getpos(cc, 0, cptr.decay(buf)) < 0 || cptr.ldI16(cc) <= 0)
         return;
-    if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         obj.v = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects));
     } else {
         glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
@@ -885,7 +885,7 @@ function namefloorobj() {
             fakeobj = object_from_map(glyph, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), obj);
     }
     if (!obj.v) {
-        There(__sl53, u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) ? __sl54 : __sl55);
+        There(__sl53, ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) ? __sl54 : __sl55);
         return;
     }
     void cptr.strcpy(cptr.decay(buf), (cptr.ldI16o(obj.v, $obj_otyp) != NHC.STRANGE_OBJECT) ? simpleonames(obj.v) : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, 16));
@@ -1197,7 +1197,7 @@ export function Amonnam(mtmp) {
 
 /** C ref: do_name.c:1170 — @param {CPtr} mon @param {CInt} article @param {CPtr} outbuf @returns {CPtr} */
 export function distant_monnam(mon, article, outbuf) {
-    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && Is_astralevel(cptr.add(u, $you_uz)) && !m_next2u(mon)) {
+    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !m_next2u(mon)) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __sl6 : __sl0);
         void cptr.strcat(outbuf, (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __sl113 : __sl114);
     } else {

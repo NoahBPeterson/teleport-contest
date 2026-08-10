@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_GRAVE, IS_SINK, IS_THRONE, Is_airlevel, Is_candle, Is_container, Is_pudding, Is_waterlevel, OMID, SURFACE_AT, carried, engulfing_u, greatest_erosion, has_omailcmd, has_omonst, has_oname, hides_under, is_ammo, is_boots, is_gloves, is_mines_prize, is_missile, is_pit, is_plural, is_pole, is_rider, is_soko_prize, is_wet_towel, matching_launcher, obj_is_generic, random_monster, random_object, touch_petrifies, u_at } from './nhmacrofn.js';
+import { Has_contents, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_GRAVE, IS_SINK, IS_THRONE, Is_candle, Is_container, Is_pudding, OMID, SURFACE_AT, carried, engulfing_u, greatest_erosion, has_omailcmd, has_omonst, has_oname, hides_under, is_ammo, is_boots, is_gloves, is_mines_prize, is_missile, is_pit, is_plural, is_pole, is_rider, is_soko_prize, is_wet_towel, matching_launcher, obj_is_generic, random_monster, random_object, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Fumbling, Hallucination, Stone_resistance, ULEFTY, URIGHTY, Underwater, Upolyd, clear_nhwindow, create_nhwindow, ctrl_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, message_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MESSAGE, c_common_strings, cg, disp, flags, gc, gd, gi, gl, go, gp, gs, gt, gu, gy, hands_obj, iflags, program_state, quitchars, svc, svd, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep, ynNaqchars, yn_number, ynaqchars, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -3494,7 +3494,7 @@ export function look_here(obj_cnt, lookhere_flags) {
     if (dfeature && !strcmp(dfeature, __sl176) && ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         dfeature = null;
     if (Blind()) {
-        let drift = schar((Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) ? 1 : 0));
+        let drift = schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
         if (dfeature && !cptr.strncmp(dfeature, __sl192, 6n)) {
             You(__sl193);
         } else if (SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == NHC.ICE) {
@@ -3859,7 +3859,7 @@ export function doprinuse() {
 /** C ref: invent.c:4763 — @param {CPtr} obj @param {CLongLong} numused */
 export function useupf(obj, numused) {
     let otmp;
-    let at_u = schar(u_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)));
+    let at_u = schar(((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
     if (cptr.ldI64o(obj, $obj_quan) > numused)
         otmp = splitobj(obj, numused);
     else

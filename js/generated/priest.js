@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DIR_CLAMP, IS_ALTAR, In_endgame, Is_astralevel, Is_sanctum, MON_AT, canspotmon, has_emin, helpless, is_rider, m_next2u, onlineu, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, DIR_CLAMP, IS_ALTAR, In_endgame, MON_AT, canspotmon, has_emin, helpless, is_rider, m_next2u, onlineu, u_at } from './nhmacrofn.js';
 import { Conflict, Deaf, Displaced, HProtection, Hallucination, Invis, Underwater } from './nhprop.js';
 import { makemon, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -413,7 +413,7 @@ export function priestname(mon, article, reveal_high_priest, pname) {
             void cptr.strcat(pname, __sl16);
     }
     void cptr.strcat(pname, what);
-    if (do_hallu || !high_priest || reveal_high_priest || !Is_astralevel(cptr.add(u, $you_uz)) || m_next2u(mon) || cptr.ldI32(program_state)) {
+    if (do_hallu || !high_priest || reveal_high_priest || !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || m_next2u(mon) || cptr.ldI32(program_state)) {
         void cptr.strcat(pname, __sl17);
         void cptr.strcat(pname, halu_gname(mon_aligntyp(mon)));
     }
@@ -469,7 +469,7 @@ export function intemple(roomno) {
         record_achievement(NHC.ACH_TMPL);
         epri_p = (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri));
         shrined = has_shrine(priest);
-        sanctum = schar((cptr.eq(cptr.ldPtro(priest, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && (Is_sanctum(cptr.add(u, $you_uz)) || In_endgame(cptr.add(u, $you_uz))) ? 1 : 0));
+        sanctum = schar((cptr.eq(cptr.ldPtro(priest, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) || In_endgame(cptr.add(u, $you_uz))) ? 1 : 0));
         can_speak = schar((!helpless(priest)));
         if (can_speak && !Deaf() && cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, $epri_intone_time)) {
             let save_priest = (cptr.ldI32o(priest, $monst_ispriest) & 1);
@@ -481,7 +481,7 @@ export function intemple(roomno) {
             cptr.stI64o(epri_p, $epri_enter_time, 0n);
         }
         msg1 = (msg2 = null);
-        if (sanctum && Is_sanctum(cptr.add(u, $you_uz))) {
+        if (sanctum && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
             if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1)) {
                 msg1 = __sl21;
                 msg2 = __sl22;

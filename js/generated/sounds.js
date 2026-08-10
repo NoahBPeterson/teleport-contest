@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, IS_WALL, In_endgame, Is_astralevel, Is_oracle_level, Is_sanctum, M_AP_TYPE, ROOM_INDEX, cansee, canspotmon, carnivorous, couldsee, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_emin, haseyes, helpless, herbivorous, humanoid, is_animal, is_dwarf, is_elf, is_flyer, is_gnome, is_lord, is_mercenary, is_minion, is_mplayer, is_prince, is_silent, is_undead, is_vampshifter, is_weptool, likes_magic, perceives } from './nhmacrofn.js';
+import { DEADMONSTER, IS_WALL, In_endgame, M_AP_TYPE, ROOM_INDEX, cansee, canspotmon, carnivorous, couldsee, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_emin, haseyes, helpless, herbivorous, humanoid, is_animal, is_dwarf, is_elf, is_flyer, is_gnome, is_lord, is_mercenary, is_minion, is_mplayer, is_prince, is_silent, is_undead, is_vampshifter, is_weptool, likes_magic, perceives } from './nhmacrofn.js';
 import { Blind, Conflict, Deaf, Hallucination, Invis, Race_switch, SYSOPT_SEDUCE, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { c_common_strings, flags, ga, gc, gi, gm, gn, gu, gv, gy, iflags, svc, svd, svl, svm, svq, svr, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uwep } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -686,11 +686,11 @@ export function dosounds() {
         }
         return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 330, __sl34), rn2(200)) : rn2(200)) && !(Is_astralevel(cptr.add(u, $you_uz)) || Is_sanctum(cptr.add(u, $you_uz)))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 330, __sl34), rn2(200)) : rn2(200)) && !((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))))) {
         if (get_iter_mons(temple_priest_sound))
             return;
     }
-    if (Is_oracle_level(cptr.add(u, $you_uz)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 335, __sl34), rn2(400)) : rn2(400))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 335, __sl34), rn2(400)) : rn2(400))) {
         if (get_iter_mons(oracle_sound))
             return;
     }

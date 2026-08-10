@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { BZ_VALID_ADTYP, M_AP_TYPE, cansee, canspotmon, couldsee, haseyes, is_demon, is_golem, is_undead, ismnum, m_seenres, max, perceives, type_is_pname, u_at } from './nhmacrofn.js';
+import { BZ_VALID_ADTYP, M_AP_TYPE, cansee, canspotmon, couldsee, haseyes, is_demon, is_golem, is_undead, ismnum, m_seenres, max, perceives, type_is_pname } from './nhmacrofn.js';
 import { Antimagic, Blind, Blinded, Cold_resistance, Deaf, Detect_monsters, Displaced, Fire_resistance, Free_action, HConfusion, HStun, Half_physical_damage, Half_spell_damage, Hallucination, Invis, See_invisible, Shock_resistance, Upolyd } from './nhprop.js';
 import { canseemon, map_invisible, sensemon, shieldeff, tp_sensemon } from './display.js';
 import { c_common_strings, gb, gi, gm, gn, gt, gv, gy, iflags, svc, svk, svm, u } from './decl.js';
@@ -387,7 +387,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         return NHM.M_ATTK_MISS;
     }
     if (canspotmon(mtmp) || !is_undirected_spell(spellnum)) {
-        (yield* pline_mon(mtmp, __sl17, canspotmon(mtmp) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : ((Invis() && !perceives(cptr.ldPtro(mtmp, $monst_data)) && !u_at(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy))) ? __sl19 : ((Displaced() && !u_at(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy))) ? __sl20 : __sl21))));
+        (yield* pline_mon(mtmp, __sl17, canspotmon(mtmp) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : ((Invis() && !perceives(cptr.ldPtro(mtmp, $monst_data)) && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl19 : ((Displaced() && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __sl20 : __sl21))));
     }
     if (!foundyou) {
         dmg = 0;

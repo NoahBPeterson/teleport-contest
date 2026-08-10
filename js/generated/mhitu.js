@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DISTANCE_ATTK_TYPE, Is_rogue_level, amorphous, amphibious, cansee, canspotmon, couldsee, flaming, haseyes, hides_under, is_animal, is_demon, is_hider, is_human, is_orc, is_pit, is_pole, is_swimmer, is_undead, is_vampshifter, is_weptool, is_were, is_wet_towel, is_whirly, likes_gold, m_next2u, m_seenres, max, min, nolimbs, perceives, thick_skinned, touch_petrifies, u_at, unsolid } from './nhmacrofn.js';
+import { DEADMONSTER, DISTANCE_ATTK_TYPE, amorphous, amphibious, cansee, canspotmon, couldsee, flaming, haseyes, hides_under, is_animal, is_demon, is_hider, is_human, is_orc, is_pit, is_pole, is_swimmer, is_undead, is_vampshifter, is_weptool, is_were, is_wet_towel, is_whirly, likes_gold, m_next2u, m_seenres, max, min, nolimbs, perceives, thick_skinned, touch_petrifies, unsolid } from './nhmacrofn.js';
 import { Acid_resistance, Amphibious, Blind, Blinded, Breathless, Cold_resistance, Conflict, Deaf, Detect_monsters, Displaced, EProtection, Fast, Fire_resistance, HConfusion, HHallucination, HProtection, HStun, Half_physical_damage, Hallucination, Invis, Protection_from_shape_changers, Punished, Reflecting, SYSOPT_SEDUCE, See_invisible, Shock_resistance, Sick, Slow_digestion, Stone_resistance, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow } from './nhprop.js';
 import { Amonnam, Mgender, Monnam, Some_Monnam, christen_monst, hliquid, m_monnam, mon_nam, noit_Monnam, noit_mon_nam, pmname } from './do_name.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gb, gh, gi, gm, gn, gs, gu, gv, gy, svd, svk, svl, svm, svp, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, uchain, uleft, uright, uwep, ynchars } from './decl.js';
@@ -690,7 +690,7 @@ export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
 function calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit) {
     cptr.st1(ranged, schar((dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 3)));
     cptr.st1(range2, schar((!monnear(mtmp, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)))));
-    cptr.st1(foundyou, schar(u_at(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy))));
+    cptr.st1(foundyou, schar(((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy) ? 1 : 0)));
     cptr.st1(youseeit, schar(canseemon(mtmp)));
     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16(u)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
@@ -892,7 +892,7 @@ export function mattacku(mtmp) {
             calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit);
             if (firstfoundyou && !foundyou.v)
                 continue;
-            if (!u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)))
+            if (!((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)))
                 continue;
         }
         mon_currwep = null;
@@ -971,7 +971,7 @@ export function mattacku(mtmp) {
             break;
             case NHM.AT_WEAP:
             if (range2.v) {
-                if (!Is_rogue_level(cptr.add(u, $you_uz)))
+                if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
                     thrwmu(mtmp);
             } else {
                 let hittmp = 0;

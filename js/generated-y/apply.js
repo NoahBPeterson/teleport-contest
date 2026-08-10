@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ATEMP, DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, IS_OBSTRUCTED, IS_STWALL, Is_airlevel, Is_candle, Is_stronghold, Is_waterlevel, MCORPSENM, M_AP_TYPE, P_SKILL, age_is_relative, bigmonst, bimanual, breathless, cansee, canspotmon, carried, couldsee, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_head, haseyes, hides_under, humanoid, ignitable, is_axe, is_boots, is_demon, is_female, is_flimsy, is_floater, is_flyer, is_gloves, is_graystone, is_male, is_pick, is_pole, is_rider, is_vampire, is_vampshifter, is_wet_towel, is_whirly, likes_gems, m_next2u, nohands, nolimbs, obj_is_generic, passes_walls, perceives, random_monster, random_object, slithy, strongmonst, throws_rocks, touch_petrifies, type_is_pname, u_at, u_wield_art, unsolid, verysmall } from './nhmacrofn.js';
+import { ATEMP, DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, IS_OBSTRUCTED, IS_STWALL, Is_candle, MCORPSENM, M_AP_TYPE, P_SKILL, age_is_relative, bigmonst, bimanual, breathless, cansee, canspotmon, carried, couldsee, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_head, haseyes, hides_under, humanoid, ignitable, is_axe, is_boots, is_demon, is_female, is_flimsy, is_floater, is_flyer, is_gloves, is_graystone, is_male, is_pick, is_pole, is_rider, is_vampire, is_vampshifter, is_wet_towel, is_whirly, likes_gems, m_next2u, nohands, nolimbs, obj_is_generic, passes_walls, perceives, random_monster, random_object, slithy, strongmonst, throws_rocks, touch_petrifies, type_is_pname, u_at, u_wield_art, unsolid, verysmall } from './nhmacrofn.js';
 import { Blind, Blinded, BlindedTimeout, Conflict, Deaf, EJumping, Flying, Free_action, Fumbling, Glib, HBlinded, HConfusion, HDeaf, HHallucination, HJumping, HStun, Half_physical_damage, Hallucination, Jumping, Levitation, Passes_walls, Protection_from_shape_changers, See_invisible, Sick, Slimed, Stone_resistance, Stoned, Strangled, Ugender, Underwater, Upolyd, Vomiting, Wounded_legs, create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { bhit, bhitm, bhito, bhitpile, get_obj_location, obj_resists, release_hold, zappable, zapsetup, zapwrapup, zapyourself } from './zap.js';
 import { c_color_names, c_common_strings, c_obj_colors, cg, disp, flags, gb, gc, gh, gi, gj, gm, gn, go, gp, gs, gt, gu, gv, gy, hands_obj, iflags, svc, svd, svl, svm, u, uarmg, ublindf, uchain, uwep, xdir, ydir, ynchars } from './decl.js';
@@ -969,7 +969,7 @@ function* use_stethoscope(obj) {
             (yield* cant_reach_floor(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), schar((cptr.ldI32o(u, $you_dz) < 0)), 1, 0));
         } else if ((yield* its_dead(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), res))) {
             ;
-        } else if (Is_stronghold(cptr.add(u, $you_uz))) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
             ;
             (yield* You_hear(__sl55));
         } else {
@@ -1269,7 +1269,7 @@ function* use_leash(obj) {
     }
     if (!(yield* get_adjacent_loc(null, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc)))
         return NHM.ECMD_OK;
-    if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         if (cptr.ldPtro(u, $you_usteed) && cptr.ldI32o(u, $you_dz) > 0) {
             mtmp = cptr.ldPtro(u, $you_usteed);
             (yield* use_leash_core(obj, mtmp, cc, 1));
@@ -1840,14 +1840,14 @@ export function* splash_lit(obj) {
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT) {
             useeit = schar((!Blind()));
             uhearit = schar((!Deaf()));
-            dunk = schar((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && ((!Levitation() && !Flying() && !((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) || Is_waterlevel(cptr.add(u, $you_uz))) ? 1 : 0));
+            dunk = schar((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && ((!Levitation() && !Flying() && !((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? 1 : 0));
             snuff = 0;
         } else if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT && ((mtmp = cptr.ldPtro(obj, $obj_v)), humanoid(cptr.ldPtro(mtmp, $monst_data)))) {
             let x = cptr.box(0);
             let y = cptr.box(0);
             useeit = schar((get_obj_location(obj, x, y, 0) && cansee(x.v, y.v) ? 1 : 0));
             uhearit = schar((couldsee(x.v, y.v) && distu(x.v, y.v) < 25 ? 1 : 0));
-            dunk = schar((is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && ((!is_flyer(cptr.ldPtro(mtmp, $monst_data)) && !is_floater(cptr.ldPtro(mtmp, $monst_data))) || Is_waterlevel(cptr.add(u, $you_uz))) ? 1 : 0));
+            dunk = schar((is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && ((!is_flyer(cptr.ldPtro(mtmp, $monst_data)) && !is_floater(cptr.ldPtro(mtmp, $monst_data))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? 1 : 0));
             snuff = 0;
             if (useeit)
                 set_msg_xy(x.v, y.v);
@@ -2198,7 +2198,7 @@ export function* jump(magic) {
         }
         (yield* You(__sl299, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         return NHM.ECMD_OK;
-    } else if (Levitation() || Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz))) {
+    } else if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
         if (magic) {
             (yield* You(__sl300));
             return NHM.ECMD_TIME;
@@ -2227,7 +2227,7 @@ export function* jump(magic) {
         return NHM.ECMD_CANCEL;
     if (!(yield* is_valid_jump_pos(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), magic, 1))) {
         return NHM.ECMD_FAIL;
-    } else if (cptr.ldPtro(u, $you_usteed) && u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+    } else if (cptr.ldPtro(u, $you_usteed) && ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         (yield* pline(__sl308, (yield* YMonnam(cptr.ldPtro(u, $you_usteed)))));
         return NHM.ECMD_FAIL;
     } else {
@@ -2268,7 +2268,7 @@ export function* jump(magic) {
             }
             (yield* reset_utrap(1));
         }
-        if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+        if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             let t;
             if (wastrapped) {
                 (yield* morehungry((rng_log_enabled() ? (rng_log_set_caller(__sl2, 2121, __sl309), rnd(10)) : rnd(10))));
@@ -2624,7 +2624,7 @@ function* use_figurine(optr) {
     cptr.stI16o(cc, $nhcoord_y, y);
     if (!(yield* figurine_location_checks(obj, cc, 0)))
         return NHM.ECMD_TIME;
-    (yield* You(__sl363, (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) ? __sl364 : ((Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || is_pool(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) ? __sl365 : (cptr.ldI32o(u, $you_dz) < 0 ? __sl366 : __sl367)), Blind() ? __sl368 : __sl35));
+    (yield* You(__sl363, (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) ? __sl364 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || is_pool(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) ? __sl365 : (cptr.ldI32o(u, $you_dz) < 0 ? __sl366 : __sl367)), Blind() ? __sl368 : __sl35));
     void (yield* make_familiar(obj, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0));
     void (yield* stop_timer(NHC.FIG_TRANSFORM, obj_to_any(obj)));
     (yield* useup(obj));
@@ -2837,7 +2837,7 @@ function* use_trap(otmp) {
         what = cptr.ld1so(stway, $stairway_isladder) ? __sl407 : __sl408;
     } else if (IS_FURNITURE(levtyp) || IS_OBSTRUCTED(levtyp) || closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         what = __sl409;
-    else if (Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)))
+    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
         what = (levtyp == NHC.AIR) ? __sl410 : ((levtyp == NHC.CLOUD) ? __sl411 : __sl412);
     if (what) {
         (yield* You_cant(__sl413, what));
@@ -2845,7 +2845,7 @@ function* use_trap(otmp) {
         return;
     }
     ttyp = (cptr.ldI16o(otmp, $obj_otyp) == NHC.LAND_MINE) ? NHC.LANDMINE : NHC.BEAR_TRAP;
-    if (cptr.eq(otmp, cptr.ldPtr(gt)) && u_at(cptr.ldI16o(gt, $trapinfo_tx), cptr.ldI16o(gt, $trapinfo_ty))) {
+    if (cptr.eq(otmp, cptr.ldPtr(gt)) && ((cptr.ldI16o(gt, $trapinfo_tx)) == cptr.ldI16(u) && (cptr.ldI16o(gt, $trapinfo_ty)) == cptr.ldI16o(u, $you_uy))) {
         (yield* You(__sl414, (yield* shk_your(cptr.decay(buf), otmp)), (yield* trapname(ttyp, 0))));
         set_occupation(set_trap, occutext, 0n);
         return;
@@ -2897,7 +2897,7 @@ function* set_trap() {
     let otmp = cptr.ldPtr(gt);
     let ttmp;
     let ttyp;
-    if (!otmp || !carried(otmp) || !u_at(cptr.ldI16o(gt, $trapinfo_tx), cptr.ldI16o(gt, $trapinfo_ty))) {
+    if (!otmp || !carried(otmp) || !((cptr.ldI16o(gt, $trapinfo_tx)) == cptr.ldI16(u) && (cptr.ldI16o(gt, $trapinfo_ty)) == cptr.ldI16o(u, $you_uy))) {
         reset_trapset();
         return 0;
     }
@@ -3045,7 +3045,7 @@ export function* use_whip(obj) {
                 (yield* pline(__sl1, msg_snap));
         } else if (mtmp) {
             __go_whipattack = true; break __skip_whipattack;
-        } else if (Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz))) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
             (yield* You(__sl441));
         } else {
             (yield* pline(__sl1, msg_snap));
@@ -3294,7 +3294,7 @@ export function* use_pole(obj, autohit) {
         (yield* pline(__sl286));
         return NHM.ECMD_FAIL;
     } else if (distu(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) < min_range.v) {
-        if (autohit && u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
+        if (autohit && ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)))
             (yield* pline(__sl454));
         else
             (yield* pline(__sl455));

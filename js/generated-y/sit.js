@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_ALTAR, IS_GRAVE, IS_SINK, IS_THRONE, Is_box, Is_waterlevel, OBJ_AT, amorphous, cansee, haseyes, humanoid, is_hider, is_prince, is_swimmer, is_vampire, lays_eggs, likes_lava, slithy, u_wield_art } from './nhmacrofn.js';
+import { IS_ALTAR, IS_GRAVE, IS_SINK, IS_THRONE, Is_box, OBJ_AT, amorphous, cansee, haseyes, humanoid, is_hider, is_prince, is_swimmer, is_vampire, lays_eggs, likes_lava, slithy, u_wield_art } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, Blind, Blind_telepat, BlindedTimeout, Cold_resistance, Deaf, Drain_resistance, Fire_resistance, Flying, HAggravate_monster, HCold_resistance, HConfusion, HFast, HFire_resistance, HInvis, HPoison_resistance, HProtection, HSee_invisible, HStealth, HTelepat, HTeleportation, Half_physical_damage, Half_spell_damage, Hallucination, Levitation, Luck, See_invisible, Shock_resistance, Slimed, Underwater, Upolyd, wizard } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gv, gy, iflags, svd, svl, u, uarm, uarmf, uwep, ynchars } from './decl.js';
 import { remove_worn_item } from './steal.js';
@@ -505,7 +505,7 @@ function* lay_an_egg() {
         (yield* You(__sl54));
         return NHM.ECMD_OK;
     } else if ((lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
-        if (!(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || Is_waterlevel(cptr.add(u, $you_uz)))) {
+        if (!(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) {
             (yield* pline(__sl55));
             return NHM.ECMD_OK;
         }
@@ -615,8 +615,8 @@ export function* dosit() {
                 (yield* You(__sl85, Flying() ? __sl86 : __sl87));
                 (yield* dotrap(trap, NHM.VIASITTING));
             }
-        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || Is_waterlevel(cptr.add(u, $you_uz))) && !(lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
-            if (Is_waterlevel(cptr.add(u, $you_uz)))
+        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && !(lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
                 (yield* There(__sl88));
             else
                 (yield* You(__sl89));

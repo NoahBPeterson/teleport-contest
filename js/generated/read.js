@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, In_endgame, Is_dragon_scales, Is_earthlevel, Is_rogue_level, Is_waterlevel, OBJ_AT, amorphous, cansee, canspotmon, distu, engulfing_u, greatest_erosion, has_omonst, hides_under, is_demon, is_elven_armor, is_female, is_hider, is_human, is_male, is_shield, is_weptool, is_whirly, ismnum, noncorporeal, passes_walls, type_is_pname, u_at, unique_corpstat, unsolid, vampshifted } from './nhmacrofn.js';
+import { DEADMONSTER, In_endgame, Is_dragon_scales, OBJ_AT, amorphous, cansee, canspotmon, distu, engulfing_u, greatest_erosion, has_omonst, hides_under, is_demon, is_elven_armor, is_female, is_hider, is_human, is_male, is_shield, is_weptool, is_whirly, ismnum, noncorporeal, passes_walls, type_is_pname, u_at, unique_corpstat, unsolid, vampshifted } from './nhmacrofn.js';
 import { Blind, Deaf, Fire_resistance, HConfusion, HStun, Half_physical_damage, Hallucination, Invisible, Luck, Passes_walls, Punished, Ugender, Unchanging, Underwater, Upolyd, wizard } from './nhprop.js';
 import { objects } from './objects.js';
 import { discover_object } from './o_init.js';
@@ -1983,7 +1983,7 @@ function seffect_fire(sobjp) {
                 cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
             }
         }
-        if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+        if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             pline_The(__sl311);
             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_TOWER_OF_FLAME);
             burn_away_slime();
@@ -1998,7 +1998,7 @@ function seffect_earth(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
-    if (!Is_rogue_level(cptr.add(u, $you_uz)) && has_ceiling(cptr.add(u, $you_uz)) && (!In_endgame(cptr.add(u, $you_uz)) || Is_earthlevel(cptr.add(u, $you_uz)))) {
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && has_ceiling(cptr.add(u, $you_uz)) && (!In_endgame(cptr.add(u, $you_uz)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))) {
         let x;
         let y;
         let nboulders = 0;
@@ -2152,7 +2152,7 @@ function seffect_magic_mapping(sobjp) {
                 for (y = 0; y < NHM.ROWNO; y++)
                     if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
                         cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36));
-                        if (Is_rogue_level(cptr.add(u, $you_uz)))
+                        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
                             unblock_point(x, y);
                     }
         }
@@ -2458,7 +2458,7 @@ export function litroom(on, obj) {
     let otmp;
     let nextobj;
     let blessed_effect = schar((obj && cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 1 : 0));
-    let no_op = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || Is_waterlevel(cptr.add(u, $you_uz)) ? 1 : 0));
+    let no_op = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
     let is_lit = cptr.box(0);
     if (!on) {
         let still_lit = 0;
@@ -2498,7 +2498,7 @@ export function litroom(on, obj) {
                 pline(__sl366, Monnam(cptr.ldPtro(u, $you_ustuck)));
             else
                 pline(__sl367, Monnam(cptr.ldPtro(u, $you_ustuck)));
-        } else if (!Blind() && (!Is_rogue_level(cptr.add(u, $you_uz)) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR)) {
+        } else if (!Blind() && (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR)) {
             pline(__sl368, no_op ? __sl369 : __sl108);
         }
     }
@@ -2506,7 +2506,7 @@ export function litroom(on, obj) {
         return;
     if (Punished() && !on && !Blind())
         move_bc(1, 0, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy), cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy));
-    if (Is_rogue_level(cptr.add(u, $you_uz))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
         let rx;
         let ry;

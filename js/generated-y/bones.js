@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_oracle_level, has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, is_mines_prize, is_soko_prize, is_undead, ismnum, likes_gems, likes_gold, likes_magic, u_at, unhideable_trap, unique_corpstat } from './nhmacrofn.js';
+import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, is_mines_prize, is_soko_prize, is_undead, ismnum, likes_gems, likes_gold, likes_magic, u_at, unhideable_trap, unique_corpstat } from './nhmacrofn.js';
 import { Punished, Role_switch, URIGHTY, discover, wizard } from './nhprop.js';
 import { In_hell, Is_botlevel, Is_branchlev, Is_special, assign_level, depth, dunlevs_in_dungeon, ledger_no, maxledgerno, on_level } from './dungeon.js';
 import { flags, gb, gf, gi, gs, gu, iflags, program_state, svc, svd, svl, svn, svp, svr, u, uball, ynchars } from './decl.js';
@@ -329,7 +329,7 @@ function* fixuporacle(oracle) {
     let cc = cptr.alloc(4);
     let ridx;
     let o_ridx;
-    if (!Is_oracle_level(cptr.add(u, $you_uz)))
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))))
         return 0;
     cptr.stI32o(oracle, $monst_mpeaceful, 1);
     o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), 756, cptr.ldI16o(oracle, $monst_my), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;

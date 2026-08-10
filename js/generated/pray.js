@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, AMAX, Align2amask, Is_astralevel, Is_sanctum, MCORPSENM, M_AP_TYPE, P_RESTRICTED, bimanual, carried, couldsee, has_omonst, haseyes, is_demon, is_human, is_undead, is_vampshifter, is_weptool, ismnum, likes_gems, nohands, throws_rocks, u_wield_art } from './nhmacrofn.js';
+import { ABASE, AMAX, Align2amask, MCORPSENM, M_AP_TYPE, P_RESTRICTED, bimanual, carried, couldsee, has_omonst, haseyes, is_demon, is_human, is_undead, is_vampshifter, is_weptool, ismnum, likes_gems, nohands, throws_rocks, u_wield_art } from './nhmacrofn.js';
 import { Antimagic, Blind, Blinded, BlindedTimeout, Blindfolded_only, Deaf, Disint_resistance, EBlinded, EDisint_resistance, EReflecting, Fixed_abil, Flying, Glib, HBlinded, HConfusion, HDeaf, HFast, HHallucination, HProtection, HStealth, HStun, HTelepat, Hallucination, Levitation, Luck, ParanoidPray, Passes_walls, Punished, Reflecting, Shock_resistance, Sick, Slimed, Stoned, Strangled, Unchanging, Upolyd, Wounded_legs, display_nhwindow, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, disp, flags, ga, gi, gm, gn, gp, gu, gv, gy, iflags, svb, svd, svk, svl, svm, svt, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uright, uswapwep, uwep, ynchars } from './decl.js';
 import { xlev_to_rank } from './botl.js';
@@ -890,7 +890,7 @@ function god_zaps_you(resp_god) {
             godvoice(resp_god, __sl49);
             monstseesu(16n);
         }
-        if (Is_astralevel(cptr.add(u, $you_uz)) || Is_sanctum(cptr.add(u, $you_uz))) {
+        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
             ;
             verbalize(__sl50);
             summon_minion(resp_god, 0);

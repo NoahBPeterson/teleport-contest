@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, AEXE, AMAX, DEADMONSTER, IS_FOUNTAIN, IS_SINK, Is_airlevel, Is_waterlevel, MON_AT, P_SKILL, breathless, cansee, canspotmon, carried, has_head, haseyes, is_ammo, is_boots, is_corrodeable, is_gloves, is_human, is_plural, is_poisonable, is_rustprone, is_silent, is_swimmer, is_vampshifter, is_weptool, is_were, ismnum, likes_lava, mon_perma_blind } from './nhmacrofn.js';
+import { ABASE, AEXE, AMAX, DEADMONSTER, IS_FOUNTAIN, IS_SINK, MON_AT, P_SKILL, breathless, cansee, canspotmon, carried, has_head, haseyes, is_ammo, is_boots, is_corrodeable, is_gloves, is_human, is_plural, is_poisonable, is_rustprone, is_silent, is_swimmer, is_vampshifter, is_weptool, is_were, ismnum, likes_lava, mon_perma_blind } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, BBlinded, BInvis, BLevitation, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only, Cold_resistance, Deaf, Detect_monsters, EBlinded, EHalluc_resistance, EWarn_of_mon, Fast, Fire_resistance, Fixed_abil, Free_action, Glib, HBlinded, HConfusion, HDeaf, HDetect_monsters, HFast, HHallucination, HInvis, HSee_invisible, HStun, Half_gas_damage, Half_physical_damage, Halluc_resistance, Hallucination, Infravision, Invis, Invisible, Levitation, PermaBlind, Poison_resistance, Protection_from_shape_changers, Punished, See_invisible, Sick, Sleep_resistance, Slimed, Stoned, Strangled, U_AP_TYPE, Unchanging, Underwater, Upolyd, Very_fast, Vomiting, Wounded_legs, display_nhwindow } from './nhprop.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, cg, disp, flags, gm, gn, gp, gu, gv, gy, hands_obj, iflags, svc, svd, svl, svm, u, uarmc, uarmg, uarmh, uball, ublindf, uwep, ynchars } from './decl.js';
 import { erode_obj, fire_damage, float_up, unconscious, water_damage } from './trap.js';
@@ -1058,7 +1058,7 @@ function* peffect_paralysis(otmp) {
     if (Free_action()) {
         (yield* You(__sl100));
     } else {
-        if (Levitation() || Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)))
+        if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
             (yield* You(__sl101));
         else if (cptr.ldPtro(u, $you_usteed))
             (yield* You(__sl102));

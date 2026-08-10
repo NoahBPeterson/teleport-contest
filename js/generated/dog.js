@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, In_endgame, Is_qstart, MON_AT, P_SKILL, acidic, cansee, canspotmon, carnivorous, emits_light, flaming, has_edog, has_oname, haseyes, helpless, herbivorous, humanoid, is_covetous, is_demon, is_domestic, is_elf, is_human, is_metallic, is_organic, is_rider, is_rustprone, is_undead, is_vampshifter, ismnum, likes_lava, max, metallivorous, noncorporeal, ofood, poisonous, regenerates, touch_petrifies } from './nhmacrofn.js';
+import { DEADMONSTER, Has_contents, In_endgame, MON_AT, P_SKILL, acidic, cansee, canspotmon, carnivorous, emits_light, flaming, has_edog, has_oname, haseyes, helpless, herbivorous, humanoid, is_covetous, is_demon, is_domestic, is_elf, is_human, is_metallic, is_organic, is_rider, is_rustprone, is_undead, is_vampshifter, ismnum, likes_lava, max, metallivorous, noncorporeal, ofood, poisonous, regenerates, touch_petrifies } from './nhmacrofn.js';
 import { Aggravate_monster, Conflict, Hallucination, Upolyd } from './nhprop.js';
 import { makemon, mbirth_limit, newmextra, rndmonst_adj, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -556,7 +556,7 @@ export function mon_arrive(mtmp, when) {
         } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (stway = stairway_find_dir(schar((!builds_up(cptr.add(u, $you_uz)))))) !== null) {
             xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
             break;
-        } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 && (Is_qstart(cptr.add(u, $you_uz0)) || Is_qstart(cptr.add(u, $you_uz))))) {
+        } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz0), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))))) {
             impossible(__sl17);
         }
         // @FallThrough
