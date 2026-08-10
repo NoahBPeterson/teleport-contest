@@ -530,7 +530,34 @@ declaration is now reported as **unclassified** rather than skipped — so
 leaving its bindings out of the reset. `js/generated/` is unaffected to the byte
 (`resetify --check`: up to date, both directories).
 
-What leg 3 then has to do with the 19:
+> **DONE — the branch merged, and this section's predictions held.** See
+> `docs/NOTES-lua-port.md` §16 for the refresh and its gate table. What
+> actually happened to each bullet below:
+>
+> - The 19 are signed rather than derived: `reset-census.mjs --dir` on a
+>   hand-written directory now consults a `HAND_WRITTEN` manifest, and an
+>   *unsigned* declaration or a *stale* entry both count as unclassified. The
+>   report is **46 signed, 0 unclassified** over 88 declarations — 88 rather
+>   than 83 because the scan learned to read flat object destructuring, which
+>   turns the `makeNhlib` line below into the five bindings it actually is.
+> - **Thirteen** bindings are reset, not two. The two named here are among
+>   them; `interp-state.mjs`'s `installed` turned out to be the load-bearing
+>   one, and it is not "already right" — the probe wraps `globalThis.realloc`,
+>   which `harness.mjs` reinstalls per game, so a flag left true silently
+>   disarms the probe for the rest of the process.
+> - `cstrCache` is cleared as instructed. Measured: leaving it warm is *not*
+>   observable, because `cptr.lit()` takes no address. Cleared anyway — see
+>   §16.3 for why the weaker argument is the one worth keeping.
+> - The pair set did not need extending: every corpus session loads
+>   `nhlib.lua`, `dungeon.lua`, `nhcore.lua`, `themerms.lua` and `quest.lua`
+>   through the ports, so all twelve pairs already reach ported code. The red
+>   control that proves it is a run with the port layer's reset disabled —
+>   **0/3**, failing inside `nhlib.lua`.
+> - The yieldable build does **not** get the ports (yieldify patch 8): they
+>   drive `js/generated/`, and reaching them from a yieldable harness would
+>   build levels in the wrong graph. §16.2.
+
+What leg 3 had to do with the 19:
 
 - **Most are immutable and need a classification, not a reset.** `PORTS`,
   `READBACK`, `LIBRARY` (Maps built once from module constants), the frozen API
@@ -567,7 +594,9 @@ What leg 3 then has to do with the 19:
 - The census's `--dir` now accepts hand-written `.mjs`, but the analysis behind
   it was built for the emitter's output. The destructuring bug in §9.2 is the
   kind of thing that finds: leg 3 should run it over `js/boot/` and `js/libc/`
-  before trusting it on `js/lua-js/`.
+  before trusting it on `js/lua-js/`. *(Partly done: the flat-destructuring
+  case is now read rather than reported, and `js/lua-js/` is signed. `js/boot/`
+  and `js/libc/` have not been swept.)*
 - `strict-score.mjs` walks `js/generated-y/` but not either `__reset.js`: the
   barrels are reached by a computed URL, by design. They are machine-generated
   and contain no imports a walk would object to, but nothing checks that.

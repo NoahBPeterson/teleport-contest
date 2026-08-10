@@ -11,7 +11,9 @@ This note is the architecture decision, the traps analysis, the proof-of-concept
 result, the cookbooks for porting the next script, and the staged plan for the
 rest.
 
-Status: **complete — PoC + S1 + S2 + S3 + S4 + S5 + S6 + S7 landed.**
+Status: **complete — PoC + S1 + S2 + S3 + S4 + S5 + S6 + S7 landed, and
+refreshed onto `main` at 8c7b833 (§16), where the ports now share a realm with
+the resettable graph instead of getting a fresh fork per segment.**
 `oracle.lua`, `dungeon.lua`, `quest.lua`, the whole 49-file T0 tier, S3's
 28-file T1 tier, S4's 46-file T2 tier, S5's `tut-1.lua`, S6's two library files
 `nhlib.lua` and `nhcore.lua`, and S7's `themerms.lua` and `hellfill.lua` are
@@ -3019,4 +3021,176 @@ gap §13 has described since S2:
   mismatches and 0 out-of-scope requests, `playability.mjs` on the `xhr` engine
   with `console_entries: []`, and `strict-score --all` clean. The off-switch is
   structural (§4) and is exercised on every corpus sweep. **It is ready to
-  merge; this stage does not merge it.**
+  merge; this stage does not merge it.** §16 re-establishes all of it against
+  a `main` that moved a long way underneath.
+
+---
+
+## 16. Refresh onto main — the resettable realm
+
+The branch forked at `408410b`. `main` reached `8c7b833` with 43 commits, and
+three of them changed what a ported script runs *inside*: the whole-program
+yieldable build (`js/generated-y/`, `docs/NOTES-async-engine.md`), the resident
+main-thread engine, and — the one that matters here — **resettable realms**
+(`docs/NOTES-resettable-state.md`): `js/jsmain.js:runSegment` no longer forks a
+module graph per segment, it keeps ONE and puts its state back.
+
+Merged, not rebased: the 30 commits are the argument, and their order is the
+evidence for it.
+
+### 16.1 The three textual conflicts
+
+| file | what happened |
+|---|---|
+| `js/boot/isolation.mjs` | Both sides edited `SHARED`. main **fixed** the pattern — `/data/nethackdir/` had matched nothing since the playground moved to `js/data-nethackdir/`, so every fork had been carrying its own 2.1 MB copy — while this branch had **added** `js/lua-js/data/` to the broken spelling. Resolved to the union on main's fixed pattern. |
+| `tools/strict-score.mjs` | Both branches had independently added an identical `ALLOWED` map for `js/boot/interactive.mjs`'s `import('node:worker_threads')`, in different surroundings, so git kept **both** — a `const` redeclaration that would not have parsed. One kept. |
+| `docs/ROADMAP.md` | Disjoint rows (1.4 from main, 1.10 from here); auto-merged. |
+
+`js/boot/harness.mjs` did not conflict — main never touched it — and neither
+did `js/jsmain.js`, which this branch never touched.
+
+### 16.2 The conflict that was not textual
+
+`js/boot/harness-y.mjs` did not exist when this branch started. It is
+`tools/c2js/yieldify.mjs`'s mechanical rewrite of `harness.mjs`, so §4's VFS
+interception lands in it *automatically* — including
+`await import('../lua-js/registry.mjs')`. That import is wrong there, and
+silently so.
+
+`js/lua-js/*` drives `js/generated/` directly: `bridge.mjs` imports `lapi.js`,
+`sp_lev.js`, `nhlsel.js`, `nhlobj.js`. Reached from a *yieldable* harness those
+specifiers resolve into the **sync** graph — and under
+`js/boot/reset-realm.mjs`'s `y` fork tag, into a *third* graph tagged like the
+yield realm but built from the sync directory. The ports would have pushed
+rooms, monsters and traps into a `lua_State` belonging to a graph the game was
+not running in; levels would have come out empty, three module URLs from the
+cause.
+
+So `yieldify.mjs` grows an **eighth** asserted patch that makes `luaPort` null
+in that build. The yieldable engine parses `.lua` exactly as it does on main —
+which costs nothing, because "the port and the interpreter are
+indistinguishable" is what this entire branch proves. Porting `js/lua-js`
+*through* the yield transform is a leg of its own: every binding the ports call
+(`lspo_monster`, `pline`, …) is coloured, so the whole port layer would have to
+become generators.
+
+`js/generated/` and `js/generated-y/` were rebuilt from scratch
+(`C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`) and
+reproduce main's committed trees **byte for byte**. `js/boot/harness-y.mjs` is
+the only file the rebuild changes.
+
+### 16.3 The port layer is state, and a reset realm has to put it back
+
+`js/generated/__reset.js` resets the graph; `js/cptr.js` resets the pointer
+runtime. `js/lua-js` is a third layer with the same problem and no emitter to
+derive it, so its reset is hand-written: `__resetState()` in `bridge.mjs` and
+`interp-state.mjs`, composed by `registry.mjs`, driven by
+`js/boot/reset-realm.mjs`.
+
+**Thirteen bindings**, and the differential is what proves the list complete.
+With the whole layer's reset skipped and everything else intact,
+`tools/reset-diff.mjs --via runsegment` goes to **0/3** and names it:
+
+```
+reset:  lua-port nhlib.lua: interpreter lua_State not found
+```
+
+That is `interp-state.mjs`'s `installed`. The state probe wraps
+`globalThis.realloc`, and `harness.mjs` installs a **fresh** `g.realloc` at the
+top of every `runBootGame()`; a flag left true makes game 2's
+`installStateProbe()` a no-op, `candidates` stays empty for the rest of the
+process, and every read-back port throws. It is loud only because §6 made a
+missing `lua_State` a hard error instead of a silent fallback.
+
+**`cstrCache`, the one `docs/NOTES-resettable-state.md` §3 predicted.** It
+interns `cptr.lit()` buffers by string, and a buffer object is what `addr()`
+hands an id to — and those ids are a `lua_State`'s string-hash seed,
+`math.random`'s `seed2`, and the hash that decides `next()` iteration order. It
+is cleared. The honest measurement is that leaving it warm and resetting
+everything else is **not observable**: `seed8000→seed8000`,
+`seed8000→seed4500` and `seed0030→seed0030` all still pass, because
+`cptr.lit()` only builds a `Uint8Array` and never takes an address, so a warm
+cache changes no id and no byte. Clearing is kept regardless — that argument
+depends on `cptr.lit()` staying side-effect-free, and "game 2 re-interns from
+empty, exactly as a fresh realm does" depends on nothing.
+
+Two orderings had to be arranged rather than discovered:
+
+* `acquire()` imports `js/lua-js/registry.mjs` **itself**, after the barrel
+  (which is what evaluates the graph) and before `captureAll()`. A fresh realm
+  evaluates it in precisely that position — `harness.mjs` imports it
+  immediately after `unixmain.js` — so the snapshot is of the state game 2 has
+  to start from. Only when a barrel exists, and only for the `sync` build.
+* `reset()` resets `js/lua-js` **first**, before the barrel overwrites the
+  bytes the port layer points into.
+
+And `detach()` gains `luaLoads`: `closeTrace()` returns registry's own exported
+`loads` array and the reset empties it in place — §7.2's `__rngLog` aliasing
+bug, arriving in the second observable a judge could hold across a reset.
+
+### 16.4 The census, and the sign-off
+
+`tools/c2js/reset-census.mjs --dir js/lua-js` reported **83 declarations, 19
+unclassified** when main scouted this branch read-only. It now reports:
+
+```
+js/lua-js: 9 modules, 88 top-level declarations
+reset plan: 64 declarations to put back, 0 immutable literals to leave alone
+--- SIGNED hand-written state (46) — js/lua-js ---
+```
+
+Two changes got it there. The scanner reads **flat object destructuring**
+(`const { a, b } = f()`), so `bridge.mjs`'s five `makeNhlib` helpers are five
+declarations instead of one unreadable line — `js/generated`'s report is
+unaffected to the byte, checked by diffing the tool's output against main's.
+And `--dir` on a hand-written directory consults a **signed manifest**,
+`HAND_WRITTEN`: every declaration that is not an immutable primitive needs an
+entry saying either why it cannot change or which function puts it back. An
+unsigned declaration and a stale entry both count as unclassified, so the audit
+is a diff rather than a memory — the property `RUNTIME_STATE` already had.
+
+`js/lua-js/data/` is shared across forks (`isolation.mjs`'s `SHARED`), which is
+only safe if those two tables are read-only. Checked at runtime rather than
+argued: deep-freezing both `export default`s before any game and then playing
+`seed8000`, `seed0013` (save/restore) and `seed0030` (ten segments) through a
+reset realm completes with no write reaching a frozen object — and ESM is
+strict mode, so a write would have thrown.
+
+### 16.5 Gates, after the refresh
+
+Ports live and the scored path on the reset realm unless stated.
+
+| gate | result |
+|---|---|
+| `reset-diff --via runsegment` | **12/12** byte-identical to a fresh realm, incl. both acid tests (`seed0013`, `seed0030`) |
+| `reset-diff --via runsegment --force-noop` | **0/12**, as required |
+| reset-diff, lua-port reset disabled *(red control)* | **0/3**, first divergence named above |
+| corpus `sessions/ sessions-extra/`, reset path | **69/69**, twice (1053+0.61/turn, 899+0.64/turn) |
+| corpus, fork fallback (`__reset.js` moved away) | **69/69** (934+1.01/turn) |
+| corpus, `C2JS_LUA_PORT=0` | **69/69** (1029+0.66/turn) |
+| `.lua` census, all 69 sessions in ONE reset realm | 104 segments, 954 loads intercepted, **0 parsed**, unported names `(none)` |
+| `.lua` census, reset vs fork, per session | **69/69 SAME**, zero parsed on both |
+| marathon `gen9996-marathon-dlvl10` | **PASS** — 54,924/54,924 draws, 17,829/17,829 screens |
+| `tools/lua-oracle.mjs` on the marathon | rng and screens `firstDiff=-1`, fingerprints MATCH, `.lua still parsed: NONE` |
+| `node --test test/*.test.mjs` | **6/6** (incl. 145 script transcriptions) |
+| `tools/strict-score.mjs` | 503 files from 2 roots (167 in `js/generated-y/`), **0 violations**, sandbox parity OK ×3 |
+| judge-sim `run.mjs` seed8000 / seed0013 | **PASS**, 0 mismatches, 0 out-of-scope |
+| `playability.mjs` (production) | 243 moves, 2.65 ms/move, first frame 652 ms, **0 console**, 0 out-of-scope |
+| `playability.mjs --no-sw` | replay rung, 19.4 ms/move, 1 console line — the 404 the flag itself injects |
+| `playability.mjs --their-page` ×3 seeds | 130 moves each, **0 console**, 0 out-of-scope |
+| sandboxed `frozen/playability_runner.mjs` | 44 sessions, **0 failures**, 9,096 moves, 3.77 / 3.48 / 3.43 ms/move |
+| `reset-census --dir js/lua-js` | 46 signed, **0 unclassified** |
+
+One number needs its context. The corpus `.lua` census reports **954** loads
+where §15.9 reported 987; the difference is entirely `dungeon.lua`,
+`themerms.lua` and `nhlib.lua`, and it is 7 segments. §15.9 was measured
+through `tools/lua-oracle.mjs`, which runs each segment **without carrying
+storage**, so a save/restore segment there starts a *new game* and loads
+`dungeon.lua` again. Driven the way the judge drives it — one storage handle
+per session — those 7 segments restore instead, and a restore does not run
+`init_dungeons()`. Reset and fork agree exactly, per session, on all 69.
+
+The sandboxed playability aggregate is against `main` measured on the same
+machine in the same hour: **3.41 / 3.34 ms/move**. `docs/NOTES-resettable-state.md`
+§7.3's 3.03–3.08 was a quieter machine, not a different build — that rung runs
+`js/generated-y/`, which is byte-identical to main's.
