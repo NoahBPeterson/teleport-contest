@@ -38,6 +38,19 @@
 //     in Node each game gets a pristine copy of the C globals and a driver that
 //     plays MANY games in one process (frozen/playability_runner.mjs plays 44)
 //     is a supported shape. See "The Node rung" in docs/NOTES-async-engine.md.
+//
+//     Forking per game only MOVED that wall, though, and the note below on
+//     roomForAnotherGraph() is the measurement of where it landed: a forked
+//     graph can never be unloaded, so by session 20 the heap was 1.6 GB, boot
+//     had gone from 580 ms to 1600 ms, and session 22 did not finish. The
+//     44-session run was not a number this tree could report.
+//
+//     It is now, because there is a third option that is neither "share a spent
+//     graph" nor "fork another one": keep ONE graph and put its state back
+//     (js/boot/reset-realm.mjs). 0.6 ms and 0.6 MB per game against 440 ms and
+//     70 MB, and byte-identical to a fresh realm — which is a claim, and
+//     tools/reset-diff.mjs is why it can be believed. The fork stays as the
+//     fallback for a build without C2JS_RESET=1, heap ceiling and all.
 //   - It cannot be retired cheaply. A worker can be terminated; a module graph
 //     in the page realm cannot be unloaded. So this engine must never be
 //     started speculatively alongside a transport that might win — it is
@@ -170,6 +183,59 @@ async function roomForAnotherGraph() {
 }
 
 /**
+ * The one yieldable graph this process plays every game in, once it has one.
+ *
+ * `tried` is separate from the realm itself so that a runtime which cannot have
+ * one — no module.registerHooks, or a build with no reset barrel — is asked
+ * exactly once and then falls to forkGraph() for the rest of the process.
+ */
+let residentRealm = null;
+let residentRealmTried = false;
+/**
+ * ...and whether a game is currently using it.
+ *
+ * One graph is a ONE-GAME-AT-A-TIME resource, and a fork was not: two forks
+ * could run concurrently because they shared nothing. Handing this realm to a
+ * second game while the first is still parked in it would be worse than a
+ * refusal — `Realm.run()` would reset the graph *underneath* the live game,
+ * silently, mid-dungeon. Nothing in this tree plays two games at once (the
+ * fallback slot holds one engine, and every driver is serial), which is exactly
+ * why the day something does, it must meet a graph of its own rather than this
+ * one. Second concurrent game ⇒ forkGraph(), the rung that could always do it.
+ */
+let residentBusy = false;
+
+/**
+ * Acquire (once) the resettable graph, or null if this build/runtime has none.
+ *
+ * Node only, and never speculative: the acquisition instantiates all 176
+ * generated modules and snapshots them, which is precisely the cost the first
+ * game was going to pay anyway.
+ *
+ * Silent in every failure branch, like everything else on the interactive path.
+ * The two ways to get null are a Node without `module.registerHooks` (acquire()
+ * refuses to take the shared graph rather than lie about isolation) and a build
+ * without C2JS_RESET=1 (no barrel, `resettable` false) — and both are answered
+ * by the per-game fork below, which is what this file did before.
+ */
+async function resettableGraph() {
+    if (residentRealmTried) return residentRealm;
+    residentRealmTried = true;
+    try {
+        // Arming snapshots the graph's top-level state, so whatever the modules
+        // evaluate against has to be installed first. A no-op in Node, where
+        // this is the only caller — but the invariant is stated here rather
+        // than assumed, exactly as prewarmMainThread() states it.
+        const { installBrowserGlobals } = await import('./browser-env.mjs');
+        installBrowserGlobals();
+        const { acquire } = await import('./reset-realm.mjs');
+        const realm = await acquire({ build: 'yield' });
+        if (realm.resettable) residentRealm = realm;
+    } catch { /* no realm to be had; forkGraph() is the rung */ }
+    return residentRealm;
+}
+
+/**
  * A private copy of the yieldable graph for one game, or null if this realm
  * cannot fork one.
  *
@@ -211,6 +277,39 @@ async function forkGraph() {
 }
 
 /**
+ * A graph for one game, however this process is able to get one.
+ *
+ * Two rungs, and the order is the whole point:
+ *
+ *   1. the resettable realm — ONE graph, put back between games. Flat heap,
+ *      and after game 1 the ~600 ms of module instantiation is gone from boot
+ *      entirely: what is left is newgame().
+ *   2. a fork per game — correct, unboundedly expensive, and subject to
+ *      roomForAnotherGraph()'s refusal. This is what the rung was.
+ *
+ * Returns `{ harness, tag, realm }`. Exactly one of `tag` and `realm` is set,
+ * and _finish() reads that to decide what to hand back at game end.
+ *
+ * Throws only what forkGraph() throws (RealmExhausted). The reset rung has no
+ * such condition: one graph is one graph however many games it plays.
+ */
+async function acquireGraph() {
+    const realm = residentBusy ? null : await resettableGraph();
+    if (realm) {
+        residentBusy = true;
+        // `run()` is the reset's own contract — reset first if this graph
+        // already ran a game, and refuse rather than replay into it. _finish()
+        // normally resets on the way out (so the heap comes back between games
+        // rather than at the start of the next one), which leaves this a no-op;
+        // it is here because "a game never starts in a dirty graph" should not
+        // depend on where the previous game's teardown got to.
+        return { harness: { runBootGame: (o) => realm.run(o) }, tag: null, realm };
+    }
+    const fork = await forkGraph();
+    return fork ? { harness: fork.harness, tag: fork.tag, realm: null } : null;
+}
+
+/**
  * Hand back what a finished game's forked graph is still pinning.
  *
  * A forked graph can never be unloaded — Node's module map keys on the URL and
@@ -244,6 +343,39 @@ function releaseForkedGraph(tag) {
         .catch(() => { /* nothing to give back */ });
 }
 
+/**
+ * Give a resettable graph back to the state it evaluated into.
+ *
+ * This is releaseForkedGraph()'s successor and a strict superset of it: that
+ * one dropped the two biggest things a spent graph pinned, which was all a
+ * fork could ever do because a fork's 176 modules are unloadable. A reset puts
+ * ALL of them back — every arena, every rebindable global, the pointer registry,
+ * the buffer-id map — so what the game allocated becomes collectible and the
+ * next game boots into a pristine graph instead of a fresh one.
+ *
+ * Done at game END rather than before the next game, which is the opposite of
+ * js/boot/reset-realm.mjs's own default, for a reason specific to this rung:
+ * the driver that plays a corpus measures the heap BETWEEN sessions
+ * (frozen/playability_runner.mjs, `--expose-gc`), and a reset deferred to the
+ * next boot would make the curve look like the fork's while being nothing like
+ * it. Parity is unaffected either way — the reset happens between the two
+ * games, which is the only thing the differential ever claimed.
+ *
+ * A reset that throws is a bug in the reset, not in this game (which is over).
+ * It is handled the way this file handles everything: silently, and by
+ * degrading honestly — the realm is dropped, so the next game forks a graph of
+ * its own rather than starting in one whose state is half-restored.
+ */
+function resetResidentGraph(realm) {
+    if (!realm) return;
+    residentBusy = false;
+    try {
+        if (!realm.reset()) residentRealm = null;
+    } catch {
+        residentRealm = null;
+    }
+}
+
 export class MainThreadEngine {
     constructor(job) {
         this.job = job;
@@ -265,12 +397,18 @@ export class MainThreadEngine {
         // graph *lazily*, from inside runBootGame, so a fork's `graphMs` is the
         // harness module alone (~10-18 ms) and its `bootMs` carries both the
         // 176-module instantiation (~600 ms) and newgame() (~150 ms).
+        // On the reset path only the FIRST game in the process pays that
+        // instantiation; every game after it is newgame() and nothing else,
+        // which is most of what the reset buys a many-game driver.
         this.graphMs = undefined;   // instantiate js/generated-y/**
         this.bootMs = undefined;    // newgame(), to the first getchar() park
         this._dead = false;
-        // `c2jsseg=yN` when this game got a graph of its own (Node), null when
-        // it is running in the realm's one shared graph. See releaseForkedGraph.
+        // `c2jsseg=yN` when this game FORKED a graph of its own (Node), null
+        // otherwise. See releaseForkedGraph.
         this._graphTag = null;
+        // ...and the resettable realm when it got one of those instead. At most
+        // one of the two is ever set; see acquireGraph().
+        this._realm = null;
         this._deliver = null;      // resolver the parked engine is waiting on
         this._onPark = null;       // one-shot: fires when the engine parks
         this._done = null;         // the runBootGame promise
@@ -303,12 +441,19 @@ export class MainThreadEngine {
         // the expression below is synchronous and this whole clause is `null`,
         // so the `claimed` refusal that follows still happens in the same
         // microtask a second game's start() was called in, exactly as before.
-        const fork = IS_NODE ? await forkGraph() : null;
-        let harness = fork && fork.harness;
-        // Only a forked graph has anything to give back; the page realm's one
-        // graph is going to be there whatever this game does with it.
-        this._graphTag = fork ? fork.tag : null;
-        // No fork: this realm has one graph and it can run one game.
+        const own = IS_NODE ? await acquireGraph() : null;
+        let harness = own && own.harness;
+        // Only a graph of this game's own has anything to give back; the page
+        // realm's one graph is going to be there whatever this game does.
+        this._graphTag = own ? own.tag : null;
+        this._realm = own ? own.realm : null;
+        // A resettable realm past its first game IS warm in the sense every
+        // other rung's `warmed` column means: the graph was already in this
+        // realm's hand before the game asked for it. A fork never is — it is
+        // instantiated for this game and by definition was not there before.
+        // (`generation` counts games already run: run() increments it below.)
+        if (this._realm) this.warmed = this._realm.generation > 0;
+        // Neither: this realm has one graph and it can run one game.
         const shared = !harness;
         if (shared) {
             if (claimed) throw new Error('the page realm has already hosted a resident engine');
@@ -328,12 +473,12 @@ export class MainThreadEngine {
             harness = await prewarmMainThread();
         }
         this.graphMs = performance.now() - tGraph;
-        if (cancelled && cancelled()) throw new Error('fallback cancelled before boot');
+        if (cancelled && cancelled()) throw this._abandon('fallback cancelled before boot');
         // One real task boundary, not a microtask: `await` on an already-
         // resolved promise resumes inside the same task and would service no
         // message at all. See the doc comment above.
         await new Promise((res) => setTimeout(res, 0));
-        if (cancelled && cancelled()) throw new Error('fallback cancelled before boot');
+        if (cancelled && cancelled()) throw this._abandon('fallback cancelled before boot');
         if (shared) {
             if (claimed) throw new Error('the page realm has already hosted a resident engine');
             claimed = true;
@@ -446,6 +591,26 @@ export class MainThreadEngine {
      */
     get engineTime() { return this._steps ? { ms: this._engineMs, steps: this._steps } : undefined; }
 
+    /**
+     * Give up before the game ever started, and hand back whatever start() had
+     * already taken.
+     *
+     * The two `cancelled` seams in start() are the only way out of this engine
+     * that never reaches _finish(), so they are the only place the resettable
+     * realm could be left marked in-use by a game that will never run. Every
+     * later game would then fork instead — correct, but quietly back on the
+     * expensive rung, which is the sort of regression that hides for months.
+     *
+     * Returns the error rather than throwing it, so the call site still reads
+     * as a `throw`.
+     */
+    _abandon(message) {
+        const realm = this._realm;
+        this._realm = null;
+        resetResidentGraph(realm);
+        return new Error(message);
+    }
+
     _parked() {
         return new Promise((res) => { this._onPark = () => { this._onPark = null; res(); }; });
     }
@@ -460,11 +625,16 @@ export class MainThreadEngine {
         this._onPark = null;
         if (park) park();
         try { this._exitRes(this.exitInfo); } catch { /* already settled */ }
-        // The game is over and this graph will never run another. Every route
-        // out of runBootGame lands here — death, #quit, the EOF stop() and
-        // retire() deliver — so this is the one place that has to say so.
+        // The game is over. Every route out of runBootGame lands here — death,
+        // #quit, the EOF stop() and retire() deliver — so this is the one place
+        // that can hand the graph back, whichever kind of graph it was: a
+        // forked one gives back the two things a fork can, a resettable one
+        // gives back everything.
         const tag = this._graphTag;
+        const realm = this._realm;
         this._graphTag = null;
+        this._realm = null;
         releaseForkedGraph(tag);
+        resetResidentGraph(realm);
     }
 }
