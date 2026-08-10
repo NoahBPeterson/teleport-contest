@@ -600,3 +600,17 @@ export function luaopen_base(L) {
     lua_setfield(L, -2, __sl50);
     return 1;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_luaB_collectgarbage_opts), S(__static_luaB_collectgarbage_optsnum), S(base_funcs)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("lbaselib.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+}
+// --- END c2js reset block ---

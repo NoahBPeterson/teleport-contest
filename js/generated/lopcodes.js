@@ -6,3 +6,15 @@
 
 /** C ref: lopcodes.c:18 — unsigned char[83] */
 export const luaP_opmodes = [8, 10, 10, 9, 9, 8, 8, 8, 8, 8, 0, 8, 8, 8, 8, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 128, 128, 128, 8, 8, 8, 8, 8, 0, 0, 4, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 24, 104, 104, 32, 0, 0, 9, 9, 1, 0, 9, 32, 9, 72, 40, 3];
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(luaP_opmodes)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("lopcodes.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

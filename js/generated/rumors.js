@@ -727,3 +727,22 @@ export function free_CapMons() {
     }
     CapMonSiz = 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 8 bindings: 0 rebound+refilled, 5 rebound, 3 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(CapMonstCnt), S(CapBogonCnt), S(CapMonSiz), S(CapMons), S(__static_init_rumors_rumors_header), S(__static_getrumor_cookie_marker), S(__static_others_check_errfmt), S(__static_outrumor_fortune_msg)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("rumors.js: __resetState before __captureState");
+    CapMonstCnt = P(r[0]);
+    CapBogonCnt = P(r[1]);
+    CapMonSiz = P(r[2]);
+    CapMons = P(r[3]);
+    P(r[4]);
+    __static_getrumor_cookie_marker = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+}
+// --- END c2js reset block ---

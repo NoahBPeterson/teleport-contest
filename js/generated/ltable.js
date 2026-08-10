@@ -751,3 +751,16 @@ export function luaH_getn(t) {
     else
         return hash_search(t, BigInt(limit >>> 0));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 2 rebound+refilled, 0 rebound, 0 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(dummynode_), S(absentkey)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("ltable.js: __resetState before __captureState");
+    dummynode_ = P(r[0]);
+    absentkey = P(r[1]);
+}
+// --- END c2js reset block ---

@@ -977,3 +977,15 @@ export function region_safety() {
     if ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) & 16777215n) == 1n)
         make_blinded(0n, 1);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(callbacks)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("region.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

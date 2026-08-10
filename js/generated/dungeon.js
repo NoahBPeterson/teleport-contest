@@ -2847,3 +2847,24 @@ function print_mapseen(win, mptr, final, how, printdun) {
         }
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 10 bindings: 0 rebound+refilled, 1 rebound, 9 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_add_branch_branch_id), S(level_map), S(__static_get_dgn_flags_flagstrs), S(__static_get_dgn_flags_flagstrs2i), S(__static_get_dgn_align_dgnaligns), S(__static_get_dgn_align_dgnaligns2i), S(__static_init_dungeon_branches_brdirstr), S(__static_init_dungeon_branches_brdirstr2i), S(__static_init_dungeon_branches_brtypes), S(__static_init_dungeon_branches_brtypes2i)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("dungeon.js: __resetState before __captureState");
+    __static_add_branch_branch_id = P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+}
+// --- END c2js reset block ---

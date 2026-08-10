@@ -2600,3 +2600,17 @@ function green_mon(mon) {
         return 0;
     return schar((cptr.ld1uo(ptr, 91) == NHM.CLR_GREEN || cptr.ld1uo(ptr, 91) == NHM.CLR_BRIGHT_GREEN ? 1 : 0));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 3 bindings: 0 rebound+refilled, 1 rebound, 2 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_precheck_empty), S(__static_use_defensive_MissingDefensiveItem), S(__static_use_misc_MissingMiscellaneousItem)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("muse.js: __resetState before __captureState");
+    __static_precheck_empty = P(r[0]);
+    P(r[1]);
+    P(r[2]);
+}
+// --- END c2js reset block ---

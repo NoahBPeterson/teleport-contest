@@ -522,10 +522,36 @@ async function maybeYield() {
   const { execFileSync } = await import('node:child_process');
   execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'yieldify.mjs'), '--check'], { stdio: 'inherit' });
 }
+
+/**
+ * C2JS_RESET=1 — additionally emit the reset functions.
+ *
+ * Same shape as C2JS_YIELD and for the same reasons: the pass needs all 176
+ * modules to exist (it writes a barrel over them), and it needs to see the
+ * hand-written runtime preludes that assemble() inlines verbatim — rnd.js's
+ * `__rngLog`, the scored RNG log, is declared in one of them and emit.mjs
+ * never sees it.
+ *
+ * Unlike the yield build, this one writes *into* js/generated/ rather than
+ * beside it, because module-scope state can only be reset from inside the
+ * module that owns it. It appends a delimited block to each module's tail and
+ * touches nothing above it, and it strips any previous block before appending,
+ * so it is idempotent and `--strip` is an exact inverse. With the flag off the
+ * pass does not run, so the scored build is byte-for-byte what it was.
+ *
+ * See tools/c2js/resetify.mjs, tools/c2js/reset-census.mjs and
+ * js/boot/reset-realm.mjs.
+ */
+async function maybeReset() {
+  if (!process.env.C2JS_RESET) return;
+  console.log('\nC2JS_RESET=1 — emitting per-module __resetState() + the reset barrel');
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'resetify.mjs')], { stdio: 'inherit' });
+}
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 
 // buildAll/buildSingle may or may not return a promise depending on the path
 // taken; normalise before chaining so the hook can never mask a build failure
 // or, worse, invent one after a build that succeeded.
-if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield);
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset);
 else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

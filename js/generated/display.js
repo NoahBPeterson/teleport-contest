@@ -2848,3 +2848,37 @@ function wall_angle(lev) {
 export function fn_cmap_to_glyph(cmap) {
     return (((cmap) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cmap) <= NHC.S_trwall) ? (((((cmap) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, 1894)), 2) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16o(svd, 1874))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cmap) < NHC.S_altar) ? (((((cmap) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cmap) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cmap) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cmap) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cmap) <= NHC.S_goodpos) ? (((((cmap) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 23 bindings: 4 rebound+refilled, 10 rebound, 9 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(tgfirst), S(__static_tmp_at_tglyph), S(__static_swallowed_lastx), S(__static_swallowed_lasty), S(__static_under_water_lastx), S(__static_under_water_lasty), S(__static_under_water_dela), S(__static_under_ground_dela), S(no_ginfo), S(nul_glyphinfo), S(glyphmap), S(nul_gbuf), S(__static_cls_in_cls), S(__static_flush_screen_flushing), S(__static_flush_screen_delay_flushing), S(zapcolors), S(altarcolors), S(explodecolors), S(wallcolors), S(seenv_matrix), S(wall_matrix), S(cross_matrix), S(__static_t_warn_warn_str)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("display.js: __resetState before __captureState");
+    tgfirst = P(r[0]);
+    __static_tmp_at_tglyph = P(r[1]);
+    __static_swallowed_lastx = P(r[2]);
+    __static_swallowed_lasty = P(r[3]);
+    __static_under_water_lastx = P(r[4]);
+    __static_under_water_lasty = P(r[5]);
+    __static_under_water_dela = P(r[6]);
+    __static_under_ground_dela = P(r[7]);
+    no_ginfo = P(r[8]);
+    nul_glyphinfo = P(r[9]);
+    P(r[10]);
+    nul_gbuf = P(r[11]);
+    __static_cls_in_cls = P(r[12]);
+    __static_flush_screen_flushing = P(r[13]);
+    __static_flush_screen_delay_flushing = P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+}
+// --- END c2js reset block ---

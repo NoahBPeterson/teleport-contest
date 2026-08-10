@@ -4301,3 +4301,29 @@ function dump_enums() {
 export function dump_glyphids() {
     dump_all_glyphids(__stdoutp);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 15 bindings: 0 rebound+refilled, 0 rebound, 15 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(earlyopts), S(ArgVal_novalue), S(monsdump), S(objdump), S(defsym_cmap_dump), S(defsym_mon_syms_dump), S(defsym_mon_defchars_dump), S(objclass_defchars_dump), S(objclass_classes_dump), S(objclass_syms_dump), S(arti_enum_dump), S(mcastu_enum_dump), S(__static_dump_enums_omdump), S(__static_dump_enums_ed), S(__static_dump_enums_edmp)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("earlyarg.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+}
+// --- END c2js reset block ---

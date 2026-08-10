@@ -2413,3 +2413,21 @@ export function get_nhcolor_from_256_index(idx) {
         retcolor = cptr.ldI32o2(color_256_definitions, idx, 8, 4);
     return retcolor;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 7 bindings: 0 rebound+refilled, 0 rebound, 7 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(colornames), S(attrnames), S(colortable), S(__static_color_attr_to_str_buf), S(__static_add_menu_coloring_parsed_re_error), S(__static_wc_color_name_hexcolor), S(color_256_definitions)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("coloratt.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+}
+// --- END c2js reset block ---

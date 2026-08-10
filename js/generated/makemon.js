@@ -2048,3 +2048,22 @@ export function summon_furies(limit) {
         i++;
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 8 bindings: 1 rebound+refilled, 3 rebound, 4 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(zeromextra), S(__static_align_shift_oldmoves), S(__static_align_shift_lev), S(mongen_order), S(mclass_maxf), S(mongen_order_init), S(syms), S(__static_set_mimic_sym_furnsyms)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("makemon.js: __resetState before __captureState");
+    zeromextra = P(r[0]);
+    __static_align_shift_oldmoves = P(r[1]);
+    __static_align_shift_lev = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    mongen_order_init = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+}
+// --- END c2js reset block ---

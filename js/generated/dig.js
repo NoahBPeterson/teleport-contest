@@ -1951,3 +1951,17 @@ export function wiz_debug_cmd_bury() {
         pline(__sl194, diff, (((diff) == 1) ? __sl49 : __sl195));
     return NHM.ECMD_OK;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_dig_d_target), S(__static_use_pick_axe2_d_action), S(__static_draft_message_draft_reaction)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("dig.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+}
+// --- END c2js reset block ---

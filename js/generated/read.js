@@ -2991,3 +2991,23 @@ export function create_particular() {
         return create_particular_creation(d);
     return 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 9 bindings: 0 rebound+refilled, 1 rebound, 8 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_tshirt_text_shirt_msgs), S(__static_hawaiian_motif_hawaiian_motifs), S(__static_hawaiian_design_hawaiian_bgs), S(__static_apron_text_apron_msgs), S(candy_wrappers), S(__static_doread_find_any_braille), S(__static_doread_card_msgs), S(__static_doread_red_mons), S(gremlins)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("read.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    gremlins = P(r[8]);
+}
+// --- END c2js reset block ---

@@ -1115,3 +1115,27 @@ export function getlin(query, bufp) {
     cptr.st1o(gb, 4864, old_bot_disabled);
     cptr.stI32o(program_state, 72, 0);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 4 rebound+refilled, 2 rebound, 7 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(windowprocs), S(winchoices), S(hup_procs), S(previnterface_exit_nhwindows), S(status_fieldnm), S(status_fieldfmt), S(status_vals), S(status_activefields), S(__static_genl_status_update_fieldorder), S(dumplog_windowprocs_backup), S(dumplog_file), S(__static_encglyph_encbuf), S(zerowri)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("windows.js: __resetState before __captureState");
+    windowprocs = P(r[0]);
+    P(r[1]);
+    hup_procs = P(r[2]);
+    previnterface_exit_nhwindows = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    dumplog_windowprocs_backup = P(r[9]);
+    dumplog_file = P(r[10]);
+    P(r[11]);
+    zerowri = P(r[12]);
+}
+// --- END c2js reset block ---

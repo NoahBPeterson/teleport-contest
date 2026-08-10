@@ -1600,3 +1600,21 @@ export function do_symset(rogueflag) {
     (cptr.ldPtro(windowprocs, 336))(__sl235);
     return 1;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 7 bindings: 2 rebound+refilled, 1 rebound, 4 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(decgraphics_mode_callback), S(utf8graphics_mode_callback), S(known_handling), S(known_restrictions), S(loadsyms), S(saved_symbols), S(__static_match_sym_alternates)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("symbols.js: __resetState before __captureState");
+    decgraphics_mode_callback = P(r[0]);
+    utf8graphics_mode_callback = P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    saved_symbols = P(r[5]);
+    P(r[6]);
+}
+// --- END c2js reset block ---

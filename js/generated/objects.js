@@ -17584,3 +17584,18 @@ export function objects_globals_init() {
     cptr.memcpy(obj_descr, obj_descr_init, 7712n);
     cptr.memcpy(objects, obj_init, 57840n);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 4 bindings: 0 rebound+refilled, 0 rebound, 4 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(obj_descr_init), S(obj_init), S(obj_descr), S(objects)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("objects.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+}
+// --- END c2js reset block ---

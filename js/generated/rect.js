@@ -162,3 +162,17 @@ export function split_rects(r1, r2) {
         add_rect(r);
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 3 bindings: 0 rebound+refilled, 3 rebound, 0 refilled.
+// S/P are supplied by js/generated/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(rect), S(n_rects), S(rect_cnt)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("rect.js: __resetState before __captureState");
+    rect = P(r[0]);
+    n_rects = P(r[1]);
+    rect_cnt = P(r[2]);
+}
+// --- END c2js reset block ---
