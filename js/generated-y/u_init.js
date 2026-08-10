@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Race_switch, Role_switch, discover } from './nhprop.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
@@ -1649,7 +1650,7 @@ cptr.stPtro(__static_u_init_role_M_spell, 16, Confuse_monster_book); /** C ref: 
 function* u_init_role() {
     let i;
     cptr.stI64o(svm, FLD.instance_globals_saved_m_moves, 1n);
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
         (yield* ini_inv(Archeologist));
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 654, __sl1), rn2(10)) : rn2(10)))
@@ -1776,7 +1777,7 @@ cptr.stI32o(__static_u_init_race_trotyp, 20, NHC.LEATHER_DRUM); /** C ref: u_ini
 
 /** C ref: u_init.c:792 */
 function* u_init_race() {
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum))) {
+    switch (Race_switch()) {
         case NHC.PM_HUMAN:
         break;
         case NHC.PM_ELF:
@@ -1839,7 +1840,7 @@ function* pauper_reinit() {
             cptr.stI16o2(u, skill, 6, FLD.you_weapon_skills + FLD.skills_advance, 0);
         }
     cptr.stI32o(u, FLD.you_weapon_slots, 2);
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_HEALER:
         preknown = NHC.SPE_HEALING;
         break;
@@ -1930,7 +1931,7 @@ export function* u_init_misc() {
 /** C ref: u_init.c:1037 @returns {CPtr} */
 function* skills_for_role() {
     let skills;
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
         skills = Skill_A;
         break;
@@ -2166,7 +2167,7 @@ export function* u_init_inventory_attrs() {
     cptr.stI64o(u, FLD.you_umoney0, 0n);
     (yield* u_init_role());
     (yield* u_init_race());
-    if (cptr.ld1so(flags, FLD.flag_explore))
+    if (discover())
         (yield* ini_inv(Wishing));
     if (cptr.ldI64o(u, FLD.you_umoney0))
         (yield* ini_inv(Money));

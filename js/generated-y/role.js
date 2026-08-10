@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Role_switch, askname, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { rn2, rn2_on_display_rng, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { Strlen_ } from './strutil.js';
 import { eos, findword, highc, lowc, s_suffix, strNsubst, strkitten, strncmpi, strstri, strsubst, trimspaces } from './hacklib.js';
@@ -2315,7 +2316,7 @@ export function* plnamesuffix() {
     }
     do {
         if (!cptr.ld1so(svp, 0, 1)) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_askname))()));
+            (yield* Y.icall(askname()()));
             cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, 0);
         }
         sptr = cptr.add(svp, cptr.ldI32o(gp, FLD.instance_globals_p_plnamelen));
@@ -2384,7 +2385,7 @@ export function* role_selection_prolog(which, where) {
     }
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl318);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_NAME) ? cptr.decay(__static_role_selection_prolog_choosing) : (!cptr.ld1s(svp) ? cptr.decay(__static_role_selection_prolog_not_yet) : svp));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(where, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(where, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl319);
     (__builtin_expect(BigInt((!(which == NHM.RS_ROLE || r == -1 || r == -2 || ((r) >= 0 && (r) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__sl314, __sl295, 1777, __sl320) : void 0);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ROLE) ? cptr.decay(__static_role_selection_prolog_choosing) : ((r == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((r == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(roles, r, 312))));
@@ -2394,17 +2395,17 @@ export function* role_selection_prolog(which, where) {
         else if (gend < 0)
             void cptr.sprintf(eos(cptr.decay(buf)), __sl322, cptr.ldPtro2(roles, r, 312, FLD.RoleName_f));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(where, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(where, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl323);
     (__builtin_expect(BigInt((!(which == NHM.RS_RACE || c == -1 || c == -2 || ((c) >= 0 && (c) < ((6 - 1) | 0))))), 0n) ? __assert_rtn(__sl314, __sl295, 1794, __sl324) : void 0);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_RACE) ? cptr.decay(__static_role_selection_prolog_choosing) : ((c == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((c == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(races, c, 112))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(where, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(where, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl325);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_GENDER) ? cptr.decay(__static_role_selection_prolog_choosing) : ((gend == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((gend == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(genders, gend, 48))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(where, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(where, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __sl317, __sl326);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ALGNMNT) ? cptr.decay(__static_role_selection_prolog_choosing) : ((a == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((a == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro2(aligns, a, 32, FLD.Align_adj))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(where, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(where, 0, cptr.decay(buf))));
 }
 
 const __static_role_menu_extra_RS_menu_let = [61, 63, 47, 34, 91]; /** C ref: role.c:1818 — char[5] (function-static) */
@@ -2609,7 +2610,7 @@ export function* role_init() {
 
 /** C ref: role.c:2120 — @param {CPtr} mtmp @returns {CPtr} */
 export function Hello(mtmp) {
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_KNIGHT:
         return __sl340;
         case NHC.PM_SAMURAI:
@@ -2625,7 +2626,7 @@ export function Hello(mtmp) {
 
 /** C ref: role.c:2143 @returns {CPtr} */
 export function Goodbye() {
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_KNIGHT:
         return __sl347;
         case NHC.PM_SAMURAI:
@@ -2727,7 +2728,7 @@ export function* genl_player_setup(screenheight) {
                         (yield* role_menu_extra(NHM.RS_filter, win, 0));
                         (yield* role_menu_extra(-1, win, 0));
                         void cptr.strcpy(cptr.decay(pbuf), __sl352);
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(pbuf))));
+                        (yield* Y.icall(end_menu()(win, cptr.decay(pbuf))));
                         n = (yield* select_menu(win, NHM.PICK_ONE, selected));
                         if (n > 0) {
                             choice = cptr.ldI32o(selected.v, 0, 24);
@@ -2737,7 +2738,7 @@ export function* genl_player_setup(screenheight) {
                             choice = (n == 0) ? -2 : -1;
                         if (selected.v)
                             cptr.free(selected.v), selected.v = null;
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win))), win = -1;
+                        (yield* Y.icall(destroy_nhwindow()(win))), win = -1;
                         if (choice == -1) {
                             {
                                 (cptr.stI32o(program_state, FLD.sinfo_in_role_selection, cptr.ldI32o(program_state, FLD.sinfo_in_role_selection) + -1)) - (-1);
@@ -2804,7 +2805,7 @@ export function* genl_player_setup(screenheight) {
                             (yield* role_menu_extra(NHM.RS_filter, win, 0));
                             (yield* role_menu_extra(-1, win, 0));
                             void cptr.strcpy(cptr.decay(pbuf), __sl354);
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(pbuf))));
+                            (yield* Y.icall(end_menu()(win, cptr.decay(pbuf))));
                             n = (yield* select_menu(win, NHM.PICK_ONE, selected));
                             if (n > 0) {
                                 choice = cptr.ldI32o(selected.v, 0, 24);
@@ -2814,7 +2815,7 @@ export function* genl_player_setup(screenheight) {
                                 choice = (n == 0) ? -2 : -1;
                             if (selected.v)
                                 cptr.free(selected.v), selected.v = null;
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win))), win = -1;
+                            (yield* Y.icall(destroy_nhwindow()(win))), win = -1;
                             if (choice == -1) {
                                 {
                                     (cptr.stI32o(program_state, FLD.sinfo_in_role_selection, cptr.ldI32o(program_state, FLD.sinfo_in_role_selection) + -1)) - (-1);
@@ -2884,7 +2885,7 @@ export function* genl_player_setup(screenheight) {
                             (yield* role_menu_extra(NHM.RS_filter, win, 0));
                             (yield* role_menu_extra(-1, win, 0));
                             void cptr.strcpy(cptr.decay(pbuf), __sl356);
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(pbuf))));
+                            (yield* Y.icall(end_menu()(win, cptr.decay(pbuf))));
                             n = (yield* select_menu(win, NHM.PICK_ONE, selected));
                             if (n > 0) {
                                 choice = cptr.ldI32o(selected.v, 0, 24);
@@ -2894,7 +2895,7 @@ export function* genl_player_setup(screenheight) {
                                 choice = (n == 0) ? -2 : -1;
                             if (selected.v)
                                 cptr.free(selected.v), selected.v = null;
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win))), win = -1;
+                            (yield* Y.icall(destroy_nhwindow()(win))), win = -1;
                             if (choice == -1) {
                                 {
                                     (cptr.stI32o(program_state, FLD.sinfo_in_role_selection, cptr.ldI32o(program_state, FLD.sinfo_in_role_selection) + -1)) - (-1);
@@ -2964,7 +2965,7 @@ export function* genl_player_setup(screenheight) {
                             (yield* role_menu_extra(NHM.RS_filter, win, 0));
                             (yield* role_menu_extra(-1, win, 0));
                             void cptr.strcpy(cptr.decay(pbuf), __sl358);
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(pbuf))));
+                            (yield* Y.icall(end_menu()(win, cptr.decay(pbuf))));
                             n = (yield* select_menu(win, NHM.PICK_ONE, selected));
                             if (n > 0) {
                                 choice = cptr.ldI32o(selected.v, 0, 24);
@@ -2974,7 +2975,7 @@ export function* genl_player_setup(screenheight) {
                                 choice = (n == 0) ? -2 : -1;
                             if (selected.v)
                                 cptr.free(selected.v), selected.v = null;
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win))), win = -1;
+                            (yield* Y.icall(destroy_nhwindow()(win))), win = -1;
                             if (choice == -1) {
                                 {
                                     (cptr.stI32o(program_state, FLD.sinfo_in_role_selection, cptr.ldI32o(program_state, FLD.sinfo_in_role_selection) + -1)) - (-1);
@@ -3023,12 +3024,12 @@ export function* genl_player_setup(screenheight) {
             cptr.stI32(any, -1);
             (yield* add_menu(win, nul_glyphinfo.v, any, 113, 0, NHM.ATR_NONE, clr, __sl336, NHM.MENU_ITEMFLAGS_NONE));
             void cptr.sprintf(cptr.decay(pbuf), __sl362, cptr.ld1so(iflags, FLD.instance_flags_renameallowed) ? __sl363 : __sl330);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(pbuf))));
+            (yield* Y.icall(end_menu()(win, cptr.decay(pbuf))));
             n = (yield* select_menu(win, NHM.PICK_ONE, selected));
             choice = (n > 0) ? cptr.ldI32o(selected.v, (n - 1) | 0, 24) : ((n == 0) ? 1 : -1);
             if (selected.v)
                 cptr.free(selected.v), selected.v = null;
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+            (yield* Y.icall(destroy_nhwindow()(win)));
             switch (choice) {
                 default:
                 {
@@ -3073,8 +3074,8 @@ function* reset_role_filtering() {
     let n;
     let filterprompt = new Uint8Array(128);
     let selected = cptr.box(null);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     (yield* add_menu_str(win, __sl364));
     (yield* setup_rolemenu(win, 0, -1, -1, -1));
     (yield* add_menu_str(win, __sl330));
@@ -3087,7 +3088,7 @@ function* reset_role_filtering() {
     (yield* add_menu_str(win, __sl367));
     (yield* setup_algnmenu(win, 0, -1, -1, -1));
     void cptr.sprintf(cptr.decay(filterprompt), __sl368, gotrolefilter() ? __sl369 : __sl330);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(filterprompt))));
+    (yield* Y.icall(end_menu()(win, cptr.decay(filterprompt))));
     n = (yield* select_menu(win, NHM.PICK_ANY, selected));
     if (n >= 0) {
         clearrolefilter(NHM.RS_filter);
@@ -3097,7 +3098,7 @@ function* reset_role_filtering() {
     }
     if (selected.v)
         cptr.free(selected.v), selected.v = null;
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     return schar(((n > 0) ? 1 : 0));
 }
 
@@ -3131,10 +3132,10 @@ function* plsel_startmenu(ttyrows, aspect) {
     } else {
         void cptr.sprintf(cptr.decay(qbuf), __sl375, svp, cptr.ldPtro2(aligns, cptr.ldI32o(flags, FLD.flag_initalign), 32, FLD.Align_adj), cptr.ldPtro(genders, cptr.ldI32o(flags, FLD.flag_initgend), 48), cptr.ldPtro2(races, cptr.ldI32o(flags, FLD.flag_initrace), 112, FLD.Race_adj), rolename);
     }
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     if (win == -1)
         (yield* panic(__sl376));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     (yield* add_menu_str(win, cptr.decay(qbuf)));
     if (maybe_skip_seps(ttyrows, aspect) != 2)
         (yield* add_menu_str(win, __sl330));

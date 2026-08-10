@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Aggravate_monster, Conflict, Hallucination, Upolyd } from './nhprop.js';
 import { makemon, mbirth_limit, newmextra, rndmonst_adj, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { flags, gb, gc, gd, gf, gh, gm, gn, gp, gu, gv, gy, iflags, program_state, svc, svd, svl, svm, svq, svr, svu, u } from './decl.js';
@@ -878,7 +879,7 @@ export function* tamedog(mtmp, obj, givemsg) {
     if ((cptr.ldI32o(mtmp, FLD.monst_iswiz) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, NHC.PM_MEDUSA, 96)) || (cptr.ldU16o(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mflags3) & NHM.M3_WANTSARTI))
         return 0;
     if (givemsg && !(cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1) && (canseemon(mtmp) || sensemon(mtmp))) {
-        (yield* pline_mon(mtmp, __sl33, (yield* Monnam(mtmp)), (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl34 : __sl35));
+        (yield* pline_mon(mtmp, __sl33, (yield* Monnam(mtmp)), Hallucination() ? __sl34 : __sl35));
         givemsg = 0;
     }
     cptr.stI32o(mtmp, FLD.monst_mpeaceful, 1);
@@ -890,7 +891,7 @@ export function* tamedog(mtmp, obj, givemsg) {
     if (cptr.eq(mtmp, cptr.ldPtro(u, FLD.you_ustuck))) {
         if ((cptr.ldI32o(u, FLD.you_uswallow) & 1))
             (yield* expels(mtmp, cptr.ldPtro(mtmp, FLD.monst_data), 1));
-        else if (!((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && sticks(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data))))
+        else if (!(Upolyd() && sticks(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data))))
             (yield* unstuck(mtmp));
     }
     if (cptr.ld1so(mtmp, FLD.monst_mtame) && obj) {
@@ -937,7 +938,7 @@ export function* tamedog(mtmp, obj, givemsg) {
             return 1;
     }
     if (givemsg && (canseemon(mtmp) || sensemon(mtmp)))
-        (yield* pline_mon(mtmp, __sl42, (yield* Monnam(mtmp)), (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl43 : __sl44));
+        (yield* pline_mon(mtmp, __sl42, (yield* Monnam(mtmp)), Hallucination() ? __sl43 : __sl44));
     (yield* newsym(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my)));
     if ((cptr.ldI32o(mtmp, FLD.monst_wormno) & 31))
         (yield* redraw_worm(mtmp));
@@ -1007,7 +1008,7 @@ export function* wary_dog(mtmp, was_dead) {
 export function* abuse_dog(mtmp) {
     if (!cptr.ld1so(mtmp, FLD.monst_mtame))
         return;
-    if ((cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, FLD.you_uprops)) || (cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)))
+    if (Aggravate_monster() || Conflict())
         cptr.st1o(mtmp, FLD.monst_mtame, cptr.ld1so(mtmp, FLD.monst_mtame) / 2);
     else
         (cptr.st1o(mtmp, FLD.monst_mtame, cptr.ld1so(mtmp, FLD.monst_mtame) + -1)) - (-1);

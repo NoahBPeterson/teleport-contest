@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { CO, LI, nh_HE, nh_HI, nh_UE, nh_US } from './nhprop.js';
 import { error, tty_utf8graphics_fixup } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { flags, gc, gs, gt, iflags } from './decl.js';
@@ -225,11 +226,11 @@ export function* term_startup(wid, hgt) {
         (yield* error(__sl6));
     }
     HO = (tgetstr((__sl7), tbufptr));
-    if (!cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO))
+    if (!CO())
         cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO, tgetnum((__sl8)));
-    if (!cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI))
+    if (!LI())
         cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI, tgetnum((__sl9)));
-    if (cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO) < NHM.COLNO || cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) < 24)
+    if (CO() < NHM.COLNO || LI() < 24)
         setclipped();
     cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_ND, (tgetstr((__sl10), tbufptr)));
     if (tgetflag((__sl11)))
@@ -285,8 +286,8 @@ export function* term_startup(wid, hgt) {
     cptr.stPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE, (tgetstr((__sl41), tbufptr)));
     cptr.stPtro(tc_lcl_data, FLD.tc_lcl_data_tc_CD, (tgetstr((__sl42), tbufptr)));
     (yield* init_hilite());
-    cptr.stI32(wid, cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO));
-    cptr.stI32(hgt, cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI));
+    cptr.stI32(wid, CO());
+    cptr.stI32(hgt, LI());
     if (!(CL = (tgetstr((__sl43), tbufptr))))
         (yield* error(__sl44));
     if (Number(BigInt.asIntN(32, (cptr.diff(tbufptr.v, cptr.decay(tbuf))))) > 512)
@@ -740,7 +741,7 @@ export function* cl_end() {
         nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury), cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx));
     } else {
         let cx = (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_curx) + 1) | 0;
-        while (cx < cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO)) {
+        while (cx < CO()) {
             void xputc(32);
             cx++;
         }
@@ -866,7 +867,7 @@ export function* cl_eos() {
         }
     } else {
         let cy = (cptr.ldI16o(ttyDisplay, FLD.DisplayDesc_cury) + 1) | 0;
-        while (cy <= ((cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) - 2) | 0)) {
+        while (cy <= ((LI() - 2) | 0)) {
             (yield* cl_end());
             void xputc(10);
             cy++;
@@ -1040,7 +1041,7 @@ function s_atr2str(n) {
             if (MB && cptr.ld1s(MB))
                 return MB;
         } else {
-            if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US) && cptr.ld1s(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US)))
+            if (nh_US())
                 return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_US);
         }
         // @FallThrough
@@ -1048,7 +1049,7 @@ function s_atr2str(n) {
         case NHM.ATR_BOLD:
         if (MD && cptr.ld1s(MD))
             return MD;
-        if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI) && cptr.ld1s(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI)))
+        if (nh_HI())
             return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HI);
         break;
         case NHM.ATR_INVERSE:
@@ -1072,13 +1073,13 @@ function e_atr2str(n) {
         // @FallThrough
         ;
         case NHM.ATR_ULINE:
-        if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE) && cptr.ld1s(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE)))
+        if (nh_UE())
             return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_UE);
         // @FallThrough
         ;
         case NHM.ATR_BOLD:
         case NHM.ATR_BLINK:
-        if (cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE) && cptr.ld1s(cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE)))
+        if (nh_HE())
             return cptr.ldPtro(tc_lcl_data, FLD.tc_lcl_data_tc_HE);
         // @FallThrough
         ;

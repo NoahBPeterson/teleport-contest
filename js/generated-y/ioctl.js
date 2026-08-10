@@ -10,6 +10,7 @@ import * as Y from '../yield-rt.js';
 
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
+import { resume_nhwindows, suspend_nhwindows } from './nhprop.js';
 import { gt } from './decl.js';
 import { sysopt } from './sys.js';
 import { check_user_string } from './unixmain.js';
@@ -52,10 +53,10 @@ export function* dosuspend() {
         return 0;
     }
     if (signal(18, 1) === null) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_suspend_nhwindows))(null)));
+        (yield* Y.icall(suspend_nhwindows()(null)));
         void signal(18, null);
         void kill(0, 18);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_resume_nhwindows))()));
+        (yield* Y.icall(resume_nhwindows()()));
     } else {
         (yield* pline(__sl1));
     }

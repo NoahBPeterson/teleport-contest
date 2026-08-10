@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Protection_from_shape_changers, Punished } from './nhprop.js';
 import { cg, emptystr, gc, gd, gf, gi, gl, gm, gn, gr, gs, gt, gu, gx, gy, head_engr, iflags, svc, svd, sve, svi, svl, svm, svn, svr, u, uball, uchain } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { eos, str_lines_maxlen, stripdigits, strncmpi, strstri, swapbits } from './hacklib.js';
@@ -771,7 +772,7 @@ export function flip_level(flp, extras) {
     if (maxy.v >= NHM.ROWNO)
         maxy.v = 20;
     if (extras) {
-        if ((uball.v !== null) && cptr.ld1so(uball.v, FLD.obj_where) != NHM.OBJ_FREE) {
+        if (Punished() && cptr.ld1so(uball.v, FLD.obj_where) != NHM.OBJ_FREE) {
             ball_active = 1;
             if ((cptr.ld1so((uball.v), FLD.obj_where) == NHM.OBJ_INVENT))
                 cptr.stI16o(uball.v, FLD.obj_ox, cptr.ldI16(u)), cptr.stI16o(uball.v, FLD.obj_oy, cptr.ldI16o(u, FLD.you_uy));
@@ -1977,7 +1978,7 @@ function create_monster(m, croom) {
         cptr.stI16o(m, FLD.monster_x, x.v), cptr.stI16o(m, FLD.monster_y, y.v);
         if (cptr.ldPtr(m))
             mtmp = christen_monst(mtmp, cptr.ldPtr(m));
-        if (cptr.ldPtro(m, FLD.monster_appear_as) && ((cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_MIMIC) || (((cptr.ldI16o(mtmp, FLD.monst_cham)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, FLD.monst_cham)) < NHC.NUMMONS) && cptr.ldI16o(m, FLD.monster_appear) == NHC.M_AP_MONSTER)) && !(cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops))) {
+        if (cptr.ldPtro(m, FLD.monster_appear_as) && ((cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_MIMIC) || (((cptr.ldI16o(mtmp, FLD.monst_cham)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, FLD.monst_cham)) < NHC.NUMMONS) && cptr.ldI16o(m, FLD.monster_appear) == NHC.M_AP_MONSTER)) && !Protection_from_shape_changers()) {
             let i;
             switch (cptr.ldI16o(m, FLD.monster_appear)) {
                 case NHC.M_AP_NOTHING:

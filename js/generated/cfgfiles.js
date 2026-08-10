@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { wait_synch } from './nhprop.js';
 import { pline, raw_printf } from './pline.js';
 import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js';
 import { windowprocs } from './windows.js';
@@ -193,11 +194,11 @@ export function do_write_config_file() {
     }
     if (cptr.ldU64o(flags, FLD.flag_suppress_alert) < 50790400n) {
         pline(__sl2);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
         pline(__sl3);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
         pline(__sl4);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
     }
     void cptr.sprintf(cptr.decay(tmp), __sl5, 226, cptr.decay(configfile));
     if (!paranoid_query(1, cptr.decay(tmp)))
@@ -246,12 +247,12 @@ function fopen_config_file(filename, src) {
         }
         if (access(cptr.decay(configfile), 4) == -1) {
             raw_printf(__sl13, cptr.decay(configfile), (cptr.ldI32(__error())));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+            wait_synch()();
         } else if ((fp = fopen(cptr.decay(configfile), __sl8)) !== null) {
             return fp;
         } else {
             raw_printf(__sl14, cptr.decay(configfile), (cptr.ldI32(__error())));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+            wait_synch()();
         }
     }
     envp = nh_getenv(__sl10);
@@ -281,7 +282,7 @@ function fopen_config_file(filename, src) {
         if ((details = strerror((cptr.ldI32(__error())))) === null)
             details = __sl17;
         raw_printf(__sl18, cptr.decay(configfile), details, (cptr.ldI32(__error())));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
     }
     return null;
 }
@@ -325,13 +326,13 @@ function get_uchars(bufp, list, modlist, size, name) {
             case 92:
             {
                 raw_printf(__sl19, name);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+                wait_synch()();
                 return count;
             }
             break;
             default:
             raw_printf(__sl19, name);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+            wait_synch()();
             return count;
         }
     }
@@ -1324,7 +1325,7 @@ export function config_erradd(buf) {
     punct = cptr.strchr(__sl106, cptr.ld1s(punct)) ? __sl17 : __sl107;
     if (!cptr.ldI32o(program_state, FLD.sinfo_config_error_ready)) {
         pline(__sl108, !cptr.ld1so(iflags, FLD.instance_flags_window_inited) ? __sl109 : __sl17, buf, punct);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
         return;
     }
     if (cptr.ld1so(iflags, FLD.instance_flags_in_lua)) {
@@ -1361,7 +1362,7 @@ export function config_error_done() {
     if (n) {
         let cmdline = schar((!strcmp(cptr.add(config_error_data, FLD._config_error_frame_source), __sl115)));
         pline(__sl116, n, (((n) == 1) ? __sl17 : __sl117), cmdline ? __sl118 : __sl119, cptr.ld1so(config_error_data, FLD._config_error_frame_source) ? cptr.add(config_error_data, FLD._config_error_frame_source) : cptr.decay(configfile));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
     }
     config_error_data = cptr.ldPtro(tmp, FLD._config_error_frame_next);
     cptr.free(tmp);

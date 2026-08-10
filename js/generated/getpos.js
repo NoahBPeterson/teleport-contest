@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
 import { eos, nh_deterministic_qsort, nh_snprintf, sgn, strsubst, visctrl } from './hacklib.js';
@@ -245,7 +246,7 @@ function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
             filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __sl26, __sl27);
     }
     void cptr.sprintf(cptr.decay(sbuf), __sl28, k1, k2, cptr.ld1so(iflags, FLD.instance_flags_getloc_usemenu) ? __sl29 : move_cursor_to, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), (2 + cptr.ld1so(iflags, FLD.instance_flags_getloc_usemenu)) | 0, 8), filtertxt);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+    putstr()(tmpwin, 0, cptr.decay(sbuf));
 }
 
 const __static_getpos_help_fastmovemode = cptr.alloc(2 * 8);
@@ -260,16 +261,16 @@ function getpos_help(force, goal) {
         switch (__pc) {
         case 0: {
         sbuf = new Uint8Array(256);
-        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+        tmpwin = create_nhwindow()(NHM.NHW_MENU);
         void cptr.sprintf(cptr.decay(sbuf), __sl30, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         void cptr.sprintf(cptr.decay(sbuf), __sl31, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtro(__static_getpos_help_fastmovemode, cptr.ld1so(iflags, FLD.instance_flags_getloc_moveskip), 8));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         void cptr.sprintf(cptr.decay(sbuf), __sl32, visctrl(cmd_from_func(do_run)), visctrl(cmd_from_func(do_rush)));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl33);
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, __sl33);
         void cptr.sprintf(cptr.decay(sbuf), __sl34, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32o(iflags, FLD.instance_flags_terrainmode) || ((cptr.ldI32o(iflags, FLD.instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_NEXT, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_PREV, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), NHC.GLOC_MONS);
         }
@@ -291,12 +292,12 @@ function getpos_help(force, goal) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_NEXT, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_PREV, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), NHC.GLOC_INTERESTING);
         }
         void cptr.sprintf(cptr.decay(sbuf), __sl36, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), cptr.ldPtro(__static_getpos_help_fastmovemode, !cptr.ld1so(iflags, FLD.instance_flags_getloc_moveskip), 8));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32o(iflags, FLD.instance_flags_terrainmode) || ((cptr.ldI32o(iflags, FLD.instance_flags_terrainmode) & NHM.TER_DETECT) >>> 0) == 0) {
             void cptr.sprintf(cptr.decay(sbuf), __sl37, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
             void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (!cptr.ldI32o(iflags, FLD.instance_flags_terrainmode)) { __pc = 5; continue; }
         __pc = 4; continue;
@@ -305,14 +306,14 @@ function getpos_help(force, goal) {
         kbuf = new Uint8Array(256);
         if (getpos_getvalid) {
             void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_NEXT, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_PREV, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (getpos_hilitefunc) {
             void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SHOWVALID, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (cptr.ld1so(iflags, FLD.instance_flags_cmdassist)) {
             void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
         }
@@ -327,26 +328,26 @@ function getpos_help(force, goal) {
             void cptr.sprintf(cptr.decay(kbuf), __sl45, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
         }
         nh_snprintf(__sl46, 280, cptr.decay(sbuf), 256n, __sl47, cptr.decay(kbuf));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+        putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (doing_what_is) {
             void cptr.sprintf(cptr.decay(sbuf), __sl48, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
             void cptr.sprintf(cptr.decay(sbuf), __sl49, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)), cptr.ld1so(flags, FLD.flag_help) && !force ? __sl50 : __sl21);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
             void cptr.sprintf(cptr.decay(sbuf), __sl51, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
             void cptr.sprintf(cptr.decay(sbuf), __sl52, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(sbuf));
+            putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         __pc = 4;
         continue;
         }
         case 4: {
         if (!force)
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl53);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl21);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+            putstr()(tmpwin, 0, __sl53);
+        putstr()(tmpwin, 0, __sl21);
+        display_nhwindow()(tmpwin, 1);
+        destroy_nhwindow()(tmpwin);
         __pc = -1;
         continue;
         }
@@ -579,7 +580,7 @@ export function auto_describe(cx, cy) {
     if (do_screen_description(cc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
         void coord_desc(cx, cy, cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords)));
         custompline(70, __sl75, firstmatch.v, cptr.ld1s(cptr.decay(tmpbuf)) ? __sl76 : __sl21, cptr.decay(tmpbuf), (cptr.ld1so(iflags, FLD.instance_flags_autodescribe) && getpos_getvalid && !(getpos_getvalid)(cx, cy)) ? __sl77 : __sl21, (cptr.ld1so(iflags, FLD.instance_flags_getloc_travelmode) && !is_valid_travelpt(cx, cy)) ? __sl78 : __sl21);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx, cy);
+        curs()(WIN_MAP.v, cx, cy);
         flush_screen(0);
     }
 }
@@ -601,8 +602,8 @@ export function getpos_menu(ccp, gloc) {
         You(__sl79, (cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __sl80 : __sl81, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8));
         return 0;
     }
-    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    tmpwin = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 1; i < gcount.v; i++) {
         let fullbuf = new Uint8Array(256);
@@ -619,9 +620,9 @@ export function getpos_menu(ccp, gloc) {
         }
     }
     void cptr.sprintf(cptr.decay(tmpbuf), __sl84, an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8)), cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter), 8), cptr.ld1so(iflags, FLD.instance_flags_getloc_travelmode) ? __sl85 : __sl21);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(tmpbuf));
+    end_menu()(tmpwin, cptr.decay(tmpbuf));
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+    destroy_nhwindow()(tmpwin);
     if (pick_cnt > 0) {
         cptr.stI16(ccp, cptr.ldI16o(garr.v, (cptr.ldI32(picks.v) - 1) | 0, 4));
         cptr.stI16o(ccp, FLD.coord_y, cptr.ldI16o2(garr.v, (cptr.ldI32(picks.v) - 1) | 0, 4, FLD.nhcoord_y));
@@ -742,8 +743,8 @@ export function getpos(ccp, force, goal) {
         }
         cx.v = cptr.stI16o(gg, FLD.instance_globals_g_getposx, cptr.ldI16(ccp));
         cy.v = cptr.stI16o(gg, FLD.instance_globals_g_getposy, cptr.ldI16o(ccp, FLD.coord_y));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_cliparound))(cx.v, cy.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx.v, cy.v);
+        cliparound()(cx.v, cy.v);
+        curs()(WIN_MAP.v, cx.v, cy.v);
         flush_screen(0);
         lock_mouse_buttons(1);
         __pc = 6; continue;
@@ -754,7 +755,7 @@ export function getpos(ccp, force, goal) {
         case 7: {
         if (show_goal_msg) {
             pline(__sl88, goal);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx.v, cy.v);
+            curs()(WIN_MAP.v, cx.v, cy.v);
             flush_screen(0);
             show_goal_msg = 0;
         } else if (cptr.ld1so(iflags, FLD.instance_flags_autodescribe) && !msg_given) {
@@ -903,7 +904,7 @@ export function getpos(ccp, force, goal) {
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys))
             getpos_help(force, goal);
         getpos_refresh();
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx.v, cy.v);
+        curs()(WIN_MAP.v, cx.v, cy.v);
         show_goal_msg = 1;
         __pc = 31;
         continue;
@@ -915,7 +916,7 @@ export function getpos(ccp, force, goal) {
         case 35: {
         if (getpos_hilitefunc) {
             getpos_toggle_hilite_state();
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx.v, cy.v);
+            curs()(WIN_MAP.v, cx.v, cy.v);
         }
         show_goal_msg = 1;
         { __pc = 3; continue; }
@@ -1137,7 +1138,7 @@ export function getpos(ccp, force, goal) {
         case 2 /* foundc: */: {
         cx.v = tx.v, cy.v = ty.v;
         if (msg_given) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+            clear_nhwindow()(WIN_MESSAGE.v);
             msg_given = 0;
         }
         { __pc = 3; continue; }
@@ -1242,8 +1243,8 @@ export function getpos(ccp, force, goal) {
         }
         case 3 /* nxtc: */: {
         cptr.stI16o(gg, FLD.instance_globals_g_getposx, cx.v), cptr.stI16o(gg, FLD.instance_globals_g_getposy, cy.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_cliparound))(cx.v, cy.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_MAP.v, cx.v, cy.v);
+        cliparound()(cx.v, cy.v);
+        curs()(WIN_MAP.v, cx.v, cy.v);
         flush_screen(0);
         __pc = 8;
         continue;
@@ -1259,7 +1260,7 @@ export function getpos(ccp, force, goal) {
         case 4 /* exitgetpos: */: {
         lock_mouse_buttons(0);
         if (msg_given)
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+            clear_nhwindow()(WIN_MESSAGE.v);
         cptr.stI16(ccp, cx.v);
         cptr.stI16o(ccp, FLD.coord_y, cy.v);
         cptr.stI16o(gg, FLD.instance_globals_g_getposx, cptr.stI16o(gg, FLD.instance_globals_g_getposy, 0));

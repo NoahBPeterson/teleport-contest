@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Amphibious, Role_switch, Upolyd } from './nhprop.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
@@ -53,7 +54,7 @@ export function newuexp(lev) {
 
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
 function enermod(en) {
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
+    switch (Role_switch()) {
         case NHC.PM_CLERIC:
         case NHC.PM_WIZARD:
         return (Math.imul(2, en));
@@ -135,7 +136,7 @@ export function experience(mtmp, nk) {
             tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
         if ((Math.imul(cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damd), cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damn))) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
-        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, FLD.permonst_mlet) == NHC.S_EEL && !(cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 512n) != 0n)))
+        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, FLD.permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64o((ptr), FLD.permonst_mflags2) & 33554432n) != 0n))
@@ -233,7 +234,7 @@ export function losexp(drainer) {
         cptr.stI32o(u, FLD.you_uen, cptr.ldI32o(u, FLD.you_uenmax));
     if (cptr.ldI64o(u, FLD.you_uexp) > 0n)
         cptr.stI64o(u, FLD.you_uexp, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, FLD.you_ulevel)) - 1n));
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+    if (Upolyd()) {
         num = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
         cptr.stI32o(u, FLD.you_mhmax, (cptr.ldI32o(u, FLD.you_mhmax) - num) | 0);
         cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) - num) | 0);
@@ -255,7 +256,7 @@ export function pluslvl(incr) {
     let eninc;
     if (!incr)
         You_feel(__sl9);
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+    if (Upolyd()) {
         hpinc = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
         cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) + hpinc) | 0);
         setuhpmax(cptr.ldI32o(u, FLD.you_mhmax), 0);

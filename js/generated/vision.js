@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Detect_monsters, See_invisible, Warn_of_mon, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
 import { debugcore } from './files.js';
@@ -254,7 +255,7 @@ export function does_block(x, y, lev) {
     let obj;
     let mon;
     if (cptr.ldI32o(gs, FLD.instance_globals_s_seethru) == 0) {
-        cptr.stI32o(gs, FLD.instance_globals_s_seethru, (cptr.ld1so(flags, FLD.flag_debug) && debugcore(__sl0, 0)) ? 1 : -1);
+        cptr.stI32o(gs, FLD.instance_globals_s_seethru, (wizard() && debugcore(__sl0, 0)) ? 1 : -1);
     }
     if (((cptr.ld1so(lev, FLD.rm_typ)) < NHC.POOL) || cptr.ld1so(lev, FLD.rm_typ) == NHC.TREE || (((cptr.ld1so(lev, FLD.rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) & 28)))
         return 1;
@@ -265,7 +266,7 @@ export function does_block(x, y, lev) {
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects); obj; obj = cptr.ldPtro(obj, FLD.obj_v))
         if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.BOULDER)
             return 1;
-    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) && (!(cptr.ldI32o(mon, FLD.monst_minvis) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops))) && (((cptr.ld1uo((mon), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.BOULDER) || ((cptr.ld1uo((mon), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_vcdoor || cptr.ldI32o((mon), FLD.monst_mappearance) < NHC.S_ndoor || cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_tree))))
+    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) && (!(cptr.ldI32o(mon, FLD.monst_minvis) & 1) || See_invisible()) && (((cptr.ld1uo((mon), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.BOULDER) || ((cptr.ld1uo((mon), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_vcdoor || cptr.ldI32o((mon), FLD.monst_mappearance) < NHC.S_ndoor || cptr.ldI32o((mon), FLD.monst_mappearance) == NHC.S_tree))))
         return 1;
     if (cptr.ldI32o(gs, FLD.instance_globals_s_seethru) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -418,7 +419,7 @@ export function vision_recalc(control) {
         get_unused_cs(next_array, next_rmin, next_rmax);
         if ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 || control == 2) {
             ;
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        } else if (Blind()) {
             view_from(cptr.ldI16o(u, FLD.you_uy), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null);
             temp_array = cptr.ldPtro(gv, FLD.instance_globals_v_viz_array);
             cptr.stPtro(gv, FLD.instance_globals_v_viz_array, next_array.v);
@@ -585,7 +586,7 @@ export function vision_recalc(control) {
 /** C ref: vision.c:865 — @param {CInt} x @param {CInt} y */
 export function block_point(x, y) {
     if (cptr.ldI32o(gs, FLD.instance_globals_s_seethru) == 0) {
-        cptr.stI32o(gs, FLD.instance_globals_s_seethru, (cptr.ld1so(flags, FLD.flag_debug) && debugcore(__sl0, 0)) ? 1 : -1);
+        cptr.stI32o(gs, FLD.instance_globals_s_seethru, (wizard() && debugcore(__sl0, 0)) ? 1 : -1);
     }
     if (cptr.ldI32o(gs, FLD.instance_globals_s_seethru) == 1) {
         if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), x, 756), y, 36)))
@@ -1682,15 +1683,15 @@ export function howmonseen(mon) {
         how_seen |= NHM.MONSEEN_NORMAL;
     if (useemon && (cptr.ldI32o(mon, FLD.monst_minvis) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
-    if ((!(cptr.ldI32o(mon, FLD.monst_minvis) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops))) && see_with_infrared(mon))
+    if ((!(cptr.ldI32o(mon, FLD.monst_minvis) & 1) || See_invisible()) && see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
     if (tp_sensemon(mon))
         how_seen |= NHM.MONSEEN_TELEPAT;
     if (useemon && xraydist > 0 && dist2((cptr.ldI16o((mon), FLD.monst_mx)), (cptr.ldI16o((mon), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= xraydist)
         how_seen |= NHM.MONSEEN_XRAYVIS;
-    if ((cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops)))
+    if (Detect_monsters())
         how_seen |= NHM.MONSEEN_DETECT;
-    if (((cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, FLD.you_uprops)) && ((cptr.ldU64o(svc, FLD.context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), FLD.monst_data), FLD.permonst_mflags2)) != 0n || (cptr.ldU64o(svc, FLD.context_info_warntype + FLD.warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), FLD.monst_data), FLD.permonst_mflags2)) != 0n || (cptr.ldPtro(svc, FLD.context_info_warntype + FLD.warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, FLD.context_info_warntype + FLD.warntype_info_species), cptr.ldPtro((mon), FLD.monst_data)))))))
+    if ((Warn_of_mon() && ((cptr.ldU64o(svc, FLD.context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), FLD.monst_data), FLD.permonst_mflags2)) != 0n || (cptr.ldU64o(svc, FLD.context_info_warntype + FLD.warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), FLD.monst_data), FLD.permonst_mflags2)) != 0n || (cptr.ldPtro(svc, FLD.context_info_warntype + FLD.warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, FLD.context_info_warntype + FLD.warntype_info_species), cptr.ldPtro((mon), FLD.monst_data)))))))
         how_seen |= NHM.MONSEEN_WARNMON;
     return how_seen;
 }

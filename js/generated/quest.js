@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Deaf, quest_dnum, wizard } from './nhprop.js';
 import { flags, gf, gi, svc, svd, svq, u } from './decl.js';
 import { com_pager, find_quest_artifact, is_quest_artifact, qt_pager } from './questpgr.js';
 import { Is_special, dungeon_branch, on_level, remdun_mapseen } from './dungeon.js';
@@ -173,7 +174,7 @@ function not_capable() {
 function is_pure(talk) {
     let purity;
     let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, FLD.you_ualignbase);
-    if (cptr.ld1so(flags, FLD.flag_debug) && talk) {
+    if (wizard() && talk) {
         if (cptr.ld1so(u, FLD.you_ualign) != original_alignment) {
             You(__sl10, align_str(cptr.ld1so(u, FLD.you_ualign)), align_str(original_alignment));
         } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, FLD.you_ualignbase) != original_alignment) {
@@ -203,7 +204,7 @@ function expulsion(seal) {
     if (seal) {
         let reexpelled = (cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_qexpelled) & 1) | 0;
         cptr.stI32o(u, FLD.you_uevent + FLD.u_event_qexpelled, 1);
-        remdun_mapseen((cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_quest_dnum)));
+        remdun_mapseen(quest_dnum());
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
             if (((cptr.ldI32o(t, FLD.trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 break;
@@ -218,7 +219,7 @@ function expulsion(seal) {
 export function finish_quest(obj) {
     let otmp;
     if (obj && !is_quest_artifact(obj)) {
-        if ((cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (Deaf())
             return;
         fully_identify_obj(obj);
         if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.AMULET_OF_YENDOR) {

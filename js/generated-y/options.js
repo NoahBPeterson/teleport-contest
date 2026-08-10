@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
 import { assure_syscf_file, config_error_add, config_error_done, config_error_init, config_unmatched_ignored, get_configfile, rcfile, read_config_file } from './cfgfiles.js';
@@ -6203,8 +6204,8 @@ export function* ask_do_tutorial() {
         norc = schar((!strcmp(get_configfile(), __sl540)));
         nh_snprintf(__sl541, 447, cptr.decay(buf), 256n, __sl542, (rc && cptr.ld1s(rc) && !norc) ? rc : __sl543);
         do {
-            win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+            win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(start_menu()(win, 0n)));
             cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             cptr.st1(any, 121);
             (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl544, NHM.MENU_ITEMFLAGS_NONE));
@@ -6214,9 +6215,9 @@ export function* ask_do_tutorial() {
             (yield* add_menu_str(win, cptr.decay(buf)));
             if (pass++)
                 (yield* add_menu_str(win, __sl546));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl547)));
+            (yield* Y.icall(end_menu()(win, __sl547)));
             n = (yield* select_menu(win, NHM.PICK_ONE, sel));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+            (yield* Y.icall(destroy_nhwindow()(win)));
         } while (!n);
         if (n > 0) {
             dotut = schar((cptr.ld1so(sel.v, 0, 24) == 121));
@@ -7210,7 +7211,7 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
             }
             if (wc_supported(__sl179)) {
                 if (!cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode) || save_map_mode != cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode))
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl179)));
+                    (yield* Y.icall(preference_update()(__sl179)));
             }
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
@@ -7656,7 +7657,7 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
             }
         }
         (yield* reset_commands(0));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_number_pad))(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0)));
+        (yield* Y.icall(number_pad()(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0)));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -7797,7 +7798,7 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         let tmpbuf = new Uint8Array(256);
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-            if (((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || cptr.ld1so(flags, FLD.flag_debug) || req == NHC.get_cnf_val))
+            if (((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
                 nh_snprintf(__sl618, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __sl619, cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_argname));
         }
         cptr.st1o(opts, 0, 0);
@@ -8051,7 +8052,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
                     use_menu = 1;
             }
             if (use_menu) {
-                if (cptr.ld1so(flags, FLD.flag_debug) && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
+                if (wizard() && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
                     (yield* strkitten(cptr.decay(ocl), NHC.VENOM_SYM));
                 void (yield* choose_classes_menu(__sl634, 1, 1, cptr.decay(ocl), cptr.decay(tbuf)));
                 op = cptr.decay(tbuf);
@@ -8166,7 +8167,7 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.strcpy(opts, cptr.ld1so(flags, FLD.flag_debug) ? __sl641 : (cptr.ld1so(flags, FLD.flag_explore) ? __sl437 : __sl638));
+        void cptr.strcpy(opts, wizard() ? __sl641 : (discover() ? __sl437 : __sl638));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8666,7 +8667,7 @@ function* optfn_suppress_alert(optidx, req, negated, opts, op) {
         else if (cptr.ldU64o(flags, FLD.flag_suppress_alert) == 0n)
             void cptr.strcpy(opts, cptr.decay(none));
         else
-            void cptr.sprintf(opts, __sl666, (cptr.ldU64o(flags, FLD.flag_suppress_alert) >> 24n), (((16711680n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 16n), (((65280n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 8n));
+            void cptr.sprintf(opts, __sl666, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -9545,8 +9546,8 @@ function* handler_menustyle() {
     let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
     let style_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < menutype.length; i++) {
         void cptr.sprintf(cptr.decay(buf), __sl707, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
@@ -9555,7 +9556,7 @@ function* handler_menustyle() {
         void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
         (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl709)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl709)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, style_pick));
     if (n > 0) {
         i = (cptr.ldI32o(style_pick.v, 0, 24) - 1) | 0;
@@ -9564,7 +9565,7 @@ function* handler_menustyle() {
         cptr.st1o(flags, FLD.flag_menu_style, schar(i));
         cptr.free(style_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     chngd = schar((cptr.ld1so(flags, FLD.flag_menu_style) != old_menu_style));
     if (chngd || cptr.ld1so(flags, FLD.flag_verbose))
         (yield* pline(__sl710, chngd ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, FLD.flag_menu_style)]), 0, 8)));
@@ -9578,8 +9579,8 @@ function* handler_align_misc(optidx) {
     let window_pick = cptr.box(null);
     let abuf = new Uint8Array(256);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32(any, NHM.ALIGN_TOP);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, __sl560, NHM.MENU_ITEMFLAGS_NONE));
@@ -9590,7 +9591,7 @@ function* handler_align_misc(optidx) {
     cptr.stI32(any, NHM.ALIGN_RIGHT);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 114, 0, NHM.ATR_NONE, clr, __sl561, NHM.MENU_ITEMFLAGS_NONE));
     void cptr.sprintf(cptr.decay(abuf), __sl712, (optidx == NHC.opt_align_message) ? __sl687 : __sl688);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(abuf))));
+    (yield* Y.icall(end_menu()(tmpwin, cptr.decay(abuf))));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick)) > 0) {
         if (optidx == NHC.opt_align_message)
             cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, cptr.ldI32(window_pick.v));
@@ -9598,7 +9599,7 @@ function* handler_align_misc(optidx) {
             cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, cptr.ldI32(window_pick.v));
         cptr.free(window_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -9617,8 +9618,8 @@ function* handler_autounlock(optidx) {
     let presel;
     let res = NHC.optn_ok;
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < unlocktypes.length; ++i) {
         void cptr.sprintf(cptr.decay(buf), __sl713, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8));
@@ -9627,7 +9628,7 @@ function* handler_autounlock(optidx) {
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (presel ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE)));
     }
     void cptr.sprintf(cptr.decay(buf), __sl714, optname);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf))));
+    (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, window_pick));
     if (n > 0) {
         let newflags = 0;
@@ -9638,7 +9639,7 @@ function* handler_autounlock(optidx) {
     } else if (n == 0) {
         cptr.stI32o(flags, FLD.flag_autounlock, 0);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     chngd = schar((cptr.ldI32o(flags, FLD.flag_autounlock) != oldflags));
     if ((chngd || cptr.ld1so(flags, FLD.flag_verbose)) && give_opt_msg) {
         (yield* optfn_autounlock(optidx, NHC.get_val, 0, cptr.decay(buf), (null)));
@@ -9669,8 +9670,8 @@ function* handler_disclose() {
     let c;
     let disclosure_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         void cptr.sprintf(cptr.decay(buf), __sl716, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
@@ -9678,7 +9679,7 @@ function* handler_disclose() {
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(disclosure_options), i, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
         cptr.stI32o(disc_cat, i, 0, 4);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl717)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl717)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, disclosure_pick));
     if (pick_cnt > 0) {
         for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
@@ -9688,13 +9689,13 @@ function* handler_disclose() {
         cptr.free(disclosure_pick.v);
         disclosure_pick.v = null;
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         if (cptr.ldI32o(disc_cat, i, 4)) {
             c = cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose);
             void cptr.sprintf(cptr.decay(buf), __sl718, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8));
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+            tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             cptr.st1(any, 45);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl719, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
@@ -9712,7 +9713,7 @@ function* handler_disclose() {
                 cptr.st1(any, 63);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl724, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf))));
+            (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
             n = (yield* select_menu(tmpwin, NHM.PICK_ONE, disclosure_pick));
             if (n > 0) {
                 cptr.st1o2(flags, i, 1, FLD.flag_end_disclose, cptr.ld1so(disclosure_pick.v, 0, 24));
@@ -9720,7 +9721,7 @@ function* handler_disclose() {
                     cptr.st1o2(flags, i, 1, FLD.flag_end_disclose, cptr.ld1so(disclosure_pick.v, 1, 24));
                 cptr.free(disclosure_pick.v);
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         }
     }
     return NHC.optn_ok;
@@ -9748,8 +9749,8 @@ function* handler_menu_objsyms() {
     let j;
     let n;
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; ++i) {
         nh_snprintf(__sl732, 5809, cptr.decay(buf), 256n, __sl707, cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_descr));
@@ -9757,7 +9758,7 @@ function* handler_menu_objsyms() {
         j = cptr.ldI32o(objsymvals, i, 24);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, FLD.instance_flags_menuobjsyms)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl733)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl733)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, picklist));
     if (n > 0) {
         i = (cptr.ldI32o(picklist.v, 0, 24) - 1) | 0;
@@ -9766,7 +9767,7 @@ function* handler_menu_objsyms() {
         set_menuobjsyms_flags(i);
         cptr.free(picklist.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -9786,8 +9787,8 @@ function* handler_msg_window() {
         let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
         let old_prevmsg_window = cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window);
         let window_pick = cptr.box(null);
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         for (i = 0; i < menutype.length; i++) {
             if (i < 2 && is_curses)
@@ -9798,7 +9799,7 @@ function* handler_msg_window() {
             void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl734)));
+        (yield* Y.icall(end_menu()(tmpwin, __sl734)));
         n = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick));
         if (n > 0) {
             c = cptr.ld1so(window_pick.v, 0, 24);
@@ -9807,7 +9808,7 @@ function* handler_msg_window() {
             cptr.st1o(iflags, FLD.instance_flags_prevmsg_window, c);
             cptr.free(window_pick.v);
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         chngd = schar((cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window) != old_prevmsg_window));
         if (chngd || cptr.ld1so(flags, FLD.flag_verbose)) {
             void (yield* optfn_msg_window(NHC.opt_msg_window, NHC.get_val, 0, cptr.decay(buf), cptr.decay(empty_optstr)));
@@ -9833,14 +9834,14 @@ function* handler_number_pad() {
     let i;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++) {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, cptr.ldPtro(__static_handler_number_pad_npchoices, i, 8), NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl737)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl737)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         switch ((cptr.ldI32(mode_pick.v) - 1) | 0) {
             case 0:
@@ -9869,10 +9870,10 @@ function* handler_number_pad() {
             break;
         }
         (yield* reset_commands(0));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_number_pad))(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0)));
+        (yield* Y.icall(number_pad()(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0)));
         cptr.free(mode_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -9889,11 +9890,11 @@ function* handler_paranoid_confirmation() {
     let cmdnm;
     let paranoia_picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-        if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !cptr.ld1so(flags, FLD.flag_debug))
+        if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !wizard())
             continue;
         explain = cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_explain);
         if ((yield* strstri(explain, __sl744)) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
@@ -9910,7 +9911,7 @@ function* handler_paranoid_confirmation() {
         cptr.stI32(any, cptr.ldI32o(paranoia, i, 48));
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl749)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl749)));
     i = (yield* select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks));
     if (i >= 0) {
         cptr.stI32o(flags, FLD.flag_paranoia_bits, 0);
@@ -9920,7 +9921,7 @@ function* handler_paranoid_confirmation() {
             cptr.free(paranoia_picks.v);
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -9940,8 +9941,8 @@ function* handler_perminv_mode() {
     let old_pi = cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode);
     let new_pi = old_pi;
     let widest = !(cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) ? 8 : 11;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < perminv_modes.length; ++i) {
         if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
@@ -9958,9 +9959,9 @@ function* handler_perminv_mode() {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, let$, schar(((48 + i) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), (i == old_pi) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl753)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl753)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, pi_pick));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
         new_pi = (cptr.ldI32o(pi_pick.v, 0, 24) - 1) | 0;
         if (n > 1 && new_pi == old_pi)
@@ -9992,20 +9993,20 @@ function* handler_pickup_burden() {
     let burden_letters = __sl755;
     let burden_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++) {
         burden_name = cptr.ldPtro(burdentype, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(burden_letters, i), 0, NHM.ATR_NONE, clr, burden_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl756)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl756)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, burden_pick)) > 0) {
         cptr.stI32o(flags, FLD.flag_pickup_burden, (cptr.ldI32(burden_pick.v) - 1) | 0);
         cptr.free(burden_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10024,20 +10025,20 @@ function* handler_runmode() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 4; i++) {
         mode_name = cptr.ldPtro(runmodes, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(mode_name), 0, NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl757)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl757)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         cptr.stI32o(flags, FLD.flag_runmode, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10062,15 +10063,15 @@ function* handler_sortloot() {
     let sortl_name;
     let sortl_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 3; i++) {
         sortl_name = cptr.ldPtro(sortltype, i, 8);
         cptr.st1(any, cptr.ld1s(sortl_name));
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(sortl_name), 0, NHM.ATR_NONE, clr, sortl_name, (cptr.ld1so(flags, FLD.flag_sortloot) == cptr.ld1s(sortl_name)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl759)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl759)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, sortl_pick));
     if (n > 0) {
         let c = cptr.ld1so(sortl_pick.v, 0, 24);
@@ -10081,7 +10082,7 @@ function* handler_sortloot() {
             (yield* update_inventory());
         cptr.free(sortl_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10094,8 +10095,8 @@ function* handler_whatis_coord() {
     let pick_cnt;
     let gpc = schar(cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords));
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.st1(any, 99);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, __sl760, (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
@@ -10115,14 +10116,14 @@ function* handler_whatis_coord() {
     void cptr.sprintf(cptr.decay(buf), __sl769, 2, 1, 22, 79, cptr.ld1so(flags, FLD.flag_verbose) ? __sl770 : __sl491);
     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     (yield* add_menu_str(tmpwin, __sl491));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl771)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl771)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, 24));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == gpc)
             cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, 24));
         cptr.free(window_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10134,8 +10135,8 @@ function* handler_whatis_filter() {
     let pick_cnt;
     let gfilt = schar(cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter));
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.st1(any, (schar(((NHC.GFILTER_NONE + 1) | 0))));
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl772, (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
@@ -10143,14 +10144,14 @@ function* handler_whatis_filter() {
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, NHM.ATR_NONE, clr, __sl773, (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, (schar(((NHC.GFILTER_AREA + 1) | 0))));
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __sl774, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl775)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl775)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, 24) - 1) | 0));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter) == gfilt)
             cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, 24) - 1) | 0));
         cptr.free(window_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10194,8 +10195,8 @@ function* handler_autopickup_exception() {
             let pick_idx;
             let pick_cnt;
             let pick_list = cptr.box(null);
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+            tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(start_menu()(tmpwin, 0n)));
             if (numapes) {
                 ape = cptr.ldPtro(ga, FLD.instance_globals_a_apelist);
                 cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
@@ -10208,14 +10209,14 @@ function* handler_autopickup_exception() {
                 }
             }
             void cptr.sprintf(cptr.decay(apebuf), __sl781, (opt_idx == 1) ? __sl782 : __sl783);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(apebuf))));
+            (yield* Y.icall(end_menu()(tmpwin, cptr.decay(apebuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     remove_autopickup_exception(cptr.ldPtro(pick_list.v, pick_idx, 24));
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
             if (pick_cnt >= 0)
                 continue __lbl_ape_again;
         }
@@ -10257,7 +10258,7 @@ function* handler_menu_colors() {
                 }
             if (cptr.ld1s(cptr.decay(mcbuf)) && (yield* test_regex_pattern(cptr.decay(mcbuf), __sl786)) && (mcclr = (yield* query_color(null, NHM.NO_COLOR))) != -1 && (mcattr = (yield* query_attr(null, NHM.ATR_NONE))) != -1 && !(yield* add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr))) {
                 (yield* pline(__sl787));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+                (yield* Y.icall(wait_synch()()));
             }
             continue __lbl_menucolors_again;
         } else {
@@ -10270,8 +10271,8 @@ function* handler_menu_colors() {
             let pick_list = cptr.box(null);
             let tmp = cptr.ldPtro(gm, FLD.instance_globals_m_menu_colorings);
             let clrbuf = new Uint8Array(128);
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+            tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             mc_idx = 0;
             while (tmp) {
@@ -10291,14 +10292,14 @@ function* handler_menu_colors() {
                 tmp = cptr.ldPtro(tmp, FLD.menucoloring_next);
             }
             void cptr.sprintf(cptr.decay(mcbuf), __sl792, (opt_idx == 1) ? __sl782 : __sl783);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(mcbuf))));
+            (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mcbuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     free_one_menu_coloring((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
             if (pick_cnt >= 0)
                 continue __lbl_menucolors_again;
         }
@@ -10327,7 +10328,7 @@ function* handler_msgtype() {
                 return 1;
             if (cptr.ld1s(cptr.decay(mtbuf)) && (yield* test_regex_pattern(cptr.decay(mtbuf), __sl795)) && (mttyp = (yield* query_msgtype())) != -1 && !(yield* msgtype_add(mttyp, cptr.decay(mtbuf)))) {
                 (yield* pline(__sl796));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+                (yield* Y.icall(wait_synch()()));
             }
             continue __lbl_msgtypes_again;
         } else {
@@ -10339,8 +10340,8 @@ function* handler_msgtype() {
             let pick_list = cptr.box(null);
             let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
             let clr = NHM.NO_COLOR;
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+            tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             mt_idx = 0;
             while (tmp) {
@@ -10356,14 +10357,14 @@ function* handler_msgtype() {
                 tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
             }
             void cptr.sprintf(cptr.decay(mtbuf), __sl800, (opt_idx == 1) ? __sl782 : __sl783);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(mtbuf))));
+            (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mtbuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     free_one_msgtype((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
             if (pick_cnt >= 0)
                 continue __lbl_msgtypes_again;
         }
@@ -10380,8 +10381,8 @@ function* handler_versinfo() {
     let have_branch = schar((cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch)) ? 1 : 0));
     let n;
     let vi = cptr.ldI32o(flags, FLD.flag_versinfo) | 0;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32(any, n = NHM.VI_NUMBER);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl801, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
@@ -10389,7 +10390,7 @@ function* handler_versinfo() {
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl802, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, n = NHM.VI_BRANCH);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __sl803 : __sl26), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl804)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl804)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, vi_pick));
     if (n > 0) {
         let i;
@@ -10401,7 +10402,7 @@ function* handler_versinfo() {
             cptr.stI32o(flags, FLD.flag_versinfo, newval >>> 0);
         cptr.free(vi_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10420,20 +10421,20 @@ function* handler_windowborders() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 5; i++) {
         mode_name = cptr.ldPtro(__static_handler_windowborders_windowborders_text, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl805)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl805)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         cptr.stI32o(iflags, FLD.instance_flags_wc2_windowborders, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHC.optn_ok;
 }
 
@@ -10930,7 +10931,7 @@ function* feature_alert_opts(op, optn) {
     }
     cptr.stU64o(flags, FLD.flag_suppress_alert, fnv);
     if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
-        void cptr.sprintf(cptr.decay(buf), __sl666, (cptr.ldU64o(flags, FLD.flag_suppress_alert) >> 24n), (((16711680n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 16n), (((65280n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 8n));
+        void cptr.sprintf(cptr.decay(buf), __sl666, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
         (yield* pline(__sl836, cptr.decay(buf)));
     }
     return 1;
@@ -11034,17 +11035,17 @@ function* query_msgtype() {
     let pick_cnt;
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++)
         if (cptr.ldPtro2(msgtype_names, i, 24, 16)) {
             cptr.stI32(any, (cptr.ld1so2(msgtype_names, i, 24, 8) + 1) | 0);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro2(msgtype_names, i, 24, 16), NHM.MENU_ITEMFLAGS_NONE));
         }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl853)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl853)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
         i = (cptr.ldI32(picks.v) - 1) | 0;
         cptr.free(picks.v);
@@ -11568,7 +11569,7 @@ function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
             return NHC.optn_err;
         } else {
             if (wc2_supported(__sl157))
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl157)));
+                (yield* Y.icall(preference_update()(__sl157)));
         }
         return NHC.optn_ok;
     }
@@ -11646,8 +11647,8 @@ function* doset_simple_menu() {
         void cptr.strcpy(cptr.decay(fmtstr_doset_simple), cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple));
     fmtstr = cptr.decay(fmtstr_doset_simple);
     __lbl_redo_opt_help: while (true) {
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
         if (cptr.ld1so(gs, FLD.instance_globals_s_simple_options_help)) {
             void cptr.strcpy(cptr.decay(buf), __sl886);
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
@@ -11703,7 +11704,7 @@ function* doset_simple_menu() {
                 }
             }
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl894)));
+        (yield* Y.icall(end_menu()(tmpwin, __sl894)));
         cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 0);
         cptr.st1o(go, FLD.instance_globals_o_opt_reset_customcolors, 0);
@@ -11735,10 +11736,10 @@ function* doset_simple_menu() {
                 }
             }
             if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, 104)) || wc2_supported(cptr.ldPtro(allopt, k, 104))))
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(cptr.ldPtro(allopt, k, 104))));
+                (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, k, 104))));
             cptr.free(pick_list.v), pick_list.v = null;
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         if (toggled_help) {
             toggled_help = 0;
             continue __lbl_redo_opt_help;
@@ -11828,8 +11829,8 @@ export function* doset() {
     }
     cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.play_opt);
     __lbl_rerun: while (true) {
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
         if (!skiphelp) {
             cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             for (i = 0; i < 5; ++i) {
@@ -11843,7 +11844,7 @@ export function* doset() {
             }
         }
         startpass = NHC.set_gameview;
-        endpass = (cptr.ld1so(flags, FLD.flag_debug)) ? NHC.set_wiznofuz : NHC.set_in_game;
+        endpass = (wizard()) ? NHC.set_wiznofuz : NHC.set_in_game;
         if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep))
             void cptr.sprintf(cptr.decay(fmtstr_doset), __sl903, (yield* longest_option_name(startpass, endpass)));
         else
@@ -11857,9 +11858,9 @@ export function* doset() {
                 if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
                     if (cptr.eq(bool_p, cptr.add(flags, FLD.flag_female)))
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug))
+                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !wizard())
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
+                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
                         continue;
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
@@ -11894,14 +11895,14 @@ export function* doset() {
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
                 }
             }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl908)));
+        (yield* Y.icall(end_menu()(tmpwin, __sl908)));
         cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 0);
         if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, pick_list))) > 0) {
             for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
                 opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0;
                 if (opt_indx == (218)) {
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_file))(__sl909, 0)));
+                    (yield* Y.icall(display_file()(__sl909, 0)));
                     gavehelp = 1;
                     continue;
                 }
@@ -11932,11 +11933,11 @@ export function* doset() {
                     }
                 }
                 if (wc_supported(cptr.ldPtro(allopt, opt_indx, 104)) || wc2_supported(cptr.ldPtro(allopt, opt_indx, 104)))
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(cptr.ldPtro(allopt, opt_indx, 104))));
+                    (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, opt_indx, 104))));
             }
             cptr.free(pick_list.v), pick_list.v = null;
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         if (pick_cnt == 1 && gavehelp) {
             skiphelp = 1;
             gavehelp = 0;
@@ -12032,7 +12033,7 @@ export function* show_menu_controls(win, dolist) {
     let arg;
     let xcp;
     let has_menu_shift = wc2_supported(__sl916);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl917)));
+    (yield* Y.icall(putstr()(win, 0, __sl917)));
     if (dolist) {
         let i;
         let ch;
@@ -12042,47 +12043,47 @@ export function* show_menu_controls(win, dolist) {
             if ((ch == 125 || ch == 123) && !has_menu_shift)
                 continue;
             void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, FLD.menu_cmd_t_desc));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
         fmt = __sl919;
         arg = __sl491;
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491)));
+        (yield* Y.icall(putstr()(win, 0, __sl491)));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl920, __sl921);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl922, __sl923);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl924, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl925, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl926, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl491)));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl927, visctrl(get_menu_cmd_key(62)), __sl928);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(60)), __sl929);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(94)), __sl930);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(124)), __sl931);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         if (has_menu_shift) {
             void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl932, visctrl(get_menu_cmd_key(125)), __sl933);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(123)), __sl934);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491)));
+        (yield* Y.icall(putstr()(win, 0, __sl491)));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl935, visctrl(get_menu_cmd_key(58)), __sl936);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl491)));
         fmt = __sl937;
         arg = __sl938;
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
         void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, FLD.xtra_cntrls_desc));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         arg = __sl491;
     }
 }
@@ -12128,8 +12129,8 @@ function* handle_add_list_remove(optname, numtotal) {
     let opt_idx;
     let pick_list = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 4; i++) {
         let tmpbuf = new Uint8Array(256);
@@ -12139,7 +12140,7 @@ function* handle_add_list_remove(optname, numtotal) {
         void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, FLD.action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, 16), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl949)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl949)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list))) > 0) {
         opt_idx = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
         if (pick_cnt > 1 && opt_idx == 3)
@@ -12147,7 +12148,7 @@ function* handle_add_list_remove(optname, numtotal) {
         cptr.free(pick_list.v);
     } else
         opt_idx = 3;
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return opt_idx;
 }
 
@@ -12314,15 +12315,15 @@ export function* option_help() {
     let optname;
     let i;
     let datawin;
-    datawin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+    datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     nh_snprintf(__sl976, 9471, cptr.decay(buf), 256n, __sl977, get_configfile());
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if ((cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug)))
+        if ((cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
@@ -12330,32 +12331,32 @@ export function* option_help() {
         (yield* next_opt(datawin, optname));
     }
     (yield* next_opt(datawin, __sl491));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl978)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl978)));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         void cptr.sprintf(cptr.decay(buf2), __sl979, optname);
         nh_snprintf(__sl976, 9507, cptr.decay(buf), 256n, __sl980, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl491)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl907)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl491)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl907)));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
         if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.OthrOpt)
             continue;
         void cptr.sprintf(cptr.decay(buf), __sl619, cptr.ldPtro(allopt, i, 104));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl491)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl491)));
     for (i = 0; cptr.ldPtro(opt_epilog, i, 8); i++)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.ldPtro(opt_epilog, i, 8))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(datawin, 0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(datawin)));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_epilog, i, 8))));
+    (yield* Y.icall(display_nhwindow()(datawin, 0)));
+    (yield* Y.icall(destroy_nhwindow()(datawin)));
     return;
 }
 
@@ -12504,14 +12505,14 @@ export function* next_opt(datawin, str) {
         i = (((((yield* Strlen_(__static_next_opt_buf, __sl995, 9770)) + (yield* Strlen_(str, __sl995, 9770))) >>> 0) + 2) >>> 0) | 0;
     }
     if (i > 78) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __static_next_opt_buf)));
+        (yield* Y.icall(putstr()(datawin, 0, __static_next_opt_buf)));
         cptr.st1o(__static_next_opt_buf, 0, 0);
     }
     if (cptr.ld1s(str)) {
         void cptr.strcat(__static_next_opt_buf, str);
         void cptr.strcat(__static_next_opt_buf, __sl996);
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, str)));
+        (yield* Y.icall(putstr()(datawin, 0, str)));
         cptr.free(__static_next_opt_buf), __static_next_opt_buf = null;
     }
     return;
@@ -12850,15 +12851,15 @@ export function options_free_window_colors() {
 
 /** C ref: options.c:10134 */
 export function set_playmode() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         if (authorize_wizard_mode())
             cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __sl642)))));
         else
             cptr.st1o(flags, FLD.flag_debug, 0);
-        cptr.st1o(flags, FLD.flag_explore, schar((!cptr.ld1so(flags, FLD.flag_debug))));
+        cptr.st1o(flags, FLD.flag_explore, schar((!wizard())));
         cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0);
     }
-    if (cptr.ld1so(flags, FLD.flag_explore) && !authorize_explore_mode()) {
+    if (discover() && !authorize_explore_mode()) {
         cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
     }
 }

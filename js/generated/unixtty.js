@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { exit_nhwindows, raw_print } from './nhprop.js';
 import { getioctls, setioctls } from './ioctl.js';
 import { windowprocs } from './windows.js';
 import { term_end_screen, term_start_screen } from './termcap.js';
@@ -114,7 +115,7 @@ export function settty(s) {
     if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty))
         term_end_screen();
     if (s)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(s);
+        raw_print()(s);
     if ((tcsetattr(0, 1, inittyb)) < 0 || 0) {
         if (!getenv(__sl0))
             perror(__sl3);
@@ -185,7 +186,7 @@ export function error(s, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
     if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows))(null);
+        exit_nhwindows()(null);
     if (settty_needed)
         settty(null);
     void vprintf(s, the_args);

@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { display_nhwindow, mines_dnum, nh_delay_output, tutorial_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { WIN_MESSAGE, flags, gc, gd, gi, gl, gm, gn, gs, gt, gu, gv, gx, gy, iflags, nhcb_counts, nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir } from './decl.js';
 import { You, impossible, pline, pline_The } from './pline.js';
@@ -358,7 +359,7 @@ export function add_subroom(proom, lowx, lowy, hix, hiy, lit, rtype, special) {
 export function free_luathemes(theme_group) {
     let i;
     for (i = 0; i < cptr.ldI32(svn); ++i) {
-        if ((theme_group == NHC.tut_themes && i != (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_tutorial_dnum))) || (theme_group == NHC.most_themes && i == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))))
+        if ((theme_group == NHC.tut_themes && i != tutorial_dnum()) || (theme_group == NHC.most_themes && i == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))))
             continue;
         if (cptr.ldPtro2(gl, i, 8, FLD.instance_globals_l_luathemes)) {
             nhl_done(cptr.ldPtro2(gl, i, 8, FLD.instance_globals_l_luathemes));
@@ -931,7 +932,7 @@ function fill_ordinary_room(croom, bonus_items) {
             void mkcorpstat(NHC.STATUE, null, null, cptr.ldI16(pos), cptr.ldI16o(pos, FLD.nhcoord_y), NHM.CORPSTAT_INIT);
         if (bonus_items && somexyspace(croom, pos)) {
             let uz_branch = Is_branchlev(cptr.add(u, FLD.you_uz));
-            if (uz_branch && cptr.ldI16o(u, FLD.you_uz) != (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mines_dnum)) && (cptr.ldI16o(uz_branch, FLD.branch_end1) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mines_dnum)) || cptr.ldI16o(uz_branch, FLD.branch_end2) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mines_dnum)))) {
+            if (uz_branch && cptr.ldI16o(u, FLD.you_uz) != mines_dnum() && (cptr.ldI16o(uz_branch, FLD.branch_end1) == mines_dnum() || cptr.ldI16o(uz_branch, FLD.branch_end2) == mines_dnum())) {
                 void mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1032, __sl21), rn2(5)) : rn2(5)) < 3) ? NHC.FOOD_RATION : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1033, __sl21), rn2(2)) : rn2(2)) ? NHC.CRAM_RATION : NHC.LEMBAS_WAFER), cptr.ldI16(pos), cptr.ldI16o(pos, FLD.nhcoord_y), 1, 0);
             } else if (cptr.ldI16o(u, FLD.you_uz) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology))) && cptr.ldI16o(u, FLD.you_uz + FLD.d_level_dlevel) < cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology)), FLD.d_level_dlevel) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1037, __sl21), rn2(3)) : rn2(3))) {
                 let otmp;
@@ -1154,7 +1155,7 @@ function makelevel() {
                         makevtele();
                 }
             }
-            if (cptr.ld1so(flags, FLD.flag_debug) && nh_getenv(__sl37))
+            if (wizard() && nh_getenv(__sl37))
                 do_mkroom(NHC.SHOPBASE);
             else if (u_depth > 1 && u_depth < depth(cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_medusa_level)) && cptr.ldI32o(svn, FLD.instance_globals_saved_n_nroom) >= room_threshold && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1350, __sl33), rn2(u_depth)) : rn2(u_depth)) < 3)
                 do_mkroom(NHC.SHOPBASE);
@@ -1898,7 +1899,7 @@ export function mkinvokearea() {
         if (wallct)
             pline_The(__sl63);
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+    display_nhwindow()(WIN_MESSAGE.v, 1);
     if (cptr.ldI32o(u, FLD.you_utrap)) {
         if (cptr.ldI32o(u, FLD.you_utraptype) == NHC.TT_BURIEDBALL)
             buried_ball_to_punishment();
@@ -1923,7 +1924,7 @@ export function mkinvokearea() {
             mkinvpos(xmax, i, dist);
         }
         flush_screen(1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))();
+        nh_delay_output()();
     }
     You(__sl64);
     mkstairs(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), 0, null, 0);
@@ -2026,7 +2027,7 @@ function mk_knox_portal(x, y) {
             return;
         source = cptr.add(br, FLD.branch_end1);
     }
-    if (cptr.ldI16(source) < cptr.ldI32(svn) || ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2644, __sl71), rn2(3)) : rn2(3)) && !cptr.ld1so(flags, FLD.flag_debug)))
+    if (cptr.ldI16(source) < cptr.ldI32(svn) || ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 2644, __sl71), rn2(3)) : rn2(3)) && !wizard()))
         return;
     if (!(cptr.ldI16o(u, FLD.you_uz) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology))) && !at_dgn_entrance(__sl73) && (u_depth = depth(cptr.add(u, FLD.you_uz))) > 10 && u_depth < depth(cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_medusa_level))))
         return;

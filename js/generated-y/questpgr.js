@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Role_switch, create_nhwindow, destroy_nhwindow, display_nhwindow, putmsghistory, putstr } from './nhprop.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -226,10 +227,10 @@ function* convert_arg(c) {
         str = (cptr.ld1so(flags, FLD.flag_female) && cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f)) ? cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f) : cptr.ldPtro(gu, FLD.instance_globals_u_urole);
         break;
         case 114:
-        str = rank_of(cptr.ldI32o(u, FLD.you_ulevel), (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)), cptr.ld1so(flags, FLD.flag_female));
+        str = rank_of(cptr.ldI32o(u, FLD.you_ulevel), Role_switch(), cptr.ld1so(flags, FLD.flag_female));
         break;
         case 82:
-        str = rank_of(NHM.MIN_QUEST_LEVEL, (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)), cptr.ld1so(flags, FLD.flag_female));
+        str = rank_of(NHM.MIN_QUEST_LEVEL, Role_switch(), cptr.ld1so(flags, FLD.flag_female));
         break;
         case 115:
         str = (cptr.ld1so(flags, FLD.flag_female)) ? __sl17 : __sl18;
@@ -286,7 +287,7 @@ function* convert_arg(c) {
         str = __sl24;
         break;
         case 120:
-        str = ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl25 : __sl26;
+        str = Blind() ? __sl25 : __sl26;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
@@ -401,15 +402,15 @@ function* deliver_by_window(msg, how) {
     let out_line = new Uint8Array(256);
     let msgp = msg;
     let msgend = eos(msg);
-    let datawin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(how)));
+    let datawin = (yield* Y.icall(create_nhwindow()(how)));
     while (cptr.cmp(msgp, msgend) < 0) {
         (yield* copynchars(cptr.decay(in_line), msgp, 255));
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
         (yield* convert_line(cptr.decay(in_line), cptr.decay(out_line)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(out_line))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(out_line))));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(datawin, 1)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(datawin)));
+    (yield* Y.icall(display_nhwindow()(datawin, 1)));
+    (yield* Y.icall(destroy_nhwindow()(datawin)));
 }
 
 /** C ref: questpgr.c:459 — @param {CInt} common @returns {CInt} */
@@ -593,7 +594,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             let out_line = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(in_line), synopsis);
             (yield* convert_line(cptr.decay(in_line), cptr.decay(out_line)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(cptr.decay(out_line), 0)));
+            (yield* Y.icall(putmsghistory()(cptr.decay(out_line), 0)));
         }
         res = 1;
         if (text)

@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Blnd_resist, EBlinded, Hallucination, Invis, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { cg, gi, gm, gu, gv, gy, svl, svm, u, uarm, ublindf, uwep } from './decl.js';
 import { mons } from './monst.js';
 import { defends, defends_when_carried, is_art } from './artifact.js';
@@ -322,13 +323,13 @@ export function resists_magm(mon) {
 export function resists_blnd(mon) {
     let ptr = cptr.ldPtro(mon, FLD.monst_data);
     let is_you = schar((cptr.eq(mon, cptr.add(gy, FLD.instance_globals_y_youmonst))));
-    if (is_you ? (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) ? 1 : 0) : ((cptr.ldI32o(mon, FLD.monst_mblinded) & 127) | 0 || !(cptr.ldI32o(mon, FLD.monst_mcansee) & 1) || !((cptr.ldU64o((ptr), FLD.permonst_mflags1) & 4096n) == 0n) || (cptr.ldI32o(mon, FLD.monst_msleeping) & 1) | 0 ? 1 : 0))
+    if (is_you ? (Blind() || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) ? 1 : 0) : ((cptr.ldI32o(mon, FLD.monst_mblinded) & 127) | 0 || !(cptr.ldI32o(mon, FLD.monst_mcansee) & 1) || !((cptr.ldU64o((ptr), FLD.permonst_mflags1) & 4096n) == 0n) || (cptr.ldI32o(mon, FLD.monst_msleeping) & 1) | 0 ? 1 : 0))
         return 1;
     if (dmgtype_fromattack(ptr, NHM.AD_BLND, NHM.AT_EXPL) || dmgtype_fromattack(ptr, NHM.AD_BLND, NHM.AT_GAZE))
         return 1;
     if (resists_blnd_by_arti(mon))
         return 1;
-    if (is_you && (cptr.ldI64o2(u, NHC.BLND_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLND_RES, 24, FLD.you_uprops))) {
+    if (is_you && Blnd_resist()) {
         impossible(__sl1);
         return 1;
     }
@@ -373,7 +374,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
         case NHM.AT_SPIT:
         case NHM.AT_NONE:
         if (obj && (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CREAM_PIE)) {
-            if (is_you && cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops))
+            if (is_you && EBlinded())
                 return 0;
         } else if (obj && (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.BLINDING_VENOM)) {
             if (is_you && (ublindf.v || cptr.ldI32o(u, FLD.you_ucreamed)))
@@ -387,7 +388,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
             return 0;
         break;
         case NHM.AT_ENGL:
-        if (is_you && (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops) || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || cptr.ldI32o(u, FLD.you_ucreamed)))
+        if (is_you && (EBlinded() || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || cptr.ldI32o(u, FLD.you_ucreamed)))
             return 0;
         if (!is_you && (cptr.ldI32o(mdef, FLD.monst_msleeping) & 1) | 0)
             return 0;
@@ -517,14 +518,14 @@ export function passes_bars(mptr) {
 export function can_blow(mtmp) {
     if (((cptr.ld1uo((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_msound) == NHC.MS_SILENT) || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_BUZZ) && (((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 1024n) != 0n) || (cptr.ld1uo((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_msize) < NHM.MZ_SMALL) || !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 32768n) == 0n) || cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_EEL))
         return 0;
-    if ((cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst))) && cptr.ldI64o2(u, NHC.STRANGLED, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    if ((cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst))) && Strangled())
         return 0;
     return 1;
 }
 
 /** C ref: mondata.c:580 — @param {CPtr} mtmp @returns {CInt} */
 export function can_chant(mtmp) {
-    if ((cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst)) && cptr.ldI64o2(u, NHC.STRANGLED, 24, FLD.you_uprops + FLD.prop_intrinsic)) || (cptr.ld1uo((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_msound) == NHC.MS_SILENT) || !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 32768n) == 0n) || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_BUZZ || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_BURBLE)
+    if ((cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst)) && Strangled()) || (cptr.ld1uo((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_msound) == NHC.MS_SILENT) || !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 32768n) == 0n) || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_BUZZ || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) == NHC.MS_BURBLE)
         return 0;
     return 1;
 }
@@ -1083,7 +1084,7 @@ export function gender(mtmp) {
 export function pronoun_gender(mtmp, pg_flags) {
     let override_vis = schar((((pg_flags & NHM.PRONOUN_NO_IT) >>> 0) ? 1 : 0));
     let hallu_rand = schar((((pg_flags & NHM.PRONOUN_HALLU) >>> 0) ? 1 : 0));
-    if (hallu_rand && (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+    if (hallu_rand && Hallucination())
         return (rng_log_enabled() ? (rng_log_set_caller(__sl91, 1200, __sl92), rn2(4)) : rn2(4));
     if (!override_vis && !(canseemon(mtmp) || sensemon(mtmp)))
         return 2;
@@ -1283,7 +1284,7 @@ export function big_little_match(montyp1, montyp2) {
 
 /** C ref: mondata.c:1359 — @param {CPtr} mtmp @returns {CPtr} */
 export function raceptr(mtmp) {
-    if (cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst)) && !(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+    if (cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst)) && !Upolyd())
         return cptr.add(mons, cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum), 96);
     return cptr.ldPtro(mtmp, FLD.monst_data);
 }
@@ -1493,7 +1494,7 @@ export function monstseesu(seenres) {
     if (seenres == 0n || (cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0)
         return;
     for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-        if (!(cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) && ((!((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldU64o((cptr.ldPtro((mtmp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((mtmp), FLD.monst_my), 8), cptr.ldI16o((mtmp), FLD.monst_mx)) & NHM.COULD_SEE) != 0)))
+        if (!(cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((mtmp), FLD.monst_my), 8), cptr.ldI16o((mtmp), FLD.monst_mx)) & NHM.COULD_SEE) != 0)))
             (cptr.stU64o((mtmp), FLD.monst_seen_resistance, cptr.ldU64o((mtmp), FLD.monst_seen_resistance) | (seenres)));
 }
 
@@ -1503,7 +1504,7 @@ export function monstunseesu(seenres) {
     if (seenres == 0n || (cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0)
         return;
     for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-        if (!(cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) && ((!((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldU64o((cptr.ldPtro((mtmp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((mtmp), FLD.monst_my), 8), cptr.ldI16o((mtmp), FLD.monst_mx)) & NHM.COULD_SEE) != 0)))
+        if (!(cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((mtmp), FLD.monst_my), 8), cptr.ldI16o((mtmp), FLD.monst_mx)) & NHM.COULD_SEE) != 0)))
             (cptr.stU64o((mtmp), FLD.monst_seen_resistance, cptr.ldU64o((mtmp), FLD.monst_seen_resistance) & BigInt.asUintN(64, ~(seenres))));
 }
 

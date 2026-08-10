@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Acid_resistance, Antimagic, BBlinded, BInvis, BLevitation, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only, Cold_resistance, Deaf, Detect_monsters, EBlinded, EHalluc_resistance, EWarn_of_mon, Fast, Fire_resistance, Fixed_abil, Free_action, Glib, HBlinded, HConfusion, HDeaf, HDetect_monsters, HFast, HHallucination, HInvis, HSee_invisible, HStun, Half_gas_damage, Half_physical_damage, Halluc_resistance, Hallucination, Infravision, Invis, Invisible, Levitation, PermaBlind, Poison_resistance, Protection_from_shape_changers, Punished, See_invisible, Sick, Sleep_resistance, Slimed, Stoned, Strangled, U_AP_TYPE, Unchanging, Underwater, Upolyd, Very_fast, Vomiting, Wounded_legs, display_nhwindow } from './nhprop.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, cg, disp, flags, gm, gn, gp, gu, gv, gy, hands_obj, iflags, svc, svd, svl, svm, u, uarmc, uarmg, uarmh, uball, ublindf, uwep, ynchars } from './decl.js';
 import { erode_obj, fire_damage, float_up, unconscious, water_damage } from './trap.js';
 import { eatmupdate, fix_petrification, is_fainted, newuhs } from './eat.js';
@@ -415,12 +416,12 @@ export function incr_itimeout(which, incr) {
 
 /** C ref: potion.c:89 — @param {CLongLong} xtime @param {CInt} talk */
 export function* make_confused(xtime, talk) {
-    let old = cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = HConfusion();
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     if (!xtime && old) {
         if (talk)
-            (yield* You_feel(__sl0, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl1 : __sl2));
+            (yield* You_feel(__sl0, Hallucination() ? __sl1 : __sl2));
     }
     if ((xtime && !old) || (!xtime && old))
         cptr.st1(disp, 1);
@@ -429,12 +430,12 @@ export function* make_confused(xtime, talk) {
 
 /** C ref: potion.c:107 — @param {CLongLong} xtime @param {CInt} talk */
 export function* make_stunned(xtime, talk) {
-    let old = cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = HStun();
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     if (!xtime && old) {
         if (talk)
-            (yield* You_feel(__sl3, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl4 : __sl5));
+            (yield* You_feel(__sl3, Hallucination() ? __sl4 : __sl5));
     }
     if (xtime && !old) {
         if (talk) {
@@ -452,7 +453,7 @@ export function* make_stunned(xtime, talk) {
 /** C ref: potion.c:137 — @param {CLongLong} xtime @param {CPtr} cause @param {CInt} talk @param {CInt} type */
 export function* make_sick(xtime, cause, talk, type) {
     let kptr;
-    let old = cptr.ldI64o2(u, NHC.SICK, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = Sick();
     if (xtime > 0n) {
         if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, FLD.you_uprops) || (yield* defended(cptr.add(gy, FLD.instance_globals_y_youmonst), NHM.AD_DISE))))
             return;
@@ -460,7 +461,7 @@ export function* make_sick(xtime, cause, talk, type) {
             (yield* You_feel(__sl9));
         } else {
             if (talk)
-                (yield* You_feel(__sl10, xtime <= cptr.ldI64o2(u, NHC.SICK, 24, FLD.you_uprops + FLD.prop_intrinsic) / 2n ? __sl11 : __sl12));
+                (yield* You_feel(__sl10, xtime <= Sick() / 2n ? __sl11 : __sl12));
         }
         set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.SICK, 24), FLD.prop_intrinsic), xtime);
         cptr.stI32o(u, FLD.you_usick_type, cptr.ldI32o(u, FLD.you_usick_type) | type);
@@ -470,7 +471,7 @@ export function* make_sick(xtime, cause, talk, type) {
         if ((cptr.ldI32o(u, FLD.you_usick_type) & 3)) {
             if (talk)
                 (yield* You_feel(__sl13));
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.SICK, 24), FLD.prop_intrinsic), BigInt.asIntN(64, cptr.ldI64o2(u, NHC.SICK, 24, FLD.you_uprops + FLD.prop_intrinsic) * 2n));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.SICK, 24), FLD.prop_intrinsic), BigInt.asIntN(64, Sick() * 2n));
         } else {
             if (talk)
                 (yield* You_feel(__sl14));
@@ -479,7 +480,7 @@ export function* make_sick(xtime, cause, talk, type) {
         cptr.st1(disp, 1);
     }
     kptr = find_delayed_killer(NHC.SICK);
-    if (cptr.ldI64o2(u, NHC.SICK, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
+    if (Sick()) {
         (yield* exercise(NHC.A_CON, 0));
         if (xtime || !old || !kptr) {
             let kpfx = ((cause && !strcmp(cause, __sl15)) ? NHM.KILLED_BY : NHM.KILLED_BY_AN);
@@ -491,16 +492,16 @@ export function* make_sick(xtime, cause, talk, type) {
 
 /** C ref: potion.c:195 — @param {CLongLong} xtime @param {CPtr} msg */
 export function* make_slimed(xtime, msg) {
-    let old = cptr.ldI64o2(u, NHC.SLIMED, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = Slimed();
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.SLIMED, 24), FLD.prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (msg)
             (yield* pline(__sl16, msg));
     }
-    if (!cptr.ldI64o2(u, NHC.SLIMED, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
+    if (!Slimed()) {
         (yield* dealloc_killer(find_delayed_killer(NHC.SLIMED)));
-        if ((cptr.ld1uo(gy, FLD.instance_globals_y_youmonst + FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER && cptr.ldI32o(gy, FLD.instance_globals_y_youmonst + FLD.monst_mappearance) == NHC.PM_GREEN_SLIME) {
+        if (U_AP_TYPE() == NHC.M_AP_MONSTER && cptr.ldI32o(gy, FLD.instance_globals_y_youmonst + FLD.monst_mappearance) == NHC.PM_GREEN_SLIME) {
             cptr.st1o(gy, FLD.instance_globals_y_youmonst + FLD.monst_m_ap_type, NHC.M_AP_NOTHING);
             cptr.stI32o(gy, FLD.instance_globals_y_youmonst + FLD.monst_mappearance, 0);
         }
@@ -509,14 +510,14 @@ export function* make_slimed(xtime, msg) {
 
 /** C ref: potion.c:222 — @param {CLongLong} xtime @param {CPtr} msg @param {CInt} killedby @param {CPtr} killername */
 export function* make_stoned(xtime, msg, killedby, killername) {
-    let old = cptr.ldI64o2(u, NHC.STONED, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = Stoned();
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.STONED, 24), FLD.prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (msg)
             (yield* pline(__sl16, msg));
     }
-    if (!cptr.ldI64o2(u, NHC.STONED, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    if (!Stoned())
         (yield* dealloc_killer(find_delayed_killer(NHC.STONED)));
     else if (!old)
         (yield* delayed_killer(NHC.STONED, killedby, killername));
@@ -524,7 +525,7 @@ export function* make_stoned(xtime, msg, killedby, killername) {
 
 /** C ref: potion.c:243 — @param {CLongLong} xtime @param {CInt} talk */
 export function* make_vomiting(xtime, talk) {
-    let old = cptr.ldI64o2(u, NHC.VOMITING, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = Vomiting();
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.VOMITING, 24), FLD.prop_intrinsic), xtime);
@@ -542,57 +543,57 @@ const eyemsg = cptr.bytes("%s momentarily %s.");
 
 /** C ref: potion.c:261 — @param {CLongLong} xtime @param {CInt} talk */
 export function* make_blinded(xtime, talk) {
-    let old = (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n);
+    let old = BlindedTimeout();
     let u_could_see;
     let can_see_now;
     let eyes;
-    u_could_see = schar((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))));
+    u_could_see = schar((!Blind()));
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.BLINDED, 24), FLD.prop_intrinsic), xtime ? 1n : 0n);
-    can_see_now = schar((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))));
+    can_see_now = schar((!Blind()));
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.BLINDED, 24), FLD.prop_intrinsic), old);
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     if (can_see_now && !u_could_see) {
         if (talk) {
-            if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+            if (Hallucination())
                 (yield* pline(__sl18));
             else
                 (yield* You(__sl19));
         }
     } else if (old && !xtime) {
         if (talk) {
-            if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) || ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 67108864n) != 0n)) {
+            if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) || PermaBlind()) {
                 (yield* strange_feeling(null, null));
-            } else if (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) {
+            } else if (EBlinded()) {
                 eyes = (yield* body_part(NHC.EYE));
                 if ((!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) != 1)
                     eyes = (yield* makeplural(eyes));
                 (yield* Your(cptr.decay(eyemsg), eyes, (yield* vtense(eyes, __sl20))));
             } else {
-                (yield* Your(cptr.decay(vismsg), __sl21, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl22 : __sl23));
+                (yield* Your(cptr.decay(vismsg), __sl21, Hallucination() ? __sl22 : __sl23));
             }
         }
     }
     if (u_could_see && !can_see_now) {
         if (talk) {
-            if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+            if (Hallucination())
                 (yield* pline(__sl24));
             else
                 (yield* pline(__sl25));
         }
-        if ((uball.v !== null))
+        if (Punished())
             (yield* set_bc(0));
     } else if (!old && xtime) {
         if (talk) {
-            if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) || ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 67108864n) != 0n)) {
+            if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) || PermaBlind()) {
                 (yield* strange_feeling(null, null));
-            } else if (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) {
+            } else if (EBlinded()) {
                 eyes = (yield* body_part(NHC.EYE));
                 if ((!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) != 1)
                     eyes = (yield* makeplural(eyes));
                 (yield* Your(cptr.decay(eyemsg), eyes, (yield* vtense(eyes, __sl26))));
             } else {
-                (yield* Your(cptr.decay(vismsg), __sl27, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl28 : __sl23));
+                (yield* Your(cptr.decay(vismsg), __sl27, Hallucination() ? __sl28 : __sl23));
             }
         }
     }
@@ -604,43 +605,43 @@ export function* make_blinded(xtime, talk) {
 
 /** C ref: potion.c:336 */
 export function* toggle_blindness() {
-    let Stinging = schar((uwep.v && (cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, FLD.you_uprops) & 256n) != 0n ? 1 : 0));
+    let Stinging = schar((uwep.v && (EWarn_of_mon() & 256n) != 0n ? 1 : 0));
     cptr.st1(disp, 1);
     cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
     (yield* vision_recalc(0));
-    if ((cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops)) || (cptr.ldI64o2(u, NHC.INFRAVISION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INFRAVISION, 24, FLD.you_uprops)) || Stinging)
+    if (Blind_telepat() || Infravision() || Stinging)
         (yield* see_monsters());
     if (Stinging)
         (yield* Sting_effects(-1));
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+    if (!Blind())
         (yield* learn_unseen_invent());
 }
 
 /** C ref: potion.c:369 — @param {CLongLong} xtime @param {CInt} talk @param {CLongLong} mask @returns {CInt} */
 export function* make_hallucinated(xtime, talk, mask) {
-    let old = cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = HHallucination();
     let changed = 0;
     let message;
     let verb;
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     message = (!xtime) ? __sl29 : __sl30;
-    verb = (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) ? __sl31 : __sl32;
+    verb = (!Blind()) ? __sl31 : __sl32;
     if (mask) {
-        if (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic))
+        if (HHallucination())
             changed = 1;
         if (!xtime)
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops) | mask);
         else
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops) & BigInt.asIntN(64, ~mask));
     } else {
-        if (!cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops) && (!!cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) != !!xtime))
+        if (!EHalluc_resistance() && (!!HHallucination() != !!xtime))
             changed = 1;
         set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.HALLUC, 24), FLD.prop_intrinsic), xtime);
-        if (!changed && !cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && old && talk) {
+        if (!changed && !HHallucination() && old && talk) {
             if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n)) {
                 (yield* strange_feeling(null, null));
-            } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+            } else if (Blind()) {
                 let eyes = (yield* body_part(NHC.EYE));
                 if ((!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) != 1)
                     eyes = (yield* makeplural(eyes));
@@ -651,7 +652,7 @@ export function* make_hallucinated(xtime, talk, mask) {
         }
     }
     if (changed) {
-        if (!(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+        if (!Hallucination())
             (yield* eatmupdate());
         if ((cptr.ldI32o(u, FLD.you_uswallow) & 1)) {
             (yield* swallowed(0));
@@ -670,20 +671,20 @@ export function* make_hallucinated(xtime, talk, mask) {
 
 /** C ref: potion.c:443 — @param {CLongLong} xtime @param {CInt} talk */
 export function* make_deaf(xtime, talk) {
-    let old = cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic);
+    let old = HDeaf();
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.DEAF, 24), FLD.prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (talk)
-            (yield* You(old && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) ? __sl34 : __sl35));
+            (yield* You(old && !Deaf() ? __sl34 : __sl35));
     }
 }
 
 /** C ref: potion.c:461 — @param {CInt} xtime */
 export function* make_glib(xtime) {
-    cptr.st1(disp, cptr.ld1s(disp) | (!cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic) ^ !!xtime));
+    cptr.st1(disp, cptr.ld1s(disp) | (!Glib() ^ !!xtime));
     set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.GLIB, 24), FLD.prop_intrinsic), BigInt(xtime));
     if (uarmg.v)
         (yield* update_inventory());
@@ -691,7 +692,7 @@ export function* make_glib(xtime) {
 
 /** C ref: potion.c:471 */
 export function* self_invis_message() {
-    (yield* pline(__sl36, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl37 : __sl38, (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops)) ? __sl39 : __sl40));
+    (yield* pline(__sl36, Hallucination() ? __sl37 : __sl38, See_invisible() ? __sl39 : __sl40));
 }
 
 /** C ref: potion.c:481 */
@@ -701,11 +702,11 @@ function* ghost_from_bottle() {
         (yield* pline(__sl41));
         return;
     }
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (Blind()) {
         (yield* pline(__sl42, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_something)));
         return;
     }
-    (yield* pline(__sl43, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? (yield* rndmonnam(null)) : __sl44));
+    (yield* pline(__sl43, Hallucination() ? (yield* rndmonnam(null)) : __sl44));
     if (cptr.ld1so(flags, FLD.flag_verbose))
         (yield* You(__sl45));
     nomul(-3);
@@ -725,7 +726,7 @@ function drink_ok(obj) {
 /** C ref: potion.c:526 @returns {CInt} */
 export function* dodrink() {
     let otmp;
-    if (cptr.ldI64o2(u, NHC.STRANGLED, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
+    if (Strangled()) {
         (yield* pline(__sl48));
         return NHM.ECMD_OK;
     }
@@ -786,7 +787,7 @@ export function* dopotion(otmp) {
         return retval ? NHM.ECMD_TIME : NHM.ECMD_OK;
     if (cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing)) {
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
-        (yield* You(__sl58, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl23 : __sl59));
+        (yield* You(__sl58, Hallucination() ? __sl23 : __sl59));
     }
     if ((cptr.ldI32o(otmp, FLD.obj_dknown) & 1) | 0 && !(cptr.ldI32o2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1)) {
         if (!cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn)) {
@@ -832,16 +833,16 @@ function* peffect_restore_ability(otmp) {
 
 /** C ref: potion.c:696 — @param {CPtr} otmp */
 function* peffect_hallucination(otmp) {
-    if ((cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) {
+    if (Halluc_resistance()) {
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
         return;
-    } else if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    } else if (Hallucination()) {
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
     }
-    void (yield* make_hallucinated(itimeout_incr(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 705, __sl66), rn2(200)) : rn2(200)) + ((600 - Math.imul(300, bcsign(otmp))) | 0)) | 0)), 1, 0n));
+    void (yield* make_hallucinated(itimeout_incr(HHallucination(), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 705, __sl66), rn2(200)) : rn2(200)) + ((600 - Math.imul(300, bcsign(otmp))) | 0)) | 0)), 1, 0n));
     if (((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 707, __sl66), rn2(3)) : rn2(3))) || (!(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 707, __sl66), rn2(6)) : rn2(6)))) {
         (yield* You(__sl67));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0)));
+        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* enlightenment(NHM.MAGICENLIGHTENMENT, NHM.ENL_GAMEINPROGRESS));
         (yield* Your(__sl68));
         (yield* exercise(NHC.A_WIS, 1));
@@ -867,11 +868,11 @@ function* peffect_water(otmp) {
                     (yield* you_unwere(0));
                 (yield* set_ulycn(NHC.NON_PM));
             }
-            (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 738, __sl71), d(2, 6)) : d(2, 6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 738, __sl71), d(2, 6)) : d(2, 6)))), __sl75, NHM.KILLED_BY_AN));
+            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 738, __sl71), d(2, 6)) : d(2, 6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 738, __sl71), d(2, 6)) : d(2, 6)))), __sl75, NHM.KILLED_BY_AN));
         } else if ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1)) {
             (yield* You_feel(__sl76));
             (yield* healup((rng_log_enabled() ? (rng_log_set_caller(__sl55, 742, __sl71), d(2, 6)) : d(2, 6)), 0, 0, 0));
-            if (((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS) && !(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+            if (((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS) && !Upolyd())
                 (yield* you_were());
             (yield* exercise(NHC.A_CON, 1));
         }
@@ -886,10 +887,10 @@ function* peffect_water(otmp) {
         } else {
             if (cptr.ld1so(u, FLD.you_ualign) == NHM.A_LAWFUL) {
                 (yield* pline(__sl72, hliquid(__sl73)));
-                (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 759, __sl71), d(2, 6)) : d(2, 6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 759, __sl71), d(2, 6)) : d(2, 6)))), __sl78, NHM.KILLED_BY_AN));
+                (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 759, __sl71), d(2, 6)) : d(2, 6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 759, __sl71), d(2, 6)) : d(2, 6)))), __sl78, NHM.KILLED_BY_AN));
             } else
                 (yield* You_feel(__sl79));
-            if (((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS) && !(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+            if (((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS) && !Upolyd())
                 (yield* you_were());
             (yield* exercise(NHC.A_CON, 0));
         }
@@ -899,9 +900,9 @@ function* peffect_water(otmp) {
 /** C ref: potion.c:771 — @param {CPtr} otmp */
 function* peffect_booze(otmp) {
     (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
-    (yield* pline(__sl80, (cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0 ? __sl81 : __sl82, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl83 : __sl84));
+    (yield* pline(__sl80, (cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0 ? __sl81 : __sl82, Hallucination() ? __sl83 : __sl84));
     if (!(cptr.ldI32o(otmp, FLD.obj_blessed) & 1)) {
-        (yield* make_confused(itimeout_incr(cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 779, __sl85), d(((2 + cptr.ldI32o(u, FLD.you_uhs)) >>> 0) | 0, 8)) : d(((2 + cptr.ldI32o(u, FLD.you_uhs)) >>> 0) | 0, 8))), 0));
+        (yield* make_confused(itimeout_incr(HConfusion(), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 779, __sl85), d(((2 + cptr.ldI32o(u, FLD.you_uhs)) >>> 0) | 0, 8)) : d(((2 + cptr.ldI32o(u, FLD.you_uhs)) >>> 0) | 0, 8))), 0));
     }
     if (!(cptr.ldI32o(otmp, FLD.obj_oeroded) & 3))
         (yield* healup(1, 0, 0, 0));
@@ -933,16 +934,16 @@ function* peffect_enlightenment(otmp) {
 /** C ref: potion.c:811 — @param {CPtr} otmp */
 function* peffect_invisibility(otmp) {
     let is_spell = schar((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.SPBOOK_CLASS));
-    if (is_spell && cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked) && cptr.ldI16o(uarmc.v, FLD.obj_otyp) == NHC.MUMMY_WRAPPING) {
+    if (is_spell && BInvis() && cptr.ldI16o(uarmc.v, FLD.obj_otyp) == NHC.MUMMY_WRAPPING) {
         (yield* You_feel(__sl89, (yield* yname(uarmc.v))));
         return;
     }
-    if (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) {
+    if (Invis() || Blind() || BInvis()) {
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
     } else {
         (yield* self_invis_message());
     }
-    if ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 825, __sl90), rn2(cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) ? 15 : 30)) : rn2(cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) ? 15 : 30)))
+    if ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 825, __sl90), rn2(HInvis() ? 15 : 30)) : rn2(HInvis() ? 15 : 30)))
         cptr.stI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) | 67108864n);
     else
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.INVIS, 24), FLD.prop_intrinsic), ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 828, __sl90), d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) : d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) + 100) | 0);
@@ -956,13 +957,13 @@ function* peffect_invisibility(otmp) {
 
 /** C ref: potion.c:841 — @param {CPtr} otmp */
 function* peffect_see_invisible(otmp) {
-    let msg = (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops))) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? 1 : 0;
-    let permchance = (((10 - (cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) ? 3 : 0)) | 0) - (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) ? 6 : 0)) | 0;
+    let msg = Invisible() && !Blind() ? 1 : 0;
+    let permchance = (((10 - (HInvis() ? 3 : 0)) | 0) - (HSee_invisible() ? 6 : 0)) | 0;
     (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
     if ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1))
-        (yield* pline(__sl92, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl93 : __sl94));
+        (yield* pline(__sl92, Hallucination() ? __sl93 : __sl94));
     else
-        (yield* pline((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl95 : __sl96, (cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0 ? __sl97 : __sl82, (yield* fruitname(1))));
+        (yield* pline(Hallucination() ? __sl95 : __sl96, (cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0 ? __sl97 : __sl82, (yield* fruitname(1))));
     if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.POT_FRUIT_JUICE) {
         cptr.stI32o(u, FLD.you_uhunger, (cptr.ldI32o(u, FLD.you_uhunger) + Math.imul(((cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0 ? 5 : 10), ((2 + bcsign(otmp)) | 0))) | 0);
         (yield* newuhs(0));
@@ -978,7 +979,7 @@ function* peffect_see_invisible(otmp) {
     (yield* set_mimic_blocking());
     (yield* see_monsters());
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
-    if (msg && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (msg && !Blind()) {
         (yield* You(__sl99));
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + -1)) - (-1);
     }
@@ -986,10 +987,10 @@ function* peffect_see_invisible(otmp) {
 
 /** C ref: potion.c:881 — @param {CPtr} otmp */
 function* peffect_paralysis(otmp) {
-    if (cptr.ldI64o2(u, NHC.FREE_ACTION, 24, FLD.you_uprops)) {
+    if (Free_action()) {
         (yield* You(__sl100));
     } else {
-        if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) || (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))))
+        if (Levitation() || (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))))
             (yield* You(__sl101));
         else if (cptr.ldPtro(u, FLD.you_usteed))
             (yield* You(__sl102));
@@ -1004,7 +1005,7 @@ function* peffect_paralysis(otmp) {
 
 /** C ref: potion.c:901 — @param {CPtr} otmp */
 function* peffect_sleeping(otmp) {
-    if ((cptr.ldI64o2(u, NHC.SLEEP_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEP_RES, 24, FLD.you_uprops)) || cptr.ldI64o2(u, NHC.FREE_ACTION, 24, FLD.you_uprops)) {
+    if (Sleep_resistance() || Free_action()) {
         monstseesu(8n);
         (yield* You(__sl106));
     } else {
@@ -1020,10 +1021,10 @@ function* peffect_monster_detection(otmp) {
         let i;
         let x;
         let y;
-        if ((cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops)))
+        if (Detect_monsters())
             (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
-        if ((cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n) >= 300n)
+        if ((HDetect_monsters() & 16777215n) >= 300n)
             i = 1;
         else if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.SPBOOK_CLASS)
             i = (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 926, __sl109), rn2(40)) : rn2(40)) + 21) | 0);
@@ -1040,7 +1041,7 @@ function* peffect_monster_detection(otmp) {
                     cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, 0);
             }
         }
-        if (!(cptr.ldI32o(u, FLD.you_uswallow) & 1) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1))) {
+        if (!(cptr.ldI32o(u, FLD.you_uswallow) & 1) && !Underwater()) {
             (yield* see_monsters());
             if (cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn))
                 (yield* You_feel(__sl110));
@@ -1070,19 +1071,19 @@ function* peffect_sickness(otmp) {
             (yield* losehp(1, __sl113, NHM.KILLED_BY_AN));
         }
     } else {
-        if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops)))
+        if (Poison_resistance())
             (yield* pline(__sl114, (yield* fruitname(1))));
         if ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_HEALER)) {
             (yield* pline(__sl115));
         } else {
             let contaminant = new Uint8Array(256);
             let typ = (rng_log_enabled() ? (rng_log_set_caller(__sl55, 981, __sl116), rn2(NHC.A_MAX)) : rn2(NHC.A_MAX));
-            void cptr.sprintf(cptr.decay(contaminant), __sl117, ((cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops))) ? __sl118 : __sl82, (cptr.ldI32o(otmp, FLD.obj_corpsenm)) ? __sl119 : __sl120);
-            if (!cptr.ldI64o2(u, NHC.FIXED_ABIL, 24, FLD.you_uprops)) {
+            void cptr.sprintf(cptr.decay(contaminant), __sl117, (Poison_resistance()) ? __sl118 : __sl82, (cptr.ldI32o(otmp, FLD.obj_corpsenm)) ? __sl119 : __sl120);
+            if (!Fixed_abil()) {
                 (yield* poisontell(typ, 0));
-                void (yield* adjattrib(typ, (cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops)) ? -1 : -(((rng_log_enabled() ? (rng_log_set_caller(__sl55, 989, __sl116), rn2(4)) : rn2(4)) + 3) | 0), 1));
+                void (yield* adjattrib(typ, Poison_resistance() ? -1 : -(((rng_log_enabled() ? (rng_log_set_caller(__sl55, 989, __sl116), rn2(4)) : rn2(4)) + 3) | 0), 1));
             }
-            if (!(cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops))) {
+            if (!Poison_resistance()) {
                 if (cptr.ldI32o(otmp, FLD.obj_corpsenm))
                     (yield* losehp(((rng_log_enabled() ? (rng_log_set_caller(__sl55, 994, __sl116), rnd(10)) : rnd(10)) + Math.imul(5, !!((cptr.ldI32o(otmp, FLD.obj_cursed) & 1)))) | 0, cptr.decay(contaminant), NHM.KILLED_BY));
                 else
@@ -1093,7 +1094,7 @@ function* peffect_sickness(otmp) {
             (yield* exercise(NHC.A_CON, 0));
         }
     }
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if (Hallucination()) {
         (yield* You(__sl121));
         void (yield* make_hallucinated(0n, 0, 0n));
     }
@@ -1101,15 +1102,15 @@ function* peffect_sickness(otmp) {
 
 /** C ref: potion.c:1014 — @param {CPtr} otmp */
 function* peffect_confusion(otmp) {
-    if (!cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if (!HConfusion()) {
+        if (Hallucination()) {
             (yield* pline(__sl122));
             (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
         } else
             (yield* pline(__sl123));
     } else
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
-    (yield* make_confused(itimeout_incr(cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1025, __sl124), rn2(7)) : rn2(7)) + ((16 - Math.imul(8, bcsign(otmp))) | 0)) | 0)), 0));
+    (yield* make_confused(itimeout_incr(HConfusion(), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1025, __sl124), rn2(7)) : rn2(7)) + ((16 - Math.imul(8, bcsign(otmp))) | 0)) | 0)), 0));
 }
 
 /** C ref: potion.c:1030 — @param {CPtr} otmp */
@@ -1117,7 +1118,7 @@ function* peffect_gain_ability(otmp) {
     if ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1)) {
         (yield* pline(__sl125));
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
-    } else if (cptr.ldI64o2(u, NHC.FIXED_ABIL, 24, FLD.you_uprops)) {
+    } else if (Fixed_abil()) {
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
     } else {
         let itmp;
@@ -1135,13 +1136,13 @@ function* peffect_gain_ability(otmp) {
 /** C ref: potion.c:1052 — @param {CPtr} otmp */
 function* peffect_speed(otmp) {
     let is_speed = schar((cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.POT_SPEED));
-    if (is_speed && (cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops)) && !(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !cptr.ldPtro(u, FLD.you_usteed)) {
+    if (is_speed && Wounded_legs() && !(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !cptr.ldPtro(u, FLD.you_usteed)) {
         (yield* heal_legs(0));
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
         return;
     }
     (yield* speed_up(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1063, __sl127), rn2(10)) : rn2(10)) + ((100 + Math.imul(60, bcsign(otmp))) | 0)) | 0))));
-    if (is_speed && !(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !(cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) & 117440512n)) {
+    if (is_speed && !(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !(HFast() & 117440512n)) {
         (yield* Your(__sl128));
         cptr.stI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) | 67108864n);
     }
@@ -1149,9 +1150,9 @@ function* peffect_speed(otmp) {
 
 /** C ref: potion.c:1073 — @param {CPtr} otmp */
 function* peffect_blindness(otmp) {
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+    if (Blind() || ((HBlinded() || EBlinded()) && BBlinded()))
         (cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, cptr.ldI32o(gp, FLD.instance_globals_p_potion_nothing) + 1)) - (1);
-    (yield* make_blinded(itimeout_incr((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1078, __sl129), rn2(200)) : rn2(200)) + ((250 - Math.imul(125, bcsign(otmp))) | 0)) | 0)), schar((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))))));
+    (yield* make_blinded(itimeout_incr(BlindedTimeout(), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1078, __sl129), rn2(200)) : rn2(200)) + ((250 - Math.imul(125, bcsign(otmp))) | 0)) | 0)), schar((!Blind()))));
 }
 
 /** C ref: potion.c:1083 — @param {CPtr} otmp */
@@ -1198,7 +1199,7 @@ function* peffect_extra_healing(otmp) {
     void (yield* make_hallucinated(0n, 1, 0n));
     (yield* exercise(NHC.A_CON, 1));
     (yield* exercise(NHC.A_STR, 1));
-    if ((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops)) && ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 && !cptr.ldPtro(u, FLD.you_usteed)))
+    if (Wounded_legs() && ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 && !cptr.ldPtro(u, FLD.you_usteed)))
         (yield* heal_legs(0));
 }
 
@@ -1213,13 +1214,13 @@ function* peffect_full_healing(otmp) {
     void (yield* make_hallucinated(0n, 1, 0n));
     (yield* exercise(NHC.A_STR, 1));
     (yield* exercise(NHC.A_CON, 1));
-    if ((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops)) && ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 || (!(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !cptr.ldPtro(u, FLD.you_usteed))))
+    if (Wounded_legs() && ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 || (!(cptr.ldI32o(otmp, FLD.obj_cursed) & 1) && !cptr.ldPtro(u, FLD.you_usteed))))
         (yield* heal_legs(0));
 }
 
 /** C ref: potion.c:1165 — @param {CPtr} otmp */
 function* peffect_levitation(otmp) {
-    if (!((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) {
+    if (!Levitation() && !BLevitation()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.LEVITATION, 24), FLD.prop_intrinsic), 1n);
         (yield* float_up());
     } else
@@ -1227,7 +1228,7 @@ function* peffect_levitation(otmp) {
     if ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1)) {
         let stway;
         cptr.stI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) & (-536870913n));
-        if (cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) {
+        if (BLevitation()) {
             ;
         } else if ((stway = stairway_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) !== null && cptr.ld1so(stway, FLD.stairway_up)) {
             void (yield* doup());
@@ -1235,7 +1236,7 @@ function* peffect_levitation(otmp) {
         } else if (has_ceiling(cptr.add(u, FLD.you_uz))) {
             let dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1200, __sl138), rnd(!uarmh.v ? 10 : (!hard_helmet(uarmh.v) ? 6 : 3))) : rnd(!uarmh.v ? 10 : (!hard_helmet(uarmh.v) ? 6 : 3)));
             (yield* You(__sl139, (yield* body_part(NHC.HEAD)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)))));
-            (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl140, NHM.KILLED_BY));
+            (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl140, NHM.KILLED_BY));
             cptr.stI32o(gp, FLD.instance_globals_p_potion_nothing, 0);
         }
     } else if ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1)) {
@@ -1243,7 +1244,7 @@ function* peffect_levitation(otmp) {
         cptr.stI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) | 536870912n);
     } else
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.LEVITATION, 24), FLD.prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1215, __sl138), rn2(140)) : rn2(140)) + 10) | 0));
-    if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) == NHC.SINK))
+    if (Levitation() && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) == NHC.SINK))
         (yield* spoteffects(0));
     float_vs_flight();
 }
@@ -1282,7 +1283,7 @@ function* peffect_oil(otmp) {
             good_for_you = 1;
         } else {
             (yield* You(__sl145, (yield* body_part(NHC.FACE))));
-            vulnerable = schar((!(cptr.ldI64o2(u, NHC.FIRE_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, FLD.you_uprops)) || (cptr.ldI64o2(u, NHC.COLD_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.COLD_RES, 24, FLD.you_uprops)) ? 1 : 0));
+            vulnerable = schar((!Fire_resistance() || Cold_resistance() ? 1 : 0));
             (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1277, __sl146), d((vulnerable ? 4 : 2), 4)) : d((vulnerable ? 4 : 2), 4)), __sl147, NHM.KILLED_BY));
         }
         (yield* burn_away_slime());
@@ -1296,24 +1297,24 @@ function* peffect_oil(otmp) {
 
 /** C ref: potion.c:1297 — @param {CPtr} otmp */
 function* peffect_acid(otmp) {
-    if ((cptr.ldI64o2(u, NHC.ACID_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.ACID_RES, 24, FLD.you_uprops))) {
-        (yield* pline(__sl150, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl151 : __sl152));
+    if (Acid_resistance()) {
+        (yield* pline(__sl150, Hallucination() ? __sl151 : __sl152));
     } else {
         let dmg;
         (yield* pline(__sl153, (cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 ? __sl154 : ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0 ? __sl155 : __sl156)));
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1308, __sl157), d(((cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0 ? 2 : 1), ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 ? 4 : 8))) : d(((cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0 ? 2 : 1), ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0 ? 4 : 8)));
-        (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl158, NHM.KILLED_BY_AN));
+        (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl158, NHM.KILLED_BY_AN));
         (yield* exercise(NHC.A_CON, 0));
     }
-    if (cptr.ldI64o2(u, NHC.STONED, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    if (Stoned())
         (yield* fix_petrification());
     (cptr.stI32o(gp, FLD.instance_globals_p_potion_unkn, cptr.ldI32o(gp, FLD.instance_globals_p_potion_unkn) + 1)) - (1);
 }
 
 /** C ref: potion.c:1318 — @param {CPtr} otmp */
 function* peffect_polymorph(otmp) {
-    (yield* You_feel(__sl159, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl23 : __sl160));
-    if (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops))) {
+    (yield* You_feel(__sl159, Hallucination() ? __sl23 : __sl160));
+    if (!Unchanging()) {
         if (!(cptr.ldI32o(otmp, FLD.obj_blessed) & 1) || (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
             (yield* polyself(NHC.POLY_NOFLAGS));
         else {
@@ -1421,7 +1422,7 @@ export function* peffects(otmp) {
 /** C ref: potion.c:1428 — @param {CInt} nhp @param {CInt} nxtra @param {CInt} curesick @param {CInt} cureblind */
 export function* healup(nhp, nxtra, curesick, cureblind) {
     if (nhp) {
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+        if (Upolyd()) {
             cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) + nhp) | 0);
             if (cptr.ldI32o(u, FLD.you_mh) > cptr.ldI32o(u, FLD.you_mhmax))
                 cptr.stI32o(u, FLD.you_mh, (cptr.stI32o(u, FLD.you_mhmax, (cptr.ldI32o(u, FLD.you_mhmax) + nxtra) | 0)));
@@ -1450,7 +1451,7 @@ export function* healup(nhp, nxtra, curesick, cureblind) {
 /** C ref: potion.c:1461 — @param {CPtr} obj @param {CPtr} txt */
 export function* strange_feeling(obj, txt) {
     if (cptr.ld1so(flags, FLD.flag_beginner) || !txt)
-        (yield* You(__sl58, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl23 : __sl160));
+        (yield* You(__sl58, Hallucination() ? __sl23 : __sl160));
     else
         (yield* pline(__sl16, txt));
     if (!obj)
@@ -1499,7 +1500,7 @@ cptr.stPtro(hbottlenames, 184, __sl193);
 
 /** C ref: potion.c:1488 @returns {CPtr} */
 export function bottlename() {
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+    if (Hallucination())
         return cptr.ldPtro(hbottlenames, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1491, __sl194), rn2(24)) : rn2(24)), 8);
     else
         return cptr.ldPtro(bottlenames, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1493, __sl194), rn2(7)) : rn2(7)), 8);
@@ -1554,7 +1555,7 @@ function* H2Opotion_dip(potion, targobj, useeit, objphrase) {
             else
                 (yield* pline(__sl36, objphrase, glowcolor));
             cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
-            cptr.stI32o(targobj, FLD.obj_bknown, (!(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) >>> 0);
+            cptr.stI32o(targobj, FLD.obj_bknown, (!Hallucination()) >>> 0);
         } else {
             if (!(cptr.ldI32o(potion, FLD.obj_bknown) & 1) || !(cptr.ldI32o(potion, FLD.obj_dknown) & 1))
                 cptr.stI32o(targobj, FLD.obj_bknown, 0);
@@ -1602,7 +1603,7 @@ export function* potionhit(mon, obj, how) {
             tx = cptr.ldI16(u), ty = cptr.ldI16o(u, FLD.you_uy);
             distance = 0;
             (yield* pline_The(__sl198, botlnam, (yield* body_part(NHC.HEAD))));
-            (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1638, __sl199), rnd(2)) : rnd(2))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1638, __sl199), rnd(2)) : rnd(2)))), (how == NHM.POTHIT_OTHER_THROW) ? __sl200 : __sl201, NHM.KILLED_BY_AN));
+            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1638, __sl199), rnd(2)) : rnd(2))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1638, __sl199), rnd(2)) : rnd(2)))), (how == NHM.POTHIT_OTHER_THROW) ? __sl200 : __sl201, NHM.KILLED_BY_AN));
         } else {
             tx = cptr.ldI16o(mon, FLD.monst_mx), ty = cptr.ldI16o(mon, FLD.monst_my);
             if (((cptr.ldI64o(mon, FLD.monst_misc_worn_check) & 1048576n) && (saddle = (yield* which_armor(mon, 1048576n)))) && (!(rng_log_enabled() ? (rng_log_set_caller(__sl55, 1647, __sl199), rn2(10)) : rn2(10)) || (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_WATER && (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1649, __sl199), rnl(10)) : rnl(10)) > 7 && (cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0) || ((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1650, __sl199), rnl(10)) : rnl(10)) < 4 && (cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0) || !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 1650, __sl199), rn2(3)) : rn2(3))))))
@@ -1639,15 +1640,15 @@ export function* potionhit(mon, obj, how) {
                 (yield* explode_oil(obj, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
             break;
             case NHC.POT_POLYMORPH:
-            (yield* You_feel(__sl159, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl23 : __sl160));
-            if (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops)) && !(cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, FLD.you_uprops)))
+            (yield* You_feel(__sl159, Hallucination() ? __sl23 : __sl160));
+            if (!Unchanging() && !Antimagic())
                 (yield* polyself(NHC.POLY_NOFLAGS));
             break;
             case NHC.POT_ACID:
-            if (!(cptr.ldI64o2(u, NHC.ACID_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.ACID_RES, 24, FLD.you_uprops))) {
+            if (!Acid_resistance()) {
                 (yield* pline(__sl153, (cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 ? __sl154 : ((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 ? __sl155 : __sl82)));
                 dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1701, __sl199), d(((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 ? 2 : 1), ((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 ? 4 : 8))) : d(((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 ? 2 : 1), ((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 ? 4 : 8)));
-                (yield* losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl158, NHM.KILLED_BY_AN));
+                (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl158, NHM.KILLED_BY_AN));
             }
             break;
         }
@@ -1662,7 +1663,7 @@ export function* potionhit(mon, obj, how) {
         buf = new Uint8Array(256);
         saddle_glows = new Uint8Array(256);
         affected = 0;
-        useeit = schar((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && canseemon(mon) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), ty, 8), tx) & NHM.IN_SIGHT) != 0) ? 1 : 0));
+        useeit = schar((!Blind() && canseemon(mon) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), ty, 8), tx) & NHM.IN_SIGHT) != 0) ? 1 : 0));
         mnam = (yield* x_monnam(mon, NHM.ARTICLE_THE, null, 9, 0));
         void cptr.sprintf(cptr.decay(buf), __sl16, upstart((yield* s_suffix(mnam))));
         switch (cptr.ldI16o(obj, FLD.obj_otyp)) {
@@ -1867,7 +1868,7 @@ export function* potionhit(mon, obj, how) {
                 if (canseemon(mon))
                     (yield* pline(__sl221, (yield* Monnam(mon))));
                 (yield* healmon(mon, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1849, __sl199), d(2, 6)) : d(2, 6)), 0));
-                if (((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n) && !(cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops)))
+                if (((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n) && !Protection_from_shape_changers())
                     (yield* new_were(mon));
             }
         } else if (cptr.eq(cptr.ldPtro(mon, FLD.monst_data), cptr.add(mons, NHC.PM_GREMLIN, 96))) {
@@ -1960,7 +1961,7 @@ export function* potionbreathe(obj) {
     let cureblind = 0;
     let already_in_use = (cptr.ldI32o(obj, FLD.obj_in_use) & 1);
     cptr.stI32o(obj, FLD.obj_in_use, 1);
-    switch ((ublindf.v && cptr.ldI16o(ublindf.v, FLD.obj_otyp) == NHC.TOWEL && cptr.ld1so(ublindf.v, FLD.obj_spe) > 0) ? NHC.TOWEL : cptr.ldI16o(obj, FLD.obj_otyp)) {
+    switch (Half_gas_damage() ? NHC.TOWEL : cptr.ldI16o(obj, FLD.obj_otyp)) {
         case NHC.TOWEL:
         (yield* pline(__sl223));
         break;
@@ -1990,7 +1991,7 @@ export function* potionbreathe(obj) {
         }
         break;
         case NHC.POT_FULL_HEALING:
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
+        if (Upolyd() && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
             (cptr.stI32o(u, FLD.you_mh, cptr.ldI32o(u, FLD.you_mh) + 1)) - (1), cptr.st1(disp, 1);
         if (cptr.ldI32o(u, FLD.you_uhp) < cptr.ldI32o(u, FLD.you_uhpmax))
             (cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhp) + 1)) - (1), cptr.st1(disp, 1);
@@ -1998,7 +1999,7 @@ export function* potionbreathe(obj) {
         // @FallThrough
         ;
         case NHC.POT_EXTRA_HEALING:
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
+        if (Upolyd() && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
             (cptr.stI32o(u, FLD.you_mh, cptr.ldI32o(u, FLD.you_mh) + 1)) - (1), cptr.st1(disp, 1);
         if (cptr.ldI32o(u, FLD.you_uhp) < cptr.ldI32o(u, FLD.you_uhpmax))
             (cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhp) + 1)) - (1), cptr.st1(disp, 1);
@@ -2007,7 +2008,7 @@ export function* potionbreathe(obj) {
         // @FallThrough
         ;
         case NHC.POT_HEALING:
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
+        if (Upolyd() && cptr.ldI32o(u, FLD.you_mh) < cptr.ldI32o(u, FLD.you_mhmax))
             (cptr.stI32o(u, FLD.you_mh, cptr.ldI32o(u, FLD.you_mh) + 1)) - (1), cptr.st1(disp, 1);
         if (cptr.ldI32o(u, FLD.you_uhp) < cptr.ldI32o(u, FLD.you_uhpmax))
             (cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhp) + 1)) - (1), cptr.st1(disp, 1);
@@ -2021,7 +2022,7 @@ export function* potionbreathe(obj) {
         break;
         case NHC.POT_SICKNESS:
         if (!(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_HEALER)) {
-            if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+            if (Upolyd()) {
                 if (cptr.ldI32o(u, FLD.you_mh) <= 5)
                     cptr.stI32o(u, FLD.you_mh, 1);
                 else
@@ -2041,19 +2042,19 @@ export function* potionbreathe(obj) {
         break;
         case NHC.POT_CONFUSION:
         case NHC.POT_BOOZE:
-        if (!cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic))
+        if (!HConfusion())
             (yield* You_feel(__sl229));
-        (yield* make_confused(itimeout_incr(cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2031, __sl227), rnd(5)) : rnd(5))), 0));
+        (yield* make_confused(itimeout_incr(HConfusion(), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2031, __sl227), rnd(5)) : rnd(5))), 0));
         break;
         case NHC.POT_INVISIBILITY:
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        if (!Blind() && !Invis()) {
             kn++;
-            (yield* pline(__sl230, (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops)) ? __sl231 : __sl232));
+            (yield* pline(__sl230, See_invisible() ? __sl231 : __sl232));
         }
         break;
         case NHC.POT_PARALYSIS:
         kn++;
-        if (!cptr.ldI64o2(u, NHC.FREE_ACTION, 24, FLD.you_uprops)) {
+        if (!Free_action()) {
             (yield* pline(__sl233, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Something)));
             nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl55, 2045, __sl227), rnd(5)) : rnd(5)));
             cptr.stPtro(gm, FLD.instance_globals_m_multi_reason, __sl105);
@@ -2064,7 +2065,7 @@ export function* potionbreathe(obj) {
         break;
         case NHC.POT_SLEEPING:
         kn++;
-        if (!cptr.ldI64o2(u, NHC.FREE_ACTION, 24, FLD.you_uprops) && !(cptr.ldI64o2(u, NHC.SLEEP_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEP_RES, 24, FLD.you_uprops))) {
+        if (!Free_action() && !Sleep_resistance()) {
             (yield* You_feel(__sl234));
             nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl55, 2056, __sl227), rnd(5)) : rnd(5)));
             cptr.stPtro(gm, FLD.instance_globals_m_multi_reason, __sl235);
@@ -2076,18 +2077,18 @@ export function* potionbreathe(obj) {
         }
         break;
         case NHC.POT_SPEED:
-        if (!(cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)))
+        if (!Fast())
             (yield* Your(__sl236));
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.FAST, 24), FLD.prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2068, __sl227), rnd(5)) : rnd(5)));
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.POT_BLINDNESS:
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
+        if (!Blind() && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
             kn++;
             (yield* pline(__sl237));
         }
-        (yield* make_blinded(itimeout_incr((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2076, __sl227), rnd(5)) : rnd(5))), 0));
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
+        (yield* make_blinded(itimeout_incr(BlindedTimeout(), (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2076, __sl227), rnd(5)) : rnd(5))), 0));
+        if (!Blind() && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
             (yield* Your(__sl16, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_vision_clears)));
         break;
         case NHC.POT_WATER:
@@ -2096,7 +2097,7 @@ export function* potionbreathe(obj) {
         } else if (((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS)) {
             if ((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 && cptr.eq(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data), cptr.add(mons, cptr.ldI32o(u, FLD.you_ulycn), 96)))
                 (yield* you_unwere(0));
-            else if ((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 && !(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+            else if ((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 && !Upolyd())
                 (yield* you_were());
         }
         break;
@@ -2208,7 +2209,7 @@ function* dip_ok(obj) {
 
 /** C ref: potion.c:2231 — @param {CPtr} obj @returns {CInt} */
 function* dip_hands_ok(obj) {
-    if (!obj && (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic) && can_reach_floor(0)))
+    if (!obj && (Glib() && can_reach_floor(0)))
         return NHC.GETOBJ_SUGGEST;
     return (yield* dip_ok(obj));
 }
@@ -2280,7 +2281,7 @@ export function* dodip() {
             let pooltype = waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
             nh_snprintf(__sl242, 2339, cptr.decay(qbuf), 128n, __sl246, cptr.decay(__static_dodip_Dip_), cptr.ld1so(flags, FLD.flag_verbose) ? cptr.decay(obuf) : shortestname, pooltype);
             if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) == 121) {
-                if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked))) {
+                if (Levitation()) {
                     (yield* floating_above(pooltype));
                 } else if (cptr.ldPtro(u, FLD.you_usteed) && !((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 2n) != 0n) && (cptr.ldI16o2(u, NHC.P_RIDING, 6, FLD.you_weapon_skills)) < NHC.P_BASIC) {
                     (yield* rider_cant_reach());
@@ -2340,7 +2341,7 @@ function* poof(potion) {
 function* dip_potion_explosion(obj, dmg) {
     if ((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_ACID || (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0) || !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 2421, __sl252), rn2((uarmc.v && cptr.ldI16o(uarmc.v, FLD.obj_otyp) == NHC.ALCHEMY_SMOCK) ? 30 : 10)) : rn2((uarmc.v && cptr.ldI16o(uarmc.v, FLD.obj_otyp) == NHC.ALCHEMY_SMOCK) ? 30 : 10))) {
         cptr.stI32o(obj, FLD.obj_in_use, 1);
-        (yield* pline(__sl253, !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) ? __sl254 : __sl82));
+        (yield* pline(__sl253, !Deaf() ? __sl254 : __sl82));
         (yield* wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), 81));
         (yield* exercise(NHC.A_STR, 0));
         if (!((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n))
@@ -2369,7 +2370,7 @@ function* potion_dip(obj, potion) {
         cptr.stI32o(obj, FLD.obj_pickup_prev, 0);
         cptr.stI32o(potion, FLD.obj_in_use, 1);
         if (cptr.ldI16o(potion, FLD.obj_otyp) == NHC.POT_WATER) {
-            let useeit = schar((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.eq(obj, ublindf.v) && (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops) && !(cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))) ? 1 : 0));
+            let useeit = schar((!Blind() || (cptr.eq(obj, ublindf.v) && Blindfolded_only()) ? 1 : 0));
             let obj_glows = (yield* Yobjnam2(obj, __sl197));
             if ((yield* H2Opotion_dip(potion, obj, useeit, obj_glows))) {
                 (yield* poof(potion));
@@ -2422,7 +2423,7 @@ function* potion_dip(obj, potion) {
             if ((yield* dip_potion_explosion(obj, (amt + (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2541, __sl260), rnd(9)) : rnd(9))) | 0)))
                 return NHM.ECMD_TIME;
             cptr.stI32o(obj, FLD.obj_blessed, cptr.stI32o(obj, FLD.obj_cursed, cptr.stI32o(obj, FLD.obj_bknown, 0)));
-            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+            if (Blind() || Hallucination())
                 cptr.stI32o(obj, FLD.obj_dknown, 0);
             if (mixture != NHC.STRANGE_OBJECT) {
                 cptr.stI16o(obj, FLD.obj_otyp, mixture);
@@ -2445,14 +2446,14 @@ function* potion_dip(obj, potion) {
                     break;
                     default:
                     (yield* useupall(obj));
-                    (yield* pline_The(__sl264, !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl265 : __sl82));
+                    (yield* pline_The(__sl264, !Blind() ? __sl265 : __sl82));
                     return NHM.ECMD_TIME;
                 }
             }
             cptr.stI32o(obj, FLD.obj_oeroded, (cptr.ldI16o(obj, FLD.obj_otyp) != NHC.POT_WATER) >>> 0);
-            if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_WATER && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
-                (yield* pline_The(__sl266, ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl82 : __sl267));
-            } else if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+            if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_WATER && !Hallucination()) {
+                (yield* pline_The(__sl266, Blind() ? __sl82 : __sl267));
+            } else if (!Blind()) {
                 (yield* pline_The(__sl268, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr)))));
             }
             (yield* freeinv(obj));
@@ -2460,7 +2461,7 @@ function* potion_dip(obj, potion) {
             return NHM.ECMD_TIME;
         }
         if (cptr.ldI16o(potion, FLD.obj_otyp) == NHC.POT_ACID && cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORPSE && cptr.ldI32o(obj, FLD.obj_corpsenm) == NHC.PM_LICHEN) {
-            (yield* pline(__sl270, (yield* The((yield* cxname(obj)))), (yield* otense(obj, __sl271)), ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl272 : ((cptr.ldI32o(potion, FLD.obj_oeroded) & 3) | 0 ? hcolor(cptr.ldPtro(c_color_names, FLD.c_color_names_c_orange)) : hcolor(cptr.ldPtro(c_color_names, FLD.c_color_names_c_red)))));
+            (yield* pline(__sl270, (yield* The((yield* cxname(obj)))), (yield* otense(obj, __sl271)), Blind() ? __sl272 : ((cptr.ldI32o(potion, FLD.obj_oeroded) & 3) | 0 ? hcolor(cptr.ldPtro(c_color_names, FLD.c_color_names_c_orange)) : hcolor(cptr.ldPtro(c_color_names, FLD.c_color_names_c_red)))));
             cptr.stI32o(potion, FLD.obj_in_use, 0);
             if ((cptr.ldI32o(potion, FLD.obj_dknown) & 1))
                 (yield* trycall(potion));
@@ -2501,16 +2502,16 @@ function* potion_dip(obj, potion) {
                 (yield* fire_damage(obj, 1, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
             } else if ((cptr.ldI32o(potion, FLD.obj_cursed) & 1)) {
                 (yield* pline_The(__sl277, (yield* fingers_or_gloves(1))));
-                (yield* make_glib((Number(BigInt.asIntN(32, (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n))) + (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2653, __sl260), d(2, 10)) : d(2, 10))) | 0));
+                (yield* make_glib((Number(BigInt.asIntN(32, (Glib() & 16777215n))) + (rng_log_enabled() ? (rng_log_set_caller(__sl55, 2653, __sl260), d(2, 10)) : d(2, 10))) | 0));
             } else if (cptr.ld1so(obj, FLD.obj_oclass) != NHC.WEAPON_CLASS && !(cptr.ld1so((obj), FLD.obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) != NHC.P_NONE)) {
                 break __lbl_more_dips;
             } else if ((!(((cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_material) & 31) | 0) == NHC.IRON) && !(((cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_material) & 31) | 0) == NHC.IRON)) || ((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) <= -20) || (!(cptr.ldI32o(obj, FLD.obj_oeroded) & 3) && !(cptr.ldI32o(obj, FLD.obj_oeroded2) & 3))) {
-                if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+                if (!Blind())
                     (yield* pline(__sl278, (yield* Yname2(obj)), (yield* otense(obj, __sl279))));
                 else
                     (yield* pline(__sl280, (yield* Yname2(obj)), (yield* otense(obj, __sl281))));
             } else {
-                (yield* pline(__sl282, (yield* Yname2(obj)), (yield* otense(obj, !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl283 : __sl281)), ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0 && (cptr.ldI32o(obj, FLD.obj_oeroded2) & 3) | 0) ? __sl284 : ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0 ? __sl285 : __sl286)));
+                (yield* pline(__sl282, (yield* Yname2(obj)), (yield* otense(obj, !Blind() ? __sl283 : __sl281)), ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0 && (cptr.ldI32o(obj, FLD.obj_oeroded2) & 3) | 0) ? __sl284 : ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0 ? __sl285 : __sl286)));
                 if (((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0) > 0)
                     (cptr.stI32o(obj, FLD.obj_oeroded, cptr.ldI32o(obj, FLD.obj_oeroded) + -1)) - (-1);
                 if (((cptr.ldI32o(obj, FLD.obj_oeroded2) & 3) | 0) > 0)
@@ -2578,13 +2579,13 @@ function* potion_dip(obj, potion) {
             cptr.stI32o(singlepotion, FLD.obj_cursed, (cptr.ldI32o(obj, FLD.obj_cursed) & 1));
         cptr.stI32o(singlepotion, FLD.obj_bknown, 0);
         cptr.stI32o(singlepotion, FLD.obj_dknown, 0);
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
-            if (!(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+        if (!Blind()) {
+            if (!Hallucination())
                 (yield* observe_object(singlepotion));
             cptr.st1(cptr.decay(newbuf), 0);
             if (mixture == NHC.POT_WATER && (cptr.ldI32o(singlepotion, FLD.obj_dknown) & 1) | 0)
                 void cptr.sprintf(cptr.decay(newbuf), __sl290);
-            else if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            else if (!Blind())
                 void cptr.sprintf(cptr.decay(newbuf), __sl291, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, mixture, 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr))));
             if (cptr.ld1s(cptr.decay(newbuf)))
                 (yield* pline_The(__sl292, cptr.decay(oldbuf), more_than_one ? __sl293 : __sl82, cptr.decay(newbuf)));
@@ -2628,7 +2629,7 @@ export function* djinni_from_bottle(obj) {
         (yield* pline(__sl297));
         return;
     }
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (!Blind()) {
         (yield* pline(__sl298, (yield* a_monnam(mtmp.v))));
         (yield* pline(__sl299, (yield* Monnam(mtmp.v))));
     } else {
@@ -2703,8 +2704,8 @@ export function* split_mon(mon, mtmp) {
 
 /** C ref: potion.c:2919 — @param {CLongLong} duration */
 export function* speed_up(duration) {
-    if (!((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) & -117440513n) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)))
-        (yield* You(__sl314, (cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)) ? __sl82 : __sl315));
+    if (!Very_fast())
+        (yield* You(__sl314, Fast() ? __sl82 : __sl315));
     else
         (yield* Your(__sl316, (yield* makeplural((yield* body_part(NHC.LEG))))));
     (yield* exercise(NHC.A_DEX, 1));

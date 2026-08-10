@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
 import { arti_speak, artifact_light, is_art, restrict_name, retouch_object, undiscovered_artifact } from './artifact.js';
@@ -182,7 +183,7 @@ export function* setuwep(obj) {
         cptr.st1(disp, 1);
     if (cptr.eq(uwep.v, obj) && artifact_light(olduwep) && (cptr.ldI32o(olduwep, FLD.obj_lamplit) & 1) | 0) {
         (yield* end_burn(olduwep, 0));
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* pline(__sl0, (yield* Tobjnam(olduwep, __sl1))));
     }
     if (cptr.eq(uwep.v, obj) && (is_art(uwep.v, NHC.ART_OGRESMASHER) || is_art(olduwep, NHC.ART_OGRESMASHER)))
@@ -196,7 +197,7 @@ export function* setuwep(obj) {
 /** C ref: wield.c:138 — @param {CPtr} obj @returns {CInt} */
 function* cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
-    if (uarmg.v || cptr.ldI16o(obj, FLD.obj_otyp) != NHC.CORPSE || !(cptr.eq((cptr.add(mons, cptr.ldI32o(obj, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || (cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops)))
+    if (uarmg.v || cptr.ldI16o(obj, FLD.obj_otyp) != NHC.CORPSE || !(cptr.eq((cptr.add(mons, cptr.ldI32o(obj, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || Stone_resistance())
         return 0;
     (yield* You(__sl2, (yield* corpse_xname(obj, null, NHM.CXN_PFX_THE)), (yield* makeplural((yield* body_part(NHC.HAND))))));
     void cptr.sprintf(cptr.decay(kbuf), __sl3, (yield* killer_xname(obj)));
@@ -238,7 +239,7 @@ function* ready_weapon(wep) {
                 tmp = thestr;
             else
                 tmp = __sl14;
-            (yield* pline(__sl15, tmp, (yield* aobjnam(wep.v, __sl16)), (cptr.ldI64o(wep.v, FLD.obj_quan) == 1n) ? __sl17 : __sl18, ((cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(wep.v, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0) ? __sl14 : ((((cptr.ldI32o(u, FLD.you_uhandedness) & 1) | 0) == NHM.RIGHT_HANDED) ? __sl19 : __sl20), ((cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(wep.v, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0) ? (yield* makeplural((yield* body_part(NHC.HAND)))) : (yield* body_part(NHC.HAND))));
+            (yield* pline(__sl15, tmp, (yield* aobjnam(wep.v, __sl16)), (cptr.ldI64o(wep.v, FLD.obj_quan) == 1n) ? __sl17 : __sl18, ((cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(wep.v, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0) ? __sl14 : (URIGHTY() ? __sl19 : __sl20), ((cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(wep.v, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(wep.v, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0) ? (yield* makeplural((yield* body_part(NHC.HAND)))) : (yield* body_part(NHC.HAND))));
             (yield* set_bknown(wep.v, 1));
         } else {
             let dummy = cptr.ldI64o(wep.v, FLD.obj_owornmask);
@@ -258,7 +259,7 @@ function* ready_weapon(wep) {
         }
         if (artifact_light(wep.v) && !(cptr.ldI32o(wep.v, FLD.obj_lamplit) & 1)) {
             (yield* begin_burn(wep.v, 0));
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 (yield* pline(__sl23, (yield* Tobjnam(wep.v, __sl24)), arti_light_description(wep.v)));
         }
         if ((cptr.ldI32o(wep.v, FLD.obj_unpaid) & 1)) {
@@ -623,7 +624,7 @@ export function* wield_tool(obj, verb) {
 export function* can_twoweapon() {
     let otmp;
     if (!((((((cptr.ld1uo2((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), 0, 4, FLD.permonst_mattk) == NHM.AT_WEAP) + (cptr.ld1uo2((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), 1, 4, FLD.permonst_mattk) == NHM.AT_WEAP)) | 0) + (cptr.ld1uo2((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), 2, 4, FLD.permonst_mattk) == NHM.AT_WEAP)) | 0) > 1)) {
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+        if (Upolyd())
             (yield* You_cant(__sl73));
         else
             (yield* pline(__sl74, (yield* makeplural((cptr.ld1so(flags, FLD.flag_female) && cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f)) ? cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f) : cptr.ldPtro(gu, FLD.instance_globals_u_urole)))));
@@ -644,8 +645,8 @@ export function* can_twoweapon() {
         (yield* pline(__sl87, (yield* Yobjnam2(uswapwep.v, __sl88))));
     } else if (cptr.ldI16o(uswapwep.v, FLD.obj_otyp) == NHC.CORPSE && (yield* cant_wield_corpse(uswapwep.v))) {
         ;
-    } else if (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic) || (cptr.ldI32o(uswapwep.v, FLD.obj_cursed) & 1) | 0) {
-        if (!cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    } else if (Glib() || (cptr.ldI32o(uswapwep.v, FLD.obj_cursed) & 1) | 0) {
+        if (!Glib())
             (yield* set_bknown(uswapwep.v, 1));
         (yield* drop_uswapwep());
     } else
@@ -698,7 +699,7 @@ export function* uwepgone() {
     if (uwep.v) {
         if (artifact_light(uwep.v) && (cptr.ldI32o(uwep.v, FLD.obj_lamplit) & 1) | 0) {
             (yield* end_burn(uwep.v, 0));
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 (yield* pline(__sl0, (yield* Tobjnam(uwep.v, __sl1))));
         }
         (yield* setworn(null, 256n));
@@ -743,9 +744,9 @@ export function* chwepon(otmp, amount) {
     if (!uwep.v || (cptr.ld1so(uwep.v, FLD.obj_oclass) != NHC.WEAPON_CLASS && !(cptr.ld1so((uwep.v), FLD.obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) != NHC.P_NONE))) {
         let buf = new Uint8Array(256);
         if (amount >= 0 && uwep.v && ((cptr.ldI32o((uwep.v), FLD.obj_cursed) & 1) | 0 && ((cptr.ld1so((uwep.v), FLD.obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), FLD.obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) != NHC.P_NONE) || cptr.ldI16o((uwep.v), FLD.obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((uwep.v), FLD.obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((uwep.v), FLD.obj_otyp) == NHC.TIN_OPENER))) {
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+            if (!Blind()) {
                 void cptr.sprintf(cptr.decay(buf), __sl100, (yield* Yobjnam2(uwep.v, __sl101)), (yield* an(hcolor(cptr.ldPtro(c_color_names, FLD.c_color_names_c_amber)))));
-                cptr.stI32o(uwep.v, FLD.obj_bknown, (!(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) >>> 0);
+                cptr.stI32o(uwep.v, FLD.obj_bknown, (!Hallucination()) >>> 0);
             } else {
                 void cptr.sprintf(cptr.decay(buf), __sl102, (yield* body_part(NHC.HAND)));
             }
@@ -797,19 +798,19 @@ export function* chwepon(otmp, amount) {
     if ((cptr.ldPtro((uwep.v), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((uwep.v), FLD.obj_oextra)))))
         wepname = (cptr.ldPtr(cptr.ldPtro((uwep.v), FLD.obj_oextra)));
     if (amount < 0 && cptr.ld1so(uwep.v, FLD.obj_oartifact) && (yield* restrict_name(uwep.v, wepname))) {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* pline(__sl110, (yield* Yobjnam2(uwep.v, __sl111)), color));
         return 1;
     }
     if (((cptr.ld1so(uwep.v, FLD.obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, FLD.obj_spe) < -5 && amount < 0)) && (rng_log_enabled() ? (rng_log_set_caller(__sl98, 1000, __sl112), rn2(3)) : rn2(3))) {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* pline(__sl113, (yield* Yobjnam2(uwep.v, __sl114)), color, (yield* otense(uwep.v, __sl115))));
         else
             (yield* pline(__sl22, (yield* Yobjnam2(uwep.v, __sl115))));
         (yield* useupall(uwep.v));
         return 1;
     }
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (!Blind()) {
         xtime = (Math.imul(amount, amount) == 1) ? __sl116 : __sl117;
         (yield* pline(__sl118, (yield* Yobjnam2(uwep.v, amount == 0 ? __sl114 : __sl101)), color, xtime));
         if (otyp != NHC.STRANGE_OBJECT && (cptr.ldI32o(uwep.v, FLD.obj_known) & 1) | 0 && (amount > 0 || (amount < 0 && (cptr.ldI32o(otmp, FLD.obj_bknown) & 1) | 0)))

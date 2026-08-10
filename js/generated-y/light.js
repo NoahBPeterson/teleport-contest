@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { cg, gb, gl, gm, gv, gy, svl, u, uskin } from './decl.js';
@@ -262,7 +263,7 @@ export function* show_transient_light(obj, x, y) {
         }
     }
     if (obj) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))()));
+        (yield* Y.icall(nh_delay_output()()));
         (yield* remove_object(obj));
     }
 }
@@ -680,22 +681,22 @@ export function* wiz_light_sources() {
     let win;
     let buf = new Uint8Array(256);
     let ls;
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     if (win == -1)
         return NHM.ECMD_OK;
     void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl33)));
+    (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(win, 0, __sl33)));
     if (cptr.ldPtro(gl, FLD.instance_globals_l_light_base)) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl43)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl44)));
+        (yield* Y.icall(putstr()(win, 0, __sl43)));
+        (yield* Y.icall(putstr()(win, 0, __sl44)));
         for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
             void cptr.sprintf(cptr.decay(buf), __sl45, cptr.ldI16o(ls, FLD.light_source_x), cptr.ldI16o(ls, FLD.light_source_y), cptr.ldI16o(ls, FLD.light_source_range), cptr.ldI16o(ls, FLD.light_source_flags), (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT ? __sl46 : (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, FLD.light_source_id)), FLD.monst_mx) > 0) ? __sl47 : ((cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? __sl48 : __sl49)) : __sl50)), fmt_ptr(cptr.ldPtro(ls, FLD.light_source_id)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     } else
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl51)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(putstr()(win, 0, __sl51)));
+    (yield* Y.icall(display_nhwindow()(win, 0)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     return NHM.ECMD_OK;
 }

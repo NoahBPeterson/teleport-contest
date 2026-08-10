@@ -529,6 +529,52 @@ export const MACRO_MODULE = './nhmacro.js';
 // C2JS_FIELDNAMES=0 restores bare integer offsets (the A/B baseline).
 export const FIELD_NS = 'FLD';
 export const FIELD_MODULE = './nhfield.js';
+
+// -------------------------------------------- named macro-body helpers ----
+//
+// `Hallucination` is one word in C and 240 characters of inlined loads here,
+// repeated at every one of its sites.  The 1.9 macro tier could not reach it:
+// it recovered a name from the spelling location of the single integer token a
+// macro expanded to, and an expression body has no single token.
+//
+// What identifies an expression body instead is its *extent*.  A node whose
+// range.begin and range.end spell at the first and last token of one
+// object-like `#define`'s body is that macro's complete expansion — a
+// sub-expression of the body starts later or ends earlier, and a use of the
+// macro inside another macro's body spells at the inner body.  The name then
+// comes from the `#define` at that extent, never from the shape of the value.
+//
+// The audit is string equality, which is what makes this safe without any
+// scope analysis: the body is emitted normally, and the call is substituted
+// only if the emission is character-for-character the one already recorded for
+// that name.  A site where a C local shadows a global the body reads emits
+// different code and keeps its expansion — except that a local *of the same
+// name* would emit the same string, so free identifiers are additionally
+// required not to be local here.  (A C local cannot be named after a live
+// object-like macro; that is why the helpers can be imported by bare name.)
+//
+// Bodies are captured flat — helper substitution is suppressed while emitting
+// one — so every helper is a leaf: no helper calls another, and a site costs
+// exactly one call.  Nesting would read better in nhprop.js and cost three
+// calls where the hot path has one.
+//
+// C2JS_MACROFNS=0 disables the substitution (the A/B baseline).
+export const PROP_NS = 'nhprop';
+export const PROP_MODULE = './nhprop.js';
+const MACRO_FNS = process.env.C2JS_MACROFNS !== '0';
+/** name -> { code, free: [names] } for every helper any emitter has captured */
+export const MACRO_HELPERS = new Map();
+const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refusedLocal: 0 };
+
+// A helper body may contain only pure loads off module-scope storage: no
+// calls but cptr.*, no assignment, no ++/--, no interned string literal (which
+// would leave a dangling __slN in a file whose output no longer mentions it),
+// and no rng_log_set_caller — that one carries the *call site's line number*,
+// so its emission differs per site and could never be shared anyway.
+const HELPER_CALLEE = /([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\(/g;
+const HELPER_IDENT = /(^|[^.\w$'"])([A-Za-z_$][\w$]*)/g;
+const HELPER_WORDS = new Set(['cptr', CONST_NS, MACRO_NS, FIELD_NS, 'BigInt', 'Math', 'null', 'true', 'false',
+  'asIntN', 'asUintN', 'imul', 'undefined']);
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 // spelling files we will trust: NetHack's own headers, as the compile
@@ -550,7 +596,7 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 export const EMIT_VERSION = 9;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -566,6 +612,12 @@ export class Emitter {
     // empty in single-file mode, where offsets stay bare integers
     this.fieldOffsets = fieldOffsets instanceof Map ? fieldOffsets : new Map(fieldOffsets || []);
     this.usesFields = false;
+    // "header.h:bodyStartOffset" -> {name, end} for object-like #defines with
+    // an expression body, which become nhprop.js helpers; empty in single-file
+    // mode, where a macro body keeps inlining at every site
+    this.macroExprDefs = macroExprDefs instanceof Map ? macroExprDefs : new Map(macroExprDefs || []);
+    this.propRefs = new Set(); // helper names this file calls
+    this.inHelperBody = false; // capturing a helper body: no nested substitution
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
@@ -1245,6 +1297,65 @@ export class Emitter {
 
   // ----- expressions -----
 
+  /**
+   * The object-like macro whose whole body this node is, or null.
+   *
+   * Both spelling ends must land on one macro body's first and last token, in
+   * a NetHack header the compile database spells `../include/x.h`, and the
+   * node must actually be a macro expansion (an expansionLoc).  Everything is
+   * a location the C source *is*; nothing is inferred from the value.
+   */
+  macroBodyAt(n) {
+    const b = n.range?.begin?.spellingLoc, e = n.range?.end?.spellingLoc;
+    if (!b || !e || b.offset === undefined || e.offset === undefined) return null;
+    if (!b.file || !MACRO_HEADER_RE.test(b.file)) return null;
+    if (!n.range.begin.expansionLoc) return null;
+    const def = this.macroExprDefs.get(`${MACRO_HEADER_RE.exec(b.file)[1]}:${b.offset}`);
+    return def && def.end === e.offset ? def : null;
+  }
+
+  /**
+   * Free module-scope identifiers of an emitted helper body, or null when the
+   * body is not one a helper may hold (see the note above MACRO_HELPERS).
+   */
+  helperFreeVars(code) {
+    if (/__sl|\+\+|--|rng_log/.test(code)) return null;
+    if (/[^=!<>+\-*/%&|^]=[^=]/.test(code)) return null; // assignment of any kind
+    if (/^[A-Za-z_$][\w$]*$/.test(code)) return null;    // a bare alias names nothing new
+    for (const m of code.matchAll(HELPER_CALLEE)) {
+      if (!m[1].startsWith('cptr.')) return null;
+    }
+    const free = new Set();
+    for (const m of code.matchAll(HELPER_IDENT)) {
+      const id = m[2];
+      if (HELPER_WORDS.has(id) || /^\d/.test(id)) continue;
+      if (code[m.index + m[1].length + id.length] === '(') continue; // callee, already checked
+      if (this.localNames?.has(id)) return null; // could be a shadowing local
+      if (this.refs.get(id) === 'FunctionDecl') return null; // a function designator, not storage
+      free.add(id);
+    }
+    return [...free].sort();
+  }
+
+  /**
+   * Substitute `Hallucination()` for a whole object-like macro expansion, when
+   * the emission of its body is character-for-character the one recorded for
+   * that name.  Returns null to leave the expansion inline.
+   */
+  macroHelper(def, d) {
+    if (d.rep !== 'val' || d.code.endsWith('()')) return null;
+    const prev = MACRO_HELPERS.get(def.name);
+    if (prev && prev.code !== d.code) { MACRO_FN_STATS.refusedMismatch++; return null; }
+    if (!prev) {
+      const free = this.helperFreeVars(d.code);
+      if (!free) { MACRO_FN_STATS.refusedImpure++; return null; }
+      MACRO_HELPERS.set(def.name, { code: d.code, free, header: def.header });
+    }
+    MACRO_FN_STATS.named++;
+    this.propRefs.add(def.name);
+    return { code: `${def.name}()`, prec: PREC.atom, rep: 'val' };
+  }
+
   emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
     if (!opts.stmtPos && !this.symbolic) {
@@ -1268,7 +1379,13 @@ export class Emitter {
     }
     const fn = this['expr_' + n.kind];
     if (!fn) throw new Error(`emitExpr: unsupported node kind ${n.kind} (${this.cref(n)})`);
-    return fn.call(this, n, opts);
+    const def = MACRO_FNS && !opts.stmtPos && !this.symbolic && !this.inHelperBody && this.macroExprDefs.size
+      ? this.macroBodyAt(n) : null;
+    if (!def) return fn.call(this, n, opts);
+    this.inHelperBody = true;
+    let d;
+    try { d = fn.call(this, n, opts); } finally { this.inHelperBody = false; }
+    return this.macroHelper(def, d) || d;
   }
 
   expr_IntegerLiteral(n) {

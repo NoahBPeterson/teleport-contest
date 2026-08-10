@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Hallucination, display_nhwindow, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
 import { WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday } from './decl.js';
@@ -1263,7 +1264,7 @@ function shkinit(shp, sroom) {
     let eshkp;
     sh = good_shopdoor(sroom, sx, sy);
     if (sh < 0) {
-        if (cptr.ld1so(flags, FLD.flag_debug)) {
+        if (wizard()) {
             let j = cptr.ld1so(sroom, FLD.mkroom_doorct);
             impossible(__sl380);
             pline(__sl381, cptr.ldI16(sroom), cptr.ldI16o(sroom, FLD.mkroom_ly), cptr.ldI16o(sroom, FLD.mkroom_hx), cptr.ldI16o(sroom, FLD.mkroom_hy));
@@ -1272,7 +1273,7 @@ function shkinit(shp, sroom) {
                 pline(__sl383, cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4, FLD.nhcoord_y));
                 sh++;
             }
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0);
+            display_nhwindow()(WIN_MESSAGE.v, 0);
         }
         return -1;
     }
@@ -1427,7 +1428,7 @@ export function shkname(mtmp) {
         panic(__sl389, nam);
     } else {
         let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam);
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !cptr.ldI32(program_state)) {
+        if (Hallucination() && !cptr.ldI32(program_state)) {
             let nlp;
             let num;
             for (num = 0; num < 13; num++)
@@ -1457,7 +1458,7 @@ export function shkname_is_pname(mtmp) {
 /** C ref: shknam.c:908 — @param {CPtr} shkp @param {CInt} override_hallucination @returns {CInt} */
 export function is_izchak(shkp, override_hallucination) {
     let shknm;
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !override_hallucination)
+    if (Hallucination() && !override_hallucination)
         return 0;
     if (!(cptr.ldI32o(shkp, FLD.monst_isshk) & 1))
         return 0;

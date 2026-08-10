@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { night } from './calendar.js';
@@ -55,10 +56,10 @@ export function* were_change(mon) {
     if (!((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n))
         return;
     if (((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n)) {
-        if (!(cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2((yield* night()) ? (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) : rn2((yield* night()) ? (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 10 : 50)))) {
+        if (!Protection_from_shape_changers() && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2((yield* night()) ? (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) : rn2((yield* night()) ? (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, FLD.flag_moonphase) == NHM.FULL_MOON ? 10 : 50)))) {
             (yield* new_were(mon));
             (cptr.stI64o(gw, FLD.instance_globals_w_were_changes, cptr.ldI64o(gw, FLD.instance_globals_w_were_changes) + 1n)) - (1n);
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !canseemon(mon)) {
+            if (!Deaf() && !canseemon(mon)) {
                 let howler;
                 switch ((cptr.ldI32o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_pmidx))) {
                     case NHC.PM_WEREWOLF:
@@ -78,7 +79,7 @@ export function* were_change(mon) {
                 }
             }
         }
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(30)) : rn2(30)) || (cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops))) {
+    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(30)) : rn2(30)) || Protection_from_shape_changers()) {
         (yield* new_were(mon));
         (cptr.stI64o(gw, FLD.instance_globals_w_were_changes, cptr.ldI64o(gw, FLD.instance_globals_w_were_changes) + 1n)) - (1n);
     }
@@ -132,14 +133,14 @@ export function were_beastie(pm) {
 /** C ref: were.c:96 — @param {CPtr} mon */
 export function* new_were(mon) {
     let pm;
-    if ((cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops)) && ((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n))
+    if (Protection_from_shape_changers() && ((cptr.ldU64o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n))
         return;
     pm = counter_were((cptr.ldI32o((cptr.ldPtro(mon, FLD.monst_data)), FLD.permonst_pmidx)));
     if (pm < NHC.LOW_PM) {
         (yield* impossible(__sl5, cptr.ldPtro(cptr.ldPtro(mon, FLD.monst_data), NHC.NEUTRAL, 8)));
         return;
     }
-    if (canseemon(mon) && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+    if (canseemon(mon) && !Hallucination())
         (yield* pline(__sl6, (yield* Monnam(mon)), ((cptr.ldU64o((cptr.add(mons, pm, 96)), FLD.permonst_mflags2) & 8n) != 0n) ? __sl7 : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4)));
     set_mon_data(mon, cptr.add(mons, pm, 96));
     if (((cptr.ldI32o((mon), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mon), FLD.monst_mcanmove) & 1))) {
@@ -163,7 +164,7 @@ export function* were_summon(ptr, yours, visible, genbuf) {
     let mtmp;
     let total = 0;
     cptr.stI32(visible, 0);
-    if ((cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops)) && !yours)
+    if (Protection_from_shape_changers() && !yours)
         return 0;
     for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 155, __sl9), rnd(5)) : rnd(5)); i > 0; i--) {
         switch (pm) {
@@ -203,8 +204,8 @@ export function* were_summon(ptr, yours, visible, genbuf) {
 /** C ref: were.c:192 */
 export function* you_were() {
     let qbuf = new Uint8Array(128);
-    let controllable_poly = schar(((cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, FLD.you_uprops)) && !(cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic) || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
-    if ((cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops)) || cptr.ldI32o(u, FLD.you_umonnum) == cptr.ldI32o(u, FLD.you_ulycn))
+    let controllable_poly = schar((Polymorph_control() && !(HStun() || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
+    if (Unchanging() || cptr.ldI32o(u, FLD.you_umonnum) == cptr.ldI32o(u, FLD.you_ulycn))
         return;
     if (controllable_poly) {
         void cptr.sprintf(cptr.decay(qbuf), __sl11, (yield* an(cptr.add(cptr.ldPtro3(mons, cptr.ldI32o(u, FLD.you_ulycn), 96, NHC.NEUTRAL, 8, 0), 4))));
@@ -219,12 +220,12 @@ export function* you_were() {
 
 /** C ref: were.c:213 — @param {CInt} purify */
 export function* you_unwere(purify) {
-    let controllable_poly = schar(((cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, FLD.you_uprops)) && !(cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic) || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
+    let controllable_poly = schar((Polymorph_control() && !(HStun() || (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
     if (purify) {
         (yield* You_feel(__sl12));
         (yield* set_ulycn(NHC.NON_PM));
     }
-    if (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops)) && ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n) && !(yield* monster_nearby()) && (!controllable_poly || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __sl13))))
+    if (!Unchanging() && ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n) && !(yield* monster_nearby()) && (!controllable_poly || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __sl13))))
         (yield* rehumanize());
     else if (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 4n) != 0n) && !cptr.ldI32o(u, FLD.you_mtimedone))
         cptr.stI32o(u, FLD.you_mtimedone, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 227, __sl14), rn2(200)) : rn2(200)) + 200) | 0));

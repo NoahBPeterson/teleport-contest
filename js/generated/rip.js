@@ -5,6 +5,7 @@
 
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
+import { putstr } from './nhprop.js';
 import { gd, gr, svp } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { formatkiller } from './topten.js';
@@ -100,11 +101,11 @@ export function genl_outrip(tmpwin, how, when) {
     year = Number(BigInt.asIntN(32, ((yyyymmdd(when) / 10000n) % 10000n)));
     void cptr.sprintf(cptr.decay(buf), __sl12, year);
     center(12, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13);
+    putstr()(tmpwin, 0, __sl13);
     for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.ldPtr(dp));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13);
+        putstr()(tmpwin, 0, cptr.ldPtr(dp));
+    putstr()(tmpwin, 0, __sl13);
+    putstr()(tmpwin, 0, __sl13);
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); x++) {
         cptr.free(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_rip), x, 8));
     }

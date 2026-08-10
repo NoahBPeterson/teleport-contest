@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
 import { setworn } from './worn.js';
@@ -529,7 +530,7 @@ function restgamestate(nhfp) {
     if (cptr.ldI32o(sysopt, FLD.sysopt_s_check_save_uid) && uid.v != BigInt(getuid() >>> 0)) {
         if (!cptr.ld1so(gc, FLD.instance_globals_c_converted_savefile_loaded))
             pline(__sl43);
-        if (cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(gc, FLD.instance_globals_c_converted_savefile_loaded)) {
+        if (wizard() || cptr.ld1so(gc, FLD.instance_globals_c_converted_savefile_loaded)) {
             if (cptr.ld1so(gc, FLD.instance_globals_c_converted_savefile_loaded))
                 cptr.st1o(gc, FLD.instance_globals_c_converted_savefile_loaded, 0);
         } else {
@@ -545,8 +546,8 @@ function restgamestate(nhfp) {
     sfi_flag(nhfp, flags, __sl45);
     defer_perm_invent = cptr.ld1so(iflags, FLD.instance_flags_perm_invent);
     cptr.st1o(iflags, FLD.instance_flags_perm_invent, 0);
-    cptr.st1o(iflags, FLD.instance_flags_deferred_X, schar((cptr.ld1so(newgameflags, FLD.flag_explore) && !cptr.ld1so(flags, FLD.flag_explore) ? 1 : 0)));
-    restoring_special = schar((cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(flags, FLD.flag_explore) ? 1 : 0));
+    cptr.st1o(iflags, FLD.instance_flags_deferred_X, schar((cptr.ld1so(newgameflags, FLD.flag_explore) && !discover() ? 1 : 0)));
+    restoring_special = schar((wizard() || discover() ? 1 : 0));
     if (cptr.ld1so(newgameflags, FLD.flag_debug)) {
         cptr.st1o(flags, FLD.flag_debug, 1), cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
     } else if (restoring_special) {
@@ -571,8 +572,8 @@ function restgamestate(nhfp) {
     cptr.stI64o(urealtime, FLD.u_realtime_start_timing, time_from_yyyymmddhhmmss(cptr.decay(timebuf)));
     cptr.stI64o(urealtime, FLD.u_realtime_start_timing, getnow());
     set_uasmon();
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_cliparound))(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
-    if (cptr.ldI32o(u, FLD.you_uhp) <= 0 && (!(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) || cptr.ldI32o(u, FLD.you_mh) <= 0)) {
+    cliparound()(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+    if (cptr.ldI32o(u, FLD.you_uhp) <= 0 && (!Upolyd() || cptr.ldI32o(u, FLD.you_mh) <= 0)) {
         cptr.stI16(u, cptr.stI16o(u, FLD.you_uy, 0));
         You(__sl52);
         cptr.stI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz1_level)), FLD.d_level_dlevel, 0);
@@ -666,7 +667,7 @@ export function dorecover(nhfp) {
     getlev(nhfp, 0, 0);
     if (!restgamestate(nhfp)) {
         let tnhfp = get_freeing_nhfile();
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+        display_nhwindow()(WIN_MESSAGE.v, 1);
         savelev(tnhfp, 0);
         close_nhfile(tnhfp);
         close_nhfile(nhfp);
@@ -704,7 +705,7 @@ export function dorecover(nhfp) {
     close_nhfile(nhfp);
     restlevelstate();
     cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 1);
-    if (!cptr.ld1so(flags, FLD.flag_debug) && !cptr.ld1so(flags, FLD.flag_explore))
+    if (!wizard() && !discover())
         void delete_savefile();
     if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))))
         assign_graphics(NHC.ROGUESET);
@@ -723,12 +724,12 @@ export function dorecover(nhfp) {
     cptr.stI32o(program_state, FLD.sinfo_restoring, 0);
     if (cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages) && !cptr.ldI32o(program_state, FLD.sinfo_beyond_savefile_load)) {
         cptr.stI32o(ge, FLD.instance_globals_e_early_raw_messages, 0);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        wait_synch()();
     }
     cptr.stI32o(u, FLD.you_usteed_mid, cptr.stI32o(u, FLD.you_ustuck_mid, 0));
     cptr.stI32o(program_state, FLD.sinfo_beyond_savefile_load, 1);
     docrt();
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+    clear_nhwindow()(WIN_MESSAGE.v);
     welcome(0);
     check_special_room(0);
     return 1;
@@ -836,7 +837,7 @@ export function getlev(nhfp, pid, lev) {
             void cptr.sprintf(cptr.decay(trickbuf), __sl72, hpid.v, pid);
         else
             void cptr.sprintf(cptr.decay(trickbuf), __sl73, dlvl.v, lev);
-        if (cptr.ld1so(flags, FLD.flag_debug))
+        if (wizard())
             pline(__sl74, cptr.decay(trickbuf));
         trickery(cptr.decay(trickbuf));
     }
@@ -1074,11 +1075,11 @@ function restore_msghistory(nhfp) {
             panic(__sl94, msgsize.v);
         sfi_char(nhfp, cptr.decay(msg), __sl95, msgsize.v);
         cptr.st1o(cptr.decay(msg), msgsize.v, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(cptr.decay(msg), 1);
+        putmsghistory()(cptr.decay(msg), 1);
         ++msgcount;
     }
     if (msgcount)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(null, 1);
+        putmsghistory()(null, 1);
     do {
         if (debugcore(__sl83, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
@@ -1171,11 +1172,11 @@ export function restore_menu(bannerwin) {
     cptr.st1(svp, 0);
     saved = get_saved_games();
     if (saved && cptr.ldPtr(saved)) {
-        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+        tmpwin = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         if (bannerwin != -1) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(bannerwin);
+            clear_nhwindow()(bannerwin);
             for (k = 1; k <= 4; ++k)
                 add_menu_str(tmpwin, copyright_banner_line(k));
             add_menu_str(tmpwin, __sl69);
@@ -1203,7 +1204,7 @@ export function restore_menu(bannerwin) {
         clet = (((k + 1) | 0) <= 16 && clet == 110) ? 113 : ((((k + 1) | 0) <= 42 && clet == 78) ? 81 : 0);
         cptr.stI32(any, -2);
         add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __sl101, NHM.MENU_ITEMFLAGS_SELECTED);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, null);
+        end_menu()(tmpwin, null);
         if (select_menu(tmpwin, NHM.PICK_ONE, chosen_game) > 0) {
             ch = cptr.ldI32(chosen_game.v);
             if (ch > 0)
@@ -1214,11 +1215,11 @@ export function restore_menu(bannerwin) {
         } else {
             ch = -1;
         }
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+        destroy_nhwindow()(tmpwin);
         if (bannerwin != -1) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(bannerwin);
+            clear_nhwindow()(bannerwin);
             if (ch == 0)
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(bannerwin, 0, copyright_banner_line(1));
+                putstr()(bannerwin, 0, copyright_banner_line(1));
         }
     }
     free_saved_games(saved);

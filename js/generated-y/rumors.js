@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard } from './nhprop.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -225,11 +226,11 @@ export function* rumor_check() {
                     { __go_no_rumors = true; break __skip_no_rumors; }
                 }
             }
-            tmpwin.v = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+            tmpwin.v = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
             void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
             void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
@@ -237,13 +238,13 @@ export function* rumor_check() {
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
             void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
@@ -251,13 +252,13 @@ export function* rumor_check() {
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             void fclose(rumors);
         } else if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
             __go_no_rumors = true; break __skip_no_rumors;
@@ -268,14 +269,14 @@ export function* rumor_check() {
     }
     if (__go_no_rumors) {
         (yield* pline(__sl15));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1)));
+        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
     }
     (yield* others_check(__sl16, __sl17, tmpwin));
     (yield* others_check(__sl18, __sl19, tmpwin));
     (yield* others_check(__sl20, __sl21, tmpwin));
     if (tmpwin.v != -1) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin.v, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin.v)));
+        (yield* Y.icall(display_nhwindow()(tmpwin.v, 1)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin.v)));
     }
 }
 
@@ -293,48 +294,48 @@ function* others_check(ftype, fname, winptr) {
     if (fh) {
         __lbl_closeit: {
             if (tmpwin == -1) {
-                cptr.stI32(winptr, tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT))));
+                cptr.stI32(winptr, tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT))));
                 if (tmpwin == -1) {
                     (yield* impossible(cptr.decay(__static_others_check_errfmt), fname, __sl22));
                     break __lbl_closeit;
                 }
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, ftype)));
+            (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
+            (yield* Y.icall(putstr()(tmpwin, 0, ftype)));
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh)) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl23);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
             if (cptr.ld1s(cptr.decay(line)) != 35) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl24);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl25)));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(line))));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl26)));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall(putstr()(tmpwin, 0, __sl25)));
+                (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(line))));
+                (yield* Y.icall(putstr()(tmpwin, 0, __sl26)));
+                (yield* Y.icall(putstr()(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
                 break __lbl_closeit;
             }
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __sl27 : __sl28);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
             ++entrycount;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+            (yield* Y.icall(putstr()(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
             if (!fgets(cptr.decay(line), 256, fh)) {
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl29)));
+                (yield* Y.icall(putstr()(tmpwin, 0, __sl29)));
             } else {
                 ++entrycount;
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall(putstr()(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
                 while (fgets(cptr.decay(line), 256, fh)) {
                     ++entrycount;
                     if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
@@ -342,11 +343,11 @@ function* others_check(ftype, fname, winptr) {
                     void (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)));
                 }
                 if (entrycount == 2) {
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl30)));
+                    (yield* Y.icall(putstr()(tmpwin, 0, __sl30)));
                 } else {
                     if (entrycount > 3)
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl31)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
+                        (yield* Y.icall(putstr()(tmpwin, 0, __sl31)));
+                    (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 }
             }
         }
@@ -423,7 +424,7 @@ export function* outrumor(truth, mechanism) {
     if (reading) {
         if (is_fainted() && mechanism == NHM.BY_COOKIE) {
             return;
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        } else if (Blind()) {
             if (mechanism == NHM.BY_COOKIE)
                 (yield* pline(cptr.decay(__static_outrumor_fortune_msg)));
             (yield* pline(__sl33));
@@ -531,19 +532,19 @@ export function* outoracle(special, delphi) {
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
                 cptr.stU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+            tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
             if (delphi)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, special ? __sl48 : __sl49)));
+                (yield* Y.icall(putstr()(tmpwin, 0, special ? __sl48 : __sl49)));
             else
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl50)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
+                (yield* Y.icall(putstr()(tmpwin, 0, __sl50)));
+            (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
             while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51)) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall(putstr()(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         }
         void fclose(oracles);
     } else {
@@ -708,17 +709,17 @@ function* init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (cptr.ld1so(flags, FLD.flag_debug) && (yield* debugcore(__sl62, 0))) {
+    if (wizard() && (yield* debugcore(__sl62, 0))) {
         let buf = new Uint8Array(256);
         let i;
-        let tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl63)));
+        let tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
+        (yield* Y.icall(putstr()(tmpwin, 0, __sl63)));
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
             void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtro(CapMons, i, 8));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     }
     return;
 }

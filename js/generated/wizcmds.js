@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
 import { encumber_msg } from './pickup.js';
@@ -246,7 +247,7 @@ const __sl184 = cptr.lit("%s %s %s %s");
 
 /** C ref: wizcmds.c:32 @returns {CInt} */
 export function wiz_wish() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let save_verbose = cptr.ld1so(flags, FLD.flag_verbose);
         cptr.st1o(flags, FLD.flag_verbose, 0);
         makewish();
@@ -259,7 +260,7 @@ export function wiz_wish() {
 
 /** C ref: wizcmds.c:50 @returns {CInt} */
 export function wiz_identify() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         cptr.stI32o(iflags, FLD.instance_flags_override_ID, cmd_from_func(wiz_identify));
         if (!cptr.ldI32o(iflags, FLD.instance_flags_override_ID))
             cptr.stI32o(iflags, FLD.instance_flags_override_ID, 9);
@@ -320,7 +321,7 @@ export function makemap_remove_mons() {
 
 /** C ref: wizcmds.c:156 @returns {CInt} */
 export function wiz_makemap() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let was_in_W_tower = In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), cptr.add(u, FLD.you_uz));
         makemap_prepost(1, was_in_W_tower);
         mklev();
@@ -333,11 +334,11 @@ export function wiz_makemap() {
 
 /** C ref: wizcmds.c:176 @returns {CInt} */
 export function wiz_map() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let t;
         let ep;
-        let save_Hconf = cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic);
-        let save_Hhallu = cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic);
+        let save_Hconf = HConfusion();
+        let save_Hhallu = HHallucination();
         do {
             (cptr.stI32o(a11y, FLD.accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, FLD.accessibility_data_mon_notices_blocked) + 1)) - (1);
         } while (0);
@@ -365,7 +366,7 @@ export function wiz_map() {
 
 /** C ref: wizcmds.c:203 @returns {CInt} */
 export function wiz_genesis() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let mongen_saved = cptr.ld1so(iflags, FLD.instance_flags_debug_mongen);
         cptr.st1o(iflags, FLD.instance_flags_debug_mongen, 0);
         void create_particular();
@@ -377,7 +378,7 @@ export function wiz_genesis() {
 
 /** C ref: wizcmds.c:218 @returns {CInt} */
 export function wiz_where() {
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         void print_dungeon(0, null, null);
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_where));
@@ -386,7 +387,7 @@ export function wiz_where() {
 
 /** C ref: wizcmds.c:229 @returns {CInt} */
 export function wiz_detect() {
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         void findit();
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_detect));
@@ -468,7 +469,7 @@ export function wiz_kill() {
 
 /** C ref: wizcmds.c:353 @returns {CInt} */
 export function wiz_load_lua() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let buf = new Uint8Array(256);
         let sbi = cptr.alloc(16); cptr.stI32(sbi, 2281701376); cptr.stI32o(sbi, FLD.nhl_sandbox_info_memlimit, 16777216); cptr.stI32o(sbi, FLD.nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, FLD.nhl_sandbox_info_perpcall, 16777216);
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
@@ -485,7 +486,7 @@ export function wiz_load_lua() {
 
 /** C ref: wizcmds.c:376 @returns {CInt} */
 export function wiz_load_splua() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let buf = new Uint8Array(256);
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         getlin(__sl23, cptr.decay(buf));
@@ -503,7 +504,7 @@ export function wiz_load_splua() {
 
 /** C ref: wizcmds.c:399 @returns {CInt} */
 export function wiz_level_tele() {
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         level_tele();
     else
         pline(cptr.decay(unavailcmd), ecname_from_fn(wiz_level_tele));
@@ -515,7 +516,7 @@ const __static_wiz_flip_level_prmpt = cptr.bytes("Flip 0=randomly, 1=vertically,
 
 /** C ref: wizcmds.c:412 @returns {CInt} */
 export function wiz_flip_level() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let c = yn_function(cptr.decay(__static_wiz_flip_level_prmpt), cptr.decay(__static_wiz_flip_level_choices), 0, 1);
         if (c && cptr.strchr(cptr.decay(__static_wiz_flip_level_choices), c)) {
             c = schar(c - 48);
@@ -647,7 +648,7 @@ export function wiz_show_seenv() {
     let curx;
     let v;
     let row = new Uint8Array(81);
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     startx = i16((1 > ((cptr.ldI16(u) - 20) | 0) ? 1 : ((cptr.ldI16(u) - 20) | 0)));
     stopx = i16((((startx + 40) | 0) < NHM.COLNO ? ((startx + 40) | 0) : NHM.COLNO));
     if (((stopx - startx) | 0) == 40)
@@ -668,10 +669,10 @@ export function wiz_show_seenv() {
             if (cptr.ld1so(cptr.decay(row), x, 1) != 32)
                 break;
         cptr.st1o(cptr.decay(row), (x + 1) | 0, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(row));
+        putstr()(win, 0, cptr.decay(row));
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 1);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -682,10 +683,10 @@ export function wiz_show_vision() {
     let y;
     let v;
     let row = new Uint8Array(81);
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     void cptr.sprintf(cptr.decay(row), __sl40, NHM.COULD_SEE, NHM.IN_SIGHT, NHM.TEMP_LIT);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(row));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+    putstr()(win, 0, cptr.decay(row));
+    putstr()(win, 0, __sl41);
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 1; x < NHM.COLNO; x++) {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy))) {
@@ -699,10 +700,10 @@ export function wiz_show_vision() {
             if (cptr.ld1so(cptr.decay(row), x, 1) != 32)
                 break;
         cptr.st1o(cptr.decay(row), (x + 1) | 0, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.add(cptr.decay(row), 1, 1));
+        putstr()(win, 0, cptr.add(cptr.decay(row), 1, 1));
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 1);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -714,9 +715,9 @@ export function wiz_show_wmodes() {
     let row = new Uint8Array(81);
     let lev;
     let istty = schar((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty));
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     if (istty)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+        putstr()(win, 0, __sl41);
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 0; x < NHM.COLNO; x++) {
             lev = cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), x, 756), y, 36);
@@ -732,10 +733,10 @@ export function wiz_show_wmodes() {
                 cptr.st1o(cptr.decay(row), x, 120, 1);
         }
         cptr.st1o(cptr.decay(row), NHM.COLNO, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.add(cptr.decay(row), 1, 1));
+        putstr()(win, 0, cptr.add(cptr.decay(row), 1, 1));
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 1);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -747,9 +748,9 @@ export function wiz_map_levltyp() {
     let terrain;
     let row = new Uint8Array(81);
     let istty = schar((!strcmp(cptr.ldPtr(windowprocs), __sl42)));
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     if (istty)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+        putstr()(win, 0, __sl41);
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 1; x < NHM.COLNO; x++) {
             terrain = cptr.ld1so3(svl, x, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ);
@@ -759,7 +760,7 @@ export function wiz_map_levltyp() {
         if (cptr.ld1so3(svl, 0, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ) != NHC.STONE || may_dig(0, y))
             cptr.st1o(cptr.decay(row), x++, 33, 1);
         cptr.st1o(cptr.decay(row), x, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(row));
+        putstr()(win, 0, cptr.decay(row));
     }
     {
         let dsc = new Uint8Array(256);
@@ -816,7 +817,7 @@ export function wiz_map_levltyp() {
             void cptr.strcat(cptr.decay(dsc), __sl66);
         if ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_arboreal) & 1))
             void cptr.strcat(cptr.decay(dsc), __sl67);
-        if ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_sokoban_rules) & 1))
+        if (Sokoban())
             void cptr.strcat(cptr.decay(dsc), __sl68);
         if (Invocation_lev(cptr.add(u, FLD.you_uz)))
             void cptr.strcat(cptr.decay(dsc), __sl69);
@@ -824,17 +825,17 @@ export function wiz_map_levltyp() {
             void cptr.strcat(cptr.decay(dsc), __sl70);
         if (cptr.ldI16o(u, FLD.you_uz) == 0)
             void cptr.strcat(cptr.decay(dsc), __sl71);
-        else if (cptr.ldI16o(u, FLD.you_uz) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mines_dnum)))
+        else if (cptr.ldI16o(u, FLD.you_uz) == mines_dnum())
             void cptr.strcat(cptr.decay(dsc), __sl72);
-        else if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sokoban_dnum))))
+        else if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == sokoban_dnum()))
             void cptr.strcat(cptr.decay(dsc), __sl73);
-        else if (cptr.ldI16o(u, FLD.you_uz) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_quest_dnum)))
+        else if (cptr.ldI16o(u, FLD.you_uz) == quest_dnum())
             void cptr.strcat(cptr.decay(dsc), __sl74);
         else if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))))
             void cptr.strcat(cptr.decay(dsc), __sl75);
         else if (cptr.ldI16o(u, FLD.you_uz) == 1)
             void cptr.strcat(cptr.decay(dsc), __sl76);
-        else if (cptr.ldI16o(u, FLD.you_uz) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_tower_dnum)))
+        else if (cptr.ldI16o(u, FLD.you_uz) == tower_dnum())
             void cptr.strcat(cptr.decay(dsc), __sl77);
         else if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))))
             void cptr.strcat(cptr.decay(dsc), __sl78);
@@ -848,10 +849,10 @@ export function wiz_map_levltyp() {
         }
         if (cptr.strlen(cptr.decay(dsc)) >= 80n)
             cptr.st1o(cptr.decay(dsc), 79, 0, 1);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(dsc));
+        putstr()(win, 0, cptr.decay(dsc));
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 1);
+    destroy_nhwindow()(win);
     return;
 }
 
@@ -865,9 +866,9 @@ export function wiz_levltyp_legend() {
     let dsc;
     let fmt;
     let buf = new Uint8Array(256);
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl82);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+    win = create_nhwindow()(NHM.NHW_TEXT);
+    putstr()(win, 0, __sl82);
+    putstr()(win, 0, __sl41);
     fmt = __sl83;
     cptr.st1(cptr.decay(buf), 0);
     last = 39 & -2;
@@ -877,12 +878,12 @@ export function wiz_levltyp_legend() {
             c = !cptr.ld1s(dsc) ? 32 : (!cptr.strncmp(dsc, __sl84, 11n) ? 42 : ((j < 10) ? (48 + j) | 0 : ((j < 36) ? (((97 + j) | 0) - 10) | 0 : (((65 + j) | 0) - 36) | 0)));
             void cptr.sprintf(eos(cptr.decay(buf)), fmt, c, dsc);
             if (j > i) {
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
                 cptr.st1(cptr.decay(buf), 0);
             }
         }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 1);
+    destroy_nhwindow()(win);
     return;
 }
 
@@ -942,7 +943,7 @@ const __static_wiz_intrinsic_fmt = cptr.bytes("You are%s %s."); /** C ref: wizcm
 
 /** C ref: wizcmds.c:949 @returns {CInt} */
 export function wiz_intrinsic() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let win;
         let any = cptr.alloc(8);
         let buf = new Uint8Array(256);
@@ -958,8 +959,8 @@ export function wiz_intrinsic() {
         let pick_list = cptr.box(null);
         let clr = NHM.NO_COLOR;
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-        win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+        win = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(win, 0n);
         if (cptr.ld1so(iflags, FLD.instance_flags_cmdassist)) {
             void cptr.sprintf(cptr.decay(buf), __sl93, 30);
             add_menu_str(win, cptr.decay(buf));
@@ -979,9 +980,9 @@ export function wiz_intrinsic() {
                 void cptr.sprintf(cptr.decay(buf), __sl24, propname);
             add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl96);
+        end_menu()(win, __sl96);
         n = select_menu(win, NHM.PICK_ANY, pick_list);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+        destroy_nhwindow()(win);
         for (j = 0; j < n; ++j) {
             i = (cptr.ldI32o(pick_list.v, j, 24) - 1) | 0;
             propname = property_by_index(i, p);
@@ -1013,23 +1014,23 @@ export function wiz_intrinsic() {
                 make_sick(newtimeout, cptr.decay(__static_wiz_intrinsic_wizintrinsic), 1, typ);
                 break;
                 case NHC.SLIMED:
-                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !cptr.ldI64o2(u, NHC.SLIMED, 24, FLD.you_uprops + FLD.prop_intrinsic) ? __sl41 : __sl99, __sl100);
+                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !Slimed() ? __sl41 : __sl99, __sl100);
                 make_slimed(newtimeout, cptr.decay(buf));
                 break;
                 case NHC.STONED:
-                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !cptr.ldI64o2(u, NHC.STONED, 24, FLD.you_uprops + FLD.prop_intrinsic) ? __sl41 : __sl99, __sl101);
+                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !Stoned() ? __sl41 : __sl99, __sl101);
                 make_stoned(newtimeout, cptr.decay(buf), NHM.KILLED_BY, cptr.decay(__static_wiz_intrinsic_wizintrinsic));
                 break;
                 case NHC.STUNNED:
                 make_stunned(newtimeout, 1);
                 break;
                 case NHC.VOMITING:
-                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !cptr.ldI64o2(u, NHC.VOMITING, 24, FLD.you_uprops + FLD.prop_intrinsic) ? __sl41 : __sl99, __sl102);
+                void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_wiz_intrinsic_fmt), !Vomiting() ? __sl41 : __sl99, __sl102);
                 make_vomiting(newtimeout, 0);
                 pline(__sl24, cptr.decay(buf));
                 break;
                 case NHC.WARN_OF_MON:
-                if (!(cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, FLD.you_uprops))) {
+                if (!Warn_of_mon()) {
                     cptr.stI16o(svc, FLD.context_info_warntype + FLD.warntype_info_speciesidx, NHC.PM_GRID_BUG);
                     cptr.stPtro(svc, FLD.context_info_warntype + FLD.warntype_info_species, cptr.add(mons, cptr.ldI16o(svc, FLD.context_info_warntype + FLD.warntype_info_speciesidx), 96));
                 }
@@ -1125,7 +1126,7 @@ function obj_chain(win, src, chain, force, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -1141,7 +1142,7 @@ function mon_invent_chain(win, src, chain, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -1163,7 +1164,7 @@ function contained_stats(win, src, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -1208,7 +1209,7 @@ function mon_chain(win, src, chain, force, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), src, count, size);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -1232,20 +1233,20 @@ function misc_stats(win, total_count, total_size) {
     cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
     void cptr.sprintf(cptr.decay(hdrbuf), __sl107, 40n);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     count.v = (size.v = 0n);
     engr_stats(__sl108, cptr.decay(hdrbuf), count, size);
     cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
     cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     count.v = (size.v = 0n);
     light_stats(__sl109, cptr.decay(hdrbuf), count, size);
     if (count.v || size.v) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     timer_stats(__sl110, cptr.decay(hdrbuf), count, size);
@@ -1253,7 +1254,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     for (sd = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_damagelist); sd; sd = cptr.ldPtr(sd)) {
@@ -1265,7 +1266,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl111, 32n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     region_stats(__sl112, cptr.decay(hdrbuf), count, size);
@@ -1273,7 +1274,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     for (k = cptr.ldPtr(svk); k; k = cptr.ldPtr(k)) {
@@ -1285,7 +1286,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl113, (((count.v) == 1n) ? __sl41 : __sl114), 272n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     for (bi = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_bonesinfo); bi; bi = cptr.ldPtr(bi)) {
@@ -1297,7 +1298,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.sprintf(cptr.decay(hdrbuf), __sl115, 184n);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     count.v = (size.v = 0n);
     for (idx = 0; idx < NHC.NUM_OBJECTS; ++idx)
@@ -1310,7 +1311,7 @@ function misc_stats(win, total_count, total_size) {
         cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
         void cptr.strcpy(cptr.decay(hdrbuf), __sl116);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -1319,7 +1320,7 @@ function you_sanity_check() {
     let mtmp;
     if ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && !cptr.ldPtro(u, FLD.you_ustuck)) {
         impossible(__sl117);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+        display_nhwindow()(WIN_MESSAGE.v, 1);
         cptr.stI32o(u, FLD.you_uswallow, 0);
         cptr.stI32o(u, FLD.you_uswldtim, 0);
         docrt();
@@ -1332,7 +1333,7 @@ function you_sanity_check() {
         impossible(__sl119, cptr.ldI32o(u, FLD.you_uhp), cptr.ldI32o(u, FLD.you_uhpmax));
         cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhpmax));
     }
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && cptr.ldI32o(u, FLD.you_mh) > cptr.ldI32o(u, FLD.you_mhmax)) {
+    if (Upolyd() && cptr.ldI32o(u, FLD.you_mh) > cptr.ldI32o(u, FLD.you_mhmax)) {
         impossible(__sl120, cptr.ldI32o(u, FLD.you_mh), cptr.ldI32o(u, FLD.you_mhmax));
         cptr.stI32o(u, FLD.you_mh, cptr.ldI32o(u, FLD.you_mhmax));
     }
@@ -1348,7 +1349,7 @@ function you_sanity_check() {
 function levl_sanity_check() {
     let x;
     let y;
-    if (((cptr.ldI32o(u, FLD.you_uinwater) & 1)))
+    if (Underwater())
         return;
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 1; x < NHM.COLNO; x++) {
@@ -1431,7 +1432,7 @@ function list_migrating_mons(nextlevl) {
         c = yn_function(__sl128, cptr.decay(prmpt), 113, 1);
         n = ((c == 99) ? here : ((c == 110) ? nxtlv : ((c == 111) ? other : ((c == 97) ? (((here + nxtlv) | 0) + other) | 0 : 0)))) >>> 0;
         if (n > 0) {
-            win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+            win = create_nhwindow()(NHM.NHW_TEXT);
             switch (c) {
                 case 99:
                 case 110:
@@ -1442,8 +1443,8 @@ function list_migrating_mons(nextlevl) {
                 void cptr.strcpy(cptr.decay(buf), __sl133);
                 break;
             }
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+            putstr()(win, 0, cptr.decay(buf));
+            putstr()(win, 0, __sl41);
             marray = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(((n + 1) >>> 0) >>> 0) * 8n))));
             n = 0;
             for (mtmp = cptr.ldPtro(gm, FLD.instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
@@ -1474,11 +1475,11 @@ function list_migrating_mons(nextlevl) {
                     y = cptr.ldI16o2(mtmp, 1, 4, FLD.monst_mtrack + FLD.nhcoord_y);
                     void cptr.sprintf(eos(cptr.decay(buf)), __sl138, x, y);
                 }
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
             cptr.free(marray);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+            display_nhwindow()(win, 0);
+            destroy_nhwindow()(win);
         } else if (c != 113) {
             pline(__sl139);
         }
@@ -1497,12 +1498,12 @@ export function wiz_show_stats() {
     let total_ovr_count = cptr.box(0n);
     let total_misc_size = cptr.box(0n);
     let total_misc_count = cptr.box(0n);
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl140);
+    win = create_nhwindow()(NHM.NHW_TEXT);
+    putstr()(win, 0, __sl140);
     total_obj_count.v = (total_obj_size.v = 0n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_hdr));
+    putstr()(win, 0, cptr.decay(stats_hdr));
     void cptr.sprintf(cptr.decay(buf), __sl141, 216n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     obj_chain(win, __sl122, cptr.ldPtro(gi, FLD.instance_globals_i_invent), 1, total_obj_count, total_obj_size);
     obj_chain(win, __sl142, cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objlist), 1, total_obj_count, total_obj_size);
     obj_chain(win, __sl143, cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_buriedobjlist), 0, total_obj_count, total_obj_size);
@@ -1511,40 +1512,40 @@ export function wiz_show_stats() {
     mon_invent_chain(win, __sl146, cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist), total_obj_count, total_obj_size);
     mon_invent_chain(win, __sl147, cptr.ldPtro(gm, FLD.instance_globals_m_migrating_mons), total_obj_count, total_obj_size);
     contained_stats(win, __sl148, total_obj_count, total_obj_size);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_sep));
+    putstr()(win, 0, cptr.decay(stats_sep));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), __sl149, total_obj_count.v, total_obj_size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     total_mon_count.v = (total_mon_size.v = 0n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+    putstr()(win, 0, __sl41);
     void cptr.sprintf(cptr.decay(buf), __sl150, 320n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     mon_chain(win, __sl106, cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist), 1, total_mon_count, total_mon_size);
     mon_chain(win, __sl151, cptr.ldPtro(gm, FLD.instance_globals_m_migrating_mons), 0, total_mon_count, total_mon_size);
     if (cptr.ldPtro(gm, FLD.instance_globals_m_mydogs))
         mon_chain(win, __sl152, cptr.ldPtro(gm, FLD.instance_globals_m_mydogs), 0, total_mon_count, total_mon_size);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_sep));
+    putstr()(win, 0, cptr.decay(stats_sep));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), __sl153, total_mon_count.v, total_mon_size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     total_ovr_count.v = (total_ovr_size.v = 0n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl154);
+    putstr()(win, 0, __sl41);
+    putstr()(win, 0, __sl154);
     overview_stats(win, cptr.decay(template), total_ovr_count, total_ovr_size);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_sep));
+    putstr()(win, 0, cptr.decay(stats_sep));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), __sl155, total_ovr_count.v, total_ovr_size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     total_misc_count.v = (total_misc_size.v = 0n);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl156);
+    putstr()(win, 0, __sl41);
+    putstr()(win, 0, __sl156);
     misc_stats(win, total_misc_count, total_misc_size);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_sep));
+    putstr()(win, 0, cptr.decay(stats_sep));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), __sl157, total_misc_count.v, total_misc_size.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(stats_sep));
+    putstr()(win, 0, cptr.decay(buf));
+    putstr()(win, 0, __sl41);
+    putstr()(win, 0, cptr.decay(stats_sep));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), __sl158, (BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, total_obj_count.v + total_mon_count.v) + total_ovr_count.v) + total_misc_count.v)), (BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, total_obj_size.v + total_mon_size.v) + total_ovr_size.v) + total_misc_size.v)));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    putstr()(win, 0, cptr.decay(buf));
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -1559,52 +1560,52 @@ export function wiz_display_macros() {
     let trouble = 0;
     let no_glyph = NHC.MAX_GLYPH;
     let max_glyph = NHC.MAX_GLYPH;
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0))) {
             test = glyph_to_cmap(glyph);
             if (test == no_glyph) {
                 if (!trouble++)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
+                    putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
                 void cptr.sprintf(cptr.decay(buf), __sl159, glyph, test);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
             if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0)) && !(test >= NHC.S_vbeam && test <= NHC.S_rslant)) {
                 if (!trouble++)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
+                    putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
                 void cptr.sprintf(cptr.decay(buf), __sl160, glyph, test);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
             if (!((test) >= 0 && (test) < 106)) {
                 if (!trouble++)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
+                    putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
                 void cptr.sprintf(cptr.decay(buf), __sl161, glyph, test, 106, max_glyph);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
         }
         if (((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0))))) {
             test = (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS))))))));
             if (test < 0 || test >= NHC.NUMMONS) {
                 if (!trouble++)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
+                    putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
                 void cptr.sprintf(cptr.decay(buf), __sl162, glyph, test, NHC.NUMMONS);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
         }
         if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))))) {
             test = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
             if (test < 0 || test > NHC.NUM_OBJECTS) {
                 if (!trouble++)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
+                    putstr()(win, 0, cptr.decay(__static_wiz_display_macros_display_issues));
                 void cptr.sprintf(cptr.decay(buf), __sl163, glyph, test, NHC.NUM_OBJECTS);
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
             }
         }
     }
     if (!trouble)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl164);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+        putstr()(win, 0, __sl164);
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -1627,25 +1628,25 @@ export function wiz_mon_diff() {
     let mdiff = 0;
     let mlev;
     let ptr;
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     for (ptr = cptr.add(mons, 0, 96); cptr.ld1so(ptr, FLD.permonst_mlet); ptr = cptr.add(ptr, 1, 96), cnt++) {
         mcalculated = mstrength(ptr);
         mhardcoded = cptr.ld1uo(ptr, FLD.permonst_difficulty);
         mdiff = (mhardcoded - mcalculated) | 0;
         if (mdiff) {
             if (!trouble++)
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(__static_wiz_mon_diff_window_title));
+                putstr()(win, 0, cptr.decay(__static_wiz_mon_diff_window_title));
             mlev = cptr.ld1so(ptr, FLD.permonst_mlevel);
             if (mlev > 50)
                 mlev = 50;
             nh_snprintf(__sl166, 1819, cptr.decay(buf), 256n, __sl167, cptr.ldPtro(ptr, NHC.NEUTRAL, 8), cnt, mlev, mcalculated, mhardcoded, mdiff);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+            putstr()(win, 0, cptr.decay(buf));
         }
     }
     if (!trouble)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl168);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+        putstr()(win, 0, __sl168);
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -1660,19 +1661,19 @@ export function wiz_objprobs() {
     for (otyp = NHC.FIRST_OBJECT; otyp < NHC.NUM_OBJECTS; otyp++) {
         cptr.stI32o(probsum, cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_class), (cptr.ldI32o(probsum, cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_class), 4) + cptr.ldI16o2(objects, otyp, 120, FLD.objclass_oc_prob)) | 0, 4);
     }
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     for (otyp = NHC.FIRST_OBJECT; otyp < NHC.NUM_OBJECTS; otyp++) {
         if (!(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)))
             continue;
         if (cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_class) != oclass) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl41);
+            putstr()(win, 0, __sl41);
         }
         oclass = cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_class);
         nh_snprintf(__sl169, 1861, cptr.decay(buf), 256n, __sl170, cptr.ldI16o2(objects, otyp, 120, FLD.objclass_oc_prob), cptr.ldI32o(probsum, oclass, 4), cptr.ldI16o2(objects, otyp, 120, FLD.objclass_oc_prob) * 100 / cptr.ldI32o(probsum, oclass, 4), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -1728,7 +1729,7 @@ const __static_wiz_custom_wizcustom = cptr.bytes("#wizcustom"); /** C ref: wizcm
 
 /** C ref: wizcmds.c:1934 @returns {CInt} */
 export function wiz_custom() {
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         let win;
         let buf = new Uint8Array(256);
         let bufa = new Uint8Array(256);
@@ -1736,8 +1737,8 @@ export function wiz_custom() {
         let pick_list = cptr.box(null);
         if (!glyphid_cache_status())
             fill_glyphid_cache();
-        win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+        win = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(win, 0n);
         add_menu_heading(win, __sl173);
         void cptr.sprintf(cptr.decay(bufa), __sl174, cptr.decay(__static_wiz_custom_wizcustom), BigInt(cptr.ldI32o(iflags, FLD.instance_flags_colorcount) >>> 0), cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) : __sl175);
         if (cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
@@ -1747,9 +1748,9 @@ export function wiz_custom() {
         }
         void cptr.sprintf(cptr.decay(buf), __sl24, cptr.decay(bufa));
         wizcustom_glyphids(win);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(bufa));
+        end_menu()(win, cptr.decay(bufa));
         n = select_menu(win, NHM.PICK_NONE, pick_list);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+        destroy_nhwindow()(win);
         if (n >= 1)
             cptr.free(pick_list.v);
         if (glyphid_cache_status())

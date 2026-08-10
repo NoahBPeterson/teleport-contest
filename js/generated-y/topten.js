@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Role_switch, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, putstr, raw_print, raw_print_bold, wizard } from './nhprop.js';
 import { flags, gh, gi, gm, gt, gu, iflags, program_state, svd, svk, svm, svp, u, ubirthday, urealtime } from './decl.js';
 import { impossible, raw_printf } from './pline.js';
 import { an } from './objnam.js';
@@ -280,17 +281,17 @@ export function* formatkiller(buf, siz, how, incl_helpless) {
 /** C ref: topten.c:165 — @param {CPtr} x */
 function* topten_print(x) {
     if (cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin) == -1)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(x)));
+        (yield* Y.icall(raw_print()(x)));
     else
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_NONE, x)));
+        (yield* Y.icall(putstr()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_NONE, x)));
 }
 
 /** C ref: topten.c:174 — @param {CPtr} x */
 function* topten_print_bold(x) {
     if (cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin) == -1)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print_bold))(x)));
+        (yield* Y.icall(raw_print_bold()(x)));
     else
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_BOLD, x)));
+        (yield* Y.icall(putstr()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), NHM.ATR_BOLD, x)));
 }
 
 /** C ref: topten.c:183 — @param {CPtr} lev @returns {CInt} */
@@ -408,9 +409,9 @@ function* writexlentry(rfile, tt, how) {
 /** C ref: topten.c:394 @returns {CLongLong} */
 function encodexlogflags() {
     let e = 0n;
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         e |= 1n;
-    if (cptr.ld1so(flags, FLD.flag_explore))
+    if (discover())
         e |= 2n;
     if (!cptr.ldI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numbones))
         e |= 4n;
@@ -561,7 +562,7 @@ function* encode_extended_achievements(buf) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(cptr.decay(rnkbuf), __sl62, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)), schar(((achidx < 0) ? 1 : 0))));
+            void cptr.sprintf(cptr.decay(rnkbuf), __sl62, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), Role_switch(), schar(((achidx < 0) ? 1 : 0))));
             (yield* strNsubst(cptr.decay(rnkbuf), __sl63, __sl19, 0));
             achievement = lcase(cptr.decay(rnkbuf));
             break;
@@ -632,7 +633,7 @@ export function* topten(how, when) {
         if (cptr.ldI32o(program_state, FLD.sinfo_panicking))
             return;
         if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-            cptr.stI32o(gt, FLD.instance_globals_t_toptenwin, (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT))));
+            cptr.stI32o(gt, FLD.instance_globals_t_toptenwin, (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT))));
         }
         t0_used = 0;
         t0 = (yield* alloc(208));
@@ -660,7 +661,7 @@ export function* topten(how, when) {
         if ((yield* lock_file(__sl84, NHM.SCOREPREFIX, 10))) {
             if (!(lfile = fopen_datafile(__sl84, __sl85, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl86)));
+                    (yield* Y.icall(raw_print()(__sl86)));
             } else {
                 writeentry(lfile, t0);
                 void fclose(lfile);
@@ -670,19 +671,19 @@ export function* topten(how, when) {
         if ((yield* lock_file(__sl87, NHM.SCOREPREFIX, 10))) {
             if (!(xlfile = fopen_datafile(__sl87, __sl85, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl88)));
+                    (yield* Y.icall(raw_print()(__sl88)));
             } else {
                 (yield* writexlentry(xlfile, t0, how));
                 void fclose(xlfile);
             }
             (yield* unlock_file(__sl87));
         }
-        if (cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(flags, FLD.flag_explore)) {
+        if (wizard() || discover()) {
             if (how != NHC.PANICKED)
                 if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup)) {
                     let pbuf = new Uint8Array(256);
                     (yield* topten_print(__sl14));
-                    void cptr.sprintf(cptr.decay(pbuf), __sl89, cptr.ld1so(flags, FLD.flag_debug) ? __sl90 : __sl91);
+                    void cptr.sprintf(cptr.decay(pbuf), __sl89, wizard() ? __sl90 : __sl91);
                     (yield* topten_print(cptr.decay(pbuf)));
                 }
             break __lbl_showwin;
@@ -692,7 +693,7 @@ export function* topten(how, when) {
         rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
         if (!rfile) {
             if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl94)));
+                (yield* Y.icall(raw_print()(__sl94)));
             (yield* unlock_file(__sl92));
             break __lbl_destroywin;
         }
@@ -750,7 +751,7 @@ export function* topten(how, when) {
             void fclose(rfile);
             if (!(rfile = fopen_datafile(__sl92, __sl96, NHM.SCOREPREFIX))) {
                 if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl97)));
+                    (yield* Y.icall(raw_print()(__sl97)));
                 (yield* unlock_file(__sl92));
                 free_ttlist(tt_head);
                 break __lbl_destroywin;
@@ -801,7 +802,7 @@ export function* topten(how, when) {
     }
         if (!cptr.ldI32o(program_state, FLD.sinfo_stopprint)) {
             if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), 1)));
+                (yield* Y.icall(display_nhwindow()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin), 1)));
             } else {
                 ;
             }
@@ -810,7 +811,7 @@ export function* topten(how, when) {
     if (!t0_used)
         cptr.free((t0));
     if (cptr.ld1so(iflags, FLD.instance_flags_toptenwin)) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin))));
+        (yield* Y.icall(destroy_nhwindow()(cptr.ldI32o(gt, FLD.instance_globals_t_toptenwin))));
         cptr.stI32o(gt, FLD.instance_globals_t_toptenwin, -1);
     }
 }
@@ -1009,7 +1010,7 @@ export function* prscore(argc, argv) {
     }
     rfile = fopen_datafile(__sl92, __sl93, NHM.SCOREPREFIX);
     if (!rfile) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl94)));
+        (yield* Y.icall(raw_print()(__sl94)));
         return;
     }
     if (cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz1_level)), FLD.d_level_dlevel) == 0) {
@@ -1044,7 +1045,7 @@ export function* prscore(argc, argv) {
         playerct = --argc;
         players = cptr.preinc(() => argv, (v) => { argv = v; }, 8);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl14)));
+    (yield* Y.icall(raw_print()(__sl14)));
     t1 = (tt_head = (yield* alloc(208)));
     for (rank = 1; ; rank++) {
         (yield* readentry(rfile, t1));
@@ -1098,7 +1099,7 @@ export function* prscore(argc, argv) {
         }
         if (cptr.strlen(cptr.decay(pbuf)) < 255n)
             void cptr.strcat(cptr.decay(pbuf), __sl137);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(pbuf))));
+        (yield* Y.icall(raw_print()(cptr.decay(pbuf))));
         (yield* raw_printf(__sl162, cptr.ldPtr(gh)));
         (yield* raw_printf(__sl163));
     }

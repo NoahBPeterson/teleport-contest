@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { CO, LI, ul_hack, wizard } from './nhprop.js';
 import { backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov, nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend, tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color, term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor, term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output, tty_nhbell, tty_number_pad, xputs } from './termcap.js';
 import { addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory, tty_putmsghistory, tty_yn_function, update_topl } from './topl.js';
 import { morc, tty_get_ext_cmd, tty_getlin, xwaitforspace } from './getline.js';
@@ -251,8 +252,8 @@ function winch_handler(sig_unused) {
 
 /** C ref: wintty.c:392 */
 function resize_tty() {
-    let oldLI = cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI);
-    let oldCO = cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO);
+    let oldLI = LI();
+    let oldCO = CO();
     let mapx;
     let mapy;
     let oldtoplin;
@@ -262,7 +263,7 @@ function resize_tty() {
     cptr.stI32o(program_state, FLD.sinfo_resize_pending, 0);
     resize_mesg = 0;
     getwindowsz();
-    if (!ttyDisplay || (cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) == oldLI && cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO) == oldCO))
+    if (!ttyDisplay || (LI() == oldLI && CO() == oldCO))
         return;
     cptr.stI16(ttyDisplay, i16(cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI)));
     cptr.stI16o(ttyDisplay, FLD.DisplayDesc_cols, i16(cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO)));
@@ -312,7 +313,7 @@ function resize_tty() {
 
 /** C ref: wintty.c:471 — @param {CInt} x @param {CInt} y */
 function newclipping(x, y) {
-    if (cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO) < NHM.COLNO || cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) < ((22 + cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) {
+    if (CO() < NHM.COLNO || LI() < ((22 + cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) {
         setclipped();
         if (x)
             tty_cliparound(x, y);
@@ -1576,7 +1577,7 @@ const __static_compress_str_cbuf = new Uint8Array(256); /** C ref: wintty.c:2249
 
 /** C ref: wintty.c:2247 — @param {CPtr} str @returns {CPtr} */
 function compress_str(str) {
-    if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO) || cptr.strchr(str, 10)) {
+    if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= CO() || cptr.strchr(str, 10)) {
         let in_str = str;
         let c;
         let outstr = cptr.decay(__static_compress_str_cbuf);
@@ -1708,7 +1709,7 @@ export function tty_putstr(window, attr, str) {
         if (cptr.stI64o(cw, FLD.WinDesc_cury, cptr.ldI64o(cw, FLD.WinDesc_cury) + 1n) > cptr.ldI64o(cw, FLD.WinDesc_maxrow))
             cptr.stI64o(cw, FLD.WinDesc_maxrow, cptr.ldI64o(cw, FLD.WinDesc_cury));
         if (n0 > BigInt(cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO))) {
-            for (i = BigInt(((cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO) - 1) | 0)); i && cptr.ld1so(str, i) != 32 && cptr.ld1so(str, i) != 10; )
+            for (i = BigInt(((CO() - 1) | 0)); i && cptr.ld1so(str, i) != 32 && cptr.ld1so(str, i) != 10; )
                 i--;
             if (i) {
                 cptr.st1o(cptr.ldPtro(cptr.ldPtro(cw, FLD.WinDesc_data), BigInt.asIntN(64, cptr.ldI64o(cw, FLD.WinDesc_cury) - 1n), 8), ++i, 0);
@@ -2044,8 +2045,8 @@ export function docorner(xmin, ymax, ystart_between_menu_pages) {
             return;
         }
     } while (0);
-    if (ymax > cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI))
-        ymax = cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI);
+    if (ymax > LI())
+        ymax = LI();
     if (ystart_between_menu_pages)
         ystart = ystart_between_menu_pages;
     for (y = ystart; y < ymax; y++) {
@@ -2130,8 +2131,8 @@ export function g_pututf8(utf8str) {
 export function setclipped() {
     clipping = 1;
     clipx = (clipy = 0);
-    clipxmax = cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO);
-    clipymax = (((cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0;
+    clipxmax = CO();
+    clipymax = (((LI() - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0;
 }
 
 /** C ref: wintty.c:3879 — @param {CInt} x @param {CInt} y */
@@ -2148,17 +2149,17 @@ export function tty_cliparound(x, y) {
         return;
     if (x < ((clipx + 5) | 0)) {
         clipx = (0 > ((x - 20) | 0) ? 0 : ((x - 20) | 0));
-        clipxmax = (clipx + cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO)) | 0;
+        clipxmax = (clipx + CO()) | 0;
     } else if (x > ((clipxmax - 5) | 0)) {
         clipxmax = (NHM.COLNO < ((clipxmax + 20) | 0) ? NHM.COLNO : ((clipxmax + 20) | 0));
-        clipx = (clipxmax - cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO)) | 0;
+        clipx = (clipxmax - CO()) | 0;
     }
     if (y < ((clipy + 2) | 0)) {
         clipy = (0 > ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? 0 : ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipymax = (clipy + ((((cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) | 0;
+        clipymax = (clipy + ((((LI() - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) | 0;
     } else if (y > ((clipymax - 2) | 0)) {
         clipymax = (NHM.ROWNO < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? NHM.ROWNO : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipy = (clipymax - ((((cptr.ldI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI) - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) | 0;
+        clipy = (clipymax - ((((LI() - 1) | 0) - cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines)) | 0)) | 0;
     }
     if (clipx != oldx || clipy != oldy) {
         redraw_map(1);
@@ -2190,7 +2191,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     ;
     tty_curs(window, x, y);
     ;
-    if (cptr.ld1so(tc_lcl_data, FLD.tc_lcl_data_tc_ul_hack) && ch == 95) {
+    if (ul_hack() && ch == 95) {
         void putchar(32);
         backsp();
     }
@@ -2221,7 +2222,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     } else if (((special & NHM.MG_PET) >>> 0) != 0 && cptr.ld1so(iflags, FLD.instance_flags_wc_hilite_pet)) {
         term_start_attr(cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr));
         petattr = 1;
-    } else if (((((special & NHM.MG_OBJPILE) >>> 0) != 0 && cptr.ld1so(iflags, FLD.instance_flags_hilite_pile)) || (((special & NHM.MG_FEMALE) >>> 0) != 0 && cptr.ld1so(flags, FLD.flag_debug) && cptr.ld1so(iflags, FLD.instance_flags_wizmgender)) || (((special & 776) >>> 0) != 0)) && cptr.ld1so(iflags, FLD.instance_flags_wc_inverse)) {
+    } else if (((((special & NHM.MG_OBJPILE) >>> 0) != 0 && cptr.ld1so(iflags, FLD.instance_flags_hilite_pile)) || (((special & NHM.MG_FEMALE) >>> 0) != 0 && wizard() && cptr.ld1so(iflags, FLD.instance_flags_wizmgender)) || (((special & 776) >>> 0) != 0)) && cptr.ld1so(iflags, FLD.instance_flags_wc_inverse)) {
         term_start_attr(NHM.ATR_INVERSE);
         inverse_on = 1;
     }

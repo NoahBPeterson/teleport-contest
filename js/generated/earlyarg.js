@@ -7,6 +7,7 @@ import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
+import { raw_print } from './nhprop.js';
 import { config_error_add, config_error_done, config_error_init } from './cfgfiles.js';
 import { eos, nh_snprintf, strncmpi } from './hacklib.js';
 import { error } from './unixtty.js';
@@ -4292,10 +4293,10 @@ function dump_enums() {
             }
             raw_printf(__sl1242, nmprefix, -nmwidth, cptr.ldPtro2(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16, FLD.enum_dump_nm), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16), cptr.decay(comment));
         }
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl1243);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl24);
+        raw_print()(__sl1243);
+        raw_print()(__sl24);
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl24);
+    raw_print()(__sl24);
 }
 
 /** C ref: earlyarg.c:806 */

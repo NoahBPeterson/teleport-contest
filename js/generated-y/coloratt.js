@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { digit, fuzzymatch, mungspaces, nh_snprintf, strncmpi, strstri } from './hacklib.js';
 import { config_error_add } from './cfgfiles.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
@@ -1514,8 +1515,8 @@ export function* query_attr(prompt, dflt_attr) {
     let picks = cptr.box(null);
     let allow_many = schar((prompt && !(yield* strncmpi(prompt, __sl171, 6)) ? 1 : 0));
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 11; i++) {
         if (!cptr.ldPtro(attrnames, i, 16))
@@ -1523,9 +1524,9 @@ export function* query_attr(prompt, dflt_attr) {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o2(attrnames, i, 16, FLD.attr_names_attr), clr, cptr.ldPtro(attrnames, i, 16), (cptr.ldI32o2(attrnames, i, 16, FLD.attr_names_attr) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl172)));
+    (yield* Y.icall(end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl172)));
     pick_cnt = (yield* select_menu(tmpwin, allow_many ? NHM.PICK_ANY : NHM.PICK_ONE, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
         let j;
         let k = 0;
@@ -1580,8 +1581,8 @@ export function* query_color(prompt, dflt_color) {
     let pick_cnt;
     let picks = cptr.box(null);
     (yield* basic_menu_colors(1));
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 27; i++) {
         if (!cptr.ldPtro(colornames, i, 16))
@@ -1589,9 +1590,9 @@ export function* query_color(prompt, dflt_color) {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtro(colornames, i, 16), (cptr.ldI32o2(colornames, i, 16, FLD.color_names_color) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl173)));
+    (yield* Y.icall(end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl173)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     (yield* basic_menu_colors(0));
     if (pick_cnt > 0) {
         i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, 24) - 1) | 0, 16, FLD.color_names_color);

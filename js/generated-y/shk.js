@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Blind_telepat, Conflict, Deaf, Detect_monsters, Displaced, Fast, Invis, Passes_walls, Punished, Underwater, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mark_synch, nh_delay_output, putstr, start_menu, wait_synch } from './nhprop.js';
 import { findgold, mdrop_special_objs, mpickobj, remove_worn_item } from './steal.js';
 import { c_common_strings, cg, disp, flags, ga, gb, gc, gf, gi, gk, gm, gr, gs, gt, gu, gv, gy, iflags, program_state, svl, svm, svp, svr, u, uarm, uarmc, uarmh, uarmu, uball, ubirthday, uchain, uswapwep, ynaqchars, ynchars } from './decl.js';
 import { Norep, There, You, You_cant, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize } from './pline.js';
@@ -793,11 +794,11 @@ function* call_kops(shkp, nearshop) {
     if (!shkp)
         return;
     ;
-    if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+    if (!Deaf())
         (yield* pline(__sl19));
     nokops = schar(((cptr.ld1uo2(svm, NHC.PM_KEYSTONE_KOP, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_KOP_SERGEANT, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_KOP_LIEUTENANT, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_KOP_KAPTAIN, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3) ? 1 : 0));
-    if (!(yield* angry_guards(schar((!!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))))) && nokops) {
-        if (cptr.ld1so(flags, FLD.flag_verbose) && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+    if (!(yield* angry_guards(schar((!!Deaf())))) && nokops) {
+        if (cptr.ld1so(flags, FLD.flag_verbose) && !Deaf())
             (yield* pline(__sl20));
         return;
     }
@@ -852,7 +853,7 @@ export function* u_left_shop(leavestring, newlev) {
         return;
     if (!cptr.ld1s(leavestring) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
         let not_upset = schar((!cptr.ld1so(eshkp, FLD.eshk_surcharge)));
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(not_upset ? __sl23 : __sl24, svp));
         } else {
@@ -961,7 +962,7 @@ function* deserted_shop(enterstring) {
                     ++m;
             }
         }
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !((cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops)) || (cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, FLD.you_uprops))))
+    if (Blind() && !(Blind_telepat() || Detect_monsters()))
         ++n;
     (yield* pline(__sl37, (m < n) ? __sl38 : __sl39, !n ? __sl40 : __sl41));
 }
@@ -1002,9 +1003,9 @@ export function* u_entered_shop(enterstring) {
     }
     if ((((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL) || cptr.ld1so(eshkp, FLD.eshk_following))
         return;
-    if (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (Invis()) {
         (yield* pline(__sl42, (yield* Shknam(shkp))));
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl43));
         } else {
@@ -1014,28 +1015,28 @@ export function* u_entered_shop(enterstring) {
     }
     rt = cptr.ld1so2(svr, (cptr.ld1s(enterstring) - NHM.ROOMOFFSET) | 0, 224, FLD.mkroom_rtype);
     if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1)))) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl45, svp, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         } else {
             (yield* pline(__sl46, (yield* Shknam(shkp)), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 820, __sl48), rn2(3)) : rn2(3)), 8), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_his)), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         }
     } else if (cptr.ld1so(eshkp, FLD.eshk_surcharge)) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl49, svp, (yield* mbodypart(shkp, NHC.EYE))));
         } else {
             (yield* pline_The(__sl50, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         }
     } else if (cptr.ldI64o(eshkp, FLD.eshk_robbed)) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             ;
             (yield* pline(__sl51, (yield* Shknam(shkp))));
         } else {
             (yield* pline(__sl52, (yield* Shknam(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_his))));
         }
     } else {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             set_voice(shkp, 0, 80, 0);
             (yield* verbalize(__sl53, Hello(shkp), svp, (cptr.stI32o(eshkp, FLD.eshk_visitct, cptr.ldI32o(eshkp, FLD.eshk_visitct) + 1)) - (1) ? __sl54 : __sl8, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         } else {
@@ -1064,10 +1065,10 @@ export function* u_entered_shop(enterstring) {
                 while ((mattock = cptr.ldPtr(mattock)) !== null)
                     if (cptr.ldI16o(mattock, FLD.obj_otyp) == NHC.DWARVISH_MATTOCK)
                         ++cnt;
-                if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+                if (!Blind())
                     (yield* discover_object(NHC.DWARVISH_MATTOCK, 1, 1, 1));
             }
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(not_upset ? __sl59 : __sl60, tool, (((cnt) == 1) ? __sl8 : __sl61)));
             } else {
@@ -1075,7 +1076,7 @@ export function* u_entered_shop(enterstring) {
             }
             should_block = 1;
         } else if (cptr.ldPtro(u, FLD.you_usteed)) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(not_upset ? __sl65 : __sl66, (yield* y_monnam(cptr.ldPtro(u, FLD.you_usteed)))));
             } else {
@@ -1083,7 +1084,7 @@ export function* u_entered_shop(enterstring) {
             }
             should_block = 1;
         } else {
-            should_block = schar(((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)) && (sobj_at(NHC.PICK_AXE, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) || sobj_at(NHC.DWARVISH_MATTOCK, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) ? 1 : 0));
+            should_block = schar((Fast() && (sobj_at(NHC.PICK_AXE, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) || sobj_at(NHC.DWARVISH_MATTOCK, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) ? 1 : 0));
         }
         if (should_block)
             void (yield* dochug(shkp));
@@ -1101,7 +1102,7 @@ export function* pick_pick(obj) {
     shkp = (yield* shop_keeper(cptr.ld1so(u, FLD.you_ushops)));
     if (shkp && (yield* inhishop(shkp))) {
         if (cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) != __static_pick_pick_pickmovetime) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl69, (yield* cad(0))));
             } else {
@@ -1626,8 +1627,8 @@ function* menu_pick_pay_items(ibillct, ibill) {
     let n;
     let amt_width;
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     largest_amt = 0n;
     for (i = 0; i < ibillct; ++i)
         if (cptr.ldI64o2(ibill, i, 32, FLD.sortbill_item_cost) > largest_amt)
@@ -1653,9 +1654,9 @@ function* menu_pick_pay_items(ibillct, ibill) {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl107)));
+    (yield* Y.icall(end_menu()(win, __sl107)));
     n = (yield* select_menu(win, NHM.PICK_ANY, pick_list));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     for (j = 0; j < n; ++j) {
         i = (cptr.ldI32o(pick_list.v, j, 24) - 1) | 0;
         cptr.st1o2(ibill, i, 32, FLD.sortbill_item_queuedpay, 1);
@@ -1699,7 +1700,7 @@ export function* dopay() {
             shkp = nxtm;
             break __lbl_proceed;
         }
-        if ((!sk && (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops)))) || (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !seensk)) {
+        if ((!sk && (!Blind() || Blind_telepat())) || (!Blind() && !seensk)) {
             (yield* There(__sl108));
             return NHM.ECMD_OK;
         }
@@ -1742,7 +1743,7 @@ export function* dopay() {
             }
             mtmp = (cptr.ldPtro3(svl, cx, 168, cy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters));
             if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) && (!mtmp || !(canseemon(mtmp) || sensemon(mtmp)))) {
-                (yield* You(__sl118, !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl119 : __sl120));
+                (yield* You(__sl118, !Blind() ? __sl119 : __sl120));
                 return NHM.ECMD_OK;
             }
             if (!mtmp) {
@@ -1896,7 +1897,7 @@ export function* dopay() {
             pay_done = 0;
     }
     if (pay_done && !(!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1))) && paid.v) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl157, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, FLD.eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, FLD.eshk_surcharge) ? __sl29 : __sl28));
         } else {
@@ -2157,7 +2158,7 @@ function* reject_purchase(shkp, obj, billed_quan) {
     let intact_quan = cptr.ldI64o(obj, FLD.obj_quan);
     (__builtin_expect(BigInt((!(intact_quan < billed_quan))), 0n) ? __assert_rtn(__sl179, __sl111, 2426, __sl180) : void 0);
     cptr.stI64o(obj, FLD.obj_quan, BigInt.asIntN(64, billed_quan - intact_quan));
-    if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
         let which = new Uint8Array(256);
         if (cptr.ld1so(obj, FLD.obj_where) == NHM.OBJ_CONTAINED)
             nh_snprintf(__sl179, 2434, cptr.decay(which), 256n, __sl181, (((intact_quan) == 1n) ? __sl8 : __sl61), (yield* thesimpleoname(cptr.ldPtro(obj, FLD.obj_v))));
@@ -2607,7 +2608,7 @@ function* special_stock(obj, shkp, quietly) {
     if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shoptype) == NHC.CANDLESHOP && cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         if (!quietly) {
             if (is_izchak(shkp, 1) && !(cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_invoked) & 1)) {
-                if ((cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) || (((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (Deaf() || (((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                     (yield* pline(__sl207, (yield* Shknam(shkp)), (cptr.ld1so(obj, FLD.obj_spe) < 7) ? __sl208 : __sl209));
                 } else {
                     ;
@@ -2618,7 +2619,7 @@ function* special_stock(obj, shkp, quietly) {
                     }
                 }
             } else {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl213));
                 } else {
@@ -2894,7 +2895,7 @@ export function* addtobill(obj, ininv, dummy, silent) {
         (yield* add_one_tobill(obj, dummy, shkp.v));
         contentscount = 0;
     }
-    if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp.v), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp.v), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp.v), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL) && !silent) {
+    if (!Deaf() && !(((cptr.ldI32o((shkp.v), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp.v), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp.v), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL) && !silent) {
         let buf = new Uint8Array(256);
         if (!ltmp) {
             (yield* pline(__sl221, (yield* Shknam(shkp.v)), (yield* the((yield* xname(obj))))));
@@ -2939,7 +2940,7 @@ function append_honorific(buf) {
     void cptr.strcat(buf, cptr.ldPtro(__static_append_honorific_honored, ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 3611, __sl233), rn2((5 - 1) | 0)) : rn2((5 - 1) | 0)) + ((cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_udemigod) & 1) | 0)) | 0, 8));
     if ((cptr.ld1so((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VAMPIRE))
         void cptr.strcat(buf, (cptr.ld1so(flags, FLD.flag_female)) ? __sl234 : __sl235);
-    else if (((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) ? (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum) == NHC.PM_ELF))))
+    else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum) == NHC.PM_ELF))))
         void cptr.strcat(buf, (cptr.ld1so(flags, FLD.flag_female)) ? __sl236 : __sl237);
     else
         void cptr.strcat(buf, !((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 8n) != 0n) ? __sl238 : ((cptr.ld1so(flags, FLD.flag_female)) ? __sl239 : __sl240));
@@ -3130,7 +3131,7 @@ export function* stolen_value(obj, x, y, peaceful, silent) {
         if (!silent) {
             if (canseemon(shkp.v)) {
                 (yield* Norep(__sl262, (yield* Shknam(shkp.v)), svp));
-            } else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+            } else if (!Deaf()) {
                 (yield* Norep(__sl263));
             }
         }
@@ -3211,7 +3212,7 @@ export function* sellobj(obj, x, y) {
     (yield* rouse_shk(shkp, 1));
     eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk));
     if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1)))) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl270));
         } else {
@@ -3241,7 +3242,7 @@ export function* sellobj(obj, x, y) {
             offer += BigInt(cgold);
         if ((cptr.stI64o(eshkp, FLD.eshk_robbed, cptr.ldI64o(eshkp, FLD.eshk_robbed) - BigInt((offer < 0n)))))
             cptr.stI64o(eshkp, FLD.eshk_robbed, 0n);
-        if (offer && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (offer && !Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl273));
         }
@@ -3381,9 +3382,9 @@ export function* doinvbill(mode) {
                     cnt++;
             return cnt;
         }
-        datawin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl296)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl8)));
+        datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl296)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl8)));
         totused = 0n;
         for (bp = cptr.ldPtro(eshkp, FLD.eshk_bill_p), end_bp = cptr.add(cptr.ldPtro(eshkp, FLD.eshk_bill_p), cptr.ldI32o(eshkp, FLD.eshk_billct), 24); cptr.cmp(bp, end_bp) < 0; bp = cptr.add(bp, 1, 24)) {
             obj = bp_to_obj(bp);
@@ -3402,22 +3403,22 @@ export function* doinvbill(mode) {
                 (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + 1)) - (1);
                 buf_p = (yield* xprname(obj, null, 120, 0, thisused, uquan));
                 (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + -1)) - (-1);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, buf_p)));
+                (yield* Y.icall(putstr()(datawin, 0, buf_p)));
             }
         }
         if (cptr.ldI64o(eshkp, FLD.eshk_debit)) {
             if (totused)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl8)));
+                (yield* Y.icall(putstr()(datawin, 0, __sl8)));
             totused += cptr.ldI64o(eshkp, FLD.eshk_debit);
             buf_p = (yield* xprname(null, __sl298, NHC.GOLD_SYM, 0, cptr.ldI64o(eshkp, FLD.eshk_debit), 0n));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, buf_p)));
+            (yield* Y.icall(putstr()(datawin, 0, buf_p)));
         }
         buf_p = (yield* xprname(null, __sl299, 42, 0, totused, 0n));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl8)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, buf_p)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(datawin, 0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl8)));
+        (yield* Y.icall(putstr()(datawin, 0, buf_p)));
+        (yield* Y.icall(display_nhwindow()(datawin, 0)));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(datawin)));
+    (yield* Y.icall(destroy_nhwindow()(datawin)));
     return 0;
 }
 
@@ -3486,7 +3487,7 @@ export function* shkcatch(obj, x, y) {
     if (!shkp || !(yield* inhishop(shkp)))
         return null;
     if (!((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) && (cptr.ld1so(u, FLD.you_ushops) != cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shoproom) || !inside_shop(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) && dist2(cptr.ldI16o(shkp, FLD.monst_mx), cptr.ldI16o(shkp, FLD.monst_my), x, y) < 3 && (cptr.ldI16o(shkp, FLD.monst_mx) != x || cptr.ldI16o(shkp, FLD.monst_my) != y)) {
-        if ((yield* mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG)) == 2 && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if ((yield* mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG)) == 2 && !Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl300));
         }
@@ -3494,8 +3495,8 @@ export function* shkcatch(obj, x, y) {
             (yield* pline(__sl301, (yield* Shknam(shkp)), (x == cptr.ldI16o(shkp, FLD.monst_mx) && y == cptr.ldI16o(shkp, FLD.monst_my)) ? __sl8 : __sl302, (yield* the((yield* xname(obj))))));
             if (!(canseemon(shkp) || sensemon(shkp)))
                 (yield* map_invisible(x, y));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))()));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))()));
+            (yield* Y.icall(nh_delay_output()()));
+            (yield* Y.icall(mark_synch()()));
         }
         (yield* subfrombill(obj, shkp));
         void (yield* mpickobj(shkp, obj));
@@ -3558,7 +3559,7 @@ function* repairable_damage(dam, shkp) {
     if ((BigInt.asIntN(64, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) - cptr.ldI64o(dam, FLD.damage_when))) < 5n)
         return 0;
     if (!((cptr.ld1so(dam, FLD.damage_typ)) >= NHC.ROOM)) {
-        if ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)) && !(cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops))) || (x == cptr.ldI16o(shkp, FLD.monst_mx) && y == cptr.ldI16o(shkp, FLD.monst_my)) || ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) !== null && !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)))
+        if ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)) && !Passes_walls()) || (x == cptr.ldI16o(shkp, FLD.monst_mx) && y == cptr.ldI16o(shkp, FLD.monst_my)) || ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) !== null && !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)))
             return 0;
     }
     ttmp = t_at(x, y);
@@ -3636,7 +3637,7 @@ function* shk_fixes_damage(shkp) {
     shk_closeby = schar((dist2((cptr.ldI16o((shkp), FLD.monst_mx)), (cptr.ldI16o((shkp), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 16));
     if (canseemon(shkp)) {
         (yield* pline(__sl303, (yield* Shknam(shkp)), shk_closeby ? __sl304 : __sl305));
-    } else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && shk_closeby) {
+    } else if (!Deaf() && shk_closeby) {
         ;
         (yield* You_hear(__sl306));
     }
@@ -3671,8 +3672,8 @@ function litter_getpos(litter, x, y, shkp) {
 function* litter_scatter(litter, x, y, shkp) {
     let otmp;
     {
-        if ((uball.v !== null) && !(cptr.ldI32o(u, FLD.you_uswallow) & 1) && ((cptr.ldI16o(uchain.v, FLD.obj_ox) == x && cptr.ldI16o(uchain.v, FLD.obj_oy) == y) || (cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uball.v, FLD.obj_ox) == x && cptr.ldI16o(uball.v, FLD.obj_oy) == y))) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (Punished() && !(cptr.ldI32o(u, FLD.you_uswallow) & 1) && ((cptr.ldI16o(uchain.v, FLD.obj_ox) == x && cptr.ldI16o(uchain.v, FLD.obj_oy) == y) || (cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uball.v, FLD.obj_ox) == x && cptr.ldI16o(uball.v, FLD.obj_oy) == y))) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl307));
             }
@@ -3800,7 +3801,7 @@ function* repair_damage(shkp, tmp_dam, catchup) {
     } else if (((cptr.ld1so(tmp_dam, FLD.damage_typ)) && (cptr.ld1so(tmp_dam, FLD.damage_typ)) <= NHC.DBWALL)) {
         if (inside_shop(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) == cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shoproom))
             (yield* You_feel(__sl314));
-        else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4833, __sl315), rn2(10)) : rn2(10)))
+        else if (!Deaf() && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4833, __sl315), rn2(10)) : rn2(10)))
             (yield* Norep(__sl316));
     }
     if (stop_picking)
@@ -3848,15 +3849,15 @@ export function* shk_move(shkp) {
     if ((yield* inhishop(shkp)))
         (yield* shk_fixes_damage(shkp));
     if ((udist = dist2((omx), (omy), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) < 3 && (!cptr.eq(cptr.ldPtro(shkp, FLD.monst_data), cptr.add(mons, NHC.PM_GRID_BUG, 96)) || (omx == cptr.ldI16(u) || omy == cptr.ldI16o(u, FLD.you_uy)))) {
-        if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1))) || ((cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)) && !resist_conflict(shkp))) {
-            if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DISPLACED, 24, FLD.you_uprops)))
+        if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1))) || (Conflict() && !resist_conflict(shkp))) {
+            if (Displaced())
                 (yield* Your(__sl317, (yield* shkname(shkp))));
             void (yield* mattacku(shkp));
             return 0;
         }
         if (cptr.ld1so(eshkp, FLD.eshk_following)) {
             if (cptr.strncmp(cptr.add(eshkp, FLD.eshk_customer), svp, 32n)) {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl318, Hello(shkp), svp, cptr.add(eshkp, FLD.eshk_customer)));
                 }
@@ -3864,7 +3865,7 @@ export function* shk_move(shkp) {
                 return 0;
             }
             if (cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) > BigInt.asIntN(64, cptr.ldI64o(gf, FLD.instance_globals_f_followmsg) + 4n)) {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl319, Hello(shkp), svp));
                 } else {
@@ -3890,18 +3891,18 @@ export function* shk_move(shkp) {
         gtx = cptr.ldI16(u);
         gty = cptr.ldI16o(u, FLD.you_uy);
     } else if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1)))) {
-        if ((cptr.ldI32o(shkp, FLD.monst_mcansee) & 1) | 0 && ((!((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldU64o((cptr.ldPtro((shkp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((shkp), FLD.monst_my), 8), cptr.ldI16o((shkp), FLD.monst_mx)) & NHM.COULD_SEE) != 0))) {
+        if ((cptr.ldI32o(shkp, FLD.monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((shkp), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((shkp), FLD.monst_my), 8), cptr.ldI16o((shkp), FLD.monst_mx)) & NHM.COULD_SEE) != 0))) {
             gtx = cptr.ldI16(u);
             gty = cptr.ldI16o(u, FLD.you_uy);
         }
         avoid = 0;
     } else {
-        if (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || cptr.ldPtro(u, FLD.you_usteed)) {
+        if (Invis() || cptr.ldPtro(u, FLD.you_usteed)) {
             avoid = 0;
         } else {
             uondoor = schar(((cptr.ldI16o(eshkp, FLD.eshk_shd)) == cptr.ldI16(u) && (cptr.ldI16o(eshkp, FLD.eshk_shd + FLD.nhcoord_y)) == cptr.ldI16o(u, FLD.you_uy) ? 1 : 0));
             if (uondoor) {
-                badinv = schar((carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || ((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)) && (sobj_at(NHC.PICK_AXE, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) || sobj_at(NHC.DWARVISH_MATTOCK, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)))) ? 1 : 0));
+                badinv = schar((carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || (Fast() && (sobj_at(NHC.PICK_AXE, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) || sobj_at(NHC.DWARVISH_MATTOCK, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)))) ? 1 : 0));
                 if (satdoor && badinv)
                     return 0;
                 avoid = schar((!badinv));
@@ -3961,7 +3962,7 @@ export function* shopdig(fall) {
         lang = 2;
     if (!fall) {
         if (lang == 2) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 if (cptr.ldI32o(u, FLD.you_utraptype) == NHC.TT_PIT) {
                     (yield* verbalize(__sl325, cptr.ld1so(flags, FLD.flag_female) ? __sl326 : __sl327));
@@ -4042,14 +4043,14 @@ function* getcad(shkp, dmgstr, x, y, uinshp, animal, pursue) {
         if (animal && !((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)))
             (yield* yelp(shkp));
     } else if (pursue || uinshp || !um_dist(x, y, 1)) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             ;
             (yield* verbalize(__sl339, dmgstr, dugwall ? __sl340 : __sl341));
         } else {
             (yield* pline(__sl342, (yield* Shknam(shkp)), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5155, __sl343), rn2(3)) : rn2(3)), 8), dmgstr, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_his)), dugwall ? __sl340 : __sl341));
         }
     } else {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             (yield* pline(__sl344, (yield* Shknam(shkp))));
             ;
             (yield* verbalize(__sl345, dmgstr, dugwall ? __sl340 : __sl341));
@@ -4142,12 +4143,12 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
     } else {
         if ((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null)) {
             if (!animal) {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                     (yield* You_hear(__sl349));
                     ;
                     (yield* verbalize(__sl300));
                 }
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+                (yield* Y.icall(wait_synch()()));
                 void sleep(1);
             } else {
                 (yield* growl(shkp));
@@ -4159,7 +4160,7 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
         (yield* getcad(shkp, dmgstr, x, y, uinshp, animal, pursue));
         return;
     }
-    if (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)))
+    if (Invis())
         (yield* Your(__sl350, (yield* shkname(shkp))));
     void cptr.sprintf(cptr.decay(qbuf), __sl351, !animal ? (yield* cad(1)) : __sl8, cost_of_damage, (yield* currency(cost_of_damage)), !animal ? __sl352 : __sl8);
     if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 110) {
@@ -4184,7 +4185,7 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
         }
     } else {
         if (!animal) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl356));
             } else {
@@ -4245,9 +4246,9 @@ export function* price_quote(first_obj) {
     shkp = (yield* shop_keeper(inside_shop(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))));
     if (!shkp || !(yield* inhishop(shkp)))
         return;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl358)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl8)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(putstr()(tmpwin, 0, __sl358)));
+    (yield* Y.icall(putstr()(tmpwin, 0, __sl8)));
     for (otmp = first_obj; otmp; otmp = cptr.ldPtro(otmp, FLD.obj_v)) {
         if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS)
             continue;
@@ -4264,10 +4265,10 @@ export function* price_quote(first_obj) {
             void cptr.sprintf(cptr.decay(price), __sl360, cost, (yield* currency(cost)), (cptr.ldI64o(otmp, FLD.obj_quan)) > 1n ? __sl223 : __sl8);
         }
         void cptr.sprintf(cptr.decay(buf), __sl361, contentsonly ? cptr.decay(the_contents_of) : __sl8, (yield* doname(otmp)), cptr.decay(price));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf)))), cnt++;
+        (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf)))), cnt++;
     }
     if (cnt > 1) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
+        (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
     } else if (cnt == 1) {
         if (!cost) {
             ;
@@ -4278,7 +4279,7 @@ export function* price_quote(first_obj) {
             (yield* verbalize(__sl363, upstart(cptr.decay(buf)), cost, (yield* currency(cost)), (cptr.ldI64o(first_obj, FLD.obj_quan) > 1n) ? __sl223 : __sl8, contentsonly ? __sl28 : shk_embellish(first_obj, cost)));
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
 }
 
 /** C ref: shk.c:5468 — @param {CPtr} itm @param {CLongLong} cost @returns {CPtr} */
@@ -4336,16 +4337,16 @@ export function* shk_chat(shkp) {
     }
     eshk = (cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk));
     if ((!((cptr.ldI32o((shkp), FLD.monst_mpeaceful) & 1)))) {
-        (yield* pline(__sl382, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl383 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_he)), cptr.ldI64o(eshk, FLD.eshk_robbed) ? __sl385 : __sl386));
+        (yield* pline(__sl382, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl383 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_he)), cptr.ldI64o(eshk, FLD.eshk_robbed) ? __sl385 : __sl386));
     } else if (cptr.ld1so(eshk, FLD.eshk_following)) {
         if (cptr.strncmp(cptr.add(eshk, FLD.eshk_customer), svp, 32n)) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl387, Hello(shkp), svp, cptr.add(eshk, FLD.eshk_customer)));
             }
             cptr.st1o(eshk, FLD.eshk_following, 0);
         } else {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl388, Hello(shkp), svp));
             } else {
@@ -4354,24 +4355,24 @@ export function* shk_chat(shkp) {
         }
     } else if (cptr.ldI32o(eshk, FLD.eshk_billct)) {
         let total = BigInt.asIntN(64, addupbill(shkp) + cptr.ldI64o(eshk, FLD.eshk_debit));
-        (yield* pline(__sl390, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384, total, (yield* currency(total))));
+        (yield* pline(__sl390, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384, total, (yield* currency(total))));
     } else if (cptr.ldI64o(eshk, FLD.eshk_debit)) {
-        (yield* pline(__sl392, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl393 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_him)), cptr.ldI64o(eshk, FLD.eshk_debit), (yield* currency(cptr.ldI64o(eshk, FLD.eshk_debit)))));
+        (yield* pline(__sl392, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl393 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_him)), cptr.ldI64o(eshk, FLD.eshk_debit), (yield* currency(cptr.ldI64o(eshk, FLD.eshk_debit)))));
     } else if (cptr.ldI64o(eshk, FLD.eshk_credit)) {
         (yield* pline(__sl394, (yield* Shknam(shkp)), cptr.ldI64o(eshk, FLD.eshk_credit), (yield* currency(cptr.ldI64o(eshk, FLD.eshk_credit)))));
     } else if (cptr.ldI64o(eshk, FLD.eshk_robbed)) {
-        (yield* pline(__sl395, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl397));
+        (yield* pline(__sl395, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl397));
     } else if (cptr.ld1so(eshk, FLD.eshk_surcharge)) {
-        (yield* pline(__sl398, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl399 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_he))));
+        (yield* pline(__sl398, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl399 : __sl384, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, FLD.Gender_he))));
     } else if ((shkmoney = money_cnt(cptr.ldPtro(shkp, FLD.monst_minvent))) < 50n) {
-        (yield* pline(__sl400, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl384));
+        (yield* pline(__sl400, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl396 : __sl384));
     } else if (shkmoney > 4000n) {
-        (yield* pline(__sl401, (yield* Shknam(shkp)), (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384));
+        (yield* pline(__sl401, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) ? __sl391 : __sl384));
     } else if (is_izchak(shkp, 0)) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL))
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL))
             (yield* pline(cptr.ldPtro(Izchak_speaks, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5596, __sl402), rn2(9)) : rn2(9)), 8), (yield* shkname(shkp))));
     } else {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL))
+        if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL))
             (yield* pline(__sl403, (yield* Shknam(shkp))));
     }
 }
@@ -4460,7 +4461,7 @@ export function* check_unpaid_usage(otmp, altusage) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5723, __sl408), rn2(3)) : rn2(3)))
             arg2 = __sl416;
     }
-    if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!Deaf() && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
         ;
         (yield* verbalize(fmt, arg1, arg2, tmp, (yield* currency(tmp))));
         (yield* exercise(NHC.A_WIS, 1));
@@ -4522,7 +4523,7 @@ export function* block_door(x, y) {
     if (!shkp || !(yield* inhishop(shkp)))
         return 0;
     if (cptr.ldI16o(shkp, FLD.monst_mx) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shk) && cptr.ldI16o(shkp, FLD.monst_my) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shk + FLD.nhcoord_y) && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shd) == x && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shd + FLD.nhcoord_y) == y && !((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) && (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_debit) || cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_robbed))) {
-        (yield* pline(__sl420, (yield* Shknam(shkp)), ((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl421 : __sl8));
+        (yield* pline(__sl420, (yield* Shknam(shkp)), Invis() ? __sl421 : __sl8));
         return 1;
     }
     return 0;
@@ -4546,8 +4547,8 @@ export function* block_entry(x, y) {
         return 0;
     sx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shk);
     sy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shk + FLD.nhcoord_y);
-    if (cptr.ldI16o(shkp, FLD.monst_mx) == sx && cptr.ldI16o(shkp, FLD.monst_my) == sy && !((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) && (x == ((sx - 1) | 0) || x == ((sx + 1) | 0) || y == ((sy - 1) | 0) || y == ((sy + 1) | 0)) && (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || cptr.ldPtro(u, FLD.you_usteed))) {
-        (yield* pline(__sl420, (yield* Shknam(shkp)), ((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl421 : __sl8));
+    if (cptr.ldI16o(shkp, FLD.monst_mx) == sx && cptr.ldI16o(shkp, FLD.monst_my) == sy && !((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) && (x == ((sx - 1) | 0) || x == ((sx + 1) | 0) || y == ((sy - 1) | 0) || y == ((sy + 1) | 0)) && (Invis() || carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || cptr.ldPtro(u, FLD.you_usteed))) {
+        (yield* pline(__sl420, (yield* Shknam(shkp)), Invis() ? __sl421 : __sl8));
         return 1;
     }
     return 0;
@@ -4711,7 +4712,7 @@ export function* globby_bill_fixup(obj_absorber, obj_absorbed) {
 /** C ref: shk.c:6101 — @param {CPtr} otmp @param {CInt} x @param {CInt} y */
 export function* use_unpaid_trapobj(otmp, x, y) {
     if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1)) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             let shkp = (yield* find_objowner(otmp, x, y));
             if (shkp && !(((cptr.ldI32o((shkp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;

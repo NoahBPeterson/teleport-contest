@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, BlindedTimeout, Breathless, Half_gas_damage, Half_physical_damage, Poison_resistance, putstr, sokoban_dnum } from './nhprop.js';
 import { alloc } from './alloc.js';
 import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
 import { mons } from './monst.js';
@@ -295,7 +296,7 @@ export function remove_region(reg) {
     if (cptr.ld1so(reg, FLD.NhRegion_visible)) {
         let pass;
         let tmp_uinwater = schar((cptr.ldI32o(u, FLD.you_uinwater) & 1));
-        for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? 1 : 2); ++pass) {
+        for (pass = 1; pass <= (Blind() ? 1 : 2); ++pass) {
             cptr.stI32o(u, FLD.you_uinwater, ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
             for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, FLD.nhrect_hx); x++)
                 for (y = cptr.ldI16o(reg, FLD.nhrect_ly); y <= cptr.ldI16o(reg, FLD.nhrect_hy); y++)
@@ -495,8 +496,8 @@ export function visible_region_summary(win) {
         if (!cptr.ld1so(reg, FLD.NhRegion_visible) || cptr.ldI64o(reg, FLD.NhRegion_ttl) == -2n)
             continue;
         if (!hdr_done++) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl5);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl10);
+            putstr()(win, 0, __sl5);
+            putstr()(win, 0, __sl10);
         }
         void cptr.sprintf(cptr.decay(buf), __sl11, BigInt.asIntN(64, cptr.ldI64o(reg, FLD.NhRegion_ttl) + 1n));
         damg = cptr.ldI32o(reg, FLD.NhRegion_arg);
@@ -506,7 +507,7 @@ export function visible_region_summary(win) {
             void cptr.strcpy(cptr.decay(typbuf), __sl13);
         void cptr.sprintf(eos(cptr.decay(buf)), __sl14, fldsep, cptr.decay(typbuf));
         void cptr.sprintf(eos(cptr.decay(buf)), __sl15, fldsep, cptr.ldI16(reg), cptr.ldI16o(reg, FLD.nhrect_ly), cptr.ldI16o(reg, FLD.nhrect_hx), cptr.ldI16o(reg, FLD.nhrect_hy));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
 }
 
@@ -726,7 +727,7 @@ export function expire_gas_cloud(p1, p2) {
         cptr.stI64o(reg, FLD.NhRegion_ttl, 2n);
         return 0;
     }
-    for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? 1 : 2); ++pass) {
+    for (pass = 1; pass <= (Blind() ? 1 : 2); ++pass) {
         for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, FLD.nhrect_hx); x++) {
             for (y = cptr.ldI16o(reg, FLD.nhrect_ly); y <= cptr.ldI16o(reg, FLD.nhrect_hy); y++) {
                 if (inside_region(reg, x, y)) {
@@ -761,16 +762,16 @@ export function inside_gas_cloud(p1, p2) {
     if (!mtmp) {
         if (m_poisongas_ok(cptr.add(gy, FLD.instance_globals_y_youmonst)) == NHM.M_POISONGAS_OK)
             return 0;
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        if (!Blind()) {
             Your(__sl41, makeplural(body_part(NHC.EYE)));
             make_blinded(1n, 0);
         }
-        if (!(cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops))) {
+        if (!Poison_resistance()) {
             pline(__sl42, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Something), makeplural(body_part(NHC.LUNG)));
             You(__sl43);
             wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), 2);
-            dam = (((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
-            if ((ublindf.v && cptr.ldI16o(ublindf.v, FLD.obj_otyp) == NHC.TOWEL && cptr.ld1so(ublindf.v, FLD.obj_spe) > 0))
+            dam = ((Half_physical_damage()) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
+            if (Half_gas_damage())
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __sl46, NHM.KILLED_BY_AN);
             monstunseesu(64n);
@@ -830,7 +831,7 @@ function make_gas_cloud(cloud, damage, inside_cloud) {
     cptr.memcpy(cptr.add(cloud, FLD.NhRegion_arg), cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32o(cloud, FLD.NhRegion_arg, damage);
     cptr.st1o(cloud, FLD.NhRegion_visible, 1);
-    cptr.stI32o(cloud, FLD.NhRegion_glyph, (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, FLD.you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, FLD.you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sokoban_dnum))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
+    cptr.stI32o(cloud, FLD.NhRegion_glyph, (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, FLD.you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, FLD.you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
     add_region(cloud);
     if (!cptr.ld1so(gi, FLD.instance_globals_i_in_mklev) && !inside_cloud && is_hero_inside_gas_cloud()) {
         You(__sl49, damage ? __sl50 : __sl51);
@@ -938,9 +939,9 @@ export function region_danger() {
             continue;
         f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_regions), i, 8), FLD.NhRegion_inside_f);
         if (f_indx == 0) {
-            if ((((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX)) || (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 1024n) != 0n)))
+            if ((((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX)) || Breathless())
                 continue;
-            if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops)))
+            if (Poison_resistance())
                 continue;
             ++n;
         }
@@ -975,7 +976,7 @@ export function region_safety() {
     } else {
         pline_The(__sl57);
     }
-    if ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n) == 1n)
+    if (BlindedTimeout() == 1n)
         make_blinded(0n, 1);
 }
 

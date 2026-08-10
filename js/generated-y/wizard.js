@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Deaf, Protection_from_shape_changers } from './nhprop.js';
 import { c_color_names, gf, gm, gs, gv, svc, svd, svl, svm, u, uamul, uwep } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { dist2, sgn } from './hacklib.js';
@@ -520,7 +521,7 @@ export function* clonewiz() {
         if (!(cptr.ldI32o(u, FLD.you_uhave) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 524, __sl10), rn2(2)) : rn2(2))) {
             void (yield* add_to_minv(mtmp2, (yield* mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0))));
         }
-        if (!(cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, FLD.you_uprops))) {
+        if (!Protection_from_shape_changers()) {
             cptr.st1o(mtmp2, FLD.monst_m_ap_type, NHC.M_AP_MONSTER);
             cptr.stI32o(mtmp2, FLD.monst_mappearance, cptr.ldI32o(wizapp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 530, __sl10), rn2(12)) : rn2(12)), 4));
         }
@@ -654,7 +655,7 @@ export function* resurrect() {
         cptr.stU64o(mtmp, FLD.monst_mstrategy, cptr.ldU64o(mtmp, FLD.monst_mstrategy) & 18446744072904245247n);
         cptr.st1o(mtmp, FLD.monst_mtame, 0), cptr.stI32o(mtmp, FLD.monst_mpeaceful, 0);
         set_malign(mtmp);
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             (yield* pline(__sl20));
             ;
             (yield* verbalize(__sl21, verb));
@@ -671,7 +672,7 @@ export function* intervene() {
         (yield* You_feel(__sl23));
         break;
         case 2:
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* You(__sl24, hcolor(cptr.ldPtr(c_color_names))));
         (yield* rndcurse());
         break;
@@ -743,7 +744,7 @@ cptr.stPtro(random_malediction, 80, __sl64);
 
 /** C ref: wizard.c:846 — @param {CPtr} mtmp */
 export function* cuss(mtmp) {
-    if ((cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+    if (Deaf())
         return;
     if ((cptr.ldI32o(mtmp, FLD.monst_iswiz) & 1)) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 851, __sl65), rn2(5)) : rn2(5))) {

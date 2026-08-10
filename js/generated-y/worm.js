@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
@@ -293,7 +294,7 @@ export function* see_wsegs(worm) {
 export function* detect_wsegs(worm, use_detection_glyph) {
     let num;
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, FLD.monst_wormno) & 31), 8);
-    let what_tail = ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : NHC.PM_LONG_WORM_TAIL);
+    let what_tail = (Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : NHC.PM_LONG_WORM_TAIL);
     while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, FLD.monst_wormno) & 31), 8))) {
         num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, FLD.monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, FLD.monst_mtame) ? (((what_tail) + ((((cptr.ldI32o(worm, FLD.monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, FLD.monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
         (yield* show_glyph(cptr.ldI16o(curr, FLD.wseg_wx), cptr.ldI16o(curr, FLD.wseg_wy), num));

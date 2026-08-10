@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { BBlinded, BClairvoyant, BlindedTimeout, Blindfolded_only, EBlinded, EFast, Fixed_abil, Fumbling, HBlinded, HBlnd_resist, HClairvoyant, HConfusion, HFast, HRegeneration, HStun, Half_gas_damage, Hallucination, Poison_resistance, Race_switch, Role_switch, Sick, Upolyd, Very_fast, Vomiting, Wounded_legs, wizard } from './nhprop.js';
 import { c_common_strings, disp, flags, gi, gm, gu, gy, iflags, program_state, svc, svd, svk, svm, u, uarmc, uarmf, uarmg, uarmh, ublindf, uwep } from './decl.js';
 import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { body_part, uasmon_maxStr } from './polyself.js';
@@ -515,7 +516,7 @@ export function* adjattrib(ndx, incr, msgflg) {
     let decr;
     let abonflg;
     let attrstr;
-    if (cptr.ldI64o2(u, NHC.FIXED_ABIL, 24, FLD.you_uprops) || !incr)
+    if (Fixed_abil() || !incr)
         return 0;
     if ((ndx == NHC.A_INT || ndx == NHC.A_WIS) && uarmh.v && cptr.ldI16o(uarmh.v, FLD.obj_otyp) == NHC.DUNCE_CAP) {
         if (msgflg == 0)
@@ -529,8 +530,8 @@ export function* adjattrib(ndx, incr, msgflg) {
     if (incr > 0) {
         if ((cptr.ld1so2(u, ndx, 1, FLD.you_acurr)) > (cptr.ld1so2(u, ndx, 1, FLD.you_amax))) {
             cptr.st1o2(u, ndx, 1, FLD.you_amax, (cptr.ld1so2(u, ndx, 1, FLD.you_acurr)));
-            if ((cptr.ld1so2(u, ndx, 1, FLD.you_amax)) > ((ndx == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, ndx, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))
-                cptr.st1o2(u, ndx, 1, FLD.you_acurr, cptr.st1o2(u, ndx, 1, FLD.you_amax, schar(((ndx == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, ndx, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))));
+            if ((cptr.ld1so2(u, ndx, 1, FLD.you_amax)) > ((ndx == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, ndx, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))
+                cptr.st1o2(u, ndx, 1, FLD.you_acurr, cptr.st1o2(u, ndx, 1, FLD.you_amax, schar(((ndx == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, ndx, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))));
         }
         attrstr = cptr.ldPtro(plusattr, ndx, 8);
         abonflg = schar(((cptr.ld1so2(u, ndx, 1, FLD.you_abon)) < 0));
@@ -603,7 +604,7 @@ export function* losestr(num, knam, k_format) {
             k_format = NHM.KILLED_BY;
         }
         (yield* losehp(dmg, knam, k_format));
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+        if (Upolyd()) {
             setuhpmax((((cptr.ldI32o(u, FLD.you_mhmax) - dmg) | 0) > 1 ? ((cptr.ldI32o(u, FLD.you_mhmax) - dmg) | 0) : 1), 0);
         } else if (!waspolyd) {
             if (cptr.ldI32o(u, FLD.you_uhpmax) > uhpmin)
@@ -612,7 +613,7 @@ export function* losestr(num, knam, k_format) {
         cptr.st1(disp, 1);
     }
     (void (olduhpmax));
-    if (num > 0 && ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) || !waspolyd))
+    if (num > 0 && (Upolyd() || !waspolyd))
         void (yield* adjattrib(NHC.A_STR, -num, 1));
 }
 
@@ -660,7 +661,7 @@ export function* poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         let plural = schar(((cptr.ld1so(reason, BigInt.asUintN(64, cptr.strlen(reason) - 1n)) == 115) ? 1 : 0));
         (yield* pline(__sl63, cptr.isupper(uchar(cptr.ld1s(reason))) ? __sl18 : __sl64, reason, plural ? __sl65 : __sl66));
     }
-    if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops))) {
+    if (Poison_resistance()) {
         if (blast)
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
         (yield* pline_The(__sl67));
@@ -695,7 +696,7 @@ export function* poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     } else if (i > 5) {
         let cloud = schar((!strcmp(reason, __sl73)));
         loss = thrown_weapon ? (rng_log_enabled() ? (rng_log_set_caller(__sl38, 388, __sl71), rnd(6)) : rnd(6)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl38, 388, __sl71), rn2(10)) : rn2(10)) + 6) | 0);
-        if ((blast || cloud) && (ublindf.v && cptr.ldI16o(ublindf.v, FLD.obj_otyp) == NHC.TOWEL && cptr.ld1so(ublindf.v, FLD.obj_spe) > 0))
+        if ((blast || cloud) && Half_gas_damage())
             loss = (((loss + 1) | 0) / 2) | 0;
         (yield* losehp(loss, pkiller, schar(kprefix)));
     } else {
@@ -751,7 +752,7 @@ export function* restore_attrib() {
     let equilibrium;
     ;
     for (i = 0; i < NHC.A_MAX; i++) {
-        equilibrium = ((i == NHC.A_STR && cptr.ldI32o(u, FLD.you_uhs) >= NHC.WEAK) || (i == NHC.A_DEX && (cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops)))) ? -1 : 0;
+        equilibrium = ((i == NHC.A_STR && cptr.ldI32o(u, FLD.you_uhs) >= NHC.WEAK) || (i == NHC.A_DEX && Wounded_legs())) ? -1 : 0;
         if ((cptr.ld1so2(u, i, 1, FLD.you_atemp)) != equilibrium && (cptr.ld1so2(u, i, 1, FLD.you_atime)) != 0) {
             if (!(cptr.st1o2(u, i, 1, FLD.you_atime, cptr.ld1so2(u, i, 1, FLD.you_atime) + -1))) {
                 cptr.st1o2(u, i, 1, FLD.you_atemp, cptr.ld1so2(u, i, 1, FLD.you_atemp) + (((cptr.ld1so2(u, i, 1, FLD.you_atemp)) > 0) ? -1 : 1));
@@ -776,7 +777,7 @@ export function* exercise(i, inc_or_dec) {
     } while (0);
     if (i == NHC.A_INT || i == NHC.A_CHA)
         return;
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && i != NHC.A_WIS)
+    if (Upolyd() && i != NHC.A_WIS)
         return;
     if (Math.abs((cptr.ld1so2(u, i, 1, FLD.you_aexe))) < 50) {
         cptr.st1o2(u, i, 1, FLD.you_aexe, cptr.ld1so2(u, i, 1, FLD.you_aexe) + ((inc_or_dec) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 509, __sl75), rn2(19)) : rn2(19)) > (acurr(i))) : -(rng_log_enabled() ? (rng_log_set_caller(__sl38, 509, __sl75), rn2(2)) : rn2(2))));
@@ -851,15 +852,15 @@ function* exerper() {
                 cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
             }
         } while (0);
-        if ((cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, FLD.you_uprops + FLD.prop_intrinsic) & 134217727n) && !cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, FLD.you_uprops + FLD.prop_blocked))
+        if ((HClairvoyant() & 134217727n) && !BClairvoyant())
             (yield* exercise(NHC.A_WIS, 1));
-        if (cptr.ldI64o2(u, NHC.REGENERATION, 24, FLD.you_uprops + FLD.prop_intrinsic))
+        if (HRegeneration())
             (yield* exercise(NHC.A_STR, 1));
-        if (cptr.ldI64o2(u, NHC.SICK, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.VOMITING, 24, FLD.you_uprops + FLD.prop_intrinsic))
+        if (Sick() || Vomiting())
             (yield* exercise(NHC.A_CON, 0));
-        if (cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+        if (HConfusion() || Hallucination())
             (yield* exercise(NHC.A_WIS, 0));
-        if (((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, FLD.you_uprops)) && !cptr.ldPtro(u, FLD.you_usteed)) || (cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops)) || cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic))
+        if ((Wounded_legs() && !cptr.ldPtro(u, FLD.you_usteed)) || Fumbling() || HStun())
             (yield* exercise(NHC.A_DEX, 0));
     }
 }
@@ -911,12 +912,12 @@ export function* exerchk() {
                     continue;
                 mod_val = sgn(ax);
                 lolim = (cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmin));
-                hilim = ((i == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax));
+                hilim = ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax));
                 if (hilim > 18)
                     hilim = 18;
                 if ((ax < 0) ? ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) <= lolim) : ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) >= hilim))
                     break __lbl_nextattrib;
-                if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && i != NHC.A_WIS)
+                if (Upolyd() && i != NHC.A_WIS)
                     break __lbl_nextattrib;
                 do {
                     if ((yield* debugcore(__sl38, 1))) {
@@ -975,7 +976,7 @@ function init_attr_role_redist(np, addition) {
     let adj = addition ? 1 : -1;
     while ((addition ? (np > 0) : (np < 0)) && tryct < 100) {
         let i = rnd_attr();
-        if (i >= NHC.A_MAX || (addition ? ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) >= ((i == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax))) : ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) <= (cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmin))))) {
+        if (i >= NHC.A_MAX || (addition ? ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) >= ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax))) : ((cptr.ld1so2(u, i, 1, FLD.you_acurr)) <= (cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmin))))) {
             tryct++;
             continue;
         }
@@ -1008,8 +1009,8 @@ export function redist_attr() {
             continue;
         tmp = (cptr.ld1so2(u, i, 1, FLD.you_amax));
         cptr.st1o2(u, i, 1, FLD.you_amax, cptr.ld1so2(u, i, 1, FLD.you_amax) + (((rng_log_enabled() ? (rng_log_set_caller(__sl38, 749, __sl108), rn2(5)) : rn2(5)) - 2) | 0));
-        if ((cptr.ld1so2(u, i, 1, FLD.you_amax)) > ((i == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))
-            cptr.st1o2(u, i, 1, FLD.you_amax, schar(((i == NHC.A_STR && (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax))));
+        if ((cptr.ld1so2(u, i, 1, FLD.you_amax)) > ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax)))
+            cptr.st1o2(u, i, 1, FLD.you_amax, schar(((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmax))));
         if ((cptr.ld1so2(u, i, 1, FLD.you_amax)) < (cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmin)))
             cptr.st1o2(u, i, 1, FLD.you_amax, schar((cptr.ldI16o2(gu, i, 2, FLD.instance_globals_u_urace + FLD.Race_attrmin))));
         cptr.st1o2(u, i, 1, FLD.you_acurr, schar(((Math.imul((cptr.ld1so2(u, i, 1, FLD.you_acurr)), (cptr.ld1so2(u, i, 1, FLD.you_amax))) / tmp) | 0)));
@@ -1051,9 +1052,9 @@ function role_abil(r) {
 function check_innate_abil(ability, frommask) {
     let abil = null;
     if (frommask == 16777216n)
-        abil = role_abil((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)));
+        abil = role_abil(Role_switch());
     else if (frommask == 33554432n)
-        switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum))) {
+        switch (Race_switch()) {
             case NHC.PM_DWARF:
             abil = dwa_abil;
             break;
@@ -1099,13 +1100,13 @@ export function is_innate(propidx) {
     let innateness;
     if (propidx == NHC.DRAIN_RES && ((cptr.ldI32o(u, FLD.you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, FLD.you_ulycn)) < NHC.NUMMONS))
         return 6;
-    if (propidx == NHC.FAST && ((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) & -117440513n) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)))
+    if (propidx == NHC.FAST && Very_fast())
         return 0;
     if ((innateness = innately(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), propidx, 24), FLD.prop_intrinsic))) != 0)
         return innateness;
     if (propidx == NHC.JUMPING && (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_KNIGHT) && !cptr.ldI64o2(u, propidx, 24, FLD.you_uprops))
         return 1;
-    if ((propidx == NHC.BLINDED && !((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n)) || (propidx == NHC.BLND_RES && (cptr.ldI64o2(u, NHC.BLND_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) & 268435456n) != 0n))
+    if ((propidx == NHC.BLINDED && !((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 4096n) == 0n)) || (propidx == NHC.BLND_RES && (HBlnd_resist() & 268435456n) != 0n))
         return 5;
     return 0;
 }
@@ -1116,7 +1117,7 @@ const __static_from_what_because_of = cptr.bytes(" because of %s"); /** C ref: a
 /** C ref: attrib.c:905 — @param {CInt} propidx @returns {CPtr} */
 export function* from_what(propidx) {
     cptr.st1o(cptr.decay(__static_from_what_buf), 0, 0, 1);
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         if (propidx >= 0) {
             let p;
             let obj = null;
@@ -1133,13 +1134,13 @@ export function* from_what(propidx) {
                 void cptr.strcpy(cptr.decay(__static_from_what_buf), __sl114);
             else if (innateness == 5)
                 void cptr.strcpy(cptr.decay(__static_from_what_buf), __sl115);
-            else if (propidx == NHC.FAST && ((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) & -117440513n) || cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops)))
-                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n) != 0n) ? __sl116 : (((cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops) & 32n) != 0n && (cptr.ldI32o(uarmf.v, FLD.obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1) | 0) ? (yield* ysimple_name(uarmf.v)) : (cptr.ldI64o2(u, NHC.FAST, 24, FLD.you_uprops) ? __sl117 : cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_something))));
-            else if (cptr.ld1so(flags, FLD.flag_debug) && (obj = what_gives(cptr.add(cptr.add(u, FLD.you_uprops), propidx, 24))) !== null)
+            else if (propidx == NHC.FAST && Very_fast())
+                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((HFast() & 16777215n) != 0n) ? __sl116 : (((EFast() & 32n) != 0n && (cptr.ldI32o(uarmf.v, FLD.obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1) | 0) ? (yield* ysimple_name(uarmf.v)) : (EFast() ? __sl117 : cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_something))));
+            else if (wizard() && (obj = what_gives(cptr.add(cptr.add(u, FLD.you_uprops), propidx, 24))) !== null)
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), cptr.ld1so(obj, FLD.obj_oartifact) ? (yield* bare_artifactname(obj)) : (yield* ysimple_name(obj)));
-            else if (propidx == NHC.BLINDED && (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops) && !(cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))))
+            else if (propidx == NHC.BLINDED && Blindfolded_only())
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), (yield* ysimple_name(ublindf.v)));
-            else if (propidx == NHC.BLINDED && cptr.ldI32o(u, FLD.you_ucreamed) && (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & 16777215n) == BigInt(cptr.ldI32o(u, FLD.you_ucreamed) >>> 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops) && !(cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) & -16777216n))
+            else if (propidx == NHC.BLINDED && cptr.ldI32o(u, FLD.you_ucreamed) && BlindedTimeout() == BigInt(cptr.ldI32o(u, FLD.you_ucreamed) >>> 0) && !EBlinded() && !(HBlinded() & -16777216n))
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), __sl118, (yield* body_part(NHC.FACE)));
             if ((p = (yield* strstri(cptr.decay(__static_from_what_buf), __sl119))) !== null)
                 (yield* copynchars(cptr.add(p, 1), cptr.add(p, 9), NHM.BUFSZ));
@@ -1148,7 +1149,7 @@ export function* from_what(propidx) {
         } else {
             switch (-propidx) {
                 case NHC.BLINDED:
-                if (cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked) && is_art(ublindf.v, NHC.ART_EYES_OF_THE_OVERWORLD))
+                if (BBlinded() && is_art(ublindf.v, NHC.ART_EYES_OF_THE_OVERWORLD))
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), (yield* bare_artifactname(ublindf.v)));
                 break;
                 case NHC.INVIS:
@@ -1156,7 +1157,7 @@ export function* from_what(propidx) {
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), (yield* ysimple_name(uarmc.v)));
                 break;
                 case NHC.CLAIRVOYANT:
-                if (cptr.ld1so(flags, FLD.flag_debug) && (cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, FLD.you_uprops + FLD.prop_blocked) & 4n))
+                if (wizard() && (cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, FLD.you_uprops + FLD.prop_blocked) & 4n))
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), (yield* ysimple_name(uarmh.v)));
                 break;
             }
@@ -1171,8 +1172,8 @@ export function* adjabil(oldlevel, newlevel) {
     let rabil;
     let prevabil;
     let mask = 16777216n;
-    abil = role_abil((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)));
-    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum))) {
+    abil = role_abil(Role_switch());
+    switch (Race_switch()) {
         case NHC.PM_ELF:
         rabil = elf_abil;
         break;
@@ -1291,7 +1292,7 @@ export function minuhpmax(altmin) {
 
 /** C ref: attrib.c:1157 — @param {CInt} newmax @param {CInt} even_when_polyd */
 export function setuhpmax(newmax, even_when_polyd) {
-    if (!(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) || even_when_polyd) {
+    if (!Upolyd() || even_when_polyd) {
         if (newmax != cptr.ldI32o(u, FLD.you_uhpmax)) {
             cptr.stI32o(u, FLD.you_uhpmax, newmax);
             if (cptr.ldI32o(u, FLD.you_uhpmax) > cptr.ldI32o(u, FLD.you_uhppeak))
@@ -1312,7 +1313,7 @@ export function setuhpmax(newmax, even_when_polyd) {
 
 /** C ref: attrib.c:1182 — @param {CInt} loss @param {CInt} olduhp @returns {CInt} */
 export function adjuhploss(loss, olduhp) {
-    if (!(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+    if (!Upolyd()) {
         if (cptr.ldI32o(u, FLD.you_uhp) < olduhp)
             loss = (loss - ((olduhp - cptr.ldI32o(u, FLD.you_uhp)) | 0)) | 0;
     } else {
@@ -1416,13 +1417,13 @@ export function* uchangealign(newalign, reason) {
         cptr.st1o(u, FLD.you_ualign, schar(newalign));
         if (reason == NHC.A_CG_HELM_ON) {
             adjalign(-7);
-            (yield* Your(__sl130, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl131 : __sl132));
+            (yield* Your(__sl130, Hallucination() ? __sl131 : __sl132));
             (yield* make_confused(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1346, __sl133), rn2(2)) : rn2(2)) + 3) | 0)), 0));
             if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) || ((rng_log_enabled() ? (rng_log_set_caller(__sl38, 1347, __sl133), rn2(50)) : rn2(50)) >>> 0 < cptr.ldI32o(u, FLD.you_ualign + FLD.align_abuse)))
                 (yield* summon_furies((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) ? 0 : 1));
             (yield* livelog_printf(512n, __sl134, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, FLD.Align_adj)));
         } else if (reason == NHC.A_CG_HELM_OFF) {
-            (yield* Your(__sl135, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl136 : __sl137));
+            (yield* Your(__sl135, Hallucination() ? __sl136 : __sl137));
         }
     }
     if (cptr.ld1so(u, FLD.you_ualign) != oldalign) {

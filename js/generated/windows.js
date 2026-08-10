@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, ctrl_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed, putstr, start_menu } from './nhprop.js';
 import { tty_procs, win_tty_init } from './wintty.js';
 import { WIN_STATUS, cg, flags, gb, gl, gm, go, gs, hexdd, iflags, program_state, svc } from './decl.js';
 import { eos, mungspaces, strncmpi } from './hacklib.js';
@@ -444,8 +445,8 @@ export function genl_status_init() {
         cptr.st1o(cptr.decay(status_activefields), i, 0, 1);
         cptr.stPtro(status_fieldfmt, i, null, 8);
     }
-    WIN_STATUS.v = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_STATUS);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_STATUS.v, 0);
+    WIN_STATUS.v = create_nhwindow()(NHM.NHW_STATUS);
+    display_nhwindow()(WIN_STATUS.v, 0);
 }
 
 /** C ref: windows.c:909 */
@@ -646,10 +647,10 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
             break;
         }
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_STATUS.v, 1, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(WIN_STATUS.v, 0, cptr.decay(newbot1));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_curs))(WIN_STATUS.v, 1, 1);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putmixed))(WIN_STATUS.v, 0, cptr.decay(newbot2));
+    curs()(WIN_STATUS.v, 1, 0);
+    putstr()(WIN_STATUS.v, 0, cptr.decay(newbot1));
+    curs()(WIN_STATUS.v, 1, 1);
+    putmixed()(WIN_STATUS.v, 0, cptr.decay(newbot2));
 }
 
 /** C ref: windows.c:1119 — struct window_procs */
@@ -676,7 +677,7 @@ export function dump_forward_putstr(win, attr, str, no_forward) {
     if (dumplog_file)
         fprintf(dumplog_file, __sl25, str);
     if (!no_forward)
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, attr, str);
+        putstr()(win, attr, str);
 }
 
 /** C ref: windows.c:1286 — @param {CInt} win @param {CInt} attr @param {CPtr} str */
@@ -853,7 +854,7 @@ export function decode_mixed(buf, str) {
 /** C ref: windows.c:1528 — @param {CInt} window @param {CInt} attr @param {CPtr} str */
 export function genl_putmixed(window, attr, str) {
     let buf = new Uint8Array(256);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(window, attr, decode_mixed(cptr.decay(buf), str));
+    putstr()(window, attr, decode_mixed(cptr.decay(buf), str));
 }
 
 /** C ref: windows.c:1539 — @param {CPtr} fname @param {CInt} complain */
@@ -919,8 +920,8 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
         return 0;
     next_accelerator = 97;
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+    win = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(win, 0n);
     while (cptr.ld1s(class_list)) {
         let idx;
         selected = 0;
@@ -974,9 +975,9 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             add_menu_str(win, cptr.ld1so(flags, FLD.flag_pickup) ? __sl39 : __sl40);
         }
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, prompt);
+    end_menu()(win, prompt);
     n = select_menu(win, way ? NHM.PICK_ANY : NHM.PICK_ONE, pick_list);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    destroy_nhwindow()(win);
     if (n > 0) {
         if (category == 1) {
             for (i = 0; i < n; ++i)
@@ -1019,7 +1020,7 @@ export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
     cptr.stI32o(wri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle, cptr.ldI32(style));
     cptr.stI32o(wri, FLD.win_request_info_t_fromcore + FLD.from_core_menu_promptstyle + FLD.color_and_attr_attr, cptr.ldI32o(style, FLD.color_attr_attr));
-    void (cptr.ldPtro(windowprocs, FLD.window_procs_win_ctrl_nhwindow))(window, NHC.set_menu_promptstyle, wri);
+    void ctrl_nhwindow()(window, NHC.set_menu_promptstyle, wri);
     cptr.st1o(go, FLD.instance_globals_o_opt_need_promptstyle, 0);
 }
 

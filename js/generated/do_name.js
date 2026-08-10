@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { dealloc_obj, newoextra } from './mkobj.js';
@@ -509,7 +510,7 @@ function do_mgivenname() {
     let cy;
     let mtmp = null;
     let do_swallow = 0;
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if (Hallucination()) {
         You(__sl14);
         return;
     }
@@ -534,7 +535,7 @@ function do_mgivenname() {
             do_swallow = 1;
         }
     }
-    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && (!(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) || see_with_infrared(mtmp)) || (cptr.ldI32o(mtmp, FLD.monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT || ((cptr.ldI32o(mtmp, FLD.monst_minvis) & 1) | 0 && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops))))))) {
+    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && (!(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) || see_with_infrared(mtmp)) || (cptr.ldI32o(mtmp, FLD.monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), FLD.monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT || ((cptr.ldI32o(mtmp, FLD.monst_minvis) & 1) | 0 && !See_invisible()))))) {
         pline(__sl17);
         return;
     }
@@ -544,7 +545,7 @@ function do_mgivenname() {
     if ((cptr.ldU16o(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_geno) & NHM.G_UNIQ) && !(cptr.ldI32o(mtmp, FLD.monst_ispriest) & 1)) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf)))
             pline(__sl19, upstart(cptr.decay(monnambuf)));
-    } else if ((cptr.ldI32o(mtmp, FLD.monst_isshk) & 1) | 0 && !((cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) || ((cptr.ldI32o((mtmp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
+    } else if ((cptr.ldI32o(mtmp, FLD.monst_isshk) & 1) | 0 && !(Deaf() || ((cptr.ldI32o((mtmp), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), FLD.monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_msound) <= NHC.MS_ANIMAL)) {
         if (!alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf))) {
             ;
             verbalize(__sl20, shkname(mtmp), cptr.decay(buf));
@@ -585,7 +586,7 @@ function do_oname(obj) {
             wipeout_text(bufp, rnd_on_display_rng(2), 0);
         } while (!strcmp(cptr.decay(buf), cptr.decay(bufcpy)));
         pline(__sl30, body_part(NHC.HAND));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0);
+        display_nhwindow()(WIN_MESSAGE.v, 0);
         You(__sl31, cptr.decay(buf));
         (cptr.stI64o(u, FLD.you_uconduct + FLD.u_conduct_literate, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_literate) + 1n)) - (1n);
     } else if (cptr.ldI16o(obj, FLD.obj_otyp) == objtyp.v) {
@@ -701,8 +702,8 @@ export function docallcmd() {
                 cmdq_clear(NHC.CQ_CANNED);
             break __lbl_docallcmd;
         }
-        win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+        win = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(win, 0n);
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         cptr.st1(any, 109);
         add_menu(win, nul_glyphinfo.v, any, schar((abc ? 0 : cptr.ld1s(any))), 67, NHM.ATR_NONE, clr, __sl37, NHM.MENU_ITEMFLAGS_NONE);
@@ -718,13 +719,13 @@ export function docallcmd() {
         add_menu(win, nul_glyphinfo.v, any, schar((abc ? 0 : cptr.ld1s(any))), 92, NHM.ATR_NONE, clr, __sl41, NHM.MENU_ITEMFLAGS_NONE);
         cptr.st1(any, 97);
         add_menu(win, nul_glyphinfo.v, any, schar((abc ? 0 : cptr.ld1s(any))), 108, NHM.ATR_NONE, clr, __sl42, NHM.MENU_ITEMFLAGS_NONE);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl43);
+        end_menu()(win, __sl43);
         if (select_menu(win, NHM.PICK_ONE, pick_list) > 0) {
             ch = cptr.ld1so(pick_list.v, 0, 24);
             cptr.free(pick_list.v);
         } else
             ch = 113;
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+        destroy_nhwindow()(win);
     }
     switch (ch) {
         default:
@@ -843,11 +844,11 @@ function namefloorobj() {
     }
     void cptr.strcpy(cptr.decay(buf), (cptr.ldI16o(obj.v, FLD.obj_otyp) != NHC.STRANGE_OBJECT) ? simpleonames(obj.v) : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, 16));
     use_plural = schar((cptr.ldI64o(obj.v, FLD.obj_quan) > 1n));
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if (Hallucination()) {
         let unames = cptr.alloc(6 * 8);
         let tmpbuf = new Uint8Array(256);
-        cptr.stPtro(unames, 0, (((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) ? (cptr.ldI32o(u, FLD.you_mfemale) & 1) | 0 : cptr.ld1so(flags, FLD.flag_female)) && cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f)) ? cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f) : cptr.ldPtro(gu, FLD.instance_globals_u_urole), 8);
-        cptr.stPtro(unames, 1, rank_of((rn2_on_display_rng(30) + 1) | 0, (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum)), cptr.ld1so(flags, FLD.flag_female)), 8);
+        cptr.stPtro(unames, 0, ((Upolyd() ? (cptr.ldI32o(u, FLD.you_mfemale) & 1) | 0 : cptr.ld1so(flags, FLD.flag_female)) && cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f)) ? cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.RoleName_f) : cptr.ldPtro(gu, FLD.instance_globals_u_urole), 8);
+        cptr.stPtro(unames, 1, rank_of((rn2_on_display_rng(30) + 1) | 0, Role_switch(), cptr.ld1so(flags, FLD.flag_female)), 8);
         cptr.stPtro(unames, 2, bogusmon(cptr.decay(tmpbuf), null), 8);
         cptr.stPtro(unames, 3, cptr.ldPtro(unames, 2, 8), 8);
         cptr.stPtro(unames, 4, roguename(), 8);
@@ -937,7 +938,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         article = NHM.ARTICLE_THE;
         suppress |= NHM.SUPPRESS_INVISIBLE;
     }
-    do_hallu = schar(((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !(suppress & NHM.SUPPRESS_HALLUCINATION) ? 1 : 0));
+    do_hallu = schar((Hallucination() && !(suppress & NHM.SUPPRESS_HALLUCINATION) ? 1 : 0));
     do_invis = schar(((cptr.ldI32o(mtmp, FLD.monst_minvis) & 1) | 0 && !(suppress & NHM.SUPPRESS_INVISIBLE) ? 1 : 0));
     do_it = schar((!(canseemon(mtmp) || sensemon(mtmp)) && article != NHM.ARTICLE_YOUR && !cptr.ldI32(program_state) && !cptr.eq(mtmp, cptr.ldPtro(u, FLD.you_usteed)) && !((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, FLD.you_ustuck), (mtmp)))) && !(suppress & NHM.SUPPRESS_IT) ? 1 : 0));
     do_saddle = schar((!(suppress & NHM.SUPPRESS_SADDLE)));
@@ -953,7 +954,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
     }
     if (((cptr.ldI32o(mtmp, FLD.monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, FLD.monst_isminion) & 1) | 0) && !do_mappear) {
         let name;
-        let save_prop = cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops);
+        let save_prop = EHalluc_resistance();
         let save_invis = (cptr.ldI32o(mtmp, FLD.monst_minvis) & 1);
         if (!do_hallu)
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops, 1n);
@@ -991,7 +992,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         void cptr.strcat(cptr.strcat(buf, adjective), __sl108);
     if (do_invis)
         void cptr.strcat(buf, __sl7);
-    if (do_saddle && (cptr.ldI64o(mtmp, FLD.monst_misc_worn_check) & 1048576n) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+    if (do_saddle && (cptr.ldI64o(mtmp, FLD.monst_misc_worn_check) & 1048576n) && !Blind() && !Hallucination())
         void cptr.strcat(buf, __sl110);
     has_adjectives = schar((cptr.ld1so(buf, 0) != 0));
     if (do_hallu) {
@@ -1150,7 +1151,7 @@ export function Amonnam(mtmp) {
 
 /** C ref: do_name.c:1170 — @param {CPtr} mon @param {CInt} article @param {CPtr} outbuf @returns {CPtr} */
 export function distant_monnam(mon, article, outbuf) {
-    if (cptr.eq(cptr.ldPtro(mon, FLD.monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && !(dist2((cptr.ldI16o((mon), FLD.monst_mx)), (cptr.ldI16o((mon), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 2)) {
+    if (cptr.eq(cptr.ldPtro(mon, FLD.monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))) && !(dist2((cptr.ldI16o((mon), FLD.monst_mx)), (cptr.ldI16o((mon), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 2)) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __sl6 : __sl0);
         void cptr.strcat(outbuf, (cptr.ldI32o(mon, FLD.monst_female) & 1) | 0 ? __sl114 : __sl115);
     } else {
@@ -1233,7 +1234,7 @@ export function minimal_monnam(mon, ckloc) {
 export function Mgender(mtmp) {
     let mgender = NHC.MALE;
     if (cptr.eq(mtmp, cptr.add(gy, FLD.instance_globals_y_youmonst))) {
-        if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) ? (cptr.ldI32o(u, FLD.you_mfemale) & 1) | 0 : cptr.ld1so(flags, FLD.flag_female))
+        if (Upolyd() ? (cptr.ldI32o(u, FLD.you_mfemale) & 1) | 0 : cptr.ld1so(flags, FLD.flag_female))
             mgender = NHC.FEMALE;
     } else if ((cptr.ldI32o(mtmp, FLD.monst_female) & 1)) {
         mgender = NHC.FEMALE;
@@ -1407,13 +1408,13 @@ cptr.stPtro(hcolors, 584, __sl213);
 
 /** C ref: do_name.c:1461 — @param {CPtr} colorpref @returns {CPtr} */
 export function hcolor(colorpref) {
-    return ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) || !colorpref) ? cptr.ldPtro(hcolors, rn2_on_display_rng(74), 8) : colorpref;
+    return (Hallucination() || !colorpref) ? cptr.ldPtro(hcolors, rn2_on_display_rng(74), 8) : colorpref;
 }
 
 /** C ref: do_name.c:1470 @returns {CPtr} */
 export function rndcolor() {
     let k = (rng_log_enabled() ? (rng_log_set_caller(__sl102, 1472, __sl214), rn2(NHM.CLR_MAX)) : rn2(NHM.CLR_MAX));
-    return (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? hcolor(null) : ((k == NHM.NO_COLOR) ? __sl189 : cptr.ldPtro(c_obj_colors, k, 8));
+    return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __sl189 : cptr.ldPtro(c_obj_colors, k, 8));
 }
 
 /** C ref: do_name.c:1479 — char *[40] */
@@ -1461,7 +1462,7 @@ cptr.stPtro(hliquids, 312, __sl254);
 
 /** C ref: do_name.c:1493 — @param {CPtr} liquidpref @returns {CPtr} */
 export function hliquid(liquidpref) {
-    let hallucinate = schar(((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !cptr.ldI32(program_state) ? 1 : 0));
+    let hallucinate = schar((Hallucination() && !cptr.ldI32(program_state) ? 1 : 0));
     if (hallucinate || !liquidpref || !cptr.ld1s(liquidpref)) {
         let indx;
         let count = 40;

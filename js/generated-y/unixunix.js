@@ -12,6 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { exit_nhwindows, raw_print, resume_nhwindows, suspend_nhwindows, wait_synch, wizard } from './nhprop.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
@@ -97,7 +98,7 @@ export function* getlock() {
             if (!isatty(0) && !getenv(__sl1))
                 (yield* error(__sl2));
         if (!(yield* lock_file(__sl3, NHM.LOCKPREFIX, 10))) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+            (yield* Y.icall(wait_synch()()));
             (yield* error(__sl4, __sl5));
         }
         if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum))
@@ -201,7 +202,7 @@ export function* ask_about_panic_save() {
         delete_levelfile(0);
         (yield* unlock_file(__sl3));
         if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows))(null)));
+            (yield* Y.icall(exit_nhwindows()(null)));
         (yield* nh_terminate(0));
     }
     return;
@@ -226,7 +227,7 @@ export function* dosh() {
             void execl(str, str, null);
         else
             void execl(__sl21, __sl22, null);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl23)));
+        (yield* Y.icall(raw_print()(__sl23)));
         exit(1);
     }
     return 0;
@@ -235,7 +236,7 @@ export function* dosh() {
 /** C ref: unixunix.c:370 — @param {CInt} wt @returns {CInt} */
 export function* child(wt) {
     let f;
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_suspend_nhwindows))(null)));
+    (yield* Y.icall(suspend_nhwindows()(null)));
     if ((f = fork()) == 0) {
         void setgid(getgid());
         void setuid(getuid());
@@ -250,13 +251,13 @@ export function* child(wt) {
     void signal(3, 1);
     void wait(null);
     void signal(2, done1);
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         void signal(3, null);
     if (wt) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl5)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(raw_print()(__sl5)));
+        (yield* Y.icall(wait_synch()()));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_resume_nhwindows))()));
+    (yield* Y.icall(resume_nhwindows()()));
     return 0;
 }
 

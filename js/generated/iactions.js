@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
 import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
 import { doinvoke, undiscovered_artifact } from './artifact.js';
@@ -392,8 +393,8 @@ export function itemactions(otmp) {
     let mtmp;
     let light = (cptr.ldI32o(otmp, FLD.obj_lamplit) & 1) | 0 ? __sl19 : __sl20;
     let already_worn = schar(((cptr.ldI64o(otmp, FLD.obj_owornmask) & 983167n) != 0n));
-    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+    win = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(win, 0n);
     if (cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) || cptr.eq(otmp, uquiver.v)) {
         let verb = (cptr.eq(otmp, uquiver.v)) ? __sl21 : __sl22;
         let action = (cptr.eq(otmp, uquiver.v)) ? __sl23 : __sl24;
@@ -614,14 +615,14 @@ export function itemactions(otmp) {
         ia_addmenu(win, NHC.IA_WHATIS_OBJ, 47, cptr.decay(buf));
     }
     void cptr.sprintf(cptr.decay(buf), __sl134, the(cxname(otmp)));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(buf));
+    end_menu()(win, cptr.decay(buf));
     n = select_menu(win, NHM.PICK_ONE, selected);
     if (n > 0) {
         act = cptr.ldI32o(selected.v, 0, 24);
         cptr.free(selected.v);
         itemactions_pushkeys(otmp, act);
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 

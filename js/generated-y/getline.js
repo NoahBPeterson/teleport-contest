@@ -12,6 +12,7 @@ import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { clear_nhwindow } from './nhprop.js';
 import { ttyDisplay, tty_clear_nhwindow, tty_nhgetch, wins } from './wintty.js';
 import { WIN_MESSAGE, gi, gt, iflags, program_state } from './decl.js';
 import { addtopl, more, putsyms, tty_doprev_message } from './topl.js';
@@ -155,7 +156,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
     }
     cptr.stI32o(ttyDisplay, FLD.DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
     (cptr.stI32o(ttyDisplay, FLD.DisplayDesc_inread, cptr.ldI32o(ttyDisplay, FLD.DisplayDesc_inread) + -1)) - (-1);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+    (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
     if (suppress_history) {
         cptr.st1o(gt, FLD.instance_globals_t_toplines, 0);
     } else {

@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
 import { on_level } from './dungeon.js';
@@ -391,11 +392,11 @@ function e_survives_at(etmp, x, y) {
     if ((cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_GHOST))
         return 1;
     if (is_pool(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, FLD.you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level))))) || (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 512n) != 0n)) || (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 1024n) != 0n)) || (cptr.ldI64o2(u, NHC.SWIMMING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SWIMMING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 2n) != 0n))) || ((cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)))) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 1n) != 0n) || (cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_LIGHT) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, FLD.you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 1n) != 0n) || (cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_LIGHT) ? 1 : 0));
     if (is_lava(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_blocked)))) || (cptr.eq(cptr.ldPtro(etmp, FLD.entity_edata), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(cptr.ldPtro(etmp, FLD.entity_edata), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 1n) != 0n) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && (Levitation() || Flying())) || (cptr.eq(cptr.ldPtro(etmp, FLD.entity_edata), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(cptr.ldPtro(etmp, FLD.entity_edata), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 1n) != 0n) ? 1 : 0));
     if (is_db_wall(x, y))
-        return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? (cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops) ? 1 : 0) : ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 8n) != 0n)));
+        return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 8n) != 0n)));
     return 1;
 }
 
@@ -417,7 +418,7 @@ function* e_died(etmp, xkill_flags, how) {
             (yield* done(how));
             if (!e_survives_at(etmp, i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey)))) {
                 if ((yield* enexto(xy, i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey)), cptr.ldPtro(etmp, FLD.entity_edata)))) {
-                    (yield* pline(__sl7, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl8 : __sl9));
+                    (yield* pline(__sl7, Hallucination() ? __sl8 : __sl9));
                     (yield* teleds(cptr.ldI16(xy), cptr.ldI16o(xy, FLD.nhcoord_y), NHM.TELEDS_NO_FLAGS));
                 }
             }
@@ -454,7 +455,7 @@ function* e_died(etmp, xkill_flags, how) {
 
 /** C ref: dbridge.c:486 — @param {CPtr} etmp @returns {CInt} */
 function automiss(etmp) {
-    return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? (cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops) ? 1 : 0) : ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 8n) != 0n)) || (cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
+    return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 8n) != 0n)) || (cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:496 — @param {CPtr} etmp @param {CInt} chunks @returns {CInt} */
@@ -473,7 +474,7 @@ function* e_missed(etmp, chunks) {
         return 1;
     if (((cptr.ldU64o((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mflags1) & 1n) != 0n) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !((cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_mcanmove) & 1))))
         misses = 5;
-    else if ((cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_LIGHT) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && ((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked))))
+    else if ((cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, FLD.entity_edata)), FLD.permonst_mlet) == NHC.S_LIGHT) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) && Levitation()))
         misses = 3;
     else if (chunks && is_pool(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey))))
         misses = 2;
@@ -494,11 +495,11 @@ function* e_missed(etmp, chunks) {
 /** C ref: dbridge.c:531 — @param {CPtr} etmp @returns {CInt} */
 function* e_jumps(etmp) {
     let tmp = 4;
-    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || (cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops)) ? 1 : 0) : (((cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_mcanmove) & 1)) || !cptr.ld1so(cptr.ldPtro(etmp, FLD.entity_edata), FLD.permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_wormno) & 31) | 0 ? 1 : 0))
+    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (((cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), FLD.monst_mcanmove) & 1)) || !cptr.ld1so(cptr.ldPtro(etmp, FLD.entity_edata), FLD.permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_wormno) & 31) | 0 ? 1 : 0))
         return 0;
-    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic) : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_mconf) & 1) >>> 0))
+    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? HConfusion() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
-    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic) : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_mstun) & 1) >>> 0))
+    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? HStun() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), FLD.monst_mstun) & 1) >>> 0))
         tmp = (tmp - 3) | 0;
     if (is_db_wall(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey))))
         tmp = (tmp - 2) | 0;
@@ -590,7 +591,7 @@ function* do_entity(etmp) {
             } else {
                 if (e_inview) {
                     (yield* pline(__sl28, (yield* E_phrase(etmp, __sl26))));
-                } else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+                } else if (!Deaf()) {
                     ;
                     (yield* You_hear(__sl29));
                 }
@@ -742,7 +743,7 @@ function* do_entity(etmp) {
             }
         } while (0);
         if (is_pool(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey))) && !e_inview)
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+            if (!Deaf()) {
                 ;
                 (yield* You_hear(__sl54));
             }
@@ -761,7 +762,7 @@ function* do_entity(etmp) {
         if (is_pool(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey))) || is_lava(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey))))
             if (e_inview && !(cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, FLD.instance_globals_y_youmonst)))) {
                 let lava = is_lava(i16(cptr.ldI32o(etmp, FLD.entity_ex)), i16(cptr.ldI32o(etmp, FLD.entity_ey)));
-                if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+                if (Hallucination())
                     (yield* pline(__sl58, (yield* E_phrase(etmp, __sl59)), lava ? __sl60 : __sl61));
                 else
                     (yield* pline(__sl62, (yield* E_phrase(etmp, __sl56)), lava ? hliquid(__sl60) : __sl61));
@@ -795,7 +796,7 @@ export function* close_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0)) {
-        (yield* You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16o(u, FLD.you_uy) == y) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1))) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) ? __sl65 : __sl66));
+        (yield* You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16o(u, FLD.you_uy) == y) && !Underwater()) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) ? __sl65 : __sl66));
     } else {
         ;
         (yield* You_hear(__sl67));
@@ -819,7 +820,7 @@ export function* close_drawbridge(x, y) {
     (yield* do_entity(cptr.add(cptr.add(go, FLD.instance_globals_o_occupants), 0, 24)));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, FLD.instance_globals_o_occupants), 1, 24));
     (yield* do_entity(cptr.add(cptr.add(go, FLD.instance_globals_o_occupants), 1, 24)));
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects) !== null) && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects) !== null) && !Deaf()) {
         ;
         (yield* You_hear(__sl68));
     }
@@ -980,12 +981,12 @@ export function* destroy_drawbridge(x, y) {
                 void (yield* minliquid(cptr.ldPtr(etmp1)));
         } else {
             if (e_inview) {
-                if (!(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, FLD.instance_globals_y_youmonst))) && (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+                if (!(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, FLD.instance_globals_y_youmonst))) && Hallucination())
                     (yield* pline(__sl80, (yield* E_phrase(etmp1, __sl81))));
                 else
                     (yield* pline(__sl82, (yield* E_phrase(etmp1, __sl26))));
             } else {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, FLD.instance_globals_y_youmonst))) && !is_pool(x, y)) {
+                if (!Deaf() && !(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, FLD.instance_globals_y_youmonst))) && !is_pool(x, y)) {
                     ;
                     (yield* You_hear(__sl29));
                 } else {

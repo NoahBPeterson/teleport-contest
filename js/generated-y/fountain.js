@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance, Unchanging, display_nhwindow, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg, ynchars } from './decl.js';
 import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon.js';
 import { You, You_feel, You_hear, You_see, Your, livelog_printf, pline, pline_The, verbalize } from './pline.js';
@@ -188,8 +189,8 @@ function* dowatersnakes() {
     let num = (((rng_log_enabled() ? (rng_log_set_caller(__sl2, 40, __sl3), rn2(5)) : rn2(5)) + 2) | 0);
     let mtmp;
     if (!(cptr.ld1uo2(svm, NHC.PM_WATER_MOCCASIN, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3)) {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
-            (yield* pline(__sl4, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? (yield* makeplural((yield* rndmonnam(null)))) : __sl5));
+        if (!Blind()) {
+            (yield* pline(__sl4, Hallucination() ? (yield* makeplural((yield* rndmonnam(null)))) : __sl5));
         } else {
             ;
             (yield* You_hear(__sl6, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_something)));
@@ -208,7 +209,7 @@ function* dowaterdemon() {
     let mtmp = cptr.box(0);
     if (!(cptr.ld1uo2(svm, NHC.PM_WATER_DEMON, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3)) {
         if ((mtmp.v = (yield* makemon(cptr.add(mons, NHC.PM_WATER_DEMON, 96), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), NHM.MM_NOMSG))) !== null) {
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 (yield* You(__sl8, (yield* a_monnam(mtmp.v))));
             else
                 (yield* You_feel(__sl9));
@@ -228,14 +229,14 @@ function* dowaterdemon() {
 function* dowaternymph() {
     let mtmp;
     if (!(cptr.ld1uo2(svm, NHC.PM_WATER_NYMPH, 12, FLD.instance_globals_saved_m_mvitals + FLD.mvitals_mvflags) & 3) && (mtmp = (yield* makemon(cptr.add(mons, NHC.PM_WATER_NYMPH, 96), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), NHM.MM_NOMSG))) !== null) {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* You(__sl12, (yield* a_monnam(mtmp))));
         else
             (yield* You_hear(__sl13));
         cptr.stI32o(mtmp, FLD.monst_msleeping, 0);
         if (t_at(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my)))
             void (yield* mintrap(mtmp, NHM.NO_TRAP_FLAGS));
-    } else if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    } else if (!Blind()) {
         ;
         ;
         (yield* pline(__sl14));
@@ -279,7 +280,7 @@ function* gush(x, y, poolcnt) {
 
 /** C ref: fountain.c:165 */
 function* dofindgem() {
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+    if (!Blind())
         (yield* You(__sl20));
     else
         (yield* You_feel(__sl21));
@@ -293,7 +294,7 @@ function* dofindgem() {
 /** C ref: fountain.c:179 — @param {CPtr} mtmp @returns {CInt} */
 function* watchman_warn_fountain(mtmp) {
     if ((cptr.eq((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_WATCHMAN, 96)) || cptr.eq((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_WATCH_CAPTAIN, 96))) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(mtmp, FLD.monst_my), 8), cptr.ldI16o(mtmp, FLD.monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1) | 0) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             (yield* pline(__sl22, (yield* Amonnam(mtmp))));
             (yield* verbalize(__sl23));
         } else {
@@ -316,7 +317,7 @@ export function* dryup(x, y, isyou) {
                 (yield* pline_The(__sl28));
             return;
         }
-        if (isyou && cptr.ld1so(flags, FLD.flag_debug)) {
+        if (isyou && wizard()) {
             if ((yield* yn_function(__sl29, cptr.decay(ynchars), 110, 1)) == 110)
                 return;
         }
@@ -338,7 +339,7 @@ export function* dryup(x, y, isyou) {
 export function* drinkfountain() {
     let mgkftn = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_horizontal) & 1) | 0) == 1));
     let fate = (rng_log_enabled() ? (rng_log_set_caller(__sl2, 247, __sl31), rnd(30)) : rnd(30));
-    if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (Levitation()) {
         (yield* floating_above(__sl32));
         return;
     }
@@ -359,7 +360,7 @@ export function* drinkfountain() {
             if (++i >= NHC.A_MAX)
                 i = 0;
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0)));
+        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* pline(__sl34));
         (yield* exercise(NHC.A_WIS, 1));
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_horizontal, 0);
@@ -375,7 +376,7 @@ export function* drinkfountain() {
         switch (fate) {
             case 19:
             (yield* You_feel(__sl36));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0)));
+            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
             (yield* enlightenment(NHM.MAGICENLIGHTENMENT, NHM.ENL_GAMEINPROGRESS));
             (yield* exercise(NHC.A_WIS, 1));
             (yield* pline_The(__sl37));
@@ -387,7 +388,7 @@ export function* drinkfountain() {
             break;
             case 21:
             (yield* pline_The(__sl39));
-            if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, FLD.you_uprops))) {
+            if (Poison_resistance()) {
                 (yield* pline(__sl40, (yield* fruitname(0))));
                 (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__sl2, 304, __sl31), rnd(4)) : rnd(4)), __sl41, NHM.KILLED_BY_AN));
                 break;
@@ -421,8 +422,8 @@ export function* drinkfountain() {
                 break;
             }
             case 25:
-            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
-                if ((((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops)))) {
+            if (Blind()) {
+                if (Invisible()) {
                     (yield* You(__sl44));
                 } else {
                     (yield* You(__sl45));
@@ -479,7 +480,7 @@ const __static_dipfountain_lady = cptr.bytes("Lady of the Lake"); /** C ref: fou
 export function* dipfountain(obj) {
     let er = NHM.ER_NOTHING;
     let is_hands = schar((cptr.eq(obj, hands_obj)));
-    if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (Levitation()) {
         (yield* floating_above(__sl32));
         return;
     }
@@ -530,7 +531,7 @@ export function* dipfountain(obj) {
         case 19:
         case 20:
         if (!is_hands && (cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0) {
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 (yield* pline_The(__sl60, hliquid(__sl50)));
             (yield* uncurse(obj));
         } else {
@@ -595,7 +596,7 @@ export function* dipfountain(obj) {
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) | NHM.F_LOOTED);
         ;
         void (yield* mkgold(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl2, 539, __sl53), rnd(Math.imul(((((dunlevs_in_dungeon(cptr.add(u, FLD.you_uz)) - dunlev(cptr.add(u, FLD.you_uz))) | 0) + 1) | 0), 2))) : rnd(Math.imul(((((dunlevs_in_dungeon(cptr.add(u, FLD.you_uz)) - dunlev(cptr.add(u, FLD.you_uz))) | 0) + 1) | 0), 2))) + 5) | 0)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* pline(__sl66, hliquid(__sl50)));
         (yield* exercise(NHC.A_WIS, 1));
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
@@ -613,9 +614,9 @@ export function* dipfountain(obj) {
 export function* wash_hands() {
     let hands = (yield* makeplural((yield* body_part(NHC.HAND))));
     let res = NHM.ER_NOTHING;
-    let was_glib = schar((!!cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic)));
+    let was_glib = schar((!!Glib()));
     (yield* You(__sl68, uarmg.v ? __sl69 : __sl70, hands, hliquid(__sl50)));
-    if (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
+    if (Glib()) {
         (yield* make_glib(0));
         (yield* Your(__sl71, (yield* fingers_or_gloves(1))));
     }
@@ -642,7 +643,7 @@ export function* breaksink(x, y) {
 export function* drinksink() {
     let otmp;
     let mtmp;
-    if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked))) {
+    if (Levitation()) {
         (yield* floating_above(__sl73));
         return;
     }
@@ -655,7 +656,7 @@ export function* drinksink() {
         break;
         case 2:
         (yield* You(__sl77, hliquid(__sl50)));
-        if ((cptr.ldI64o2(u, NHC.FIRE_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, FLD.you_uprops))) {
+        if (Fire_resistance()) {
             (yield* pline(__sl78));
             monstseesu(2n);
         } else {
@@ -669,7 +670,7 @@ export function* drinksink() {
         else {
             mtmp = (yield* makemon(cptr.add(mons, NHC.PM_SEWER_RAT, 96), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), NHM.MM_NOMSG));
             if (mtmp)
-                (yield* pline(__sl81, (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || !(canseemon(mtmp) || sensemon(mtmp))) ? __sl82 : (yield* a_monnam(mtmp))));
+                (yield* pline(__sl81, (Blind() || !(canseemon(mtmp) || sensemon(mtmp))) ? __sl82 : (yield* a_monnam(mtmp))));
         }
         break;
         case 4:
@@ -680,8 +681,8 @@ export function* drinksink() {
             (yield* obfree(otmp, null));
         }
         cptr.stI32o(otmp, FLD.obj_cursed, cptr.stI32o(otmp, FLD.obj_blessed, 0));
-        (yield* pline(__sl83, ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl84 : hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr)))));
-        if (!(((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))))
+        (yield* pline(__sl83, Blind() ? __sl84 : hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr)))));
+        if (!(Blind() || Hallucination()))
             (yield* observe_object(otmp));
         (cptr.stI64o(otmp, FLD.obj_quan, cptr.ldI64o(otmp, FLD.obj_quan) + 1n)) - (1n);
         cptr.stI32o(otmp, FLD.obj_corpsenm, 1);
@@ -718,7 +719,7 @@ export function* drinksink() {
         break;
         case 10:
         (yield* pline(__sl91, hliquid(__sl50)));
-        if (!(cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops))) {
+        if (!Unchanging()) {
             (yield* You(__sl92));
             (yield* polyself(NHC.POLY_NOFLAGS));
         }
@@ -736,7 +737,7 @@ export function* drinksink() {
         (yield* create_gas_cloud(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), 1, 4));
         break;
         case 19:
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+        if (Hallucination()) {
             (yield* pline(__sl96));
             break;
         }
@@ -754,7 +755,7 @@ export function* dipsink(obj) {
     let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg.v && cptr.eq(obj, uarmg.v)) ? 1 : 0));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 722, __sl101), rn2(not_looted_yet ? 25 : 15)) : rn2(not_looted_yet ? 25 : 15))) {
         (yield* breaksink(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
-        if (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic) && is_hands)
+        if (Glib() && is_hands)
             (yield* Your(__sl102, (yield* fingers_or_gloves(1))));
         return;
     } else if (is_hands) {
@@ -773,7 +774,7 @@ export function* dipsink(obj) {
         try_call = 1;
         break;
         case NHC.POT_OIL:
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        if (!Blind()) {
             (yield* pline(__sl106));
             try_call = 1;
         } else {
@@ -782,9 +783,9 @@ export function* dipsink(obj) {
         break;
         case NHC.POT_ACID:
         try_call = 1;
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        if (!Blind()) {
             (yield* pline_The(__sl107));
-        } else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        } else if (!Deaf()) {
             (yield* You_hear(__sl108));
         } else {
             (yield* pline(__sl67, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_nothing_seems_to_happen)));
@@ -824,15 +825,15 @@ export function* dipsink(obj) {
 /** C ref: fountain.c:805 — @param {CInt} x @param {CInt} y */
 export function* sink_backs_up(x, y) {
     let buf = new Uint8Array(256);
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+    if (!Blind())
         void cptr.strcpy(cptr.decay(buf), __sl111);
-    else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+    else if (!Deaf())
         void cptr.strcpy(cptr.decay(buf), __sl112);
     else
         void cptr.sprintf(cptr.decay(buf), __sl113, (yield* body_part(NHC.FACE)));
-    (yield* pline(__sl114, !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) ? __sl115 : __sl70, cptr.decay(buf)));
+    (yield* pline(__sl114, !Deaf() ? __sl115 : __sl70, cptr.decay(buf)));
     if (!(((cptr.ldI32o3(svl, x, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) & 31) | 0) & NHM.S_LRING)) {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (!Blind())
             (yield* You_see(__sl116));
         void (yield* mkobj_at(NHC.RING_CLASS, x, y, 1));
         (yield* newsym(x, y));

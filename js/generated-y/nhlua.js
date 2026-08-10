@@ -14,6 +14,7 @@ import * as cjmp from '../cjmp.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd, svl, svm, svn, svs, u } from './decl.js';
 import { impossible, livelog_printf, pline, verbalize } from './pline.js';
 import { lua_atpanic, lua_callk, lua_createtable, lua_error, lua_gc, lua_getallocf, lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_isstring, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawset, lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settable, lua_settop, lua_setwarnf, lua_toboolean, lua_tointegerx, lua_tolstring, lua_type } from './lapi.js';
@@ -825,7 +826,7 @@ function* nhl_pline(L) {
     if (argc == 1 || argc == 2) {
         (yield* pline(__sl72, ((yield* luaL_checklstring(L, 1, null)))));
         if (lua_toboolean(L, 2))
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1)));
+            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
     } else
         (yield* nhl_error(L, __sl73));
     return 0;
@@ -902,8 +903,8 @@ function* nhl_menu(L) {
     if (lua_isstring(L, 3))
         pick = (yield* luaL_checkoption(L, 3, __sl75, __static_nhl_menu_pickX));
     (yield* luaL_checktype(L, argc, 5));
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     (yield* lua_pushnil(L));
     while ((yield* lua_next(L, argc)) != 0) {
         let str = __sl74;
@@ -927,9 +928,9 @@ function* nhl_menu(L) {
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, str, (cptr.ld1s(defval) && cptr.ld1s(key) && cptr.ld1so(defval, 0) == cptr.ld1so(key, 0)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
         (yield* lua_settop(L, -2));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, prompt)));
+    (yield* Y.icall(end_menu()(tmpwin, prompt)));
     pick_cnt = (yield* select_menu(tmpwin, pick, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
         let buf = new Uint8Array(2);
         cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 0, 24), 1);
@@ -952,8 +953,8 @@ function* nhl_text(L) {
     if (argc > 0) {
         let picks = cptr.box(null);
         let tmpwin;
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
         while (lua_gettop(L) > 0) {
             let ostr = (yield* dupstr(((yield* luaL_checklstring(L, 1, null)))));
             let ptr;
@@ -977,9 +978,9 @@ function* nhl_text(L) {
             (yield* lua_settop(L, -2));
             cptr.free(ostr);
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, null)));
+        (yield* Y.icall(end_menu()(tmpwin, null)));
         void (yield* select_menu(tmpwin, NHM.PICK_NONE, picks));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     }
     return 0;
 }
@@ -1205,7 +1206,7 @@ function* nhl_get_debug_themerm_name(L) {
         let dbg_themerm = null;
         let is_fill = schar(lua_toboolean(L, 1));
         (yield* lua_settop(L, -2));
-        if (cptr.ld1so(flags, FLD.flag_debug))
+        if (wizard())
             dbg_themerm = getenv(is_fill ? __sl92 : __sl93);
         if (!dbg_themerm || !cptr.ld1s(dbg_themerm)) {
             (yield* lua_pushnil(L));

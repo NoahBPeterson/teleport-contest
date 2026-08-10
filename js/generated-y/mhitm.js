@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Antimagic, Blind, Conflict, Deaf, Passes_walls, Unchanging } from './nhprop.js';
 import { dist2, distmin, nh_snprintf, s_suffix, strNsubst, strncmpi, strsubst } from './hacklib.js';
 import { c_common_strings, flags, gb, gf, gl, gm, gn, gs, gv, gy, gz, iflags, svl, svm, u } from './decl.js';
 import { You, You_feel, You_hear, Your, pline, pline_mon } from './pline.js';
@@ -168,7 +169,7 @@ const brief_feeling = cptr.bytes("have a %s feeling for a moment, then it passes
 /** C ref: mhitm.c:27 — @param {CPtr} magr @param {CPtr} mattk */
 function* noises(magr, mattk) {
     let farq = schar((dist2((cptr.ldI16o((magr), FLD.monst_mx)), (cptr.ldI16o((magr), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) > 15));
-    if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && (farq != cptr.ld1so(gf, FLD.instance_globals_f_far_noise) || BigInt.asIntN(64, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) - cptr.ldI64o(gn, FLD.instance_globals_n_noisetime)) > 10n)) {
+    if (!Deaf() && (farq != cptr.ld1so(gf, FLD.instance_globals_f_far_noise) || BigInt.asIntN(64, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) - cptr.ldI64o(gn, FLD.instance_globals_n_noisetime)) > 10n)) {
         cptr.st1o(gf, FLD.instance_globals_f_far_noise, farq);
         cptr.stI64o(gn, FLD.instance_globals_n_noisetime, cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves));
         (yield* You_hear(__sl0, (cptr.ld1u(mattk) == NHM.AT_EXPL) ? __sl1 : __sl2, farq ? __sl3 : __sl4));
@@ -427,7 +428,7 @@ export function* mattackm(magr, mdef) {
                 continue;
             if (distmin(cptr.ldI16o(magr, FLD.monst_mx), cptr.ldI16o(magr, FLD.monst_my), cptr.ldI16o(mdef, FLD.monst_mx), cptr.ldI16o(mdef, FLD.monst_my)) > 1)
                 continue;
-            if (!(cptr.ldI32o(magr, FLD.monst_mconf) & 1) && !(cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)) && mwep && cptr.ld1u(mattk) != NHM.AT_WEAP && (cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))) {
+            if (!(cptr.ldI32o(magr, FLD.monst_mconf) & 1) && !Conflict() && mwep && cptr.ld1u(mattk) != NHM.AT_WEAP && (cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))) {
                 strike = 0;
                 break;
             }
@@ -691,12 +692,12 @@ export function engulf_target(magr, mdef) {
     dx = (cptr.eq(mdef, cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI16(u) : cptr.ldI16o(mdef, FLD.monst_mx);
     dy = (cptr.eq(mdef, cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI16o(u, FLD.you_uy) : cptr.ldI16o(mdef, FLD.monst_my);
     lev = cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), dx, 756), dy, 36);
-    if (!(udef ? (cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops) ? 1 : 0) : ((cptr.ldU64o((cptr.ldPtro(mdef, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, FLD.rm_typ)) < NHC.POOL) || closed_door(i16(dx), i16(dy)) || ((cptr.ld1so(lev, FLD.rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_arboreal) & 1) | 0 && (cptr.ld1so(lev, FLD.rm_typ)) == NHC.STONE)) || (cptr.ld1so(lev, FLD.rm_typ) == NHC.IRONBARS && !(cptr.ld1so((cptr.ldPtro(magr, FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(magr, FLD.monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))))))
+    if (!(udef ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(mdef, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, FLD.rm_typ)) < NHC.POOL) || closed_door(i16(dx), i16(dy)) || ((cptr.ld1so(lev, FLD.rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_arboreal) & 1) | 0 && (cptr.ld1so(lev, FLD.rm_typ)) == NHC.STONE)) || (cptr.ld1so(lev, FLD.rm_typ) == NHC.IRONBARS && !(cptr.ld1so((cptr.ldPtro(magr, FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(magr, FLD.monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))))))
         return 0;
     ax = (cptr.eq(magr, cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI16(u) : cptr.ldI16o(magr, FLD.monst_mx);
     ay = (cptr.eq(magr, cptr.add(gy, FLD.instance_globals_y_youmonst))) ? cptr.ldI16o(u, FLD.you_uy) : cptr.ldI16o(magr, FLD.monst_my);
     lev = cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), ax, 756), ay, 36);
-    if (!(uatk ? (cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, FLD.you_uprops) ? 1 : 0) : ((cptr.ldU64o((cptr.ldPtro(magr, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, FLD.rm_typ)) < NHC.POOL) || closed_door(i16(ax), i16(ay)) || ((cptr.ld1so(lev, FLD.rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_arboreal) & 1) | 0 && (cptr.ld1so(lev, FLD.rm_typ)) == NHC.STONE)) || (cptr.ld1so(lev, FLD.rm_typ) == NHC.IRONBARS && !(cptr.ld1so((cptr.ldPtro(mdef, FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))))))
+    if (!(uatk ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(magr, FLD.monst_data)), FLD.permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, FLD.rm_typ)) < NHC.POOL) || closed_door(i16(ax), i16(ay)) || ((cptr.ld1so(lev, FLD.rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_arboreal) & 1) | 0 && (cptr.ld1so(lev, FLD.rm_typ)) == NHC.STONE)) || (cptr.ld1so(lev, FLD.rm_typ) == NHC.IRONBARS && !(cptr.ld1so((cptr.ldPtro(mdef, FLD.monst_data)), FLD.permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(mdef, FLD.monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))))))
         return 0;
     return 1;
 }
@@ -880,9 +881,9 @@ const __static_mon_poly_freaky = cptr.bytes(" undergoes a freakish metamorphosis
 export function* mon_poly(magr, mdef, dmg) {
     let oldform = cptr.ldPtro(mdef, FLD.monst_data);
     if (cptr.eq(mdef, cptr.add(gy, FLD.instance_globals_y_youmonst))) {
-        if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, FLD.you_uprops))) {
+        if (Antimagic()) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
-        } else if ((cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops))) {
+        } else if (Unchanging()) {
             ;
         } else {
             if (cptr.ldI32o(u, FLD.you_ulycn) == NHC.NON_PM) {
@@ -1001,7 +1002,7 @@ export function* rustm(mdef, obj) {
 
 /** C ref: mhitm.c:1283 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} otemp */
 function* mswingsm(magr, mdef, otemp) {
-    if (cptr.ld1so(flags, FLD.flag_verbose) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && mon_visible(magr)) {
+    if (cptr.ld1so(flags, FLD.flag_verbose) && !Blind() && mon_visible(magr)) {
         let bash = schar((((cptr.ld1so(otemp, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otemp, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(otemp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(otemp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_LANCE || is_art(otemp, NHC.ART_SNICKERSNEE))) && !is_art(otemp, NHC.ART_SNICKERSNEE) && (dist2(cptr.ldI16o(magr, FLD.monst_mx), cptr.ldI16o(magr, FLD.monst_my), cptr.ldI16o(mdef, FLD.monst_mx), cptr.ldI16o(mdef, FLD.monst_my)) <= 2) ? 1 : 0));
         (yield* pline(__sl93, (yield* Monnam(magr)), mswings_verb(otemp, bash), (cptr.ldI64o(otemp, FLD.obj_quan) > 1n) ? __sl94 : __sl4, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, FLD.Gender_his)), (yield* xname(otemp)), (yield* mon_nam(mdef))));
     }

@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Conflict, Deaf } from './nhprop.js';
 import { makemon, mkclass, mkclass_aligned, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { disp, flags, gi, gm, gy, svd, svl, svm, u, uwep } from './decl.js';
@@ -204,7 +205,7 @@ export function msummon(mon) {
                 cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_emin)), FLD.emin_min_align, atyp);
                 cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_emin)), FLD.emin_renegade, schar(((atyp != cptr.ld1so(u, FLD.you_ualign)) ^ !(cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1))));
             }
-            if (cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_ANGEL && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+            if (cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_ANGEL && !Blind()) {
                 show_transient_light(null, cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my));
                 xlight = 1;
             }
@@ -265,7 +266,7 @@ export function summon_minion(alignment, talk) {
     }
     if (mon) {
         if (talk) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+            if (!Deaf())
                 pline_The(__sl6, align_gname(alignment));
             else
                 You_feel(__sl7, s_suffix(align_gname(alignment)));
@@ -313,7 +314,7 @@ export function demon_talk(mtmp) {
         newsym(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my));
     }
     if (cptr.ld1so(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data), FLD.permonst_mlet) == NHC.S_DEMON) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl12, Amonnam(mtmp), cptr.ld1so(flags, FLD.flag_female) ? __sl13 : __sl14);
         else if (canseemon(mtmp))
             pline(__sl15, Amonnam(mtmp));
@@ -328,14 +329,14 @@ export function demon_talk(mtmp) {
         set_malign(mtmp);
         return 0;
     } else {
-        if (mon_has_amulet(mtmp) || (cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (mon_has_amulet(mtmp) || Deaf())
             demand = BigInt.asIntN(64, cash + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 327, __sl16), rn2(1000)) : rn2(1000)) + 125) | 0)));
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl17, Amonnam(mtmp), demand, currency(demand));
         else if (canseemon(mtmp))
             pline(__sl18, Amonnam(mtmp));
         offer = 0n;
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && ((offer = bribe(mtmp, __sl19)) >= demand)) {
+        if (!Deaf() && ((offer = bribe(mtmp, __sl19)) >= demand)) {
             pline(__sl20, Amonnam(mtmp));
         } else if (offer > 0n && BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl1, 340, __sl16), rnd(Math.imul(5, (acurr(NHC.A_CHA))))) : rnd(Math.imul(5, (acurr(NHC.A_CHA)))))) > (BigInt.asIntN(64, demand - offer))) {
             pline(__sl21, Amonnam(mtmp));
@@ -432,7 +433,7 @@ export function lose_guardian_angel(mon) {
     let i;
     if (mon) {
         if ((canseemon(mon) || sensemon(mon))) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+            if (!Deaf()) {
                 pline(__sl33, Monnam(mon));
                 ;
                 verbalize(__sl34);
@@ -456,8 +457,8 @@ export function gain_guardian_angel() {
     let otmp;
     let mm = cptr.alloc(4);
     Hear_again();
-    if ((cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops))) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+    if (Conflict()) {
+        if (!Deaf())
             pline(__sl37);
         else
             You_feel(__sl38);
@@ -465,7 +466,7 @@ export function gain_guardian_angel() {
         verbalize(__sl39);
         lose_guardian_angel(null);
     } else if (cptr.ldI32o(u, FLD.you_ualign + FLD.align_record) > 8) {
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl40);
         else
             You_feel(__sl41);
@@ -480,7 +481,7 @@ export function gain_guardian_angel() {
                 (cptr.stI64o(u, FLD.you_uconduct + FLD.u_conduct_pets, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_pets) + 1n)) - (1n);
             }
             newsym(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my));
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 pline(__sl43);
             else
                 You_feel(__sl44);

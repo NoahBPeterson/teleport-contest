@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Hallucination } from './nhprop.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { c_common_strings, cg, flags, gb, gc, gi, gk, gm, go, gt, gu, gv, gz, hands_obj, iflags, program_state, svb, svc, svd, svl, svm, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { can_be_hatched, copy_mextra, dead_species, dealloc_mextra, maybe_unhide_at, undead_to_corpse, zombie_form } from './mon.js';
@@ -1540,7 +1541,7 @@ export function maybe_adjust_light(obj, old_range) {
     let delta = (new_range - old_range) | 0;
     if (delta) {
         obj_adjust_light_radius(obj, new_range);
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && get_obj_location(obj, ox, oy, 0)) {
+        if (!Blind() && get_obj_location(obj, ox, oy, 0)) {
             cptr.st1(cptr.decay(buf), 0);
             if (cptr.ldI32o(iflags, FLD.instance_flags_last_msg) == NHC.PLNMSG_OBJ_GLOWS)
                 void cptr.strcpy(cptr.decay(buf), (cptr.ldI64o(obj, FLD.obj_quan) == 1n) ? __sl61 : __sl62);
@@ -3001,8 +3002,8 @@ export function pudding_merge_message(otmp, otmp2) {
     let visible = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(otmp, FLD.obj_oy), 8), cptr.ldI16o(otmp, FLD.obj_ox)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(otmp2, FLD.obj_oy), 8), cptr.ldI16o(otmp2, FLD.obj_ox)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
     let onfloor = schar((cptr.ld1so(otmp, FLD.obj_where) == NHM.OBJ_FLOOR || cptr.ld1so(otmp2, FLD.obj_where) == NHM.OBJ_FLOOR ? 1 : 0));
     let inpack = schar(((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_INVENT) || (cptr.ld1so((otmp2), FLD.obj_where) == NHM.OBJ_INVENT) ? 1 : 0));
-    if ((!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && visible) || inpack) {
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if ((!Blind() && visible) || inpack) {
+        if (Hallucination()) {
             if (onfloor) {
                 You_see(__sl211);
             } else if (inpack) {

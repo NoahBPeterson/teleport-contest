@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
 import { doddoremarm, doputon, doremring, dotakeoff, dowear, ia_dotakeoff, remarm_swapwep, reset_remarm } from './do_wear.js';
@@ -782,7 +783,7 @@ const cmdnotavail = cptr.bytes("'%s' command not available.");
 
 /** C ref: cmd.c:164 @returns {CInt} */
 function* doprev_message() {
-    void (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_doprev_message))()));
+    void (yield* Y.icall(nh_doprev_message()()));
     return NHM.ECMD_OK;
 }
 
@@ -966,7 +967,7 @@ export function* pgetchar() {
     let ch = 0;
     if (cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer))
         return randomkey();
-    ch = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_nhgetch))()));
+    ch = (yield* Y.icall(nhgetch()()));
     return schar(ch);
 }
 
@@ -989,7 +990,7 @@ function* can_do_extcmd(extcmd) {
         }
         (yield* lua_settop(cptr.ldPtro(gl, FLD.instance_globals_l_luacore), 0));
     }
-    if (!cptr.ld1so(flags, FLD.flag_debug) && (ecflags & NHM.WIZMODECMD)) {
+    if (!wizard() && (ecflags & NHM.WIZMODECMD)) {
         (yield* pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_txt)));
         return 0;
     } else if ((cptr.ldI32o(u, FLD.you_uburied) & 1) | 0 && !(ecflags & NHM.IFBURIED)) {
@@ -1007,7 +1008,7 @@ export function* doextcmd() {
     let retval;
     let func;
     do {
-        idx = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_get_ext_cmd))()));
+        idx = (yield* Y.icall(get_ext_cmd()()));
         if (idx < 0)
             return NHM.ECMD_OK;
         func = cptr.ldPtro2(extcmdlist, idx, 48, FLD.ext_func_tab_ef_funct);
@@ -1074,11 +1075,11 @@ export function* doextlist() {
     let search = 0;
     let clr = NHM.NO_COLOR;
     cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
-    menuwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+    menuwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     while (redisplay) {
         redisplay = 0;
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(menuwin, 0n)));
+        (yield* Y.icall(start_menu()(menuwin, 0n)));
         (yield* add_menu_str(menuwin, __sl7));
         (yield* add_menu_str(menuwin, __sl0));
         void cptr.sprintf(cptr.decay(buf), __sl8, menumode ? __sl9 : __sl10);
@@ -1094,7 +1095,7 @@ export function* doextlist() {
             cptr.stI32(any, 3);
             (yield* add_menu(menuwin, nul_glyphinfo.v, any, 115, 58, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
         }
-        if (cptr.ld1so(flags, FLD.flag_debug)) {
+        if (wizard()) {
             cptr.stI32(any, 4);
             (yield* add_menu(menuwin, nul_glyphinfo.v, any, 122, 0, NHM.ATR_NONE, clr, onelist ? __sl15 : __sl16, NHM.MENU_ITEMFLAGS_NONE));
         }
@@ -1102,7 +1103,7 @@ export function* doextlist() {
         cptr.stI32o(menushown, 0, cptr.stI32o(menushown, 1, 0, 4), 4);
         n = 0;
         for (pass = 0; pass <= 1; ++pass) {
-            if (pass == 1 && (onelist || !cptr.ld1so(flags, FLD.flag_debug)))
+            if (pass == 1 && (onelist || !wizard()))
                 break;
             for (efp = extcmdlist; cptr.ldPtro(efp, FLD.ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
                 let wizc;
@@ -1111,12 +1112,12 @@ export function* doextlist() {
                 if (menumode == 1 && ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) == 0)
                     continue;
                 wizc = ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0;
-                if (wizc && !cptr.ld1so(flags, FLD.flag_debug))
+                if (wizc && !wizard())
                     continue;
                 if (!onelist && pass != wizc)
                     continue;
                 cmd_desc = cptr.ldPtro(efp, FLD.ext_func_tab_ef_desc);
-                if (!cptr.ld1so(flags, FLD.flag_debug) && !cptr.ld1so(flags, FLD.flag_explore) && ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 && (yield* strstri(cmd_desc, __sl17)))
+                if (!wizard() && !discover() && ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 && (yield* strstri(cmd_desc, __sl17)))
                     cmd_desc = strsubst(cptr.strcpy(cptr.decay(descbuf), cmd_desc), __sl18, __sl19);
                 if (cptr.ld1s(cptr.decay(searchbuf)) && !(yield* strstri(cptr.ldPtro(efp, FLD.ext_func_tab_ef_txt), cptr.decay(searchbuf))) && !(yield* strstri(cmd_desc, cptr.decay(searchbuf))) && !(yield* pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, FLD.ext_func_tab_ef_txt))) && !(yield* pmatchi(cptr.decay(searchbuf), cmd_desc)))
                     continue;
@@ -1136,7 +1137,7 @@ export function* doextlist() {
             (yield* add_menu_str(menuwin, __sl21));
         else
             void (yield* doc_extcmd_flagstr(menuwin, null));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(menuwin, null)));
+        (yield* Y.icall(end_menu()(menuwin, null)));
         n = (yield* select_menu(menuwin, NHM.PICK_ONE, selected));
         if (n > 0) {
             switch (cptr.ldI32o(selected.v, 0, 24)) {
@@ -1176,7 +1177,7 @@ export function* doextlist() {
             search = 0;
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(menuwin)));
+    (yield* Y.icall(destroy_nhwindow()(menuwin)));
     return NHM.ECMD_OK;
 }
 
@@ -1211,7 +1212,7 @@ export function* extcmd_via_menu() {
         i = (n = 0);
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         for (efp = extcmdlist; cptr.ldPtro(efp, FLD.ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
-            if (((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & 80) >>> 0) || !((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) || (!cptr.ld1so(flags, FLD.flag_debug) && ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
+            if (((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & 80) >>> 0) || !((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) || (!wizard() && ((cptr.ldI32o(efp, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
                 continue;
             if (!matchlevel || !cptr.strncmp(cptr.ldPtro(efp, FLD.ext_func_tab_ef_txt), cptr.decay(cbuf), BigInt.asUintN(64, BigInt(matchlevel)))) {
                 cptr.stPtro(choices, i, efp, 8);
@@ -1229,8 +1230,8 @@ export function* extcmd_via_menu() {
             ret = (nchoices == 1) ? Number(BigInt.asIntN(32, (cptr.diff(cptr.ldPtro(choices, 0, 8), extcmdlist) / 48n))) : -1;
             break;
         }
-        win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+        win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(win, 0n)));
         void cptr.sprintf(cptr.decay(fmtstr), __sl26, (biggest + 15) | 0);
         cptr.st1o(cptr.decay(prompt), 0, 0, 1);
         wastoolong = 0;
@@ -1268,9 +1269,9 @@ export function* extcmd_via_menu() {
             (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
         }
         nh_snprintf(__sl31, 856, cptr.decay(prompt), 128n, __sl32, cptr.decay(cbuf));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(prompt))));
+        (yield* Y.icall(end_menu()(win, cptr.decay(prompt))));
         n = (yield* select_menu(win, NHM.PICK_ONE, pick_list));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
         if (n == 1) {
             if (matchlevel > 126) {
                 cptr.free(pick_list.v);
@@ -1340,7 +1341,7 @@ export function* domonability() {
     } else if (cptr.ldPtro(u, FLD.you_usteed) && attacktype(cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data), NHM.AT_BREA)) {
         void (yield* pet_ranged_attk(cptr.ldPtro(u, FLD.you_usteed), 1));
         return NHM.ECMD_TIME;
-    } else if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+    } else if (Upolyd()) {
         (yield* pline(__sl37));
     } else {
         (yield* You(__sl38));
@@ -1350,12 +1351,12 @@ export function* domonability() {
 
 /** C ref: cmd.c:952 @returns {CInt} */
 export function* enter_explore_mode() {
-    if (cptr.ld1so(flags, FLD.flag_explore)) {
+    if (discover()) {
         (yield* You(__sl39));
     } else {
-        let oldmode = !cptr.ld1so(flags, FLD.flag_debug) ? __sl40 : __sl41;
+        let oldmode = !wizard() ? __sl40 : __sl41;
         if (!authorize_explore_mode()) {
-            if (!cptr.ld1so(flags, FLD.flag_debug)) {
+            if (!wizard()) {
                 (yield* You(__sl42));
                 return NHM.ECMD_OK;
             } else {
@@ -1366,10 +1367,10 @@ export function* enter_explore_mode() {
         if ((yield* paranoid_query(schar((((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __sl45))) {
             cptr.st1o(flags, FLD.flag_explore, 1);
             cptr.st1o(flags, FLD.flag_debug, 0);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             (yield* You(__sl46));
         } else {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             (yield* pline(__sl47, oldmode));
         }
     }
@@ -1396,7 +1397,7 @@ export function* makemap_prepost(pre, wiztower) {
                 cptr.stI32o(svc, FLD.context_info_achieveo + FLD.achievement_tracking_soko_prize_oid, 0);
             }
         }
-        if ((uball.v !== null)) {
+        if (Punished()) {
             (yield* ballrelease(0));
             (yield* unplacebc());
         }
@@ -1428,7 +1429,7 @@ export function* makemap_prepost(pre, wiztower) {
         if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, FLD.you_uy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters))) !== null)
             (yield* u_collide_m(mtmp));
         initrack();
-        if ((uball.v !== null)) {
+        if (Punished()) {
             (yield* unplacebc());
             (yield* placebc());
         }
@@ -1498,8 +1499,8 @@ function* doterrain() {
     let which;
     let clr = NHM.NO_COLOR;
     (yield* recalc_mapseen());
-    men = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(men, 0n)));
+    men = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(men, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32(any, 1);
     (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl88, NHM.MENU_ITEMFLAGS_SELECTED));
@@ -1507,19 +1508,19 @@ function* doterrain() {
     (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl89, NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, 3);
     (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl90, NHM.MENU_ITEMFLAGS_NONE));
-    if (cptr.ld1so(flags, FLD.flag_explore) || cptr.ld1so(flags, FLD.flag_debug)) {
+    if (discover() || wizard()) {
         cptr.stI32(any, 4);
         (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl91, NHM.MENU_ITEMFLAGS_NONE));
-        if (cptr.ld1so(flags, FLD.flag_debug)) {
+        if (wizard()) {
             cptr.stI32(any, 5);
             (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl92, NHM.MENU_ITEMFLAGS_NONE));
             cptr.stI32(any, 6);
             (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl93, NHM.MENU_ITEMFLAGS_NONE));
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(men, __sl94)));
+    (yield* Y.icall(end_menu()(men, __sl94)));
     n = (yield* select_menu(men, NHM.PICK_ONE, sel));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(men)));
+    (yield* Y.icall(destroy_nhwindow()(men)));
     which = (n < 0) ? -1 : ((n == 0) ? 1 : cptr.ldI32o(sel.v, 0, 24));
     if (n > 1 && which == 1)
         which = cptr.ldI32o(sel.v, 1, 24);
@@ -3111,7 +3112,7 @@ export function* get_changed_key_binds(sbuf) {
     let keys = new Uint8Array(256);
     void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
     if (!sbuf)
-        win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+        win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
         if (cptr.ld1so(bind, FLD.Cmd_bind_userbind) && cptr.ldPtro(bind, FLD.Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, FLD.Cmd_bind_cmd)) != cptr.ld1u(bind)) {
@@ -3122,7 +3123,7 @@ export function* get_changed_key_binds(sbuf) {
             if (sbuf)
                 (yield* strbuf_append(sbuf, cptr.decay(buf)));
             else
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+                (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
         bind = cptr.ldPtro(bind, FLD.Cmd_bind_next);
     }
@@ -3133,12 +3134,12 @@ export function* get_changed_key_binds(sbuf) {
             if (sbuf)
                 (yield* strbuf_append(sbuf, cptr.decay(buf)));
             else
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+                (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
     if (!sbuf) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(display_nhwindow()(win, 1)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
     }
 }
 
@@ -3160,8 +3161,8 @@ function* handler_rebind_keys_add(keyfirst) {
         if (!key || key == 27)
             return;
     }
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     if (key) {
         let bind = cmdbind_get(key);
@@ -3188,9 +3189,9 @@ function* handler_rebind_keys_add(keyfirst) {
         void cptr.sprintf(cptr.decay(buf), __sl457, key2txt(key, cptr.decay(buf2)));
     else
         void cptr.sprintf(cptr.decay(buf), __sl458);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(buf))));
+    (yield* Y.icall(end_menu()(win, cptr.decay(buf))));
     npick = (yield* select_menu(win, NHM.PICK_ONE, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     if (npick > 0) {
         let prevcmd;
         let cmdstr = new Uint8Array(256);
@@ -3245,8 +3246,8 @@ export function* handler_rebind_keys() {
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
     __lbl_redo_rebind: while (true) {
-        win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+        win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(win, 0n)));
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         cptr.stI32(any, 1);
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl466, NHM.MENU_ITEMFLAGS_NONE));
@@ -3256,9 +3257,9 @@ export function* handler_rebind_keys() {
             cptr.stI32(any, 3);
             (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl468, NHM.MENU_ITEMFLAGS_NONE));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl469)));
+        (yield* Y.icall(end_menu()(win, __sl469)));
         npick = (yield* select_menu(win, NHM.PICK_ONE, picks));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
         if (npick > 0) {
             i = cptr.ldI32(picks.v);
             cptr.free(picks.v);
@@ -3283,8 +3284,8 @@ export function* handler_change_autocompletions() {
     let clr = NHM.NO_COLOR;
     let ec;
     let buf = new Uint8Array(256);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, 48);
@@ -3296,7 +3297,7 @@ export function* handler_change_autocompletions() {
         void cptr.sprintf(cptr.decay(buf), __sl470, ((cptr.ldI32o(ec, FLD.ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32, cptr.ldPtro(ec, FLD.ext_func_tab_ef_txt), cptr.ldPtro(ec, FLD.ext_func_tab_ef_desc));
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), ((cptr.ldI32o(ec, FLD.ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl471)));
+    (yield* Y.icall(end_menu()(win, __sl471)));
     n = (yield* select_menu(win, NHM.PICK_ANY, picks));
     if (n >= 0) {
         let j;
@@ -3322,7 +3323,7 @@ export function* handler_change_autocompletions() {
         if (n > 0)
             cptr.free(picks.v);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
 }
 
 const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
@@ -3339,7 +3340,7 @@ export function* extcmds_match(findstr, ecmflags, matchlist) {
     for (i = 0; cptr.ldPtro2(extcmdlist, i, 48, FLD.ext_func_tab_ef_txt); i++) {
         if ((cptr.ldI32o2(extcmdlist, i, 48, FLD.ext_func_tab_flags) & 80) >>> 0)
             continue;
-        if (!cptr.ld1so(flags, FLD.flag_debug) && ((cptr.ldI32o2(extcmdlist, i, 48, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
+        if (!wizard() && ((cptr.ldI32o2(extcmdlist, i, 48, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
             continue;
         if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, 48, FLD.ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0))
             continue;
@@ -3557,7 +3558,7 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
                 void cptr.sprintf(cptr.decay(buf), __sl486, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, FLD.Cmd_bind_cmd), FLD.ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, FLD.Cmd_bind_cmd), FLD.ext_func_tab_ef_desc), cptr.ldPtro(bind, FLD.Cmd_bind_param));
             else
                 void cptr.sprintf(cptr.decay(buf), __sl487, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, FLD.Cmd_bind_cmd), FLD.ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, FLD.Cmd_bind_cmd), FLD.ext_func_tab_ef_desc));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             cptr.st1o(keys_used, i, 1);
         }
     }
@@ -3571,7 +3572,7 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             continue;
         }
         void cptr.sprintf(cptr.decay(buf), __sl488, cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_txt), cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_desc));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     return count;
 }
@@ -3606,35 +3607,35 @@ export function* dokeylist() {
         } else
             spkey_gap = 1;
     }
-    datawin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
+    datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl0)));
     void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl490);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (spkey_gap || !keylist_func_has_key(extcmd, cptr.decay(keys_used))) {
             void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl491);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             break;
         }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl492)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl492)));
     (yield* show_direction_keys(datawin, 46, 0));
     if (!cptr.ld1so(iflags, FLD.instance_flags_num_pad)) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl493)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl493)));
         void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl494);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
         void cptr.strcpy(cptr.decay(buf), __sl495);
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl0)));
         void cptr.strcpy(cptr.decay(buf), __sl496);
     }
     void cptr.strcat(cptr.decay(buf), __sl497);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl498);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl499)));
+    (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl499)));
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
         if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, FLD.instance_flags_num_pad))
             continue;
@@ -3642,13 +3643,13 @@ export function* dokeylist() {
         key = uchar(cptr.ld1so2(gc, j, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys));
         if (key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) && (cptr.ldI32o(pfx_seen, key, 4) == j)) {
             void cptr.sprintf(cptr.decay(buf), __sl500, key2txt(key, cptr.decay(buf2)), cptr.ldPtro2(misc_keys, i, 24, 8));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
         }
     }
     key = 3;
     void cptr.sprintf(cptr.decay(buf), __sl501, key2txt(key, cptr.decay(buf2)));
     void cptr.strcat(cptr.decay(buf), __sl502);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     if (spkey_gap) {
         for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
             if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, FLD.instance_flags_num_pad))
@@ -3658,29 +3659,29 @@ export function* dokeylist() {
             if (!key || (cptr.ldI32o(pfx_seen, key, 4) != j)) {
                 void cptr.sprintf(cptr.decay(buf2), __sl503, spkey_name(j));
                 nh_snprintf(__sl504, 2976, cptr.decay(buf), 256n, __sl505, cptr.decay(buf2), cptr.ldPtro2(misc_keys, i, 24, 8));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf))));
+                (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             }
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
+    (yield* Y.icall(putstr()(datawin, 0, __sl0)));
     (yield* show_menu_controls(datawin, 1));
     if ((yield* keylist_putcmds(datawin, 1, NHM.GENERALCMD, 1092, cptr.decay(keys_used)))) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl506)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl506)));
         void (yield* keylist_putcmds(datawin, 0, NHM.GENERALCMD, 1092, cptr.decay(keys_used)));
     }
     if ((yield* keylist_putcmds(datawin, 1, 0, 1100, cptr.decay(keys_used)))) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl507)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl507)));
         void (yield* keylist_putcmds(datawin, 0, 0, 1100, cptr.decay(keys_used)));
     }
-    if (cptr.ld1so(flags, FLD.flag_debug) && (yield* keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)))) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl508)));
+    if (wizard() && (yield* keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)))) {
+        (yield* Y.icall(putstr()(datawin, 0, __sl0)));
+        (yield* Y.icall(putstr()(datawin, 0, __sl508)));
         void (yield* keylist_putcmds(datawin, 0, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(datawin, 0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(datawin)));
+    (yield* Y.icall(display_nhwindow()(datawin, 0)));
+    (yield* Y.icall(destroy_nhwindow()(datawin)));
 }
 
 /** C ref: cmd.c:3016 — @param {CPtr} fn @returns {CPtr} */
@@ -3776,7 +3777,7 @@ export function* cmdname_from_func(fn, outbuf, fullname) {
             for (extcmd = matchcmd; cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
                 if (cptr.eq(extcmd, cmdptr))
                     continue;
-                if (((cptr.ldI32o(extcmd, FLD.ext_func_tab_flags) & NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 || (((cptr.ldI32o(extcmd, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 && !cptr.ld1so(flags, FLD.flag_debug)))
+                if (((cptr.ldI32o(extcmd, FLD.ext_func_tab_flags) & NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 || (((cptr.ldI32o(extcmd, FLD.ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 && !wizard()))
                     continue;
                 if (!cptr.strncmp(res, cptr.ldPtro(extcmd, FLD.ext_func_tab_ef_txt), BigInt(len >>> 0))) {
                     matchcmd = extcmd;
@@ -3961,7 +3962,7 @@ export function* parseautocomplete(autocomplete, condition) {
         }
     }
     (yield* raw_printf(__sl546, autocomplete));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+    (yield* Y.icall(wait_synch()()));
 }
 
 /** C ref: cmd.c:3296 — @param {CPtr} sbuf */
@@ -4306,7 +4307,7 @@ export function* rhack(key) {
             if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys))
                 cptr.st1o(iflags, FLD.instance_flags_sanity_no_check, cptr.ld1so(iflags, FLD.instance_flags_sanity_check));
             else
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_nhbell))()));
+                (yield* Y.icall(nhbell()()));
             reset_cmd_vars(1);
             return;
         }
@@ -4595,7 +4596,7 @@ export function* getdir(s) {
                 }
             }
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+        (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         if (redraw_cmd(dirsym)) { __pc = 6; continue; }
         __pc = 5; continue;
         }
@@ -4737,22 +4738,22 @@ function* show_direction_keys(win, centerchar, nodiag) {
         centerchar = 32;
     if (nodiag) {
         void cptr.sprintf(cptr.decay(buf), __sl566, visctrl(cmd_from_func(do_move_north)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl567)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl567)));
         void cptr.sprintf(cptr.decay(buf), __sl568, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl567)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl567)));
         void cptr.sprintf(cptr.decay(buf), __sl566, visctrl(cmd_from_func(do_move_south)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     } else {
         void cptr.sprintf(cptr.decay(buf), __sl569, visctrl(cmd_from_func(do_move_northwest)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_northeast)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl570)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl570)));
         void cptr.sprintf(cptr.decay(buf), __sl568, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl571)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl571)));
         void cptr.sprintf(cptr.decay(buf), __sl569, visctrl(cmd_from_func(do_move_southwest)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_southeast)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
     ;
 }
@@ -4772,51 +4773,51 @@ function* help_dir(sym, spkey, msg) {
     dothat = __sl572;
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (void (prefixhandling));
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     if (!win)
         return 0;
     if (cptr.ld1s(cptr.decay(buf))) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl0)));
     } else if (msg) {
         void cptr.sprintf(cptr.decay(buf), __sl573, msg);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
+        (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(win, 0, __sl0)));
     }
     if (!prefixhandling && (letter(sym) || sym == 91)) {
         sym = highc(sym);
         ctrl = schar(((((sym - 65) | 0) + 1) | 0));
-        if ((explain = (yield* dowhatdoes_core(ctrl, cptr.decay(buf2)))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || cptr.ld1so(flags, FLD.flag_debug))) {
+        if ((explain = (yield* dowhatdoes_core(ctrl, cptr.decay(buf2)))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
             void cptr.sprintf(cptr.decay(buf), __sl574, sym, cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) ? __sl0 : __sl575);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, explain)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl576)));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, __sl0)));
+            (yield* Y.icall(putstr()(win, 0, explain)));
+            (yield* Y.icall(putstr()(win, 0, __sl0)));
+            (yield* Y.icall(putstr()(win, 0, __sl576)));
             void cptr.sprintf(cptr.decay(buf), __sl577, sym);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, __sl0)));
         }
     }
     void cptr.sprintf(cptr.decay(buf), __sl578, prefixhandling ? __sl579 : __sl0, prefixhandling ? dothat : __sl0, ((cptr.ldI32o(u, FLD.you_umonnum)) == NHC.PM_GRID_BUG) ? __sl580 : __sl0);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, FLD.you_umonnum)) == NHC.PM_GRID_BUG))));
     if (!prefixhandling) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl581)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl582)));
+        (yield* Y.icall(putstr()(win, 0, __sl0)));
+        (yield* Y.icall(putstr()(win, 0, __sl581)));
+        (yield* Y.icall(putstr()(win, 0, __sl582)));
         if (!prefixhandling) {
             let selfi = cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_num_pad) ? NHC.NHKF_GETDIR_SELF2 : NHC.NHKF_GETDIR_SELF;
             void cptr.sprintf(cptr.decay(buf), __sl583, visctrl(cptr.ld1so2(gc, selfi, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
     if (msg) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl584)));
+        (yield* Y.icall(putstr()(win, 0, __sl0)));
+        (yield* Y.icall(putstr()(win, 0, __sl584)));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(display_nhwindow()(win, 0)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     return 1;
 }
 
@@ -5085,7 +5086,7 @@ function* there_cmd_menu_far(win, x, y, mod) {
 function* there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
     if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
-        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)) || (cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) || glyph_at(x, y) != (((((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) || !cptr.ld1so(flags, FLD.flag_showrace)) ? cptr.ldI32o(u, FLD.you_umonnum) : cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum)) + (((((((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) ? (cptr.ldI32o(u, FLD.you_mfemale) & 1) | 0 : cptr.ld1so(flags, FLD.flag_female)) ? 1 : 0))) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
+        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, FLD.flag_showrace)) ? cptr.ldI32o(u, FLD.you_umonnum) : cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
             (yield* mcmd_addmenu(win, NHC.MCMD_LOOK_AT, __sl636)), ++K;
     }
     return K;
@@ -5271,8 +5272,8 @@ function* there_cmd_menu(x, y, mod) {
     let dx = i16(((x - cptr.ldI16(u)) | 0));
     let dy = i16(((y - cptr.ldI16o(u, FLD.you_uy)) | 0));
     let act = cptr.box(NHC.MCMD_NOTHING);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, FLD.you_uy)))
         K = (K + (yield* there_cmd_menu_self(win, x, y, act))) | 0;
     else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 2))
@@ -5292,15 +5293,15 @@ function* there_cmd_menu(x, y, mod) {
         npick = 0;
         ch = 0;
     } else if (K == 1 && act.v != NHC.MCMD_NOTHING && act.v != NHC.MCMD_TRAVEL) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
         (yield* act_on_act(act.v, dx, dy));
         return 0;
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl637)));
+        (yield* Y.icall(end_menu()(win, __sl637)));
         npick = (yield* select_menu(win, NHM.PICK_ONE, picks));
         ch = 27;
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
     if (npick > 0) {
         act.v = cptr.ldI32(picks.v);
         cptr.free(picks.v);
@@ -5446,7 +5447,7 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
             break;
         }
         if (cnt > 9n || backspaced || echoalways) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             if (backspaced && !cnt && !showzero) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl639);
             } else {
@@ -5454,13 +5455,13 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
                 backspaced = 0;
             }
             (yield* custompline(NHM.SUPPRESS_HISTORY, __sl472, cptr.decay(qbuf)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))()));
+            (yield* Y.icall(mark_synch()()));
         }
     }
     if (historicmsg || (conditionalmsg && cptr.ldI64(count) != first)) {
         void cptr.sprintf(cptr.decay(qbuf), __sl641, cptr.ldI64(count));
         void key2txt(uchar(key), eos(cptr.decay(qbuf)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(cptr.decay(qbuf), 0)));
+        (yield* Y.icall(putmsghistory()(cptr.decay(qbuf), 0)));
     }
     return schar(key);
 }
@@ -5480,7 +5481,7 @@ function* parse() {
     }
     cptr.stI64(gl, cptr.ldI64o(gc, FLD.instance_globals_c_command_count));
     if (foo == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, FLD.instance_globals_c_Cmd + FLD.cmd_spkeys)) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+        (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         cptr.stI64o(gc, FLD.instance_globals_c_command_count, 0n);
         cptr.stI64(gl, 0n);
     } else if (cptr.ldI32(gi)) {
@@ -5492,7 +5493,7 @@ function* parse() {
     if (cptr.ldI64o(gm, FLD.instance_globals_m_multi))
         (cptr.stI64o(gm, FLD.instance_globals_m_multi, cptr.ldI64o(gm, FLD.instance_globals_m_multi) + -1n)) - (-1n);
     cptr.stI32o(gc, FLD.instance_globals_c_cmd_key, foo);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+    (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
     cptr.st1o(iflags, FLD.instance_flags_in_parse, 0);
     return cptr.ldI32o(gc, FLD.instance_globals_c_cmd_key);
 }
@@ -5510,14 +5511,14 @@ export function* hangup(sig_unused) {
 
 /** C ref: cmd.c:5183 */
 export function* end_of_input() {
-    if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_tutorial_dnum))))
+    if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == tutorial_dnum()))
         cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 0);
     if (cptr.ldI32o(program_state, FLD.sinfo_something_worth_saving))
         void (yield* dosave0());
     if (cptr.ldPtro(soundprocs, FLD.sound_procs_sound_exit_nhsound))
         (yield* Y.icall((cptr.ldPtro(soundprocs, FLD.sound_procs_sound_exit_nhsound))(__sl642)));
     if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows))(null)));
+        (yield* Y.icall(exit_nhwindows()(null)));
     clearlocks();
     (yield* nh_terminate(0));
     return;
@@ -5536,7 +5537,7 @@ function* readchar_core(x, y, mod) {
         else if (cptr.ldI32(gi))
             sym = (yield* pgetchar());
         else
-            sym = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_nh_poskey))(x, y, mod)));
+            sym = (yield* Y.icall(nh_poskey()(x, y, mod)));
         if (sym == -1) {
             let cnt = 20;
             do {
@@ -5660,11 +5661,11 @@ function* yn_func_menu_opt(win, key, text, def) {
 /** C ref: cmd.c:5419 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @param {CPtr} res @returns {CInt} */
 function* yn_function_menu(query, resp, def, res) {
     if (yn_menuable_resp(resp)) {
-        let win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+        let win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         let sel = cptr.box(0);
         let n;
         let keybuf = new Uint8Array(128);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+        (yield* Y.icall(start_menu()(win, 0n)));
         if (cptr.eq(resp, cptr.decay(rightleftchars))) {
             (yield* yn_func_menu_opt(win, 114, __sl647, def));
             (yield* yn_func_menu_opt(win, 108, __sl648, def));
@@ -5679,9 +5680,9 @@ function* yn_function_menu(query, resp, def, res) {
             (yield* yn_func_menu_opt(win, 97, __sl653, def));
         if (cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(hidespinchars)))
             (yield* yn_func_menu_opt(win, 113, __sl654, def));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, query)));
+        (yield* Y.icall(end_menu()(win, query)));
         n = (yield* select_menu(win, NHM.PICK_ONE, sel));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
         if (n > 0) {
             cptr.st1(res, cptr.ld1so(sel.v, 0, 24));
             if (n > 1 && cptr.ld1s(res) == def)
@@ -5691,7 +5692,7 @@ function* yn_function_menu(query, resp, def, res) {
             cptr.st1(res, def);
         }
         (yield* pline(__sl629, query, key2txt(uchar(cptr.ld1s(res)), cptr.decay(keybuf))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+        (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         return 1;
     }
     return 0;
@@ -5751,7 +5752,7 @@ export function* yn_function(query, resp, def, addcmdq) {
     }
     if (resp && cptr.ld1s(resp) && res.v && !cptr.strchr(resp, res.v)) {
         let altres = def ? def : 27;
-        if (!cptr.ldI32(gi) || cptr.ld1so(flags, FLD.flag_debug)) {
+        if (!cptr.ldI32(gi) || wizard()) {
             let fuzzing = cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer);
             let dbg_buf = new Uint8Array(256);
             nh_snprintf(__sl657, 5570, cptr.decay(dbg_buf), 256n, __sl659, query, resp ? resp : __sl0, def ? visctrl(def) : __sl0);
@@ -5774,7 +5775,7 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
         let qbuf = new Uint8Array(128);
         let ans = new Uint8Array(256);
         let promptprefix = __sl0;
-        let responsetype = (((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0) ? (accept_q ? __sl662 : __sl663) : (accept_q ? __sl664 : __sl665);
+        let responsetype = ParanoidConfirm() ? (accept_q ? __sl662 : __sl663) : (accept_q ? __sl664 : __sl665);
         let k;
         let trylimit = 6;
         (yield* copynchars(cptr.decay(pbuf), prompt, 255));
@@ -5796,7 +5797,7 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
                 break;
             }
             promptprefix = __sl670;
-        } while ((((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0) && (yield* strncmpi(cptr.decay((ans)), (__sl671), -1)) && --trylimit);
+        } while (ParanoidConfirm() && (yield* strncmpi(cptr.decay((ans)), (__sl671), -1)) && --trylimit);
     } else if (accept_q) {
         c = (yield* yn_function(prompt, cptr.decay(ynqchars), 110, 0));
     } else {

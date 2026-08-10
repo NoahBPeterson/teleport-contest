@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Glib, Hallucination } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { gu, gy, svb, svp, u } from './decl.js';
@@ -161,7 +162,7 @@ export function* dowrite(pen) {
         if (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 8192n) != 0n)) {
             (yield* You(__sl1));
             return NHM.ECMD_OK;
-        } else if (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
+        } else if (Glib()) {
             (yield* pline(__sl2, (yield* Tobjnam(pen, __sl3)), (yield* fingers_or_gloves(0))));
             (yield* dropx(pen));
             return NHM.ECMD_TIME;
@@ -170,7 +171,7 @@ export function* dowrite(pen) {
         if (!paper)
             return NHM.ECMD_CANCEL;
         typeword = (cptr.ldI16o(paper, FLD.obj_otyp) == NHC.SPE_NOVEL) ? __sl5 : ((cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) ? __sl6 : __sl7);
-        if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        if (Blind()) {
             if (!(cptr.ldI32o(paper, FLD.obj_dknown) & 1)) {
                 (yield* You(__sl8, typeword));
                 return NHM.ECMD_OK;
@@ -243,9 +244,9 @@ export function* dowrite(pen) {
         let fanfic = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         let tearup = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         if (!fanfic) {
-            (yield* You(__sl22, !tearup ? __sl23 : __sl24, !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl25 : __sl26));
+            (yield* You(__sl22, !tearup ? __sl23 : __sl24, !Hallucination() ? __sl25 : __sl26));
         } else {
-            (yield* You(__sl27, !tearup ? __sl28 : __sl29, !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl30 : __sl31));
+            (yield* You(__sl27, !tearup ? __sl28 : __sl29, !Hallucination() ? __sl30 : __sl31));
         }
         if (!tearup) {
             (yield* You(__sl32));
@@ -311,7 +312,7 @@ export function* dowrite(pen) {
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3))) {
+    if (Blind() && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3))) {
         (yield* You(__sl47));
         (yield* useup(paper));
         (yield* obfree(new_obj, null));

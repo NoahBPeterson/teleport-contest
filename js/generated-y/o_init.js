@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
 import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -115,7 +116,7 @@ function* setgemprobs(dlev) {
     first = (first + j) | 0;
     if (first > NHC.LAST_REAL_GEM || cptr.ld1so2(objects, first, 120, FLD.objclass_oc_class) != NHC.GEM_CLASS || (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, first, 120))), 16)) === null) {
         (yield* raw_printf(__sl0, first, j, NHC.LAST_REAL_GEM));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(wait_synch()()));
     }
     for (j = first; j <= NHC.LAST_REAL_GEM; j++)
         cptr.stI16o2(objects, j, 120, FLD.objclass_oc_prob, i16(((((((171 + j) | 0) - first) | 0) / ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0)));
@@ -390,7 +391,7 @@ export function* restnames(nhfp) {
 /** C ref: o_init.c:442 — @param {CPtr} obj */
 export function* observe_object(obj) {
     let oindx = cptr.ldI16o(obj, FLD.obj_otyp);
-    if (oindx >= NHC.FIRST_OBJECT && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) {
+    if (oindx >= NHC.FIRST_OBJECT && !Hallucination()) {
         cptr.stI32o(obj, FLD.obj_dknown, 1);
         (yield* discover_object(oindx, 0, 1, 0));
     }
@@ -507,8 +508,8 @@ export function* choose_disco_sort(mode) {
     let n;
     let choice;
     let clr = NHM.NO_COLOR;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; cptr.ldPtro(disco_orders_descr, i, 8); ++i) {
         cptr.stI32(any, cptr.ld1so(cptr.decay(disco_order_let), i, 1));
@@ -520,9 +521,9 @@ export function* choose_disco_sort(mode) {
         (yield* add_menu_str(tmpwin, __sl29));
         (yield* add_menu_str(tmpwin, __sl30));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl31)));
+    (yield* Y.icall(end_menu()(tmpwin, __sl31)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
         choice = cptr.ldI32o(selected.v, 0, 24);
         if (n > 1 && choice == cptr.ld1so(flags, FLD.flag_discosort))
@@ -595,7 +596,7 @@ function* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort) {
             cptr.st1o(p, 6, cptr.ld1so(p, 0));
             p = cptr.add(p, 6);
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, p)));
+        (yield* Y.icall(putstr()(tmpwin, 0, p)));
         cptr.free(cptr.ldPtro(sorted_lines, j, 8)), cptr.stPtro(sorted_lines, j, null, 8);
     }
 }
@@ -631,19 +632,19 @@ export function* dodiscovered() {
     alphabetized = schar((cptr.ld1so(flags, FLD.flag_discosort) == 97 || alphabyclass ? 1 : 0));
     lootsort = schar((cptr.ld1so(flags, FLD.flag_discosort) == 115));
     sortindx = cptr.diff(cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, FLD.flag_discosort)), cptr.decay(disco_order_let));
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     void cptr.sprintf(cptr.decay(buf), __sl43, cptr.ldPtro(disco_orders_descr, sortindx, 8));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl9)));
+    (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
+    (yield* Y.icall(putstr()(tmpwin, 0, __sl9)));
     uniq_ct = 0;
     for (i = (dis = 0); i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
         if ((cptr.ldI32o2(objects, uidx, 120, FLD.objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, 120, FLD.objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
             if (!dis++)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), __sl44)));
+                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), __sl44)));
             ++uniq_ct;
             disco_fmt_uniq(uidx, cptr.decay(buf));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+            (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
         }
     }
     arti_ct = (yield* disp_artifact_discoveries(tmpwin));
@@ -664,7 +665,7 @@ export function* dodiscovered() {
                         sorted_ct = 0;
                     }
                     if (!alphabetized || alphabyclass) {
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), (yield* let_to_name(oclass, 0, 0)))));
+                        (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), (yield* let_to_name(oclass, 0, 0)))));
                         prev_class = oclass;
                     }
                 }
@@ -673,7 +674,7 @@ export function* dodiscovered() {
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
                 if (!alphabetized && !lootsort)
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+                    (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 else
                     cptr.stPtro(sorted_lines, sorted_ct++, (yield* dupstr(cptr.decay(buf))), 8);
             }
@@ -684,12 +685,12 @@ export function* dodiscovered() {
     } else {
         if (sorted_ct) {
             if ((uniq_ct || arti_ct) && alphabetized && !alphabyclass)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), __sl48)));
+                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), __sl48)));
             (yield* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
+        (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHM.ECMD_OK;
 }
 
@@ -742,8 +743,8 @@ export function* doclassdisco() {
     cptr.st1o(cptr.decay(discosyms), 0, 0, 1);
     traditional = schar((cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_COMBINATION ? 1 : 0));
     if (!traditional) {
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
     }
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     menulet = 97;
@@ -785,7 +786,7 @@ export function* doclassdisco() {
     if (!cptr.ld1so(cptr.decay(discosyms), 0, 1)) {
         (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), __sl51));
         if (tmpwin != -1)
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+            (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         return NHM.ECMD_OK;
     }
     c = 0;
@@ -802,41 +803,41 @@ export function* doclassdisco() {
         }
         c = (yield* yn_function(cptr.decay(__static_doclassdisco_prompt), cptr.decay(discosyms), 0, 1));
         if (!c)
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
     } else {
         if (!cptr.ld1so(cptr.decay(discosyms), 1, 1) && cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_PARTIAL) {
             c = cptr.ld1so(cptr.decay(discosyms), 0, 1);
         } else {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(__static_doclassdisco_prompt))));
+            (yield* Y.icall(end_menu()(tmpwin, cptr.decay(__static_doclassdisco_prompt))));
             i = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list));
             if (i > 0) {
                 c = schar(cptr.ldI32o(pick_list.v, 0, 24));
                 cptr.free(pick_list.v);
             }
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     }
     if (!c)
         return NHM.ECMD_OK;
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     ct = 0;
     switch (c) {
         case 117:
         case 114:
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items))))));
+        (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr), upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items))))));
         for (i = 0; i < 4; i++) {
             uidx = cptr.ldI16o(uniq_objs, i, 2);
             if ((cptr.ldI32o2(objects, uidx, 120, FLD.objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, 120, FLD.objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
                 ++ct;
                 disco_fmt_uniq(uidx, cptr.decay(buf));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+                (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
             }
         }
         if (!ct)
             (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), cptr.decay(__static_doclassdisco_unique_items)));
         break;
         case 97:
-        if (cptr.ld1so(flags, FLD.flag_debug) && (yield* yn_function(__sl54, cptr.decay(ynchars), 110, 1)) == 121) {
+        if (wizard() && (yield* yn_function(__sl54, cptr.decay(ynchars), 110, 1)) == 121) {
             (yield* dump_artifact_info(tmpwin));
             ct = NHC.NROFARTIFACTS;
             break;
@@ -850,7 +851,7 @@ export function* doclassdisco() {
         if (oclass == NHC.MAXOCLASSES)
             (yield* impossible(__sl55, visctrl(c)));
         void cptr.sprintf(cptr.decay(buf), __sl56, (yield* let_to_name(oclass, 0, 0)), (cptr.ld1so(flags, FLD.flag_discosort) == 111) ? __sl57 : ((cptr.ld1so(flags, FLD.flag_discosort) == 115) ? __sl58 : __sl59));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+        (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
         sorted_ct = 0;
         for (i = cptr.ldI32o2(svb, oclass, 4, FLD.instance_globals_saved_b_bases); i <= ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, FLD.instance_globals_saved_b_bases) - 1) | 0); ++i) {
             if ((dis = cptr.ldI16o2(svd, i, 2, FLD.instance_globals_saved_d_disco)) != 0 && interesting_to_discover(dis)) {
@@ -860,7 +861,7 @@ export function* doclassdisco() {
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
                 if (!alphabetized && !lootsort)
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+                    (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 else
                     cptr.stPtro(sorted_lines, sorted_ct++, (yield* dupstr(cptr.decay(buf))), 8);
             }
@@ -876,15 +877,15 @@ export function* doclassdisco() {
                     cptr.st1o(sl, 6, cptr.ld1so(sl, 0));
                     sl = cptr.add(sl, 6);
                 }
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, sl)));
+                (yield* Y.icall(putstr()(tmpwin, 0, sl)));
                 cptr.free(cptr.ldPtro(sorted_lines, i, 8)), cptr.stPtro(sorted_lines, i, null, 8);
             }
         }
         break;
     }
     if (ct)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+        (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return NHM.ECMD_OK;
 }
 
@@ -904,8 +905,8 @@ export function* rename_disco() {
     let clr = NHM.NO_COLOR;
     let buf = new Uint8Array(256);
     cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     for (s = cptr.add(flags, FLD.flag_inv_order); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         prev_class = schar(((oclass + 1) | 0));
@@ -933,7 +934,7 @@ export function* rename_disco() {
     } else if (mn == 0) {
         (yield* pline(__sl60));
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl61)));
+        (yield* Y.icall(end_menu()(tmpwin, __sl61)));
         dis = NHC.STRANGE_OBJECT;
         sl = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
         if (sl > 0) {
@@ -951,7 +952,7 @@ export function* rename_disco() {
             (yield* docall(odummy));
         }
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return;
 }
 

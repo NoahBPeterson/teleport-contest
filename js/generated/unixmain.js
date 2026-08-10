@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { discover, display_file, init_nhwindows, mark_synch, player_selection, raw_print, wizard } from './nhprop.js';
 import { early_init, init_sound_disp_gamewindows, moveloop, newgame } from './allmain.js';
 import { rng_log_init } from './rnd.js';
 import { ARGV0, flags, ge, gh, gl, gp, gs, has_strong_rngseed, iflags, program_state, svh, svn, svp, u, ynchars } from './decl.js';
@@ -139,12 +140,12 @@ export function main(argc, argv) {
     cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 1);
     sethanguphandler(hangup);
     process_options(argc.v, argv.v);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_init_nhwindows))(argc, argv.v);
+    init_nhwindows()(argc, argv.v);
     getmailstatus();
     set_playmode();
     cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, exact_username ? Number(BigInt.asIntN(32, cptr.strlen(svp))) : 0);
     plnamesuffix();
-    if (cptr.ld1so(flags, FLD.flag_debug)) {
+    if (wizard()) {
         cptr.stI32o(gl, FLD.instance_globals_l_locknum, 0);
     } else {
         void signal(3, 1);
@@ -163,18 +164,18 @@ export function main(argc, argv) {
             void chmod(fq_save, 0);
             void signal(2, done1);
             if (cptr.ld1so(iflags, FLD.instance_flags_news)) {
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_file))(__sl6, 0);
+                display_file()(__sl6, 0);
                 cptr.st1o(iflags, FLD.instance_flags_news, 0);
             }
             if (cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages))
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl7);
+                raw_print()(__sl7);
             else
                 pline(__sl7);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))();
+            mark_synch()();
             if (dorecover(nhfp)) {
                 resuming = 1;
                 wd_message();
-                if (cptr.ld1so(flags, FLD.flag_explore) || cptr.ld1so(flags, FLD.flag_debug)) {
+                if (discover() || wizard()) {
                     if (yn_function(__sl8, cptr.decay(ynchars), 110, 1) == 110) {
                         void delete_savefile();
                     } else {
@@ -191,7 +192,7 @@ export function main(argc, argv) {
             let neednewlock = schar((!cptr.ld1s(svp)));
             if (!cptr.ld1so(iflags, FLD.instance_flags_renameinprogress) || cptr.ld1s(iflags) || neednewlock) {
                 if (!plsel_once)
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_player_selection))();
+                    player_selection()();
                 plsel_once = 1;
                 if (neednewlock && cptr.ld1s(svp))
                     continue __lbl_attempt_restore;
@@ -412,7 +413,7 @@ function wd_message() {
     } else if (cptr.ld1so(iflags, FLD.instance_flags_explore_error_flag)) {
         You(__sl34);
         cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
-    } else if (cptr.ld1so(flags, FLD.flag_explore))
+    } else if (discover())
         You(__sl35);
 }
 

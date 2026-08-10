@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch, putmsghistory, putstr, raw_print, wait_synch, wizard } from './nhprop.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
 import { bclose, close_check } from './sfstruct.js';
@@ -551,7 +552,7 @@ export function* commit_bonesfile(lev) {
     tempname = set_bonestemp_name();
     tempname = fqname(tempname, NHM.BONESPREFIX, 1);
     ret = rename(tempname, fq_bones);
-    if (cptr.ld1so(flags, FLD.flag_debug) && ret != 0)
+    if (wizard() && ret != 0)
         (yield* pline(__sl15, tempname, fq_bones));
 }
 
@@ -886,12 +887,12 @@ function* docompress_file(filename, uncomp) {
         cptr.stPtro(args, ++i, __sl27, 8);
     cptr.stPtro(args, ++i, null, 8);
     if (istty) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))()));
+        (yield* Y.icall(mark_synch()()));
     }
     f = fork();
     if (f == 0) {
         if (istty) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl17)));
+            (yield* Y.icall(raw_print()(__sl17)));
         }
         if (uncomp) {
             (yield* redirect(cfn, __sl21, __stdinp, uncomp));
@@ -927,7 +928,7 @@ function* docompress_file(filename, uncomp) {
         (yield* raw_printf(__sl32, uncomp ? __sl25 : __sl17, filename, details));
     }
     void signal(2, done1);
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         void signal(3, null);
     if (childstatus.v == 0) {
         if (uncomp)
@@ -942,7 +943,7 @@ function* docompress_file(filename, uncomp) {
             void unlink(cfn);
         }
         if (istty && cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             (yield* more());
         }
     }
@@ -1145,7 +1146,7 @@ export function* lock_file(filename, whichprefix, retryct) {
             sleep(1);
         } else {
             if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl57)));
+                (yield* Y.icall(raw_print()(__sl57)));
             if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
                 (yield* raw_printf(__sl58, filename));
             (cptr.stI32o(gn, FLD.instance_globals_n_nesting, cptr.ldI32o(gn, FLD.instance_globals_n_nesting) + -1)) - (-1);
@@ -1181,12 +1182,12 @@ function* fopen_wizkit_file() {
         return null;
     if (access(cptr.add(gw, FLD.instance_globals_w_wizkit), 4) == -1) {
         (yield* raw_printf(__sl61, cptr.add(gw, FLD.instance_globals_w_wizkit), (cptr.ldI32(__error()))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(wait_synch()()));
     } else if ((fp = fopen(cptr.add(gw, FLD.instance_globals_w_wizkit), __sl21)) !== null) {
         return fp;
     } else {
         (yield* raw_printf(__sl62, cptr.add(gw, FLD.instance_globals_w_wizkit), (cptr.ldI32(__error()))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(wait_synch()()));
     }
     envp = nh_getenv(__sl63);
     if (envp)
@@ -1197,7 +1198,7 @@ function* fopen_wizkit_file() {
         return fp;
     else if ((cptr.ldI32(__error())) != 2) {
         (yield* raw_printf(__sl65, cptr.decay(tmp_wizkit), (cptr.ldI32(__error()))));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(wait_synch()()));
     }
     return null;
 }
@@ -1240,7 +1241,7 @@ export function* proc_wizkit_line(buf) {
 /** C ref: files.c:2584 */
 export function* read_wizkit() {
     let fp;
-    if (!cptr.ld1so(flags, FLD.flag_debug) || !(fp = (yield* fopen_wizkit_file())))
+    if (!wizard() || !(fp = (yield* fopen_wizkit_file())))
         return;
     cptr.stI32o(program_state, FLD.sinfo_wizkit_wishing, 1);
     (yield* config_error_init(1, __sl60, 0));
@@ -1299,7 +1300,7 @@ export function* check_recordfile(dir) {
         void (yield* nhclose(fd));
     } else {
         (yield* raw_printf(__sl74, fq_record));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
+        (yield* Y.icall(wait_synch()()));
     }
 }
 
@@ -1313,7 +1314,7 @@ export function* paniclog(type, reason) {
             let buf = new Uint8Array(256);
             let now = (yield* getnow());
             let uid = getuid() | 0;
-            let playmode = schar((cptr.ld1so(flags, FLD.flag_debug) ? 68 : (cptr.ld1so(flags, FLD.flag_explore) ? 88 : 45)));
+            let playmode = schar((wizard() ? 68 : (discover() ? 88 : 45)));
             void fprintf(lfile, __sl76, version_string(cptr.decay(buf), 256n), (yield* yyyymmdd(now)), (yield* hhmmss(now)), uid, playmode, type, reason);
             void fclose(lfile);
         }
@@ -1353,7 +1354,7 @@ export function* do_deferred_showpaths(code) {
 export function* debugcore(filename, wildcards) {
     let debugfiles;
     let p;
-    if (!cptr.ld1so(flags, FLD.flag_debug))
+    if (!wizard())
         return 0;
     if (!filename || !cptr.ld1s(filename))
         return 0;
@@ -1398,7 +1399,7 @@ export function* reveal_paths(code) {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     envp = getcwd(cptr.decay(cwdbuf), 1024n);
     if (envp) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl85)));
+        (yield* Y.icall(raw_print()(__sl85)));
         (yield* raw_printf(__sl86, envp, __sl67));
     }
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
@@ -1426,7 +1427,7 @@ export function* reveal_paths(code) {
         }
     }
     (yield* raw_printf(__sl83, cptr.decay(buf)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl17)));
+    (yield* Y.icall(raw_print()(__sl17)));
     (void (skip_sysopt));
     (void (nodumpreason));
 }
@@ -1536,7 +1537,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                         if (matchedtitle && passagenum == targetpassage) {
                             foundpassage = 1;
                             if (!nowin_buf) {
-                                tribwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+                                tribwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
                                 if (tribwin == -1)
                                     break __lbl_cleanup;
                             }
@@ -1566,7 +1567,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                 default:
                 if (foundpassage) {
                     if (!nowin_buf) {
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tribwin, 0, cptr.decay(line))));
+                        (yield* Y.icall(putstr()(tribwin, 0, cptr.decay(line))));
                         if (cptr.ld1s(cptr.decay(line)))
                             void cptr.strcpy(cptr.decay(lastline), cptr.decay(line));
                     } else {
@@ -1584,17 +1585,17 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
         if (tribwin != -1) {
             if (cptr.ld1s(cptr.decay(lastline))) {
                 let p;
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tribwin, 0)));
+                (yield* Y.icall(display_nhwindow()(tribwin, 0)));
                 if (cptr.strchr(cptr.decay(lastline), 91))
                     (yield* mungspaces(cptr.decay(lastline)));
                 else
                     void cptr.sprintf(cptr.decay(lastline), __sl104, tribtitle);
                 if ((p = cptr.strrchr(cptr.decay(lastline), 93)) !== null)
                     void cptr.sprintf(p, __sl105, targetpassage);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(cptr.decay(lastline), 0)));
+                (yield* Y.icall(putmsghistory()(cptr.decay(lastline), 0)));
                 grasped = 1;
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tribwin)));
+            (yield* Y.icall(destroy_nhwindow()(tribwin)));
         }
         if (!grasped)
             (yield* pline(__sl106, badtranslation, tribtitle));

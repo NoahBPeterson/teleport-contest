@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Upolyd, create_nhwindow, destroy_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { You, You_feel, Your, impossible, pline, pline_mon } from './pline.js';
 import { handle_tip } from './hack.js';
 import { obj_descr, objects } from './objects.js';
@@ -874,7 +875,7 @@ export function* abon() {
     let sbon;
     let str = (acurr(NHC.A_STR));
     let dex = (acurr(NHC.A_DEX));
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+    if (Upolyd())
         return (((yield* adj_lev(cptr.add(mons, cptr.ldI32o(u, FLD.you_umonnum), 96))) - 3) | 0);
     if (str < 6)
         sbon = -2;
@@ -904,7 +905,7 @@ export function* abon() {
 /** C ref: weapon.c:993 @returns {CInt} */
 export function dbon() {
     let str = (acurr(NHC.A_STR));
-    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)))
+    if (Upolyd())
         return 0;
     if (str < 6)
         return -1;
@@ -1012,7 +1013,7 @@ function slots_required(skill) {
 export function can_advance(skill, speedy) {
     if ((cptr.ldI16o2(u, skill, 6, FLD.you_weapon_skills) == NHC.P_ISRESTRICTED) || (cptr.ldI16o2(u, skill, 6, FLD.you_weapon_skills)) >= (cptr.ldI16o2(u, skill, 6, FLD.you_weapon_skills + FLD.skills_max_skill)) || cptr.ldI32o(u, FLD.you_skills_advanced) >= NHM.P_SKILL_LIMIT)
         return 0;
-    if (cptr.ld1so(flags, FLD.flag_debug) && speedy)
+    if (wizard() && speedy)
         return 1;
     return schar(((cptr.ldU16o2(u, skill, 6, FLD.you_weapon_skills + FLD.skills_advance)) >= (Math.imul(Math.imul(((cptr.ldI16o2(u, skill, 6, FLD.you_weapon_skills))), ((cptr.ldI16o2(u, skill, 6, FLD.you_weapon_skills)))), 20)) && cptr.ldI32o(u, FLD.you_weapon_slots) >= slots_required(skill) ? 1 : 0));
 }
@@ -1090,7 +1091,7 @@ export function* add_skills_to_menu(win, selectable, speedy) {
             else
                 prefix = __sl84;
             void skill_level_name(i, cptr.decay(sklnambuf));
-            if (cptr.ld1so(flags, FLD.flag_debug)) {
+            if (wizard()) {
                 if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep))
                     nh_snprintf(__sl81, 1282, cptr.decay(buf), 256n, __sl85, prefix, longest, ((cptr.ldI16o(skill_names_indices, i, 2) > 0) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(skill_names_indices, i, 2), 120))), 16)) : ((i == NHC.P_BARE_HANDED_COMBAT) ? cptr.ldPtro(barehands_or_martial, ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_MONK) ? 1 : 0), 8) : cptr.ldPtro(odd_skill_names, -cptr.ldI16o(skill_names_indices, i, 2), 8))), cptr.decay(sklnambuf), (cptr.ldU16o2(u, i, 6, FLD.you_weapon_skills + FLD.skills_advance)), (Math.imul(Math.imul(((cptr.ldI16o2(u, i, 6, FLD.you_weapon_skills))), ((cptr.ldI16o2(u, i, 6, FLD.you_weapon_skills)))), 20)));
                 else
@@ -1111,12 +1112,12 @@ export function* show_skills() {
     let win;
     let selected = cptr.box(0);
     (yield* pline(__sl89));
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(win, 0n)));
     (yield* add_skills_to_menu(win, 0, 0));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl18)));
+    (yield* Y.icall(end_menu()(win, __sl18)));
     (void ((yield* select_menu(win, NHM.PICK_NONE, selected))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+    (yield* Y.icall(destroy_nhwindow()(win)));
 }
 
 /** C ref: weapon.c:1329 @returns {CInt} */
@@ -1131,7 +1132,7 @@ export function* enhance_weapon_skill() {
     let win;
     let speedy = 0;
     cptr.stU64o(svc, FLD.context_info_tips, cptr.ldU64o(svc, FLD.context_info_tips) | 1n);
-    if (cptr.ld1so(flags, FLD.flag_debug) && (yield* yn_function(__sl90, cptr.decay(ynchars), 110, 1)) == 121)
+    if (wizard() && (yield* yn_function(__sl90, cptr.decay(ynchars), 110, 1)) == 121)
         speedy = 1;
     do {
         to_advance = (eventually_advance = (maxxed_cnt = 0));
@@ -1145,8 +1146,8 @@ export function* enhance_weapon_skill() {
             else if (peaked_skill(i))
                 maxxed_cnt++;
         }
-        win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+        win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(win, 0n)));
         if (eventually_advance > 0 || maxxed_cnt > 0) {
             if (eventually_advance > 0) {
                 void cptr.sprintf(cptr.decay(buf), __sl91, (((eventually_advance) == 1) ? __sl18 : __sl33), (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV) ? __sl92 : __sl93);
@@ -1160,11 +1161,11 @@ export function* enhance_weapon_skill() {
         }
         (yield* add_skills_to_menu(win, schar((((((to_advance + eventually_advance) | 0) + maxxed_cnt) | 0) > 0)), speedy));
         void cptr.strcpy(cptr.decay(buf), (to_advance > 0) ? __sl95 : __sl96);
-        if (cptr.ld1so(flags, FLD.flag_debug) && !speedy)
+        if (wizard() && !speedy)
             void cptr.sprintf(eos(cptr.decay(buf)), __sl97, cptr.ldI32o(u, FLD.you_weapon_slots), (((cptr.ldI32o(u, FLD.you_weapon_slots)) == 1) ? __sl18 : __sl33));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, cptr.decay(buf))));
+        (yield* Y.icall(end_menu()(win, cptr.decay(buf))));
         n = (yield* select_menu(win, to_advance ? NHM.PICK_ONE : NHM.PICK_NONE, selected));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
+        (yield* Y.icall(destroy_nhwindow()(win)));
         if (n > 0) {
             n = (cptr.ldI32o(selected.v, 0, 24) - 1) | 0;
             cptr.free(selected.v);

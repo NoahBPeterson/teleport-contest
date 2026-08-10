@@ -7,6 +7,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { exit_nhwindows, raw_print, resume_nhwindows, suspend_nhwindows, wait_synch, wizard } from './nhprop.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
@@ -92,7 +93,7 @@ export function getlock() {
             if (!isatty(0) && !getenv(__sl1))
                 error(__sl2);
         if (!lock_file(__sl3, NHM.LOCKPREFIX, 10)) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+            wait_synch()();
             error(__sl4, __sl5);
         }
         if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum))
@@ -196,7 +197,7 @@ export function ask_about_panic_save() {
         delete_levelfile(0);
         unlock_file(__sl3);
         if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows))(null);
+            exit_nhwindows()(null);
         nh_terminate(0);
     }
     return;
@@ -221,7 +222,7 @@ export function dosh() {
             void execl(str, str, null);
         else
             void execl(__sl21, __sl22, null);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl23);
+        raw_print()(__sl23);
         exit(1);
     }
     return 0;
@@ -230,7 +231,7 @@ export function dosh() {
 /** C ref: unixunix.c:370 — @param {CInt} wt @returns {CInt} */
 export function child(wt) {
     let f;
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_suspend_nhwindows))(null);
+    suspend_nhwindows()(null);
     if ((f = fork()) == 0) {
         void setgid(getgid());
         void setuid(getuid());
@@ -245,13 +246,13 @@ export function child(wt) {
     void signal(3, 1);
     void wait(null);
     void signal(2, done1);
-    if (cptr.ld1so(flags, FLD.flag_debug))
+    if (wizard())
         void signal(3, null);
     if (wt) {
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl5);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+        raw_print()(__sl5);
+        wait_synch()();
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_resume_nhwindows))();
+    resume_nhwindows()();
     return 0;
 }
 

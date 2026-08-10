@@ -12,6 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
+import { Luck } from './nhprop.js';
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/rnd-prelude.js) ----
 // rng-log runtime + minimal libc shims + extern stubs for the parity harness.
@@ -263,7 +264,7 @@ export function rn2(x) {
 export function rnl(x) {
     let i;
     let adjustment;
-    adjustment = ((cptr.ld1so(u, FLD.you_uluck) + cptr.ld1so(u, FLD.you_moreluck)) | 0);
+    adjustment = Luck();
     if (x <= 15) {
         adjustment = Math.imul((((Math.abs(adjustment) + 1) | 0) / 3) | 0, sgn(adjustment));
     }

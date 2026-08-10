@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Conflict, Deaf, Displaced, HProtection, Hallucination, Invis, Underwater } from './nhprop.js';
 import { makemon, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { mfndpos, mon_allowflags, mongone, monnear, setmangry, wakeup } from './mon.js';
@@ -255,20 +256,20 @@ export function pri_move(priest) {
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), FLD.monst_mextra), FLD.mextra_epri)), FLD.epri_shrpos + FLD.nhcoord_y);
     ggx = i16(ggx + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 194, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
     ggy = i16(ggy + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 195, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
-    if (!(cptr.ldI32o(priest, FLD.monst_mpeaceful) & 1) || ((cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)) && !resist_conflict(priest))) {
+    if (!(cptr.ldI32o(priest, FLD.monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(priest))) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) {
-            if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DISPLACED, 24, FLD.you_uprops)))
+            if (Displaced())
                 Your(__sl3, mon_nam(priest));
             void mattacku(priest);
             return 0;
         } else if (cptr.strchr(cptr.add(u, FLD.you_urooms), temple)) {
-            if ((cptr.ldI32o(priest, FLD.monst_mcansee) & 1) | 0 && ((!((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldU64o((cptr.ldPtro((priest), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((priest), FLD.monst_my), 8), cptr.ldI16o((priest), FLD.monst_mx)) & NHM.COULD_SEE) != 0))) {
+            if ((cptr.ldI32o(priest, FLD.monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((priest), FLD.monst_data)), FLD.permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o((priest), FLD.monst_my), 8), cptr.ldI16o((priest), FLD.monst_mx)) & NHM.COULD_SEE) != 0))) {
                 ggx = cptr.ldI16(u);
                 ggy = cptr.ldI16o(u, FLD.you_uy);
             }
             avoid = 0;
         }
-    } else if (((cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, FLD.you_uprops + FLD.prop_blocked)))
+    } else if (Invis())
         avoid = 0;
     return move_special(priest, 0, 1, 0, avoid, omx, omy, ggx, ggy);
 }
@@ -428,9 +429,9 @@ export function intemple(roomno) {
         shrined = has_shrine(priest);
         sanctum = schar((cptr.eq(cptr.ldPtro(priest, FLD.monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)))) || (cptr.ldI16((cptr.add(u, FLD.you_uz))) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level))))) ? 1 : 0));
         can_speak = schar((!((cptr.ldI32o((priest), FLD.monst_msleeping) & 1) | 0 || !(cptr.ldI32o((priest), FLD.monst_mcanmove) & 1))));
-        if (can_speak && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, FLD.epri_intone_time)) {
+        if (can_speak && !Deaf() && cptr.ldI64o(svm, FLD.instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, FLD.epri_intone_time)) {
             let save_priest = (cptr.ldI32o(priest, FLD.monst_ispriest) & 1);
-            if (sanctum && !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+            if (sanctum && !Hallucination())
                 cptr.stI32o(priest, FLD.monst_ispriest, 0);
             pline(__sl18, canseemon(priest) ? Monnam(priest) : __sl19);
             cptr.stI32o(priest, FLD.monst_ispriest, save_priest);
@@ -451,7 +452,7 @@ export function intemple(roomno) {
             void cptr.sprintf(cptr.decay(buf), __sl24, !shrined ? __sl25 : __sl26);
             msg1 = cptr.decay(buf);
         }
-        if (msg1 && can_speak && !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (msg1 && can_speak && !Deaf()) {
             ;
             verbalize(__sl27, msg1);
             if (msg2)
@@ -560,7 +561,7 @@ export function priest_talk(priest) {
             let pmoney = money_cnt(cptr.ldPtro(priest, FLD.monst_minvent));
             if (pmoney > 0n) {
                 let bits;
-                bits = ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? currency(pmoney) : ((pmoney == 1n) ? __sl49 : __sl50);
+                bits = (Hallucination()) ? currency(pmoney) : ((pmoney == 1n) ? __sl49 : __sl50);
                 pline(__sl51, Monnam(priest), (pmoney == 1n) ? __sl52 : __sl53, bits);
                 money2u(priest, BigInt((pmoney > 1n ? 2 : 1)));
             } else
@@ -610,7 +611,7 @@ export function priest_talk(priest) {
             incr_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.CLAIRVOYANT, 24), FLD.prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl47), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, FLD.you_ublessed);
-            if (!(cptr.ldI64o2(u, NHC.PROTECTION, 24, FLD.you_uprops + FLD.prop_intrinsic) & 117440512n)) {
+            if (!(HProtection() & 117440512n)) {
                 cptr.stI64o2(u, NHC.PROTECTION, 24, FLD.you_uprops + FLD.prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, 24, FLD.you_uprops + FLD.prop_intrinsic) | 67108864n);
                 orig_ublessed = -1;
             }

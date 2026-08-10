@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Blind_telepat, Deaf, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { nh_getenv } from './options.js';
 import { alloc, dupstr } from './alloc.js';
 import { debugcore } from './files.js';
@@ -105,7 +106,7 @@ function md_start(startp) {
     let dd;
     let max_distance;
     let stway = cptr.ldPtro(gs, FLD.instance_globals_s_stairs);
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops))) {
+    if (Blind() && !Blind_telepat()) {
         if (!enexto(startp, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), null))
             return 0;
         return 1;
@@ -223,7 +224,7 @@ function md_rush(md, tx, ty) {
         if (fx == tx && fy == ty)
             break;
         mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters));
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             ;
             if (mon)
                 verbalize(__sl9, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__sl2, 340, __sl10), rn2(3)) : rn2(3)), 8)));
@@ -235,7 +236,7 @@ function md_rush(md, tx, ty) {
         place_monster(md, i16(fx), i16(fy));
         newsym(i16(fx), i16(fy));
         flush_screen(0);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))();
+        nh_delay_output()();
         cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
         if (mon) {
             if ((cptr.ldI16o(mon, FLD.monst_mx) != fx) || (cptr.ldI16o(mon, FLD.monst_my) != fy))
@@ -249,7 +250,7 @@ function md_rush(md, tx, ty) {
         cptr.stPtro3(svl, fx, 168, fy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters, null);
         place_monster(md, i16(fx), i16(fy));
         newsym(i16(fx), i16(fy));
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             ;
             verbalize(__sl12);
         } else {
@@ -266,7 +267,7 @@ function md_rush(md, tx, ty) {
     place_monster(md, i16(fx), i16(fy));
     newsym(i16(fx), i16(fy));
     flush_screen(0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))();
+    nh_delay_output()();
     return 1;
 }
 
@@ -285,7 +286,7 @@ function newmail(info) {
         if (!md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, FLD.nhcoord_y)))
             break __lbl_go_back;
         message_seen = 1;
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+        if (!Deaf()) {
             ;
             verbalize(__sl14, Hello(md), svp, cptr.ldPtro(info, FLD.mail_info_display_txt));
         } else {
@@ -298,14 +299,14 @@ function newmail(info) {
             if (cptr.ldPtro(info, FLD.mail_info_response_cmd))
                 new_omailcmd(obj, cptr.ldPtro(info, FLD.mail_info_response_cmd));
             if (!(dist2((cptr.ldI16o((md), FLD.monst_mx)), (cptr.ldI16o((md), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) <= 2)) {
-                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+                if (!Deaf()) {
                     ;
                     verbalize(__sl16);
                 } else {
                     ;
                 }
             }
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0);
+            display_nhwindow()(WIN_MESSAGE.v, 0);
             obj = hold_another_object(obj, __sl17, null, null);
             (void (obj));
         }
@@ -349,7 +350,7 @@ export function readmail(otmp) {
     let mr = null;
     if (cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer))
         return;
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0);
+    display_nhwindow()(WIN_MESSAGE.v, 0);
     if (!(mr = nh_getenv(__sl20)))
         mr = __sl21;
     if (child(1)) {

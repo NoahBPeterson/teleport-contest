@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { BALL_IN_MON, CHAIN_IN_MON, clear_nhwindow, discover, display_nhwindow, exit_nhwindows, getmsghistory, mark_synch, wizard } from './nhprop.js';
 import { windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc, svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, ynchars } from './decl.js';
 import { cmdbind_freeall, cmdq_clear, yn_function } from './cmd.js';
@@ -155,13 +156,13 @@ const __sl91 = cptr.lit("Stored %d messages into savefile.");
 
 /** C ref: save.c:43 @returns {CInt} */
 export function dosave() {
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+    clear_nhwindow()(WIN_MESSAGE.v);
     if (yn_function(__sl0, cptr.decay(ynchars), 110, 1) == 110) {
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+        clear_nhwindow()(WIN_MESSAGE.v);
         if (cptr.ldI64o(gm, FLD.instance_globals_m_multi) > 0n)
             nomul(0);
     } else {
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+        clear_nhwindow()(WIN_MESSAGE.v);
         pline(__sl1);
         cptr.stI32o(program_state, FLD.sinfo_done_hup, 0);
         if (dosave0()) {
@@ -169,8 +170,8 @@ export function dosave() {
             cptr.stI32o(u, FLD.you_uhp, -1);
             if (cptr.ldPtro(soundprocs, FLD.sound_procs_sound_exit_nhsound))
                 (cptr.ldPtro(soundprocs, FLD.sound_procs_sound_exit_nhsound))(__sl2);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_exit_nhwindows))(__sl3);
+            display_nhwindow()(WIN_MESSAGE.v, 1);
+            exit_nhwindows()(__sl3);
             nh_terminate(0);
         } else
             docrt();
@@ -210,7 +211,7 @@ export function dosave0() {
                 nhfp = open_savefile();
                 if (nhfp) {
                     close_nhfile(nhfp);
-                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+                    clear_nhwindow()(WIN_MESSAGE.v);
                     There(__sl4);
                     if (yn_function(__sl5, cptr.decay(ynchars), 110, 1) == 110) {
                         nh_sfconvert(fq_save);
@@ -220,7 +221,7 @@ export function dosave0() {
                 }
             }
         if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))();
+            mark_synch()();
         nhfp = create_savefile();
         if (!nhfp) {
             if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
@@ -238,12 +239,12 @@ export function dosave0() {
             change_luck(1);
         if (cptr.ld1so(iflags, FLD.instance_flags_window_inited))
             if (!cptr.ldI32o(program_state, FLD.sinfo_done_hup))
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v);
+                clear_nhwindow()(WIN_MESSAGE.v);
         cptr.stI32o(nhfp, FLD.NHFILE_mode, 6);
         store_version(nhfp);
         store_plname_in_file(nhfp);
-        cptr.stPtro(gl, FLD.instance_globals_l_looseball, ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && uball.v && cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FREE) ? uball.v : null);
-        cptr.stPtro(gl, FLD.instance_globals_l_loosechain, ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && uchain.v && cptr.ld1so(uchain.v, FLD.obj_where) == NHM.OBJ_FREE) ? uchain.v : null);
+        cptr.stPtro(gl, FLD.instance_globals_l_looseball, BALL_IN_MON() ? uball.v : null);
+        cptr.stPtro(gl, FLD.instance_globals_l_loosechain, CHAIN_IN_MON() ? uchain.v : null);
         savelev(nhfp, schar(ledger_no(cptr.add(u, FLD.you_uz))));
         savegamestate(nhfp);
         cptr.memcpy(cptr.add(gu, FLD.instance_globals_u_uz_save), cptr.add(u, FLD.you_uz), 4);
@@ -434,8 +435,8 @@ export function savestateinlock() {
             save_savefile_name(nhfp);
             store_version(nhfp);
             store_plname_in_file(nhfp);
-            cptr.stPtro(gl, FLD.instance_globals_l_looseball, ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && uball.v && cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FREE) ? uball.v : null);
-            cptr.stPtro(gl, FLD.instance_globals_l_loosechain, ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && uchain.v && cptr.ld1so(uchain.v, FLD.obj_where) == NHM.OBJ_FREE) ? uchain.v : null);
+            cptr.stPtro(gl, FLD.instance_globals_l_looseball, BALL_IN_MON() ? uball.v : null);
+            cptr.stPtro(gl, FLD.instance_globals_l_loosechain, CHAIN_IN_MON() ? uchain.v : null);
             savegamestate(nhfp);
         }
         close_nhfile(nhfp);
@@ -899,7 +900,7 @@ export function store_plname_in_file(nhfp) {
     nh_snprintf(__sl81, 1010, cptr.decay(hero), 49n, __sl82, svp, cptr.ldPtro(gu, FLD.instance_globals_u_urole + FLD.Role_filecode), cptr.ldPtro(gu, FLD.instance_globals_u_urace + FLD.Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, FLD.flag_female), 48, FLD.Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, FLD.you_ualign)) | 0, 32, FLD.Align_filecode));
     cptr.st1o(cptr.decay(hero), cptr.strlen(svp), 0, 1);
     (__builtin_expect(BigInt((!(cptr.ld1so(cptr.decay(hero), 47, 1) == 0))), 0n) ? __assert_rtn(__sl81, __sl83, 1017, __sl84) : void 0);
-    cptr.st1o(cptr.decay(hero), 48, schar((cptr.ld1so(flags, FLD.flag_debug) ? 68 : (cptr.ld1so(flags, FLD.flag_explore) ? 88 : 45))), 1);
+    cptr.st1o(cptr.decay(hero), 48, schar((wizard() ? 68 : (discover() ? 88 : 45))), 1);
     if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel))
         bufoff(cptr.ldI32(nhfp));
     sfo_int(nhfp, plsiztmp, __sl85);
@@ -917,7 +918,7 @@ function save_msghistory(nhfp) {
     let msglen = cptr.box(0);
     let init = 1;
     if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & 3)) {
-        while ((msg = (cptr.ldPtro(windowprocs, FLD.window_procs_win_getmsghistory))(init)) !== null) {
+        while ((msg = getmsghistory()(init)) !== null) {
             init = 0;
             msglen.v = Strlen_(msg, __sl87, 1041) | 0;
             if (msglen.v < 1)

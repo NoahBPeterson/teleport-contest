@@ -7,6 +7,7 @@ import { u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { raw_print } from './nhprop.js';
 import { windowprocs } from './windows.js';
 import { ARGV0, gc, gs } from './decl.js';
 import { sysopt } from './sys.js';
@@ -111,7 +112,7 @@ export function crashreport_init(argc, argv) {
 /** C ref: report.c:189 */
 export function crashreport_bidshow() {
     {
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(bid));
+        raw_print()(cptr.decay(bid));
     }
 }
 
@@ -344,7 +345,7 @@ export function submit_web_report(cos, msg, why) {
         let err = new Uint8Array(400);
         void execve(__sl17, xargv, environ);
         void cptr.sprintf(cptr.decay(err), __sl18, 372, strerror((cptr.ldI32(__error()))));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(err));
+        raw_print()(cptr.decay(err));
         exit(1);
     } else {
         let status = cptr.box(0);
@@ -372,7 +373,7 @@ export function NH_panictrace_libc() {
     let x;
     let info;
     let buf = new Uint8Array(256);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl22);
+    raw_print()(__sl22);
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
@@ -397,7 +398,7 @@ export function NH_panictrace_gdb() {
     nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __sl26);
     if (gdb) {
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl22);
+        raw_print()(__sl22);
         void fprintf(gdb, __sl27);
         void fflush(gdb);
         sleep(4);

@@ -6,6 +6,7 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
+import { quest_dnum } from './nhprop.js';
 import { alloc } from './alloc.js';
 import { assign_level, depth, dunlev, on_level, single_level_branch, u_on_newpos, u_on_rndspot } from './dungeon.js';
 import { gs, svd, u } from './decl.js';
@@ -177,7 +178,7 @@ export function stairs_description(sway, outbuf, stcase) {
     if (!known_branch_stairs(sway)) {
         void cptr.sprintf(outbuf, __sl5, stairs, updown);
         if (cptr.ld1so(sway, FLD.stairway_u_traversed)) {
-            let specialdepth = schar((cptr.ldI16(tolev) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_quest_dnum)) || single_level_branch(tolev) ? 1 : 0));
+            let specialdepth = schar((cptr.ldI16(tolev) == quest_dnum() || single_level_branch(tolev) ? 1 : 0));
             let to_dlev = specialdepth ? dunlev(tolev) : depth(tolev);
             void cptr.sprintf(eos(outbuf), __sl6, to_dlev);
         }

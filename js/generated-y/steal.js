@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Adornment, Blind, Conflict, Flying, Levitation, Punished } from './nhprop.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { carry_obj_effects, count_unpaid, freeinv, g_at, stackobj } from './invent.js';
 import { disp, flags, ga, gi, gk, gm, gn, go, gs, gt, gv, gy, iflags, svl, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
@@ -183,7 +184,7 @@ export function* stealgold(mtmp) {
             what = __sl4;
         if (!cptr.strncmp(what, __sl5, 5n))
             what = cptr.add(what, 5);
-        (yield* pline(__sl6, (yield* Monnam(mtmp)), (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_blocked))) ? __sl7 : __sl8, whose, what));
+        (yield* pline(__sl6, (yield* Monnam(mtmp)), (Levitation() || Flying()) ? __sl7 : __sl8, whose, what));
         if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 94, __sl2), rn2(5)) : rn2(5))) {
             if (!(yield* tele_restrict(mtmp)))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
@@ -393,13 +394,13 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 1 /* nothing_to_steal: */: {
-        if ((uball.v !== null) && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 379, __sl33), rn2(4)) : rn2(4))) {
+        if (Punished() && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 379, __sl33), rn2(4)) : rn2(4))) {
             (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__sl33, __sl34, 381, __sl35) : void 0);
             (yield* worn_item_removal(mtmp, uchain.v));
         } else if (cptr.ldI32o(u, FLD.you_utrap) && cptr.ldI32o(u, FLD.you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
             (yield* pline(__sl36, cptr.decay(Monnambuf)));
             void (yield* openholdingtrap(cptr.add(gy, FLD.instance_globals_y_youmonst), dummy));
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        } else if (Blind()) {
             (yield* pline(__sl37));
         } else if (inv_cnt(1) > inv_cnt(0)) {
             (yield* pline(__sl38, cptr.decay(Monnambuf)));
@@ -420,7 +421,7 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 9: {
-        if (cptr.ldI64o2(u, NHC.ADORNED, 24, FLD.you_uprops) & 131072n) { __pc = 11; continue; }
+        if (Adornment() & 131072n) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
@@ -430,7 +431,7 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 12: {
-        if (cptr.ldI64o2(u, NHC.ADORNED, 24, FLD.you_uprops) & 262144n) { __pc = 14; continue; }
+        if (Adornment() & 262144n) { __pc = 14; continue; }
         __pc = 13; continue;
         }
         case 14: {
@@ -665,7 +666,7 @@ export function* steal(mtmp, objnambuf) {
         case 29: {
         if (objnambuf)
             void cptr.strcpy(objnambuf, (yield* yname(otmp)));
-        if (!(cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)) && !(was_punished && !(uball.v !== null)))
+        if (!Conflict() && !(was_punished && !Punished()))
             cptr.stI32o(mtmp, FLD.monst_mavenge, 1);
         if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1))
             (yield* subfrombill(otmp, (yield* shop_keeper(cptr.ld1so(u, FLD.you_ushops)))));
@@ -709,7 +710,7 @@ export function* mpickobj(mtmp, otmp) {
         (yield* subfrombill(otmp, (yield* find_objowner(otmp, cptr.ldI16o(otmp, FLD.obj_ox), cptr.ldI16o(otmp, FLD.obj_oy)))));
     }
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, FLD.monst_data), NHM.AT_ENGL)) {
-        if (((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, FLD.you_ustuck), (mtmp)))) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+        if (((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, FLD.you_ustuck), (mtmp)))) && !Blind())
             (yield* pline(__sl64, (yield* Tobjnam(otmp, __sl65))));
         snuff_otmp = 1;
     }

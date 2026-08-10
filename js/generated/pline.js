@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Deaf, Underwater, display_nhwindow, putstr, raw_print } from './nhprop.js';
 import { WIN_MESSAGE, a11y, flags, ge, gg, gm, gp, gs, gv, gy, iflags, program_state, svm, u, ynchars } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { windowprocs } from './windows.js';
@@ -93,7 +94,7 @@ function putmesg(line) {
         attr |= NHM.ATR_URGENT;
     if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & 32768n) != 0n)
         attr |= NHM.ATR_NOHISTORY;
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(WIN_MESSAGE.v, attr, line);
+    putstr()(WIN_MESSAGE.v, attr, line);
     ;
 }
 
@@ -204,7 +205,7 @@ function vpline(line, the_args) {
         if (((cptr.ldI32o(gp, FLD.instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             dumplogmsg(line);
         if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(line);
+            raw_print()(line);
             cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
         }
@@ -227,7 +228,7 @@ function vpline(line, the_args) {
         cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
         void __builtin___strncpy_chk(cptr.add(gp, FLD.instance_globals_p_prevmsg), line, 256n, __builtin_object_size(cptr.add(gp, FLD.instance_globals_p_prevmsg), 1)), cptr.st1o2(gp, 255, 1, FLD.instance_globals_p_prevmsg, 0);
         if (msgtyp == NHM.MSGTYP_STOP)
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+            display_nhwindow()(WIN_MESSAGE.v, 1);
     }
     --__static_vpline_in_pline;
 }
@@ -342,10 +343,10 @@ export function There(line, ...__va) {
 export function You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if (((cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
+    if ((Deaf() && !(cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
         return;
     the_args = cptr.vaList(__va);
-    if (((cptr.ldI32o(u, FLD.you_uinwater) & 1)))
+    if (Underwater())
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n)))))), __sl10);
     else if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl11);
@@ -362,7 +363,7 @@ export function You_see(line, ...__va) {
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
-    else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+    else if (Blind())
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
     else
         void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __sl15);
@@ -436,7 +437,7 @@ function vraw_printf(line, the_args) {
             line = __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
         cptr.st1o(cptr.decay(pbuf), 255, 0, 1);
     }
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(line);
+    raw_print()(line);
     execplinehandler(line);
     if (!cptr.ldI32o(program_state, FLD.sinfo_beyond_savefile_load))
         (cptr.stI32o(ge, FLD.instance_globals_e_early_raw_messages, cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages) + 1)) - (1);
@@ -474,7 +475,7 @@ export function impossible(s, ...__va) {
     }
     if (cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl)) {
         let report = schar((121 == yn_function(__sl27, cptr.decay(ynchars), 110, 0)));
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl28);
+        raw_print()(__sl28);
         if (report) {
             submit_web_report(1, __sl29, cptr.decay(pbuf));
         }

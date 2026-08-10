@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, end_menu, preference_update, start_menu } from './nhprop.js';
 import { cg, gc, go, gp, gr, gs, svd, u } from './decl.js';
 import { def_monsyms, def_oc_syms, def_r_oc_syms, def_warnsyms, defsyms } from './drawing.js';
 import { nul_glyphinfo, reset_glyphmap } from './display.js';
@@ -1507,8 +1508,8 @@ export function do_symset(rogueflag) {
             return 1;
         }
         void cptr.sprintf(cptr.decay(fmtstr), __sl228, (biggest + 2) | 0);
-        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+        tmpwin = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(tmpwin, 0n);
         cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         cptr.stI32(any, 1);
         if (!symset_name)
@@ -1528,7 +1529,7 @@ export function do_symset(rogueflag) {
             }
         }
         void cptr.sprintf(cptr.decay(buf), __sl230, rogueflag ? __sl231 : __sl213);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf));
+        end_menu()(tmpwin, cptr.decay(buf));
         n = select_menu(tmpwin, NHM.PICK_ONE, symset_pick);
         if (n > 0) {
             chosen = cptr.ldI32o(symset_pick.v, 0, 24);
@@ -1539,7 +1540,7 @@ export function do_symset(rogueflag) {
         } else if (n == 0 && defindx > 0) {
             chosen = (defindx - 2) | 0;
         }
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+        destroy_nhwindow()(tmpwin);
         if (chosen > -1) {
             for (sl = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl))
                 if (cptr.ldI32o(sl, FLD.symsetentry_idx) == chosen)
@@ -1598,7 +1599,7 @@ export function do_symset(rogueflag) {
     } else if (!rogueflag)
         assign_graphics(NHC.PRIMARYSET);
     apply_customizations(rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET, (NHC.do_custom_symbols | NHC.do_custom_colors));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl235);
+    preference_update()(__sl235);
     return 1;
 }
 

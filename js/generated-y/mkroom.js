@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { wizard } from './nhprop.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
 import { nh_getenv } from './options.js';
@@ -109,7 +110,7 @@ function* mkshop() {
     let i = -1;
     let ep = null;
     __lbl_gottype: {
-        if (cptr.ld1so(flags, FLD.flag_debug)) {
+        if (wizard()) {
             ep = nh_getenv(__sl1);
             if (ep) {
                 if (cptr.ld1s(ep) == 122 || cptr.ld1s(ep) == 90) {
@@ -175,7 +176,7 @@ function* mkshop() {
             continue;
         if (has_dnstairs(sroom) || has_upstairs(sroom))
             continue;
-        if (cptr.ld1so(sroom, FLD.mkroom_doorct) == 1 || (cptr.ld1so(flags, FLD.flag_debug) && ep && cptr.ld1so(sroom, FLD.mkroom_doorct) != 0)) {
+        if (cptr.ld1so(sroom, FLD.mkroom_doorct) == 1 || (wizard() && ep && cptr.ld1so(sroom, FLD.mkroom_doorct) != 0)) {
             if ((yield* invalid_shop_shape(sroom)))
                 continue;
             else
@@ -218,7 +219,7 @@ function pick_room(strict) {
                 continue;
         } else if (has_upstairs(sroom) || has_dnstairs(sroom))
             continue;
-        if (cptr.ld1so(sroom, FLD.mkroom_doorct) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 237, __sl5), rn2(5)) : rn2(5)) || cptr.ld1so(flags, FLD.flag_debug))
+        if (cptr.ld1so(sroom, FLD.mkroom_doorct) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 237, __sl5), rn2(5)) : rn2(5)) || wizard())
             return sroom;
     }
     return null;

@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, raw_print, wait_synch } from './nhprop.js';
 import { datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand, what_datamodel_is_this } from './hacklib.js';
 import { nomakedefs } from './date.js';
 import { do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init } from './mdlib.js';
@@ -219,7 +220,7 @@ export function doextversion() {
     let f = null;
     let buf = new Uint8Array(256);
     let p = null;
-    let win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
+    let win = create_nhwindow()(NHM.NHW_TEXT);
     let use_dlb = 1;
     let done_rt = 0;
     let done_dlb = 0;
@@ -232,17 +233,17 @@ export function doextversion() {
         cptr.st1o(p, -1, 0);
     else
         p = null;
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    putstr()(win, 0, cptr.decay(buf));
     if (p) {
         cptr.st1(cptr.predec(() => p, (v) => { p = v; }), 32);
-        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, p);
+        putstr()(win, 0, p);
     }
     if (use_dlb) {
         f = fopen(__sl12, __sl13);
         if (!f) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl7);
+            putstr()(win, 0, __sl7);
             void cptr.sprintf(cptr.decay(buf), __sl14, __sl12);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+            putstr()(win, 0, cptr.decay(buf));
             done_dlb = 1;
         }
     }
@@ -267,7 +268,7 @@ export function doextversion() {
         if (cptr.strchr(cptr.decay(buf), 9) !== null)
             void tabexpand(cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32) {
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl7);
+            putstr()(win, 0, __sl7);
             prolog = 0;
         }
         if (prolog || !cptr.ld1s(cptr.decay(buf)))
@@ -275,12 +276,12 @@ export function doextversion() {
         if (cptr.strchr(cptr.decay(buf), 58))
             insert_rtoption(cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf)))
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+            putstr()(win, 0, cptr.decay(buf));
     }
     if (use_dlb)
         void fclose(f);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return NHM.ECMD_OK;
 }
 
@@ -342,13 +343,13 @@ export function check_version(version_data, filename, complain, utdflags) {
         if (complain) {
             pline(__sl21, filename);
             if (WIN_MESSAGE.v != -1)
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+                display_nhwindow()(WIN_MESSAGE.v, 1);
         }
         return 0;
     } else if ((cptr.ldU64o(version_data, FLD.version_info_feature_set) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))) != (cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, FLD.version_info_entity_count) != cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1))) {
         if (complain) {
             pline(__sl22, filename);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+            display_nhwindow()(WIN_MESSAGE.v, 1);
         }
         return 0;
     }
@@ -413,7 +414,7 @@ export function dump_version_info() {
         hname = cptr.add(eos((hname)), -(33));
     runtime_info_init();
     nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_number), (cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))), cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1));
-    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(buf));
+    raw_print()(cptr.decay(buf));
     release_runtime_info();
     return;
 }
@@ -642,7 +643,7 @@ export function uptodate(nhfp, name, utdflags) {
     if (!check_version(vers_info, name, verbose, utdflags)) {
         if (verbose) {
             if ((utdflags & 16n) == 0n) {
-                (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
+                wait_synch()();
             }
         }
         return NHM.SF_OUTDATED;

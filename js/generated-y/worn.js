@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ETelepat, See_invisible, Stone_resistance } from './nhprop.js';
 import { c_color_names, c_common_strings, disp, flags, gb, gi, gm, go, gu, gv, gy, iflags, svc, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { objects } from './objects.js';
 import { You, You_hear, impossible, pline, pline_mon } from './pline.js';
@@ -181,7 +182,7 @@ export function recalc_telepat_range() {
         if (oobj && cptr.ld1uo2(objects, cptr.ldI16o(oobj, FLD.obj_otyp), 120, FLD.objclass_oc_oprop) == NHC.TELEPAT)
             nobjs++;
     }
-    if (cptr.ldI64o2(u, NHC.TELEPAT, 24, FLD.you_uprops) & 4096n)
+    if (ETelepat() & 4096n)
         nobjs++;
     if (nobjs)
         cptr.stI32o(u, FLD.you_unblind_telepat_range, Math.imul(64, nobjs));
@@ -711,7 +712,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     __lbl_outer_break: {
         if ((cptr.ldI32o(mon, FLD.monst_mfrozen) & 127))
             return;
-        void cptr.strcpy(cptr.decay(nambuf), (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops)) ? (yield* Monnam(mon)) : (yield* mon_nam(mon)));
+        void cptr.strcpy(cptr.decay(nambuf), See_invisible() ? (yield* Monnam(mon)) : (yield* mon_nam(mon)));
         old = (yield* which_armor(mon, flag));
         if (old && (cptr.ldI32o(old, FLD.obj_cursed) & 1) | 0)
             return;
@@ -738,7 +739,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                     continue;
                 if (cptr.ld1uo(cptr.ldPtro(mon, FLD.monst_data), FLD.permonst_msize) > NHM.MZ_MEDIUM && cptr.ldI16o(obj, FLD.obj_otyp) != NHC.MUMMY_WRAPPING)
                     continue;
-                if ((cptr.ldI32o(mon, FLD.monst_minvis) & 1) | 0 && ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.MUMMY_WRAPPING && 1) ? NHC.INVIS : ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORNUTHAUM && 0 && !(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD)) ? NHC.CLAIRVOYANT : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 0) ? NHC.BLINDED : 0))) == NHC.INVIS && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops)) && !creation)
+                if ((cptr.ldI32o(mon, FLD.monst_minvis) & 1) | 0 && ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.MUMMY_WRAPPING && 1) ? NHC.INVIS : ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORNUTHAUM && 0 && !(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD)) ? NHC.CLAIRVOYANT : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 0) ? NHC.BLINDED : 0))) == NHC.INVIS && !See_invisible() && !creation)
                     continue;
                 break;
                 case 4n:
@@ -841,7 +842,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     }
     (yield* update_mon_extrinsics(mon, best, 1, creation));
     if (!creation && (sawmon ^ canseemon(mon))) {
-        if ((cptr.ldI32o(mon, FLD.monst_minvis) & 1) | 0 && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, FLD.you_uprops))) {
+        if ((cptr.ldI32o(mon, FLD.monst_minvis) & 1) | 0 && !See_invisible()) {
             (yield* pline(__sl41, cptr.decay(nambuf)));
             (yield* discover_object((cptr.ldI16o(best, FLD.obj_otyp)), 1, 1, 1));
         }
@@ -1089,7 +1090,7 @@ export function* mon_break_armor(mon, polyspot) {
     }
     if (noride || (cptr.eq(mon, cptr.ldPtro(u, FLD.you_usteed)) && !can_ride(mon))) {
         (yield* You(__sl65, (yield* mon_nam(mon))));
-        if ((cptr.eq((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !(cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops)) && (rng_log_enabled() ? (rng_log_set_caller(__sl66, 1324, __sl67), rnl(3)) : rnl(3))) {
+        if ((cptr.eq((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) && !Stone_resistance() && (rng_log_enabled() ? (rng_log_set_caller(__sl66, 1324, __sl67), rnl(3)) : rnl(3))) {
             let buf = new Uint8Array(256);
             (yield* You(__sl68, (yield* mon_nam(cptr.ldPtro(u, FLD.you_usteed)))));
             void cptr.sprintf(cptr.decay(buf), __sl69, (yield* an(pmname(cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data), Mgender(cptr.ldPtro(u, FLD.you_usteed))))));

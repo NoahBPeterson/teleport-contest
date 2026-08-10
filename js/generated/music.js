@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Blind, Deaf, Flying, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Unchanging, Underwater, Upolyd, sokoban_dnum } from './nhprop.js';
 import { flash_str, resist, ubuzz, zapyourself } from './zap.js';
 import { monflee, onscary } from './monmove.js';
 import { c_common_strings, disp, flags, gc, gu, gv, gy, svc, svd, svl, svt, u, ynqchars } from './decl.js';
@@ -254,7 +255,7 @@ export function awaken_soldiers(bugler) {
             cptr.stU64o(mtmp, FLD.monst_mstrategy, cptr.ldU64o(mtmp, FLD.monst_mstrategy) & 18446744072904245247n);
             if (canseemon(mtmp))
                 pline(__sl7, Monnam(mtmp));
-            else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+            else if (!Deaf())
                 Norep(__sl8, __sl9);
         } else if ((distm = ((cptr.eq(bugler, cptr.add(gy, FLD.instance_globals_y_youmonst))) ? dist2((cptr.ldI16o((mtmp), FLD.monst_mx)), (cptr.ldI16o((mtmp), FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) : dist2(cptr.ldI16o(bugler, FLD.monst_mx), cptr.ldI16o(bugler, FLD.monst_my), cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my)))) < distance) {
             awaken_scare(mtmp, schar((distm < ((distance / 3) | 0))));
@@ -336,7 +337,7 @@ function do_pit(x, y, tu_pit) {
             Your(__sl19);
             reset_utrap(1);
         }
-        if (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 16n) != 0n)) {
+        if (Levitation() || Flying() || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 16n) != 0n)) {
             if (!tu_pit) {
                 pline(__sl20);
                 You(__sl21);
@@ -344,17 +345,17 @@ function do_pit(x, y, tu_pit) {
         } else if (!tu_pit || !cptr.ldI32o(u, FLD.you_utrap) || cptr.ldI32o(u, FLD.you_utraptype) != NHC.TT_PIT) {
             You(__sl22);
             set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl15), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
-            losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl15), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl15), rnd(6)) : rnd(6)))), __sl23, NHM.NO_KILLER_PREFIX);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl15), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 314, __sl15), rnd(6)) : rnd(6)))), __sl23, NHM.NO_KILLER_PREFIX);
             selftouch(__sl24);
         } else if (cptr.ldI32o(u, FLD.you_utrap) && cptr.ldI32o(u, FLD.you_utraptype) == NHC.TT_PIT) {
-            let keepfooting = schar((!((cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops)) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 319, __sl15), rn2(5)) : rn2(5))) && (!((rng_log_enabled() ? (rng_log_set_caller(__sl0, 320, __sl15), rnl((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9)) : rnl((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9))) || (((acurr(NHC.A_DEX)) > 7) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 321, __sl15), rn2(5)) : rn2(5)))) ? 1 : 0));
+            let keepfooting = schar((!(Fumbling() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 319, __sl15), rn2(5)) : rn2(5))) && (!((rng_log_enabled() ? (rng_log_set_caller(__sl0, 320, __sl15), rnl((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9)) : rnl((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9))) || (((acurr(NHC.A_DEX)) > 7) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 321, __sl15), rn2(5)) : rn2(5)))) ? 1 : 0));
             You(__sl25);
             set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 324, __sl15), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
-            losehp((((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, FLD.you_uprops))) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl15), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl15), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4)))), __sl26, NHM.NO_KILLER_PREFIX);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl15), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl15), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4)))), __sl26, NHM.NO_KILLER_PREFIX);
             if (keepfooting)
                 exercise(NHC.A_DEX, 1);
             else
-                selftouch(((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)) && (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 524288n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 24576n) == 24576n))) ? __sl27 : __sl28);
+                selftouch((Upolyd() && (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 524288n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 24576n) == 24576n))) ? __sl27 : __sl28);
         }
     } else {
         newsym(x, y);
@@ -482,7 +483,7 @@ function generic_lvl_desc() {
         return __sl41;
     else if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level)))))
         return __sl42;
-    else if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == (cptr.ldI16o(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sokoban_dnum))))
+    else if ((cptr.ldI16((cptr.add(u, FLD.you_uz))) == sokoban_dnum()))
         return __sl43;
     else if (In_V_tower(cptr.add(u, FLD.you_uz)))
         return __sl44;
@@ -508,7 +509,7 @@ let __static_do_improvisation_improvisation = cptr.decay(__static_do_improvisati
 function do_improvisation(instr) {
     let damage;
     let mode;
-    let do_spec = !(cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic));
+    let do_spec = !(HStun() || HConfusion());
     let itmp = cptr.alloc(216);
     let mundane = 0;
     let same_old_song = cptr.box(0);
@@ -520,11 +521,11 @@ function do_improvisation(instr) {
             mundane = 1;
         }
     mode = 0;
-    if (cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    if (HStun())
         mode |= 1;
-    if (cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic))
+    if (HConfusion())
         mode |= 2;
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))
+    if (Hallucination())
         mode |= 4;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 535, __sl54), rn2(2)) : rn2(2))) {
         if (mode == 3)
@@ -537,13 +538,13 @@ function do_improvisation(instr) {
         You(__sl55, yname(instr));
         break;
         case 1:
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             You(__sl56);
         else
             You_feel(__sl57);
         break;
         case 2:
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             You(__sl58);
         else
             You_feel(__sl59);
@@ -563,14 +564,14 @@ function do_improvisation(instr) {
     switch (cptr.ldI16o(itmp, FLD.obj_otyp)) {
         case NHC.MAGIC_FLUTE:
         consume_obj_charge(instr, 1);
-        You(__sl62, !(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) ? __sl4 : __sl63, (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl64 : __sl65, same_old_song.v ? __sl66 : __sl4);
+        You(__sl62, !Deaf() ? __sl4 : __sl63, Hallucination() ? __sl64 : __sl65, same_old_song.v ? __sl66 : __sl4);
         ;
         put_monsters_to_sleep(Math.imul(cptr.ldI32o(u, FLD.you_ulevel), 5));
         exercise(NHC.A_DEX, 1);
         break;
         case NHC.WOODEN_FLUTE:
         do_spec &= ((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 600, __sl54), rn2((acurr(NHC.A_DEX)))) : rn2((acurr(NHC.A_DEX)))) + cptr.ldI32o(u, FLD.you_ulevel)) | 0) > 25);
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl67, Tobjnam(instr, do_spec ? __sl68 : __sl69), same_old_song.v ? __sl70 : __sl4);
         else
             You_feel(__sl71, yname(instr), do_spec ? __sl68 : __sl69);
@@ -594,7 +595,7 @@ function do_improvisation(instr) {
             }
         } else {
             let type = (Math.abs((((cptr.ldI16o(instr, FLD.obj_otyp) == NHC.FROST_HORN) ? NHM.AD_COLD : NHM.AD_FIRE) - NHM.AD_MAGM) | 0) % 10);
-            if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
+            if (!Blind())
                 pline(__sl75, flash_str(type, 0));
             ;
             cptr.stPtro(gc, FLD.instance_globals_c_current_wand, instr);
@@ -604,7 +605,7 @@ function do_improvisation(instr) {
         discover_object((cptr.ldI16o(instr, FLD.obj_otyp)), 1, 1, 1);
         break;
         case NHC.TOOLED_HORN:
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             You(__sl76, same_old_song.v ? __sl77 : __sl4);
         else
             You(__sl78);
@@ -613,7 +614,7 @@ function do_improvisation(instr) {
         exercise(NHC.A_WIS, 0);
         break;
         case NHC.BUGLE:
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             You(__sl79, same_old_song.v ? __sl66 : __sl4, yname(instr));
         else
             You(__sl80);
@@ -623,7 +624,7 @@ function do_improvisation(instr) {
         break;
         case NHC.MAGIC_HARP:
         consume_obj_charge(instr, 1);
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl81, Tobjnam(instr, __sl82), same_old_song.v ? __sl83 : __sl4);
         else
             You_feel(__sl84);
@@ -633,7 +634,7 @@ function do_improvisation(instr) {
         break;
         case NHC.WOODEN_HARP:
         do_spec &= ((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 673, __sl54), rn2((acurr(NHC.A_DEX)))) : rn2((acurr(NHC.A_DEX)))) + cptr.ldI32o(u, FLD.you_ulevel)) | 0) > 25);
-        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)))
+        if (!Deaf())
             pline(__sl71, Yname2(instr), (do_spec && same_old_song.v) ? __sl85 : ((do_spec) ? __sl86 : ((same_old_song.v) ? __sl87 : __sl88)));
         else
             You_feel(__sl89);
@@ -653,7 +654,7 @@ function do_improvisation(instr) {
         break;
         case NHC.LEATHER_DRUM:
         if (!mundane) {
-            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+            if (!Deaf()) {
                 You(__sl92, same_old_song.v ? __sl93 : __sl4);
                 ;
                 incr_itimeout(cptr.add(cptr.add(cptr.add(u, FLD.you_uprops), NHC.DEAF, 24), FLD.prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 709, __sl54), rn2(20)) : rn2(20)) + 30) | 0));
@@ -680,7 +681,7 @@ const __static_improvised_notes_notes = [65, 66, 67, 68, 69, 70, 71]; /** C ref:
 
 /** C ref: music.c:733 — @param {CPtr} same_as_last_time @returns {CPtr} */
 function improvised_notes(same_as_last_time) {
-    if (!((cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, FLD.you_uprops)) && cptr.ld1so2(svc, 0, 1, FLD.context_info_jingle) != 0)) {
+    if (!(Unchanging() && cptr.ld1so2(svc, 0, 1, FLD.context_info_jingle) != 0)) {
         let i;
         let notecount = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 742, __sl99), rnd((Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0)) : rnd((Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0));
         for (i = 0; i < notecount; ++i) {
@@ -703,14 +704,14 @@ export function do_play_instrument(instr) {
     let y = cptr.box(0);
     let ok;
     __lbl_nevermind: {
-        if (((cptr.ldI32o(u, FLD.you_uinwater) & 1))) {
+        if (Underwater()) {
             You_cant(__sl100);
             return NHM.ECMD_OK;
         } else if ((cptr.ldI16o(instr, FLD.obj_otyp) == NHC.WOODEN_FLUTE || cptr.ldI16o(instr, FLD.obj_otyp) == NHC.MAGIC_FLUTE || cptr.ldI16o(instr, FLD.obj_otyp) == NHC.TOOLED_HORN || cptr.ldI16o(instr, FLD.obj_otyp) == NHC.FROST_HORN || cptr.ldI16o(instr, FLD.obj_otyp) == NHC.FIRE_HORN || cptr.ldI16o(instr, FLD.obj_otyp) == NHC.BUGLE) && !can_blow(cptr.add(gy, FLD.instance_globals_y_youmonst))) {
             You(__sl101, thesimpleoname(instr));
             return NHM.ECMD_OK;
         }
-        if (cptr.ldI16o(instr, FLD.obj_otyp) != NHC.LEATHER_DRUM && cptr.ldI16o(instr, FLD.obj_otyp) != NHC.DRUM_OF_EARTHQUAKE && !(cptr.ldI64o2(u, NHC.STUNNED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFUSION, 24, FLD.you_uprops + FLD.prop_intrinsic) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))) {
+        if (cptr.ldI16o(instr, FLD.obj_otyp) != NHC.LEATHER_DRUM && cptr.ldI16o(instr, FLD.obj_otyp) != NHC.DRUM_OF_EARTHQUAKE && !(HStun() || HConfusion() || Hallucination())) {
             c = yn_function(__sl102, cptr.decay(ynqchars), 113, 1);
             if (c == 113)
                 break __lbl_nevermind;
@@ -734,7 +735,7 @@ export function do_play_instrument(instr) {
                     cptr.st1(s, 66);
             }
         }
-        You(!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf)) ? __sl105 : __sl106, the(xname(instr)));
+        You(!Deaf() ? __sl105 : __sl106, the(xname(instr)));
         ;
         if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_stronghold_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_stronghold_level))))) {
             exercise(NHC.A_WIS, 1);
@@ -753,7 +754,7 @@ export function do_play_instrument(instr) {
                             return NHM.ECMD_TIME;
                         }
                     }
-            } else if (!(cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, FLD.you_uprops) || cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_deaf))) {
+            } else if (!Deaf()) {
                 if (((cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_uheard_tune) & 3) | 0) < 1)
                     cptr.stI32o(u, FLD.you_uevent + FLD.u_event_uheard_tune, 1);
                 ok = 0;

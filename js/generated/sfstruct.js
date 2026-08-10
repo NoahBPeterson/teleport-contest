@@ -7,6 +7,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
+import { display_nhwindow } from './nhprop.js';
 import { norm_ptrs_any, norm_ptrs_arti_info, norm_ptrs_branch, norm_ptrs_bubble, norm_ptrs_cemetery, norm_ptrs_context_info, norm_ptrs_d_level, norm_ptrs_damage, norm_ptrs_dest_area, norm_ptrs_dgn_topology, norm_ptrs_dungeon, norm_ptrs_ebones, norm_ptrs_edog, norm_ptrs_egd, norm_ptrs_emin, norm_ptrs_engr, norm_ptrs_epri, norm_ptrs_eshk, norm_ptrs_fe, norm_ptrs_flag, norm_ptrs_fruit, norm_ptrs_gamelog_line, norm_ptrs_kinfo, norm_ptrs_levelflags, norm_ptrs_linfo, norm_ptrs_ls_t, norm_ptrs_mapseen_feat, norm_ptrs_mapseen_flags, norm_ptrs_mapseen_rooms, norm_ptrs_mkroom, norm_ptrs_monst, norm_ptrs_mvitals, norm_ptrs_nhcoord, norm_ptrs_nhrect, norm_ptrs_obj, norm_ptrs_objclass, norm_ptrs_q_score, norm_ptrs_rm, norm_ptrs_s_level, norm_ptrs_spell, norm_ptrs_stairway, norm_ptrs_trap, norm_ptrs_version_info, norm_ptrs_you } from './sfbase.js';
 import { nh_terminate, panic } from './end.js';
 import { WIN_MESSAGE, program_state } from './decl.js';
@@ -1421,7 +1422,7 @@ export function mread(fd, buf, len) {
             return;
         } else {
             pline(__sl8, rlen | 0, len);
-            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
+            display_nhwindow()(WIN_MESSAGE.v, 1);
             if (cptr.ldI32o(program_state, FLD.sinfo_restoring)) {
                 void nhclose(fd);
                 void delete_savefile();
