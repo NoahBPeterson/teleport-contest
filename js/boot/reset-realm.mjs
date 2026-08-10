@@ -51,9 +51,10 @@
 import { enableSegmentIsolation, segmentSpecifier } from './isolation.mjs';
 
 // Am I in a browser? Asked the way every other file in this tree asks it —
-// what the realm *is*, not what a page-supplied `process` claims. Same three
+// what the realm *is*, not what a page-supplied `process` claims. Same two
 // lines as js/jsmain.js, js/boot/interactive.mjs, js/boot/isolation.mjs and
-// js/boot/main-thread-engine.mjs; keep them in step.
+// js/boot/main-thread-engine.mjs (the first three then derive an IS_NODE from
+// them); keep them in step.
 const IS_BROWSER = typeof globalThis.window !== 'undefined'
     || typeof globalThis.WorkerGlobalScope !== 'undefined';
 
