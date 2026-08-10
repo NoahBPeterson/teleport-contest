@@ -842,9 +842,9 @@ const MFN_STATS = {
   refusedMismatch: 0,    // a second site emitted a different body for the same name
   refusedLocal: 0,       // a free name the helper binds means a local here
   refusedNameClash: 0,   // a parameter name also occurs free in the body
-  refusedRepeat: 0,      // argument re-evaluated and not provably safe to
-  refusedImpureArg: 0,   //   ... because its callee is not provably pure
-  refusedConditional: 0, // first use of the parameter is not unconditional
+  refusedRepeat: 0,      // the argument itself assigns, or steps a value
+  refusedImpureArg: 0,   // an argument calls something not provably pure
+  refusedConditional: 0, // a non-total argument only ever behind a short circuit
 };
 
 // C2JS_MACROFN=0 disables the function-like tier (the A/B baseline).

@@ -361,6 +361,7 @@ export const M2_GNOME = 64;
 export const M2_HUMAN = 8;
 export const M2_ORC = 128;
 export const M3_CLOSE = 128;
+export const M3_COVETOUS = 31;
 export const M3_DISPLACES = 1024;
 export const M3_INFRAVISIBLE = 512;
 export const M3_INFRAVISION = 256;

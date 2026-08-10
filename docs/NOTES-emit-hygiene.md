@@ -318,12 +318,17 @@ cannot move an evaluation out of a loop condition.
 
 | | |
 |---|---|
-| helpers in `js/generated/nhmacrofn.js` | **356** |
-| call sites | **6,659** |
-| — case (a), every argument only loads memory | **6,619** |
+| helpers in `js/generated/nhmacrofn.js` | **339** |
+| call sites | **6,202** |
+| — case (a), every argument only loads memory | **6,162** |
 | — case (b), an argument calls a provably pure function | **40** |
-| sites where the macro repeated an argument | **2,579** |
+| sites where the macro repeated an argument | **2,557** |
 | — of those repeats, ones holding a call (now evaluated once) | **48** |
+| `js/generated` size | 15,965,231 → **15,599,340 bytes (−2.29%)**, including a 79 KB `nhmacrofn.js` |
+
+The tier *shrinks* the tree: 339 named bodies replace more inline expansion
+than the module costs. That is the opposite of the readability leg before it,
+which paid +19.5% for its names.
 
 The motivating line, `detect.js`:
 
@@ -378,18 +383,27 @@ Of **18,286** expansions the extent test matched:
 |---|---|---|
 | arity | 4,839 | a parameter the body never mentions, so the positional mapping from call-site order to parameter order is not one this can trust |
 | non-value expansion | 2,360 | the expansion is a pointer or a buffer, not a plain value |
-| back-substitution audit | 1,601 | putting the arguments back did not reproduce the inline emission |
-| impure body | 1,496 | the body writes, or calls something not provably pure |
-| parameter name clash | 905 | a parameter name occurs in the body more often than the argument does |
+| impure body | 1,584 | the body writes, calls something not provably pure, or calls through a parameter |
+| back-substitution audit | 1,552 | putting the arguments back did not reproduce the inline emission |
+| parameter name clash | 893 | a parameter name occurs in the body more often than the argument does |
+| **conditional-only argument** | **430** | every occurrence of a non-total argument sits behind a short circuit |
 | body mismatch | 379 | a second site emitted a different body for the same name |
 | split arguments | 23 | two occurrences of one parameter did not emit the same text |
 | argument callee not provably pure | 22 | case (b), refused |
 | side-effecting argument | 2 | the argument assigns or steps |
-| conditional-only argument | 0 | every occurrence behind a short circuit |
 | alias body | 0 | (the guard that catches the `glyph_is_object` failure; nothing hits it now) |
 
 The default is refuse: anything the walker does not recognize, and any shape it
 cannot read, leaves the expansion inline.
+
+### the yieldable build agrees the bodies are pure
+
+`js/generated-y/nhmacrofn.js` contains **zero generators**. yieldify colours
+every function that can reach a keystroke read, propagating up the call graph
+over the emitted JS; it coloured nothing here. That is an independent
+confirmation, from a pass that knows nothing about this tier, that no helper
+body can reach anything that blocks — which is the §3 property ("nothing for
+the yieldable build to colour") restated as a measurement rather than a rule.
 
 ### the one place §3's rule was relaxed
 
@@ -415,16 +429,16 @@ reproducibility risk not worth taking in this leg. It is the obvious next step.
 
 ## 4. Gates
 
-Run at `0fc80d0`, after `C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`.
+Run at `a4a7e78`, after `C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`.
 
 | gate | result |
 |---|---|
-| batch build | 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures**; all 178 yield files parse |
-| `C2JS_FOLD_VERIFY=1` | **336,808 folds, 0 mismatched, 0 unevaluable** |
+| batch build | 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures** |
+| `C2JS_FOLD_VERIFY=1` | **337,424 folds, 0 mismatched, 0 unevaluable** |
 | full rebuild reproduces the committed trees | **byte-identical** (`js/generated`, `js/generated-y`, both reset barrels) |
-| all three flags off reproduces `origin/main` | **byte-identical** (`git diff origin/main -- js/` empty; `nhmacrofn.js` comes out with no helpers) |
+| all three flags off reproduces `origin/main` | **byte-identical** for every file that existed there; the one addition is `nhmacrofn.js`, which comes out with no helpers (same precedent as `nhfield.js`/`nhprop.js` in the readability leg) |
 | no-absolute-path assertion | **360 modules, 0 hits** |
-| `reset-census` | 179 modules, 45,964 declarations, plan 1,416, **0 unclassified** |
+| `reset-census` | 179 modules, 45,951 declarations, plan 1,416, **0 unclassified** |
 | corpus (`sessions/` + `sessions-extra/`), twice | **69/69** and **69/69** |
 | `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm |
 | `purity-audit.mjs` | 14 functions `nhmacrofn.js` calls, **0 disagree** with the AST analysis |
@@ -436,9 +450,55 @@ Run at `0fc80d0`, after `C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --a
 | `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 351 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 536 ms |
 | sandboxed `playability_runner.mjs` (`node --permission`) | 44 sessions, **0 failures**, 9,096 moves, **3.18 ms/move** (documented baseline 3.03–3.15) |
 
+### a bug this leg's own reproducibility check caught
+
+After the tier landed, a rebuild of the committed tree changed one byte-set:
+`nhmacro.js` gained `M3_COVETOUS`. The cause is an ordering one and the effect
+was live, not cosmetic. The sidecar modules export the *subset* of names the
+tree references, computed by scanning `js/generated` after emission — and
+`nhmacrofn.js` was written **after** that scan, so on a clean build its
+`NHM.M3_COVETOUS` was invisible and `nhmacro.js` did not export it. A namespace
+import of a missing name is `undefined`, not a load error, so the failure would
+have surfaced as NaN arithmetic inside the one helper that reads it, in a
+session that happens to call it. The corpus does not.
+
+Fixed twice over: the helper modules are now written before their providers are
+scanned, and `assertNamespaceExports()` fails the build if any `NHC.`/`NHM.`/
+`FLD.` name a module reads is not exported by the module it imports from. A
+rebuild now reproduces itself byte-for-byte.
+
+The general lesson is the one this leg keeps re-learning: **a scan-based export
+set makes writer order load-bearing**, and every module added to `js/generated`
+after this point has to be written before the scans or be caught by the
+assertion.
+
 ### the A/B
 
-PERF_TABLE_PLACEHOLDER
+Interleaved ABBA on the scoring path over all 69 sessions, both `js/generated`
+and `js/generated-y` swapped every time. **Three complete pairs** (the run was
+cut short at 7 of 10 measurements; the fourth `new` run is unpaired and is
+excluded from the deltas below).
+
+| | base (`origin/main`) | new (this branch) | median Δ | min Δ |
+|---|---|---|---|---|
+| slope (ms/turn) | 0.53 / 0.53 / 0.54 | 0.55 / 0.54 / 0.55 | **+3.8%** | **+1.9%** |
+| startup (ms) | 763 / 765 / 771 | 757 / 759 / 763 | **−0.8%** | **−0.8%** |
+
+The direction is consistent in every pair, which is what makes a three-pair
+result worth reading at all: base never produced a slope above 0.54, new never
+produced one below 0.54. **Slope is worse and startup is better**, and both are
+explained by the same change — 6,202 inline expansions became function calls.
+Fewer source bytes to parse (−2.29%) is the startup win; a call where there was
+straight-line code is the per-move cost.
+
+**Task 3(b) does not show up.** The 48 hoisted repeats are a rounding error
+against 6,162 case-(a) sites, and against a corpus where `glyph_at` is not hot.
+The call-collapsing is real and provable but it is inside the noise floor; the
+aggregate slope is dominated by case (a), and case (a) costs rather than pays.
+
+Provisional on the two missing pairs: the exact magnitude (+1.9% to +3.8%
+spans the min/median disagreement, and the previous readability leg used ±2% as
+its guard). The **sign** is not provisional — six of six measurements agree.
 
 ---
 
@@ -447,6 +507,24 @@ PERF_TABLE_PLACEHOLDER
 * `017d463` — `__FILE__` is the path the compiler was given, not this machine's.
 * `e131ad2` — a `do{}while(0)` that nothing jumps out of is just a block.
 * `0fc80d0` — function-like macros, and the purity analysis that makes them safe.
+* `98cf361` — a macro argument that only loads memory can still fault (the
+  conditionality guard, widened from calls to anything non-total: 430 sites).
+* `a4a7e78` — a helper body may not call through a parameter (2 helpers).
+* `<this>` — write the helper modules before the scans that export to them,
+  and assert every namespace name a module reads is exported.
+
+## 6. Merge readiness
+
+Sections 1 and 2 are ready: §1 is a correctness fix with a proof from the C
+binary, §2 is 421/421 with no refusals and no measurable cost.
+
+Section 3 is **correct but not free**, and the standing order is parity >
+speed > readability. It costs 2–4% of slope to buy a large readability win and
+a 2.29% smaller tree. That is a trade for Noah to make, not the emitter; it is
+one flag (`C2JS_MACROFN=0`) either way. If the cost is judged too high, the
+narrowing that keeps most of the value is to admit only macros that **repeat**
+an argument (2,557 of 6,202 sites) — those replace duplicated work rather than
+adding a call to a single use.
 
 On `emit-hygiene`, off `main` at `dcd42b6`. Nothing pushed, nothing merged.
 `js/generated` must be committed from a **normal** build, never a

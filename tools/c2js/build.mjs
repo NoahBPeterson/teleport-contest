@@ -1029,11 +1029,19 @@ function buildAll() {
     }
   }
 
-  // after emission, so the module exports exactly what the files reference
-  writeMacroModule(macroValues);
-  writeFieldModule(fieldOffsets);
+  // After emission, so each module exports exactly what the files reference —
+  // and the HELPER modules first, because they are themselves files that
+  // reference NHM./FLD. names. Written last, their references were invisible to
+  // the scans below, and a clean build produced an nhmacrofn.js reading
+  // NHM.M3_COVETOUS from an nhmacro.js that did not export it: a namespace
+  // import of a missing name is `undefined`, not an error, so it is silent
+  // until the one helper that uses it runs. assertNamespaceExports() below
+  // turns that whole class loud rather than relying on this ordering.
   writePropModule(symbols);
   writeMacroFnModule(symbols);
+  writeMacroModule(macroValues);
+  writeFieldModule(fieldOffsets);
+  assertNamespaceExports();
 
   const ok = results.filter((r) => r.ok === true);
   const skipped = results.filter((r) => r.ok === 'skipped');
@@ -1145,6 +1153,48 @@ async function maybeReset() {
       { stdio: 'inherit' });
   }
 }
+/**
+ * Every `NHC.x` / `NHM.x` / `FLD.x` a generated module reads must actually be
+ * exported by the module it imports from.
+ *
+ * A namespace import makes a missing name `undefined` rather than a load
+ * error, so the failure surfaces as NaN arithmetic inside whichever function
+ * first touches it — arbitrarily far from the build that caused it, and
+ * invisible to a corpus that happens not to call it. The sidecar modules
+ * export the subset of names the tree references, computed by scanning the
+ * tree, so any writer that emits a reference *after* its provider has been
+ * scanned reintroduces the bug. This closes it by construction.
+ */
+function assertNamespaceExports() {
+  const outDir = path.join(repoRoot, 'js/generated');
+  const providers = [[CONST_NS, CONST_MODULE], [MACRO_NS, MACRO_MODULE], [FIELD_NS, FIELD_MODULE]];
+  const exported = new Map();
+  for (const [ns, mod] of providers) {
+    const file = path.join(outDir, path.basename(mod));
+    const names = new Set();
+    if (fs.existsSync(file)) {
+      for (const m of fs.readFileSync(file, 'utf8').matchAll(/^export const ([A-Za-z_][A-Za-z0-9_]*)/gm)) names.add(m[1]);
+    }
+    exported.set(ns, names);
+  }
+  const bad = [];
+  for (const f of fs.readdirSync(outDir).sort()) {
+    if (!f.endsWith('.js')) continue;
+    const text = fs.readFileSync(path.join(outDir, f), 'utf8');
+    for (const [ns, mod] of providers) {
+      if (f === path.basename(mod)) continue;
+      for (const m of text.matchAll(new RegExp(`\\b${ns}\\.([A-Za-z_][A-Za-z0-9_]*)`, 'g'))) {
+        if (!exported.get(ns).has(m[1])) bad.push(`${f}: ${ns}.${m[1]}`);
+      }
+    }
+  }
+  if (bad.length) {
+    throw new Error(`namespace import reads ${bad.length} name(s) the provider does not export ` +
+      `(a runtime undefined, not a load error): ${bad.slice(0, 8).join(', ')}${bad.length > 8 ? ' …' : ''}`);
+  }
+  console.log('namespace exports: every NHC./NHM./FLD. name a module reads is exported');
+}
+
 /**
  * Final sweep: no emitted tree may carry an absolute machine path.
  *
