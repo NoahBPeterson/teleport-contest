@@ -4720,3 +4720,26 @@ export function* use_unpaid_trapobj(otmp, x, y) {
         (yield* bill_dummy_object(otmp));
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 12 bindings: 1 rebound+refilled, 1 rebound, 10 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(and_its_contents), S(the_contents_of), S(angrytexts), S(__static_credit_report_credit_snap), S(__static_u_entered_shop_empty_shops), S(__static_pick_pick_pickmovetime), S(no_money), S(not_enough_money), S(__static_make_itemized_bill_zerosbi), S(__static_append_honorific_honored), S(__static_makekops_k_mndx), S(Izchak_speaks)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("shk.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    __static_pick_pick_pickmovetime = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    __static_make_itemized_bill_zerosbi = P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+}
+// --- END c2js reset block ---

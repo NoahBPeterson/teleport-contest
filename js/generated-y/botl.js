@@ -4403,3 +4403,51 @@ export function* status_hilite_menu() {
         break __lbl_shlmenu_redo;
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 37 bindings: 0 rebound+refilled, 7 rebound, 30 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(enc_stat), S(__static_get_strength_str_buf), S(__static_do_statusline1_newbot1), S(__static_do_statusline2_newbot2), S(__static_do_statusline2_dloc), S(__static_do_statusline2_hlth), S(__static_do_statusline2_expr), S(__static_do_statusline2_tmmv), S(__static_do_statusline2_cond), S(__static_do_statusline2_vers), S(initblstats), S(condition_aliases), S(conditions), S(condtests), S(cond_idx), S(c_Wall), S(terrain_descr), S(cache_avail), S(cache_reslt), S(cache_nomovemsg), S(cache_multi_reason), S(__static_cond_menu_menutitle), S(__static_eval_notify_windowport_field_oldrndencode), S(__static_eval_notify_windowport_field_oldgoldsym), S(__static_init_blstats_initalready), S(fieldids_alias), S(threshold_value), S(is_out_of_range), S(__static_splitsubfields_subfields), S(__static_parse_status_hl2_aligntxt), S(__static_parse_status_hl2_hutxt), S(__static_conditionbitmask2str_buf), S(status_hilite_str), S(status_hilite_str_id), S(__static_status_hilite2str_buf), S(__static_status_hilite_menu_add_aligntxt), S(__static_status_hilite_menu_add_hutxt)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("botl.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    cache_nomovemsg = P(r[19]);
+    cache_multi_reason = P(r[20]);
+    P(r[21]);
+    __static_eval_notify_windowport_field_oldrndencode = P(r[22]);
+    __static_eval_notify_windowport_field_oldgoldsym = P(r[23]);
+    __static_init_blstats_initalready = P(r[24]);
+    P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    status_hilite_str = P(r[32]);
+    status_hilite_str_id = P(r[33]);
+    P(r[34]);
+    P(r[35]);
+    P(r[36]);
+}
+// --- END c2js reset block ---

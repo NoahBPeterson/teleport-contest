@@ -5149,3 +5149,37 @@ export function* safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
     }
     return qbuf;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 23 bindings: 0 rebound+refilled, 3 rebound, 20 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(Japanese_items), S(obufs), S(obufidx), S(__static_xname_flags_xname_full), S(__static_doname_base_doname_full), S(__static_paydoname_and_contents), S(wrp), S(wrpsym), S(special_subjs), S(one_off), S(as_is), S(__static_singplur_compound_compounds), S(__static_singplur_compound_compound_start), S(__static_makeplural_already_plural), S(__static_ch_ksound_ch_k), S(__static_badman_no_men), S(__static_badman_no_man), S(__static_wishymatch_detect_SP), S(__static_wishymatch_SP_detection), S(o_ranges), S(spellings), S(__static_gloves_simple_name_gauntlets), S(__static_boots_simple_name_shoes)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("objnam.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    obufidx = P(r[2]);
+    __static_xname_flags_xname_full = P(r[3]);
+    __static_doname_base_doname_full = P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+}
+// --- END c2js reset block ---

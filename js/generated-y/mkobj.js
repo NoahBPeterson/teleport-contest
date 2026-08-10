@@ -3021,3 +3021,29 @@ export function* pudding_merge_message(otmp, otmp2) {
         (yield* You_hear(__sl216));
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 15 bindings: 1 rebound+refilled, 0 rebound, 14 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(mkobjprobs), S(boxiprobs), S(rogueprobs), S(hellprobs), S(zerooextra), S(alteration_verbs), S(dknowns), S(treefruits), S(ofmt0), S(ofmt3), S(mfmt1), S(mfmt2), S(obj_state_names), S(__static_where_name_unknown), S(__static_sanity_check_worn_wearbits)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mkobj.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    zerooextra = P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+}
+// --- END c2js reset block ---

@@ -1691,3 +1691,22 @@ export function* assure_syscf_file() {
     (yield* raw_printf(__sl130));
     exit(1);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 8 bindings: 0 rebound+refilled, 5 rebound, 3 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(ignore_errors_on_unmatched), S(ignore_statement_errors), S(default_configfile), S(configfile), S(config_line_stmt), S(disregarded_config_lines), S(config_error_data), S(config_error_msg)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("cfgfiles.js: __resetState before __captureState");
+    ignore_errors_on_unmatched = P(r[0]);
+    ignore_statement_errors = P(r[1]);
+    default_configfile = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    config_error_data = P(r[6]);
+    config_error_msg = P(r[7]);
+}
+// --- END c2js reset block ---

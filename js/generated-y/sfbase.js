@@ -2951,3 +2951,48 @@ export function norm_ptrs_vptrs(d_vptrs) {
 /** C ref: sfbase.c:1107 — @param {CPtr} d_you */
 export function norm_ptrs_you(d_you) {
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 34 bindings: 4 rebound+refilled, 0 rebound, 30 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(sfoprocs), S(sfiprocs), S(zerosfoprocs), S(zerosfiprocs), S(sfoflprocs), S(sfiflprocs), S(zerosfoflprocs), S(zerosfiflprocs), S(__static_sfvalue_char_buf), S(__static_sfvalue_boolean_buf), S(__static_sfvalue_schar_buf), S(__static_sfvalue_aligntyp_buf), S(__static_sfvalue_any_buf), S(__static_sfvalue_genericptr_buf), S(__static_sfvalue_int16_buf), S(__static_sfvalue_int32_buf), S(__static_sfvalue_int64_buf), S(__static_sfvalue_uchar_buf), S(__static_sfvalue_uint16_buf), S(__static_sfvalue_uint32_buf), S(__static_sfvalue_uint64_buf), S(__static_sfvalue_size_t_buf), S(__static_sfvalue_time_t_buf), S(__static_sfvalue_short_buf), S(__static_sfvalue_ushort_buf), S(__static_sfvalue_int_buf), S(__static_sfvalue_unsigned_buf), S(__static_sfvalue_long_buf), S(__static_sfvalue_ulong_buf), S(__static_sfvalue_xint8_buf), S(__static_sfvalue_xint16_buf), S(__static_sfvalue_bitfield_buf), S(__static_bitfield_dump_buf), S(__static_complex_dump_buf)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("sfbase.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    zerosfoprocs = P(r[2]);
+    zerosfiprocs = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    zerosfoflprocs = P(r[6]);
+    zerosfiflprocs = P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+    P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    P(r[32]);
+    P(r[33]);
+}
+// --- END c2js reset block ---

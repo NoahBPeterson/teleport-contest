@@ -1744,3 +1744,36 @@ export function set_voice(mtmp, tone, volume, moreinfo) {
 /** C ref: sounds.c:2185 — @param {CPtr} text */
 export function sound_speak(text) {
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 22 bindings: 2 rebound+refilled, 0 rebound, 20 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_throne_mon_sound_throne_msg), S(__static_zoo_mon_sound_zoo_msg), S(__static_temple_priest_sound_temple_msg), S(__static_oracle_sound_ora_msg), S(__static_dosounds_fountain_msg), S(__static_dosounds_sink_msg), S(__static_dosounds_swamp_msg), S(__static_dosounds_barracks_msg), S(__static_dosounds_shop_msg), S(h_sounds), S(__static_maybe_gasp_Exclam), S(__static_domonnoise_vampmsg), S(__static_domonnoise_laugh_msg), S(__static_domonnoise_arrest_msg), S(__static_domonnoise_soldier_foe_msg), S(__static_domonnoise_soldier_pax_msg), S(__static_dochat_walltalk), S(__static_tiphat_reaction), S(soundprocs), S(nosound_procs), S(soundlib_choices), S(__static_base_soundname_to_filename_suffix)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("sounds.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    soundprocs = P(r[18]);
+    nosound_procs = P(r[19]);
+    P(r[20]);
+    P(r[21]);
+}
+// --- END c2js reset block ---

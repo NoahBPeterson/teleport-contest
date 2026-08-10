@@ -4022,3 +4022,27 @@ function* flip_coin(obj) {
     }
     return NHM.ECMD_TIME;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 0 rebound+refilled, 0 rebound, 13 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(no_elbow_room), S(hollow_str), S(whistle_str), S(alt_whistle_str), S(look_str), S(__static_use_tinning_kit_you_buy_it), S(__static_use_stone_scritch), S(not_enough_room), S(where_to_hit), S(cant_see_spot), S(cant_reach), S(__static_do_break_wand_nothing_else_happens), S(__static_flip_through_book_fadeness)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("apply.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+}
+// --- END c2js reset block ---

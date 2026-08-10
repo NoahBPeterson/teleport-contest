@@ -19,8 +19,34 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { scanModule } from './jslex.mjs';
+import { RESET_BARREL, stripResetBlock } from './reset-census.mjs';
 
 export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+
+// ---------------------------------------------------------------------------
+// The reset pass is invisible to this one, deliberately.
+// ---------------------------------------------------------------------------
+//
+// tools/c2js/resetify.mjs appends a delimited block to the tail of every
+// stateful module in js/generated/ (a C2JS_RESET=1 build) and writes a barrel
+// beside them. Neither is transpiled C, and both would be *wrong* to colour:
+//
+//   - `export function __captureState(S) { __c2js_rs = [S(a), S(b), ...]; }`
+//     calls its own parameter, which this analysis classifies as a call through
+//     a function pointer, so `fptrMode` colours it and yieldify emits
+//     `(yield* Y.icall(S(a)))`. The reset functions become generators — and
+//     js/generated-y/__reset.js's barrel calls them directly, so the yieldable
+//     build's reset would throw on its first use.
+//   - a rewritten barrel would be a second, differently-shaped copy of a file
+//     resetify writes for that directory anyway.
+//
+// So the source this analysis sees is the source *before* the reset pass ran,
+// which also means js/generated-y/ is byte-identical whether or not the sync
+// build was built with C2JS_RESET=1. The yieldable build gets its own reset
+// blocks from `resetify.mjs --dir js/generated-y`, run after yieldify.
+//
+// The delimiters and the strip itself live in tools/c2js/reset-census.mjs,
+// which is where all three passes that need them can agree on one copy.
 
 /** Hand-written runtime modules transpiled code calls into. Scanned so the
  *  analysis can see whether any of them can itself reach a blocking point. */
@@ -96,8 +122,14 @@ export function buildGraph({ fptrMode = 'any', genDir = 'js/generated' } = {}) {
 
   const genAbs = path.join(repoRoot, genDir);
   for (const f of fs.readdirSync(genAbs).filter((x) => x.endsWith('.js')).sort()) {
+    // __reset.js is not transpiled C — it is tools/c2js/resetify.mjs's barrel
+    // over the directory, hand-written by a generator. It is not part of the
+    // program's call graph and must not be rewritten into one: see
+    // stripResetBlock below for the whole story.
+    if (f === RESET_BARREL) continue;
     const abs = path.join(genAbs, f);
-    mods.set(modKeyOf(abs), scanModule(fs.readFileSync(abs, 'utf8'), { file: modKeyOf(abs) }));
+    mods.set(modKeyOf(abs), scanModule(stripResetBlock(fs.readFileSync(abs, 'utf8')),
+      { file: modKeyOf(abs) }));
   }
   for (const rel of RUNTIME_MODULES) {
     const abs = path.join(repoRoot, rel);

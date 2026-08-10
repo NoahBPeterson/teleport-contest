@@ -3208,3 +3208,37 @@ export function* ustatusline() {
         nh_snprintf(__sl723, 3483, eos(cptr.decay(info)), BigInt.asUintN(64, 256n - ln), __sl724, reg_damg(reg) ? __sl725 : __sl726);
     (yield* pline(__sl727, svp, piousness(0, align_str(cptr.ld1so(u, 2172))), (cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? cptr.ld1so2(mons, cptr.ldI32o(u, 1808), 96, 29) : cptr.ldI32o(u, 48), (cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? cptr.ldI32o(u, 1812) : cptr.ldI32o(u, 2196), (cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? cptr.ldI32o(u, 1816) : cptr.ldI32o(u, 2200), cptr.ld1so(u, 2190), cptr.decay(info)));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 23 bindings: 0 rebound+refilled, 0 rebound, 23 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(You_), S(are), S(were), S(have), S(had), S(can), S(could), S(have_been), S(have_never), S(never), S(achieve_msg), S(__static_enlght_line_contra), S(__static_basics_enlightenment_Power), S(__static_weapon_insight_also_), S(__static_weapon_insight_also_wik_), S(__static_attributes_enlightenment_if_surroundings_permitted), S(__static_attributes_enlightenment_hofe_titles), S(__static_attributes_enlightenment_mc_types), S(vanqorders), S(__static_vanqsort_cmp_punctclasses), S(__static_doborn_fmt), S(__static_size_str_outbuf), S(__static_piousness_buf)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("insight.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+}
+// --- END c2js reset block ---

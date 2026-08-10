@@ -2249,3 +2249,27 @@ export function* dohistory() {
     (yield* Y.icall((cptr.ldPtro(windowprocs, 160))(__sl294, 1)));
     return NHM.ECMD_OK;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 0 rebound+refilled, 1 rebound, 12 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(invisexplain), S(altinvisexplain), S(__static_append_str_sep), S(__static_waterbody_name_pooltype), S(__static_ice_descr_icetyp), S(__static_do_screen_description_mon_interior), S(__static_do_screen_description_unreconnoitered), S(__static_do_screen_description_look_buf), S(what_is_a_location), S(suptext1), S(suptext2), S(__static_dowhatdoes_once), S(help_menu_items)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("pager.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    __static_dowhatdoes_once = P(r[11]);
+    P(r[12]);
+}
+// --- END c2js reset block ---

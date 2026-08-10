@@ -808,3 +808,15 @@ export function restpriest(mtmp, ghostly) {
             assign_level(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 16)), 10), cptr.add(u, 24));
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_priest_talk_cranky_msg)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("priest.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

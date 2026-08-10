@@ -3237,3 +3237,24 @@ function* setup_algnmenu(win, filtering, role, race, gend) {
         (yield* add_menu(win, nul_glyphinfo.v, any, schar((filtering ? this_ch : highc(this_ch))), schar((filtering ? highc(this_ch) : 0)), NHM.ATR_NONE, clr, cptr.ldPtro2(aligns, i, 32, 8), (!filtering && !algn_ok ? 1 : 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 10 bindings: 0 rebound+refilled, 0 rebound, 10 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(roles), S(races), S(genders), S(aligns), S(randomstr), S(__static_root_plselection_prompt_err_ret), S(__static_role_selection_prolog_choosing), S(__static_role_selection_prolog_not_yet), S(__static_role_selection_prolog_rand_choice), S(__static_role_menu_extra_RS_menu_let)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("role.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+}
+// --- END c2js reset block ---

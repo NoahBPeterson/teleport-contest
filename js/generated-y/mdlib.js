@@ -453,3 +453,27 @@ export function release_runtime_info() {
     done_runtime_opt_init_once = 0;
     free_nomakedefs();
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 1 rebound+refilled, 3 rebound, 9 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(artifact_names), S(date_via_env), S(idxopttext), S(done_runtime_opt_init_once), S(opttext), S(optbuf), S(version), S(opt_indent), S(window_opts), S(soundlib_opts), S(save_bones_compat_buf), S(build_opts), S(__static_build_options_lua_info)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mdlib.js: __resetState before __captureState");
+    P(r[0]);
+    date_via_env = P(r[1]);
+    idxopttext = P(r[2]);
+    done_runtime_opt_init_once = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    version = P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+}
+// --- END c2js reset block ---

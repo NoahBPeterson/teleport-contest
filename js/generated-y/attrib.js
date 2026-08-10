@@ -1429,3 +1429,39 @@ export function* uchangealign(newalign, reason) {
         (yield* retouch_equipment(0));
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 25 bindings: 0 rebound+refilled, 0 rebound, 25 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(plusattr), S(minusattr), S(attrname), S(arc_abil), S(bar_abil), S(cav_abil), S(hea_abil), S(kni_abil), S(mon_abil), S(pri_abil), S(ran_abil), S(rog_abil), S(sam_abil), S(tou_abil), S(val_abil), S(wiz_abil), S(dwa_abil), S(elf_abil), S(gno_abil), S(orc_abil), S(hum_abil), S(poiseff), S(exertext), S(__static_from_what_buf), S(__static_from_what_because_of)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("attrib.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+}
+// --- END c2js reset block ---

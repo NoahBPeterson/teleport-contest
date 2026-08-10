@@ -1830,3 +1830,16 @@ export function lua_upvaluejoin(L, fidx1, n1, fidx2, n2) {
     cptr.stPtr(up1, cptr.ldPtr(up2));
     ((((cptr.ld1uo((f1.v), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtr(up1)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((f1.v)))), ((((cptr.ldPtr(up1)))))) : (void 0));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 1 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(lua_ident), S(__static_getupvalref_nullup)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("lapi.js: __resetState before __captureState");
+    P(r[0]);
+    __static_getupvalref_nullup = P(r[1]);
+}
+// --- END c2js reset block ---

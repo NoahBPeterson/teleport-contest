@@ -5801,3 +5801,75 @@ export function* load_special(name) {
     cptr.stPtro(gc, 568, null);
     return result;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 61 bindings: 2 rebound+refilled, 6 rebound, 53 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(splev_init_present), S(icedpools), S(SpLev_Map), S(container_idx), S(container_obj), S(invent_carrying_monster), S(__static_rnddoor_state), S(is_ok_location_func), S(__static_get_unpacked_coord_c), S(__static_create_object_prize_warning), S(__static_get_table_align_gtaligns), S(__static_get_table_align_aligns2i), S(__static_get_table_buc_bucs), S(__static_get_table_buc_bucs2i), S(__static_find_objtype_class_prefixes), S(__static_lspo_object_zeroobject), S(__static_lspo_level_init_initstyles), S(__static_lspo_level_init_initstyles2i), S(__static_lspo_engraving_engrtypes), S(__static_lspo_engraving_engrtypes2i), S(room_types), S(__static_lspo_room_left_or_right), S(__static_lspo_room_l_or_r2i), S(__static_lspo_room_top_or_bot), S(__static_lspo_room_t_or_b2i), S(__static_l_create_stairway_stairdirs), S(__static_l_create_stairway_stairdirs2i), S(__static_lspo_altar_shrines), S(__static_lspo_altar_shrines2i), S(trap_types), S(__static_lspo_corridor_walldirs), S(__static_lspo_corridor_walldirs2i), S(__static_random_wdir_wdirs), S(floodfillchk_match_under_typ), S(__static_lspo_door_doorstates), S(__static_lspo_door_doorstates2i), S(__static_lspo_door_walldirs), S(__static_lspo_door_walldirs2i), S(__static_lspo_feature_features), S(__static_lspo_feature_features2i), S(__static_generate_way_out_method_escapeitems), S(__static_lspo_teleport_region_teledirs), S(__static_lspo_teleport_region_teledirs2i), S(__static_lspo_levregion_regiontypes), S(__static_lspo_levregion_regiontypes2i), S(__static_lspo_exclusion_ez_types), S(__static_lspo_exclusion_ez_types2i), S(__static_lspo_region_lits), S(__static_lspo_drawbridge_mwdirs), S(__static_lspo_drawbridge_mwdirs2i), S(__static_lspo_drawbridge_dbopens), S(__static_lspo_drawbridge_dbopens2i), S(__static_lspo_mazewalk_mwdirs), S(__static_lspo_mazewalk_mwdirs2i), S(__static_lspo_wall_property_wprops), S(__static_lspo_wall_property_wprop2i), S(__static_lspo_map_left_or_right), S(__static_lspo_map_l_or_r2i), S(__static_lspo_map_top_or_bot), S(__static_lspo_map_t_or_b2i), S(nhl_functions)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("sp_lev.js: __resetState before __captureState");
+    splev_init_present = P(r[0]);
+    icedpools = P(r[1]);
+    P(r[2]);
+    container_idx = P(r[3]);
+    P(r[4]);
+    invent_carrying_monster = P(r[5]);
+    P(r[6]);
+    is_ok_location_func = P(r[7]);
+    __static_get_unpacked_coord_c = P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    __static_lspo_object_zeroobject = P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+    P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    P(r[32]);
+    floodfillchk_match_under_typ = P(r[33]);
+    P(r[34]);
+    P(r[35]);
+    P(r[36]);
+    P(r[37]);
+    P(r[38]);
+    P(r[39]);
+    P(r[40]);
+    P(r[41]);
+    P(r[42]);
+    P(r[43]);
+    P(r[44]);
+    P(r[45]);
+    P(r[46]);
+    P(r[47]);
+    P(r[48]);
+    P(r[49]);
+    P(r[50]);
+    P(r[51]);
+    P(r[52]);
+    P(r[53]);
+    P(r[54]);
+    P(r[55]);
+    P(r[56]);
+    P(r[57]);
+    P(r[58]);
+    P(r[59]);
+    P(r[60]);
+}
+// --- END c2js reset block ---

@@ -539,6 +539,18 @@ async function maybeYield() {
  * so it is idempotent and `--strip` is an exact inverse. With the flag off the
  * pass does not run, so the scored build is byte-for-byte what it was.
  *
+ * BOTH BUILDS. The yieldable build in js/generated-y/ needs the same treatment
+ * — js/boot/main-thread-engine.mjs is the interactive rung a `node --permission`
+ * sandbox lands on, and it plays a whole corpus in one process — so the pass is
+ * run once per directory. It cannot be inherited through yieldify: that rewrite
+ * would turn `__captureState`'s calls to its own `S` parameter into
+ * `(yield* Y.icall(S(x)))` and leave the barrel calling generators. yieldify
+ * therefore strips the block on the way through (tools/c2js/callgraph.mjs), so
+ * js/generated-y/ is byte-identical whichever order the two flags are set in,
+ * and this pass appends to it afterwards. That also fixes the order below:
+ * maybeYield rewrites the whole of js/generated-y/ from scratch, so it must run
+ * BEFORE the reset pass writes into it.
+ *
  * See tools/c2js/resetify.mjs, tools/c2js/reset-census.mjs and
  * js/boot/reset-realm.mjs.
  */
@@ -546,7 +558,10 @@ async function maybeReset() {
   if (!process.env.C2JS_RESET) return;
   console.log('\nC2JS_RESET=1 — emitting per-module __resetState() + the reset barrel');
   const { execFileSync } = await import('node:child_process');
-  execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'resetify.mjs')], { stdio: 'inherit' });
+  for (const dir of ['js/generated', 'js/generated-y']) {
+    execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'resetify.mjs'), '--dir', dir],
+      { stdio: 'inherit' });
+  }
 }
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 

@@ -5838,3 +5838,45 @@ function* dosh_core() {
 function dummyfunction() {
     return NHM.ECMD_CANCEL;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 31 bindings: 1 rebound+refilled, 7 rebound, 23 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(timed_occ_fn), S(readchar_queue), S(unavailcmd), S(cmdnotavail), S(__static_doc_extcmd_flagstr_Abuf), S(__static_doextlist_headings), S(__static_makemap_prepost_Unachieve), S(levltyp), S(extcmdlist), S(move_funcs), S(misc_keys), S(extcmdlist_length), S(__static_extcmds_match_retmatchlist), S(__static_key2extcmddesc_key2cmdbuf), S(__static_cmd_from_ecname_cmdnamebuf), S(spkeys_binds), S(__static_lock_mouse_buttons_mousebtn), S(__static_reset_commands_sdir), S(__static_reset_commands_sdir_swap_yz), S(__static_reset_commands_ndir), S(__static_reset_commands_ndir_phone_layout), S(__static_reset_commands_ylist), S(__static_reset_commands_back_dir_cmd), S(__static_reset_commands_back_dir_key), S(__static_reset_commands_backed_dir_cmd), S(__static_update_rest_on_space_restonspace), S(__static_update_rest_on_space_unrestonspace), S(__static_randomkey_i), S(__static_randomkey_last_c), S(__static_help_dir_wiz_only_list), S(__static_directionname_dirnames)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("cmd.js: __resetState before __captureState");
+    timed_occ_fn = P(r[0]);
+    readchar_queue = P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    extcmdlist_length = P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    __static_reset_commands_backed_dir_cmd = P(r[24]);
+    __static_update_rest_on_space_restonspace = P(r[25]);
+    __static_update_rest_on_space_unrestonspace = P(r[26]);
+    __static_randomkey_i = P(r[27]);
+    __static_randomkey_last_c = P(r[28]);
+    P(r[29]);
+    P(r[30]);
+}
+// --- END c2js reset block ---

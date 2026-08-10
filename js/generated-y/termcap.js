@@ -1205,3 +1205,70 @@ export function term_start_extracolor(customcolor, color256idx) {
 export function term_end_extracolor() {
     xputs(__sl59);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 56 bindings: 1 rebound+refilled, 38 rebound, 17 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(tc_lcl_data), S(nh_VI), S(nh_VE), S(nh_Ic), S(HO), S(CL), S(CE), S(UP), S(XD), S(BC), S(SO), S(SE), S(TI), S(TE), S(VS), S(VE), S(ME), S(MR), S(MB), S(MH), S(MD), S(ZH), S(ZR), S(dynamic_HIHE), S(SG), S(PC), S(tbuf), S(hilites), S(KS), S(KE), S(nullstr), S(tty_standout_on), S(tty_standout_off), S(__static_tty_decgraphics_termcap_fixup_ctrlN), S(__static_tty_decgraphics_termcap_fixup_ctrlO), S(__static_tty_decgraphics_termcap_fixup_appMode), S(__static_tty_decgraphics_termcap_fixup_numMode), S(__static_nomux_markers_enabled_cached), S(nomux_seq), S(nomux_anim_id), S(nomux_buf), S(nomux_fg_cur), S(nomux_attr_cur), S(nomux_decgfx_cur), S(nomux_out), S(nomux_raw_active), S(nomux_raw_row), S(nomux_raw_col), S(tmspc10), S(__static_tty_delay_output_no_delay), S(ti_map), S(nilstring), S(nulstr), S(__static_term_curs_set_vis), S(__static_emit24bit_tcolorbuf), S(__static_emit256_tcolorbuf)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("termcap.js: __resetState before __captureState");
+    tc_lcl_data = P(r[0]);
+    nh_VI = P(r[1]);
+    nh_VE = P(r[2]);
+    nh_Ic = P(r[3]);
+    HO = P(r[4]);
+    CL = P(r[5]);
+    CE = P(r[6]);
+    UP = P(r[7]);
+    XD = P(r[8]);
+    BC = P(r[9]);
+    SO = P(r[10]);
+    SE = P(r[11]);
+    TI = P(r[12]);
+    TE = P(r[13]);
+    VS = P(r[14]);
+    VE = P(r[15]);
+    ME = P(r[16]);
+    MR = P(r[17]);
+    MB = P(r[18]);
+    MH = P(r[19]);
+    MD = P(r[20]);
+    ZH = P(r[21]);
+    ZR = P(r[22]);
+    dynamic_HIHE = P(r[23]);
+    SG = P(r[24]);
+    PC = P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    KS = P(r[28]);
+    KE = P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    P(r[32]);
+    P(r[33]);
+    P(r[34]);
+    P(r[35]);
+    P(r[36]);
+    __static_nomux_markers_enabled_cached = P(r[37]);
+    nomux_seq = P(r[38]);
+    nomux_anim_id = P(r[39]);
+    P(r[40]);
+    nomux_fg_cur = P(r[41]);
+    nomux_attr_cur = P(r[42]);
+    nomux_decgfx_cur = P(r[43]);
+    P(r[44]);
+    nomux_raw_active = P(r[45]);
+    nomux_raw_row = P(r[46]);
+    nomux_raw_col = P(r[47]);
+    P(r[48]);
+    __static_tty_delay_output_no_delay = P(r[49]);
+    P(r[50]);
+    P(r[51]);
+    P(r[52]);
+    __static_term_curs_set_vis = P(r[53]);
+    P(r[54]);
+    P(r[55]);
+}
+// --- END c2js reset block ---

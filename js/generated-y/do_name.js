@@ -1654,3 +1654,25 @@ export function* lookup_novel(lookname, idx) {
         return cptr.ldPtro(sir_Terry_novels, cptr.ldI32(idx), 8);
     return null;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 11 bindings: 0 rebound+refilled, 1 rebound, 10 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_nextmbuf_bufs), S(__static_nextmbuf_bufidx), S(ghostnames), S(bogon_codes), S(__static_rndmonnam_buf), S(hcolors), S(hliquids), S(coynames), S(__static_rndorcname_v), S(__static_rndorcname_snd), S(sir_Terry_novels)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("do_name.js: __resetState before __captureState");
+    P(r[0]);
+    __static_nextmbuf_bufidx = P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+}
+// --- END c2js reset block ---

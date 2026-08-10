@@ -2187,3 +2187,56 @@ export function* u_init_skills_discoveries() {
         cptr.stI32o(u, 2208, cptr.stI32o(u, 2212, cptr.stI32o(u, 2216, cptr.stI16o2(u, cptr.ldI32o(u, 48), 2, 2280, 5))));
     find_ac();
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 42 bindings: 0 rebound+refilled, 0 rebound, 42 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(Archeologist), S(Barbarian_0), S(Barbarian_1), S(Cave_man), S(Healer), S(Knight), S(Monk), S(Priest), S(Ranger), S(Rogue), S(Samurai), S(Tourist), S(Valkyrie), S(Wizard), S(Healing_book), S(Protection_book), S(Confuse_monster_book), S(Tinopener), S(Magicmarker), S(Lamp), S(Blindfold), S(Xtra_food), S(Leash), S(Towel), S(Wishing), S(Money), S(inv_subs), S(Skill_A), S(Skill_B), S(Skill_C), S(Skill_H), S(Skill_K), S(Skill_Mon), S(Skill_P), S(Skill_R), S(Skill_Ran), S(Skill_S), S(Skill_T), S(Skill_V), S(Skill_W), S(__static_u_init_role_M_spell), S(__static_u_init_race_trotyp)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("u_init.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    P(r[20]);
+    P(r[21]);
+    P(r[22]);
+    P(r[23]);
+    P(r[24]);
+    P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    P(r[29]);
+    P(r[30]);
+    P(r[31]);
+    P(r[32]);
+    P(r[33]);
+    P(r[34]);
+    P(r[35]);
+    P(r[36]);
+    P(r[37]);
+    P(r[38]);
+    P(r[39]);
+    P(r[40]);
+    P(r[41]);
+}
+// --- END c2js reset block ---

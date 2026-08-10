@@ -125,12 +125,12 @@ export function analyzeModule(src, opts = {}) {
         if (t.v !== 'let' && t.v !== 'const' && t.v !== 'var') continue;
         // `export let x` — the `export` is the token before.
         const exported = tokens[k - 1]?.v === 'export';
-        // `for (let i = ...)` cannot appear at depth 0 for our purposes, and a
-        // `const` in a destructuring position does not occur in c2js output.
+        // `for (let i = ...)` cannot appear at depth 0 for our purposes.
         const declKw = t.v;
 
         // Walk the declarator list: NAME = <init> [, NAME = <init>]* ;
         let m = k + 1;
+        let bound = false;
         for (;;) {
             const nameTok = tokens[m];
             if (!nameTok || nameTok.t !== 'id') break;
@@ -169,8 +169,33 @@ export function analyzeModule(src, opts = {}) {
             if (cls.kind === KIND.OTHER) {
                 warnings.push({ file, kind: 'unclassified', detail: `${name} = ${trunc(decls[decls.length - 1].init)}` });
             }
+            bound = true;
             if (tokens[p]?.v === ',') { m = p + 1; continue; }
             break;
+        }
+        // A DESTRUCTURING declaration — `const { a, b } = f()` or
+        // `const [x] = ...` — binds names at module scope that this walk cannot
+        // read, and the c2js emitter produces none, which is why nothing has
+        // ever met one. Two things then have to be true, and neither was:
+        //
+        //   1. It must be LOUD. Left as it is, such a declaration's bindings
+        //      are simply absent from the reset — the one failure mode this
+        //      whole design refuses, since `S()` throws on a shape it cannot
+        //      snapshot precisely so that nothing is ever silently skipped.
+        //      Reported as unclassified, so tools/c2js/resetify.mjs refuses to
+        //      emit a block for the module rather than emitting a short one.
+        //   2. It must not desynchronise the SCAN. `k = m` used to step past
+        //      the opening `{` without the depth counter seeing it, so its `}`
+        //      drove depth to -1 and every function body in the rest of the
+        //      file then looked like module scope. Found on the unmerged
+        //      lua-port branch, where one `export const { nhRandom, ... } =
+        //      makeNhlib(rn2)` turned 25 function-locals in js/lua-js/bridge.mjs
+        //      into phantom top-level state.
+        if (!bound) {
+            warnings.push({ file, kind: 'unclassified',
+                detail: `${declKw} <destructuring> at line ${lineOf(src, t.i)} — `
+                    + 'the bindings it creates cannot be enumerated by this scan' });
+            continue;   // leave k on the keyword: the next iteration counts `{`
         }
         k = m;
     }
@@ -237,6 +262,37 @@ function lineOf(src, off) {
 }
 function trunc(s, n = 90) { return s && s.length > n ? s.slice(0, n - 3) + '...' : String(s); }
 
+// ------------------------------------------------- the pass's own output ----
+//
+// tools/c2js/resetify.mjs appends a delimited block to the tail of every
+// stateful module. The delimiters live HERE, in the census, rather than beside
+// the code that writes them, because three passes have to agree on them and
+// only one of them writes:
+//
+//   - resetify strips before appending, which is what makes it idempotent and
+//     `--strip` an exact inverse;
+//   - the census strips before counting, or a reset build reports its own
+//     `__c2js_rs` bindings as state;
+//   - tools/c2js/callgraph.mjs strips before scanning, or yieldify colours
+//     `__captureState`'s calls to its `S` parameter and emits reset functions
+//     that are generators.
+//
+// This module is the one all three already import.
+
+/** resetify's barrel; machine-written, and not itself a stateful module. */
+export const RESET_BARREL = '__reset.js';
+export const RESET_BEGIN = '// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---';
+export const RESET_END = '// --- END c2js reset block ---';
+
+/** Drop resetify's appended block, if this build has one. */
+export function stripResetBlock(src) {
+    const i = src.indexOf('\n' + RESET_BEGIN);
+    if (i < 0) return src;
+    const j = src.indexOf(RESET_END, i);
+    if (j < 0) throw new Error('reset block has a BEGIN with no END — refusing to guess');
+    return src.slice(0, i) + src.slice(j + RESET_END.length).replace(/^\n/, '');
+}
+
 // --------------------------------------------------------------- the sweep --
 
 /** Analyze every generated module. @returns {{modules: Map, warnings: Array}} */
@@ -244,8 +300,17 @@ export function censusGenerated(dir = GEN_DIR) {
     const modules = new Map();
     const warnings = [];
     for (const f of fs.readdirSync(dir).sort()) {
-        if (!f.endsWith('.js')) continue;
-        const src = fs.readFileSync(path.join(dir, f), 'utf8');
+        // .mjs too: the census is also how a directory that is NOT js/generated
+        // gets scouted before it joins the reset (the unmerged lua-port branch's
+        // js/lua-js is .mjs). The barrel is this pass's own output, not state.
+        if (!/\.m?js$/.test(f) || f === RESET_BARREL) continue;
+        // Stripped, so a reset build censuses the same as the build it came
+        // from. Without this the census counts the block's own
+        // `let __c2js_rs = null` as state — 146 phantom null pointers, one per
+        // stateful module, in the report that is supposed to BE the ground
+        // truth. tools/c2js/resetify.mjs always analysed the stripped source,
+        // so nothing was ever emitted wrong; only the report was.
+        const src = stripResetBlock(fs.readFileSync(path.join(dir, f), 'utf8'));
         const r = analyzeModule(src, { file: f });
         modules.set(f, r.decls);
         warnings.push(...r.warnings);
@@ -318,24 +383,32 @@ function summarize(modules) {
 }
 
 async function main(argv) {
-    const opts = { byKind: false, module: null, unknown: false, json: null, verifyLits: null };
+    const opts = { byKind: false, module: null, unknown: false, json: null, verifyLits: null, dir: null };
     for (let i = 0; i < argv.length; i++) {
         const a = argv[i];
         if (a === '--by-kind') opts.byKind = true;
         else if (a === '--unknown') opts.unknown = true;
         else if (a === '--module') opts.module = argv[++i];
         else if (a === '--json') opts.json = argv[++i];
+        else if (a === '--dir') opts.dir = argv[++i];
+        else if (a.startsWith('--dir=')) opts.dir = a.slice(6);
         else if (a === '--verify-lits') opts.verifyLits = argv[++i] || 'seed8000';
         else throw new Error('unknown argument: ' + a);
     }
 
     if (opts.verifyLits) return verifyLits(opts.verifyLits);
 
-    const { modules, warnings } = censusGenerated();
+    // `--dir` takes any directory of modules, absolute or repo-relative. It is
+    // how a directory that does not exist on this branch yet gets scouted:
+    // point it at a checkout of one and read the UNCLASSIFIED list, which is
+    // exactly the work that directory would add to the reset.
+    const dirRel = opts.dir || 'js/generated';
+    const dirAbs = path.isAbsolute(dirRel) ? dirRel : path.join(repoRoot, dirRel);
+    const { modules, warnings } = censusGenerated(dirAbs);
     const { byKind, total } = summarize(modules);
 
     const W = process.stdout.write.bind(process.stdout);
-    W(`js/generated: ${modules.size} modules, ${total} top-level declarations\n\n`);
+    W(`${dirRel}: ${modules.size} modules, ${total} top-level declarations\n\n`);
     W('kind        strategy   count    let  const  modules\n');
     W('----------  --------  ------  -----  -----  -------\n');
     const order = [...byKind.entries()].sort((a, b) => b[1].count - a[1].count);

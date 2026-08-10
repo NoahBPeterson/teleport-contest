@@ -47,20 +47,30 @@
 //
 // USAGE
 //   node tools/c2js/resetify.mjs                  # -> js/generated/**
+//   node tools/c2js/resetify.mjs --dir js/generated-y   # the yieldable build
 //   node tools/c2js/resetify.mjs --check          # exit 1 if it would change
 //   node tools/c2js/resetify.mjs --strip          # remove every reset block
 //   node tools/c2js/resetify.mjs --stats
+//
+// `--dir` is why this pass is a post-pass twice over. js/generated-y/ is
+// tools/c2js/yieldify.mjs's whole-program rewrite of js/generated/, and the
+// interactive Node rung (js/boot/main-thread-engine.mjs) needs the same
+// one-graph-many-games property the scored path gets. It cannot inherit the
+// blocks through yieldify: the rewrite would colour `__captureState`'s calls to
+// its `S` parameter as indirect calls and emit `(yield* Y.icall(S(x)))`, making
+// the reset functions generators that the barrel cannot call. So yieldify
+// strips the block on the way through (tools/c2js/callgraph.mjs) and this pass
+// runs over the yieldable directory in its own right, where the top-level
+// declarations it analyses are — by construction, since yieldify emits no
+// top-level coloured call — the same 1,395 bindings as the sync build.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { analyzeModule, KIND, STRATEGY, repoRoot } from './reset-census.mjs';
-
-const GEN_DIR = path.join(repoRoot, 'js/generated');
-const BARREL = '__reset.js';
-
-const BEGIN = '// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---';
-const END = '// --- END c2js reset block ---';
+import {
+    analyzeModule, KIND, STRATEGY, repoRoot,
+    RESET_BARREL as BARREL, RESET_BEGIN as BEGIN, RESET_END as END, stripResetBlock,
+} from './reset-census.mjs';
 
 /**
  * Does this declaration need anything doing to it, and what?
@@ -80,17 +90,17 @@ export function planFor(d) {
     return { rebind: mutableBinding, restore: mutableContents };
 }
 
-/** Strip a previously appended reset block (idempotence). */
-export function stripBlock(src) {
-    const i = src.indexOf('\n' + BEGIN);
-    if (i < 0) return src;
-    const j = src.indexOf(END, i);
-    if (j < 0) throw new Error('reset block has a BEGIN with no END — refusing to guess');
-    return src.slice(0, i) + src.slice(j + END.length).replace(/^\n/, '');
-}
+/** Strip a previously appended reset block (idempotence). See reset-census.mjs. */
+export const stripBlock = stripResetBlock;
 
-/** The block to append for one module, or null when it owns no state. */
-export function blockFor(src, file) {
+/**
+ * The block to append for one module, or null when it owns no state.
+ *
+ * `genDirRel` only names the barrel in a comment, but it has to be right: the
+ * two builds have two barrels, and a comment pointing at the other directory's
+ * would be the sort of small lie that costs an hour later.
+ */
+export function blockFor(src, file, genDirRel = 'js/generated') {
     const { decls, warnings } = analyzeModule(src, { file });
     const bad = warnings.filter((w) => w.kind === 'unclassified');
     if (bad.length) {
@@ -118,7 +128,7 @@ export function blockFor(src, file) {
             + items.filter((i) => i.rebind && i.restore).length + ' rebound+refilled, '
             + items.filter((i) => i.rebind && !i.restore).length + ' rebound, '
             + items.filter((i) => !i.rebind && i.restore).length + ' refilled.',
-        '// S/P are supplied by js/generated/__reset.js so this module needs no new import.',
+        `// S/P are supplied by ${genDirRel}/__reset.js so this module needs no new import.`,
         'let __c2js_rs = null;',
         `export function __captureState(S) { __c2js_rs = [${cap}]; }`,
         'export function __resetState(P) {',
@@ -331,8 +341,20 @@ export function statefulModules() { return MODULES.map(([n]) => n); }
 
 // ------------------------------------------------------------------- main ---
 
+function argVal(argv, flag) {
+    const i = argv.findIndex((a) => a === flag || a.startsWith(flag + '='));
+    if (i < 0) return null;
+    return argv[i].includes('=') ? argv[i].slice(flag.length + 1) : (argv[i + 1] ?? null);
+}
+
 function main(argv) {
     const opts = { check: argv.includes('--check'), strip: argv.includes('--strip'), stats: argv.includes('--stats') };
+    const genDirRel = (argVal(argv, '--dir') || 'js/generated').replace(/\/+$/, '');
+    const GEN_DIR = path.join(repoRoot, genDirRel);
+    if (!fs.existsSync(GEN_DIR)) {
+        process.stdout.write(`resetify: ${genDirRel} does not exist — nothing to do\n`);
+        return 0;
+    }
     const files = fs.readdirSync(GEN_DIR).filter((f) => f.endsWith('.js') && f !== BARREL).sort();
     const { seen: live, order: evalOrder } = reachableFrom(GEN_DIR, ENTRY);
     const dead = files.filter((f) => !live.has(f));
@@ -350,7 +372,7 @@ function main(argv) {
         const base = stripBlock(orig);
         let next = base;
         if (!opts.strip) {
-            const b = blockFor(base, f);
+            const b = blockFor(base, f, genDirRel);
             if (b) { next = base + b.text; stateful.push(f); bindings += b.items.length; }
         }
         if (next !== orig) changes.push({ file: f, path: p, text: next });
@@ -384,13 +406,13 @@ function main(argv) {
 
     for (const c of changes) fs.writeFileSync(c.path, c.text);
     process.stdout.write(opts.strip
-        ? `resetify --strip: ${changes.length} file(s) reverted\n`
-        : `resetify: ${stateful.length}/${live.size} live modules carry state, `
+        ? `resetify --strip ${genDirRel}: ${changes.length} file(s) reverted\n`
+        : `resetify ${genDirRel}: ${stateful.length}/${live.size} live modules carry state, `
           + `${bindings} bindings, ${changes.length} file(s) written`
           + (dead.length ? ` (${dead.length} module(s) outside the graph skipped: ${dead.join(', ')})\n` : '\n'));
     if (opts.stats) {
         for (const f of stateful) {
-            const b = blockFor(stripBlock(fs.readFileSync(path.join(GEN_DIR, f), 'utf8')), f);
+            const b = blockFor(stripBlock(fs.readFileSync(path.join(GEN_DIR, f), 'utf8')), f, genDirRel);
             process.stdout.write(`  ${f.padEnd(18)} ${String(b.items.length).padStart(4)}\n`);
         }
     }

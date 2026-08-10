@@ -6137,3 +6137,33 @@ export function* trap_sanity_check() {
         ttmp = cptr.ldPtr(ttmp);
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 19 bindings: 1 rebound+refilled, 2 rebound, 16 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(a_your), S(A_Your), S(tower_of_flame), S(A_gush_of_water_hits), S(blindgas), S(__static_erode_obj_action), S(__static_erode_obj_msg), S(__static_erode_obj_bythe), S(__static_grease_protect_txt), S(__static_maketrap_zero_vl), S(__static_animate_statue_historic_statue_is_gone), S(__static_trapeffect_landmine_recursive_mine), S(__static_trapnote_tnnames), S(__static_trapnote_tnbuf), S(__static_rescued_from_terrain_find_yourself), S(lava_killer), S(__static_sink_into_lava_sink_deeper), S(__static_trapname_halu_trapnames), S(__static_trapname_roletrap)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("trap.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    A_gush_of_water_hits = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    __static_maketrap_zero_vl = P(r[9]);
+    P(r[10]);
+    __static_trapeffect_landmine_recursive_mine = P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    P(r[15]);
+    P(r[16]);
+    P(r[17]);
+    P(r[18]);
+}
+// --- END c2js reset block ---

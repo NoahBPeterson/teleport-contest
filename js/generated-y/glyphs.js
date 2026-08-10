@@ -1028,3 +1028,29 @@ export function* reset_customcolors() {
     clear_all_glyphmap_colors();
     (yield* apply_customizations(cptr.ldI32o(gc, 428), NHC.do_custom_colors));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 15 bindings: 3 rebound+refilled, 6 rebound, 6 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(zero_find), S(glyphid_cache), S(glyphid_cache_lsize), S(glyphid_cache_size), S(glyphcache_find), S(to_custom_symbol_find), S(nonzero_black), S(__static_to_custom_symset_entry_callback_glyphnag), S(__static_to_custom_symset_entry_callback_colornag), S(__static_shuffle_customizations_offsets), S(__static_parse_id_altar_text), S(__static_parse_id_zap_texts), S(__static_parse_id_swallow_texts), S(__static_parse_id_expl_type_texts), S(__static_parse_id_expl_texts)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("glyphs.js: __resetState before __captureState");
+    zero_find = P(r[0]);
+    glyphid_cache = P(r[1]);
+    glyphid_cache_lsize = P(r[2]);
+    glyphid_cache_size = P(r[3]);
+    glyphcache_find = P(r[4]);
+    to_custom_symbol_find = P(r[5]);
+    nonzero_black = P(r[6]);
+    __static_to_custom_symset_entry_callback_glyphnag = P(r[7]);
+    __static_to_custom_symset_entry_callback_colornag = P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+}
+// --- END c2js reset block ---

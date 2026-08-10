@@ -3545,3 +3545,25 @@ export function* Finish_digestion() {
     }
     return 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 11 bindings: 1 rebound+refilled, 4 rebound, 6 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(hu_stat), S(zero_victual), S(getobj_else), S(tintxts), S(__static_eat_brains_brainlessness), S(__static_maybe_cannibal_ate_brains), S(__static_eatcorpse_palatable_msgs), S(__static_start_eating_msgbuf), S(foodwords), S(__static_newuhs_save_hs), S(__static_newuhs_saved_hs)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("eat.js: __resetState before __captureState");
+    P(r[0]);
+    zero_victual = P(r[1]);
+    getobj_else = P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    __static_maybe_cannibal_ate_brains = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    __static_newuhs_save_hs = P(r[9]);
+    __static_newuhs_saved_hs = P(r[10]);
+}
+// --- END c2js reset block ---

@@ -874,3 +874,15 @@ export function* relobj(mtmp, show, is_pet) {
     if (show && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), omy, 8), omx) & NHM.IN_SIGHT) != 0) ? 1 : 0)
         (yield* newsym(i16(omx), i16(omy)));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_steal_how)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("steal.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

@@ -201,3 +201,20 @@ export function* error(s, ...__va) {
 /** C ref: unixtty.c:514 */
 export function tty_utf8graphics_fixup() {
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 6 bindings: 2 rebound+refilled, 4 rebound, 0 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(erase_char), S(intr_char), S(kill_char), S(settty_needed), S(inittyb), S(curttyb)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("unixtty.js: __resetState before __captureState");
+    erase_char = P(r[0]);
+    intr_char = P(r[1]);
+    kill_char = P(r[2]);
+    settty_needed = P(r[3]);
+    inittyb = P(r[4]);
+    curttyb = P(r[5]);
+}
+// --- END c2js reset block ---

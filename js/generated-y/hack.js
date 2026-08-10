@@ -3495,3 +3495,25 @@ export function* rounddiv(x, y) {
         r++;
     return Math.imul(divsgn, r);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 11 bindings: 1 rebound+refilled, 5 rebound, 5 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_dosinkfall_fell_on_sink), S(__static_domove_fight_empty_unknown_obstacle), S(__static_spoteffects_inspoteffects), S(__static_spoteffects_spotloc), S(__static_spoteffects_spotterrain), S(__static_spoteffects_spottrap), S(__static_spoteffects_spottraptyp), S(__static_spoteffects_icewarnings), S(__static_in_rooms_buf), S(__static_maybe_wail_powers), S(weightlist)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("hack.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    __static_spoteffects_inspoteffects = P(r[2]);
+    __static_spoteffects_spotloc = P(r[3]);
+    __static_spoteffects_spotterrain = P(r[4]);
+    __static_spoteffects_spottrap = P(r[5]);
+    __static_spoteffects_spottraptyp = P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    weightlist = P(r[10]);
+}
+// --- END c2js reset block ---

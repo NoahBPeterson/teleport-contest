@@ -953,3 +953,15 @@ export function* luaL_checkversion_(L, ver, sz) {
     else if (v != ver)
         (yield* luaL_error(L, __sl69, ver, v));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 1 bindings: 0 rebound+refilled, 0 rebound, 1 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(boxmt)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("lauxlib.js: __resetState before __captureState");
+    P(r[0]);
+}
+// --- END c2js reset block ---

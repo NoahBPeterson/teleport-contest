@@ -1280,3 +1280,27 @@ export function* getpos(ccp, force, goal) {
         if (__pc === -1) break __dispatch;
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 0 rebound+refilled, 4 rebound, 9 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(getpos_hilitefunc), S(getpos_getvalid), S(getpos_hilite_state), S(defaultHiliteState), S(gloc_descr), S(gloc_filtertxt), S(__static_getpos_help_fastmovemode), S(__static_dxdy_to_dist_descr_buf), S(__static_dxdy_to_dist_descr_dirnames), S(__static_coord_desc_screen_fmt), S(__static_getpos_pick_chars_def), S(__static_getpos_mMoOdDxX_def), S(__static_getpos_view_filters)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("getpos.js: __resetState before __captureState");
+    getpos_hilitefunc = P(r[0]);
+    getpos_getvalid = P(r[1]);
+    getpos_hilite_state = P(r[2]);
+    defaultHiliteState = P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+}
+// --- END c2js reset block ---

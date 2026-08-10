@@ -3087,3 +3087,27 @@ function get_artifact(obj) {
 export function permapoisoned(obj) {
     return schar((obj && is_art(obj, NHC.ART_GRIMTOOTH) ? 1 : 0));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 13 bindings: 1 rebound+refilled, 2 rebound, 10 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(artilist), S(artiexist), S(artidisco), S(zero_artiexist), S(touch_blasted), S(mb_verb), S(__static_artifact_hit_you), S(__static_artifact_hit_behead_msg), S(__static_abil_to_spfx_abil2spfx), S(glow_verbs), S(__static_glow_verb_resbuf), S(__static_retouch_equipment_nesting), S(__static_mkot_trap_warn_heat)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("artifact.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    zero_artiexist = P(r[3]);
+    touch_blasted = P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    __static_retouch_equipment_nesting = P(r[11]);
+    P(r[12]);
+}
+// --- END c2js reset block ---

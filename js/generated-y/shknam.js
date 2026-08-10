@@ -1472,3 +1472,26 @@ export function is_izchak(shkp, override_hallucination) {
         shknm = cptr.add(shknm, 1);
     return schar((!strcmp(shknm, __sl391)));
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 12 bindings: 0 rebound+refilled, 0 rebound, 12 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(shkliquors), S(shkbooks), S(shkarmors), S(shkwands), S(shkrings), S(shkfoods), S(shkweapons), S(shktools), S(shklight), S(shkgeneral), S(shkhealthfoods), S(shtypes)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("shknam.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+}
+// --- END c2js reset block ---

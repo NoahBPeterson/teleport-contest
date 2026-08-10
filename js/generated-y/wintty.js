@@ -3210,3 +3210,53 @@ function* render_status() {
     }
     return;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 39 bindings: 3 rebound+refilled, 24 rebound, 12 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(tty_procs), S(BASE_WINDOW), S(wins), S(ttyDisplay), S(erasing_tty_screen), S(obuf), S(winpanicstr), S(defmorestr), S(clipping), S(clipx), S(clipxmax), S(clipy), S(clipymax), S(GFlag), S(HE_resets_AS), S(calling_from_update_inventory), S(default_menu_cmds), S(resize_mesg), S(__static_tty_askname_who_are_you), S(__static_compress_str_cbuf), S(tty_menu_promptstyle), S(tty_colormasks), S(tty_condition_bits), S(tty_status), S(hpbar_percent), S(hpbar_crit_hp), S(encvals), S(twolineorder), S(threelineorder), S(fieldorder), S(finalx), S(windowdata_init), S(cond_shrinklvl), S(enclev), S(enc_shrinklvl), S(dlvl_shrinklvl), S(truncation_expected), S(do_field_opt), S(__static_render_status_once_only)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("wintty.js: __resetState before __captureState");
+    tty_procs = P(r[0]);
+    BASE_WINDOW = P(r[1]);
+    P(r[2]);
+    ttyDisplay = P(r[3]);
+    erasing_tty_screen = P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    clipping = P(r[8]);
+    clipx = P(r[9]);
+    clipxmax = P(r[10]);
+    clipy = P(r[11]);
+    clipymax = P(r[12]);
+    GFlag = P(r[13]);
+    HE_resets_AS = P(r[14]);
+    calling_from_update_inventory = P(r[15]);
+    P(r[16]);
+    resize_mesg = P(r[17]);
+    P(r[18]);
+    P(r[19]);
+    tty_menu_promptstyle = P(r[20]);
+    tty_colormasks = P(r[21]);
+    tty_condition_bits = P(r[22]);
+    P(r[23]);
+    hpbar_percent = P(r[24]);
+    hpbar_crit_hp = P(r[25]);
+    P(r[26]);
+    P(r[27]);
+    P(r[28]);
+    fieldorder = P(r[29]);
+    P(r[30]);
+    windowdata_init = P(r[31]);
+    cond_shrinklvl = P(r[32]);
+    enclev = P(r[33]);
+    enc_shrinklvl = P(r[34]);
+    dlvl_shrinklvl = P(r[35]);
+    truncation_expected = P(r[36]);
+    do_field_opt = P(r[37]);
+    __static_render_status_once_only = P(r[38]);
+}
+// --- END c2js reset block ---

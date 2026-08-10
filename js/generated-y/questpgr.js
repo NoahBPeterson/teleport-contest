@@ -641,3 +641,16 @@ export function* deliver_splev_message() {
         cptr.stPtro(gl, 512, null);
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 2 bindings: 0 rebound+refilled, 0 rebound, 2 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_com_pager_core_howtoput), S(__static_com_pager_core_howtoput2i)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("questpgr.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+}
+// --- END c2js reset block ---

@@ -887,3 +887,20 @@ export function* l_selection_register(L) {
     (yield* lua_setglobal(L, __sl0));
     return 0;
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 6 bindings: 0 rebound+refilled, 0 rebound, 6 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_l_selection_grow_growdirs), S(__static_l_selection_grow_growdirs2i), S(__static_l_selection_gradient_gradtypes), S(__static_l_selection_gradient_gradtypes2i), S(l_selection_methods), S(l_selection_meta)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("nhlsel.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+}
+// --- END c2js reset block ---

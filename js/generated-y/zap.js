@@ -5278,3 +5278,31 @@ export function flash_str(typ, nohallu) {
     }
     return cptr.decay(__static_flash_str_fltxt);
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 17 bindings: 0 rebound+refilled, 1 rebound, 16 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(are_blinded_by_the_flash), S(flash_types), S(charged_objs), S(__static_cancel_monst_writing_vanishes), S(__static_cancel_monst_your), S(__static_item_what_whatbuf), S(destroy_strings), S(__static_wishcmdassist_wishinfo), S(__static_wishcmdassist_preserve_wishless), S(__static_wishcmdassist_retry_info), S(__static_wishcmdassist_retry_too), S(__static_wishcmdassist_suppress_cmdassist), S(__static_wishcmdassist_cardinals), S(__static_wishcmdassist_too_many), S(wish_history), S(wish_history_idx), S(__static_flash_str_fltxt)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("zap.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    P(r[2]);
+    P(r[3]);
+    P(r[4]);
+    P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+    P(r[14]);
+    wish_history_idx = P(r[15]);
+    P(r[16]);
+}
+// --- END c2js reset block ---

@@ -1771,3 +1771,28 @@ function* mv_bubble(b, dx, dy, ini) {
         }
     }
 }
+
+// --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
+// 14 bindings: 2 rebound+refilled, 2 rebound, 10 refilled.
+// S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
+let __c2js_rs = null;
+export function __captureState(S) { __c2js_rs = [S(__static_fix_wall_spines_spine_array), S(orcfruit), S(hero_bubble), S(__static_movebubbles_water_pos), S(__static_movebubbles_air_pos), S(__static_movebubbles_up), S(__static_mk_bubble_bm2), S(__static_mk_bubble_bm3), S(__static_mk_bubble_bm4), S(__static_mk_bubble_bm5), S(__static_mk_bubble_bm6), S(__static_mk_bubble_bm7), S(__static_mk_bubble_bm8), S(__static_mk_bubble_bmask)]; }
+export function __resetState(P) {
+    const r = __c2js_rs;
+    if (r === null) throw new Error("mkmaze.js: __resetState before __captureState");
+    P(r[0]);
+    P(r[1]);
+    hero_bubble = P(r[2]);
+    __static_movebubbles_water_pos = P(r[3]);
+    __static_movebubbles_air_pos = P(r[4]);
+    __static_movebubbles_up = P(r[5]);
+    P(r[6]);
+    P(r[7]);
+    P(r[8]);
+    P(r[9]);
+    P(r[10]);
+    P(r[11]);
+    P(r[12]);
+    P(r[13]);
+}
+// --- END c2js reset block ---
