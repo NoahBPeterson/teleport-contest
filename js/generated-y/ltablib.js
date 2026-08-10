@@ -9,9 +9,14 @@
 
 import { u32div, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { lua_callk, lua_checkstack, lua_compare, lua_createtable, lua_geti, lua_getmetatable, lua_gettop, lua_isstring, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawget, lua_rotate, lua_setfield, lua_seti, lua_settop, lua_toboolean, lua_type, lua_typename } from './lapi.js';
 import { luaL_addlstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checktype, luaL_checkversion_, luaL_error, luaL_len, luaL_optinteger, luaL_optlstring, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 import { rnd } from './rnd.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("__index");
@@ -45,7 +50,7 @@ function* checkfield(L, key, n) {
 function* checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;
-        if ((((yield* lua_getmetatable(L, arg)) && (!(what & 1) || (yield* checkfield(L, __sl0, ++n)) ? 1 : 0) ? 1 : 0) && (!(what & 2) || (yield* checkfield(L, __sl1, ++n)) ? 1 : 0) ? 1 : 0) && (!(what & 4) || (yield* checkfield(L, __sl2, ++n)) ? 1 : 0) ? 1 : 0) {
+        if ((yield* lua_getmetatable(L, arg)) && (!(what & 1) || (yield* checkfield(L, __sl0, ++n))) && (!(what & 2) || (yield* checkfield(L, __sl1, ++n))) && (!(what & 4) || (yield* checkfield(L, __sl2, ++n)))) {
             (yield* lua_settop(L, (-(n) - 1) | 0));
         } else
             (yield* luaL_checktype(L, arg, 5));
@@ -113,7 +118,7 @@ function* tmove(L) {
         (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__sl5))) ? 1 : 0));
         n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);
         (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || (yield* luaL_argerror(L, 4, (__sl6))) ? 1 : 0));
-        if ((t > e || t <= f ? 1 : 0) || (tt != 1 && !(yield* lua_compare(L, 1, tt, 0)) ? 1 : 0) ? 1 : 0) {
+        if (t > e || t <= f || (tt != 1 && !(yield* lua_compare(L, 1, tt, 0)))) {
             for (i = 0n; i < n; i++) {
                 (yield* lua_geti(L, 1, BigInt.asIntN(64, f + i)));
                 (yield* lua_seti(L, tt, BigInt.asIntN(64, t + i)));
@@ -269,7 +274,7 @@ function* auxsort(L, lo, up, rnd) {
             (yield* lua_settop(L, -3));
         if ((up - lo) >>> 0 == 1)
             return;
-        if ((up - lo) >>> 0 < 100 || rnd == 0 ? 1 : 0)
+        if ((up - lo) >>> 0 < 100 || rnd == 0)
             p = u32div(((lo + up) >>> 0), 2);
         else
             p = choosePivot(lo, up, rnd);
@@ -322,21 +327,21 @@ function* sort(L) {
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
 const tab_funcs = cptr.alloc(8 * 16);
 cptr.stPtro(tab_funcs, 0, __sl13);
-cptr.stPtro(tab_funcs, 8, tconcat);
+cptr.stPtro(tab_funcs, 0 + $luaL_Reg_func, tconcat);
 cptr.stPtro(tab_funcs, 16, __sl14);
-cptr.stPtro(tab_funcs, 24, tinsert);
+cptr.stPtro(tab_funcs, 16 + $luaL_Reg_func, tinsert);
 cptr.stPtro(tab_funcs, 32, __sl15);
-cptr.stPtro(tab_funcs, 40, tpack);
+cptr.stPtro(tab_funcs, 32 + $luaL_Reg_func, tpack);
 cptr.stPtro(tab_funcs, 48, __sl16);
-cptr.stPtro(tab_funcs, 56, tunpack);
+cptr.stPtro(tab_funcs, 48 + $luaL_Reg_func, tunpack);
 cptr.stPtro(tab_funcs, 64, __sl17);
-cptr.stPtro(tab_funcs, 72, tremove);
+cptr.stPtro(tab_funcs, 64 + $luaL_Reg_func, tremove);
 cptr.stPtro(tab_funcs, 80, __sl18);
-cptr.stPtro(tab_funcs, 88, tmove);
+cptr.stPtro(tab_funcs, 80 + $luaL_Reg_func, tmove);
 cptr.stPtro(tab_funcs, 96, __sl19);
-cptr.stPtro(tab_funcs, 104, sort);
+cptr.stPtro(tab_funcs, 96 + $luaL_Reg_func, sort);
 cptr.stPtro(tab_funcs, 112, null);
-cptr.stPtro(tab_funcs, 120, null);
+cptr.stPtro(tab_funcs, 112 + $luaL_Reg_func, null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function* luaopen_table(L) {

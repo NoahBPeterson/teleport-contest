@@ -145,6 +145,29 @@ function operand(e, parentPrec, side) {
   return e;
 }
 
+// ------------------------------------------------- `? 1 : 0` elision ------
+//
+// C11 6.5.13/14 make `a && b` an int 0 or 1, and JS's `&&` yields the raw
+// operand instead, so every logical operator is emitted as `... ? 1 : 0`.
+// That normalization is load-bearing wherever the value is *stored* or does
+// *arithmetic* — and dead weight wherever the value is only ever tested for
+// truth, which is where the overwhelming majority of them land: `if (a && b)`,
+// `while (...)`, `!(...)`, `(...) ? x : y`, and the operands of another
+// logical operator.
+//
+// A descriptor produced by `&&`/`||` therefore carries `boolRaw`, holding both
+// the normalized code it actually emitted and the un-normalized form.  A
+// consumer that only needs truthiness asks for the raw form through
+// `asBool()`.  The stored `.code` is compared before the swap is taken, so a
+// descriptor that was spread into a *different* code string (`{...inner,
+// code: ...}`, of which the emitter has many) can never hand back a raw form
+// that no longer corresponds to it — the guard makes staleness inert rather
+// than wrong.
+//
+// C2JS_BOOLCTX=0 restores the unconditional `? 1 : 0` (the A/B baseline).
+const BOOL_CTX = process.env.C2JS_BOOLCTX !== '0';
+const BOOL_STATS = { elided: 0, kept: 0 };
+
 // ---------------------------------------------------- constant folding ----
 //
 // Macro-heavy C expands to expressions that are compile-time constant but
@@ -337,18 +360,63 @@ const FUSED_O3 = new Set(['ld1s', 'ld1u', 'ldI16', 'ldI32', 'ldPtr', 'st1', 'stI
 
 const INT_LITERAL = /^-?\d+$/;
 
+// ---------------------------------------------- named struct offsets ------
+//
+// A field displacement is emitted as `FLD.monst_data` rather than `8` (see
+// fieldOffCode), and the address algebra below has to keep folding through it:
+// without that, `cptr.add(cptr.add(p, A), B)` would stop merging and a
+// one-component address would be mistaken for a subscript term, changing which
+// fused accessor is chosen.  So every emitted displacement — literal, named, or
+// a sum of the two — is registered here with its value, and the algebra asks
+// `intOf()` instead of matching a digit string.
+//
+// The map is process-global rather than per-emitter because the strings are:
+// `FLD.monst_data` means the same offset in every module that imports the
+// module, and build.mjs computes the table once for the whole corpus (see
+// collectFieldOffsets) precisely so that it can.
+const NAMED_INTS = new Map();
+
+/** numeric value of an emitted constant displacement, or null if not one */
+function intOf(code) {
+  const s = String(code).trim();
+  if (INT_LITERAL.test(s)) return Number(s);
+  const v = NAMED_INTS.get(s);
+  return v === undefined ? null : v;
+}
+
+/** register `code` as denoting the constant `value`, and return it */
+function namedInt(code, value) {
+  NAMED_INTS.set(code, value);
+  return code;
+}
+
+/**
+ * Code for a sum of constant displacements, in the order they were written.
+ * One part keeps its own spelling; several become `FLD.a + FLD.b`, which is
+ * legal everywhere a literal was (both are single arguments) and reads as the
+ * field path it is.  All-numeric parts collapse to the arithmetic, as before.
+ */
+function sumCode(parts, value) {
+  if (!parts.length) return '0';
+  if (parts.length === 1) return parts[0];
+  if (parts.every((p) => INT_LITERAL.test(p))) return String(value);
+  return namedInt(parts.join(' + '), value);
+}
+
 /**
  * Decompose a `cptr.add` chain into a base, its scaled terms in source order,
  * and the sum of its constant displacements. `sz === null` marks the
  * two-argument `cptr.add(p, n)` form, whose scale is 1.
  *
- * Constant folding here is exact: every displacement is an integer literal and
- * their sum is nowhere near 2^53. Term *order* is preserved, which is what
- * keeps evaluation order identical — the rewritten call evaluates the base,
- * then each subscript, left to right, exactly as the nested calls did.
+ * Constant folding here is exact: every displacement is an integer literal or
+ * a name standing for one, and their sum is nowhere near 2^53. Term *order* is
+ * preserved, which is what keeps evaluation order identical — the rewritten
+ * call evaluates the base, then each subscript, left to right, exactly as the
+ * nested calls did.
  */
 function decomposeAddress(code) {
   const terms = [];
+  const kParts = [];
   let k = 0, expr = String(code).trim();
   while (expr.startsWith('cptr.add(') && expr.endsWith(')')) {
     // splitTopLevelArgs returns null unless the trailing ')' is the one that
@@ -356,12 +424,14 @@ function decomposeAddress(code) {
     const a = splitTopLevelArgs(expr.slice('cptr.add('.length, -1));
     if (!a || a.length < 2 || a.length > 3) break;
     const idx = a[1].trim();
-    if (a.length === 2 && INT_LITERAL.test(idx)) k += Number(idx);
+    const kv = a.length === 2 ? intOf(idx) : null;
+    if (kv !== null) { k += kv; kParts.push(idx); }
     else terms.push([idx, a.length === 3 ? a[2].trim() : null]);
     expr = a[0].trim();
   }
   terms.reverse();
-  return { base: expr, terms, k };
+  kParts.reverse(); // outermost-first walk; written order is the field path
+  return { base: expr, terms, k, kCode: sumCode(kParts, k) };
 }
 
 /** cptr.ldI32(cptr.add(p, K)) -> cptr.ldI32o(p, K); null when not applicable.
@@ -373,7 +443,7 @@ export function fuseOffsetAccess(name, args) {
   const loc = String(args[0]).trim();
   if (!loc.startsWith('cptr.add(') || !loc.endsWith(')')) return null;
   const dec = decomposeAddress(loc);
-  const { terms, k } = dec;
+  const { terms, k, kCode } = dec;
   let base = dec.base;
   if (base === loc) return null;                       // not a well-formed chain
   const val = isStore ? [String(args[1])] : [];
@@ -388,24 +458,25 @@ export function fuseOffsetAccess(name, args) {
   // scale of a two-argument add: `n * 1` is `n` for every number, and the
   // slow path coerces identically, so the explicit 1 is not a semantic change.
   const scale = (t) => (t[1] === null ? '1' : t[1]);
-  if (terms.length === 0) return `cptr.${name}o(${[base, String(k), ...val].join(', ')})`;
+  if (terms.length === 0) return `cptr.${name}o(${[base, kCode, ...val].join(', ')})`;
   if (terms.length === 1) {
     const [i, sz] = terms[0];
     if (k === 0) return `cptr.${name}o(${[base, i, ...val, ...(sz === null ? [] : [sz])].join(', ')})`;
-    return `cptr.${name}o2(${[base, i, scale(terms[0]), String(k), ...val].join(', ')})`;
+    return `cptr.${name}o2(${[base, i, scale(terms[0]), kCode, ...val].join(', ')})`;
   }
-  return `cptr.${name}o3(${[base, terms[0][0], scale(terms[0]), terms[1][0], scale(terms[1]), String(k), ...val].join(', ')})`;
+  return `cptr.${name}o3(${[base, terms[0][0], scale(terms[0]), terms[1][0], scale(terms[1]), kCode, ...val].join(', ')})`;
 }
 
 /** cptr.add(cptr.add(p, A), B) -> cptr.add(p, A+B); null when not applicable */
 function mergeConstAdd(baseCode, offCode) {
-  if (!/^-?\d+$/.test(String(offCode).trim())) return null;
+  const off = intOf(offCode);
+  if (off === null) return null;
   if (!baseCode.startsWith('cptr.add(') || !baseCode.endsWith(')')) return null;
   const args = splitTopLevelArgs(baseCode.slice('cptr.add('.length, -1));
   if (!args || args.length !== 2) return null; // scaled 3-arg form: not constant
-  if (!/^-?\d+$/.test(args[1].trim())) return null;
-  const sum = Number(args[1].trim()) + Number(String(offCode).trim());
-  return `cptr.add(${args[0]}, ${sum})`;
+  const inner = intOf(args[1]);
+  if (inner === null) return null;
+  return `cptr.add(${args[0]}, ${sumCode([args[1].trim(), String(offCode).trim()], inner + off)})`;
 }
 
 // JS strict-mode reserved words get a $ suffix when used as identifiers
@@ -436,6 +507,106 @@ export const CONST_MODULE = './nhconst.js';
 // provenance tier from enum constants and will churn differently in 5.1.
 export const MACRO_NS = 'NHM';
 export const MACRO_MODULE = './nhmacro.js';
+
+// ------------------------------------------------ named field offsets ----
+//
+// `cptr.ldPtro(mtmp, 8)` says nothing; `cptr.ldPtro(mtmp, FLD.monst_data)`
+// says what the port is reading, and says it in the vocabulary of the C
+// struct — which is the vocabulary a 5.1 merge will move.  Offsets come from
+// the emitter's own layoutOf(), so naming them costs no new source of truth;
+// what it needs is a table that is the same in every module, which build.mjs
+// computes once for the corpus (collectFieldOffsets) and hands to every
+// emitter.  A name is used at a site only when the table's offset equals the
+// one this emitter just computed — the same equality audit the 1.9 macro tier
+// applies, and the reason a file-local struct that shadows a header one can
+// never borrow the wrong name.
+//
+// Accessor FUNCTIONS (`M.data(mtmp)`) were the other candidate and were
+// rejected: a field read is the hottest shape in the port, and a call per read
+// is a cost the slope guard would have had to absorb.
+//
+// A site spells the offset as `$monst_data`, a module-scope `const` the file
+// binds once from the shared table:
+//
+//     import * as FLD from './nhfield.js';
+//     const $monst_data = FLD.monst_data, ...;
+//
+// Not `FLD.monst_data` at the site, which is what this first shipped as and
+// what the A/B rejected: V8 constant-folds a module-scope `const`, and does
+// not fold a module-namespace load — measured at +8.1% on the corpus over
+// 150k sites, and 0.0% once bound locally.  The single source of truth is
+// still nhfield.js; the local binding is a fold hint, not a second table.
+//
+// The `$` prefix is not decoration: it makes the name collision-proof by
+// construction, because a C identifier cannot contain `$`.  That matters twice
+// — nothing the emitter emits for a C local can shadow the binding, and the
+// address algebra's NAMED_INTS lookup (which is keyed by the emitted string)
+// can never mistake some file's local variable for a constant offset.
+//
+// C2JS_FIELDNAMES=0 restores bare integer offsets (the A/B baseline).
+export const FIELD_NS = 'FLD';
+export const FIELD_MODULE = './nhfield.js';
+export const FIELD_PREFIX = '$';
+const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
+const FIELD_STATS = { named: 0, unnamed: 0 };
+
+// -------------------------------------------- named macro-body helpers ----
+//
+// `Hallucination` is one word in C and 240 characters of inlined loads here,
+// repeated at every one of its sites.  The 1.9 macro tier could not reach it:
+// it recovered a name from the spelling location of the single integer token a
+// macro expanded to, and an expression body has no single token.
+//
+// What identifies an expression body instead is its *extent*.  A node whose
+// range.begin and range.end spell at the first and last token of one
+// object-like `#define`'s body is that macro's complete expansion — a
+// sub-expression of the body starts later or ends earlier, and a use of the
+// macro inside another macro's body spells at the inner body.  The name then
+// comes from the `#define` at that extent, never from the shape of the value.
+//
+// The audit is string equality, which is what makes this safe without any
+// scope analysis: the body is emitted normally, and the call is substituted
+// only if the emission is character-for-character the one already recorded for
+// that name.  A site where a C local shadows a global the body reads emits
+// different code and keeps its expansion — except that a local *of the same
+// name* would emit the same string, so free identifiers are additionally
+// required not to be local here.  (A C local cannot be named after a live
+// object-like macro; that is why the helpers can be imported by bare name.)
+//
+// Bodies are captured flat — helper substitution is suppressed while emitting
+// one — so every helper is a leaf: no helper calls another, and a site costs
+// exactly one call.  Nesting would read better in nhprop.js and cost three
+// calls where the hot path has one.
+//
+// C2JS_MACROFNS=0 disables the substitution (the A/B baseline).
+export const PROP_NS = 'nhprop';
+export const PROP_MODULE = './nhprop.js';
+const MACRO_FNS = process.env.C2JS_MACROFNS !== '0';
+/** name -> { code, free: [names] } for every helper any emitter has captured */
+export const MACRO_HELPERS = new Map();
+const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refusedLocal: 0 };
+
+// A helper body may contain only pure loads off module-scope storage: no
+// calls but cptr.*, no assignment, no ++/--, no interned string literal (which
+// would leave a dangling __slN in a file whose output no longer mentions it),
+// and no rng_log_set_caller — that one carries the *call site's line number*,
+// so its emission differs per site and could never be shared anyway.
+const HELPER_CALLEE = /([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\(/g;
+const HELPER_IDENT = /(^|[^.\w$'"])([A-Za-z_$][\w$]*)/g;
+const HELPER_WORDS = new Set(['cptr', CONST_NS, MACRO_NS, 'BigInt', 'Math', 'null', 'true', 'false',
+  'asIntN', 'asUintN', 'imul', 'undefined']);
+
+// C2JS_READ_STATS=1 reports what the readability tier named and what it left
+// alone — the counterpart of C2JS_SYM_STATS for roadmap 1.11.
+if (process.env.C2JS_READ_STATS) {
+  process.on('exit', () => process.stderr.write(
+    `bool ctx:      ${BOOL_STATS.elided} logical results emitted bare, ${BOOL_STATS.kept} kept the \`? 1 : 0\`\n`
+    + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
+    + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
+    + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
+    + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`));
+}
+
 // spelling files we will trust: NetHack's own headers, as the compile
 // database spells them.  System headers and clang's `<scratch space>` are
 // not ours to name.
@@ -452,10 +623,17 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 //    module it skips keeps the reset block belonging to its previous
 //    contents. Bumping forces the full re-emit that keeps blocks and
 //    declarations in step.
-export const EMIT_VERSION = 9;
+// 10. The readability tier (roadmap 1.11): `? 1 : 0` elision in truth
+//    position, named field offsets (nhfield.js) and macro-body helpers
+//    (nhprop.js). Two of those depend on tables build.mjs computes, and one
+//    on a corpus-wide capture whose *first* emitter fixes each helper's body,
+//    so a partially skipped emit would mix two vocabularies. The incremental
+//    path keys on emit.mjs's mtime alone, which build.mjs changes do not
+//    move; the version is what invalidates them.
+export const EMIT_VERSION = 10;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -467,6 +645,16 @@ export class Emitter {
     // that nhmacro.js exports; empty in single-file mode
     this.macroDefs = macroDefs instanceof Map ? macroDefs : new Map(macroDefs || []);
     this.usesMacros = false;
+    // corpus-wide "record_field" -> byte offset that nhfield.js exports;
+    // empty in single-file mode, where offsets stay bare integers
+    this.fieldOffsets = fieldOffsets instanceof Map ? fieldOffsets : new Map(fieldOffsets || []);
+    this.fieldRefs = new Set(); // field offsets this file binds at module scope
+    // "header.h:bodyStartOffset" -> {name, end} for object-like #defines with
+    // an expression body, which become nhprop.js helpers; empty in single-file
+    // mode, where a macro body keeps inlining at every site
+    this.macroExprDefs = macroExprDefs instanceof Map ? macroExprDefs : new Map(macroExprDefs || []);
+    this.propRefs = new Set(); // helper names this file calls
+    this.inHelperBody = false; // capturing a helper body: no nested substitution
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
@@ -709,6 +897,36 @@ export class Emitter {
 
   group(e, ctxPrec) {
     return e.prec < ctxPrec ? `(${e.code})` : e.code;
+  }
+
+  // ----- `? 1 : 0` elision (see the note above BOOL_CTX) -----
+
+  /**
+   * Descriptor for a logical operator: `inner ? 1 : 0`, remembering the bare
+   * `inner` for consumers that only test truth.
+   */
+  boolNorm(inner, innerPrec) {
+    const code = `${inner} ? 1 : 0`;
+    return { code, prec: PREC.cond, rep: 'val', boolRaw: { code, raw: inner, prec: innerPrec } };
+  }
+
+  /**
+   * The same value, with C's int-0/1 normalization dropped — legal only where
+   * the result is consumed as a truth value and nowhere else.
+   *
+   * `boolRaw.code === d.code` is the staleness guard: descriptors are routinely
+   * respread with a rewritten `code` (casts, parens, bitfield narrowing), and a
+   * carried-over `boolRaw` must not be honoured for code it no longer describes.
+   */
+  asBool(d) {
+    if (!BOOL_CTX || !d || !d.boolRaw || d.boolRaw.code !== d.code) { if (d?.boolRaw) BOOL_STATS.kept++; return d; }
+    BOOL_STATS.elided++;
+    return { ...d, code: d.boolRaw.raw, prec: d.boolRaw.prec, boolRaw: undefined };
+  }
+
+  /** emit a node that is used only as a condition */
+  condExpr(n, opts) {
+    return this.asBool(this.emitExpr(n, opts));
   }
 
   // ----- constant folding -----
@@ -1116,6 +1334,75 @@ export class Emitter {
 
   // ----- expressions -----
 
+  /**
+   * The object-like macro whose whole body this node is, or null.
+   *
+   * Both spelling ends must land on one macro body's first and last token, in
+   * a NetHack header the compile database spells `../include/x.h`, and the
+   * node must actually be a macro expansion (an expansionLoc).  Everything is
+   * a location the C source *is*; nothing is inferred from the value.
+   */
+  macroBodyAt(n) {
+    const b = n.range?.begin?.spellingLoc, e = n.range?.end?.spellingLoc;
+    if (!b || !e || b.offset === undefined || e.offset === undefined) return null;
+    if (!b.file || !MACRO_HEADER_RE.test(b.file)) return null;
+    if (!n.range.begin.expansionLoc) return null;
+    const def = this.macroExprDefs.get(`${MACRO_HEADER_RE.exec(b.file)[1]}:${b.offset}`);
+    return def && def.end === e.offset ? def : null;
+  }
+
+  /**
+   * Free module-scope identifiers of an emitted helper body, or null when the
+   * body is not one a helper may hold (see the note above MACRO_HELPERS).
+   */
+  helperFreeVars(code) {
+    if (/__sl|\+\+|--|rng_log/.test(code)) return null;
+    if (/[^=!<>+\-*/%&|^]=[^=]/.test(code)) return null; // assignment of any kind
+    if (/^[A-Za-z_$][\w$]*$/.test(code)) return null;    // a bare alias names nothing new
+    for (const m of code.matchAll(HELPER_CALLEE)) {
+      if (!m[1].startsWith('cptr.')) return null;
+    }
+    const free = new Set();
+    for (const m of code.matchAll(HELPER_IDENT)) {
+      const id = m[2];
+      if (HELPER_WORDS.has(id) || /^\d/.test(id)) continue;
+      if (code[m.index + m[1].length + id.length] === '(') continue; // callee, already checked
+      if (id.startsWith(FIELD_PREFIX)) continue; // a field offset; nhprop.js binds its own
+      if (this.localNames?.has(id)) return null; // could be a shadowing local
+      if (this.refs.get(id) === 'FunctionDecl') return null; // a function designator, not storage
+      free.add(id);
+    }
+    return [...free].sort();
+  }
+
+  /**
+   * Substitute `Hallucination()` for a whole object-like macro expansion, when
+   * the emission of its body is character-for-character the one recorded for
+   * that name.  Returns null to leave the expansion inline.
+   */
+  macroHelper(def, d) {
+    if (d.rep !== 'val' || d.code.endsWith('()')) return null;
+    let h = MACRO_HELPERS.get(def.name);
+    if (h && h.code !== d.code) { MACRO_FN_STATS.refusedMismatch++; return null; }
+    if (!h) {
+      const free = this.helperFreeVars(d.code);
+      if (!free) { MACRO_FN_STATS.refusedImpure++; return null; }
+      h = { code: d.code, free, header: def.header };
+      MACRO_HELPERS.set(def.name, h);
+    }
+    // Re-checked at EVERY site, not just where the body was captured: a local
+    // named like a global the body reads emits the very same string, so string
+    // equality alone would hand this site a helper that reads the global. The
+    // helper module resolves the name once, at its own scope, for everyone.
+    if (this.localNames && h.free.some((v) => this.localNames.has(v))) {
+      MACRO_FN_STATS.refusedLocal++;
+      return null;
+    }
+    MACRO_FN_STATS.named++;
+    this.propRefs.add(def.name);
+    return { code: `${def.name}()`, prec: PREC.atom, rep: 'val' };
+  }
+
   emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
     if (!opts.stmtPos && !this.symbolic) {
@@ -1139,7 +1426,13 @@ export class Emitter {
     }
     const fn = this['expr_' + n.kind];
     if (!fn) throw new Error(`emitExpr: unsupported node kind ${n.kind} (${this.cref(n)})`);
-    return fn.call(this, n, opts);
+    const def = MACRO_FNS && !opts.stmtPos && !this.symbolic && !this.inHelperBody && this.macroExprDefs.size
+      ? this.macroBodyAt(n) : null;
+    if (!def) return fn.call(this, n, opts);
+    this.inHelperBody = true;
+    let d;
+    try { d = fn.call(this, n, opts); } finally { this.inHelperBody = false; }
+    return this.macroHelper(def, d) || d;
   }
 
   expr_IntegerLiteral(n) {
@@ -1164,7 +1457,11 @@ export class Emitter {
 
   expr_ParenExpr(n) {
     const inner = this.emitExpr(n.inner[0]);
-    return { ...inner, code: `(${inner.code})`, prec: PREC.atom };
+    const code = `(${inner.code})`;
+    // parens are transparent to truth-testing, so carry the bare form across
+    const boolRaw = inner.boolRaw && inner.boolRaw.code === inner.code
+      ? { code, raw: `(${inner.boolRaw.raw})`, prec: PREC.atom } : undefined;
+    return { ...inner, code, prec: PREC.atom, boolRaw };
   }
 
   expr_PredefinedExpr(n) {
@@ -1362,6 +1659,21 @@ export class Emitter {
     return l.offsets[fieldName];
   }
 
+  /**
+   * The displacement of `recName.fieldName`, spelled as `FLD.record_field`
+   * when the corpus-wide table agrees with the offset computed here, and as
+   * the bare integer otherwise (anonymous records, file-local shadowing, a
+   * name two different fields could produce — all refused by the table).
+   */
+  fieldOffCode(recName, fieldName, off) {
+    if (!FIELD_NAMES) return String(off);
+    const name = `${recName}_${fieldName}`;
+    if (this.fieldOffsets.get(name) !== off) { FIELD_STATS.unnamed++; return String(off); }
+    FIELD_STATS.named++;
+    this.fieldRefs.add(name);
+    return namedInt(FIELD_PREFIX + name, off);
+  }
+
   expr_MemberExpr(n) {
     const base = this.emitExpr(n.inner[0]);
     if (base.rep === 'obj') {
@@ -1379,7 +1691,7 @@ export class Emitter {
       const off = this.fieldOffset(recName, n.name);
       const fi = this.fieldInfoOf(n.inner[0], n.name, recName);
       const fieldQ = fi?.q;
-      const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
+      const loc = off === 0 ? base.code : this.cptrCall('add', base.code, this.fieldOffCode(recName, n.name, off));
       // record/array fields: the location itself is the value (decays later);
       // enum-typed fields are int-sized VALUES — load them, never take the address
       if (arrayParts(fieldQ) || (parseType(fieldQ).cls === 'record' && !this.isEnumType(fieldQ))) {
@@ -1694,7 +2006,8 @@ export class Emitter {
         return { code: n.isPostfix ? `${this.group(this.emitExpr(sub), PREC.postfix)}${n.opcode}` : `${n.opcode}${this.group(this.emitExpr(sub), PREC.unary)}`, prec: n.isPostfix ? PREC.postfix : PREC.unary, rep: 'val' };
       }
       case '-': case '!': case '~': {
-        const e = this.emitExpr(sub);
+        // `!` tests its operand for truth and nothing else
+        const e = n.opcode === '!' ? this.condExpr(sub) : this.emitExpr(sub);
         // 64-bit ~: JS BigInt ~ is infinite-precision (~0n = -1n); C wraps to
         // the operand width — mask with the operand's signedness
         if (n.opcode === '~' && subT.cls === 'int' && subT.bits === 64) {
@@ -1795,7 +2108,7 @@ export class Emitter {
         const bq = desugar(n.inner[0].type);
         const recName = base.elemRec || this.recordNameForType(pointeeOf(bq) || bq);
         const off = this.fieldOffset(recName, n.name);
-        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldInfoOf(n.inner[0], n.name, recName)?.q };
+        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, this.fieldOffCode(recName, n.name, off)), elemQ: this.fieldInfoOf(n.inner[0], n.name, recName)?.q };
       }
     }
     throw new Error(`emitLValue: unsupported ${n.kind} (${this.cref(n)})`);
@@ -1840,11 +2153,18 @@ export class Emitter {
       if (lf) {
         const decisive = op === '&&' ? lf.v === 0n : lf.v !== 0n;
         if (decisive) return { code: op === '&&' ? '0' : '1', prec: PREC.atom, const: op === '&&' ? '0' : '1', rep: 'val' };
-        return { code: `${operand(r0, PREC.cond, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
+        // the surviving operand alone decides the result; in a truth test the
+        // normalization around it is redundant, so offer the bare form too
+        const only = this.asBool(r0);
+        return this.boolNorm(operand(only, PREC.cond, 'right').code, only.prec);
       }
       // C11 6.5.13/14: the result is int 0 or 1 — JS would yield the raw
-      // operand (breaks narrow casts/stores of the result, e.g. boolean())
-      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
+      // operand (breaks narrow casts/stores of the result, e.g. boolean()).
+      // Both operands of a logical operator are themselves only tested for
+      // truth, so each drops its own normalization unconditionally — that is
+      // true no matter what *this* result is used for.
+      const lb = this.asBool(l0), rb = this.asBool(r0);
+      return this.boolNorm(`${operand(lb, p, 'left').code} ${op} ${operand(rb, p, 'right').code}`, p);
     }
     // pointer arithmetic
     if ((op === '+' || op === '-') && (lT.cls === 'ptr' || rT.cls === 'ptr') && !(lT.cls === 'ptr' && rT.cls === 'ptr' && op === '+')) {
@@ -2032,7 +2352,7 @@ export class Emitter {
       const cs = this.foldConst(n.inner[0]);
       if (cs) return this.emitExpr(n.inner[cs.v !== 0n ? 1 : 2]);
     }
-    const c = this.emitExpr(n.inner[0]);
+    const c = this.condExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);
     // Constant condition: C evaluates only the live arm, so the dead arm's
@@ -2676,7 +2996,7 @@ export class Emitter {
     const cont = this.sm.synth++;
     const thenState = this.sm.synth++;
     const elseState = elseS ? this.sm.synth++ : cont;
-    const condCode = this.emitExpr(cond).code;
+    const condCode = this.condExpr(cond).code;
     // finish the current case with the pure dispatcher
     this.smLine(`if (${condCode}) { __pc = ${thenState}; continue; }`);
     this.smLine(`__pc = ${elseState}; continue;`);
@@ -2723,14 +3043,14 @@ export class Emitter {
     if (isFor) {
       const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
       const cond = kids.length === 5 ? slot(2) : kids.slice(0, -1).filter((k) => k && k.kind)[1];
-      if (cond) this.smLine(`if (!(${this.emitExpr(cond).code})) { __pc = ${cont}; continue; }`);
+      if (cond) this.smLine(`if (!(${this.condExpr(cond).code})) { __pc = ${cont}; continue; }`);
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     } else if (isDo) {
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     } else {
-      this.smLine(`if (!(${this.emitExpr(kids[0]).code})) { __pc = ${cont}; continue; }`);
+      this.smLine(`if (!(${this.condExpr(kids[0]).code})) { __pc = ${cont}; continue; }`);
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     }
@@ -2738,7 +3058,7 @@ export class Emitter {
     const ctx2 = { ...ctx, breakTo: cont, continueTo: incState };
     this.smOpen(body);
     this.emitSMSeq(bodyItems, ctx2);
-    if (isDo) this.smLine(`if (${this.emitExpr(kids[1]).code}) { __pc = ${body}; continue; }`);
+    if (isDo) this.smLine(`if (${this.condExpr(kids[1]).code}) { __pc = ${body}; continue; }`);
     if (isFor) this.smClose(incState); else this.smClose(isDo ? cont : head);
     if (isFor) {
       this.smOpen(incState);
@@ -3444,7 +3764,7 @@ export class Emitter {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [cond, thenS, elseS] = kids;
     const lines = [];
-    const condCode = this.emitExpr(cond).code;
+    const condCode = this.condExpr(cond).code;
     if (thenS.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(thenS, indent);
       lines.push(`${indent}if (${condCode}) ${block[0].trimStart()}`);
@@ -3492,7 +3812,7 @@ export class Emitter {
     const initCode = !init ? '' : init.kind === 'DeclStmt'
       ? this.stmt_DeclStmt(init, '').join(' ').trim().replace(/;$/, '')
       : this.emitExpr(init, { stmtPos: true }).code;
-    const condCode = cond ? this.emitExpr(cond).code : '';
+    const condCode = cond ? this.condExpr(cond).code : '';
     const incCode = inc ? this.emitExpr(inc, { stmtPos: true }).code : '';
     const head = `${indent}for (${initCode}; ${condCode}; ${incCode})`;
     return this.loopBody(head, body, indent);
@@ -3509,7 +3829,7 @@ export class Emitter {
   stmt_WhileStmt(n, indent) {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [cond, body] = kids;
-    return this.loopBody(`${indent}while (${this.emitExpr(cond).code})`, body, indent);
+    return this.loopBody(`${indent}while (${this.condExpr(cond).code})`, body, indent);
   }
 
   stmt_DoStmt(n, indent) {
@@ -3517,9 +3837,9 @@ export class Emitter {
     const [body, cond] = kids;
     if (body.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(body, indent);
-      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.emitExpr(cond).code});`];
+      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.condExpr(cond).code});`];
     }
-    return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.emitExpr(cond).code});`];
+    return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.condExpr(cond).code});`];
   }
 
   stmt_ReturnStmt(n, indent) {
@@ -3664,7 +3984,7 @@ export class Emitter {
       if (!init || init.kind === 'ImplicitValueInitExpr') continue;
       const f = rec.fields[i];
       const off = this.layoutOf(recName).offsets[f.name];
-      const loc = off === 0 ? name : this.cptrCall('add', name, String(off));
+      const loc = off === 0 ? name : this.cptrCall('add', name, this.fieldOffCode(recName, f.name, off));
       if (!arrayParts(f.q) && (parseType(f.q).cls === 'record' || this.recordNameForType(f.q)) && !this.isEnumType(f.q)) {
         // nested record field: recursive stores (InitListExpr) or whole copy
         const fRecName = this.recordNameForType(f.q);

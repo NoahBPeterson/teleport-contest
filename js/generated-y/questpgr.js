@@ -12,6 +12,8 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { Blind, Role_switch, create_nhwindow, destroy_nhwindow, display_nhwindow, putmsghistory, putstr } from './nhprop.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -30,6 +32,40 @@ import { dupstr } from './alloc.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { luaL_checklstring } from './lauxlib.js';
 import { mkclass } from './makemon.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his,
+    $RoleName_f = FLD.RoleName_f, $Role_enemy1num = FLD.Role_enemy1num, $Role_enemy1sym = FLD.Role_enemy1sym,
+    $Role_enemy2num = FLD.Role_enemy2num, $Role_enemy2sym = FLD.Role_enemy2sym,
+    $Role_filecode = FLD.Role_filecode, $Role_guardnum = FLD.Role_guardnum,
+    $Role_homebase = FLD.Role_homebase, $Role_intermed = FLD.Role_intermed, $Role_ldrnum = FLD.Role_ldrnum,
+    $Role_mnum = FLD.Role_mnum, $Role_neminum = FLD.Role_neminum, $Role_questarti = FLD.Role_questarti,
+    $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_monlist = FLD.dlevel_t_monlist,
+    $dlevel_t_objlist = FLD.dlevel_t_objlist, $flag_female = FLD.flag_female,
+    $instance_globals_c_cvt_buf = FLD.instance_globals_c_cvt_buf,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_l_lev_message = FLD.instance_globals_l_lev_message,
+    $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
+    $instance_globals_m_migrating_objs = FLD.instance_globals_m_migrating_objs,
+    $instance_globals_n_nambuf = FLD.instance_globals_n_nambuf,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole, $monst_mhp = FLD.monst_mhp,
+    $monst_minvent = FLD.monst_minvent, $mvitals_mvflags = FLD.mvitals_mvflags,
+    $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
+    $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
+    $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps, $obj_cobj = FLD.obj_cobj,
+    $obj_oartifact = FLD.obj_oartifact, $permonst_mflags2 = FLD.permonst_mflags2,
+    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+    $q_score_godgend = FLD.q_score_godgend, $q_score_ldrgend = FLD.q_score_ldrgend,
+    $q_score_nemgend = FLD.q_score_nemgend, $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_ualign = FLD.you_ualign,
+    $you_ualignbase = FLD.you_ualignbase, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("quest_info(%d)");
@@ -90,13 +126,13 @@ const __sl52 = cptr.lit("qt_montype");
 export function* quest_info(typ) {
     switch (typ) {
         case 0:
-        return cptr.ldI16o(gu, 232);
+        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti);
         case NHC.MS_LEADER:
-        return cptr.ldI16o(gu, 220);
+        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
         case NHC.MS_NEMESIS:
-        return cptr.ldI16o(gu, 224);
+        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
         case NHC.MS_GUARDIAN:
-        return cptr.ldI16o(gu, 222);
+        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
         default:
         (yield* impossible(__sl0, typ));
     }
@@ -105,19 +141,19 @@ export function* quest_info(typ) {
 
 /** C ref: questpgr.c:50 @returns {CPtr} */
 export function ldrname() {
-    let i = cptr.ldI16o(gu, 220);
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
-    return cptr.add(gn, 87);
+    let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
 /** C ref: questpgr.c:61 @returns {CPtr} */
 function intermed() {
-    return cptr.ldPtro(gu, 208);
+    return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_intermed);
 }
 
 /** C ref: questpgr.c:67 — @param {CPtr} otmp @returns {CInt} */
 export function is_quest_artifact(otmp) {
-    return schar((cptr.ld1so(otmp, 51) == cptr.ldI16o(gu, 232)));
+    return schar((cptr.ld1so(otmp, $obj_oartifact) == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)));
 }
 
 /** C ref: questpgr.c:73 — @param {CPtr} ochain @returns {CPtr} */
@@ -127,7 +163,7 @@ function find_qarti(ochain) {
     for (otmp = ochain; otmp; otmp = cptr.ldPtr(otmp)) {
         if (is_quest_artifact(otmp))
             return otmp;
-        if ((cptr.ldPtro((otmp), 16) !== null) && (qarti = find_qarti(cptr.ldPtro(otmp, 16))) !== null ? 1 : 0)
+        if ((cptr.ldPtro((otmp), $obj_cobj) !== null) && (qarti = find_qarti(cptr.ldPtro(otmp, $obj_cobj))) !== null)
             return qarti;
     }
     return null;
@@ -138,47 +174,47 @@ export function find_quest_artifact(whichchains) {
     let mtmp;
     let qarti = null;
     if (((whichchains & 8) >>> 0) != 0)
-        qarti = find_qarti(cptr.ldPtro(gi, 8));
-    if (!qarti && ((whichchains & 2) >>> 0) != 0 ? 1 : 0)
-        qarti = find_qarti(cptr.ldPtro(svl, 89040));
-    if (!qarti && ((whichchains & 16) >>> 0) != 0 ? 1 : 0)
-        for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if ((cptr.ldI32o((mtmp), 52) < 1))
+        qarti = find_qarti(cptr.ldPtro(gi, $instance_globals_i_invent));
+    if (!qarti && ((whichchains & 2) >>> 0) != 0)
+        qarti = find_qarti(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
+    if (!qarti && ((whichchains & 16) >>> 0) != 0)
+        for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
-            if ((qarti = find_qarti(cptr.ldPtro(mtmp, 280))) !== null)
+            if ((qarti = find_qarti(cptr.ldPtro(mtmp, $monst_minvent))) !== null)
                 break;
         }
-    if (!qarti && ((whichchains & 32) >>> 0) != 0 ? 1 : 0) {
-        for (mtmp = cptr.ldPtro(gm, 192); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if ((cptr.ldI32o((mtmp), 52) < 1))
+    if (!qarti && ((whichchains & 32) >>> 0) != 0) {
+        for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
-            if ((qarti = find_qarti(cptr.ldPtro(mtmp, 280))) !== null)
+            if ((qarti = find_qarti(cptr.ldPtro(mtmp, $monst_minvent))) !== null)
                 break;
         }
         if (!qarti)
-            qarti = find_qarti(cptr.ldPtro(gm, 176));
+            qarti = find_qarti(cptr.ldPtro(gm, $instance_globals_m_migrating_objs));
     }
-    if (!qarti && ((whichchains & 64) >>> 0) != 0 ? 1 : 0)
-        qarti = find_qarti(cptr.ldPtro(svl, 89048));
+    if (!qarti && ((whichchains & 64) >>> 0) != 0)
+        qarti = find_qarti(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist));
     return qarti;
 }
 
 /** C ref: questpgr.c:124 @returns {CPtr} */
 function neminame() {
-    let i = cptr.ldI16o(gu, 224);
-    void cptr.sprintf(cptr.add(gn, 87), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), 80) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
-    return cptr.add(gn, 87);
+    let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
 /** C ref: questpgr.c:134 @returns {CPtr} */
 function guardname() {
-    let i = cptr.ldI16o(gu, 222);
+    let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
     return cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0);
 }
 
 /** C ref: questpgr.c:142 @returns {CPtr} */
 function homebase() {
-    return cptr.ldPtro(gu, 200);
+    return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_homebase);
 }
 
 /** C ref: questpgr.c:150 — @param {CPtr} mon @returns {CInt} */
@@ -186,11 +222,11 @@ export function* stinky_nemesis(mon) {
     let mesg = cptr.box(null);
     let res = 0;
     (void (mon));
-    void (yield* com_pager_core(cptr.ldPtro(gu, 192), __sl4, 0, mesg));
+    void (yield* com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), __sl4, 0, mesg));
     if (mesg.v) {
         let p;
         void (yield* strNsubst(mesg.v, __sl5, __sl6, 0));
-        if ((((p = (yield* strstri(mesg.v, __sl7))) !== null || (p = (yield* strstri(mesg.v, __sl8))) !== null ? 1 : 0) || (p = (yield* strstri(mesg.v, __sl9))) !== null ? 1 : 0) && ((yield* strstri(p, __sl10)) || (yield* strstri(p, __sl11)) ? 1 : 0) ? 1 : 0)
+        if (((p = (yield* strstri(mesg.v, __sl7))) !== null || (p = (yield* strstri(mesg.v, __sl8))) !== null || (p = (yield* strstri(mesg.v, __sl9))) !== null) && ((yield* strstri(p, __sl10)) || (yield* strstri(p, __sl11))))
             res = 1;
         cptr.free(mesg.v);
     }
@@ -202,15 +238,15 @@ function* qtext_pronoun(who, which) {
     let pnoun;
     let godgend;
     let lwhich = lowc(which);
-    if (who == 111 && ((yield* strstri(cptr.add(gc, 497), __sl12)) || (yield* strncmpi((cptr.add(gc, 497)), ((yield* makesingular(cptr.add(gc, 497)))), -1)) ? 1 : 0) ? 1 : 0) {
+    if (who == 111 && ((yield* strstri(cptr.add(gc, $instance_globals_c_cvt_buf), __sl12)) || (yield* strncmpi((cptr.add(gc, $instance_globals_c_cvt_buf)), ((yield* makesingular(cptr.add(gc, $instance_globals_c_cvt_buf)))), -1)))) {
         pnoun = (lwhich == 104) ? __sl13 : ((lwhich == 105) ? __sl14 : ((lwhich == 106) ? __sl15 : __sl16));
     } else {
-        godgend = (who == 100) ? (cptr.ldI32o(svq, 76) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, 68) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, 72) & 3) | 0 : 2));
-        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, 8) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, 16) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, 24) : __sl16));
+        godgend = (who == 100) ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));
+        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, $Gender_his) : __sl16));
     }
-    void cptr.strcpy(cptr.add(gc, 497), pnoun);
+    void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), pnoun);
     if (lwhich != which)
-        cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
+        cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
     return;
 }
 
@@ -222,19 +258,19 @@ function* convert_arg(c) {
         str = svp;
         break;
         case 99:
-        str = (cptr.ld1so(flags, 13) && cptr.ldPtro(gu, 16) ? 1 : 0) ? cptr.ldPtro(gu, 16) : cptr.ldPtro(gu, 8);
+        str = (cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
         break;
         case 114:
-        str = rank_of(cptr.ldI32o(u, 48), (cptr.ldI16o(gu, 216)), cptr.ld1so(flags, 13));
+        str = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), cptr.ld1so(flags, $flag_female));
         break;
         case 82:
-        str = rank_of(NHM.MIN_QUEST_LEVEL, (cptr.ldI16o(gu, 216)), cptr.ld1so(flags, 13));
+        str = rank_of(NHM.MIN_QUEST_LEVEL, Role_switch(), cptr.ld1so(flags, $flag_female));
         break;
         case 115:
-        str = (cptr.ld1so(flags, 13)) ? __sl17 : __sl18;
+        str = (cptr.ld1so(flags, $flag_female)) ? __sl17 : __sl18;
         break;
         case 83:
-        str = (cptr.ld1so(flags, 13)) ? __sl19 : __sl20;
+        str = (cptr.ld1so(flags, $flag_female)) ? __sl19 : __sl20;
         break;
         case 108:
         str = ldrname();
@@ -244,7 +280,7 @@ function* convert_arg(c) {
         break;
         case 79:
         case 111:
-        str = (yield* the(artiname(cptr.ldI16o(gu, 232))));
+        str = (yield* the(artiname(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti))));
         if (c == 79) {
             let p = (yield* strstri(str, __sl21));
             if (p)
@@ -258,19 +294,19 @@ function* convert_arg(c) {
         str = guardname();
         break;
         case 71:
-        str = align_gtitle(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184));
+        str = align_gtitle(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
         break;
         case 72:
         str = homebase();
         break;
         case 97:
-        str = align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184));
+        str = align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
         break;
         case 65:
-        str = align_str(cptr.ld1so(u, 2172));
+        str = align_str(cptr.ld1so(u, $you_ualign));
         break;
         case 100:
-        str = (yield* align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184)));
+        str = (yield* align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)));
         break;
         case 68:
         str = (yield* align_gname(NHM.A_LAWFUL));
@@ -285,7 +321,7 @@ function* convert_arg(c) {
         str = __sl24;
         break;
         case 120:
-        str = ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl25 : __sl26;
+        str = Blind() ? __sl25 : __sl26;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
@@ -297,7 +333,7 @@ function* convert_arg(c) {
         str = __sl2;
         break;
     }
-    void cptr.strcpy(cptr.add(gc, 497), str);
+    void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), str);
 }
 
 /** C ref: questpgr.c:328 — @param {CPtr} in_line @param {CPtr} out_line */
@@ -317,15 +353,15 @@ function* convert_line(in_line, out_line) {
                 (yield* convert_arg(cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; })))));
                 switch (cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; })))) {
                     case 65:
-                    void cptr.strcat(cc, (yield* An(cptr.add(gc, 497))));
+                    void cptr.strcat(cc, (yield* An(cptr.add(gc, $instance_globals_c_cvt_buf))));
                     cc = cptr.add(cc, cptr.strlen(cc));
                     continue;
                     case 97:
-                    void cptr.strcat(cc, (yield* an(cptr.add(gc, 497))));
+                    void cptr.strcat(cc, (yield* an(cptr.add(gc, $instance_globals_c_cvt_buf))));
                     cc = cptr.add(cc, cptr.strlen(cc));
                     continue;
                     case 67:
-                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
+                    cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
                     break;
                     case 104:
                     case 72:
@@ -339,22 +375,22 @@ function* convert_line(in_line, out_line) {
                         c = cptr.add(c, -1);
                     break;
                     case 80:
-                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
+                    cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
                     // @FallThrough
                     ;
                     case 112:
-                    void cptr.strcpy(cptr.add(gc, 497), (yield* makeplural(cptr.add(gc, 497))));
+                    void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), (yield* makeplural(cptr.add(gc, $instance_globals_c_cvt_buf))));
                     break;
                     case 83:
-                    cptr.st1o2(gc, 0, 1, 497, highc(cptr.ld1so2(gc, 0, 1, 497)));
+                    cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
                     // @FallThrough
                     ;
                     case 115:
-                    void cptr.strcpy(cptr.add(gc, 497), (yield* s_suffix(cptr.add(gc, 497))));
+                    void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), (yield* s_suffix(cptr.add(gc, $instance_globals_c_cvt_buf))));
                     break;
                     case 116:
-                    if (!(yield* strncmpi(cptr.add(gc, 497), __sl3, 4))) {
-                        void cptr.strcat(cc, cptr.add(cptr.add(gc, 497), 4, 1));
+                    if (!(yield* strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __sl3, 4))) {
+                        void cptr.strcat(cc, cptr.add(cptr.add(gc, $instance_globals_c_cvt_buf), 4, 1));
                         cc = cptr.add(cc, cptr.strlen(cc));
                         continue;
                     }
@@ -363,8 +399,8 @@ function* convert_line(in_line, out_line) {
                     c = cptr.add(c, -1);
                     break;
                 }
-                void cptr.strcat(cc, cptr.add(gc, 497));
-                cc = cptr.add(cc, cptr.strlen(cptr.add(gc, 497)));
+                void cptr.strcat(cc, cptr.add(gc, $instance_globals_c_cvt_buf));
+                cc = cptr.add(cc, cptr.strlen(cptr.add(gc, $instance_globals_c_cvt_buf)));
                 break;
             }
             // @FallThrough
@@ -400,20 +436,20 @@ function* deliver_by_window(msg, how) {
     let out_line = new Uint8Array(256);
     let msgp = msg;
     let msgend = eos(msg);
-    let datawin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(how)));
+    let datawin = (yield* Y.icall(create_nhwindow()(how)));
     while (cptr.cmp(msgp, msgend) < 0) {
         (yield* copynchars(cptr.decay(in_line), msgp, 255));
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
         (yield* convert_line(cptr.decay(in_line), cptr.decay(out_line)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(out_line))));
+        (yield* Y.icall(putstr()(datawin, 0, cptr.decay(out_line))));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(datawin, 1)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(datawin)));
+    (yield* Y.icall(display_nhwindow()(datawin, 1)));
+    (yield* Y.icall(destroy_nhwindow()(datawin)));
 }
 
 /** C ref: questpgr.c:459 — @param {CInt} common @returns {CInt} */
 function skip_pager(common) {
-    if (cptr.ldI32o(program_state, 100))
+    if (cptr.ldI32o(program_state, $sinfo_wizkit_wishing))
         return 1;
     return 0;
 }
@@ -441,7 +477,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
     let synopsis = null;
     let fallback_msgid = null;
     let res = 0;
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, 4, 1048576); cptr.stI32o(sbi, 8, 0); cptr.stI32o(sbi, 12, 1048576);
+    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
     if (skip_pager(1))
         return 0;
     L = (yield* nhl_init(sbi));
@@ -574,7 +610,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             (yield* lua_gettable(L, -2));
             text = (yield* dupstr(((yield* luaL_checklstring(L, -1, null)))));
         }
-        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n ? 1 : 0) ? 1 : 0) {
+        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n)) {
             output = 2;
             if (!synopsis) {
                 let tmpbuf = new Uint8Array(256);
@@ -583,7 +619,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                 synopsis = (yield* dupstr(cptr.decay(tmpbuf)));
             }
         }
-        if (output == 0 || output == 1 ? 1 : 0)
+        if (output == 0 || output == 1)
             (yield* deliver_by_pline(text));
         else
             (yield* deliver_by_window(text, (output == 3) ? NHM.NHW_MENU : NHM.NHW_TEXT));
@@ -592,7 +628,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             let out_line = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(in_line), synopsis);
             (yield* convert_line(cptr.decay(in_line), cptr.decay(out_line)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 352))(cptr.decay(out_line), 0)));
+            (yield* Y.icall(putmsghistory()(cptr.decay(out_line), 0)));
         }
         res = 1;
         if (text)
@@ -614,7 +650,7 @@ export function* com_pager(msgid) {
 
 /** C ref: questpgr.c:630 — @param {CPtr} msgid */
 export function* qt_pager(msgid) {
-    if (!(yield* com_pager_core(cptr.ldPtro(gu, 192), msgid, 0, null)))
+    if (!(yield* com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), msgid, 0, null)))
         void (yield* com_pager_core(__sl51, msgid, 1, null));
 }
 
@@ -622,23 +658,23 @@ export function* qt_pager(msgid) {
 export function* qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
-        qpm = cptr.ldI16o(gu, 226);
-        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
+        qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
+        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
             return cptr.add(mons, qpm, 96);
-        return (yield* mkclass(cptr.ld1so(gu, 230), 0));
+        return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy1sym), 0));
     }
-    qpm = cptr.ldI16o(gu, 228);
-    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
+    qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy2num);
+    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         return cptr.add(mons, qpm, 96);
-    return (yield* mkclass(cptr.ld1so(gu, 231), 0));
+    return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0));
 }
 
 /** C ref: questpgr.c:655 */
 export function* deliver_splev_message() {
-    if (cptr.ldPtro(gl, 512)) {
-        (yield* deliver_by_pline(cptr.ldPtro(gl, 512)));
-        cptr.free(cptr.ldPtro(gl, 512));
-        cptr.stPtro(gl, 512, null);
+    if (cptr.ldPtro(gl, $instance_globals_l_lev_message)) {
+        (yield* deliver_by_pline(cptr.ldPtro(gl, $instance_globals_l_lev_message)));
+        cptr.free(cptr.ldPtro(gl, $instance_globals_l_lev_message));
+        cptr.stPtro(gl, $instance_globals_l_lev_message, null);
     }
 }
 

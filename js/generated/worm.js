@@ -7,6 +7,8 @@ import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
@@ -21,6 +23,20 @@ import { Monnam, mon_nam } from './do_name.js';
 import { sfi_int, sfi_int16, sfi_long, sfo_int, sfo_int16, sfo_long } from './sfbase.js';
 import { isok } from './cmd.js';
 import { rnd_nextto_goodpos } from './trap.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $NHFILE_mode = FLD.NHFILE_mode, $context_info_mon_moving = FLD.context_info_mon_moving,
+    $dlevel_t_monsters = FLD.dlevel_t_monsters,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+    $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data, $monst_female = FLD.monst_female,
+    $monst_m_lev = FLD.monst_m_lev, $monst_mcloned = FLD.monst_mcloned, $monst_mextra = FLD.monst_mextra,
+    $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mtame = FLD.monst_mtame,
+    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $monst_wormno = FLD.monst_wormno,
+    $prop_intrinsic = FLD.prop_intrinsic, $wseg_wx = FLD.wseg_wx, $wseg_wy = FLD.wseg_wy,
+    $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/worm.c");
@@ -77,7 +93,7 @@ export function get_wormno() {
 export function initworm(worm, wseg_count) {
     let seg;
     let new_tail = create_worm_tail(wseg_count);
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     if (new_tail) {
         cptr.stPtro(wtails, wnum, new_tail, 8);
         for (seg = new_tail; cptr.ldPtr(seg); seg = cptr.ldPtr(seg))
@@ -87,8 +103,8 @@ export function initworm(worm, wseg_count) {
         cptr.stPtro(wtails, wnum, cptr.stPtro(wheads, wnum, seg = alloc(16), 8), 8);
         cptr.stPtr(seg, null);
     }
-    cptr.stI16o(seg, 8, cptr.ldI16o(worm, 28));
-    cptr.stI16o(seg, 10, cptr.ldI16o(worm, 30));
+    cptr.stI16o(seg, $wseg_wx, cptr.ldI16o(worm, $monst_mx));
+    cptr.stI16o(seg, $wseg_wy, cptr.ldI16o(worm, $monst_my));
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
 }
 
@@ -97,10 +113,10 @@ function toss_wsegs(curr, display_update) {
     let nxtseg;
     while (curr) {
         nxtseg = cptr.ldPtr(curr);
-        if (cptr.ldI16o(curr, 8)) {
-            cptr.stPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600, null);
+        if (cptr.ldI16o(curr, $wseg_wx)) {
+            cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
             if (display_update)
-                newsym(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10));
+                newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
         }
         cptr.free((curr));
         curr = nxtseg;
@@ -122,30 +138,30 @@ function shrink_worm(wnum) {
 export function worm_move(worm) {
     let seg;
     let new_seg;
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     seg = cptr.ldPtro(wheads, wnum, 8);
-    cptr.stPtro3(svl, cptr.ldI16o(seg, 8), 168, cptr.ldI16o(seg, 10), 8, 75600, worm);
-    newsym(cptr.ldI16o(seg, 8), cptr.ldI16o(seg, 10));
+    cptr.stPtro3(svl, cptr.ldI16o(seg, $wseg_wx), 168, cptr.ldI16o(seg, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
+    newsym(cptr.ldI16o(seg, $wseg_wx), cptr.ldI16o(seg, $wseg_wy));
     new_seg = alloc(16);
-    cptr.stI16o(new_seg, 8, cptr.ldI16o(worm, 28));
-    cptr.stI16o(new_seg, 10, cptr.ldI16o(worm, 30));
+    cptr.stI16o(new_seg, $wseg_wx, cptr.ldI16o(worm, $monst_mx));
+    cptr.stI16o(new_seg, $wseg_wy, cptr.ldI16o(worm, $monst_my));
     cptr.stPtr(new_seg, null);
     cptr.stPtr(seg, new_seg);
     cptr.stPtro(wheads, wnum, new_seg, 8);
-    if (cptr.ldI64o(wgrowtime, wnum, 8) <= cptr.ldI64o(svm, 8)) {
+    if (cptr.ldI64o(wgrowtime, wnum, 8) <= cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         let whplimit;
         let whpcap;
         let prev_mhp;
         let wsegs = count_wsegs(worm);
         if (!cptr.ldI64o(wgrowtime, wnum, 8)) {
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, 8) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl1), rnd(5)) : rnd(5)))), 8);
+            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl1), rnd(5)) : rnd(5)))), 8);
         } else {
             let mmove = mcalcmove(worm, 0);
             let incr = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 233, __sl1), rn2(10)) : rn2(10)) + 2) | 0);
             incr = ((Math.imul(incr, NHM.NORMAL_SPEED)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, 8) + BigInt(incr)), 8);
+            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(incr)), 8);
         }
-        whplimit = !cptr.ld1uo(worm, 26) ? 4 : (Math.imul(8, cptr.ld1uo(worm, 26)));
+        whplimit = !cptr.ld1uo(worm, $monst_m_lev) ? 4 : (Math.imul(8, cptr.ld1uo(worm, $monst_m_lev)));
         if (wsegs > 33)
             whplimit = (whplimit + Math.imul(2, ((wsegs - 33) | 0))) | 0, wsegs = 33;
         if (wsegs > 22)
@@ -155,17 +171,17 @@ export function worm_move(worm) {
         whplimit = (whplimit + Math.imul(8, wsegs)) | 0;
         if (whplimit > NHM.MHPMAX)
             whplimit = NHM.MHPMAX;
-        prev_mhp = cptr.ldI32o(worm, 52);
-        cptr.stI32o(worm, 52, (cptr.ldI32o(worm, 52) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl1), d(2, 2)) : d(2, 2))) | 0);
-        whpcap = ((whplimit) > (cptr.ldI32o(worm, 56)) ? (whplimit) : (cptr.ldI32o(worm, 56)));
-        if (cptr.ldI32o(worm, 52) < whpcap) {
-            if (cptr.ldI32o(worm, 52) > whplimit)
-                cptr.stI32o(worm, 52, ((prev_mhp) > (whplimit) ? (prev_mhp) : (whplimit)));
-            if (cptr.ldI32o(worm, 52) > cptr.ldI32o(worm, 56))
-                cptr.stI32o(worm, 56, cptr.ldI32o(worm, 52));
+        prev_mhp = cptr.ldI32o(worm, $monst_mhp);
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl1), d(2, 2)) : d(2, 2))) | 0);
+        whpcap = ((whplimit) > (cptr.ldI32o(worm, $monst_mhpmax)) ? (whplimit) : (cptr.ldI32o(worm, $monst_mhpmax)));
+        if (cptr.ldI32o(worm, $monst_mhp) < whpcap) {
+            if (cptr.ldI32o(worm, $monst_mhp) > whplimit)
+                cptr.stI32o(worm, $monst_mhp, ((prev_mhp) > (whplimit) ? (prev_mhp) : (whplimit)));
+            if (cptr.ldI32o(worm, $monst_mhp) > cptr.ldI32o(worm, $monst_mhpmax))
+                cptr.stI32o(worm, $monst_mhpmax, cptr.ldI32o(worm, $monst_mhp));
         } else {
-            if (cptr.ldI32o(worm, 52) > cptr.ldI32o(worm, 56))
-                cptr.stI32o(worm, 52, cptr.ldI32o(worm, 56));
+            if (cptr.ldI32o(worm, $monst_mhp) > cptr.ldI32o(worm, $monst_mhpmax))
+                cptr.stI32o(worm, $monst_mhp, cptr.ldI32o(worm, $monst_mhpmax));
         }
     } else {
         shrink_worm(wnum);
@@ -174,33 +190,33 @@ export function worm_move(worm) {
 
 /** C ref: worm.c:288 — @param {CPtr} worm */
 export function worm_nomove(worm) {
-    shrink_worm((cptr.ldI32o(worm, 200) & 31) | 0);
-    if (cptr.ldI32o(worm, 52) > count_wsegs(worm)) {
-        cptr.stI32o(worm, 52, (cptr.ldI32o(worm, 52) - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 293, __sl2), d(2, 2)) : d(2, 2))) | 0);
-        if (cptr.ldI32o(worm, 52) < 1)
-            cptr.stI32o(worm, 52, 1);
+    shrink_worm((cptr.ldI32o(worm, $monst_wormno) & 31) | 0);
+    if (cptr.ldI32o(worm, $monst_mhp) > count_wsegs(worm)) {
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 293, __sl2), d(2, 2)) : d(2, 2))) | 0);
+        if (cptr.ldI32o(worm, $monst_mhp) < 1)
+            cptr.stI32o(worm, $monst_mhp, 1);
     }
 }
 
 /** C ref: worm.c:308 — @param {CPtr} worm */
 export function wormgone(worm) {
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     if (!wnum)
         impossible(__sl3);
-    cptr.stI32o(worm, 200, 0);
+    cptr.stI32o(worm, $monst_wormno, 0);
     toss_wsegs(cptr.ldPtro(wtails, wnum, 8), 1);
     cptr.stPtro(wheads, wnum, cptr.stPtro(wtails, wnum, null, 8), 8);
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
-    if (cptr.eq(cptr.ldPtro(worm, 8), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), 312) && (cptr.ldI32o(cptr.ldPtro((worm), 312), 56)) != NHC.NON_PM ? 1 : 0) ? 1 : 0)
-        cptr.stI32o(cptr.ldPtro((worm), 312), 56, NHC.NON_PM);
+    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), $monst_mextra) && (cptr.ldI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm)) != NHC.NON_PM))
+        cptr.stI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
 }
 
 /** C ref: worm.c:344 — @param {CPtr} worm @returns {CInt} */
 export function wormhitu(worm) {
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let seg;
     for (seg = cptr.ldPtro(wtails, wnum, 8); !cptr.eq(seg, cptr.ldPtro(wheads, wnum, 8)); seg = cptr.ldPtr(seg))
-        if (dist2((cptr.ldI16o(seg, 8)), (cptr.ldI16o(seg, 10)), cptr.ldI16(u), cptr.ldI16o(u, 2)) < 3)
+        if (dist2((cptr.ldI16o(seg, $wseg_wx)), (cptr.ldI16o(seg, $wseg_wy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 3)
             if (mattacku(worm))
                 return 1;
     return 0;
@@ -211,12 +227,12 @@ export function cutworm(worm, x, y, cuttier) {
     let curr;
     let new_tail;
     let new_worm;
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let cut_chance;
     let new_wnum;
     if (!wnum)
         return;
-    if (x == cptr.ldI16o(worm, 28) && y == cptr.ldI16o(worm, 30) ? 1 : 0)
+    if (x == cptr.ldI16o(worm, $monst_mx) && y == cptr.ldI16o(worm, $monst_my))
         return;
     cut_chance = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl4), rnd(20)) : rnd(20));
     if (cuttier)
@@ -224,7 +240,7 @@ export function cutworm(worm, x, y, cuttier) {
     if (cut_chance < 17)
         return;
     curr = cptr.ldPtro(wtails, wnum, 8);
-    while ((cptr.ldI16o(curr, 8) != x) || (cptr.ldI16o(curr, 10) != y) ? 1 : 0) {
+    while ((cptr.ldI16o(curr, $wseg_wx) != x) || (cptr.ldI16o(curr, $wseg_wy) != y)) {
         curr = cptr.ldPtr(curr);
         if (!curr) {
             impossible(__sl5, x, y);
@@ -239,36 +255,36 @@ export function cutworm(worm, x, y, cuttier) {
     cptr.stPtro(wtails, wnum, cptr.ldPtr(curr), 8);
     cptr.stPtr(curr, null);
     new_worm = null;
-    new_wnum = (cptr.ld1uo(worm, 26) >= 3 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 427, __sl4), rn2(3)) : rn2(3)) ? 1 : 0) ? get_wormno() : 0;
+    new_wnum = (cptr.ld1uo(worm, $monst_m_lev) >= 3 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 427, __sl4), rn2(3)) : rn2(3))) ? get_wormno() : 0;
     if (new_wnum) {
-        cptr.stPtro3(svl, x, 168, y, 8, 75600, null);
+        cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         new_worm = clone_mon(worm, x, y);
     }
     if (!new_worm) {
-        cptr.stPtro3(svl, x, 168, y, 8, 75600, worm);
-        if (cptr.ld1so(svc, 77)) {
-            if ((canseemon(worm) || sensemon(worm) ? 1 : 0))
+        cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
+        if (cptr.ld1so(svc, $context_info_mon_moving)) {
+            if ((canseemon(worm) || sensemon(worm)))
                 pline(__sl6, s_suffix(mon_nam(worm)));
         } else
             You(__sl7, mon_nam(worm));
         toss_wsegs(new_tail, 1);
-        if (cptr.ldI32o(worm, 52) > 1)
-            cptr.stI32o(worm, 52, (cptr.ldI32o(worm, 52) / 2) | 0);
+        if (cptr.ldI32o(worm, $monst_mhp) > 1)
+            cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) / 2) | 0);
         return;
     }
-    cptr.stI32o(new_worm, 200, new_wnum >>> 0);
-    cptr.stI32o(new_worm, 128, 0);
-    cptr.st1o(worm, 26, uchar((((cptr.ld1uo(worm, 26) - 2) >>> 0) > 3 ? ((cptr.ld1uo(worm, 26) - 2) >>> 0) : 3)));
-    cptr.st1o(new_worm, 26, cptr.ld1uo(worm, 26));
-    cptr.stI32o(new_worm, 56, cptr.stI32o(new_worm, 52, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 461, __sl4), d((cptr.ld1uo(new_worm, 26)), 8)) : d((cptr.ld1uo(new_worm, 26)), 8))));
-    cptr.stI32o(worm, 56, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 462, __sl4), d((cptr.ld1uo(worm, 26)), 8)) : d((cptr.ld1uo(worm, 26)), 8)));
-    if (cptr.ldI32o(worm, 56) < cptr.ldI32o(worm, 52))
-        cptr.stI32o(worm, 52, cptr.ldI32o(worm, 56));
+    cptr.stI32o(new_worm, $monst_wormno, new_wnum >>> 0);
+    cptr.stI32o(new_worm, $monst_mcloned, 0);
+    cptr.st1o(worm, $monst_m_lev, uchar((((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) > 3 ? ((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) : 3)));
+    cptr.st1o(new_worm, $monst_m_lev, cptr.ld1uo(worm, $monst_m_lev));
+    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 461, __sl4), d((cptr.ld1uo(new_worm, $monst_m_lev)), 8)) : d((cptr.ld1uo(new_worm, $monst_m_lev)), 8))));
+    cptr.stI32o(worm, $monst_mhpmax, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 462, __sl4), d((cptr.ld1uo(worm, $monst_m_lev)), 8)) : d((cptr.ld1uo(worm, $monst_m_lev)), 8)));
+    if (cptr.ldI32o(worm, $monst_mhpmax) < cptr.ldI32o(worm, $monst_mhp))
+        cptr.stI32o(worm, $monst_mhp, cptr.ldI32o(worm, $monst_mhpmax));
     cptr.stPtro(wtails, new_wnum, new_tail, 8);
     cptr.stPtro(wheads, new_wnum, curr, 8);
     cptr.stI64o(wgrowtime, new_wnum, 0n, 8);
     place_wsegs(new_worm, worm);
-    if (cptr.ld1so(svc, 77))
+    if (cptr.ld1so(svc, $context_info_mon_moving))
         pline(__sl8, Monnam(worm));
     else
         You(__sl9, mon_nam(worm));
@@ -276,9 +292,9 @@ export function cutworm(worm, x, y, cuttier) {
 
 /** C ref: worm.c:487 — @param {CPtr} worm */
 export function see_wsegs(worm) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
-    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, 200) & 31), 8))) {
-        newsym(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10));
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
+        newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
         curr = cptr.ldPtr(curr);
     }
 }
@@ -286,11 +302,11 @@ export function see_wsegs(worm) {
 /** C ref: worm.c:503 — @param {CPtr} worm @param {CInt} use_detection_glyph */
 export function detect_wsegs(worm, use_detection_glyph) {
     let num;
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
-    let what_tail = ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
-    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, 200) & 31), 8))) {
-        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, 65) ? (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
-        show_glyph(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10), num);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
+    let what_tail = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
+        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, $monst_mtame) ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
+        show_glyph(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy), num);
         curr = cptr.ldPtr(curr);
     }
 }
@@ -301,15 +317,15 @@ export function save_worm(nhfp) {
     let count = cptr.box(0);
     let curr;
     let temp;
-    if ((cptr.ldI32o((nhfp), 4) & 3)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             for (count.v = 0, curr = cptr.ldPtro(wtails, i, 8); curr; curr = cptr.ldPtr(curr))
                 count.v++;
             sfo_int(nhfp, count, __sl10);
             if (count.v) {
                 for (curr = cptr.ldPtro(wtails, i, 8); curr; curr = cptr.ldPtr(curr)) {
-                    sfo_int16(nhfp, cptr.add(curr, 8), __sl11);
-                    sfo_int16(nhfp, cptr.add(curr, 10), __sl12);
+                    sfo_int16(nhfp, cptr.add(curr, $wseg_wx), __sl11);
+                    sfo_int16(nhfp, cptr.add(curr, $wseg_wy), __sl12);
                 }
             }
         }
@@ -317,7 +333,7 @@ export function save_worm(nhfp) {
             sfo_long(nhfp, cptr.add(wgrowtime, i, 8), __sl13);
         ;
     }
-    if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             if (!(curr = cptr.ldPtro(wtails, i, 8)))
                 continue;
@@ -345,8 +361,8 @@ export function rest_worm(nhfp) {
         for (curr = null, j = 0; j < count.v; j++) {
             temp = alloc(16);
             cptr.stPtr(temp, null);
-            sfi_int16(nhfp, cptr.add(temp, 8), __sl11);
-            sfi_int16(nhfp, cptr.add(temp, 10), __sl12);
+            sfi_int16(nhfp, cptr.add(temp, $wseg_wx), __sl11);
+            sfi_int16(nhfp, cptr.add(temp, $wseg_wy), __sl12);
             if (curr)
                 cptr.stPtr(curr, temp);
             else
@@ -363,21 +379,21 @@ export function rest_worm(nhfp) {
 
 /** C ref: worm.c:615 — @param {CPtr} worm @param {CPtr} oldworm */
 export function place_wsegs(worm, oldworm) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
-    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, 200) & 31), 8))) {
-        let x = cptr.ldI16o(curr, 8);
-        let y = cptr.ldI16o(curr, 10);
-        let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, 75600));
-        if (oldworm && cptr.eq(mtmp, oldworm) ? 1 : 0)
-            cptr.stPtro3(svl, x, 168, y, 8, 75600, null);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
+    while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
+        let x = cptr.ldI16o(curr, $wseg_wx);
+        let y = cptr.ldI16o(curr, $wseg_wy);
+        let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+        if (oldworm && cptr.eq(mtmp, oldworm))
+            cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         else if (mtmp)
             impossible(__sl14, x, y);
         else if (oldworm)
             impossible(__sl15, x, y);
-        cptr.stPtro3(svl, x, 168, y, 8, 75600, worm);
+        cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
         curr = cptr.ldPtr(curr);
     }
-    cptr.stI16o(curr, 8, cptr.ldI16o(worm, 28)), cptr.stI16o(curr, 10, cptr.ldI16o(worm, 30));
+    cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)), cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
 }
 
 /** C ref: worm.c:639 — @param {CPtr} worm */
@@ -390,24 +406,24 @@ export function sanity_check_worm(worm) {
         impossible(__sl16);
         return;
     }
-    if (!(cptr.ldI32o(worm, 200) & 31)) {
+    if (!(cptr.ldI32o(worm, $monst_wormno) & 31)) {
         impossible(__sl17);
         return;
     }
-    wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
-    if (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8) ? 1 : 0) {
+    wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
+    if (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8)) {
         impossible(__sl18, wnum);
         return;
     }
-    if (!cptr.ldI16o(worm, 28))
+    if (!cptr.ldI16o(worm, $monst_mx))
         return;
     curr = cptr.ldPtro(wtails, wnum, 8);
     while (!cptr.eq(curr, cptr.ldPtro(wheads, wnum, 8))) {
-        x = cptr.ldI16o(curr, 8), y = cptr.ldI16o(curr, 10);
+        x = cptr.ldI16o(curr, $wseg_wx), y = cptr.ldI16o(curr, $wseg_wy);
         if (!isok(i16(x), i16(y)))
             impossible(__sl19, x, y);
-        else if (!cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, 75600), worm))
-            impossible(__sl20, fmt_ptr(cptr.ldPtro3(svl, x, 168, y, 8, 75600)), fmt_ptr(worm));
+        else if (!cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters), worm))
+            impossible(__sl20, fmt_ptr(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), fmt_ptr(worm));
         curr = cptr.ldPtr(curr);
     }
 }
@@ -418,12 +434,12 @@ export function wormno_sanity_check() {
 
 /** C ref: worm.c:714 — @param {CPtr} worm */
 export function remove_worm(worm) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        if (cptr.ldI16o(curr, 8)) {
-            cptr.stPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600, null);
-            newsym(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10));
-            cptr.stI16o(curr, 8, 0);
+        if (cptr.ldI16o(curr, $wseg_wx)) {
+            cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
+            cptr.stI16o(curr, $wseg_wx, 0);
         }
         curr = cptr.ldPtr(curr);
     }
@@ -431,37 +447,37 @@ export function remove_worm(worm) {
 
 /** C ref: worm.c:738 — @param {CPtr} worm @param {CInt} x @param {CInt} y */
 export function place_worm_tail_randomly(worm, x, y) {
-    let wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
+    let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let curr = cptr.ldPtro(wtails, wnum, 8);
     let new_tail;
     let ox = x;
     let oy = y;
-    if (wnum && (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8) ? 1 : 0) ? 1 : 0) {
+    if (wnum && (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8))) {
         impossible(__sl21);
         return;
     }
     if (cptr.eq(cptr.ldPtro(wtails, wnum, 8), cptr.ldPtro(wheads, wnum, 8))) {
-        if (cptr.ldI16o(curr, 8) && (cptr.ldI16o(curr, 8) != cptr.ldI16o(worm, 28) || cptr.ldI16o(curr, 10) != cptr.ldI16o(worm, 30) ? 1 : 0) ? 1 : 0) {
-            impossible(__sl22, cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10), cptr.ldI16o(worm, 28), cptr.ldI16o(worm, 30));
-            if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600)), worm))
-                cptr.stPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600, null);
+        if (cptr.ldI16o(curr, $wseg_wx) && (cptr.ldI16o(curr, $wseg_wx) != cptr.ldI16o(worm, $monst_mx) || cptr.ldI16o(curr, $wseg_wy) != cptr.ldI16o(worm, $monst_my))) {
+            impossible(__sl22, cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy), cptr.ldI16o(worm, $monst_mx), cptr.ldI16o(worm, $monst_my));
+            if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm))
+                cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         }
-        cptr.stI16o(curr, 8, cptr.ldI16o(worm, 28)), cptr.stI16o(curr, 10, cptr.ldI16o(worm, 30));
+        cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)), cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
         return;
     }
-    cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), 8, cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), 10, 0));
+    cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wx, cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wy, 0));
     cptr.stPtro(wheads, wnum, new_tail = curr, 8);
     curr = cptr.ldPtr(curr);
     cptr.stPtr(new_tail, null);
-    cptr.stI16o(new_tail, 8, x);
-    cptr.stI16o(new_tail, 10, y);
+    cptr.stI16o(new_tail, $wseg_wx, x);
+    cptr.stI16o(new_tail, $wseg_wy, y);
     while (curr) {
         let nx = cptr.box(i16(ox));
         let ny = cptr.box(i16(oy));
         if (rnd_nextto_goodpos(nx, ny, worm)) {
-            cptr.stPtro3(svl, nx.v, 168, ny.v, 8, 75600, worm);
-            cptr.stI16o(curr, 8, i16((ox = nx.v)));
-            cptr.stI16o(curr, 10, i16((oy = ny.v)));
+            cptr.stPtro3(svl, nx.v, 168, ny.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
+            cptr.stI16o(curr, $wseg_wx, i16((ox = nx.v)));
+            cptr.stI16o(curr, $wseg_wy, i16((oy = ny.v)));
             cptr.stPtro(wtails, wnum, curr, 8);
             curr = cptr.ldPtr(curr);
             cptr.stPtr(cptr.ldPtro(wtails, wnum, 8), new_tail);
@@ -483,8 +499,8 @@ export function size_wseg(worm) {
 export function count_wsegs(mtmp) {
     let i = 0;
     let curr;
-    if ((cptr.ldI32o(mtmp, 200) & 31)) {
-        for (curr = cptr.ldPtr(cptr.ldPtro(wtails, (cptr.ldI32o(mtmp, 200) & 31), 8)); curr; curr = cptr.ldPtr(curr))
+    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
+        for (curr = cptr.ldPtr(cptr.ldPtro(wtails, (cptr.ldI32o(mtmp, $monst_wormno) & 31), 8)); curr; curr = cptr.ldPtr(curr))
             i++;
     }
     return i;
@@ -499,14 +515,14 @@ function create_worm_tail(num_segs) {
         return null;
     new_tail = (curr = alloc(16));
     cptr.stPtr(curr, null);
-    cptr.stI16o(curr, 8, 0);
-    cptr.stI16o(curr, 10, 0);
+    cptr.stI16o(curr, $wseg_wx, 0);
+    cptr.stI16o(curr, $wseg_wy, 0);
     while (i < num_segs) {
         cptr.stPtr(curr, alloc(16));
         curr = cptr.ldPtr(curr);
         cptr.stPtr(curr, null);
-        cptr.stI16o(curr, 8, 0);
-        cptr.stI16o(curr, 10, 0);
+        cptr.stI16o(curr, $wseg_wx, 0);
+        cptr.stI16o(curr, $wseg_wy, 0);
         i++;
     }
     return new_tail;
@@ -514,9 +530,9 @@ function create_worm_tail(num_segs) {
 
 /** C ref: worm.c:883 — @param {CPtr} worm @returns {CInt} */
 export function worm_known(worm) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(curr, 10), 8), cptr.ldI16o(curr, 8)) & NHM.IN_SIGHT) != 0))
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(curr, $wseg_wy), 8), cptr.ldI16o(curr, $wseg_wx)) & NHM.IN_SIGHT) != 0))
             return 1;
         curr = cptr.ldPtr(curr);
     }
@@ -532,19 +548,19 @@ export function worm_cross(x1, y1, x2, y2) {
         impossible(__sl23);
         return 0;
     }
-    if (x1 == x2 || y1 == y2 ? 1 : 0)
+    if (x1 == x2 || y1 == y2)
         return 0;
-    worm = (cptr.ldPtro3(svl, x1, 168, y2, 8, 75600));
-    if (!worm || !cptr.eq((cptr.ldPtro3(svl, x2, 168, y1, 8, 75600)), worm) ? 1 : 0)
+    worm = (cptr.ldPtro3(svl, x1, 168, y2, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+    if (!worm || !cptr.eq((cptr.ldPtro3(svl, x2, 168, y1, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm))
         return 0;
-    for (curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8); curr; curr = wnxt) {
+    for (curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8); curr; curr = wnxt) {
         wnxt = cptr.ldPtr(curr);
         if (!wnxt)
             break;
-        if (cptr.ldI16o(curr, 8) == x1 && cptr.ldI16o(curr, 10) == y2 ? 1 : 0)
-            return schar((cptr.ldI16o(wnxt, 8) == x2 && cptr.ldI16o(wnxt, 10) == y1 ? 1 : 0));
-        if (cptr.ldI16o(curr, 8) == x2 && cptr.ldI16o(curr, 10) == y1 ? 1 : 0)
-            return schar((cptr.ldI16o(wnxt, 8) == x1 && cptr.ldI16o(wnxt, 10) == y2 ? 1 : 0));
+        if (cptr.ldI16o(curr, $wseg_wx) == x1 && cptr.ldI16o(curr, $wseg_wy) == y2)
+            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x2 && cptr.ldI16o(wnxt, $wseg_wy) == y1 ? 1 : 0));
+        if (cptr.ldI16o(curr, $wseg_wx) == x2 && cptr.ldI16o(curr, $wseg_wy) == y1)
+            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x1 && cptr.ldI16o(wnxt, $wseg_wy) == y2 ? 1 : 0));
     }
     return 0;
 }
@@ -552,14 +568,14 @@ export function worm_cross(x1, y1, x2, y2) {
 /** C ref: worm.c:946 — @param {CPtr} worm @param {CInt} x @param {CInt} y @returns {CInt} */
 export function wseg_at(worm, x, y) {
     let res = 0;
-    if ((worm && (cptr.ldI32o(worm, 200) & 31) | 0 ? 1 : 0) && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), worm) ? 1 : 0) {
+    if (worm && (cptr.ldI32o(worm, $monst_wormno) & 31) | 0 && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm)) {
         let curr;
         let i;
         let n;
         let wx = i16(x);
         let wy = i16(y);
-        for (i = 0, curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8); curr; curr = cptr.ldPtr(curr)) {
-            if (cptr.ldI16o(curr, 8) == wx && cptr.ldI16o(curr, 10) == wy ? 1 : 0)
+        for (i = 0, curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8); curr; curr = cptr.ldPtr(curr)) {
+            if (cptr.ldI16o(curr, $wseg_wx) == wx && cptr.ldI16o(curr, $wseg_wy) == wy)
                 break;
             ++i;
         }
@@ -572,27 +588,27 @@ export function wseg_at(worm, x, y) {
 
 /** C ref: worm.c:968 — @param {CPtr} worm @param {CInt} miny @param {CInt} maxy */
 export function flip_worm_segs_vertical(worm, miny, maxy) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        cptr.stI16o(curr, 10, i16(((((maxy - cptr.ldI16o(curr, 10)) | 0) + miny) | 0)));
+        cptr.stI16o(curr, $wseg_wy, i16(((((maxy - cptr.ldI16o(curr, $wseg_wy)) | 0) + miny) | 0)));
         curr = cptr.ldPtr(curr);
     }
 }
 
 /** C ref: worm.c:979 — @param {CPtr} worm @param {CInt} minx @param {CInt} maxx */
 export function flip_worm_segs_horizontal(worm, minx, maxx) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        cptr.stI16o(curr, 8, i16(((((maxx - cptr.ldI16o(curr, 8)) | 0) + minx) | 0)));
+        cptr.stI16o(curr, $wseg_wx, i16(((((maxx - cptr.ldI16o(curr, $wseg_wx)) | 0) + minx) | 0)));
         curr = cptr.ldPtr(curr);
     }
 }
 
 /** C ref: worm.c:990 — @param {CPtr} worm */
 export function redraw_worm(worm) {
-    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
+    let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        newsym(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10));
+        newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
         curr = cptr.ldPtr(curr);
     }
 }

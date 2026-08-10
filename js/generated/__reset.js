@@ -17,146 +17,146 @@ import './unixmain.js';
 import * as M0 from './calendar.js';
 import * as M1 from './rnd.js';
 import * as M2 from './decl.js';
-import * as M3 from './hacklib.js';
-import * as M4 from './options.js';
-import * as M5 from './glyphs.js';
-import * as M6 from './earlyarg.js';
-import * as M7 from './hack.js';
-import * as M8 from './save.js';
-import * as M9 from './sys.js';
-import * as M10 from './end.js';
-import * as M11 from './report.js';
-import * as M12 from './pline.js';
-import * as M13 from './files.js';
-import * as M14 from './allmain.js';
-import * as M15 from './insight.js';
-import * as M16 from './region.js';
-import * as M17 from './teleport.js';
-import * as M18 from './dog.js';
-import * as M19 from './sounds.js';
-import * as M20 from './worn.js';
-import * as M21 from './weapon.js';
-import * as M22 from './cmd.js';
-import * as M23 from './unixunix.js';
-import * as M24 from './unixtty.js';
-import * as M25 from './termcap.js';
-import * as M26 from './symbols.js';
-import * as M27 from './dungeon.js';
-import * as M28 from './topten.js';
-import * as M29 from './display.js';
-import * as M30 from './drawing.js';
-import * as M31 from './objects.js';
-import * as M32 from './monst.js';
-import * as M33 from './getpos.js';
-import * as M34 from './objnam.js';
-import * as M35 from './questpgr.js';
-import * as M36 from './makemon.js';
-import * as M37 from './o_init.js';
-import * as M38 from './do_name.js';
-import * as M39 from './rumors.js';
-import * as M40 from './polyself.js';
-import * as M41 from './shk.js';
-import * as M42 from './priest.js';
-import * as M43 from './zap.js';
-import * as M44 from './alloc.js';
-import * as M45 from './mkmaze.js';
-import * as M46 from './invent.js';
-import * as M47 from './mthrowu.js';
-import * as M48 from './vision.js';
-import * as M49 from './worm.js';
-import * as M50 from './trap.js';
-import * as M51 from './botl.js';
-import * as M52 from './coloratt.js';
-import * as M53 from './posixregex.js';
-import * as M54 from './windows.js';
-import * as M55 from './cfgfiles.js';
-import * as M56 from './nhlua.js';
-import * as M57 from './ldblib.js';
-import * as M58 from './lparser.js';
-import * as M59 from './ltable.js';
-import * as M60 from './lvm.js';
-import * as M61 from './lgc.js';
-import * as M62 from './ltm.js';
-import * as M63 from './ldebug.js';
-import * as M64 from './lopcodes.js';
-import * as M65 from './lobject.js';
-import * as M66 from './lctype.js';
-import * as M67 from './lcode.js';
-import * as M68 from './llex.js';
-import * as M69 from './lauxlib.js';
-import * as M70 from './lapi.js';
-import * as M71 from './topl.js';
-import * as M72 from './getline.js';
-import * as M73 from './wintty.js';
-import * as M74 from './pray.js';
-import * as M75 from './dbridge.js';
-import * as M76 from './explode.js';
-import * as M77 from './do.js';
-import * as M78 from './mhitu.js';
-import * as M79 from './wield.js';
-import * as M80 from './pickup.js';
-import * as M81 from './dothrow.js';
-import * as M82 from './uhitm.js';
-import * as M83 from './pager.js';
-import * as M84 from './version.js';
-import * as M85 from './sfbase.js';
-import * as M86 from './sfstruct.js';
-import * as M87 from './mdlib.js';
-import * as M88 from './date.js';
-import * as M89 from './engrave.js';
-import * as M90 from './track.js';
-import * as M91 from './steed.js';
-import * as M92 from './dogmove.js';
-import * as M93 from './apply.js';
-import * as M94 from './music.js';
-import * as M95 from './mondata.js';
-import * as M96 from './attrib.js';
-import * as M97 from './potion.js';
-import * as M98 from './role.js';
-import * as M99 from './mhitm.js';
-import * as M100 from './artifact.js';
-import * as M101 from './steal.js';
-import * as M102 from './timeout.js';
-import * as M103 from './dig.js';
-import * as M104 from './shknam.js';
+import * as M3 from './windows.js';
+import * as M4 from './cmd.js';
+import * as M5 from './unixunix.js';
+import * as M6 from './sys.js';
+import * as M7 from './end.js';
+import * as M8 from './report.js';
+import * as M9 from './pline.js';
+import * as M10 from './files.js';
+import * as M11 from './allmain.js';
+import * as M12 from './insight.js';
+import * as M13 from './region.js';
+import * as M14 from './teleport.js';
+import * as M15 from './dog.js';
+import * as M16 from './sounds.js';
+import * as M17 from './worn.js';
+import * as M18 from './weapon.js';
+import * as M19 from './hacklib.js';
+import * as M20 from './alloc.js';
+import * as M21 from './spell.js';
+import * as M22 from './dothrow.js';
+import * as M23 from './explode.js';
+import * as M24 from './do.js';
+import * as M25 from './mhitu.js';
+import * as M26 from './shk.js';
+import * as M27 from './makemon.js';
+import * as M28 from './o_init.js';
+import * as M29 from './do_name.js';
+import * as M30 from './options.js';
+import * as M31 from './glyphs.js';
+import * as M32 from './earlyarg.js';
+import * as M33 from './hack.js';
+import * as M34 from './save.js';
+import * as M35 from './botl.js';
+import * as M36 from './coloratt.js';
+import * as M37 from './posixregex.js';
+import * as M38 from './display.js';
+import * as M39 from './drawing.js';
+import * as M40 from './objects.js';
+import * as M41 from './monst.js';
+import * as M42 from './getpos.js';
+import * as M43 from './objnam.js';
+import * as M44 from './questpgr.js';
+import * as M45 from './lauxlib.js';
+import * as M46 from './lparser.js';
+import * as M47 from './ltable.js';
+import * as M48 from './lvm.js';
+import * as M49 from './lgc.js';
+import * as M50 from './ltm.js';
+import * as M51 from './ldebug.js';
+import * as M52 from './lopcodes.js';
+import * as M53 from './lobject.js';
+import * as M54 from './lctype.js';
+import * as M55 from './lcode.js';
+import * as M56 from './llex.js';
+import * as M57 from './lapi.js';
+import * as M58 from './topl.js';
+import * as M59 from './unixtty.js';
+import * as M60 from './termcap.js';
+import * as M61 from './symbols.js';
+import * as M62 from './dungeon.js';
+import * as M63 from './topten.js';
+import * as M64 from './mkobj.js';
+import * as M65 from './mondata.js';
+import * as M66 from './vision.js';
+import * as M67 from './worm.js';
+import * as M68 from './trap.js';
+import * as M69 from './lock.js';
+import * as M70 from './potion.js';
+import * as M71 from './role.js';
+import * as M72 from './pray.js';
+import * as M73 from './dbridge.js';
+import * as M74 from './engrave.js';
+import * as M75 from './mkmaze.js';
+import * as M76 from './invent.js';
+import * as M77 from './mthrowu.js';
+import * as M78 from './wield.js';
+import * as M79 from './pickup.js';
+import * as M80 from './polyself.js';
+import * as M81 from './zap.js';
+import * as M82 from './pager.js';
+import * as M83 from './version.js';
+import * as M84 from './sfbase.js';
+import * as M85 from './sfstruct.js';
+import * as M86 from './nhlua.js';
+import * as M87 from './ldblib.js';
+import * as M88 from './lutf8lib.js';
+import * as M89 from './lmathlib.js';
+import * as M90 from './lstrlib.js';
+import * as M91 from './loslib.js';
+import * as M92 from './ltablib.js';
+import * as M93 from './lcorolib.js';
+import * as M94 from './lbaselib.js';
+import * as M95 from './nhlsel.js';
+import * as M96 from './rect.js';
+import * as M97 from './sp_lev.js';
+import * as M98 from './detect.js';
+import * as M99 from './artifact.js';
+import * as M100 from './steed.js';
+import * as M101 from './dogmove.js';
+import * as M102 from './apply.js';
+import * as M103 from './music.js';
+import * as M104 from './attrib.js';
 import * as M105 from './mon.js';
 import * as M106 from './ball.js';
-import * as M107 from './mkobj.js';
-import * as M108 from './lock.js';
-import * as M109 from './eat.js';
-import * as M110 from './read.js';
-import * as M111 from './minion.js';
+import * as M107 from './uhitm.js';
+import * as M108 from './mcastu.js';
+import * as M109 from './sit.js';
+import * as M110 from './fountain.js';
+import * as M111 from './do_wear.js';
 import * as M112 from './wizard.js';
-import * as M113 from './sit.js';
-import * as M114 from './fountain.js';
-import * as M115 from './do_wear.js';
-import * as M116 from './monmove.js';
-import * as M117 from './mcastu.js';
-import * as M118 from './muse.js';
-import * as M119 from './detect.js';
-import * as M120 from './mkroom.js';
-import * as M121 from './mklev.js';
-import * as M122 from './rect.js';
-import * as M123 from './sp_lev.js';
-import * as M124 from './nhlsel.js';
-import * as M125 from './selvar.js';
-import * as M126 from './nhlobj.js';
-import * as M127 from './mplayer.js';
-import * as M128 from './mkmap.js';
-import * as M129 from './mail.js';
-import * as M130 from './spell.js';
-import * as M131 from './dokick.js';
-import * as M132 from './write.js';
-import * as M133 from './ioctl.js';
-import * as M134 from './rip.js';
-import * as M135 from './lutf8lib.js';
-import * as M136 from './lmathlib.js';
-import * as M137 from './lstrlib.js';
-import * as M138 from './loslib.js';
-import * as M139 from './ltablib.js';
-import * as M140 from './lcorolib.js';
-import * as M141 from './lbaselib.js';
-import * as M142 from './iactions.js';
+import * as M113 from './minion.js';
+import * as M114 from './steal.js';
+import * as M115 from './track.js';
+import * as M116 from './mkroom.js';
+import * as M117 from './priest.js';
+import * as M118 from './monmove.js';
+import * as M119 from './mhitm.js';
+import * as M120 from './eat.js';
+import * as M121 from './rumors.js';
+import * as M122 from './read.js';
+import * as M123 from './mail.js';
+import * as M124 from './dig.js';
+import * as M125 from './shknam.js';
+import * as M126 from './timeout.js';
+import * as M127 from './dokick.js';
+import * as M128 from './muse.js';
+import * as M129 from './mklev.js';
+import * as M130 from './write.js';
+import * as M131 from './selvar.js';
+import * as M132 from './nhlobj.js';
+import * as M133 from './mplayer.js';
+import * as M134 from './mkmap.js';
+import * as M135 from './cfgfiles.js';
+import * as M136 from './mdlib.js';
+import * as M137 from './date.js';
+import * as M138 from './iactions.js';
+import * as M139 from './wintty.js';
+import * as M140 from './ioctl.js';
+import * as M141 from './rip.js';
+import * as M142 from './getline.js';
 import * as M143 from './wizcmds.js';
 import * as M144 from './u_init.js';
 import * as MENTRY from './unixmain.js';
@@ -167,146 +167,146 @@ const MODULES = [
     ['calendar.js', M0],
     ['rnd.js', M1],
     ['decl.js', M2],
-    ['hacklib.js', M3],
-    ['options.js', M4],
-    ['glyphs.js', M5],
-    ['earlyarg.js', M6],
-    ['hack.js', M7],
-    ['save.js', M8],
-    ['sys.js', M9],
-    ['end.js', M10],
-    ['report.js', M11],
-    ['pline.js', M12],
-    ['files.js', M13],
-    ['allmain.js', M14],
-    ['insight.js', M15],
-    ['region.js', M16],
-    ['teleport.js', M17],
-    ['dog.js', M18],
-    ['sounds.js', M19],
-    ['worn.js', M20],
-    ['weapon.js', M21],
-    ['cmd.js', M22],
-    ['unixunix.js', M23],
-    ['unixtty.js', M24],
-    ['termcap.js', M25],
-    ['symbols.js', M26],
-    ['dungeon.js', M27],
-    ['topten.js', M28],
-    ['display.js', M29],
-    ['drawing.js', M30],
-    ['objects.js', M31],
-    ['monst.js', M32],
-    ['getpos.js', M33],
-    ['objnam.js', M34],
-    ['questpgr.js', M35],
-    ['makemon.js', M36],
-    ['o_init.js', M37],
-    ['do_name.js', M38],
-    ['rumors.js', M39],
-    ['polyself.js', M40],
-    ['shk.js', M41],
-    ['priest.js', M42],
-    ['zap.js', M43],
-    ['alloc.js', M44],
-    ['mkmaze.js', M45],
-    ['invent.js', M46],
-    ['mthrowu.js', M47],
-    ['vision.js', M48],
-    ['worm.js', M49],
-    ['trap.js', M50],
-    ['botl.js', M51],
-    ['coloratt.js', M52],
-    ['posixregex.js', M53],
-    ['windows.js', M54],
-    ['cfgfiles.js', M55],
-    ['nhlua.js', M56],
-    ['ldblib.js', M57],
-    ['lparser.js', M58],
-    ['ltable.js', M59],
-    ['lvm.js', M60],
-    ['lgc.js', M61],
-    ['ltm.js', M62],
-    ['ldebug.js', M63],
-    ['lopcodes.js', M64],
-    ['lobject.js', M65],
-    ['lctype.js', M66],
-    ['lcode.js', M67],
-    ['llex.js', M68],
-    ['lauxlib.js', M69],
-    ['lapi.js', M70],
-    ['topl.js', M71],
-    ['getline.js', M72],
-    ['wintty.js', M73],
-    ['pray.js', M74],
-    ['dbridge.js', M75],
-    ['explode.js', M76],
-    ['do.js', M77],
-    ['mhitu.js', M78],
-    ['wield.js', M79],
-    ['pickup.js', M80],
-    ['dothrow.js', M81],
-    ['uhitm.js', M82],
-    ['pager.js', M83],
-    ['version.js', M84],
-    ['sfbase.js', M85],
-    ['sfstruct.js', M86],
-    ['mdlib.js', M87],
-    ['date.js', M88],
-    ['engrave.js', M89],
-    ['track.js', M90],
-    ['steed.js', M91],
-    ['dogmove.js', M92],
-    ['apply.js', M93],
-    ['music.js', M94],
-    ['mondata.js', M95],
-    ['attrib.js', M96],
-    ['potion.js', M97],
-    ['role.js', M98],
-    ['mhitm.js', M99],
-    ['artifact.js', M100],
-    ['steal.js', M101],
-    ['timeout.js', M102],
-    ['dig.js', M103],
-    ['shknam.js', M104],
+    ['windows.js', M3],
+    ['cmd.js', M4],
+    ['unixunix.js', M5],
+    ['sys.js', M6],
+    ['end.js', M7],
+    ['report.js', M8],
+    ['pline.js', M9],
+    ['files.js', M10],
+    ['allmain.js', M11],
+    ['insight.js', M12],
+    ['region.js', M13],
+    ['teleport.js', M14],
+    ['dog.js', M15],
+    ['sounds.js', M16],
+    ['worn.js', M17],
+    ['weapon.js', M18],
+    ['hacklib.js', M19],
+    ['alloc.js', M20],
+    ['spell.js', M21],
+    ['dothrow.js', M22],
+    ['explode.js', M23],
+    ['do.js', M24],
+    ['mhitu.js', M25],
+    ['shk.js', M26],
+    ['makemon.js', M27],
+    ['o_init.js', M28],
+    ['do_name.js', M29],
+    ['options.js', M30],
+    ['glyphs.js', M31],
+    ['earlyarg.js', M32],
+    ['hack.js', M33],
+    ['save.js', M34],
+    ['botl.js', M35],
+    ['coloratt.js', M36],
+    ['posixregex.js', M37],
+    ['display.js', M38],
+    ['drawing.js', M39],
+    ['objects.js', M40],
+    ['monst.js', M41],
+    ['getpos.js', M42],
+    ['objnam.js', M43],
+    ['questpgr.js', M44],
+    ['lauxlib.js', M45],
+    ['lparser.js', M46],
+    ['ltable.js', M47],
+    ['lvm.js', M48],
+    ['lgc.js', M49],
+    ['ltm.js', M50],
+    ['ldebug.js', M51],
+    ['lopcodes.js', M52],
+    ['lobject.js', M53],
+    ['lctype.js', M54],
+    ['lcode.js', M55],
+    ['llex.js', M56],
+    ['lapi.js', M57],
+    ['topl.js', M58],
+    ['unixtty.js', M59],
+    ['termcap.js', M60],
+    ['symbols.js', M61],
+    ['dungeon.js', M62],
+    ['topten.js', M63],
+    ['mkobj.js', M64],
+    ['mondata.js', M65],
+    ['vision.js', M66],
+    ['worm.js', M67],
+    ['trap.js', M68],
+    ['lock.js', M69],
+    ['potion.js', M70],
+    ['role.js', M71],
+    ['pray.js', M72],
+    ['dbridge.js', M73],
+    ['engrave.js', M74],
+    ['mkmaze.js', M75],
+    ['invent.js', M76],
+    ['mthrowu.js', M77],
+    ['wield.js', M78],
+    ['pickup.js', M79],
+    ['polyself.js', M80],
+    ['zap.js', M81],
+    ['pager.js', M82],
+    ['version.js', M83],
+    ['sfbase.js', M84],
+    ['sfstruct.js', M85],
+    ['nhlua.js', M86],
+    ['ldblib.js', M87],
+    ['lutf8lib.js', M88],
+    ['lmathlib.js', M89],
+    ['lstrlib.js', M90],
+    ['loslib.js', M91],
+    ['ltablib.js', M92],
+    ['lcorolib.js', M93],
+    ['lbaselib.js', M94],
+    ['nhlsel.js', M95],
+    ['rect.js', M96],
+    ['sp_lev.js', M97],
+    ['detect.js', M98],
+    ['artifact.js', M99],
+    ['steed.js', M100],
+    ['dogmove.js', M101],
+    ['apply.js', M102],
+    ['music.js', M103],
+    ['attrib.js', M104],
     ['mon.js', M105],
     ['ball.js', M106],
-    ['mkobj.js', M107],
-    ['lock.js', M108],
-    ['eat.js', M109],
-    ['read.js', M110],
-    ['minion.js', M111],
+    ['uhitm.js', M107],
+    ['mcastu.js', M108],
+    ['sit.js', M109],
+    ['fountain.js', M110],
+    ['do_wear.js', M111],
     ['wizard.js', M112],
-    ['sit.js', M113],
-    ['fountain.js', M114],
-    ['do_wear.js', M115],
-    ['monmove.js', M116],
-    ['mcastu.js', M117],
-    ['muse.js', M118],
-    ['detect.js', M119],
-    ['mkroom.js', M120],
-    ['mklev.js', M121],
-    ['rect.js', M122],
-    ['sp_lev.js', M123],
-    ['nhlsel.js', M124],
-    ['selvar.js', M125],
-    ['nhlobj.js', M126],
-    ['mplayer.js', M127],
-    ['mkmap.js', M128],
-    ['mail.js', M129],
-    ['spell.js', M130],
-    ['dokick.js', M131],
-    ['write.js', M132],
-    ['ioctl.js', M133],
-    ['rip.js', M134],
-    ['lutf8lib.js', M135],
-    ['lmathlib.js', M136],
-    ['lstrlib.js', M137],
-    ['loslib.js', M138],
-    ['ltablib.js', M139],
-    ['lcorolib.js', M140],
-    ['lbaselib.js', M141],
-    ['iactions.js', M142],
+    ['minion.js', M113],
+    ['steal.js', M114],
+    ['track.js', M115],
+    ['mkroom.js', M116],
+    ['priest.js', M117],
+    ['monmove.js', M118],
+    ['mhitm.js', M119],
+    ['eat.js', M120],
+    ['rumors.js', M121],
+    ['read.js', M122],
+    ['mail.js', M123],
+    ['dig.js', M124],
+    ['shknam.js', M125],
+    ['timeout.js', M126],
+    ['dokick.js', M127],
+    ['muse.js', M128],
+    ['mklev.js', M129],
+    ['write.js', M130],
+    ['selvar.js', M131],
+    ['nhlobj.js', M132],
+    ['mplayer.js', M133],
+    ['mkmap.js', M134],
+    ['cfgfiles.js', M135],
+    ['mdlib.js', M136],
+    ['date.js', M137],
+    ['iactions.js', M138],
+    ['wintty.js', M139],
+    ['ioctl.js', M140],
+    ['rip.js', M141],
+    ['getline.js', M142],
     ['wizcmds.js', M143],
     ['u_init.js', M144],
 ];

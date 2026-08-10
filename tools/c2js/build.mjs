@@ -21,7 +21,7 @@ import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
 import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
-import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, JS_RESERVED } from './emit.mjs';
+import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_HELPERS, JS_RESERVED } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -231,6 +231,285 @@ function writeMacroModule(values) {
   console.log(`nhmacro: ${names.length} constants exported`);
 }
 
+/**
+ * Object-like `#define`s whose body is an *expression*, indexed by the byte
+ * extent of that body inside its header: "youprop.h:4759" -> {name, endOffset}.
+ *
+ * This is the handle on the macro tier the 1.9 work deliberately left alone.
+ * There, a value born from a macro was recovered from the spelling location of
+ * the single integer token it expanded to; an expression body has no single
+ * token, so what identifies it instead is the *extent*: a node whose
+ * range.begin and range.end both spell inside one macro body, at that body's
+ * first and last token, is that macro's complete expansion and nothing else.
+ * Sub-expressions of the body start later or end earlier; a use of the macro
+ * inside another macro's body spells at the inner body.  As with the integer
+ * tier, C makes a directive own its line, so two macros can never share a key.
+ *
+ * Offsets, not (line, col): clang prints an `offset` on every location, and
+ * omits `line` whenever it is unchanged since the last location it printed.
+ *
+ * Bodies that are one integer token are excluded — those belong to nhmacro.js.
+ */
+function scanMacroExprDefs() {
+  const dir = path.join(repoRoot, 'nethack-c/recorder/include');
+  const defRe = /^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)(?![(\w])/;
+  const byExtent = new Map();
+  for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.h')).sort()) {
+    // latin1 so a string index is a byte offset, which is what clang reports
+    const text = fs.readFileSync(path.join(dir, f), 'latin1');
+    let pos = 0;
+    while (pos < text.length) {
+      let nl = text.indexOf('\n', pos);
+      if (nl < 0) nl = text.length;
+      const m = defRe.exec(text.slice(pos, nl));
+      if (m) {
+        // splice on backslash-newline continuations to get the whole body
+        let end = nl;
+        while (end > pos && text[end - 1] === '\r') end--;
+        while (text[end - 1] === '\\' || (end < text.length && text[end - 1] === '\\')) {
+          let nn = text.indexOf('\n', end + 1);
+          if (nn < 0) nn = text.length;
+          end = nn;
+          while (end > pos && text[end - 1] === '\r') end--;
+          if (text[end - 1] !== '\\') break;
+        }
+        const bodyFrom = pos + m[0].length;
+        const toks = cTokenOffsets(text, bodyFrom, end);
+        if (toks.length && !(toks.length === 1 && /^[0-9]/.test(text[toks[0]]))) {
+          byExtent.set(`${f}:${toks[0]}`, { name: m[1], end: toks[toks.length - 1], header: f });
+        }
+        pos = end + 1;
+        continue;
+      }
+      pos = nl + 1;
+    }
+  }
+  return byExtent;
+}
+
+/**
+ * Start offsets of the C tokens in text[from, to), skipping comments and
+ * backslash-newline splices. Only the first and last matter to the caller.
+ */
+function cTokenOffsets(text, from, to) {
+  const out = [];
+  let i = from;
+  while (i < to) {
+    const c = text[i];
+    if (c === ' ' || c === '\t' || c === '\r' || c === '\n') { i++; continue; }
+    if (c === '\\' && (text[i + 1] === '\n' || (text[i + 1] === '\r' && text[i + 2] === '\n'))) { i += 2; continue; }
+    if (c === '/' && text[i + 1] === '*') { const e = text.indexOf('*/', i + 2); i = e < 0 ? to : e + 2; continue; }
+    if (c === '/' && text[i + 1] === '/') { const e = text.indexOf('\n', i); i = e < 0 ? to : e; continue; }
+    out.push(i);
+    if (/[A-Za-z_0-9]/.test(c)) { while (i < to && /[A-Za-z_0-9]/.test(text[i])) i++; continue; }
+    if (c === '"' || c === "'") {
+      const q = c; i++;
+      while (i < to && text[i] !== q) i += text[i] === '\\' ? 2 : 1;
+      i++; continue;
+    }
+    i++;
+  }
+  return out;
+}
+
+/**
+ * Corpus-wide struct field offsets: "record_field" -> byte offset.
+ *
+ * Computed before any file is emitted, from the same record tables the real
+ * emitters will use, because the name has to mean the same thing in all 170
+ * modules — they share one nhfield.js.  Building it here rather than
+ * accumulating it during emission also keeps incremental builds honest: a file
+ * whose emission is skipped still has its FLD.* references resolved.
+ *
+ * A name is dropped when two translation units disagree about its offset (a
+ * file-local struct shadowing a header one) and, separately, when two
+ * different (record, field) pairs would spell it the same way — `record_field`
+ * is not an injective encoding on its own, and a name that could mean two
+ * things is exactly the "wrong name on a right value" this design refuses.
+ * Anonymous records never qualify: their emitter-internal keys (`anon#123`,
+ * `byloc#12:5`) are not identifiers, so their fields keep bare offsets.
+ */
+function collectFieldOffsets(perFile, ctorCommon) {
+  const ID = /^[A-Za-z_][A-Za-z0-9_]*$/;
+  const values = new Map();   // name -> offset
+  const owners = new Map();   // name -> "record.field" that produced it
+  const conflicted = new Set();
+  let ambiguous = 0;
+  for (const pf of perFile) {
+    if (pf.parseError) continue;
+    let em;
+    try {
+      em = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: '', fileName: `${pf.name}.c`,
+        extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc,
+        enumValues: pf.enumValues, ...ctorCommon });
+    } catch { continue; }
+    for (const [recName, rec] of em.records) {
+      if (!ID.test(recName) || rec.tag === 'enum' || JS_RESERVED.has(recName)) continue;
+      let layout;
+      try { layout = em.layoutOf(recName); } catch { continue; } // incomplete field type
+      for (const [field, off] of Object.entries(layout.offsets)) {
+        if (!ID.test(field)) continue;
+        const name = `${recName}_${field}`;
+        if (JS_RESERVED.has(name)) continue;
+        const owner = `${recName}.${field}`;
+        if (owners.has(name) && owners.get(name) !== owner) { conflicted.add(name); ambiguous++; continue; }
+        owners.set(name, owner);
+        if (values.has(name) && values.get(name) !== off) conflicted.add(name);
+        else values.set(name, off);
+      }
+    }
+  }
+  for (const n of conflicted) values.delete(n);
+  if (conflicted.size) {
+    console.log(`nhfield: ${conflicted.size} name(s) refused (${ambiguous} ambiguous spelling, ` +
+      `${conflicted.size - ambiguous} conflicting offset): ` + [...conflicted].slice(0, 12).join(', '));
+  }
+  return values;
+}
+
+/**
+ * Write js/generated/nhfield.js with exactly the offsets the emitted modules
+ * reference, read back out of the generated files — same discipline, and same
+ * reason, as writeMacroModule(): a missing export is a runtime `undefined` in
+ * a byte-exact program, and an incremental build cannot be trusted to have
+ * reported every name.
+ */
+function writeFieldModule(values) {
+  const outDir = path.join(repoRoot, 'js/generated');
+  const used = new Set();
+  const ref = new RegExp(`\\b${FIELD_NS}\\.([A-Za-z_][A-Za-z0-9_]*)`, 'g');
+  for (const f of fs.readdirSync(outDir)) {
+    if (!f.endsWith('.js') || f === path.basename(FIELD_MODULE)) continue;
+    const text = fs.readFileSync(path.join(outDir, f), 'utf8');
+    for (const m of text.matchAll(ref)) used.add(m[1]);
+  }
+  const names = [...used].sort();
+  const missing = names.filter((n) => !values.has(n));
+  if (missing.length) throw new Error(`nhfield: emitted names with no offset: ${missing.join(', ')}`);
+  const lines = [
+    '// Generated by tools/c2js — do not edit by hand',
+    '// Byte offsets of C struct/union fields in the port\'s byte-packed record',
+    '// layout, named `<record>_<field>` (see fieldOffCode() in tools/c2js/emit.mjs).',
+    `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
+    '//',
+    '// The layout is the emitter\'s own (layoutOf), not the host C ABI\'s: it only',
+    '// has to be self-consistent inside the port. These names are what makes a',
+    '// NetHack 5.1 struct change a readable diff of this file instead of a',
+    '// scatter of renumbered integers across 170 modules.',
+    '//',
+    `// Referenced through a namespace import (\`import * as ${FIELD_NS} from '${FIELD_MODULE}'\`),`,
+    `// for the same reason ${CONST_NS} and ${MACRO_NS} are: a C local can shadow the name,`,
+    '// a member access cannot be shadowed.',
+    '',
+    ...names.map((n) => `export const ${n} = ${values.get(n)};`),
+    '',
+  ];
+  fs.writeFileSync(path.join(outDir, path.basename(FIELD_MODULE)), lines.join('\n'));
+  console.log(`nhfield: ${names.length} field offsets exported (${values.size} available)`);
+}
+
+/**
+ * Write js/generated/nhprop.js: one tiny function per object-like macro whose
+ * body the emitters captured, with the imports those bodies need.
+ *
+ * The exported set is read back out of the generated files' import lists, for
+ * the reason writeMacroModule() gives — a missing export is a runtime
+ * `undefined` in a byte-exact program, and only a --force build has run every
+ * emitter.  Each free identifier is resolved to its defining module through
+ * the same symbol table the cross-file imports use.
+ */
+function writePropModule(symbols) {
+  const outDir = path.join(repoRoot, 'js/generated');
+  const base = path.basename(PROP_MODULE);
+  const used = new Set();
+  const importRe = new RegExp(`import \\{([^}]*)\\} from '\\./${base.replace('.', '\\.')}';`, 'g');
+  for (const f of fs.readdirSync(outDir)) {
+    if (!f.endsWith('.js') || f === base) continue;
+    for (const m of fs.readFileSync(path.join(outDir, f), 'utf8').matchAll(importRe)) {
+      for (const nm of m[1].split(',')) if (nm.trim()) used.add(nm.trim());
+    }
+  }
+  const names = [...used].sort();
+  const missing = names.filter((n) => !MACRO_HELPERS.has(n));
+  if (missing.length) throw new Error(`nhprop: called helpers with no captured body (rebuild with --force): ${missing.join(', ')}`);
+  const byFile = new Map();
+  for (const n of names) {
+    for (const v of MACRO_HELPERS.get(n).free) {
+      const sym = symbols.get(v);
+      if (!sym) throw new Error(`nhprop: helper ${n} reads ${v}, which no module exports`);
+      if (!byFile.has(sym.file)) byFile.set(sym.file, new Set());
+      byFile.get(sym.file).add(v);
+    }
+  }
+  const bodies = names.map((n) => {
+    const h = MACRO_HELPERS.get(n);
+    return [`/** C: include/${h.header} — the \`${n}\` macro body */`,
+      `export function ${n}() { return ${h.code}; }`].join('\n');
+  });
+  const text = bodies.join('\n\n');
+  const fieldRefs = new Set([...text.matchAll(new RegExp(`\\${FIELD_PREFIX}([A-Za-z_][A-Za-z0-9_]*)`, 'g'))].map((m) => m[1]));
+  const imports = ["import * as cptr from '../cptr.js';"];
+  if (new RegExp(`\\b${CONST_NS}\\.`).test(text)) imports.push(`import * as ${CONST_NS} from '${CONST_MODULE}';`);
+  if (new RegExp(`\\b${MACRO_NS}\\.`).test(text)) imports.push(`import * as ${MACRO_NS} from '${MACRO_MODULE}';`);
+  if (fieldRefs.size) imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
+  for (const [file, vars] of [...byFile].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    imports.push(`import { ${[...vars].sort().join(', ')} } from './${file}.js';`);
+  }
+  const lines = [
+    '// Generated by tools/c2js — do not edit by hand',
+    '// One function per NetHack object-like macro whose body is an expression:',
+    '// the body as this port emits it, named by the macro that spelled it (see',
+    '// macroBodyAt()/macroHelper() in tools/c2js/emit.mjs).',
+    `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
+    '//',
+    '// A call site takes the name only when its own emission of the body is',
+    '// character-for-character the body below, so these are shorthand for code',
+    '// the generated modules would otherwise repeat verbatim — never a',
+    '// reinterpretation of it.',
+    '//',
+    '// Imported by bare name rather than through a namespace: unlike an enum',
+    '// constant or a #define, a live object-like macro cannot be shadowed by a C',
+    '// identifier, because the preprocessor would have expanded that identifier.',
+    '',
+    ...imports,
+    '',
+    ...(fieldRefs.size ? [fieldPreamble(fieldRefs, null, base), ''] : []),
+    text,
+    '',
+  ];
+  fs.writeFileSync(path.join(outDir, base), lines.join('\n'));
+  console.log(`nhprop: ${names.length} macro-body helpers exported (${MACRO_HELPERS.size} captured)`);
+}
+
+/**
+ * The module-scope bindings for the struct field offsets a file uses.
+ *
+ * A site spells the offset `$monst_data` rather than `FLD.monst_data` because
+ * V8 constant-folds a module-scope `const` and does not fold a namespace load
+ * — worth 8.1% of the corpus per-move time over 150k sites (see
+ * docs/NOTES-readability.md §2). The values still come from nhfield.js; this
+ * is a fold hint, not a second table.
+ *
+ * The `$` prefix cannot collide with anything the emitter emits for C code,
+ * since a C identifier cannot contain `$`; the assertion is kept anyway.
+ */
+function fieldPreamble(refs, declared, where) {
+  if (!refs.size) return null;
+  const names = [...refs].sort();
+  const clash = names.filter((n) => declared && declared.has(FIELD_PREFIX + n));
+  if (clash.length) throw new Error(`field-offset binding(s) collide with a declaration in ${where}: ${clash.join(', ')}`);
+  const lines = ['// struct field offsets used below, bound at module scope so V8 folds them',
+    `// (values from ${FIELD_MODULE}, which is the whole table)`];
+  let cur = 'const ';
+  for (let i = 0; i < names.length; i++) {
+    const piece = `${FIELD_PREFIX}${names[i]} = ${FIELD_NS}.${names[i]}${i === names.length - 1 ? ';' : ','}`;
+    if (cur !== 'const ' && cur.length + piece.length > 110) { lines.push(cur.trimEnd()); cur = '    '; }
+    cur += piece + ' ';
+  }
+  lines.push(cur.trimEnd());
+  return lines.join('\n');
+}
+
 /** assemble a generated module from emitter output (+ optional prelude/imports) */
 function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports }) {
   const header = [
@@ -264,16 +543,31 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
     if (bare) throw new Error(`macro-constant prefix ${MACRO_NS} collides with an emitted identifier in ${name}.c`);
     imports.push(`import * as ${MACRO_NS} from '${MACRO_MODULE}';`);
   }
+  if (emitter.fieldRefs.size) {
+    const bare = (bodyText + (prelude || '')).match(new RegExp(`\\b${FIELD_NS}\\b(?!\\.)`, 'g'));
+    if (bare) throw new Error(`field-offset prefix ${FIELD_NS} collides with an emitted identifier in ${name}.c`);
+    imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
+  }
+  if (emitter.propRefs.size) {
+    // bare-name import: a C identifier cannot be named after a live
+    // object-like macro, so nothing emitted here can shadow one — asserted
+    // rather than assumed, as with the NHC/NHM/FLD prefixes
+    const clash = [...emitter.propRefs].filter((n) => emitter.declared.has(n));
+    if (clash.length) throw new Error(`macro helper name(s) collide with a declaration in ${name}.c: ${clash.join(', ')}`);
+    imports.push(`import { ${[...emitter.propRefs].sort().join(', ')} } from '${PROP_MODULE}';`);
+  }
   for (const [file, names] of crossImports || []) {
     imports.push(`import { ${names.sort().join(', ')} } from './${file}.js';`);
   }
+
+  const fieldTable = fieldPreamble(emitter.fieldRefs, emitter.declared, `${name}.c`);
 
   const stringTable = emitter.stringList.length
     ? ['// string literals (C char* uses decay to CPtr into these static buffers)',
       ...emitter.stringList.map((raw, i) => `const __sl${i} = cptr.lit(${raw});`)].join('\n')
     : null;
 
-  return [header, '', ...imports, '', ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
+  return [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
 }
 
 function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
@@ -325,6 +619,11 @@ function causeOf(err) {
   if ((mm = m.match(/^(compound assign \S+ on [^ ]+ [^ ]+ [^ ]+)/))) return mm[1];
   return m.length > 90 ? m.slice(0, 90) + '…' : m;
 }
+
+// decl.js is the globals hub of a giant import cycle and is kept a leaf of it
+// (see the IMPORT_SKIP note below); nhprop.js reads those globals, so decl.js
+// keeps its macro expansions inline rather than importing back into the cycle.
+const PROP_SKIP = new Set(['decl']);
 
 function buildAll() {
   const force = process.argv.includes('--force');
@@ -380,6 +679,10 @@ function buildAll() {
   }
   const constNames = writeConstModule(perFile);
   const { byKey: macroDefs, values: macroValues } = scanMacroDefs();
+  // struct field offsets have to be agreed corpus-wide before the first file
+  // is emitted; see collectFieldOffsets
+  const fieldOffsets = collectFieldOffsets(perFile, { externBoxed, recordGlobals, recordArrays, bitfieldWidths });
+  const macroExprDefs = scanMacroExprDefs();
   console.log(`pass 1: ${perFile.length} slim IRs (${rebuilt} rebuilt) in ${((Date.now() - t0) / 1000).toFixed(1)}s; ` +
     `${symbols.size} importable symbols, ${conflicts.size} conflicts`);
 
@@ -405,7 +708,7 @@ function buildAll() {
       // current emitter (prelude included, no cross imports) — the batch
       // import graph reads them from disk, so a stale emission breaks parity
       try {
-        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths });
+        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, recordGlobals, recordArrays, bitfieldWidths });
         const chunks = emitter.emitModule();
         const sha = crypto.createHash('sha256').update(fs.readFileSync(pf.file)).digest('hex');
         const out = assemble({ name: pf.name, srcRel: path.relative(repoRoot, pf.file), sha, emitter, chunks, prelude: loadPrelude(pf.name), crossImports: null });
@@ -419,7 +722,7 @@ function buildAll() {
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, recordGlobals, recordArrays, bitfieldWidths });
       const chunks = emitter.emitModule();
       // cross-file imports: referenced but not declared here. decl.js must
       // stay a leaf (it is the globals hub in a giant import cycle); its one
@@ -452,6 +755,8 @@ function buildAll() {
 
   // after emission, so the module exports exactly what the files reference
   writeMacroModule(macroValues);
+  writeFieldModule(fieldOffsets);
+  writePropModule(symbols);
 
   const ok = results.filter((r) => r.ok === true);
   const skipped = results.filter((r) => r.ok === 'skipped');

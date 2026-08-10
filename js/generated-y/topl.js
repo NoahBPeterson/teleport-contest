@@ -11,6 +11,8 @@ import * as Y from '../yield-rt.js';
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { CO, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr } from './nhprop.js';
 import { BASE_WINDOW, defmorestr, docorner, end_glyphout, g_putch, ttyDisplay, tty_clear_nhwindow, tty_curs, wins } from './wintty.js';
 import { WIN_MESSAGE, flags, gs, gt, iflags, program_state, quitchars, svx, yn_number } from './decl.js';
 import { windowprocs } from './windows.js';
@@ -22,6 +24,27 @@ import { custompline, dumplogmsg, nhassert_failed } from './pline.js';
 import { digit, eos, lowc } from './hacklib.js';
 import { key2txt, readchar } from './cmd.js';
 import { erase_char } from './unixtty.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayDesc_cury,
+    $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more, $DisplayDesc_inmore = FLD.DisplayDesc_inmore,
+    $DisplayDesc_inread = FLD.DisplayDesc_inread, $DisplayDesc_intr = FLD.DisplayDesc_intr,
+    $DisplayDesc_mixed = FLD.DisplayDesc_mixed, $DisplayDesc_topl_utf8 = FLD.DisplayDesc_topl_utf8,
+    $DisplayDesc_toplin = FLD.DisplayDesc_toplin, $WinDesc_curx = FLD.WinDesc_curx,
+    $WinDesc_cury = FLD.WinDesc_cury, $WinDesc_data = FLD.WinDesc_data, $WinDesc_datlen = FLD.WinDesc_datlen,
+    $WinDesc_maxcol = FLD.WinDesc_maxcol, $WinDesc_maxrow = FLD.WinDesc_maxrow,
+    $WinDesc_rows = FLD.WinDesc_rows, $flag_standout = FLD.flag_standout,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_flags_prevmsg_window = FLD.instance_flags_prevmsg_window,
+    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+    $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+    $instance_globals_t_toplines = FLD.instance_globals_t_toplines,
+    $sinfo_in_checkpoint = FLD.sinfo_in_checkpoint, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("Message History");
@@ -48,113 +71,113 @@ export function* tty_doprev_message() {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let prevmsg_win;
     let i;
-    if ((cptr.ld1so(iflags, 176) != 115) && !cptr.ldI32o(ttyDisplay, 36) ? 1 : 0) {
-        if (cptr.ld1so(iflags, 176) == 102) {
-            prevmsg_win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl0)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl1)));
-            cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
-            i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, 56)));
+    if ((cptr.ld1so(iflags, $instance_flags_prevmsg_window) != 115) && !cptr.ldI32o(ttyDisplay, $DisplayDesc_inread)) {
+        if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 102) {
+            prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+            cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
+            i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxcol)));
             do {
-                if (cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8), __sl1) ? 1 : 0)
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8))));
-                i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, 16))));
-            } while (BigInt(i) != cptr.ldI64o(cw, 56));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.add(gt, 26))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(prevmsg_win, 1)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(prevmsg_win)));
-        } else if (cptr.ld1so(iflags, 176) == 99) {
+                if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __sl1))
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8))));
+                i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows))));
+            } while (BigInt(i) != cptr.ldI64o(cw, $WinDesc_maxcol));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.add(gt, $instance_globals_t_toplines))));
+            (yield* Y.icall(display_nhwindow()(prevmsg_win, 1)));
+            (yield* Y.icall(destroy_nhwindow()(prevmsg_win)));
+        } else if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 99) {
             do {
                 morc.v = 0;
-                if (cptr.ldI64o(cw, 56) == cptr.ldI64o(cw, 48)) {
-                    cptr.st1o(ttyDisplay, 48, 16);
-                    (yield* redotoplin(cptr.add(gt, 26)));
-                    (cptr.stI64o(cw, 56, cptr.ldI64o(cw, 56) + -1n)) - (-1n);
-                    if (cptr.ldI64o(cw, 56) < 0n)
-                        cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 16) - 1n));
-                    if (!cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))
-                        cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
-                } else if (cptr.ldI64o(cw, 56) == (BigInt.asIntN(64, cptr.ldI64o(cw, 48) - 1n))) {
-                    cptr.st1o(ttyDisplay, 48, 16);
-                    (yield* redotoplin(cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8)));
-                    (cptr.stI64o(cw, 56, cptr.ldI64o(cw, 56) + -1n)) - (-1n);
-                    if (cptr.ldI64o(cw, 56) < 0n)
-                        cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 16) - 1n));
-                    if (!cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))
-                        cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
+                if (cptr.ldI64o(cw, $WinDesc_maxcol) == cptr.ldI64o(cw, $WinDesc_maxrow)) {
+                    cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 16);
+                    (yield* redotoplin(cptr.add(gt, $instance_globals_t_toplines)));
+                    (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) - (-1n);
+                    if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
+                        cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) - 1n));
+                    if (!cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))
+                        cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
+                } else if (cptr.ldI64o(cw, $WinDesc_maxcol) == (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n))) {
+                    cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 16);
+                    (yield* redotoplin(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8)));
+                    (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) - (-1n);
+                    if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
+                        cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) - 1n));
+                    if (!cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))
+                        cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                 } else {
-                    prevmsg_win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl0)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl1)));
-                    cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
-                    i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, 56)));
+                    prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+                    cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
+                    i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxcol)));
                     do {
-                        if (cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8), __sl1) ? 1 : 0)
-                            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, 80), i, 8))));
-                        i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, 16))));
-                    } while (BigInt(i) != cptr.ldI64o(cw, 56));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.add(gt, 26))));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(prevmsg_win, 1)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(prevmsg_win)));
+                        if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __sl1))
+                            (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8))));
+                        i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows))));
+                    } while (BigInt(i) != cptr.ldI64o(cw, $WinDesc_maxcol));
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.add(gt, $instance_globals_t_toplines))));
+                    (yield* Y.icall(display_nhwindow()(prevmsg_win, 1)));
+                    (yield* Y.icall(destroy_nhwindow()(prevmsg_win)));
                 }
             } while (morc.v == 16);
-            cptr.st1o(ttyDisplay, 48, 0);
+            cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
         } else {
             morc.v = 0;
-            prevmsg_win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl0)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, __sl1)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.add(gt, 26))));
-            cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 48) - 1n));
-            if (cptr.ldI64o(cw, 56) < 0n)
-                cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 16) - 1n));
+            prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.add(gt, $instance_globals_t_toplines))));
+            cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n));
+            if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
+                cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) - 1n));
             do {
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))));
-                (cptr.stI64o(cw, 56, cptr.ldI64o(cw, 56) + -1n)) - (-1n);
-                if (cptr.ldI64o(cw, 56) < 0n)
-                    cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 16) - 1n));
-                if (!cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))
-                    cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
-            } while (cptr.ldI64o(cw, 56) != cptr.ldI64o(cw, 48));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(prevmsg_win, 1)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(prevmsg_win)));
-            cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
-            cptr.st1o(ttyDisplay, 48, 0);
+                (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))));
+                (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) - (-1n);
+                if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
+                    cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) - 1n));
+                if (!cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))
+                    cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
+            } while (cptr.ldI64o(cw, $WinDesc_maxcol) != cptr.ldI64o(cw, $WinDesc_maxrow));
+            (yield* Y.icall(display_nhwindow()(prevmsg_win, 1)));
+            (yield* Y.icall(destroy_nhwindow()(prevmsg_win)));
+            cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
+            cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
         }
-    } else if (cptr.ld1so(iflags, 176) == 115) {
-        cptr.st1o(ttyDisplay, 48, 16);
+    } else if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 115) {
+        cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 16);
         do {
             morc.v = 0;
-            if (cptr.ldI64o(cw, 56) == cptr.ldI64o(cw, 48))
-                (yield* redotoplin(cptr.add(gt, 26)));
-            else if (cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))
-                (yield* redotoplin(cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8)));
-            (cptr.stI64o(cw, 56, cptr.ldI64o(cw, 56) + -1n)) - (-1n);
-            if (cptr.ldI64o(cw, 56) < 0n)
-                cptr.stI64o(cw, 56, BigInt.asIntN(64, cptr.ldI64o(cw, 16) - 1n));
-            if (!cptr.ldPtro(cptr.ldPtro(cw, 80), cptr.ldI64o(cw, 56), 8))
-                cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
+            if (cptr.ldI64o(cw, $WinDesc_maxcol) == cptr.ldI64o(cw, $WinDesc_maxrow))
+                (yield* redotoplin(cptr.add(gt, $instance_globals_t_toplines)));
+            else if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))
+                (yield* redotoplin(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8)));
+            (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) - (-1n);
+            if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
+                cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) - 1n));
+            if (!cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_maxcol), 8))
+                cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
         } while (morc.v == 16);
-        cptr.st1o(ttyDisplay, 48, 0);
+        cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
     }
     return 0;
 }
 
 /** C ref: topl.c:122 — @param {CPtr} str */
 function* redotoplin(str) {
-    let otoplin = cptr.ldI32o(ttyDisplay, 24);
+    let otoplin = cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin);
     (yield* home());
-    if (!cptr.ldI32o(ttyDisplay, 52)) {
-        if (cptr.ldI32o(ttyDisplay, 56) && (cptr.ld1s(str) & 128) ? 1 : 0) {
+    if (!cptr.ldI32o(ttyDisplay, $DisplayDesc_topl_utf8)) {
+        if (cptr.ldI32o(ttyDisplay, $DisplayDesc_mixed) && (cptr.ld1s(str) & 128)) {
             g_putch(cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; })));
-            (cptr.stI16o(ttyDisplay, 4, cptr.ldI16o(ttyDisplay, 4) + 1)) - (1);
+            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
         }
         end_glyphout();
     }
     (yield* putsyms(str));
     (yield* cl_end());
-    cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_NEED_MORE);
-    if (cptr.ldI16o(ttyDisplay, 6) && otoplin != NHM.TOPLINE_SPECIAL_PROMPT ? 1 : 0)
+    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
+    if (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) && otoplin != NHM.TOPLINE_SPECIAL_PROMPT)
         (yield* more());
 }
 
@@ -163,81 +186,81 @@ export function* show_topl(str) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     if ((cptr.ldI32(cw) & 5) != NHM.WIN_STOP) {
         cptr.stI32(cw, cptr.ldI32(cw) & -6);
-        if (cptr.ldI16o(ttyDisplay, 6) && cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NON_EMPTY ? 1 : 0)
+        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) && cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NON_EMPTY)
             (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
-        cptr.stI64o(cw, 32, cptr.stI64o(cw, 40, 0n));
+        cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
         (yield* home());
         (yield* cl_end());
         (yield* addtopl(str));
-        if (cptr.ldI16o(ttyDisplay, 6) && cptr.ldI32o(ttyDisplay, 24) != NHM.TOPLINE_SPECIAL_PROMPT ? 1 : 0)
-            cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_NON_EMPTY);
+        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) && cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_SPECIAL_PROMPT)
+            cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
     }
 }
 
 /** C ref: topl.c:170 */
 export function* remember_topl() {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
-    let idx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, 48)));
-    let len = Number(BigInt.asUintN(32, BigInt.asUintN(64, cptr.strlen(cptr.add(gt, 26)) + 1n)));
-    if ((cptr.ldI32(cw) & NHM.WIN_LOCKHISTORY) || !cptr.ld1so(gt, 26) ? 1 : 0)
+    let idx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
+    let len = Number(BigInt.asUintN(32, BigInt.asUintN(64, cptr.strlen(cptr.add(gt, $instance_globals_t_toplines)) + 1n)));
+    if ((cptr.ldI32(cw) & NHM.WIN_LOCKHISTORY) || !cptr.ld1so(gt, $instance_globals_t_toplines))
         return;
-    if (len > cptr.ldI16o(cptr.ldPtro(cw, 72), idx, 2)) {
-        if (cptr.ldPtro(cptr.ldPtro(cw, 80), idx, 8))
-            cptr.free(cptr.ldPtro(cptr.ldPtro(cw, 80), idx, 8));
+    if (len > cptr.ldI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, 2)) {
+        if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8))
+            cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8));
         len = (len + ((8 - ((len & 7) >>> 0)) >>> 0)) | 0;
-        cptr.stPtro(cptr.ldPtro(cw, 80), idx, (yield* alloc(len)), 8);
-        cptr.stI16o(cptr.ldPtro(cw, 72), idx, i16(len), 2);
+        cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), idx, (yield* alloc(len)), 8);
+        cptr.stI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, i16(len), 2);
     }
-    void cptr.strcpy(cptr.ldPtro(cptr.ldPtro(cw, 80), idx, 8), cptr.add(gt, 26));
-    if (!cptr.ldI32o(program_state, 60)) {
-        cptr.st1o(gt, 26, 0);
-        cptr.stI64o(cw, 56, cptr.stI64o(cw, 48, BigInt(((idx + 1) | 0)) % cptr.ldI64o(cw, 16)));
+    void cptr.strcpy(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8), cptr.add(gt, $instance_globals_t_toplines));
+    if (!cptr.ldI32o(program_state, $sinfo_in_checkpoint)) {
+        cptr.st1o(gt, $instance_globals_t_toplines, 0);
+        cptr.stI64o(cw, $WinDesc_maxcol, cptr.stI64o(cw, $WinDesc_maxrow, BigInt(((idx + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows)));
     }
 }
 
 /** C ref: topl.c:194 — @param {CPtr} s */
 export function* addtopl(s) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
-    (yield* tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 32) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, 40)))));
+    (yield* tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))));
     (yield* putsyms(s));
     (yield* cl_end());
-    cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_NEED_MORE);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
 }
 
 /** C ref: topl.c:205 */
 export function* more() {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
-    if (cptr.ld1so(iflags, 15))
+    if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         return;
-    if (cptr.ldI32o(ttyDisplay, 32))
+    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_inmore))
         return;
-    (cptr.stI32o(ttyDisplay, 32, cptr.ldI32o(ttyDisplay, 32) + 1)) - (1);
-    if (cptr.ldI32o(ttyDisplay, 24)) {
-        (yield* tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 32) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, 40)))));
-        if (cptr.ldI64o(cw, 32) >= BigInt(((cptr.ldI32o(gt, 356) - 8) | 0)))
+    (cptr.stI32o(ttyDisplay, $DisplayDesc_inmore, cptr.ldI32o(ttyDisplay, $DisplayDesc_inmore) + 1)) - (1);
+    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin)) {
+        (yield* tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))));
+        if (cptr.ldI64o(cw, $WinDesc_curx) >= BigInt(((CO() - 8) | 0)))
             (yield* topl_putsym(10));
     }
-    if (cptr.ld1so(flags, 44))
+    if (cptr.ld1so(flags, $flag_standout))
         standoutbeg();
     (yield* putsyms(cptr.decay(defmorestr)));
-    if (cptr.ld1so(flags, 44))
+    if (cptr.ld1so(flags, $flag_standout))
         standoutend();
     (yield* xwaitforspace(__sl2));
     if (morc.v == 27) {
         if (!(cptr.ldI32(cw) & NHM.WIN_NOSTOP))
             cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_STOP);
     }
-    if (cptr.ldI32o(ttyDisplay, 24) && cptr.ldI64o(cw, 40) ? 1 : 0) {
-        (yield* docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 40) + 1n))), 0));
-        cptr.stI64o(cw, 32, cptr.stI64o(cw, 40, 0n));
+    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) && cptr.ldI64o(cw, $WinDesc_cury)) {
+        (yield* docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + 1n))), 0));
+        cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
         (yield* home());
     } else if (morc.v == 27) {
-        cptr.stI64o(cw, 32, cptr.stI64o(cw, 40, 0n));
+        cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
         (yield* home());
         (yield* cl_end());
     }
-    cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_EMPTY);
-    cptr.stI32o(ttyDisplay, 32, 0);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_inmore, 0);
 }
 
 /** C ref: topl.c:251 — @param {CPtr} bp */
@@ -249,27 +272,27 @@ export function* update_topl(bp) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let skip = schar(((cptr.ldI32(cw) & 5) == NHM.WIN_STOP));
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
-    if ((((cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE || skip ? 1 : 0) && cptr.ldI64o(cw, 40) == 0n ? 1 : 0) && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, 26))))) | 0) + 3) | 0) < ((cptr.ldI32o(gt, 356) - 8) | 0) ? 1 : 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0 ? 1 : 0) {
-        void cptr.strcat(cptr.add(gt, 26), __sl4);
-        void cptr.strcat(cptr.add(gt, 26), bp);
-        cptr.stI64o(cw, 32, cptr.ldI64o(cw, 32) + 2n);
+    if ((cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE || skip) && cptr.ldI64o(cw, $WinDesc_cury) == 0n && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, $instance_globals_t_toplines))))) | 0) + 3) | 0) < ((CO() - 8) | 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0) {
+        void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), __sl4);
+        void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), bp);
+        cptr.stI64o(cw, $WinDesc_curx, cptr.ldI64o(cw, $WinDesc_curx) + 2n);
         if (!skip)
             (yield* addtopl(bp));
         return;
     } else if (!skip) {
-        if (cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE) {
+        if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE) {
             (yield* more());
-        } else if (cptr.ldI64o(cw, 40)) {
-            (yield* docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, 40) + 1n))), 0));
-            cptr.stI64o(cw, 32, cptr.stI64o(cw, 40, 0n));
+        } else if (cptr.ldI64o(cw, $WinDesc_cury)) {
+            (yield* docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + 1n))), 0));
+            cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
         }
     }
     (yield* remember_topl());
-    void __builtin___strncpy_chk(cptr.add(gt, 26), bp, 300n, __builtin_object_size(cptr.add(gt, 26), 1));
-    cptr.st1o2(gt, 299, 1, 26, 0);
-    for (tl = cptr.add(gt, 26); n0 >= cptr.ldI32o(gt, 356); ) {
+    void __builtin___strncpy_chk(cptr.add(gt, $instance_globals_t_toplines), bp, 300n, __builtin_object_size(cptr.add(gt, $instance_globals_t_toplines), 1));
+    cptr.st1o2(gt, 299, 1, $instance_globals_t_toplines, 0);
+    for (tl = cptr.add(gt, $instance_globals_t_toplines); n0 >= CO(); ) {
         otl = tl;
-        for (tl = cptr.add(tl, (cptr.ldI32o(gt, 356) - 1) | 0); !cptr.eq(tl, otl); tl = cptr.add(tl, -1))
+        for (tl = cptr.add(tl, (CO() - 1) | 0); !cptr.eq(tl, otl); tl = cptr.add(tl, -1))
             if (cptr.ld1s(tl) == 32)
                 break;
         if (cptr.eq(tl, otl)) {
@@ -283,7 +306,7 @@ export function* update_topl(bp) {
     if (!notdied)
         cptr.stI32(cw, cptr.ldI32(cw) & -2), skip = 0;
     if (!skip)
-        (yield* redotoplin(cptr.add(gt, 26)));
+        (yield* redotoplin(cptr.add(gt, $instance_globals_t_toplines)));
 }
 
 /** C ref: topl.c:305 — @param {CInt} c */
@@ -293,33 +316,33 @@ function* topl_putsym(c) {
         (yield* panic(__sl5));
     switch (c) {
         case 8:
-        if (cptr.ldI16o(ttyDisplay, 4) == 0 && cptr.ldI16o(ttyDisplay, 6) > 0 ? 1 : 0)
-            (yield* tty_curs(BASE_WINDOW, cptr.ldI32o(gt, 356), (cptr.ldI16o(ttyDisplay, 6) - 1) | 0));
+        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == 0 && cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > 0)
+            (yield* tty_curs(BASE_WINDOW, CO(), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) - 1) | 0));
         backsp();
-        void ((!!(cptr.ldI16o(ttyDisplay, 4) > 0)) || ((yield* nhassert_failed(__sl6, __sl7, 317)), 0) ? 1 : 0);
-        (cptr.stI16o(ttyDisplay, 4, cptr.ldI16o(ttyDisplay, 4) + -1)) - (-1);
-        cptr.stI64o(cw, 32, BigInt(cptr.ldI16o(ttyDisplay, 4)));
+        void ((!!(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)) || ((yield* nhassert_failed(__sl6, __sl7, 317)), 0) ? 1 : 0);
+        (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+        cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
         return;
         case 10:
         (yield* cl_end());
-        cptr.stI16o(ttyDisplay, 4, 0);
-        (cptr.stI16o(ttyDisplay, 6, cptr.ldI16o(ttyDisplay, 6) + 1)) - (1);
-        cptr.stI64o(cw, 40, BigInt(cptr.ldI16o(ttyDisplay, 6)));
+        cptr.stI16o(ttyDisplay, $DisplayDesc_curx, 0);
+        (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1)) - (1);
+        cptr.stI64o(cw, $WinDesc_cury, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)));
         break;
         default:
-        if (cptr.ldI16o(ttyDisplay, 4) == ((cptr.ldI32o(gt, 356) - 1) | 0))
+        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == ((CO() - 1) | 0))
             (yield* topl_putsym(10));
-        (cptr.stI16o(ttyDisplay, 4, cptr.ldI16o(ttyDisplay, 4) + 1)) - (1);
+        (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
     }
-    cptr.stI64o(cw, 32, BigInt(cptr.ldI16o(ttyDisplay, 4)));
-    if (cptr.ldI64o(cw, 32) == 0n)
+    cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
+    if (cptr.ldI64o(cw, $WinDesc_curx) == 0n)
         (yield* cl_end());
     void putchar(c);
     {
-        let svx = cptr.ldI16o(ttyDisplay, 4);
-        (cptr.stI16o(ttyDisplay, 4, cptr.ldI16o(ttyDisplay, 4) + -1)) - (-1);
+        let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
+        (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
         nomux_putch(c);
-        cptr.stI16o(ttyDisplay, 4, i16(svx));
+        cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
     }
 }
 
@@ -347,18 +370,18 @@ export function* tty_yn_function(query, resp, def) {
     let prompt = new Uint8Array(256);
     __lbl_clean_up: {
         yn_number.v = 0n;
-        if (cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE && (cptr.ldI32(cw) & 5) != NHM.WIN_STOP ? 1 : 0)
+        if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE && (cptr.ldI32(cw) & 5) != NHM.WIN_STOP)
             (yield* more());
         cptr.stI32(cw, cptr.ldI32(cw) & -6);
-        cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_SPECIAL_PROMPT);
-        (cptr.stI32o(ttyDisplay, 36, cptr.ldI32o(ttyDisplay, 36) + 1)) - (1);
+        cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
+        (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1)) - (1);
         if (resp) {
             let rb;
             let respbuf = new Uint8Array(128);
             allow_num = schar((cptr.strchr(resp, 35) !== null));
             void cptr.strcpy(cptr.decay(respbuf), resp);
             for (rb = cptr.decay(respbuf); cptr.ld1s(rb); rb = cptr.add(rb, 1))
-                if (65 <= cptr.ld1s(rb) && cptr.ld1s(rb) <= 90 ? 1 : 0) {
+                if (65 <= cptr.ld1s(rb) && cptr.ld1s(rb) <= 90) {
                     preserve_case = 1;
                     break;
                 }
@@ -382,13 +405,13 @@ export function* tty_yn_function(query, resp, def) {
             if (!preserve_case)
                 q = lowc(q);
             if (q == 16) {
-                if (cptr.ld1so(iflags, 176) != 115) {
-                    let sav = cptr.ldI32o(ttyDisplay, 36);
-                    cptr.stI32o(ttyDisplay, 36, 0);
+                if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) != 115) {
+                    let sav = cptr.ldI32o(ttyDisplay, $DisplayDesc_inread);
+                    cptr.stI32o(ttyDisplay, $DisplayDesc_inread, 0);
                     void (yield* tty_doprev_message());
-                    cptr.stI32o(ttyDisplay, 36, sav);
+                    cptr.stI32o(ttyDisplay, $DisplayDesc_inread, sav);
                     (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
-                    cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
+                    cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                     (yield* addtopl(cptr.decay(prompt)));
                 } else {
                     if (!doprev)
@@ -400,7 +423,7 @@ export function* tty_yn_function(query, resp, def) {
                 continue;
             } else if (doprev) {
                 (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
-                cptr.stI64o(cw, 56, cptr.ldI64o(cw, 48));
+                cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                 doprev = 0;
                 (yield* addtopl(cptr.decay(prompt)));
                 q = 0;
@@ -419,10 +442,10 @@ export function* tty_yn_function(query, resp, def) {
                 q = def;
                 break;
             }
-            if (!cptr.strchr(resp, q) && !digit_ok ? 1 : 0) {
+            if (!cptr.strchr(resp, q) && !digit_ok) {
                 tty_nhbell();
                 q = 0;
-            } else if (q == 35 || digit_ok ? 1 : 0) {
+            } else if (q == 35 || digit_ok) {
                 let z;
                 let digit_string = new Uint8Array(2);
                 let n_len = 0;
@@ -441,16 +464,16 @@ export function* tty_yn_function(query, resp, def) {
                         z = lowc(z);
                     if (digit(z)) {
                         let dgt = BigInt(((z - 48) | 0));
-                        value = (((value) < 922337203685477580n || ((value) == 922337203685477580n && (dgt) <= 7n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt)) : -1n);
+                        value = (((value) < 922337203685477580n || ((value) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt)) : -1n);
                         if (value < 0n)
                             break;
                         cptr.st1o(cptr.decay(digit_string), 0, z, 1);
                         (yield* addtopl(cptr.decay(digit_string))), n_len++;
-                    } else if (z == 121 || cptr.strchr(cptr.decay(quitchars), z) ? 1 : 0) {
+                    } else if (z == 121 || cptr.strchr(cptr.decay(quitchars), z)) {
                         if (z == 27)
                             value = -1n;
                         z = 10;
-                    } else if (z == erase_char || z == 8 ? 1 : 0) {
+                    } else if (z == erase_char || z == 8) {
                         if (n_len <= 1) {
                             value = -1n;
                             break;
@@ -479,13 +502,13 @@ export function* tty_yn_function(query, resp, def) {
         void cptr.sprintf(cptr.decay(rtmp), __sl15, yn_number.v);
     else
         void key2txt(uchar(q), cptr.decay(rtmp));
-    void cptr.sprintf(cptr.add(gt, 26), __sl16, cptr.decay(prompt), cptr.decay(rtmp));
-    (yield* dumplogmsg(cptr.add(gt, 26)));
-    (cptr.stI32o(ttyDisplay, 36, cptr.ldI32o(ttyDisplay, 36) + -1)) - (-1);
-    cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_NON_EMPTY);
-    if (cptr.ldI32o(ttyDisplay, 40))
-        (cptr.stI32o(ttyDisplay, 40, cptr.ldI32o(ttyDisplay, 40) + -1)) - (-1);
-    if (cptr.ldI64o(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), 40))
+    void cptr.sprintf(cptr.add(gt, $instance_globals_t_toplines), __sl16, cptr.decay(prompt), cptr.decay(rtmp));
+    (yield* dumplogmsg(cptr.add(gt, $instance_globals_t_toplines)));
+    (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1)) - (-1);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
+    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_intr))
+        (cptr.stI32o(ttyDisplay, $DisplayDesc_intr, cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + -1)) - (-1);
+    if (cptr.ldI64o(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), $WinDesc_cury))
         (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
     return q;
 }
@@ -500,30 +523,30 @@ function* msghistory_snapshot(purge) {
     let inidx;
     let outidx;
     let cw;
-    if (WIN_MESSAGE.v == -1 || !cptr.ldPtro(wins, WIN_MESSAGE.v, 8) ? 1 : 0)
+    if (WIN_MESSAGE.v == -1 || !cptr.ldPtro(wins, WIN_MESSAGE.v, 8))
         return;
     cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     (yield* remember_topl());
     if (!purge)
         cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_LOCKHISTORY);
-    snapshot_mesgs = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o(cw, 16) + 1n))) * 8n)))));
+    snapshot_mesgs = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) + 1n))) * 8n)))));
     outidx = 0;
-    inidx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, 48)));
-    for (i = 0; BigInt(i) < cptr.ldI64o(cw, 16); ++i) {
+    inidx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
+    for (i = 0; BigInt(i) < cptr.ldI64o(cw, $WinDesc_rows); ++i) {
         cptr.stPtro(snapshot_mesgs, i, null, 8);
-        mesg = cptr.ldPtro(cptr.ldPtro(cw, 80), inidx, 8);
-        if (mesg && cptr.ld1s(mesg) ? 1 : 0) {
+        mesg = cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), inidx, 8);
+        if (mesg && cptr.ld1s(mesg)) {
             cptr.stPtro(snapshot_mesgs, outidx++, mesg, 8);
             if (purge) {
-                cptr.stPtro(cptr.ldPtro(cw, 80), inidx, null, 8);
-                cptr.stI16o(cptr.ldPtro(cw, 72), inidx, 0, 2);
+                cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), inidx, null, 8);
+                cptr.stI16o(cptr.ldPtro(cw, $WinDesc_datlen), inidx, 0, 2);
             }
         }
-        inidx = Number(BigInt.asIntN(32, (BigInt(((inidx + 1) | 0)) % cptr.ldI64o(cw, 16))));
+        inidx = Number(BigInt.asIntN(32, (BigInt(((inidx + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows))));
     }
-    cptr.stPtro(snapshot_mesgs, cptr.ldI64o(cw, 16), null, 8);
+    cptr.stPtro(snapshot_mesgs, cptr.ldI64o(cw, $WinDesc_rows), null, 8);
     if (purge)
-        cptr.stI64o(cw, 56, cptr.stI64o(cw, 48, 0n));
+        cptr.stI64o(cw, $WinDesc_maxcol, cptr.stI64o(cw, $WinDesc_maxrow, 0n));
 }
 
 /** C ref: topl.c:613 — @param {CInt} purged */
@@ -566,23 +589,23 @@ let __static_tty_putmsghistory_initd = 0; /** C ref: topl.c:687 — signed char 
 /** C ref: topl.c:685 — @param {CPtr} msg @param {CInt} restoring_msghist */
 export function* tty_putmsghistory(msg, restoring_msghist) {
     let idx;
-    if (restoring_msghist && !__static_tty_putmsghistory_initd ? 1 : 0) {
+    if (restoring_msghist && !__static_tty_putmsghistory_initd) {
         (yield* msghistory_snapshot(1));
         __static_tty_putmsghistory_initd = 1;
-        cptr.stI32o(gs, 980, 0);
+        cptr.stI32o(gs, $instance_globals_s_saved_pline_index, 0);
     }
     if (msg) {
-        if (ttyDisplay && cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE ? 1 : 0)
-            cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_NON_EMPTY);
+        if (ttyDisplay && cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE)
+            cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
         (yield* remember_topl());
-        void cptr.strcpy(cptr.add(gt, 26), msg);
-        (yield* dumplogmsg(cptr.add(gt, 26)));
+        void cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), msg);
+        (yield* dumplogmsg(cptr.add(gt, $instance_globals_t_toplines)));
     } else if (snapshot_mesgs) {
-        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32o(ttyDisplay, 24) != NHM.TOPLINE_NEED_MORE ? 1 : 0)) || ((yield* nhassert_failed(__sl17, __sl7, 720)), 0) ? 1 : 0);
+        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_NEED_MORE)) || ((yield* nhassert_failed(__sl17, __sl7, 720)), 0) ? 1 : 0);
         for (idx = 0; cptr.ldPtro(snapshot_mesgs, idx, 8); ++idx) {
             (yield* remember_topl());
-            void cptr.strcpy(cptr.add(gt, 26), cptr.ldPtro(snapshot_mesgs, idx, 8));
-            (yield* dumplogmsg(cptr.add(gt, 26)));
+            void cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), cptr.ldPtro(snapshot_mesgs, idx, 8));
+            (yield* dumplogmsg(cptr.add(gt, $instance_globals_t_toplines)));
         }
         free_msghistory_snapshot(1);
         __static_tty_putmsghistory_initd = 0;

@@ -7,6 +7,8 @@ import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch, putmsghistory, putstr, raw_print, wait_synch, wizard } from './nhprop.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
 import { bclose, close_check } from './sfstruct.js';
@@ -39,6 +41,61 @@ import { pmatch } from './strutil.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { aligns, genders } from './role.js';
 import { timet_to_seconds } from './allmain.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_filecode,
+    $NHFILE_addinfo = FLD.NHFILE_addinfo, $NHFILE_bendian = FLD.NHFILE_bendian, $NHFILE_eof = FLD.NHFILE_eof,
+    $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel, $NHFILE_fnidx = FLD.NHFILE_fnidx,
+    $NHFILE_fpdebug = FLD.NHFILE_fpdebug, $NHFILE_fpdef = FLD.NHFILE_fpdef, $NHFILE_fplog = FLD.NHFILE_fplog,
+    $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode,
+    $NHFILE_nhfpconvert = FLD.NHFILE_nhfpconvert, $NHFILE_rcount = FLD.NHFILE_rcount,
+    $NHFILE_structlevel = FLD.NHFILE_structlevel, $NHFILE_style = FLD.NHFILE_style,
+    $NHFILE_wcount = FLD.NHFILE_wcount, $Race_filecode = FLD.Race_filecode,
+    $Role_filecode = FLD.Role_filecode, $Role_mnum = FLD.Role_mnum,
+    $context_info_novel = FLD.context_info_novel, $d_level_dlevel = FLD.d_level_dlevel,
+    $dirent_d_name = FLD.dirent_d_name, $dungeon_boneid = FLD.dungeon_boneid,
+    $fieldlevel_content_binary = FLD.fieldlevel_content_binary, $flag_debug = FLD.flag_debug,
+    $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female, $flock_l_len = FLD.flock_l_len,
+    $flock_l_type = FLD.flock_l_type, $flock_l_whence = FLD.flock_l_whence,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_b_bones = FLD.instance_globals_b_bones,
+    $instance_globals_c_chosen_symset_end = FLD.instance_globals_c_chosen_symset_end,
+    $instance_globals_c_chosen_symset_start = FLD.instance_globals_c_chosen_symset_start,
+    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+    $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_l_lock = FLD.instance_globals_l_lock,
+    $instance_globals_n_nesting = FLD.instance_globals_n_nesting,
+    $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
+    $instance_globals_s_symset = FLD.instance_globals_s_symset,
+    $instance_globals_s_symset_count = FLD.instance_globals_s_symset_count,
+    $instance_globals_s_symset_which_set = FLD.instance_globals_s_symset_which_set,
+    $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_u_urace = FLD.instance_globals_u_urace,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole,
+    $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
+    $novel_tracking_count = FLD.novel_tracking_count, $novel_tracking_pasg = FLD.novel_tracking_pasg,
+    $obj_bknown = FLD.obj_bknown, $obj_oclass = FLD.obj_oclass, $obj_owornmask = FLD.obj_owornmask,
+    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $s_level_boneid = FLD.s_level_boneid,
+    $sfstatus_to_msg_msg = FLD.sfstatus_to_msg_msg, $sinfo_done_hup = FLD.sinfo_done_hup,
+    $sinfo_in_paniclog = FLD.sinfo_in_paniclog, $sinfo_in_self_recover = FLD.sinfo_in_self_recover,
+    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing,
+    $symsetentry_explicitly = FLD.symsetentry_explicitly, $symsetentry_name = FLD.symsetentry_name,
+    $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools, $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat,
+    $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles, $sysopt_s_livelog = FLD.sysopt_s_livelog,
+    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+    $window_procs_wp_id = FLD.window_procs_wp_id, $you_ualign = FLD.you_ualign;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("%c%02X");
@@ -161,7 +218,7 @@ export function nh_basename(fname, keep_suffix) {
     let p;
     if ((p = cptr.strrchr(fname, 47)) !== null)
         fname = cptr.add(p, 1);
-    if ((p = cptr.strrchr(fname, 46)) !== null && !keep_suffix ? 1 : 0) {
+    if ((p = cptr.strrchr(fname, 46)) !== null && !keep_suffix) {
         let ln = BigInt.asUintN(64, (cptr.diff(p, fname)));
         if (ln < 80n) {
             __builtin___strncpy_chk(cptr.decay(__static_nh_basename_basebuf), fname, ln, __builtin_object_size(cptr.decay(__static_nh_basename_basebuf), 1));
@@ -189,7 +246,7 @@ export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
             void cptr.sprintf(op, __sl0, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
-        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null) ? 1 : 0) {
+        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null)) {
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(sp));
             cptr.st1(op, 0);
             cnt++;
@@ -270,32 +327,32 @@ let bei = cptr.box(1);
 
 /** C ref: files.c:461 — @param {CPtr} nhfp */
 export function init_nhfile(nhfp) {
-    if (cptr.ld1so(nhfp, 32)) {
+    if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         if (cptr.ldI32(nhfp) != -1) {
             impossible(__sl1);
             void nhclose(cptr.ldI32(nhfp));
         }
-    } else if (cptr.ldPtro(nhfp, 40)) {
-        if (cptr.ldPtro(nhfp, 40)) {
+    } else if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
+        if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
             impossible(__sl2);
-            void fclose(cptr.ldPtro(nhfp, 40));
+            void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef));
         }
     }
     cptr.stI32(nhfp, -1);
-    cptr.stPtro(nhfp, 40, null);
-    cptr.stI32o(nhfp, 4, NHM.COUNTING);
-    cptr.st1o(nhfp, 32, 1);
-    cptr.st1o(nhfp, 33, 0);
-    cptr.st1o(nhfp, 34, 0);
-    cptr.st1o(nhfp, 36, schar(((cptr.ld1s(bei)) == 0)));
-    cptr.stPtro(nhfp, 56, null);
-    cptr.stPtro(nhfp, 64, null);
-    cptr.stI64o(nhfp, 16, cptr.stI64o(nhfp, 24, 0n));
-    cptr.st1o(nhfp, 35, 0);
-    cptr.stI32o(nhfp, 12, 0);
-    cptr.st1o(nhfp, 72, 0);
-    cptr.st1o(nhfp, 73, 1);
-    cptr.stPtro(nhfp, 80, null);
+    cptr.stPtro(nhfp, $NHFILE_fpdef, null);
+    cptr.stI32o(nhfp, $NHFILE_mode, NHM.COUNTING);
+    cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+    cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+    cptr.st1o(nhfp, $NHFILE_addinfo, 0);
+    cptr.st1o(nhfp, $NHFILE_bendian, schar(((cptr.ld1s(bei)) == 0)));
+    cptr.stPtro(nhfp, $NHFILE_fplog, null);
+    cptr.stPtro(nhfp, $NHFILE_fpdebug, null);
+    cptr.stI64o(nhfp, $NHFILE_rcount, cptr.stI64o(nhfp, $NHFILE_wcount, 0n));
+    cptr.st1o(nhfp, $NHFILE_eof, 0);
+    cptr.stI32o(nhfp, $NHFILE_fnidx, 0);
+    cptr.st1o(nhfp, $NHFILE_style, 0);
+    cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+    cptr.stPtro(nhfp, $NHFILE_nhfpconvert, null);
 }
 
 /** C ref: files.c:496 @returns {CPtr} */
@@ -316,43 +373,43 @@ function free_nhfile(nhfp) {
 
 /** C ref: files.c:518 — @param {CPtr} nhfp */
 export function close_nhfile(nhfp) {
-    if (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) != -1 ? 1 : 0)
+    if (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) != -1)
         void nhclose(cptr.ldI32(nhfp)), cptr.stI32(nhfp, -1);
-    else if (cptr.ldPtro(nhfp, 40))
-        void fclose(cptr.ldPtro(nhfp, 40)), cptr.stPtro(nhfp, 40, null);
-    if (cptr.ldPtro(nhfp, 56))
-        void fprintf(cptr.ldPtro(nhfp, 56), __sl3);
-    if (cptr.ldPtro(nhfp, 56))
-        void fclose(cptr.ldPtro(nhfp, 56));
-    if (cptr.ldPtro(nhfp, 64))
-        void fclose(cptr.ldPtro(nhfp, 64));
+    else if (cptr.ldPtro(nhfp, $NHFILE_fpdef))
+        void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef)), cptr.stPtro(nhfp, $NHFILE_fpdef, null);
+    if (cptr.ldPtro(nhfp, $NHFILE_fplog))
+        void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __sl3);
+    if (cptr.ldPtro(nhfp, $NHFILE_fplog))
+        void fclose(cptr.ldPtro(nhfp, $NHFILE_fplog));
+    if (cptr.ldPtro(nhfp, $NHFILE_fpdebug))
+        void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdebug));
     free_nhfile(nhfp);
 }
 
 /** C ref: files.c:534 — @param {CPtr} nhfp */
 export function rewind_nhfile(nhfp) {
-    if (cptr.ld1so(nhfp, 32)) {
+    if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         void lseek(cptr.ldI32(nhfp), 0n, 0);
     } else {
-        rewind(cptr.ldPtro(nhfp, 40));
+        rewind(cptr.ldPtro(nhfp, $NHFILE_fpdef));
     }
 }
 
 /** C ref: files.c:549 — @param {CPtr} nhfp @returns {CPtr} */
 function viable_nhfile(nhfp) {
     if (nhfp) {
-        if ((((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, 40) ? 1 : 0) || (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) < 0 ? 1 : 0) ? 1 : 0) || (cptr.ld1so(nhfp, 33) && !cptr.ldPtro(nhfp, 40) ? 1 : 0) ? 1 : 0) {
-            if (cptr.ld1so(nhfp, 33)) {
-                if (cptr.ldPtro(nhfp, 40)) {
-                    void fclose(cptr.ldPtro(nhfp, 40));
-                    cptr.stPtro(nhfp, 40, null);
+        if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, $NHFILE_fpdef)) || (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) < 0) || (cptr.ld1so(nhfp, $NHFILE_fieldlevel) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))) {
+            if (cptr.ld1so(nhfp, $NHFILE_fieldlevel)) {
+                if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
+                    void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef));
+                    cptr.stPtro(nhfp, $NHFILE_fpdef, null);
                 }
-                if (cptr.ldPtro(nhfp, 56)) {
-                    void fprintf(cptr.ldPtro(nhfp, 56), __sl4);
-                    void fclose(cptr.ldPtro(nhfp, 56));
+                if (cptr.ldPtro(nhfp, $NHFILE_fplog)) {
+                    void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __sl4);
+                    void fclose(cptr.ldPtro(nhfp, $NHFILE_fplog));
                 }
-                if (cptr.ldPtro(nhfp, 64))
-                    void fclose(cptr.ldPtro(nhfp, 64));
+                if (cptr.ldPtro(nhfp, $NHFILE_fpdebug))
+                    void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdebug));
             }
             free_nhfile(nhfp);
             nhfp = null;
@@ -389,25 +446,25 @@ export function create_levelfile(lev, errbuf) {
     let nhfp = null;
     if (errbuf)
         cptr.st1(errbuf, 0);
-    set_levelfile_name(cptr.add(gl, 16), lev);
-    fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
+    set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
+    fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 8, NHM.NHF_LEVELFILE);
-        cptr.stI32o(nhfp, 4, NHM.WRITING);
-        cptr.st1o(nhfp, 32, 1);
-        cptr.st1o(nhfp, 33, 0);
-        cptr.st1o(nhfp, 34, 0);
-        cptr.st1o(nhfp, 72, 0);
-        cptr.st1o(nhfp, 73, 1);
-        cptr.stI32o(nhfp, 12, NHC.historical);
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_LEVELFILE);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.st1o(nhfp, $NHFILE_addinfo, 0);
+        cptr.st1o(nhfp, $NHFILE_style, 0);
+        cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+        cptr.stI32o(nhfp, $NHFILE_fnidx, NHC.historical);
         cptr.stI32(nhfp, -1);
-        cptr.stPtro(nhfp, 40, null);
+        cptr.stPtro(nhfp, $NHFILE_fpdef, null);
         cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
         if (cptr.ldI32(nhfp) >= 0)
-            cptr.st1o2(svl, lev, 1, 89208, cptr.ld1uo2(svl, lev, 1, 89208) | NHM.LFILE_EXISTS);
+            cptr.st1o2(svl, lev, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
         else if (errbuf)
-            void cptr.sprintf(errbuf, __sl6, cptr.add(gl, 16), lev, (cptr.ldI32(__error())));
+            void cptr.sprintf(errbuf, __sl6, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
     nhfp = viable_nhfile(nhfp);
     return nhfp;
@@ -419,25 +476,25 @@ export function open_levelfile(lev, errbuf) {
     let nhfp = null;
     if (errbuf)
         cptr.st1(errbuf, 0);
-    set_levelfile_name(cptr.add(gl, 16), lev);
-    fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
+    set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
+    fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 4, NHM.READING);
-        cptr.st1o(nhfp, 32, 1);
-        cptr.st1o(nhfp, 33, 0);
-        cptr.st1o(nhfp, 34, 0);
-        cptr.st1o(nhfp, 72, 0);
-        cptr.st1o(nhfp, 73, 1);
-        cptr.stI32o(nhfp, 8, NHM.NHF_LEVELFILE);
-        cptr.stI32o(nhfp, 12, NHC.historical);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.st1o(nhfp, $NHFILE_addinfo, 0);
+        cptr.st1o(nhfp, $NHFILE_style, 0);
+        cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_LEVELFILE);
+        cptr.stI32o(nhfp, $NHFILE_fnidx, NHC.historical);
         cptr.stI32(nhfp, -1);
-        cptr.stPtro(nhfp, 40, null);
+        cptr.stPtro(nhfp, $NHFILE_fpdef, null);
     }
-    if (nhfp && cptr.ld1so(nhfp, 32) ? 1 : 0) {
+    if (nhfp && cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         cptr.stI32(nhfp, open(fq_lock, 0, 0));
-        if (cptr.ldI32(nhfp) < 0 && errbuf ? 1 : 0)
-            void cptr.sprintf(errbuf, __sl7, cptr.add(gl, 16), lev, (cptr.ldI32(__error())));
+        if (cptr.ldI32(nhfp) < 0 && errbuf)
+            void cptr.sprintf(errbuf, __sl7, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
     nhfp = viable_nhfile(nhfp);
     return nhfp;
@@ -445,17 +502,17 @@ export function open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
-    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, 89208) & NHM.LFILE_EXISTS) ? 1 : 0) {
-        set_levelfile_name(cptr.add(gl, 16), lev);
-        void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
-        cptr.st1o2(svl, lev, 1, 89208, cptr.ld1uo2(svl, lev, 1, 89208) & -5);
+    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS)) {
+        set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
+        void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
+        cptr.st1o2(svl, lev, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) & -5);
     }
 }
 
 /** C ref: files.c:733 */
 export function clearlocks() {
     let x;
-    if (cptr.ldI32o(program_state, 12))
+    if (cptr.ldI32o(program_state, $sinfo_preserve_locks))
         return;
     void signal(2, 1);
     sethanguphandler(1);
@@ -473,28 +530,28 @@ function set_bonesfile_name(file, lev) {
     let sptr;
     let dptr;
     void cptr.strcpy(file, __sl8);
-    if (cptr.ldI32o(sysopt, 92) > 1) {
-        let poolnum = ((cptr.ldI32o(sysopt, 92) >>> 0) < 10 ? (cptr.ldI32o(sysopt, 92) >>> 0) : 10);
+    if (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) > 1) {
+        let poolnum = ((cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) < 10 ? (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) : 10);
         poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);
         void cptr.sprintf(eos(file), __sl9, poolnum);
     }
     dptr = eos(file);
-    void cptr.sprintf(dptr, __sl10, cptr.ld1so2(svd, cptr.ldI16(lev), 112, 69), In_quest(lev) ? cptr.ldPtro(gu, 192) : __sl11);
+    void cptr.sprintf(dptr, __sl10, cptr.ld1so2(svd, cptr.ldI16(lev), 112, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __sl11);
     if ((sptr = Is_special(lev)) !== null)
-        void cptr.sprintf(eos(dptr), __sl12, cptr.ld1so(sptr, 27));
+        void cptr.sprintf(eos(dptr), __sl12, cptr.ld1so(sptr, $s_level_boneid));
     else
-        void cptr.sprintf(eos(dptr), __sl5, cptr.ldI16o(lev, 2));
+        void cptr.sprintf(eos(dptr), __sl5, cptr.ldI16o(lev, $d_level_dlevel));
     return dptr;
 }
 
 /** C ref: files.c:818 @returns {CPtr} */
 function set_bonestemp_name() {
     let tf;
-    tf = cptr.strrchr(cptr.add(gl, 16), 46);
+    tf = cptr.strrchr(cptr.add(gl, $instance_globals_l_lock), 46);
     if (!tf)
-        tf = eos(cptr.add(gl, 16));
+        tf = eos(cptr.add(gl, $instance_globals_l_lock));
     void cptr.sprintf(tf, __sl13);
-    return cptr.add(gl, 16);
+    return cptr.add(gl, $instance_globals_l_lock);
 }
 
 /** C ref: files.c:833 — @param {CPtr} lev @param {CPtr} bonesid @param {CPtr} errbuf @returns {CPtr} */
@@ -504,32 +561,32 @@ export function create_bonesfile(lev, bonesid, errbuf) {
     let failed = 0;
     if (errbuf)
         cptr.st1(errbuf, 0);
-    cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, 4784), lev));
+    cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev));
     file = set_bonestemp_name();
     file = fqname(file, NHM.BONESPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 8, NHM.NHF_BONESFILE);
-        cptr.stI32o(nhfp, 4, NHM.WRITING);
-        cptr.st1o(nhfp, 32, 1);
-        cptr.st1o(nhfp, 33, 0);
-        cptr.st1o(nhfp, 34, 1);
-        cptr.st1o(nhfp, 72, 1);
-        cptr.st1o(nhfp, 73, 1);
-        cptr.stI32o(nhfp, 12, NHC.historical);
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_BONESFILE);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.st1o(nhfp, $NHFILE_addinfo, 1);
+        cptr.st1o(nhfp, $NHFILE_style, 1);
+        cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+        cptr.stI32o(nhfp, $NHFILE_fnidx, NHC.historical);
         cptr.stI32(nhfp, -1);
-        cptr.stPtro(nhfp, 40, null);
-        if (cptr.ldPtro(nhfp, 40)) {
+        cptr.stPtro(nhfp, $NHFILE_fpdef, null);
+        if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
         } else {
             failed = (cptr.ldI32(__error()));
         }
-        if (cptr.ld1so(nhfp, 32)) {
+        if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
             cptr.stI32(nhfp, creat(file, NHM.FCMASK));
             if (cptr.ldI32(nhfp) < 0)
                 failed = (cptr.ldI32(__error()));
         }
-        if (failed && errbuf ? 1 : 0)
-            void cptr.sprintf(errbuf, __sl14, cptr.add(gl, 16), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
+        if (failed && errbuf)
+            void cptr.sprintf(errbuf, __sl14, cptr.add(gl, $instance_globals_l_lock), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
     }
     nhfp = viable_nhfile(nhfp);
     return nhfp;
@@ -540,12 +597,12 @@ export function commit_bonesfile(lev) {
     let fq_bones;
     let tempname;
     let ret;
-    void set_bonesfile_name(cptr.add(gb, 4784), lev);
-    fq_bones = fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0);
+    void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
+    fq_bones = fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0);
     tempname = set_bonestemp_name();
     tempname = fqname(tempname, NHM.BONESPREFIX, 1);
     ret = rename(tempname, fq_bones);
-    if (cptr.ld1so(flags, 10) && ret != 0 ? 1 : 0)
+    if (wizard() && ret != 0)
         pline(__sl15, tempname, fq_bones);
 }
 
@@ -553,24 +610,24 @@ export function commit_bonesfile(lev) {
 export function open_bonesfile(lev, bonesid) {
     let fq_bones;
     let nhfp = null;
-    cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, 4784), lev));
-    fq_bones = fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0);
+    cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev));
+    fq_bones = fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0);
     nh_uncompress(fq_bones);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.st1o(nhfp, 32, 1);
-        cptr.st1o(nhfp, 33, 0);
-        cptr.stI32o(nhfp, 8, NHM.NHF_BONESFILE);
-        cptr.stI32o(nhfp, 4, NHM.READING);
-        cptr.st1o(nhfp, 34, 1);
-        cptr.st1o(nhfp, 72, 1);
-        cptr.st1o(nhfp, 73, schar((cptr.ldI32o2(sysopt, 0, 4, 168) != NHC.exportascii)));
-        cptr.stI32o(nhfp, 12, cptr.ldI32o2(sysopt, 0, 4, 168));
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_BONESFILE);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
+        cptr.st1o(nhfp, $NHFILE_addinfo, 1);
+        cptr.st1o(nhfp, $NHFILE_style, 1);
+        cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, schar((cptr.ldI32o2(sysopt, 0, 4, $sysopt_s_bonesformat) != NHC.exportascii)));
+        cptr.stI32o(nhfp, $NHFILE_fnidx, cptr.ldI32o2(sysopt, 0, 4, $sysopt_s_bonesformat));
         cptr.stI32(nhfp, -1);
-        cptr.stPtro(nhfp, 40, null);
-        if (cptr.ldPtro(nhfp, 40)) {
+        cptr.stPtro(nhfp, $NHFILE_fpdef, null);
+        if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
         }
-        if (cptr.ld1so(nhfp, 32)) {
+        if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
             cptr.stI32(nhfp, open(fq_bones, 0, 0));
         }
     }
@@ -581,16 +638,16 @@ export function open_bonesfile(lev, bonesid) {
 /** C ref: files.c:993 — @param {CPtr} lev @returns {CInt} */
 export function delete_bonesfile(lev) {
     let reslt;
-    void set_bonesfile_name(cptr.add(gb, 4784), lev);
-    reslt = unlink(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
-    delete_convertedfile(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
+    void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
+    reslt = unlink(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
+    delete_convertedfile(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
     return !(reslt < 0);
 }
 
 /** C ref: files.c:1006 */
 export function compress_bonesfile() {
-    nh_sfconvert(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
-    nh_compress(fqname(cptr.add(gb, 4784), NHM.BONESPREFIX, 0));
+    nh_sfconvert(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
+    nh_compress(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
 }
 
 /** C ref: files.c:1020 — @param {CInt} regularize_it */
@@ -600,32 +657,32 @@ export function set_savefile_name(regularize_it) {
     let indicator_spot = 0;
     let postappend = null;
     let sfindicator = null;
-    void cptr.sprintf(cptr.add(gs, 884), __sl16, getuid() | 0, svp);
+    void cptr.sprintf(cptr.add(gs, $instance_globals_s_SAVEF), __sl16, getuid() | 0, svp);
     regoffset = 5;
     indicator_spot = 2;
     if (regularize_it)
-        regularize(cptr.add(cptr.add(gs, 884), regoffset));
-    if ((indicator_spot == 1 && sfindicator ? 1 : 0) && !overflow ? 1 : 0) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(sfindicator)) < 53n)
-            void cptr.strcat(cptr.add(gs, 884), sfindicator);
+        regularize(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), regoffset));
+    if (indicator_spot == 1 && sfindicator && !overflow) {
+        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)) < 53n)
+            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), sfindicator);
         else
             overflow = 2;
     }
-    if (cptr.strlen(__sl17) > 0n && !overflow ? 1 : 0) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(__sl17)) < 53n) {
-            void cptr.strcat(cptr.add(gs, 884), __sl17);
+    if (cptr.strlen(__sl17) > 0n && !overflow) {
+        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__sl17)) < 53n) {
+            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __sl17);
         } else
             overflow = 3;
     }
-    if ((indicator_spot == 2 && sfindicator ? 1 : 0) && !overflow ? 1 : 0) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(sfindicator)) < 53n)
-            void cptr.strcat(cptr.add(gs, 884), sfindicator);
+    if (indicator_spot == 2 && sfindicator && !overflow) {
+        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)) < 53n)
+            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), sfindicator);
         else
             overflow = 4;
     }
-    if (postappend && !overflow ? 1 : 0) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(postappend)) < 53n)
-            void cptr.strcat(cptr.add(gs, 884), postappend);
+    if (postappend && !overflow) {
+        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(postappend)) < 53n)
+            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), postappend);
         else
             overflow = 5;
     }
@@ -633,12 +690,12 @@ export function set_savefile_name(regularize_it) {
 
 /** C ref: files.c:1128 — @param {CPtr} nhfp */
 export function save_savefile_name(nhfp) {
-    sfo_char(nhfp, cptr.add(gs, 884), __sl18, 54);
+    sfo_char(nhfp, cptr.add(gs, $instance_globals_s_SAVEF), __sl18, 54);
 }
 
 /** C ref: files.c:1137 */
 export function set_error_savefile() {
-    void cptr.strcat(cptr.add(gs, 884), __sl19);
+    void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __sl19);
 }
 
 /** C ref: files.c:1159 @returns {CPtr} */
@@ -646,21 +703,21 @@ export function create_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
-    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
+    fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 8, NHM.NHF_SAVEFILE);
-        cptr.stI32o(nhfp, 4, NHM.WRITING);
-        if (cptr.ldI32o(program_state, 56) || do_historical ? 1 : 0) {
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_SAVEFILE);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
+        if (cptr.ldI32o(program_state, $sinfo_in_self_recover) || do_historical) {
             (void (do_historical));
-            cptr.st1o(nhfp, 32, 1);
-            cptr.st1o(nhfp, 33, 0);
-            cptr.st1o(nhfp, 34, 0);
-            cptr.st1o(nhfp, 72, 0);
-            cptr.st1o(nhfp, 73, 1);
-            cptr.stI32o(nhfp, 12, NHC.historical);
+            cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+            cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+            cptr.st1o(nhfp, $NHFILE_addinfo, 0);
+            cptr.st1o(nhfp, $NHFILE_style, 0);
+            cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+            cptr.stI32o(nhfp, $NHFILE_fnidx, NHC.historical);
             cptr.stI32(nhfp, -1);
-            cptr.stPtro(nhfp, 40, null);
+            cptr.stPtro(nhfp, $NHFILE_fpdef, null);
             cptr.stI32(nhfp, creat(fq_save, NHM.FCMASK));
         }
     }
@@ -673,22 +730,22 @@ export function open_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
-    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
+    fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 8, NHM.NHF_SAVEFILE);
-        cptr.stI32o(nhfp, 4, NHM.READING);
-        if (cptr.ldI32o(program_state, 56) || do_historical ? 1 : 0) {
+        cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_SAVEFILE);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
+        if (cptr.ldI32o(program_state, $sinfo_in_self_recover) || do_historical) {
             do_historical = 1;
             (void (do_historical));
-            cptr.st1o(nhfp, 32, 1);
-            cptr.st1o(nhfp, 33, 0);
-            cptr.st1o(nhfp, 34, 0);
-            cptr.st1o(nhfp, 72, 0);
-            cptr.st1o(nhfp, 73, 1);
-            cptr.stI32o(nhfp, 12, NHC.historical);
+            cptr.st1o(nhfp, $NHFILE_structlevel, 1);
+            cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+            cptr.st1o(nhfp, $NHFILE_addinfo, 0);
+            cptr.st1o(nhfp, $NHFILE_style, 0);
+            cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
+            cptr.stI32o(nhfp, $NHFILE_fnidx, NHC.historical);
             cptr.stI32(nhfp, -1);
-            cptr.stPtro(nhfp, 40, null);
+            cptr.stPtro(nhfp, $NHFILE_fpdef, null);
         }
         cptr.stI32(nhfp, open(fq_save, 0, 0));
     }
@@ -698,7 +755,7 @@ export function open_savefile() {
 
 /** C ref: files.c:1259 @returns {CInt} */
 export function delete_savefile() {
-    let sfname = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
+    let sfname = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     void unlink(sfname);
     void delete_convertedfile(sfname);
     return 0;
@@ -710,7 +767,7 @@ export function restore_saved_game() {
     let nhfp = null;
     let sfstatus = 0;
     set_savefile_name(1);
-    fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
+    fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     nh_uncompress(fq_save);
     if ((nhfp = open_savefile()) !== null) {
         if ((sfstatus = validate(nhfp, fq_save, 0)) != NHM.SF_UPTODATE) {
@@ -726,7 +783,7 @@ export function get_freeing_nhfile() {
     let nhfp = null;
     nhfp = new_nhfile();
     if (nhfp) {
-        cptr.stI32o(nhfp, 4, NHM.FREEING);
+        cptr.stI32o(nhfp, $NHFILE_mode, NHM.FREEING);
     }
     return nhfp;
 }
@@ -737,7 +794,7 @@ export function check_panic_save() {
     let cf;
     let savef;
     set_error_savefile();
-    savef = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 0);
+    savef = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__sl20)))));
     let cfn = alloc((ln + 1) >>> 0);
     void cptr.strcpy(cfn, savef);
@@ -763,14 +820,14 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
     let ln;
     let result = null;
     let sfstatus = 0;
-    void cptr.strcpy(cptr.add(gs, 884), filename);
+    void cptr.strcpy(cptr.add(gs, $instance_globals_s_SAVEF), filename);
     {
-        let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, 884))));
+        let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF))));
         let xln = Number(BigInt.asIntN(32, cptr.strlen(__sl20)));
-        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, 884), (sln - xln) | 0, 1), __sl20) ? 1 : 0)
-            cptr.st1o2(gs, (sln - xln) | 0, 1, 884, 0);
+        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1), __sl20))
+            cptr.st1o2(gs, (sln - xln) | 0, 1, $instance_globals_s_SAVEF, 0);
     }
-    nh_uncompress(cptr.add(gs, 884));
+    nh_uncompress(cptr.add(gs, $instance_globals_s_SAVEF));
     if ((nhfp = open_savefile()) !== null) {
         if ((sfstatus = validate(nhfp, filename, without_wait_synch_per_file)) == NHM.SF_UPTODATE) {
             ln = 49;
@@ -779,7 +836,7 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
         }
         close_nhfile(nhfp);
     }
-    nh_compress(cptr.add(gs, 884));
+    nh_compress(cptr.add(gs, $instance_globals_s_SAVEF));
     return result;
 }
 
@@ -806,7 +863,7 @@ export function get_saved_games() {
                 let entry = readdir(dir);
                 if (!entry)
                     break;
-                if (sscanf(cptr.add(entry, 21), __sl23, uid, cptr.decay(name)) == 2) {
+                if (sscanf(cptr.add(entry, $dirent_d_name), __sl23, uid, cptr.decay(name)) == 2) {
                     if (uid.v == myuid) {
                         let filename = new Uint8Array(256);
                         let r;
@@ -862,7 +919,7 @@ function docompress_file(filename, uncomp) {
     let f;
     let childstatus = cptr.box(0);
     let ln;
-    let istty = schar((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty));
+    let istty = schar((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty));
     xtra = __sl20;
     ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))));
     cfn = alloc((ln + 1) >>> 0);
@@ -880,12 +937,12 @@ function docompress_file(filename, uncomp) {
         cptr.stPtro(args, ++i, __sl27, 8);
     cptr.stPtro(args, ++i, null, 8);
     if (istty) {
-        (cptr.ldPtro(windowprocs, 208))();
+        mark_synch()();
     }
     f = fork();
     if (f == 0) {
         if (istty) {
-            (cptr.ldPtro(windowprocs, 240))(__sl17);
+            raw_print()(__sl17);
         }
         if (uncomp) {
             redirect(cfn, __sl21, __stdinp, uncomp);
@@ -921,7 +978,7 @@ function docompress_file(filename, uncomp) {
         raw_printf(__sl32, uncomp ? __sl25 : __sl17, filename, details);
     }
     void signal(2, done1);
-    if (cptr.ld1so(flags, 10))
+    if (wizard())
         void signal(3, null);
     if (childstatus.v == 0) {
         if (uncomp)
@@ -935,8 +992,8 @@ function docompress_file(filename, uncomp) {
         } else {
             void unlink(cfn);
         }
-        if (istty && cptr.ld1so(iflags, 81) ? 1 : 0) {
-            (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
+        if (istty && cptr.ld1so(iflags, $instance_flags_window_inited)) {
+            clear_nhwindow()(WIN_MESSAGE.v);
             more();
         }
     }
@@ -959,25 +1016,25 @@ export function nh_uncompress(filename) {
 /** C ref: files.c:2000 — struct sfstatus_to_msg[10] */
 const sf2msg = cptr.alloc(10 * 16);
 cptr.stI32o(sf2msg, 0, NHM.SF_UPTODATE);
-cptr.stPtro(sf2msg, 8, __sl34);
+cptr.stPtro(sf2msg, 0 + $sfstatus_to_msg_msg, __sl34);
 cptr.stI32o(sf2msg, 16, NHM.SF_OUTDATED);
-cptr.stPtro(sf2msg, 24, __sl35);
+cptr.stPtro(sf2msg, 16 + $sfstatus_to_msg_msg, __sl35);
 cptr.stI32o(sf2msg, 32, NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH);
-cptr.stPtro(sf2msg, 40, __sl36);
+cptr.stPtro(sf2msg, 32 + $sfstatus_to_msg_msg, __sl36);
 cptr.stI32o(sf2msg, 48, NHM.SF_DM_IL32LLP64_ON_ILP32LL64);
-cptr.stPtro(sf2msg, 56, __sl37);
+cptr.stPtro(sf2msg, 48 + $sfstatus_to_msg_msg, __sl37);
 cptr.stI32o(sf2msg, 64, NHM.SF_DM_I32LP64_ON_ILP32LL64);
-cptr.stPtro(sf2msg, 72, __sl38);
+cptr.stPtro(sf2msg, 64 + $sfstatus_to_msg_msg, __sl38);
 cptr.stI32o(sf2msg, 80, NHM.SF_DM_ILP32LL64_ON_I32LP64);
-cptr.stPtro(sf2msg, 88, __sl39);
+cptr.stPtro(sf2msg, 80 + $sfstatus_to_msg_msg, __sl39);
 cptr.stI32o(sf2msg, 96, NHM.SF_DM_ILP32LL64_ON_IL32LLP64);
-cptr.stPtro(sf2msg, 104, __sl40);
+cptr.stPtro(sf2msg, 96 + $sfstatus_to_msg_msg, __sl40);
 cptr.stI32o(sf2msg, 112, NHM.SF_DM_I32LP64_ON_IL32LLP64);
-cptr.stPtro(sf2msg, 120, __sl41);
+cptr.stPtro(sf2msg, 112 + $sfstatus_to_msg_msg, __sl41);
 cptr.stI32o(sf2msg, 128, NHM.SF_DM_IL32LLP64_ON_I32LP64);
-cptr.stPtro(sf2msg, 136, __sl42);
+cptr.stPtro(sf2msg, 128 + $sfstatus_to_msg_msg, __sl42);
 cptr.stI32o(sf2msg, 144, NHM.SF_DM_MISMATCH);
-cptr.stPtro(sf2msg, 152, __sl43);
+cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __sl43);
 
 /** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr} savefilenm @returns {CPtr} */
 function problematic_savefile(sfstatus, savefilenm) {
@@ -1000,7 +1057,7 @@ function problematic_savefile(sfstatus, savefilenm) {
         default:
         for (i = 0; i < 10; ++i) {
             if (cptr.ldI32o(sf2msg, i, 16) == sfstatus) {
-                raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtro2(sf2msg, i, 16, 8));
+                raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtro2(sf2msg, i, 16, $sfstatus_to_msg_msg));
                 break;
             }
         }
@@ -1058,7 +1115,7 @@ function make_converted_name(filename) {
         if (dir) {
             finaldirchar = c_eos(dir);
             finaldirchar = cptr.add(finaldirchar, -1);
-            if (!((cptr.ld1s(finaldirchar) == 47 || cptr.ld1s(finaldirchar) == 92 ? 1 : 0) || cptr.ld1s(finaldirchar) == 58 ? 1 : 0)) {
+            if (!(cptr.ld1s(finaldirchar) == 47 || cptr.ld1s(finaldirchar) == 92 || cptr.ld1s(finaldirchar) == 58)) {
                 needsep = 1;
                 ln = (ln + 1) | 0;
             }
@@ -1066,7 +1123,7 @@ function make_converted_name(filename) {
         }
     }
     unconverted_filename = alloc((ln + 1) >>> 0);
-    nh_snprintf(__sl50, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __sl51, dir ? dir : __sl17, (dir && needsep ? 1 : 0) ? __sl52 : __sl17, filename);
+    nh_snprintf(__sl50, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __sl51, dir ? dir : __sl17, (dir && needsep) ? __sl52 : __sl17, filename);
     xtra = __sl53;
     ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) | 0;
     converted_filename = alloc((ln + 1) >>> 0);
@@ -1100,7 +1157,7 @@ export function contains_directory(s) {
     let slen = Number(BigInt.asIntN(32, cptr.strlen(s)));
     let cp = s;
     for (i = 0; i < slen; ++i) {
-        if ((cptr.ld1s(cp) == 92 || cptr.ld1s(cp) == 47 ? 1 : 0) || cptr.ld1s(cp) == 58 ? 1 : 0)
+        if (cptr.ld1s(cp) == 92 || cptr.ld1s(cp) == 47 || cptr.ld1s(cp) == 58)
             return 1;
         cp = cptr.add(cp, 1);
     }
@@ -1115,34 +1172,34 @@ let sflock = cptr.alloc(24);
 
 /** C ref: files.c:2255 — @param {CPtr} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
 export function lock_file(filename, whichprefix, retryct) {
-    (cptr.stI32o(gn, 56, cptr.ldI32o(gn, 56) + 1)) - (1);
-    if (cptr.ldI32o(gn, 56) > 1) {
+    (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + 1)) - (1);
+    if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
         impossible(__sl54);
         return 1;
     }
     filename = fqname(filename, whichprefix, 0);
     lockfd = open(filename, 2);
     if (lockfd == -1) {
-        if (!cptr.ldI32o(program_state, 8))
+        if (!cptr.ldI32o(program_state, $sinfo_done_hup))
             raw_printf(__sl55, filename);
-        (cptr.stI32o(gn, 56, cptr.ldI32o(gn, 56) + -1)) - (-1);
+        (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
         return 0;
     }
-    cptr.stI16o(sflock, 20, 3);
-    cptr.stI16o(sflock, 22, 0);
+    cptr.stI16o(sflock, $flock_l_type, 3);
+    cptr.stI16o(sflock, $flock_l_whence, 0);
     cptr.stI64(sflock, 0n);
-    cptr.stI64o(sflock, 8, 0n);
+    cptr.stI64o(sflock, $flock_l_len, 0n);
     while (fcntl(lockfd, 8, sflock) == -1) {
         if (retryct--) {
-            if (!cptr.ldI32o(program_state, 8))
+            if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                 raw_printf(__sl56, filename, retryct);
             sleep(1);
         } else {
-            if (!cptr.ldI32o(program_state, 8))
-                (cptr.ldPtro(windowprocs, 240))(__sl57);
-            if (!cptr.ldI32o(program_state, 8))
+            if (!cptr.ldI32o(program_state, $sinfo_done_hup))
+                raw_print()(__sl57);
+            if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                 raw_printf(__sl58, filename);
-            (cptr.stI32o(gn, 56, cptr.ldI32o(gn, 56) + -1)) - (-1);
+            (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
             return 0;
         }
     }
@@ -1151,16 +1208,16 @@ export function lock_file(filename, whichprefix, retryct) {
 
 /** C ref: files.c:2416 — @param {CPtr} filename */
 export function unlock_file(filename) {
-    if (cptr.ldI32o(gn, 56) == 1) {
-        cptr.stI16o(sflock, 20, 2);
+    if (cptr.ldI32o(gn, $instance_globals_n_nesting) == 1) {
+        cptr.stI16o(sflock, $flock_l_type, 2);
         if (lockfd >= 0) {
             if (fcntl(lockfd, 8, sflock) == -1)
-                if (!cptr.ldI32o(program_state, 8))
+                if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                     raw_printf(__sl59, filename);
             void close(lockfd), lockfd = -1;
         }
     }
-    (cptr.stI32o(gn, 56, cptr.ldI32o(gn, 56) + -1)) - (-1);
+    (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
 }
 
 /** C ref: files.c:2465 @returns {CPtr} */
@@ -1169,45 +1226,45 @@ function fopen_wizkit_file() {
     let tmp_wizkit = new Uint8Array(256);
     let envp;
     envp = nh_getenv(__sl60);
-    if (envp && cptr.ld1s(envp) ? 1 : 0)
-        void __builtin___strncpy_chk(cptr.add(gw, 23), envp, 127n, __builtin_object_size(cptr.add(gw, 23), 1));
-    if (!cptr.ld1so2(gw, 0, 1, 23))
+    if (envp && cptr.ld1s(envp))
+        void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), envp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
+    if (!cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit))
         return null;
-    if (access(cptr.add(gw, 23), 4) == -1) {
-        raw_printf(__sl61, cptr.add(gw, 23), (cptr.ldI32(__error())));
-        (cptr.ldPtro(windowprocs, 216))();
-    } else if ((fp = fopen(cptr.add(gw, 23), __sl21)) !== null) {
+    if (access(cptr.add(gw, $instance_globals_w_wizkit), 4) == -1) {
+        raw_printf(__sl61, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error())));
+        wait_synch()();
+    } else if ((fp = fopen(cptr.add(gw, $instance_globals_w_wizkit), __sl21)) !== null) {
         return fp;
     } else {
-        raw_printf(__sl62, cptr.add(gw, 23), (cptr.ldI32(__error())));
-        (cptr.ldPtro(windowprocs, 216))();
+        raw_printf(__sl62, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error())));
+        wait_synch()();
     }
     envp = nh_getenv(__sl63);
     if (envp)
-        void cptr.sprintf(cptr.decay(tmp_wizkit), __sl64, envp, cptr.add(gw, 23));
+        void cptr.sprintf(cptr.decay(tmp_wizkit), __sl64, envp, cptr.add(gw, $instance_globals_w_wizkit));
     else
-        void cptr.strcpy(cptr.decay(tmp_wizkit), cptr.add(gw, 23));
+        void cptr.strcpy(cptr.decay(tmp_wizkit), cptr.add(gw, $instance_globals_w_wizkit));
     if ((fp = fopen(cptr.decay(tmp_wizkit), __sl21)) !== null)
         return fp;
     else if ((cptr.ldI32(__error())) != 2) {
         raw_printf(__sl65, cptr.decay(tmp_wizkit), (cptr.ldI32(__error())));
-        (cptr.ldPtro(windowprocs, 216))();
+        wait_synch()();
     }
     return null;
 }
 
 /** C ref: files.c:2537 — @param {CPtr} obj */
 function wizkit_addinv(obj) {
-    if (!obj || cptr.eq(obj, hands_obj) ? 1 : 0)
+    if (!obj || cptr.eq(obj, hands_obj))
         return;
     observe_object(obj);
-    if ((cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
-        cptr.stI32o(obj, 88, 1);
-    if ((cptr.ld1so(obj, 49) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic ? 1 : 0) && !merge_choice(cptr.ldPtro(gi, 8), obj) ? 1 : 0) {
+    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
+        cptr.stI32o(obj, $obj_bknown, 1);
+    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)) {
         add_to_migration(obj);
-        cptr.stI16o(obj, 28, 0);
-        cptr.stI16o(obj, 30, 1);
-        cptr.stI64o(obj, 192, 3081n);
+        cptr.stI16o(obj, $obj_ox, 0);
+        cptr.stI16o(obj, $obj_oy, 1);
+        cptr.stI64o(obj, $obj_owornmask, 3081n);
     } else {
         void addinv(obj);
     }
@@ -1234,14 +1291,14 @@ export function proc_wizkit_line(buf) {
 /** C ref: files.c:2584 */
 export function read_wizkit() {
     let fp;
-    if (!cptr.ld1so(flags, 10) || !(fp = fopen_wizkit_file()) ? 1 : 0)
+    if (!wizard() || !(fp = fopen_wizkit_file()))
         return;
-    cptr.stI32o(program_state, 100, 1);
+    cptr.stI32o(program_state, $sinfo_wizkit_wishing, 1);
     config_error_init(1, __sl60, 0);
     parse_conf_file(fp, proc_wizkit_line);
     void fclose(fp);
     config_error_done();
-    cptr.stI32o(program_state, 100, 0);
+    cptr.stI32o(program_state, $sinfo_wizkit_wishing, 0);
     return;
 }
 
@@ -1255,28 +1312,28 @@ function fopen_sym_file() {
 /** C ref: files.c:2631 — @param {CInt} which_set @returns {CInt} */
 export function read_sym_file(which_set) {
     let fp;
-    cptr.stI32o2(gs, which_set, 48, 244, 0);
+    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 0);
     if (!(fp = fopen_sym_file()))
         return 0;
-    cptr.stI32o2(gs, which_set, 48, 244, 1);
-    cptr.st1o(gc, 456, cptr.st1o(gc, 457, 0));
-    cptr.stI32o(gs, 880, which_set);
-    cptr.stI32o(gs, 876, 0);
+    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 1);
+    cptr.st1o(gc, $instance_globals_c_chosen_symset_start, cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0));
+    cptr.stI32o(gs, $instance_globals_s_symset_which_set, which_set);
+    cptr.stI32o(gs, $instance_globals_s_symset_count, 0);
     config_error_init(1, __sl67, 0);
     parse_conf_file(fp, proc_symset_line);
     void fclose(fp);
-    if (!cptr.ld1so(gc, 456) && !cptr.ld1so(gc, 457) ? 1 : 0) {
-        if (cptr.ldPtro2(gs, which_set, 48, 208) && (fuzzymatch(cptr.ldPtro2(gs, which_set, 48, 208), __sl68, __sl69, 1) || !strncmpi((cptr.ldPtro2(gs, which_set, 48, 208)), (__sl70), -1) ? 1 : 0) ? 1 : 0)
+    if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) && !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
+        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) && (fuzzymatch(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name), __sl68, __sl69, 1) || !strncmpi((cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)), (__sl70), -1)))
             clear_symsetentry(which_set, 1);
         config_error_done();
-        if (cptr.ldPtro2(gs, which_set, 48, 208)) {
-            cptr.stI32o2(gs, which_set, 48, 244, 0);
+        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)) {
+            cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 0);
             return 0;
         }
         return 1;
     }
-    if (!cptr.ld1so(gc, 457))
-        config_error_add(__sl71, cptr.ldPtro2(gs, which_set, 48, 208) ? cptr.ldPtro2(gs, which_set, 48, 208) : __sl72);
+    if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_end))
+        config_error_add(__sl71, cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) : __sl72);
     config_error_done();
     return 1;
 }
@@ -1293,25 +1350,25 @@ export function check_recordfile(dir) {
         void nhclose(fd);
     } else {
         raw_printf(__sl74, fq_record);
-        (cptr.ldPtro(windowprocs, 216))();
+        wait_synch()();
     }
 }
 
 /** C ref: files.c:2801 — @param {CPtr} type @param {CPtr} reason */
 export function paniclog(type, reason) {
     let lfile;
-    if (!cptr.ldI32o(program_state, 96)) {
-        cptr.stI32o(program_state, 96, 1);
+    if (!cptr.ldI32o(program_state, $sinfo_in_paniclog)) {
+        cptr.stI32o(program_state, $sinfo_in_paniclog, 1);
         lfile = fopen_datafile(__sl75, __sl46, NHM.TROUBLEPREFIX);
         if (lfile) {
             let buf = new Uint8Array(256);
             let now = getnow();
             let uid = getuid() | 0;
-            let playmode = schar((cptr.ld1so(flags, 10) ? 68 : (cptr.ld1so(flags, 12) ? 88 : 45)));
+            let playmode = schar((wizard() ? 68 : (discover() ? 88 : 45)));
             void fprintf(lfile, __sl76, version_string(cptr.decay(buf), 256n), yyyymmdd(now), hhmmss(now), uid, playmode, type, reason);
             void fclose(lfile);
         }
-        cptr.stI32o(program_state, 96, 0);
+        cptr.stI32o(program_state, $sinfo_in_paniclog, 0);
     }
     return;
 }
@@ -1335,31 +1392,31 @@ export function testinglog(filenm, type, reason) {
 
 /** C ref: files.c:3090 — @param {CInt} code */
 export function do_deferred_showpaths(code) {
-    cptr.st1o(gd, 146, 0);
+    cptr.st1o(gd, $instance_globals_d_deferred_showpaths, 0);
     reveal_paths(code);
     freedynamicdata();
     ;
     l_nhcore_done();
-    after_opt_showpaths(cptr.ldPtro(gd, 152));
+    after_opt_showpaths(cptr.ldPtro(gd, $instance_globals_d_deferred_showpaths_dir));
 }
 
 /** C ref: files.c:3126 — @param {CPtr} filename @param {CInt} wildcards @returns {CInt} */
 export function debugcore(filename, wildcards) {
     let debugfiles;
     let p;
-    if (!cptr.ld1so(flags, 10))
+    if (!wizard())
         return 0;
-    if (!filename || !cptr.ld1s(filename) ? 1 : 0)
+    if (!filename || !cptr.ld1s(filename))
         return 0;
-    debugfiles = cptr.ldPtro(sysopt, 56);
-    if (!debugfiles || !cptr.ld1s(debugfiles) ? 1 : 0)
+    debugfiles = cptr.ldPtro(sysopt, $sysopt_s_debugfiles);
+    if (!debugfiles || !cptr.ld1s(debugfiles))
         return 0;
     filename = nh_basename(filename, 1);
-    if (wildcards && pmatch(debugfiles, filename) ? 1 : 0)
+    if (wildcards && pmatch(debugfiles, filename))
         return 1;
     if ((p = cptr.strstr(debugfiles, filename)) !== null) {
         let l = Number(BigInt.asIntN(32, cptr.strlen(filename)));
-        if (((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 ? 1 : 0) || cptr.ld1so(p, -1) == 47 ? 1 : 0) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0 ? 1 : 0) ? 1 : 0)
+        if ((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 || cptr.ld1so(p, -1) == 47) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0))
             return 1;
     }
     return 0;
@@ -1372,7 +1429,7 @@ export function reveal_paths(code) {
     let nodumpreason;
     let buf = new Uint8Array(256);
     let filep;
-    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh)) ? 1 : 0) ? cptr.ldPtr(gh) : __sl79;
+    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh))) ? cptr.ldPtr(gh) : __sl79;
     let endp;
     let envp;
     let cwdbuf = new Uint8Array(1024);
@@ -1392,7 +1449,7 @@ export function reveal_paths(code) {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     envp = getcwd(cptr.decay(cwdbuf), 1024n);
     if (envp) {
-        (cptr.ldPtro(windowprocs, 240))(__sl85);
+        raw_print()(__sl85);
         raw_printf(__sl86, envp, __sl67);
     }
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
@@ -1420,7 +1477,7 @@ export function reveal_paths(code) {
         }
     }
     raw_printf(__sl83, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, 240))(__sl17);
+    raw_print()(__sl17);
     (void (skip_sysopt));
     (void (nodumpreason));
 }
@@ -1431,27 +1488,27 @@ function choose_passage(passagecnt, oid) {
     let res;
     if (passagecnt < 1)
         return 0;
-    if (oid != cptr.ldI32o(svc, 632) || cptr.ldI32o(svc, 636) == 0 ? 1 : 0) {
+    if (oid != cptr.ldI32o(svc, $context_info_novel) || cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) == 0) {
         let i;
         let range = passagecnt;
         let limit = Number(BigInt.asIntN(32, (30n / 1n)));
-        cptr.stI32o(svc, 632, oid);
+        cptr.stI32o(svc, $context_info_novel, oid);
         if (range <= limit) {
-            cptr.stI32o(svc, 636, passagecnt);
+            cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, passagecnt);
             for (idx = 0; idx < Number(BigInt.asIntN(32, (30n / 1n))); idx++)
-                cptr.st1o2(svc, idx, 1, 640, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))));
+                cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))));
         } else {
-            cptr.stI32o(svc, 636, Number(BigInt.asIntN(32, (30n / 1n))));
+            cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
-                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit ? 1 : 0) {
-                    cptr.st1o2(svc, idx++, 1, 640, schar(i16(((i + 1) | 0))));
+                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit) {
+                    cptr.st1o2(svc, idx++, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
         }
     }
-    idx = (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3463, __sl93), rn2(cptr.ldI32o(svc, 636))) : rn2(cptr.ldI32o(svc, 636)));
-    res = cptr.ld1so2(svc, idx, 1, 640);
-    cptr.st1o2(svc, idx, 1, 640, cptr.ld1so2(svc, cptr.stI32o(svc, 636, cptr.ldI32o(svc, 636) + -1), 1, 640));
+    idx = (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3463, __sl93), rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count))) : rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count)));
+    res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
+    cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, cptr.ld1so2(svc, cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1), 1, $context_info_novel + $novel_tracking_pasg));
     return res;
 }
 
@@ -1473,16 +1530,16 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
     __lbl_cleanup: {
         if (nowin_buf)
             cptr.st1(nowin_buf, 0);
-        if (!tribsection || !tribtitle ? 1 : 0) {
+        if (!tribsection || !tribtitle) {
             if (!nowin_buf)
                 pline(__sl95, badtranslation, tribtitle);
             return grasped;
         }
         do {
             if (debugcore(__sl92, 1)) {
-                let save_plnmsg = cptr.ldI32o(iflags, 40);
+                let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl96, tribsection, tribtitle, tribpassage);
-                cptr.stI32o(iflags, 40, save_plnmsg);
+                cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         } while (0);
         fp = fopen(__sl97, __sl21);
@@ -1512,7 +1569,7 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                             cptr.st1(p2, 0);
                             passagecnt = atoi(p1);
                             scope = 2;
-                            if (matchedsection && !strncmpi((st), (tribtitle), -1) ? 1 : 0) {
+                            if (matchedsection && !strncmpi((st), (tribtitle), -1)) {
                                 matchedtitle = 1;
                                 targetpassage = !tribpassage ? choose_passage(passagecnt, oid) : ((tribpassage <= passagecnt) ? tribpassage : 0);
                             } else {
@@ -1525,12 +1582,12 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                     let st = cptr.add(cptr.decay(line), 9, 1);
                     mungspaces(st);
                     passagenum = atoi(st);
-                    if (passagenum > 0 && passagenum <= passagecnt ? 1 : 0) {
+                    if (passagenum > 0 && passagenum <= passagecnt) {
                         scope = 3;
-                        if (matchedtitle && passagenum == targetpassage ? 1 : 0) {
+                        if (matchedtitle && passagenum == targetpassage) {
                             foundpassage = 1;
                             if (!nowin_buf) {
-                                tribwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
+                                tribwin = create_nhwindow()(NHM.NHW_MENU);
                                 if (tribwin == -1)
                                     break __lbl_cleanup;
                             }
@@ -1548,9 +1605,9 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                 } else {
                     do {
                         if (debugcore(__sl92, 1)) {
-                            let save_plnmsg = cptr.ldI32o(iflags, 40);
+                            let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                             pline(__sl103, linect);
-                            cptr.stI32o(iflags, 40, save_plnmsg);
+                            cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
                     } while (0);
                 }
@@ -1560,7 +1617,7 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                 default:
                 if (foundpassage) {
                     if (!nowin_buf) {
-                        (cptr.ldPtro(windowprocs, 144))(tribwin, 0, cptr.decay(line));
+                        putstr()(tribwin, 0, cptr.decay(line));
                         if (cptr.ld1s(cptr.decay(line)))
                             void cptr.strcpy(cptr.decay(lastline), cptr.decay(line));
                     } else {
@@ -1578,17 +1635,17 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
         if (tribwin != -1) {
             if (cptr.ld1s(cptr.decay(lastline))) {
                 let p;
-                (cptr.ldPtro(windowprocs, 120))(tribwin, 0);
+                display_nhwindow()(tribwin, 0);
                 if (cptr.strchr(cptr.decay(lastline), 91))
                     mungspaces(cptr.decay(lastline));
                 else
                     void cptr.sprintf(cptr.decay(lastline), __sl104, tribtitle);
                 if ((p = cptr.strrchr(cptr.decay(lastline), 93)) !== null)
                     void cptr.sprintf(p, __sl105, targetpassage);
-                (cptr.ldPtro(windowprocs, 352))(cptr.decay(lastline), 0);
+                putmsghistory()(cptr.decay(lastline), 0);
                 grasped = 1;
             }
-            (cptr.ldPtro(windowprocs, 128))(tribwin);
+            destroy_nhwindow()(tribwin);
         }
         if (!grasped)
             pline(__sl106, badtranslation, tribtitle);
@@ -1608,7 +1665,7 @@ export function livelog_add(ll_type, str) {
     let now;
     let gindx;
     let aindx;
-    if (!(ll_type & cptr.ldI64o(sysopt, 96)))
+    if (!(ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)))
         return;
     if (lock_file(__sl109, NHM.SCOREPREFIX, 10)) {
         if (!(livelogfile = fopen_datafile(__sl109, __sl46, NHM.SCOREPREFIX))) {
@@ -1617,9 +1674,9 @@ export function livelog_add(ll_type, str) {
             return;
         }
         now = getnow();
-        gindx = cptr.ld1so(flags, 13) ? 1 : 0;
-        aindx = (1 - cptr.ld1so(u, 2172)) | 0;
-        void fprintf(livelogfile, __sl111, (ll_type & cptr.ldI64o(sysopt, 96)), svp, cptr.ldPtro(gu, 192), cptr.ldPtro(gu, 344), cptr.ldPtro2(genders, gindx, 48, 32), cptr.ldPtro2(aligns, aindx, 32, 16), cptr.ldI64o(svm, 8), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
+        gindx = cptr.ld1so(flags, $flag_female) ? 1 : 0;
+        aindx = (1 - cptr.ld1so(u, $you_ualign)) | 0;
+        void fprintf(livelogfile, __sl111, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, 48, $Gender_filecode), cptr.ldPtro2(aligns, aindx, 32, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
         unlock_file(__sl109);
     }

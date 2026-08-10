@@ -11,6 +11,7 @@ import * as Y from '../yield-rt.js';
 import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { alloc, dupstr } from './alloc.js';
 import { cg, gc, svl, svr } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -20,6 +21,18 @@ import { isok } from './cmd.js';
 import { dist2 } from './hacklib.js';
 import { impossible } from './pline.js';
 import { newsym_force } from './display.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly,
+    $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
+    $instance_globals_c_coder = FLD.instance_globals_c_coder,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level, $mkroom_hx = FLD.mkroom_hx,
+    $mkroom_hy = FLD.mkroom_hy, $mkroom_ly = FLD.mkroom_ly, $nhrect_hx = FLD.nhrect_hx,
+    $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $rm_edge = FLD.rm_edge, $rm_lit = FLD.rm_lit,
+    $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ, $selectionvar_bounds = FLD.selectionvar_bounds,
+    $selectionvar_bounds_dirty = FLD.selectionvar_bounds_dirty, $selectionvar_hei = FLD.selectionvar_hei,
+    $selectionvar_map = FLD.selectionvar_map, $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("/Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/selvar.c");
@@ -38,23 +51,23 @@ const __sl10 = cptr.lit("rectangular");
 export function* selection_new() {
     let tmps = (yield* alloc(32));
     cptr.stI32(tmps, NHM.COLNO);
-    cptr.stI32o(tmps, 4, NHM.ROWNO);
-    cptr.st1o(tmps, 8, 0);
-    cptr.stI16o(tmps, 10, NHM.COLNO);
-    cptr.stI16o(tmps, 12, NHM.ROWNO);
-    cptr.stI16o(tmps, 14, cptr.stI16o(tmps, 16, 0));
-    cptr.stPtro(tmps, 24, (yield* alloc(1681)));
-    void __builtin___memset_chk(cptr.ldPtro(tmps, 24), 1, 1680n, __builtin_object_size(cptr.ldPtro(tmps, 24), 0));
-    cptr.st1o(cptr.ldPtro(tmps, 24), 1680, 0);
+    cptr.stI32o(tmps, $selectionvar_hei, NHM.ROWNO);
+    cptr.st1o(tmps, $selectionvar_bounds_dirty, 0);
+    cptr.stI16o(tmps, $selectionvar_bounds, NHM.COLNO);
+    cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
+    cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hy, 0));
+    cptr.stPtro(tmps, $selectionvar_map, (yield* alloc(1681)));
+    void __builtin___memset_chk(cptr.ldPtro(tmps, $selectionvar_map), 1, 1680n, __builtin_object_size(cptr.ldPtro(tmps, $selectionvar_map), 0));
+    cptr.st1o(cptr.ldPtro(tmps, $selectionvar_map), 1680, 0);
     return tmps;
 }
 
 /** C ref: selvar.c:33 — @param {CPtr} sel @param {CInt} freesel */
 export function selection_free(sel, freesel) {
     if (sel) {
-        if (cptr.ldPtro(sel, 24))
-            cptr.free(cptr.ldPtro(sel, 24));
-        cptr.stPtro(sel, 24, null);
+        if (cptr.ldPtro(sel, $selectionvar_map))
+            cptr.free(cptr.ldPtro(sel, $selectionvar_map));
+        cptr.stPtro(sel, $selectionvar_map, null);
         if (freesel)
             cptr.free(sel);
         else
@@ -64,43 +77,43 @@ export function selection_free(sel, freesel) {
 
 /** C ref: selvar.c:48 — @param {CPtr} sel @param {CInt} val */
 export function selection_clear(sel, val) {
-    void __builtin___memset_chk(cptr.ldPtro(sel, 24), (1 + val) | 0, 1680n, __builtin_object_size(cptr.ldPtro(sel, 24), 0));
+    void __builtin___memset_chk(cptr.ldPtro(sel, $selectionvar_map), (1 + val) | 0, 1680n, __builtin_object_size(cptr.ldPtro(sel, $selectionvar_map), 0));
     if (val) {
-        cptr.stI16o(sel, 10, 0);
-        cptr.stI16o(sel, 12, 0);
-        cptr.stI16o(sel, 14, 79);
-        cptr.stI16o(sel, 16, 20);
+        cptr.stI16o(sel, $selectionvar_bounds, 0);
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, 0);
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, 79);
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 20);
     } else {
-        cptr.stI16o(sel, 10, NHM.COLNO);
-        cptr.stI16o(sel, 12, NHM.ROWNO);
-        cptr.stI16o(sel, 14, cptr.stI16o(sel, 16, 0));
+        cptr.stI16o(sel, $selectionvar_bounds, NHM.COLNO);
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0));
     }
-    cptr.st1o(sel, 8, 0);
+    cptr.st1o(sel, $selectionvar_bounds_dirty, 0);
 }
 
 /** C ref: selvar.c:65 — @param {CPtr} sel @returns {CPtr} */
 export function* selection_clone(sel) {
     let tmps = (yield* alloc(32));
     cptr.memcpy(tmps, sel, 32);
-    cptr.stPtro(tmps, 24, (yield* dupstr(cptr.ldPtro(sel, 24))));
+    cptr.stPtro(tmps, $selectionvar_map, (yield* dupstr(cptr.ldPtro(sel, $selectionvar_map))));
     return tmps;
 }
 
 /** C ref: selvar.c:77 — @param {CPtr} sel @param {CPtr} b */
 export function selection_getbounds(sel, b) {
-    if (!sel || !b ? 1 : 0)
+    if (!sel || !b)
         return;
     selection_recalc_bounds(sel);
-    if (cptr.ldI16o(sel, 10) >= cptr.ldI32(sel)) {
+    if (cptr.ldI16o(sel, $selectionvar_bounds) >= cptr.ldI32(sel)) {
         cptr.stI16(b, 0);
-        cptr.stI16o(b, 2, 0);
-        cptr.stI16o(b, 4, 79);
-        cptr.stI16o(b, 6, 20);
+        cptr.stI16o(b, $NhRect_ly, 0);
+        cptr.stI16o(b, $NhRect_hx, 79);
+        cptr.stI16o(b, $NhRect_hy, 20);
     } else {
-        cptr.stI16(b, cptr.ldI16o(sel, 10));
-        cptr.stI16o(b, 2, cptr.ldI16o(sel, 12));
-        cptr.stI16o(b, 4, cptr.ldI16o(sel, 14));
-        cptr.stI16o(b, 6, cptr.ldI16o(sel, 16));
+        cptr.stI16(b, cptr.ldI16o(sel, $selectionvar_bounds));
+        cptr.stI16o(b, $NhRect_ly, cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_ly));
+        cptr.stI16o(b, $NhRect_hx, cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_hx));
+        cptr.stI16o(b, $NhRect_hy, cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_hy));
     }
 }
 
@@ -109,14 +122,14 @@ export function selection_recalc_bounds(sel) {
     let x;
     let y;
     let r = cptr.alloc(8);
-    if (!cptr.ld1so(sel, 8))
+    if (!cptr.ld1so(sel, $selectionvar_bounds_dirty))
         return;
-    cptr.stI16o(sel, 10, NHM.COLNO);
-    cptr.stI16o(sel, 12, NHM.ROWNO);
-    cptr.stI16o(sel, 14, cptr.stI16o(sel, 16, 0));
-    cptr.stI16(r, cptr.stI16o(r, 2, cptr.stI16o(r, 4, cptr.stI16o(r, 6, -1))));
+    cptr.stI16o(sel, $selectionvar_bounds, NHM.COLNO);
+    cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
+    cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0));
+    cptr.stI16(r, cptr.stI16o(r, $nhrect_ly, cptr.stI16o(r, $nhrect_hx, cptr.stI16o(r, $nhrect_hy, -1))));
     for (x = 0; x < cptr.ldI32(sel); x++) {
-        for (y = 0; y < cptr.ldI32o(sel, 4); y++) {
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
             if (selection_getpoint(x, y, sel)) {
                 cptr.stI16(r, x);
                 break;
@@ -127,77 +140,77 @@ export function selection_recalc_bounds(sel) {
     }
     if (cptr.ldI16(r) > -1) {
         for (x = i16(((cptr.ldI32(sel) - 1) | 0)); x >= cptr.ldI16(r); x--) {
-            for (y = 0; y < cptr.ldI32o(sel, 4); y++) {
+            for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
                 if (selection_getpoint(x, y, sel)) {
-                    cptr.stI16o(r, 4, x);
+                    cptr.stI16o(r, $nhrect_hx, x);
                     break;
                 }
             }
-            if (cptr.ldI16o(r, 4) > -1)
+            if (cptr.ldI16o(r, $nhrect_hx) > -1)
                 break;
         }
-        for (y = 0; y < cptr.ldI32o(sel, 4); y++) {
-            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, 4); x++) {
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++) {
+            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++) {
                 if (selection_getpoint(x, y, sel)) {
-                    cptr.stI16o(r, 2, y);
+                    cptr.stI16o(r, $nhrect_ly, y);
                     break;
                 }
             }
-            if (cptr.ldI16o(r, 2) > -1)
+            if (cptr.ldI16o(r, $nhrect_ly) > -1)
                 break;
         }
-        for (y = i16(((cptr.ldI32o(sel, 4) - 1) | 0)); y >= cptr.ldI16o(r, 2); y--) {
-            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, 4); x++) {
+        for (y = i16(((cptr.ldI32o(sel, $selectionvar_hei) - 1) | 0)); y >= cptr.ldI16o(r, $nhrect_ly); y--) {
+            for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++) {
                 if (selection_getpoint(x, y, sel)) {
-                    cptr.stI16o(r, 6, y);
+                    cptr.stI16o(r, $nhrect_hy, y);
                     break;
                 }
             }
-            if (cptr.ldI16o(r, 6) > -1)
+            if (cptr.ldI16o(r, $nhrect_hy) > -1)
                 break;
         }
-        cptr.memcpy(cptr.add(sel, 10), r, 8);
+        cptr.memcpy(cptr.add(sel, $selectionvar_bounds), r, 8);
     }
-    cptr.st1o(sel, 8, 0);
+    cptr.st1o(sel, $selectionvar_bounds_dirty, 0);
 }
 
 /** C ref: selvar.c:168 — @param {CInt} x @param {CInt} y @param {CPtr} sel @returns {*} */
 export function selection_getpoint(x, y, sel) {
-    if (!sel || !cptr.ldPtro(sel, 24) ? 1 : 0)
+    if (!sel || !cptr.ldPtro(sel, $selectionvar_map))
         return 0;
-    if (((x < 0 || y < 0 ? 1 : 0) || x >= cptr.ldI32(sel) ? 1 : 0) || y >= cptr.ldI32o(sel, 4) ? 1 : 0)
+    if (x < 0 || y < 0 || x >= cptr.ldI32(sel) || y >= cptr.ldI32o(sel, $selectionvar_hei))
         return 0;
-    return i16(((cptr.ld1so(cptr.ldPtro(sel, 24), (Math.imul(cptr.ldI32(sel), y) + x) | 0) - 1) | 0));
+    return i16(((cptr.ld1so(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0) - 1) | 0));
 }
 
 /** C ref: selvar.c:181 — @param {CInt} x @param {CInt} y @param {CPtr} sel @param {CInt} c */
 export function selection_setpoint(x, y, sel, c) {
-    if (!sel || !cptr.ldPtro(sel, 24) ? 1 : 0)
+    if (!sel || !cptr.ldPtro(sel, $selectionvar_map))
         return;
-    if (((x < 0 || y < 0 ? 1 : 0) || x >= cptr.ldI32(sel) ? 1 : 0) || y >= cptr.ldI32o(sel, 4) ? 1 : 0)
+    if (x < 0 || y < 0 || x >= cptr.ldI32(sel) || y >= cptr.ldI32o(sel, $selectionvar_hei))
         return;
-    if (c && !cptr.ld1so(sel, 8) ? 1 : 0) {
-        if (cptr.ldI16o(sel, 10) > x)
-            cptr.stI16o(sel, 10, x);
-        if (cptr.ldI16o(sel, 12) > y)
-            cptr.stI16o(sel, 12, y);
-        if (cptr.ldI16o(sel, 14) < x)
-            cptr.stI16o(sel, 14, x);
-        if (cptr.ldI16o(sel, 16) < y)
-            cptr.stI16o(sel, 16, y);
-    } else if (cptr.ld1so(cptr.ldPtro(sel, 24), (Math.imul(cptr.ldI32(sel), y) + x) | 0) != 0) {
-        cptr.st1o(sel, 8, 1);
+    if (c && !cptr.ld1so(sel, $selectionvar_bounds_dirty)) {
+        if (cptr.ldI16o(sel, $selectionvar_bounds) > x)
+            cptr.stI16o(sel, $selectionvar_bounds, x);
+        if (cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_ly) > y)
+            cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, y);
+        if (cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_hx) < x)
+            cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, x);
+        if (cptr.ldI16o(sel, $selectionvar_bounds + $nhrect_hy) < y)
+            cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, y);
+    } else if (cptr.ld1so(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0) != 0) {
+        cptr.st1o(sel, $selectionvar_bounds_dirty, 1);
     }
-    cptr.st1o(cptr.ldPtro(sel, 24), (Math.imul(cptr.ldI32(sel), y) + x) | 0, schar(((c + 1) | 0)));
+    cptr.st1o(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0, schar(((c + 1) | 0)));
 }
 
 /** C ref: selvar.c:211 — @param {CPtr} s @returns {CPtr} */
 export function selection_not(s) {
     let x;
     let y;
-    let tmprect = cptr.alloc(8); cptr.memcpy(tmprect, cptr.add(cg, 544), 8);
+    let tmprect = cptr.alloc(8); cptr.memcpy(tmprect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     for (x = 0; x < cptr.ldI32(s); x++)
-        for (y = 0; y < cptr.ldI32o(s, 4); y++)
+        for (y = 0; y < cptr.ldI32o(s, $selectionvar_hei); y++)
             selection_setpoint(i16(x), i16(y), s, selection_getpoint(i16(x), i16(y), s) ? 0 : 1);
     selection_getbounds(s, tmprect);
     return s;
@@ -208,14 +221,14 @@ export function* selection_filter_percent(ov, percent) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     if (!ov)
         return null;
     ret = (yield* selection_new());
     selection_getbounds(ov, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 241, __sl1), rn2(100)) : rn2(100)) < percent) ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (selection_getpoint(i16(x), i16(y), ov) && ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 241, __sl1), rn2(100)) : rn2(100)) < percent))
                 selection_setpoint(i16(x), i16(y), ret, 1);
     return ret;
 }
@@ -225,14 +238,14 @@ export function* selection_filter_mapchar(ov, typ, lit) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     if (!ov)
         return null;
     ret = (yield* selection_new());
     selection_getbounds(ov, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1so3(svl, x, 756, y, 36, 1684))) ? 1 : 0) {
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)))) {
                 switch (lit) {
                     default:
                     case -2:
@@ -243,7 +256,7 @@ export function* selection_filter_mapchar(ov, typ, lit) {
                     break;
                     case 0:
                     case 1:
-                    if ((cptr.ldI32o3(svl, x, 756, y, 36, 1696) & 1) == lit >>> 0)
+                    if ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit) & 1) == lit >>> 0)
                         selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                 }
@@ -257,16 +270,16 @@ export function selection_rndcoord(ov, x, y, removeit) {
     let c;
     let dx;
     let dy;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     selection_getbounds(ov, rect);
-    for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, 4); dx++)
-        for (dy = cptr.ldI16o(rect, 2); dy <= cptr.ldI16o(rect, 6); dy++)
+    for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, $nhrect_hx); dx++)
+        for (dy = cptr.ldI16o(rect, $nhrect_ly); dy <= cptr.ldI16o(rect, $nhrect_hy); dy++)
             if (selection_getpoint(i16(dx), i16(dy), ov))
                 idx++;
     if (idx) {
         c = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 302, __sl3), rn2(idx)) : rn2(idx));
-        for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, 4); dx++)
-            for (dy = cptr.ldI16o(rect, 2); dy <= cptr.ldI16o(rect, 6); dy++)
+        for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, $nhrect_hx); dx++)
+            for (dy = cptr.ldI16o(rect, $nhrect_ly); dy <= cptr.ldI16o(rect, $nhrect_hy); dy++)
                 if (selection_getpoint(i16(dx), i16(dy), ov)) {
                     if (!c) {
                         cptr.stI16(x, i16(dx));
@@ -287,22 +300,22 @@ export function* selection_do_grow(ov, dir) {
     let x;
     let y;
     let tmp;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     if (!ov)
         return;
     tmp = (yield* selection_new());
     if (dir == -1)
         dir = random_wdir();
     selection_getbounds(ov, rect);
-    for (x = i16((0 > ((cptr.ldI16(rect) - 1) | 0) ? 0 : ((cptr.ldI16(rect) - 1) | 0))); x <= (79 < ((cptr.ldI16o(rect, 4) + 1) | 0) ? 79 : ((cptr.ldI16o(rect, 4) + 1) | 0)); x++)
-        for (y = i16((0 > ((cptr.ldI16o(rect, 2) - 1) | 0) ? 0 : ((cptr.ldI16o(rect, 2) - 1) | 0))); y <= (20 < ((cptr.ldI16o(rect, 6) + 1) | 0) ? 20 : ((cptr.ldI16o(rect, 6) + 1) | 0)); y++) {
-            if (((((((((dir & NHM.W_WEST) && selection_getpoint(i16(((x + 1) | 0)), y, ov) ? 1 : 0) || (((dir & 9) == 9) && selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_NORTH) && selection_getpoint(x, i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 5) == 5) && selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_EAST) && selection_getpoint(i16(((x - 1) | 0)), y, ov) ? 1 : 0) ? 1 : 0) || (((dir & 6) == 6) && selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || ((dir & NHM.W_SOUTH) && selection_getpoint(x, i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) || (((dir & 10) == 10) && selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov) ? 1 : 0) ? 1 : 0) {
+    for (x = i16((0 > ((cptr.ldI16(rect) - 1) | 0) ? 0 : ((cptr.ldI16(rect) - 1) | 0))); x <= (79 < ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0) ? 79 : ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0)); x++)
+        for (y = i16((0 > ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0) ? 0 : ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0))); y <= (20 < ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0) ? 20 : ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0)); y++) {
+            if (((dir & NHM.W_WEST) && selection_getpoint(i16(((x + 1) | 0)), y, ov)) || (((dir & 9) == 9) && selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov)) || ((dir & NHM.W_NORTH) && selection_getpoint(x, i16(((y + 1) | 0)), ov)) || (((dir & 5) == 5) && selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov)) || ((dir & NHM.W_EAST) && selection_getpoint(i16(((x - 1) | 0)), y, ov)) || (((dir & 6) == 6) && selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov)) || ((dir & NHM.W_SOUTH) && selection_getpoint(x, i16(((y - 1) | 0)), ov)) || (((dir & 10) == 10) && selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov))) {
                 selection_setpoint(x, y, tmp, 1);
             }
         }
     selection_getbounds(tmp, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, tmp))
                 selection_setpoint(x, y, ov, 1);
     selection_free(tmp, 1);
@@ -322,7 +335,7 @@ function sel_flood_havepoint(x, y, xs, ys, n) {
     let yy = y;
     while (n > 0) {
         --n;
-        if (cptr.ldI16o(xs, n, 2) == xx && cptr.ldI16o(ys, n, 2) == yy ? 1 : 0)
+        if (cptr.ldI16o(xs, n, 2) == xx && cptr.ldI16o(ys, n, 2) == yy)
             return 1;
     }
     return 0;
@@ -357,7 +370,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
             selection_setpoint(x, y, tmp, 1);
         }
         do {
-            if (((isok(i16((((x + 1) | 0))), (y)) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), (y)))) ? 1 : 0) && !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x + 1) | 0))), (y), dx, dy, idx) ? 1 : 0)
+            if (isok(i16((((x + 1) | 0))), (y)) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), (y)))) && !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), (y), dx, dy, idx))
                 do {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -368,7 +381,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                 } while (0);
         } while (0);
         do {
-            if (((isok(i16((((x - 1) | 0))), (y)) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), (y)))) ? 1 : 0) && !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x - 1) | 0))), (y), dx, dy, idx) ? 1 : 0)
+            if (isok(i16((((x - 1) | 0))), (y)) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), (y)))) && !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), (y), dx, dy, idx))
                 do {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -379,7 +392,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                 } while (0);
         } while (0);
         do {
-            if (((isok((x), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)((x), i16((((y + 1) | 0)))))) ? 1 : 0) && !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint((x), i16((((y + 1) | 0))), dx, dy, idx) ? 1 : 0)
+            if (isok((x), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)((x), i16((((y + 1) | 0)))))) && !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y + 1) | 0))), dx, dy, idx))
                 do {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, ((x)), 2);
@@ -390,7 +403,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                 } while (0);
         } while (0);
         do {
-            if (((isok((x), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)((x), i16((((y - 1) | 0)))))) ? 1 : 0) && !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint((x), i16((((y - 1) | 0))), dx, dy, idx) ? 1 : 0)
+            if (isok((x), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)((x), i16((((y - 1) | 0)))))) && !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y - 1) | 0))), dx, dy, idx))
                 do {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, ((x)), 2);
@@ -402,7 +415,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
         } while (0);
         if (diagonals) {
             do {
-                if (((isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))))) ? 1 : 0) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx) ? 1 : 0)
+                if (isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -413,7 +426,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                     } while (0);
             } while (0);
             do {
-                if (((isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))))) ? 1 : 0) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx) ? 1 : 0)
+                if (isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -424,7 +437,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                     } while (0);
             } while (0);
             do {
-                if (((isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))))) ? 1 : 0) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx) ? 1 : 0)
+                if (isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -435,7 +448,7 @@ export function* selection_floodfill(ov, x, y, diagonals) {
                     } while (0);
             } while (0);
             do {
-                if (((isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))))) ? 1 : 0) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) ? 1 : 0) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx) ? 1 : 0)
+                if (isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && (yield* Y.icall((selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
                     do {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -470,15 +483,15 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
         return;
     filled = !filled;
     if (!filled) {
-        while (y >= 0 && x <= a ? 1 : 0) {
+        while (y >= 0 && x <= a) {
             selection_setpoint(i16(((xc + x) | 0)), i16(((yc + y) | 0)), ov, 1);
-            if (x != 0 || y != 0 ? 1 : 0)
+            if (x != 0 || y != 0)
                 selection_setpoint(i16(((xc - x) | 0)), i16(((yc - y) | 0)), ov, 1);
-            if (x != 0 && y != 0 ? 1 : 0) {
+            if (x != 0 && y != 0) {
                 selection_setpoint(i16(((xc + x) | 0)), i16(((yc - y) | 0)), ov, 1);
                 selection_setpoint(i16(((xc - x) | 0)), i16(((yc + y) | 0)), ov, 1);
             }
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3 ? 1 : 0) {
+            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
@@ -496,8 +509,8 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
             }
         }
     } else {
-        while (y >= 0 && x <= a ? 1 : 0) {
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3 ? 1 : 0) {
+        while (y >= 0 && x <= a) {
+            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
@@ -540,7 +553,7 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     let dy;
     let distsq = 0n;
     let lu = 0;
-    if (x1 == x2 && y1 == y2 ? 1 : 0)
+    if (x1 == x2 && y1 == y2)
         return BigInt(dist2(Number(BigInt.asIntN(16, x1)), Number(BigInt.asIntN(16, y1)), Number(BigInt.asIntN(16, x3)), Number(BigInt.asIntN(16, y3))));
     lu = Number((BigInt.asIntN(64, BigInt.asIntN(64, (BigInt.asIntN(64, x3 - x1)) * px) + BigInt.asIntN(64, (BigInt.asIntN(64, y3 - y1)) * py)))) / Number(s);
     if (lu > 1)
@@ -578,7 +591,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
             for (dx = 0n; dx < 80n; dx++)
                 for (dy = 0n; dy < 21n; dy++) {
                     let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 600, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs))))) ? 1 : 0) ? 1 : 0)
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 600, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -593,7 +606,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                     let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
                     let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
                     let d0 = ((d5) < (((((d1) > (d2) ? (d1) : (d2))) < (((d3) > (d4) ? (d3) : (d4))) ? (((d1) > (d2) ? (d1) : (d2))) : (((d3) > (d4) ? (d3) : (d4))))) ? (d5) : (((((d1) > (d2) ? (d1) : (d2))) < (((d3) > (d4) ? (d3) : (d4))) ? (((d1) > (d2) ? (d1) : (d2))) : (((d3) > (d4) ? (d3) : (d4))))));
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 616, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs))))) ? 1 : 0) ? 1 : 0)
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 616, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -625,7 +638,7 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
         dy = (y1 - y2) | 0;
     }
     selection_setpoint(x1, y1, ov, 1);
-    if (!dx && !dy ? 1 : 0) {
+    if (!dx && !dy) {
         ;
     } else if (dx > dy) {
         ai = Math.imul(((dy - dx) | 0), 2);
@@ -662,7 +675,7 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
     let my;
     let dx;
     let dy;
-    if (rec < 1 || (x2 == x1 && y2 == y1 ? 1 : 0) ? 1 : 0)
+    if (rec < 1 || (x2 == x1 && y2 == y1))
         return;
     if (rough > ((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0)) ? (Math.abs((x2 - x1) | 0)) : (Math.abs((y2 - y1) | 0))))
         rough = schar(((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0)) ? (Math.abs((x2 - x1) | 0)) : (Math.abs((y2 - y1) | 0))));
@@ -675,7 +688,7 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
             dy = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 705, __sl6), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
             mx = (((((x1 + x2) | 0) / 2) | 0) + dx) | 0;
             my = (((((y1 + y2) | 0) / 2) | 0) + dy) | 0;
-        } while ((((mx > 79 || mx < 0 ? 1 : 0) || my < 0 ? 1 : 0) || my > 20 ? 1 : 0));
+        } while ((mx > 79 || mx < 0 || my < 0 || my > 20));
     }
     if (!selection_getpoint(i16(mx), i16(my), ov)) {
         selection_setpoint(i16(mx), i16(my), ov, 1);
@@ -691,13 +704,13 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
 export function* selection_iterate(ov, func, arg) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     if (!ov)
         return;
     selection_getbounds(ov, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if (isok(x, y) && selection_getpoint(x, y, ov) ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (isok(x, y) && selection_getpoint(x, y, ov))
                 (yield* Y.icall((func)(x, y, arg)));
 }
 
@@ -705,23 +718,23 @@ export function* selection_iterate(ov, func, arg) {
 export function selection_is_irregular(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     selection_getbounds(sel, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if (isok(x, y) && !selection_getpoint(x, y, sel) ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (isok(x, y) && !selection_getpoint(x, y, sel))
                 return 1;
     return 0;
 }
 
 /** C ref: selvar.c:764 — @param {CPtr} sel @param {CPtr} buf @returns {CPtr} */
 export function selection_size_description(sel, buf) {
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     let dx;
     let dy;
     selection_getbounds(sel, rect);
-    dx = i16(((((cptr.ldI16o(rect, 4) - cptr.ldI16(rect)) | 0) + 1) | 0));
-    dy = i16(((((cptr.ldI16o(rect, 6) - cptr.ldI16o(rect, 2)) | 0) + 1) | 0));
+    dx = i16(((((cptr.ldI16o(rect, $nhrect_hx) - cptr.ldI16(rect)) | 0) + 1) | 0));
+    dy = i16(((((cptr.ldI16o(rect, $nhrect_hy) - cptr.ldI16o(rect, $nhrect_ly)) | 0) + 1) | 0));
     void cptr.sprintf(buf, __sl7, selection_is_irregular(sel) ? __sl8 : ((dx == dy) ? __sl9 : __sl10), dx, dy);
     return buf;
 }
@@ -732,14 +745,14 @@ export function* selection_from_mkroom(croom) {
     let x;
     let y;
     let rmno;
-    if ((!croom && cptr.ldPtro(gc, 568) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(gc, 568), 8) ? 1 : 0)
-        croom = cptr.ldPtro(cptr.ldPtro(gc, 568), 8);
+    if (!croom && cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom))
+        croom = cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom);
     if (!croom)
         return sel;
     rmno = Number(BigInt.asUintN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
-    for (y = cptr.ldI16o(croom, 4); y <= cptr.ldI16o(croom, 6); y++)
-        for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, 2); x++)
-            if ((isok(x, y) && !(cptr.ldI32o3(svl, x, 756, y, 36, 1708) & 1) ? 1 : 0) && (cptr.ldI32o3(svl, x, 756, y, 36, 1704) & 63) == rmno ? 1 : 0)
+    for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
+        for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
+            if (isok(x, y) && !(cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }
@@ -749,7 +762,7 @@ export function* selection_force_newsyms(sel) {
     let x;
     let y;
     for (x = 1; x < cptr.ldI32(sel); x++)
-        for (y = 0; y < cptr.ldI32o(sel, 4); y++)
+        for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++)
             if (selection_getpoint(x, y, sel))
                 (yield* newsym_force(x, y));
 }

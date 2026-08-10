@@ -7,6 +7,8 @@ import { i16, schar, u32mod, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
 import { doddoremarm, doputon, doremring, dotakeoff, dowear, ia_dotakeoff, remarm_swapwep, reset_remarm } from './do_wear.js';
@@ -86,6 +88,117 @@ import { getnow } from './calendar.js';
 import { timet_delta } from './allmain.js';
 import { dosuspend } from './ioctl.js';
 import { dosh } from './unixunix.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $Cmd_bind_cmd = FLD.Cmd_bind_cmd, $Cmd_bind_next = FLD.Cmd_bind_next,
+    $Cmd_bind_param = FLD.Cmd_bind_param, $Cmd_bind_userbind = FLD.Cmd_bind_userbind,
+    $Race_mnum = FLD.Race_mnum, $_cmd_queue_dirx = FLD._cmd_queue_dirx,
+    $_cmd_queue_diry = FLD._cmd_queue_diry, $_cmd_queue_dirz = FLD._cmd_queue_dirz,
+    $_cmd_queue_ec_entry = FLD._cmd_queue_ec_entry, $_cmd_queue_intval = FLD._cmd_queue_intval,
+    $_cmd_queue_key = FLD._cmd_queue_key, $_cmd_queue_next = FLD._cmd_queue_next,
+    $achievement_tracking_soko_prize_oid = FLD.achievement_tracking_soko_prize_oid,
+    $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind,
+    $cmd_alphadirchars = FLD.cmd_alphadirchars, $cmd_cmdbinds = FLD.cmd_cmdbinds,
+    $cmd_dirchars = FLD.cmd_dirchars, $cmd_extcmd_char = FLD.cmd_extcmd_char,
+    $cmd_mousebtn = FLD.cmd_mousebtn, $cmd_num_pad = FLD.cmd_num_pad,
+    $cmd_pcHack_compat = FLD.cmd_pcHack_compat, $cmd_phone_layout = FLD.cmd_phone_layout,
+    $cmd_spkeys = FLD.cmd_spkeys, $cmd_swap_yz = FLD.cmd_swap_yz,
+    $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
+    $const_globals_zeroany = FLD.const_globals_zeroany, $context_info_achieveo = FLD.context_info_achieveo,
+    $context_info_digging = FLD.context_info_digging, $context_info_forcefight = FLD.context_info_forcefight,
+    $context_info_move = FLD.context_info_move, $context_info_mv = FLD.context_info_mv,
+    $context_info_nopick = FLD.context_info_nopick, $context_info_polearm = FLD.context_info_polearm,
+    $context_info_run = FLD.context_info_run, $context_info_travel = FLD.context_info_travel,
+    $context_info_travel1 = FLD.context_info_travel1, $coord_y = FLD.coord_y,
+    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
+    $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
+    $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum, $dig_info_level = FLD.dig_info_level,
+    $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+    $dlevel_t_objects = FLD.dlevel_t_objects, $ext_func_tab_ef_desc = FLD.ext_func_tab_ef_desc,
+    $ext_func_tab_ef_funct = FLD.ext_func_tab_ef_funct, $ext_func_tab_ef_txt = FLD.ext_func_tab_ef_txt,
+    $ext_func_tab_f_text = FLD.ext_func_tab_f_text, $ext_func_tab_flags = FLD.ext_func_tab_flags,
+    $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
+    $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_rest_on_space = FLD.flag_rest_on_space,
+    $flag_showrace = FLD.flag_showrace, $flag_travelcmd = FLD.flag_travelcmd,
+    $instance_flags_altmeta = FLD.instance_flags_altmeta,
+    $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
+    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+    $instance_flags_extmenu = FLD.instance_flags_extmenu,
+    $instance_flags_getdir_click = FLD.instance_flags_getdir_click,
+    $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
+    $instance_flags_getloc_travelmode = FLD.instance_flags_getloc_travelmode,
+    $instance_flags_in_parse = FLD.instance_flags_in_parse,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+    $instance_flags_num_pad = FLD.instance_flags_num_pad,
+    $instance_flags_num_pad_mode = FLD.instance_flags_num_pad_mode,
+    $instance_flags_query_menu = FLD.instance_flags_query_menu,
+    $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
+    $instance_flags_sanity_no_check = FLD.instance_flags_sanity_no_check,
+    $instance_flags_travelcc = FLD.instance_flags_travelcc,
+    $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+    $instance_globals_c_clicklook_cc = FLD.instance_globals_c_clicklook_cc,
+    $instance_globals_c_cmd_bind = FLD.instance_globals_c_cmd_bind,
+    $instance_globals_c_cmd_key = FLD.instance_globals_c_cmd_key,
+    $instance_globals_c_command_count = FLD.instance_globals_c_command_count,
+    $instance_globals_d_domove_attempting = FLD.instance_globals_d_domove_attempting,
+    $instance_globals_e_ext_tlist = FLD.instance_globals_e_ext_tlist,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
+    $instance_globals_m_multi = FLD.instance_globals_m_multi,
+    $instance_globals_o_occtime = FLD.instance_globals_o_occtime,
+    $instance_globals_o_occtxt = FLD.instance_globals_o_occtxt,
+    $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
+    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+    $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
+    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_t_travelmap = FLD.instance_globals_t_travelmap,
+    $instance_globals_u_urace = FLD.instance_globals_u_urace,
+    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+    $levelflags_arboreal = FLD.levelflags_arboreal, $monst_cham = FLD.monst_cham,
+    $monst_data = FLD.monst_data, $monst_mextra = FLD.monst_mextra, $monst_mpeaceful = FLD.monst_mpeaceful,
+    $monst_mtame = FLD.monst_mtame, $nhcoord_y = FLD.nhcoord_y, $nhrect_hx = FLD.nhrect_hx,
+    $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $obj_invlet = FLD.obj_invlet,
+    $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp, $obj_v = FLD.obj_v,
+    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+    $permonst_mlet = FLD.permonst_mlet, $permonst_msound = FLD.permonst_msound, $rm_flags = FLD.rm_flags,
+    $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
+    $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_input_state = FLD.sinfo_input_state,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
+    $stairway_isladder = FLD.stairway_isladder, $stairway_up = FLD.stairway_up,
+    $symdef_explanation = FLD.symdef_explanation, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+    $u_realtime_start_timing = FLD.u_realtime_start_timing,
+    $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
+    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
+    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+    $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
+    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+    $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
+    $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
+    $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
+    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+    $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+    $window_procs_win_yn_function = FLD.window_procs_win_yn_function, $you_dx = FLD.you_dx,
+    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_last_str_turn = FLD.you_last_str_turn,
+    $you_mfemale = FLD.you_mfemale, $you_tx = FLD.you_tx, $you_ty = FLD.you_ty,
+    $you_uburied = FLD.you_uburied, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
+    $you_umonster = FLD.you_umonster, $you_urooms = FLD.you_urooms, $you_usteed = FLD.you_usteed,
+    $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uswldtim = FLD.you_uswldtim,
+    $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");
@@ -776,16 +889,16 @@ const cmdnotavail = cptr.bytes("'%s' command not available.");
 
 /** C ref: cmd.c:164 @returns {CInt} */
 function doprev_message() {
-    void (cptr.ldPtro(windowprocs, 280))();
+    void nh_doprev_message()();
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:172 @returns {CInt} */
 function timed_occupation() {
     (timed_occ_fn)();
-    if (cptr.ldI64o(gm, 8) > 0n)
-        (cptr.stI64o(gm, 8, cptr.ldI64o(gm, 8) + -1n)) - (-1n);
-    return cptr.ldI64o(gm, 8) > 0n;
+    if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
+        (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n)) - (-1n);
+    return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
 }
 
 /** C ref: cmd.c:195 */
@@ -798,12 +911,12 @@ export function reset_occupations() {
 /** C ref: cmd.c:206 — @param {CPtr} fn @param {CPtr} txt @param {CLongLong} xtime */
 export function set_occupation(fn, txt, xtime) {
     if (xtime) {
-        cptr.stPtro(go, 56, timed_occupation);
+        cptr.stPtro(go, $instance_globals_o_occupation, timed_occupation);
         timed_occ_fn = fn;
     } else
-        cptr.stPtro(go, 56, fn);
-    cptr.stPtro(go, 80, txt);
-    cptr.stI32o(go, 64, 0);
+        cptr.stPtro(go, $instance_globals_o_occupation, fn);
+    cptr.stPtro(go, $instance_globals_o_occtxt, txt);
+    cptr.stI32o(go, $instance_globals_o_occtime, 0);
     return;
 }
 
@@ -812,12 +925,12 @@ export function cmdq_add_ec(q, fn) {
     let tmp = alloc(32);
     let cq = cptr.ldPtro(gc, q, 8);
     cptr.stI32(tmp, NHC.CMDQ_EXTCMD);
-    cptr.stPtro(tmp, 16, ext_func_tab_from_func(fn));
-    cptr.stPtro(tmp, 24, null);
-    while (cq && cptr.ldPtro(cq, 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    cptr.stPtro(tmp, $_cmd_queue_ec_entry, ext_func_tab_from_func(fn));
+    cptr.stPtro(tmp, $_cmd_queue_next, null);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        cptr.stPtro(cq, 24, tmp);
+        cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
@@ -827,12 +940,12 @@ export function cmdq_add_key(q, key) {
     let tmp = alloc(32);
     let cq = cptr.ldPtro(gc, q, 8);
     cptr.stI32(tmp, NHC.CMDQ_KEY);
-    cptr.st1o(tmp, 4, key);
-    cptr.stPtro(tmp, 24, null);
-    while (cq && cptr.ldPtro(cq, 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    cptr.st1o(tmp, $_cmd_queue_key, key);
+    cptr.stPtro(tmp, $_cmd_queue_next, null);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        cptr.stPtro(cq, 24, tmp);
+        cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
@@ -842,14 +955,14 @@ export function cmdq_add_dir(q, dx, dy, dz) {
     let tmp = alloc(32);
     let cq = cptr.ldPtro(gc, q, 8);
     cptr.stI32(tmp, NHC.CMDQ_DIR);
-    cptr.st1o(tmp, 5, dx);
-    cptr.st1o(tmp, 6, dy);
-    cptr.st1o(tmp, 7, dz);
-    cptr.stPtro(tmp, 24, null);
-    while (cq && cptr.ldPtro(cq, 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    cptr.st1o(tmp, $_cmd_queue_dirx, dx);
+    cptr.st1o(tmp, $_cmd_queue_diry, dy);
+    cptr.st1o(tmp, $_cmd_queue_dirz, dz);
+    cptr.stPtro(tmp, $_cmd_queue_next, null);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        cptr.stPtro(cq, 24, tmp);
+        cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
@@ -859,11 +972,11 @@ export function cmdq_add_userinput(q) {
     let tmp = alloc(32);
     let cq = cptr.ldPtro(gc, q, 8);
     cptr.stI32(tmp, NHC.CMDQ_USER_INPUT);
-    cptr.stPtro(tmp, 24, null);
-    while (cq && cptr.ldPtro(cq, 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    cptr.stPtro(tmp, $_cmd_queue_next, null);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        cptr.stPtro(cq, 24, tmp);
+        cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
@@ -873,12 +986,12 @@ export function cmdq_add_int(q, val) {
     let tmp = alloc(32);
     let cq = cptr.ldPtro(gc, q, 8);
     cptr.stI32(tmp, NHC.CMDQ_INT);
-    cptr.stI32o(tmp, 8, val);
-    cptr.stPtro(tmp, 24, null);
-    while (cq && cptr.ldPtro(cq, 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    cptr.stI32o(tmp, $_cmd_queue_intval, val);
+    cptr.stPtro(tmp, $_cmd_queue_next, null);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        cptr.stPtro(cq, 24, tmp);
+        cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
@@ -887,14 +1000,14 @@ export function cmdq_add_int(q, val) {
 export function cmdq_shift(q) {
     let tmp = null;
     let cq = cptr.ldPtro(gc, q, 8);
-    while ((cq && cptr.ldPtro(cq, 24) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(cq, 24), 24) ? 1 : 0)
-        cq = cptr.ldPtro(cq, 24);
+    while (cq && cptr.ldPtro(cq, $_cmd_queue_next) && cptr.ldPtro(cptr.ldPtro(cq, $_cmd_queue_next), $_cmd_queue_next))
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     if (cq)
-        tmp = cptr.ldPtro(cq, 24);
+        tmp = cptr.ldPtro(cq, $_cmd_queue_next);
     if (tmp) {
-        cptr.stPtro(tmp, 24, cptr.ldPtro(gc, q, 8));
+        cptr.stPtro(tmp, $_cmd_queue_next, cptr.ldPtro(gc, q, 8));
         cptr.stPtro(gc, q, tmp, 8);
-        cptr.stPtro(cq, 24, null);
+        cptr.stPtro(cq, $_cmd_queue_next, null);
     }
 }
 
@@ -904,8 +1017,8 @@ export function cmdq_reverse(head) {
     let curr = head;
     let next;
     while (curr) {
-        next = cptr.ldPtro(curr, 24);
-        cptr.stPtro(curr, 24, prev);
+        next = cptr.ldPtro(curr, $_cmd_queue_next);
+        cptr.stPtro(curr, $_cmd_queue_next, prev);
         prev = curr;
         curr = next;
     }
@@ -919,9 +1032,9 @@ export function cmdq_copy(q) {
     while (cq) {
         let tmp2 = alloc(32);
         cptr.memcpy(tmp2, cq, 32);
-        cptr.stPtro(tmp2, 24, tmp);
+        cptr.stPtro(tmp2, $_cmd_queue_next, tmp);
         tmp = tmp2;
-        cq = cptr.ldPtro(cq, 24);
+        cq = cptr.ldPtro(cq, $_cmd_queue_next);
     }
     tmp = cmdq_reverse(tmp);
     return tmp;
@@ -932,8 +1045,8 @@ export function cmdq_pop() {
     let q = (cptr.ldI32(gi)) ? NHC.CQ_REPEAT : NHC.CQ_CANNED;
     let tmp = cptr.ldPtro(gc, q, 8);
     if (tmp) {
-        cptr.stPtro(gc, q, cptr.ldPtro(tmp, 24), 8);
-        cptr.stPtro(tmp, 24, null);
+        cptr.stPtro(gc, q, cptr.ldPtro(tmp, $_cmd_queue_next), 8);
+        cptr.stPtro(tmp, $_cmd_queue_next, null);
     }
     return tmp;
 }
@@ -948,7 +1061,7 @@ export function cmdq_clear(q) {
     let tmp = cptr.ldPtro(gc, q, 8);
     let tmp2;
     while (tmp) {
-        tmp2 = cptr.ldPtro(tmp, 24);
+        tmp2 = cptr.ldPtro(tmp, $_cmd_queue_next);
         cptr.free(tmp);
         tmp = tmp2;
     }
@@ -958,38 +1071,38 @@ export function cmdq_clear(q) {
 /** C ref: cmd.c:445 @returns {CInt} */
 export function pgetchar() {
     let ch = 0;
-    if (cptr.ld1so(iflags, 15))
+    if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         return randomkey();
-    ch = (cptr.ldPtro(windowprocs, 256))();
+    ch = nhgetch()();
     return schar(ch);
 }
 
 /** C ref: cmd.c:457 @returns {CInt} */
 export function extcmd_initiator() {
-    return cptr.ld1so(gc, 293);
+    return cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_extcmd_char);
 }
 
 /** C ref: cmd.c:463 — @param {CPtr} extcmd @returns {CInt} */
 function can_do_extcmd(extcmd) {
-    let ecflags = cptr.ldI32o(extcmd, 32) | 0;
-    if (cptr.ldPtro(gl, 216) && cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4) ? 1 : 0) {
-        lua_getglobal(cptr.ldPtro(gl, 216), __sl1);
-        lua_pushstring(cptr.ldPtro(gl, 216), cptr.ldPtro(nhcb_name, NHC.NHCB_CMD_BEFORE, 8));
-        lua_pushstring(cptr.ldPtro(gl, 216), cptr.ldPtro(extcmd, 8));
-        nhl_pcall_handle(cptr.ldPtro(gl, 216), 2, 1, __sl2, NHC.NHLpa_panic);
-        if (!lua_toboolean(cptr.ldPtro(gl, 216), -1)) {
-            lua_settop(cptr.ldPtro(gl, 216), 0);
+    let ecflags = cptr.ldI32o(extcmd, $ext_func_tab_flags) | 0;
+    if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4)) {
+        lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl1);
+        lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(nhcb_name, NHC.NHCB_CMD_BEFORE, 8));
+        lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt));
+        nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 2, 1, __sl2, NHC.NHLpa_panic);
+        if (!lua_toboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), -1)) {
+            lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), 0);
             return 0;
         }
-        lua_settop(cptr.ldPtro(gl, 216), 0);
+        lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), 0);
     }
-    if (!cptr.ld1so(flags, 10) && (ecflags & NHM.WIZMODECMD) ? 1 : 0) {
-        pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, 8));
+    if (!wizard() && (ecflags & NHM.WIZMODECMD)) {
+        pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt));
         return 0;
-    } else if ((cptr.ldI32o(u, 1868) & 1) | 0 && !(ecflags & NHM.IFBURIED) ? 1 : 0) {
+    } else if ((cptr.ldI32o(u, $you_uburied) & 1) | 0 && !(ecflags & NHM.IFBURIED)) {
         You_cant(__sl3);
         return 0;
-    } else if (cptr.ld1so(iflags, 15) && (ecflags & NHM.NOFUZZERCMD) ? 1 : 0) {
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (ecflags & NHM.NOFUZZERCMD)) {
         return 0;
     }
     return 1;
@@ -1001,17 +1114,17 @@ export function doextcmd() {
     let retval;
     let func;
     do {
-        idx = (cptr.ldPtro(windowprocs, 304))();
+        idx = get_ext_cmd()();
         if (idx < 0)
             return NHM.ECMD_OK;
-        func = cptr.ldPtro2(extcmdlist, idx, 48, 24);
+        func = cptr.ldPtro2(extcmdlist, idx, 48, $ext_func_tab_ef_funct);
         if (!can_do_extcmd(cptr.add(extcmdlist, idx, 48)))
             return NHM.ECMD_OK;
-        if (cptr.ld1so(iflags, 135) && !accept_menu_prefix(cptr.add(extcmdlist, idx, 48)) ? 1 : 0) {
-            pline(__sl4, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, 48, 8));
-            cptr.st1o(iflags, 135, 0);
+        if (cptr.ld1so(iflags, $instance_flags_menu_requested) && !accept_menu_prefix(cptr.add(extcmdlist, idx, 48))) {
+            pline(__sl4, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, 48, $ext_func_tab_ef_txt));
+            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         }
-        cptr.stPtro(ge, 8, cptr.add(extcmdlist, idx, 48));
+        cptr.stPtro(ge, $instance_globals_e_ext_tlist, cptr.add(extcmdlist, idx, 48));
         retval = (func)();
     } while (func === doextlist);
     return retval;
@@ -1029,9 +1142,9 @@ function doc_extcmd_flagstr(menuwin, efp) {
         return null;
     } else {
         let mprefix = accept_menu_prefix(efp);
-        let autocomplete = schar((((cptr.ldI32o(efp, 32) & NHM.AUTOCOMPLETE) >>> 0) != 0));
+        let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) != 0));
         let p = cptr.decay(__static_doc_extcmd_flagstr_Abuf);
-        if (mprefix || autocomplete ? 1 : 0) {
+        if (mprefix || autocomplete) {
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), 91);
             if (mprefix)
                 cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), 109);
@@ -1068,11 +1181,11 @@ export function doextlist() {
     let search = 0;
     let clr = NHM.NO_COLOR;
     cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
-    menuwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
+    menuwin = create_nhwindow()(NHM.NHW_MENU);
     while (redisplay) {
         redisplay = 0;
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
-        (cptr.ldPtro(windowprocs, 168))(menuwin, 0n);
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+        start_menu()(menuwin, 0n);
         add_menu_str(menuwin, __sl7);
         add_menu_str(menuwin, __sl0);
         void cptr.sprintf(cptr.decay(buf), __sl8, menumode ? __sl9 : __sl10);
@@ -1088,7 +1201,7 @@ export function doextlist() {
             cptr.stI32(any, 3);
             add_menu(menuwin, nul_glyphinfo.v, any, 115, 58, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
-        if (cptr.ld1so(flags, 10)) {
+        if (wizard()) {
             cptr.stI32(any, 4);
             add_menu(menuwin, nul_glyphinfo.v, any, 122, 0, NHM.ATR_NONE, clr, onelist ? __sl15 : __sl16, NHM.MENU_ITEMFLAGS_NONE);
         }
@@ -1096,41 +1209,41 @@ export function doextlist() {
         cptr.stI32o(menushown, 0, cptr.stI32o(menushown, 1, 0, 4), 4);
         n = 0;
         for (pass = 0; pass <= 1; ++pass) {
-            if (pass == 1 && (onelist || !cptr.ld1so(flags, 10) ? 1 : 0) ? 1 : 0)
+            if (pass == 1 && (onelist || !wizard()))
                 break;
-            for (efp = extcmdlist; cptr.ldPtro(efp, 8); efp = cptr.add(efp, 1, 48)) {
+            for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
                 let wizc;
-                if (((cptr.ldI32o(efp, 32) & 80) >>> 0) != 0)
+                if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) != 0)
                     continue;
-                if (menumode == 1 && ((cptr.ldI32o(efp, 32) & NHM.AUTOCOMPLETE) >>> 0) == 0 ? 1 : 0)
+                if (menumode == 1 && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) == 0)
                     continue;
-                wizc = ((cptr.ldI32o(efp, 32) & NHM.WIZMODECMD) >>> 0) != 0;
-                if (wizc && !cptr.ld1so(flags, 10) ? 1 : 0)
+                wizc = ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0;
+                if (wizc && !wizard())
                     continue;
-                if (!onelist && pass != wizc ? 1 : 0)
+                if (!onelist && pass != wizc)
                     continue;
-                cmd_desc = cptr.ldPtro(efp, 16);
-                if (((!cptr.ld1so(flags, 10) && !cptr.ld1so(flags, 12) ? 1 : 0) && ((cptr.ldI32o(efp, 32) & NHM.GENERALCMD) >>> 0) != 0 ? 1 : 0) && strstri(cmd_desc, __sl17) ? 1 : 0)
+                cmd_desc = cptr.ldPtro(efp, $ext_func_tab_ef_desc);
+                if (!wizard() && !discover() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 && strstri(cmd_desc, __sl17))
                     cmd_desc = strsubst(cptr.strcpy(cptr.decay(descbuf), cmd_desc), __sl18, __sl19);
-                if ((((cptr.ld1s(cptr.decay(searchbuf)) && !strstri(cptr.ldPtro(efp, 8), cptr.decay(searchbuf)) ? 1 : 0) && !strstri(cmd_desc, cptr.decay(searchbuf)) ? 1 : 0) && !pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, 8)) ? 1 : 0) && !pmatchi(cptr.decay(searchbuf), cmd_desc) ? 1 : 0)
+                if (cptr.ld1s(cptr.decay(searchbuf)) && !strstri(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(searchbuf)) && !strstri(cmd_desc, cptr.decay(searchbuf)) && !pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, $ext_func_tab_ef_txt)) && !pmatchi(cptr.decay(searchbuf), cmd_desc))
                     continue;
                 if (!cptr.ldI32o(menushown, pass, 4)) {
                     void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(__static_doextlist_headings, pass, 8));
                     add_menu_heading(menuwin, cptr.decay(buf));
                     cptr.stI32o(menushown, pass, 1, 4);
                 }
-                void cptr.sprintf(cptr.decay(buf), __sl20, cptr.ldPtro(efp, 8), doc_extcmd_flagstr(menuwin, efp), cmd_desc);
+                void cptr.sprintf(cptr.decay(buf), __sl20, cptr.ldPtro(efp, $ext_func_tab_ef_txt), doc_extcmd_flagstr(menuwin, efp), cmd_desc);
                 add_menu_str(menuwin, cptr.decay(buf));
                 ++n;
             }
             if (n)
                 add_menu_str(menuwin, __sl0);
         }
-        if (cptr.ld1s(cptr.decay(searchbuf)) && !n ? 1 : 0)
+        if (cptr.ld1s(cptr.decay(searchbuf)) && !n)
             add_menu_str(menuwin, __sl21);
         else
             void doc_extcmd_flagstr(menuwin, null);
-        (cptr.ldPtro(windowprocs, 184))(menuwin, null);
+        end_menu()(menuwin, null);
         n = select_menu(menuwin, NHM.PICK_ONE, selected);
         if (n > 0) {
             switch (cptr.ldI32o(selected.v, 0, 24)) {
@@ -1170,7 +1283,7 @@ export function doextlist() {
             search = 0;
         }
     }
-    (cptr.ldPtro(windowprocs, 128))(menuwin);
+    destroy_nhwindow()(menuwin);
     return NHM.ECMD_OK;
 }
 
@@ -1203,16 +1316,16 @@ export function extcmd_via_menu() {
     biggest = 0;
     while (!ret) {
         i = (n = 0);
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
-        for (efp = extcmdlist; cptr.ldPtro(efp, 8); efp = cptr.add(efp, 1, 48)) {
-            if ((((cptr.ldI32o(efp, 32) & 80) >>> 0) || !((cptr.ldI32o(efp, 32) & NHM.AUTOCOMPLETE) >>> 0) ? 1 : 0) || (!cptr.ld1so(flags, 10) && ((cptr.ldI32o(efp, 32) & NHM.WIZMODECMD) >>> 0) ? 1 : 0) ? 1 : 0)
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+        for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
+            if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) || !((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) || (!wizard() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
                 continue;
-            if (!matchlevel || !cptr.strncmp(cptr.ldPtro(efp, 8), cptr.decay(cbuf), BigInt.asUintN(64, BigInt(matchlevel))) ? 1 : 0) {
+            if (!matchlevel || !cptr.strncmp(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(cbuf), BigInt.asUintN(64, BigInt(matchlevel)))) {
                 cptr.stPtro(choices, i, efp, 8);
-                if ((len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(efp, 16))))) > biggest)
+                if ((len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(efp, $ext_func_tab_ef_desc))))) > biggest)
                     biggest = len;
                 if (++i > 200) {
-                    cptr.st1o(iflags, 177, 0);
+                    cptr.st1o(iflags, $instance_flags_extmenu, 0);
                     return -1;
                 }
             }
@@ -1223,8 +1336,8 @@ export function extcmd_via_menu() {
             ret = (nchoices == 1) ? Number(BigInt.asIntN(32, (cptr.diff(cptr.ldPtro(choices, 0, 8), extcmdlist) / 48n))) : -1;
             break;
         }
-        win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(win, 0n);
+        win = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(win, 0n);
         void cptr.sprintf(cptr.decay(fmtstr), __sl26, (biggest + 15) | 0);
         cptr.st1o(cptr.decay(prompt), 0, 0, 1);
         wastoolong = 0;
@@ -1232,27 +1345,27 @@ export function extcmd_via_menu() {
         prevaccelerator = 0;
         acount = 0;
         for (i = 0; cptr.ldPtro(choices, i, 8); ++i) {
-            accelerator = cptr.ld1so(cptr.ldPtro(cptr.ldPtro(choices, i, 8), 8), matchlevel);
-            if (accelerator != prevaccelerator || one_per_line ? 1 : 0)
+            accelerator = cptr.ld1so(cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt), matchlevel);
+            if (accelerator != prevaccelerator || one_per_line)
                 wastoolong = 0;
-            if ((accelerator != prevaccelerator || one_per_line ? 1 : 0) || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtro(cptr.ldPtro(choices, i, 8), 8))) >= 74n) ? 1 : 0) ? 1 : 0) {
+            if (accelerator != prevaccelerator || one_per_line || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt))) >= 74n))) {
                 if (acount) {
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
                     cptr.st1(any, schar(prevaccelerator));
                     add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
                     acount = 0;
-                    if (!(accelerator != prevaccelerator || one_per_line ? 1 : 0))
+                    if (!(accelerator != prevaccelerator || one_per_line))
                         wastoolong = 1;
                 }
             }
             prevaccelerator = accelerator;
-            if (!acount || one_per_line ? 1 : 0) {
-                void cptr.sprintf(cptr.decay(prompt), __sl27, wastoolong ? __sl28 : __sl0, cptr.ldPtro(cptr.ldPtro(choices, i, 8), 8), cptr.ldPtro(cptr.ldPtro(choices, i, 8), 16));
+            if (!acount || one_per_line) {
+                void cptr.sprintf(cptr.decay(prompt), __sl27, wastoolong ? __sl28 : __sl0, cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_desc));
             } else if (acount == 1) {
-                void cptr.sprintf(cptr.decay(prompt), __sl29, wastoolong ? __sl28 : __sl0, cptr.ldPtro(cptr.ldPtro(choices, (i - 1) | 0, 8), 8), cptr.ldPtro(cptr.ldPtro(choices, i, 8), 8));
+                void cptr.sprintf(cptr.decay(prompt), __sl29, wastoolong ? __sl28 : __sl0, cptr.ldPtro(cptr.ldPtro(choices, (i - 1) | 0, 8), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt));
             } else {
                 void cptr.strcat(cptr.decay(prompt), __sl30);
-                void cptr.strcat(cptr.decay(prompt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), 8));
+                void cptr.strcat(cptr.decay(prompt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt));
             }
             ++acount;
         }
@@ -1262,9 +1375,9 @@ export function extcmd_via_menu() {
             add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         }
         nh_snprintf(__sl31, 856, cptr.decay(prompt), 128n, __sl32, cptr.decay(cbuf));
-        (cptr.ldPtro(windowprocs, 184))(win, cptr.decay(prompt));
+        end_menu()(win, cptr.decay(prompt));
         n = select_menu(win, NHM.PICK_ONE, pick_list);
-        (cptr.ldPtro(windowprocs, 128))(win);
+        destroy_nhwindow()(win);
         if (n == 1) {
             if (matchlevel > 126) {
                 cptr.free(pick_list.v);
@@ -1287,54 +1400,54 @@ export function extcmd_via_menu() {
 
 /** C ref: cmd.c:890 @returns {CInt} */
 export function domonability() {
-    let uptr = cptr.ldPtro(gy, 16);
-    let might_hide = schar((((cptr.ldU64o((uptr), 72) & 256n) != 0n) || ((cptr.ldU64o((uptr), 72) & 128n) != 0n) ? 1 : 0));
+    let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
+    let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
     let c = 0;
-    if (might_hide && (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) ? 1 : 0) ? 1 : 0) {
+    if (might_hide && (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)))) {
         c = yn_function(__sl33, cptr.decay(hidespinchars), 113, 1);
-        if (c == 113 || c == 27 ? 1 : 0)
+        if (c == 113 || c == 27)
             return NHM.ECMD_OK;
     }
     if (attacktype(uptr, NHM.AT_BREA))
         return dobreathe();
     else if (attacktype(uptr, NHM.AT_SPIT))
         return dospit();
-    else if (cptr.ld1so(uptr, 28) == NHC.S_NYMPH)
+    else if (cptr.ld1so(uptr, $permonst_mlet) == NHC.S_NYMPH)
         return doremove();
     else if (attacktype(uptr, NHM.AT_GAZE))
         return dogaze();
-    else if (((cptr.ldU64o((uptr), 80) & 4n) != 0n))
+    else if (((cptr.ldU64o((uptr), $permonst_mflags2) & 4n) != 0n))
         return dosummon();
     else if (c ? c == 104 : might_hide)
         return dohide();
     else if (c ? c == 115 : (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) ? 1 : 0))
         return dospinweb();
-    else if ((cptr.eq((uptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96)) ? 1 : 0))
+    else if ((cptr.eq((uptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96))))
         return domindblast();
-    else if (cptr.ldI32o(u, 1808) == NHC.PM_GREMLIN) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.FOUNTAIN)) {
-            if (split_mon(cptr.add(gy, 8), null))
-                dryup(cptr.ldI16(u), cptr.ldI16o(u, 2), 1);
-        } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, 2))) {
-            void split_mon(cptr.add(gy, 8), null);
+    else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
+            if (split_mon(cptr.add(gy, $instance_globals_y_youmonst), null))
+                dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1);
+        } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+            void split_mon(cptr.add(gy, $instance_globals_y_youmonst), null);
         } else {
             There(__sl34);
         }
-    } else if ((cptr.ld1so((uptr), 28) == NHC.S_UNICORN && ((cptr.ldU64o((uptr), 80) & 536870912n) != 0n) ? 1 : 0)) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_UNICORN && ((cptr.ldU64o((uptr), $permonst_mflags2) & 536870912n) != 0n))) {
         use_unicorn_horn(null);
         return NHM.ECMD_TIME;
-    } else if (cptr.ld1uo(uptr, 66) == NHC.MS_SHRIEK) {
+    } else if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK) {
         You(__sl35);
-        if ((cptr.ldI32o(u, 1868) & 1))
+        if ((cptr.ldI32o(u, $you_uburied) & 1))
             pline(__sl36);
         else
             aggravate();
-    } else if ((cptr.ld1so((uptr), 28) == NHC.S_VAMPIRE) || ((cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VAMPIRE || cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VAMPIRE_LEADER ? 1 : 0) || cptr.ldI16o((cptr.add(gy, 8)), 22) == NHC.PM_VLAD_THE_IMPALER ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || (cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) {
         return dopoly();
-    } else if (cptr.ldPtro(u, 2424) && attacktype(cptr.ldPtro(cptr.ldPtro(u, 2424), 8), NHM.AT_BREA) ? 1 : 0) {
-        void pet_ranged_attk(cptr.ldPtro(u, 2424), 1);
+    } else if (cptr.ldPtro(u, $you_usteed) && attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), NHM.AT_BREA)) {
+        void pet_ranged_attk(cptr.ldPtro(u, $you_usteed), 1);
         return NHM.ECMD_TIME;
-    } else if ((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804))) {
+    } else if (Upolyd()) {
         pline(__sl37);
     } else {
         You(__sl38);
@@ -1344,12 +1457,12 @@ export function domonability() {
 
 /** C ref: cmd.c:952 @returns {CInt} */
 export function enter_explore_mode() {
-    if (cptr.ld1so(flags, 12)) {
+    if (discover()) {
         You(__sl39);
     } else {
-        let oldmode = !cptr.ld1so(flags, 10) ? __sl40 : __sl41;
+        let oldmode = !wizard() ? __sl40 : __sl41;
         if (!authorize_explore_mode()) {
-            if (!cptr.ld1so(flags, 10)) {
+            if (!wizard()) {
                 You(__sl42);
                 return NHM.ECMD_OK;
             } else {
@@ -1357,13 +1470,13 @@ export function enter_explore_mode() {
             }
         }
         pline(__sl44, oldmode);
-        if (paranoid_query(schar((((cptr.ldI32o(flags, 80) & NHM.PARANOID_QUIT) >>> 0) != 0)), __sl45)) {
-            cptr.st1o(flags, 12, 1);
-            cptr.st1o(flags, 10, 0);
-            (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
+        if (paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __sl45)) {
+            cptr.st1o(flags, $flag_explore, 1);
+            cptr.st1o(flags, $flag_debug, 0);
+            clear_nhwindow()(WIN_MESSAGE.v);
             You(__sl46);
         } else {
-            (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
+            clear_nhwindow()(WIN_MESSAGE.v);
             pline(__sl47, oldmode);
         }
     }
@@ -1378,51 +1491,51 @@ export function makemap_prepost(pre, wiztower) {
     let mtmp;
     if (pre) {
         makemap_remove_mons();
-        rm_mapseen(ledger_no(cptr.add(u, 24)));
+        rm_mapseen(ledger_no(cptr.add(u, $you_uz)));
         {
-            if ((((cptr.ldI16o((cptr.add(svd, 1898)), 2) || cptr.ldI16((cptr.add(svd, 1898))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1898)) ? 1 : 0))) {
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
                 if (remove_achievement(NHC.ACH_MINE_PRIZE))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl48);
-                cptr.stI32o(svc, 672, 0);
-            } else if ((((cptr.ldI16o((cptr.add(svd, 1902)), 2) || cptr.ldI16((cptr.add(svd, 1902))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1902)) ? 1 : 0))) {
+                cptr.stI32o(svc, $context_info_achieveo, 0);
+            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level))))) {
                 if (remove_achievement(NHC.ACH_SOKO_PRIZE))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl49);
-                cptr.stI32o(svc, 676, 0);
+                cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
             }
         }
-        if ((uball.v !== null)) {
+        if (Punished()) {
             ballrelease(0);
             unplacebc();
         }
         maybe_reset_pick(null);
-        if (on_level(cptr.add(svc, 100), cptr.add(u, 24)))
-            void __builtin___memset_chk(cptr.add(svc, 96), 0, 32n, __builtin_object_size(cptr.add(svc, 96), 0));
-        cptr.stI16o(iflags, 76, cptr.stI16o(iflags, 78, 0));
-        cptr.stPtro(svc, 584, null);
+        if (on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)))
+            void __builtin___memset_chk(cptr.add(svc, $context_info_digging), 0, 32n, __builtin_object_size(cptr.add(svc, $context_info_digging), 0));
+        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
+        cptr.stPtro(svc, $context_info_polearm, null);
         reset_utrap(0);
         check_special_room(1);
-        void __builtin___memset_chk(cptr.add(svd, 1906), 0, 16n, __builtin_object_size(cptr.add(svd, 1906), 0));
+        void __builtin___memset_chk(cptr.add(svd, $instance_globals_saved_d_dndest), 0, 16n, __builtin_object_size(cptr.add(svd, $instance_globals_saved_d_dndest), 0));
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
-        cptr.stPtro(u, 2416, null);
-        cptr.stI32o(u, 1848, cptr.stI32o(u, 1844, 0));
+        cptr.stPtro(u, $you_ustuck, null);
+        cptr.stI32o(u, $you_uswallow, cptr.stI32o(u, $you_uswldtim, 0));
         set_uinwater(0);
-        cptr.stI32o(u, 1856, 0);
+        cptr.stI32o(u, $you_uundetected, 0);
         dmonsfree();
         dobjsfree();
         tmpnhfp = get_freeing_nhfile();
-        savelev(tmpnhfp, schar(ledger_no(cptr.add(u, 24))));
+        savelev(tmpnhfp, schar(ledger_no(cptr.add(u, $you_uz))));
         close_nhfile(tmpnhfp);
     } else {
         vision_reset();
-        cptr.st1o(gv, 144, 1);
+        cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
         cls();
-        u_on_rndspot(((cptr.ldI32o(u, 1944) & 1) | 0 ? 1 : 0) | (wiztower ? 2 : 0));
+        u_on_rndspot(((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? 1 : 0) | (wiztower ? 2 : 0));
         losedogs();
         kill_genocided_monsters();
-        if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, 2), 8, 75600))) !== null)
+        if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null)
             u_collide_m(mtmp);
         initrack();
-        if ((uball.v !== null)) {
+        if (Punished()) {
             unplacebc();
             placebc();
         }
@@ -1478,7 +1591,7 @@ cptr.stPtro(levltyp, 304, __sl0);
 
 /** C ref: cmd.c:1089 — @param {CInt} typ @returns {CPtr} */
 export function levltyp_to_name(typ) {
-    if (typ >= 0 && typ < NHC.MAX_TYPE ? 1 : 0)
+    if (typ >= 0 && typ < NHC.MAX_TYPE)
         return cptr.ldPtro(levltyp, typ, 8);
     return null;
 }
@@ -1492,30 +1605,30 @@ function doterrain() {
     let which;
     let clr = NHM.NO_COLOR;
     recalc_mapseen();
-    men = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(men, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    men = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(men, 0n);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, 1);
     add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl88, NHM.MENU_ITEMFLAGS_SELECTED);
     cptr.stI32(any, 2);
     add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl89, NHM.MENU_ITEMFLAGS_NONE);
     cptr.stI32(any, 3);
     add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl90, NHM.MENU_ITEMFLAGS_NONE);
-    if (cptr.ld1so(flags, 12) || cptr.ld1so(flags, 10) ? 1 : 0) {
+    if (discover() || wizard()) {
         cptr.stI32(any, 4);
         add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl91, NHM.MENU_ITEMFLAGS_NONE);
-        if (cptr.ld1so(flags, 10)) {
+        if (wizard()) {
             cptr.stI32(any, 5);
             add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl92, NHM.MENU_ITEMFLAGS_NONE);
             cptr.stI32(any, 6);
             add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl93, NHM.MENU_ITEMFLAGS_NONE);
         }
     }
-    (cptr.ldPtro(windowprocs, 184))(men, __sl94);
+    end_menu()(men, __sl94);
     n = select_menu(men, NHM.PICK_ONE, sel);
-    (cptr.ldPtro(windowprocs, 128))(men);
+    destroy_nhwindow()(men);
     which = (n < 0) ? -1 : ((n == 0) ? 1 : cptr.ldI32o(sel.v, 0, 24));
-    if (n > 1 && which == 1 ? 1 : 0)
+    if (n > 1 && which == 1)
         which = cptr.ldI32o(sel.v, 1, 24);
     if (n > 0)
         cptr.free(sel.v);
@@ -1548,11 +1661,11 @@ function doterrain() {
 function u_have_seen_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     selection_getbounds(sel, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
                 return 0;
     return 1;
 }
@@ -1561,22 +1674,22 @@ function u_have_seen_whole_selection(sel) {
 function u_have_seen_bounds_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     selection_getbounds(sel, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++) {
-        y = cptr.ldI16o(rect, 2);
-        if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++) {
+        y = cptr.ldI16o(rect, $nhrect_ly);
+        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
-        y = cptr.ldI16o(rect, 6);
-        if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF ? 1 : 0)
+        y = cptr.ldI16o(rect, $nhrect_hy);
+        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
     }
-    for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++) {
+    for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
         x = cptr.ldI16(rect);
-        if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF ? 1 : 0)
+        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
-        x = cptr.ldI16o(rect, 4);
-        if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF ? 1 : 0)
+        x = cptr.ldI16o(rect, $nhrect_hx);
+        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
     }
     return 1;
@@ -1586,19 +1699,19 @@ function u_have_seen_bounds_selection(sel) {
 function u_can_see_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, 544), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
     selection_getbounds(sel, rect);
-    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, 4); x++)
-        for (y = cptr.ldI16o(rect, 2); y <= cptr.ldI16o(rect, 6); y++)
-            if ((isok(x, y) && selection_getpoint(x, y, sel) ? 1 : 0) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), y, 8), x) & NHM.IN_SIGHT) != 0) ? 1 : 0)
+    for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+        for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
+            if (isok(x, y) && selection_getpoint(x, y, sel) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                 return 0;
     return 1;
 }
 
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, 1684);
-    if ((((((((((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) ? 1 : 0) || ((typ) == NHC.TREE || ((cptr.ldI32o(svl, 89156) & 1) | 0 && (typ) == NHC.STONE ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((typ) == NHC.WATER) ? 1 : 0) || typ == NHC.LAVAWALL ? 1 : 0) || typ == NHC.IRONBARS ? 1 : 0) || typ == NHC.SCORR ? 1 : 0) || typ == NHC.SDOOR ? 1 : 0) || typ == NHC.DRAWBRIDGE_UP ? 1 : 0)
+    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || ((typ) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (typ) == NHC.STONE)) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
 }
@@ -1606,19 +1719,19 @@ function dolookaround_floodfill_findroom(x, y) {
 /** C ref: cmd.c:1276 — @param {CInt} x @param {CInt} y */
 function lookaround_known_room(x, y) {
     let sel = selection_new();
-    let rmno = (cptr.ld1so2(u, 0, 1, 68) - NHM.ROOMOFFSET) | 0;
+    let rmno = (cptr.ld1so2(u, 0, 1, $you_urooms) - NHM.ROOMOFFSET) | 0;
     let qbuf = new Uint8Array(128);
     set_selection_floodfillchk(dolookaround_floodfill_findroom);
     selection_floodfill(sel, x, y, 1);
-    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0))
+    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         set_msg_xy(x, y);
     if (u_have_seen_whole_selection(sel)) {
         let u_in = schar(selection_getpoint(x, y, sel));
-        You(__sl95, ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) && u_in ? 1 : 0) && u_can_see_whole_selection(sel) ? 1 : 0) ? __sl96 : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0)) ? __sl97 : __sl98), an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
+        You(__sl95, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in && u_can_see_whole_selection(sel) ? __sl96 : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) ? __sl97 : __sl98), an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
     } else if (u_have_seen_bounds_selection(sel)) {
-        You(__sl100, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) ? __sl101 : __sl102, an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
+        You(__sl100, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __sl101 : __sl102, an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
     } else {
-        You(__sl103, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) ? __sl101 : __sl102);
+        You(__sl103, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __sl101 : __sl102);
     }
     selection_free(sel, 1);
 }
@@ -1627,49 +1740,49 @@ function lookaround_known_room(x, y) {
 export function dolookaround() {
     let x;
     let y;
-    let tmp_getloc_filter = cptr.ldI32o(iflags, 32);
+    let tmp_getloc_filter = cptr.ldI32o(iflags, $instance_flags_getloc_filter);
     let tmp_accessiblemsg = cptr.ld1s(a11y);
     let corr_next2u = 0;
     cptr.st1(a11y, 1);
-    if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684) == NHC.CORR) {
+    if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
         corr_next2u = 1;
-    } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.DOOR)) {
+    } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
         let i;
         for (i = NHC.DIR_W; i < ((NHC.N_DIRS_Z - 2) | 0); i = (i + 2) | 0) {
             x = i16(((cptr.ldI16(u) + cptr.ld1so(cptr.decay(xdir), i, 1)) | 0));
-            y = i16(((cptr.ldI16o(u, 2) + cptr.ld1so(cptr.decay(ydir), i, 1)) | 0));
-            if (isok(x, y) && ((cptr.ld1so3(svl, x, 756, y, 36, 1684)) >= NHC.ROOM) ? 1 : 0)
+            y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cptr.decay(ydir), i, 1)) | 0));
+            if (isok(x, y) && ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM))
                 lookaround_known_room(x, y);
         }
         corr_next2u = 1;
     } else {
-        lookaround_known_room(cptr.ldI16(u), cptr.ldI16o(u, 2));
+        lookaround_known_room(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
-    cptr.stI32o(iflags, 32, NHC.GFILTER_VIEW);
+    cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
     for (y = 0; y < NHM.ROWNO; y++)
         for (x = 1; x < NHM.COLNO; x++) {
             let glyph;
             let mapsym;
-            let iscorr = schar((((corr_next2u && (glyph = glyph_at(x, y)) >= 0 ? 1 : 0) && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0) ? 1 : 0) ? 1 : 0) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr ? 1 : 0) ? 1 : 0));
-            if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) && (gather_locs_interesting(x, y, NHC.GLOC_INTERESTING) || iscorr ? 1 : 0) ? 1 : 0) {
+            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
+            if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && (gather_locs_interesting(x, y, NHC.GLOC_INTERESTING) || iscorr)) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
                 let sym = 0;
                 let firstmatch = cptr.box(null);
-                cptr.stI16(cc, x), cptr.stI16o(cc, 2, y);
+                cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
                 do_screen_description(cc, 1, sym, cptr.decay(buf), firstmatch, null);
                 pline_xy(x, y, __sl104, firstmatch.v);
             }
         }
-    cptr.stI32o(iflags, 32, tmp_getloc_filter);
+    cptr.stI32o(iflags, $instance_flags_getloc_filter, tmp_getloc_filter);
     cptr.st1(a11y, tmp_accessiblemsg);
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:1376 @returns {CInt} */
 export function dotoggleoption() {
-    if (cptr.ldPtro(gc, 320) && cptr.ldPtro(cptr.ldPtro(gc, 320), 8) ? 1 : 0) {
-        return toggle_bool_option(cptr.ldPtro(cptr.ldPtro(gc, 320), 8));
+    if (cptr.ldPtro(gc, $instance_globals_c_cmd_bind) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param)) {
+        return toggle_bool_option(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param));
     } else {
         pline(__sl105);
         return NHM.ECMD_OK;
@@ -1678,15 +1791,15 @@ export function dotoggleoption() {
 
 /** C ref: cmd.c:1387 — @param {CInt} dir @param {CInt} run */
 export function set_move_cmd(dir, run) {
-    cptr.stI32o(u, 12, cptr.ld1so(cptr.decay(zdir), dir, 1));
-    cptr.stI32o(u, 4, cptr.ld1so(cptr.decay(xdir), dir, 1));
-    cptr.stI32o(u, 8, cptr.ld1so(cptr.decay(ydir), dir, 1));
-    if (cptr.ld1so(iflags, 135))
-        cptr.st1o(svc, 75, 1);
-    cptr.st1o(svc, 72, cptr.st1o(svc, 73, 0));
-    if (!cptr.ldI64o(gd, 16) && !cptr.ldI32o(u, 12) ? 1 : 0) {
-        cptr.stI32o(svc, 8, run >>> 0);
-        cptr.stI64o(gd, 16, cptr.ldI64o(gd, 16) | BigInt((!run ? NHM.DOMOVE_WALK : NHM.DOMOVE_RUSH)));
+    cptr.stI32o(u, $you_dz, cptr.ld1so(cptr.decay(zdir), dir, 1));
+    cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), dir, 1));
+    cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), dir, 1));
+    if (cptr.ld1so(iflags, $instance_flags_menu_requested))
+        cptr.st1o(svc, $context_info_nopick, 1);
+    cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
+    if (!cptr.ldI64o(gd, $instance_globals_d_domove_attempting) && !cptr.ldI32o(u, $you_dz)) {
+        cptr.stI32o(svc, $context_info_run, run >>> 0);
+        cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | BigInt((!run ? NHM.DOMOVE_WALK : NHM.DOMOVE_RUSH)));
     }
 }
 
@@ -1836,51 +1949,51 @@ export function do_run_southwest() {
 
 /** C ref: cmd.c:1575 @returns {CInt} */
 export function do_reqmenu() {
-    if (cptr.ld1so(iflags, 135)) {
+    if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
         Norep(__sl106, visctrl(cmd_from_func(do_reqmenu)));
-        cptr.st1o(iflags, 135, 0);
+        cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         return NHM.ECMD_CANCEL;
     }
-    cptr.st1o(iflags, 135, 1);
+    cptr.st1o(iflags, $instance_flags_menu_requested, 1);
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:1590 @returns {CInt} */
 export function do_rush() {
-    if ((cptr.ldI64o(gd, 16) & 2n)) {
+    if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n)) {
         Norep(__sl107);
-        cptr.stI32o(svc, 8, 0);
-        cptr.stI64o(gd, 16, 0n);
+        cptr.stI32o(svc, $context_info_run, 0);
+        cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
-    cptr.stI32o(svc, 8, 2);
-    cptr.stI64o(gd, 16, cptr.ldI64o(gd, 16) | 2n);
+    cptr.stI32o(svc, $context_info_run, 2);
+    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:1606 @returns {CInt} */
 export function do_run() {
-    if ((cptr.ldI64o(gd, 16) & 2n)) {
+    if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n)) {
         Norep(__sl108);
-        cptr.stI32o(svc, 8, 0);
-        cptr.stI64o(gd, 16, 0n);
+        cptr.stI32o(svc, $context_info_run, 0);
+        cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
-    cptr.stI32o(svc, 8, 3);
-    cptr.stI64o(gd, 16, cptr.ldI64o(gd, 16) | 2n);
+    cptr.stI32o(svc, $context_info_run, 3);
+    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:1622 @returns {CInt} */
 export function do_fight() {
-    if (cptr.ld1so(svc, 74)) {
+    if (cptr.ld1so(svc, $context_info_forcefight)) {
         Norep(__sl109);
-        cptr.st1o(svc, 74, 0);
-        cptr.stI64o(gd, 16, 0n);
+        cptr.st1o(svc, $context_info_forcefight, 0);
+        cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
-    cptr.st1o(svc, 74, 1);
-    cptr.stI64o(gd, 16, cptr.ldI64o(gd, 16) | 1n);
+    cptr.st1o(svc, $context_info_forcefight, 1);
+    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 1n);
     return NHM.ECMD_OK;
 }
 
@@ -1899,8 +2012,8 @@ export function do_repeat() {
         cptr.stI32(gi, 0);
         cmdq_clear(NHC.CQ_REPEAT);
         cptr.stPtro(gc, NHC.CQ_REPEAT, repeat_copy, 8);
-        cptr.st1o(iflags, 135, 0);
-        if (cptr.ld1so(svc, 78))
+        cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+        if (cptr.ld1so(svc, $context_info_move))
             res = NHM.ECMD_TIME;
     }
     return res;
@@ -1909,1031 +2022,1031 @@ export function do_repeat() {
 /** C ref: cmd.c:1667 — struct ext_func_tab[171] */
 export const extcmdlist = cptr.alloc(171 * 48);
 cptr.st1o(extcmdlist, 0, 35);
-cptr.stPtro(extcmdlist, 8, __sl111);
-cptr.stPtro(extcmdlist, 16, __sl112);
-cptr.stPtro(extcmdlist, 24, doextcmd);
-cptr.stI32o(extcmdlist, 32, 137);
-cptr.stPtro(extcmdlist, 40, null);
+cptr.stPtro(extcmdlist, 0 + $ext_func_tab_ef_txt, __sl111);
+cptr.stPtro(extcmdlist, 0 + $ext_func_tab_ef_desc, __sl112);
+cptr.stPtro(extcmdlist, 0 + $ext_func_tab_ef_funct, doextcmd);
+cptr.stI32o(extcmdlist, 0 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 0 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 48, 191);
-cptr.stPtro(extcmdlist, 56, __sl23);
-cptr.stPtro(extcmdlist, 64, __sl113);
-cptr.stPtro(extcmdlist, 72, doextlist);
-cptr.stI32o(extcmdlist, 80, 139);
-cptr.stPtro(extcmdlist, 88, null);
+cptr.stPtro(extcmdlist, 48 + $ext_func_tab_ef_txt, __sl23);
+cptr.stPtro(extcmdlist, 48 + $ext_func_tab_ef_desc, __sl113);
+cptr.stPtro(extcmdlist, 48 + $ext_func_tab_ef_funct, doextlist);
+cptr.stI32o(extcmdlist, 48 + $ext_func_tab_flags, 139);
+cptr.stPtro(extcmdlist, 48 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 96, 225);
-cptr.stPtro(extcmdlist, 104, __sl114);
-cptr.stPtro(extcmdlist, 112, __sl115);
-cptr.stPtro(extcmdlist, 120, doorganize);
-cptr.stI32o(extcmdlist, 128, 11);
-cptr.stPtro(extcmdlist, 136, null);
+cptr.stPtro(extcmdlist, 96 + $ext_func_tab_ef_txt, __sl114);
+cptr.stPtro(extcmdlist, 96 + $ext_func_tab_ef_desc, __sl115);
+cptr.stPtro(extcmdlist, 96 + $ext_func_tab_ef_funct, doorganize);
+cptr.stI32o(extcmdlist, 96 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 96 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 144, 193);
-cptr.stPtro(extcmdlist, 152, __sl116);
-cptr.stPtro(extcmdlist, 160, __sl117);
-cptr.stPtro(extcmdlist, 168, donamelevel);
-cptr.stI32o(extcmdlist, 176, 139);
-cptr.stPtro(extcmdlist, 184, null);
+cptr.stPtro(extcmdlist, 144 + $ext_func_tab_ef_txt, __sl116);
+cptr.stPtro(extcmdlist, 144 + $ext_func_tab_ef_desc, __sl117);
+cptr.stPtro(extcmdlist, 144 + $ext_func_tab_ef_funct, donamelevel);
+cptr.stI32o(extcmdlist, 144 + $ext_func_tab_flags, 139);
+cptr.stPtro(extcmdlist, 144 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 192, 97);
-cptr.stPtro(extcmdlist, 200, __sl118);
-cptr.stPtro(extcmdlist, 208, __sl119);
-cptr.stPtro(extcmdlist, 216, doapply);
-cptr.stI32o(extcmdlist, 224, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 232, null);
+cptr.stPtro(extcmdlist, 192 + $ext_func_tab_ef_txt, __sl118);
+cptr.stPtro(extcmdlist, 192 + $ext_func_tab_ef_desc, __sl119);
+cptr.stPtro(extcmdlist, 192 + $ext_func_tab_ef_funct, doapply);
+cptr.stI32o(extcmdlist, 192 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 192 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 240, 24);
-cptr.stPtro(extcmdlist, 248, __sl120);
-cptr.stPtro(extcmdlist, 256, __sl121);
-cptr.stPtro(extcmdlist, 264, doattributes);
-cptr.stI32o(extcmdlist, 272, 9);
-cptr.stPtro(extcmdlist, 280, null);
+cptr.stPtro(extcmdlist, 240 + $ext_func_tab_ef_txt, __sl120);
+cptr.stPtro(extcmdlist, 240 + $ext_func_tab_ef_desc, __sl121);
+cptr.stPtro(extcmdlist, 240 + $ext_func_tab_ef_funct, doattributes);
+cptr.stI32o(extcmdlist, 240 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 240 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 288, 64);
-cptr.stPtro(extcmdlist, 296, __sl122);
-cptr.stPtro(extcmdlist, 304, __sl123);
-cptr.stPtro(extcmdlist, 312, dotogglepickup);
-cptr.stI32o(extcmdlist, 320, 9);
-cptr.stPtro(extcmdlist, 328, null);
+cptr.stPtro(extcmdlist, 288 + $ext_func_tab_ef_txt, __sl122);
+cptr.stPtro(extcmdlist, 288 + $ext_func_tab_ef_desc, __sl123);
+cptr.stPtro(extcmdlist, 288 + $ext_func_tab_ef_funct, dotogglepickup);
+cptr.stI32o(extcmdlist, 288 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 288 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 336, 0);
-cptr.stPtro(extcmdlist, 344, __sl124);
-cptr.stPtro(extcmdlist, 352, __sl125);
-cptr.stPtro(extcmdlist, 360, dobugreport);
-cptr.stI32o(extcmdlist, 368, 40);
-cptr.stPtro(extcmdlist, 376, null);
+cptr.stPtro(extcmdlist, 336 + $ext_func_tab_ef_txt, __sl124);
+cptr.stPtro(extcmdlist, 336 + $ext_func_tab_ef_desc, __sl125);
+cptr.stPtro(extcmdlist, 336 + $ext_func_tab_ef_funct, dobugreport);
+cptr.stI32o(extcmdlist, 336 + $ext_func_tab_flags, 40);
+cptr.stPtro(extcmdlist, 336 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 384, 67);
-cptr.stPtro(extcmdlist, 392, __sl126);
-cptr.stPtro(extcmdlist, 400, __sl127);
-cptr.stPtro(extcmdlist, 408, docallcmd);
-cptr.stI32o(extcmdlist, 416, 9);
-cptr.stPtro(extcmdlist, 424, null);
+cptr.stPtro(extcmdlist, 384 + $ext_func_tab_ef_txt, __sl126);
+cptr.stPtro(extcmdlist, 384 + $ext_func_tab_ef_desc, __sl127);
+cptr.stPtro(extcmdlist, 384 + $ext_func_tab_ef_funct, docallcmd);
+cptr.stI32o(extcmdlist, 384 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 384 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 432, 90);
-cptr.stPtro(extcmdlist, 440, __sl128);
-cptr.stPtro(extcmdlist, 448, __sl129);
-cptr.stPtro(extcmdlist, 456, docast);
-cptr.stI32o(extcmdlist, 464, NHM.IFBURIED);
-cptr.stPtro(extcmdlist, 472, null);
+cptr.stPtro(extcmdlist, 432 + $ext_func_tab_ef_txt, __sl128);
+cptr.stPtro(extcmdlist, 432 + $ext_func_tab_ef_desc, __sl129);
+cptr.stPtro(extcmdlist, 432 + $ext_func_tab_ef_funct, docast);
+cptr.stI32o(extcmdlist, 432 + $ext_func_tab_flags, NHM.IFBURIED);
+cptr.stPtro(extcmdlist, 432 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 480, 227);
-cptr.stPtro(extcmdlist, 488, __sl130);
-cptr.stPtro(extcmdlist, 496, __sl131);
-cptr.stPtro(extcmdlist, 504, dotalk);
-cptr.stI32o(extcmdlist, 512, 3);
-cptr.stPtro(extcmdlist, 520, null);
+cptr.stPtro(extcmdlist, 480 + $ext_func_tab_ef_txt, __sl130);
+cptr.stPtro(extcmdlist, 480 + $ext_func_tab_ef_desc, __sl131);
+cptr.stPtro(extcmdlist, 480 + $ext_func_tab_ef_funct, dotalk);
+cptr.stI32o(extcmdlist, 480 + $ext_func_tab_flags, 3);
+cptr.stPtro(extcmdlist, 480 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 528, 118);
-cptr.stPtro(extcmdlist, 536, __sl132);
-cptr.stPtro(extcmdlist, 544, __sl133);
-cptr.stPtro(extcmdlist, 552, do_gamelog);
-cptr.stI32o(extcmdlist, 560, 11);
-cptr.stPtro(extcmdlist, 568, null);
+cptr.stPtro(extcmdlist, 528 + $ext_func_tab_ef_txt, __sl132);
+cptr.stPtro(extcmdlist, 528 + $ext_func_tab_ef_desc, __sl133);
+cptr.stPtro(extcmdlist, 528 + $ext_func_tab_ef_funct, do_gamelog);
+cptr.stI32o(extcmdlist, 528 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 528 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 576, 99);
-cptr.stPtro(extcmdlist, 584, __sl134);
-cptr.stPtro(extcmdlist, 592, __sl135);
-cptr.stPtro(extcmdlist, 600, doclose);
-cptr.stI32o(extcmdlist, 608, 0);
-cptr.stPtro(extcmdlist, 616, null);
+cptr.stPtro(extcmdlist, 576 + $ext_func_tab_ef_txt, __sl134);
+cptr.stPtro(extcmdlist, 576 + $ext_func_tab_ef_desc, __sl135);
+cptr.stPtro(extcmdlist, 576 + $ext_func_tab_ef_funct, doclose);
+cptr.stI32o(extcmdlist, 576 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 576 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 624, 195);
-cptr.stPtro(extcmdlist, 632, __sl136);
-cptr.stPtro(extcmdlist, 640, __sl137);
-cptr.stPtro(extcmdlist, 648, doconduct);
-cptr.stI32o(extcmdlist, 656, 11);
-cptr.stPtro(extcmdlist, 664, null);
+cptr.stPtro(extcmdlist, 624 + $ext_func_tab_ef_txt, __sl136);
+cptr.stPtro(extcmdlist, 624 + $ext_func_tab_ef_desc, __sl137);
+cptr.stPtro(extcmdlist, 624 + $ext_func_tab_ef_funct, doconduct);
+cptr.stI32o(extcmdlist, 624 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 624 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 672, 0);
-cptr.stPtro(extcmdlist, 680, __sl138);
-cptr.stPtro(extcmdlist, 688, __sl139);
-cptr.stPtro(extcmdlist, 696, wiz_fuzzer);
-cptr.stI32o(extcmdlist, 704, 37);
-cptr.stPtro(extcmdlist, 712, null);
+cptr.stPtro(extcmdlist, 672 + $ext_func_tab_ef_txt, __sl138);
+cptr.stPtro(extcmdlist, 672 + $ext_func_tab_ef_desc, __sl139);
+cptr.stPtro(extcmdlist, 672 + $ext_func_tab_ef_funct, wiz_fuzzer);
+cptr.stI32o(extcmdlist, 672 + $ext_func_tab_flags, 37);
+cptr.stPtro(extcmdlist, 672 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 720, 228);
-cptr.stPtro(extcmdlist, 728, __sl140);
-cptr.stPtro(extcmdlist, 736, __sl141);
-cptr.stPtro(extcmdlist, 744, dodip);
-cptr.stI32o(extcmdlist, 752, 130);
-cptr.stPtro(extcmdlist, 760, null);
+cptr.stPtro(extcmdlist, 720 + $ext_func_tab_ef_txt, __sl140);
+cptr.stPtro(extcmdlist, 720 + $ext_func_tab_ef_desc, __sl141);
+cptr.stPtro(extcmdlist, 720 + $ext_func_tab_ef_funct, dodip);
+cptr.stI32o(extcmdlist, 720 + $ext_func_tab_flags, 130);
+cptr.stPtro(extcmdlist, 720 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 768, 62);
-cptr.stPtro(extcmdlist, 776, __sl142);
-cptr.stPtro(extcmdlist, 784, __sl143);
-cptr.stPtro(extcmdlist, 792, dodown);
-cptr.stI32o(extcmdlist, 800, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 808, null);
+cptr.stPtro(extcmdlist, 768 + $ext_func_tab_ef_txt, __sl142);
+cptr.stPtro(extcmdlist, 768 + $ext_func_tab_ef_desc, __sl143);
+cptr.stPtro(extcmdlist, 768 + $ext_func_tab_ef_funct, dodown);
+cptr.stI32o(extcmdlist, 768 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 768 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 816, 100);
-cptr.stPtro(extcmdlist, 824, __sl144);
-cptr.stPtro(extcmdlist, 832, __sl145);
-cptr.stPtro(extcmdlist, 840, dodrop);
-cptr.stI32o(extcmdlist, 848, 0);
-cptr.stPtro(extcmdlist, 856, null);
+cptr.stPtro(extcmdlist, 816 + $ext_func_tab_ef_txt, __sl144);
+cptr.stPtro(extcmdlist, 816 + $ext_func_tab_ef_desc, __sl145);
+cptr.stPtro(extcmdlist, 816 + $ext_func_tab_ef_funct, dodrop);
+cptr.stI32o(extcmdlist, 816 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 816 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 864, 68);
-cptr.stPtro(extcmdlist, 872, __sl146);
-cptr.stPtro(extcmdlist, 880, __sl147);
-cptr.stPtro(extcmdlist, 888, doddrop);
-cptr.stI32o(extcmdlist, 896, 0);
-cptr.stPtro(extcmdlist, 904, null);
+cptr.stPtro(extcmdlist, 864 + $ext_func_tab_ef_txt, __sl146);
+cptr.stPtro(extcmdlist, 864 + $ext_func_tab_ef_desc, __sl147);
+cptr.stPtro(extcmdlist, 864 + $ext_func_tab_ef_funct, doddrop);
+cptr.stI32o(extcmdlist, 864 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 864 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 912, 101);
-cptr.stPtro(extcmdlist, 920, __sl148);
-cptr.stPtro(extcmdlist, 928, __sl149);
-cptr.stPtro(extcmdlist, 936, doeat);
-cptr.stI32o(extcmdlist, 944, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 952, null);
+cptr.stPtro(extcmdlist, 912 + $ext_func_tab_ef_txt, __sl148);
+cptr.stPtro(extcmdlist, 912 + $ext_func_tab_ef_desc, __sl149);
+cptr.stPtro(extcmdlist, 912 + $ext_func_tab_ef_funct, doeat);
+cptr.stI32o(extcmdlist, 912 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 912 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 960, 69);
-cptr.stPtro(extcmdlist, 968, __sl150);
-cptr.stPtro(extcmdlist, 976, __sl151);
-cptr.stPtro(extcmdlist, 984, doengrave);
-cptr.stI32o(extcmdlist, 992, 0);
-cptr.stPtro(extcmdlist, 1000, null);
+cptr.stPtro(extcmdlist, 960 + $ext_func_tab_ef_txt, __sl150);
+cptr.stPtro(extcmdlist, 960 + $ext_func_tab_ef_desc, __sl151);
+cptr.stPtro(extcmdlist, 960 + $ext_func_tab_ef_funct, doengrave);
+cptr.stI32o(extcmdlist, 960 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 960 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1008, 229);
-cptr.stPtro(extcmdlist, 1016, __sl152);
-cptr.stPtro(extcmdlist, 1024, __sl153);
-cptr.stPtro(extcmdlist, 1032, enhance_weapon_skill);
-cptr.stI32o(extcmdlist, 1040, 11);
-cptr.stPtro(extcmdlist, 1048, null);
+cptr.stPtro(extcmdlist, 1008 + $ext_func_tab_ef_txt, __sl152);
+cptr.stPtro(extcmdlist, 1008 + $ext_func_tab_ef_desc, __sl153);
+cptr.stPtro(extcmdlist, 1008 + $ext_func_tab_ef_funct, enhance_weapon_skill);
+cptr.stI32o(extcmdlist, 1008 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 1008 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1056, 216);
-cptr.stPtro(extcmdlist, 1064, __sl154);
-cptr.stPtro(extcmdlist, 1072, __sl155);
-cptr.stPtro(extcmdlist, 1080, enter_explore_mode);
-cptr.stI32o(extcmdlist, 1088, 41);
-cptr.stPtro(extcmdlist, 1096, null);
+cptr.stPtro(extcmdlist, 1056 + $ext_func_tab_ef_txt, __sl154);
+cptr.stPtro(extcmdlist, 1056 + $ext_func_tab_ef_desc, __sl155);
+cptr.stPtro(extcmdlist, 1056 + $ext_func_tab_ef_funct, enter_explore_mode);
+cptr.stI32o(extcmdlist, 1056 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 1056 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1104, 70);
-cptr.stPtro(extcmdlist, 1112, __sl156);
-cptr.stPtro(extcmdlist, 1120, __sl157);
-cptr.stPtro(extcmdlist, 1128, do_fight);
-cptr.stI32o(extcmdlist, 1136, NHM.PREFIXCMD);
-cptr.stPtro(extcmdlist, 1144, null);
+cptr.stPtro(extcmdlist, 1104 + $ext_func_tab_ef_txt, __sl156);
+cptr.stPtro(extcmdlist, 1104 + $ext_func_tab_ef_desc, __sl157);
+cptr.stPtro(extcmdlist, 1104 + $ext_func_tab_ef_funct, do_fight);
+cptr.stI32o(extcmdlist, 1104 + $ext_func_tab_flags, NHM.PREFIXCMD);
+cptr.stPtro(extcmdlist, 1104 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1152, 102);
-cptr.stPtro(extcmdlist, 1160, __sl158);
-cptr.stPtro(extcmdlist, 1168, __sl159);
-cptr.stPtro(extcmdlist, 1176, dofire);
-cptr.stI32o(extcmdlist, 1184, 0);
-cptr.stPtro(extcmdlist, 1192, null);
+cptr.stPtro(extcmdlist, 1152 + $ext_func_tab_ef_txt, __sl158);
+cptr.stPtro(extcmdlist, 1152 + $ext_func_tab_ef_desc, __sl159);
+cptr.stPtro(extcmdlist, 1152 + $ext_func_tab_ef_funct, dofire);
+cptr.stI32o(extcmdlist, 1152 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 1152 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1200, 230);
-cptr.stPtro(extcmdlist, 1208, __sl160);
-cptr.stPtro(extcmdlist, 1216, __sl161);
-cptr.stPtro(extcmdlist, 1224, doforce);
-cptr.stI32o(extcmdlist, 1232, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 1240, null);
+cptr.stPtro(extcmdlist, 1200 + $ext_func_tab_ef_txt, __sl160);
+cptr.stPtro(extcmdlist, 1200 + $ext_func_tab_ef_desc, __sl161);
+cptr.stPtro(extcmdlist, 1200 + $ext_func_tab_ef_funct, doforce);
+cptr.stI32o(extcmdlist, 1200 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 1200 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1248, 231);
-cptr.stPtro(extcmdlist, 1256, __sl162);
-cptr.stPtro(extcmdlist, 1264, __sl163);
-cptr.stPtro(extcmdlist, 1272, dogenocided);
-cptr.stI32o(extcmdlist, 1280, 139);
-cptr.stPtro(extcmdlist, 1288, null);
+cptr.stPtro(extcmdlist, 1248 + $ext_func_tab_ef_txt, __sl162);
+cptr.stPtro(extcmdlist, 1248 + $ext_func_tab_ef_desc, __sl163);
+cptr.stPtro(extcmdlist, 1248 + $ext_func_tab_ef_funct, dogenocided);
+cptr.stI32o(extcmdlist, 1248 + $ext_func_tab_flags, 139);
+cptr.stPtro(extcmdlist, 1248 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1296, 59);
-cptr.stPtro(extcmdlist, 1304, __sl164);
-cptr.stPtro(extcmdlist, 1312, __sl165);
-cptr.stPtro(extcmdlist, 1320, doquickwhatis);
-cptr.stI32o(extcmdlist, 1328, 9);
-cptr.stPtro(extcmdlist, 1336, null);
+cptr.stPtro(extcmdlist, 1296 + $ext_func_tab_ef_txt, __sl164);
+cptr.stPtro(extcmdlist, 1296 + $ext_func_tab_ef_desc, __sl165);
+cptr.stPtro(extcmdlist, 1296 + $ext_func_tab_ef_funct, doquickwhatis);
+cptr.stI32o(extcmdlist, 1296 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 1296 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1344, 63);
-cptr.stPtro(extcmdlist, 1352, __sl166);
-cptr.stPtro(extcmdlist, 1360, __sl167);
-cptr.stPtro(extcmdlist, 1368, dohelp);
-cptr.stI32o(extcmdlist, 1376, 9);
-cptr.stPtro(extcmdlist, 1384, null);
+cptr.stPtro(extcmdlist, 1344 + $ext_func_tab_ef_txt, __sl166);
+cptr.stPtro(extcmdlist, 1344 + $ext_func_tab_ef_desc, __sl167);
+cptr.stPtro(extcmdlist, 1344 + $ext_func_tab_ef_funct, dohelp);
+cptr.stI32o(extcmdlist, 1344 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 1344 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1392, 0);
-cptr.stPtro(extcmdlist, 1400, __sl168);
-cptr.stPtro(extcmdlist, 1408, __sl169);
-cptr.stPtro(extcmdlist, 1416, doherecmdmenu);
-cptr.stI32o(extcmdlist, 1424, 11);
-cptr.stPtro(extcmdlist, 1432, null);
+cptr.stPtro(extcmdlist, 1392 + $ext_func_tab_ef_txt, __sl168);
+cptr.stPtro(extcmdlist, 1392 + $ext_func_tab_ef_desc, __sl169);
+cptr.stPtro(extcmdlist, 1392 + $ext_func_tab_ef_funct, doherecmdmenu);
+cptr.stI32o(extcmdlist, 1392 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 1392 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1440, 0);
-cptr.stPtro(extcmdlist, 1448, __sl170);
-cptr.stPtro(extcmdlist, 1456, __sl171);
-cptr.stPtro(extcmdlist, 1464, dohistory);
-cptr.stI32o(extcmdlist, 1472, 11);
-cptr.stPtro(extcmdlist, 1480, null);
+cptr.stPtro(extcmdlist, 1440 + $ext_func_tab_ef_txt, __sl170);
+cptr.stPtro(extcmdlist, 1440 + $ext_func_tab_ef_desc, __sl171);
+cptr.stPtro(extcmdlist, 1440 + $ext_func_tab_ef_funct, dohistory);
+cptr.stI32o(extcmdlist, 1440 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 1440 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1488, 105);
-cptr.stPtro(extcmdlist, 1496, __sl172);
-cptr.stPtro(extcmdlist, 1504, __sl173);
-cptr.stPtro(extcmdlist, 1512, ddoinv);
-cptr.stI32o(extcmdlist, 1520, 9);
-cptr.stPtro(extcmdlist, 1528, null);
+cptr.stPtro(extcmdlist, 1488 + $ext_func_tab_ef_txt, __sl172);
+cptr.stPtro(extcmdlist, 1488 + $ext_func_tab_ef_desc, __sl173);
+cptr.stPtro(extcmdlist, 1488 + $ext_func_tab_ef_funct, ddoinv);
+cptr.stI32o(extcmdlist, 1488 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 1488 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1536, 73);
-cptr.stPtro(extcmdlist, 1544, __sl174);
-cptr.stPtro(extcmdlist, 1552, __sl175);
-cptr.stPtro(extcmdlist, 1560, dotypeinv);
-cptr.stI32o(extcmdlist, 1568, 9);
-cptr.stPtro(extcmdlist, 1576, null);
+cptr.stPtro(extcmdlist, 1536 + $ext_func_tab_ef_txt, __sl174);
+cptr.stPtro(extcmdlist, 1536 + $ext_func_tab_ef_desc, __sl175);
+cptr.stPtro(extcmdlist, 1536 + $ext_func_tab_ef_funct, dotypeinv);
+cptr.stI32o(extcmdlist, 1536 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 1536 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1584, 233);
-cptr.stPtro(extcmdlist, 1592, __sl176);
-cptr.stPtro(extcmdlist, 1600, __sl177);
-cptr.stPtro(extcmdlist, 1608, doinvoke);
-cptr.stI32o(extcmdlist, 1616, 3);
-cptr.stPtro(extcmdlist, 1624, null);
+cptr.stPtro(extcmdlist, 1584 + $ext_func_tab_ef_txt, __sl176);
+cptr.stPtro(extcmdlist, 1584 + $ext_func_tab_ef_desc, __sl177);
+cptr.stPtro(extcmdlist, 1584 + $ext_func_tab_ef_funct, doinvoke);
+cptr.stI32o(extcmdlist, 1584 + $ext_func_tab_flags, 3);
+cptr.stPtro(extcmdlist, 1584 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1632, 234);
-cptr.stPtro(extcmdlist, 1640, __sl178);
-cptr.stPtro(extcmdlist, 1648, __sl179);
-cptr.stPtro(extcmdlist, 1656, dojump);
-cptr.stI32o(extcmdlist, 1664, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 1672, null);
+cptr.stPtro(extcmdlist, 1632 + $ext_func_tab_ef_txt, __sl178);
+cptr.stPtro(extcmdlist, 1632 + $ext_func_tab_ef_desc, __sl179);
+cptr.stPtro(extcmdlist, 1632 + $ext_func_tab_ef_funct, dojump);
+cptr.stI32o(extcmdlist, 1632 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 1632 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1680, 4);
-cptr.stPtro(extcmdlist, 1688, __sl180);
-cptr.stPtro(extcmdlist, 1696, __sl181);
-cptr.stPtro(extcmdlist, 1704, dokick);
-cptr.stI32o(extcmdlist, 1712, 0);
-cptr.stPtro(extcmdlist, 1720, null);
+cptr.stPtro(extcmdlist, 1680 + $ext_func_tab_ef_txt, __sl180);
+cptr.stPtro(extcmdlist, 1680 + $ext_func_tab_ef_desc, __sl181);
+cptr.stPtro(extcmdlist, 1680 + $ext_func_tab_ef_funct, dokick);
+cptr.stI32o(extcmdlist, 1680 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 1680 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1728, 92);
-cptr.stPtro(extcmdlist, 1736, __sl182);
-cptr.stPtro(extcmdlist, 1744, __sl183);
-cptr.stPtro(extcmdlist, 1752, dodiscovered);
-cptr.stI32o(extcmdlist, 1760, 137);
-cptr.stPtro(extcmdlist, 1768, null);
+cptr.stPtro(extcmdlist, 1728 + $ext_func_tab_ef_txt, __sl182);
+cptr.stPtro(extcmdlist, 1728 + $ext_func_tab_ef_desc, __sl183);
+cptr.stPtro(extcmdlist, 1728 + $ext_func_tab_ef_funct, dodiscovered);
+cptr.stI32o(extcmdlist, 1728 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 1728 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1776, 96);
-cptr.stPtro(extcmdlist, 1784, __sl184);
-cptr.stPtro(extcmdlist, 1792, __sl185);
-cptr.stPtro(extcmdlist, 1800, doclassdisco);
-cptr.stI32o(extcmdlist, 1808, 137);
-cptr.stPtro(extcmdlist, 1816, null);
+cptr.stPtro(extcmdlist, 1776 + $ext_func_tab_ef_txt, __sl184);
+cptr.stPtro(extcmdlist, 1776 + $ext_func_tab_ef_desc, __sl185);
+cptr.stPtro(extcmdlist, 1776 + $ext_func_tab_ef_funct, doclassdisco);
+cptr.stI32o(extcmdlist, 1776 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 1776 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1824, 0);
-cptr.stPtro(extcmdlist, 1832, __sl186);
-cptr.stPtro(extcmdlist, 1840, __sl187);
-cptr.stPtro(extcmdlist, 1848, wiz_level_change);
-cptr.stI32o(extcmdlist, 1856, 7);
-cptr.stPtro(extcmdlist, 1864, null);
+cptr.stPtro(extcmdlist, 1824 + $ext_func_tab_ef_txt, __sl186);
+cptr.stPtro(extcmdlist, 1824 + $ext_func_tab_ef_desc, __sl187);
+cptr.stPtro(extcmdlist, 1824 + $ext_func_tab_ef_funct, wiz_level_change);
+cptr.stI32o(extcmdlist, 1824 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 1824 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1872, 0);
-cptr.stPtro(extcmdlist, 1880, __sl188);
-cptr.stPtro(extcmdlist, 1888, __sl189);
-cptr.stPtro(extcmdlist, 1896, wiz_light_sources);
-cptr.stI32o(extcmdlist, 1904, 7);
-cptr.stPtro(extcmdlist, 1912, null);
+cptr.stPtro(extcmdlist, 1872 + $ext_func_tab_ef_txt, __sl188);
+cptr.stPtro(extcmdlist, 1872 + $ext_func_tab_ef_desc, __sl189);
+cptr.stPtro(extcmdlist, 1872 + $ext_func_tab_ef_funct, wiz_light_sources);
+cptr.stI32o(extcmdlist, 1872 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 1872 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1920, 58);
-cptr.stPtro(extcmdlist, 1928, __sl190);
-cptr.stPtro(extcmdlist, 1936, __sl191);
-cptr.stPtro(extcmdlist, 1944, dolook);
-cptr.stI32o(extcmdlist, 1952, NHM.IFBURIED);
-cptr.stPtro(extcmdlist, 1960, null);
+cptr.stPtro(extcmdlist, 1920 + $ext_func_tab_ef_txt, __sl190);
+cptr.stPtro(extcmdlist, 1920 + $ext_func_tab_ef_desc, __sl191);
+cptr.stPtro(extcmdlist, 1920 + $ext_func_tab_ef_funct, dolook);
+cptr.stI32o(extcmdlist, 1920 + $ext_func_tab_flags, NHM.IFBURIED);
+cptr.stPtro(extcmdlist, 1920 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 1968, 0);
-cptr.stPtro(extcmdlist, 1976, __sl192);
-cptr.stPtro(extcmdlist, 1984, __sl193);
-cptr.stPtro(extcmdlist, 1992, dolookaround);
-cptr.stI32o(extcmdlist, 2000, 9);
-cptr.stPtro(extcmdlist, 2008, null);
+cptr.stPtro(extcmdlist, 1968 + $ext_func_tab_ef_txt, __sl192);
+cptr.stPtro(extcmdlist, 1968 + $ext_func_tab_ef_desc, __sl193);
+cptr.stPtro(extcmdlist, 1968 + $ext_func_tab_ef_funct, dolookaround);
+cptr.stI32o(extcmdlist, 1968 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 1968 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2016, 236);
-cptr.stPtro(extcmdlist, 2024, __sl194);
-cptr.stPtro(extcmdlist, 2032, __sl195);
-cptr.stPtro(extcmdlist, 2040, doloot);
-cptr.stI32o(extcmdlist, 2048, 130);
-cptr.stPtro(extcmdlist, 2056, null);
+cptr.stPtro(extcmdlist, 2016 + $ext_func_tab_ef_txt, __sl194);
+cptr.stPtro(extcmdlist, 2016 + $ext_func_tab_ef_desc, __sl195);
+cptr.stPtro(extcmdlist, 2016 + $ext_func_tab_ef_funct, doloot);
+cptr.stI32o(extcmdlist, 2016 + $ext_func_tab_flags, 130);
+cptr.stPtro(extcmdlist, 2016 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2064, 0);
-cptr.stPtro(extcmdlist, 2072, __sl196);
-cptr.stPtro(extcmdlist, 2080, __sl197);
-cptr.stPtro(extcmdlist, 2088, wiz_migrate_mons);
-cptr.stI32o(extcmdlist, 2096, 7);
-cptr.stPtro(extcmdlist, 2104, null);
+cptr.stPtro(extcmdlist, 2064 + $ext_func_tab_ef_txt, __sl196);
+cptr.stPtro(extcmdlist, 2064 + $ext_func_tab_ef_desc, __sl197);
+cptr.stPtro(extcmdlist, 2064 + $ext_func_tab_ef_funct, wiz_migrate_mons);
+cptr.stI32o(extcmdlist, 2064 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 2064 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2112, 237);
-cptr.stPtro(extcmdlist, 2120, __sl198);
-cptr.stPtro(extcmdlist, 2128, __sl199);
-cptr.stPtro(extcmdlist, 2136, domonability);
-cptr.stI32o(extcmdlist, 2144, 3);
-cptr.stPtro(extcmdlist, 2152, null);
+cptr.stPtro(extcmdlist, 2112 + $ext_func_tab_ef_txt, __sl198);
+cptr.stPtro(extcmdlist, 2112 + $ext_func_tab_ef_desc, __sl199);
+cptr.stPtro(extcmdlist, 2112 + $ext_func_tab_ef_funct, domonability);
+cptr.stI32o(extcmdlist, 2112 + $ext_func_tab_flags, 3);
+cptr.stPtro(extcmdlist, 2112 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2160, 238);
-cptr.stPtro(extcmdlist, 2168, __sl200);
-cptr.stPtro(extcmdlist, 2176, __sl201);
-cptr.stPtro(extcmdlist, 2184, docallcmd);
-cptr.stI32o(extcmdlist, 2192, 11);
-cptr.stPtro(extcmdlist, 2200, null);
+cptr.stPtro(extcmdlist, 2160 + $ext_func_tab_ef_txt, __sl200);
+cptr.stPtro(extcmdlist, 2160 + $ext_func_tab_ef_desc, __sl201);
+cptr.stPtro(extcmdlist, 2160 + $ext_func_tab_ef_funct, docallcmd);
+cptr.stI32o(extcmdlist, 2160 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 2160 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2208, 239);
-cptr.stPtro(extcmdlist, 2216, __sl202);
-cptr.stPtro(extcmdlist, 2224, __sl203);
-cptr.stPtro(extcmdlist, 2232, dosacrifice);
-cptr.stI32o(extcmdlist, 2240, 130);
-cptr.stPtro(extcmdlist, 2248, null);
+cptr.stPtro(extcmdlist, 2208 + $ext_func_tab_ef_txt, __sl202);
+cptr.stPtro(extcmdlist, 2208 + $ext_func_tab_ef_desc, __sl203);
+cptr.stPtro(extcmdlist, 2208 + $ext_func_tab_ef_funct, dosacrifice);
+cptr.stI32o(extcmdlist, 2208 + $ext_func_tab_flags, 130);
+cptr.stPtro(extcmdlist, 2208 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2256, 111);
-cptr.stPtro(extcmdlist, 2264, __sl204);
-cptr.stPtro(extcmdlist, 2272, __sl205);
-cptr.stPtro(extcmdlist, 2280, doopen);
-cptr.stI32o(extcmdlist, 2288, 0);
-cptr.stPtro(extcmdlist, 2296, null);
+cptr.stPtro(extcmdlist, 2256 + $ext_func_tab_ef_txt, __sl204);
+cptr.stPtro(extcmdlist, 2256 + $ext_func_tab_ef_desc, __sl205);
+cptr.stPtro(extcmdlist, 2256 + $ext_func_tab_ef_funct, doopen);
+cptr.stI32o(extcmdlist, 2256 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 2256 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2304, 79);
-cptr.stPtro(extcmdlist, 2312, __sl206);
-cptr.stPtro(extcmdlist, 2320, __sl207);
-cptr.stPtro(extcmdlist, 2328, doset_simple);
-cptr.stI32o(extcmdlist, 2336, 137);
-cptr.stPtro(extcmdlist, 2344, null);
+cptr.stPtro(extcmdlist, 2304 + $ext_func_tab_ef_txt, __sl206);
+cptr.stPtro(extcmdlist, 2304 + $ext_func_tab_ef_desc, __sl207);
+cptr.stPtro(extcmdlist, 2304 + $ext_func_tab_ef_funct, doset_simple);
+cptr.stI32o(extcmdlist, 2304 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 2304 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2352, 0);
-cptr.stPtro(extcmdlist, 2360, __sl208);
-cptr.stPtro(extcmdlist, 2368, __sl209);
-cptr.stPtro(extcmdlist, 2376, doset);
-cptr.stI32o(extcmdlist, 2384, 137);
-cptr.stPtro(extcmdlist, 2392, null);
+cptr.stPtro(extcmdlist, 2352 + $ext_func_tab_ef_txt, __sl208);
+cptr.stPtro(extcmdlist, 2352 + $ext_func_tab_ef_desc, __sl209);
+cptr.stPtro(extcmdlist, 2352 + $ext_func_tab_ef_funct, doset);
+cptr.stI32o(extcmdlist, 2352 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 2352 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2400, 15);
-cptr.stPtro(extcmdlist, 2408, __sl210);
-cptr.stPtro(extcmdlist, 2416, __sl211);
-cptr.stPtro(extcmdlist, 2424, dooverview);
-cptr.stI32o(extcmdlist, 2432, 139);
-cptr.stPtro(extcmdlist, 2440, null);
+cptr.stPtro(extcmdlist, 2400 + $ext_func_tab_ef_txt, __sl210);
+cptr.stPtro(extcmdlist, 2400 + $ext_func_tab_ef_desc, __sl211);
+cptr.stPtro(extcmdlist, 2400 + $ext_func_tab_ef_funct, dooverview);
+cptr.stI32o(extcmdlist, 2400 + $ext_func_tab_flags, 139);
+cptr.stPtro(extcmdlist, 2400 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2448, 0);
-cptr.stPtro(extcmdlist, 2456, __sl212);
-cptr.stPtro(extcmdlist, 2464, __sl213);
-cptr.stPtro(extcmdlist, 2472, wiz_panic);
-cptr.stI32o(extcmdlist, 2480, 7);
-cptr.stPtro(extcmdlist, 2488, null);
+cptr.stPtro(extcmdlist, 2448 + $ext_func_tab_ef_txt, __sl212);
+cptr.stPtro(extcmdlist, 2448 + $ext_func_tab_ef_desc, __sl213);
+cptr.stPtro(extcmdlist, 2448 + $ext_func_tab_ef_funct, wiz_panic);
+cptr.stI32o(extcmdlist, 2448 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 2448 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2496, 112);
-cptr.stPtro(extcmdlist, 2504, __sl214);
-cptr.stPtro(extcmdlist, 2512, __sl215);
-cptr.stPtro(extcmdlist, 2520, dopay);
-cptr.stI32o(extcmdlist, 2528, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 2536, null);
+cptr.stPtro(extcmdlist, 2496 + $ext_func_tab_ef_txt, __sl214);
+cptr.stPtro(extcmdlist, 2496 + $ext_func_tab_ef_desc, __sl215);
+cptr.stPtro(extcmdlist, 2496 + $ext_func_tab_ef_funct, dopay);
+cptr.stI32o(extcmdlist, 2496 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 2496 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2544, 124);
-cptr.stPtro(extcmdlist, 2552, __sl216);
-cptr.stPtro(extcmdlist, 2560, __sl217);
-cptr.stPtro(extcmdlist, 2568, doperminv);
-cptr.stI32o(extcmdlist, 2576, 41);
-cptr.stPtro(extcmdlist, 2584, null);
+cptr.stPtro(extcmdlist, 2544 + $ext_func_tab_ef_txt, __sl216);
+cptr.stPtro(extcmdlist, 2544 + $ext_func_tab_ef_desc, __sl217);
+cptr.stPtro(extcmdlist, 2544 + $ext_func_tab_ef_funct, doperminv);
+cptr.stI32o(extcmdlist, 2544 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 2544 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2592, 44);
-cptr.stPtro(extcmdlist, 2600, __sl218);
-cptr.stPtro(extcmdlist, 2608, __sl219);
-cptr.stPtro(extcmdlist, 2616, dopickup);
-cptr.stI32o(extcmdlist, 2624, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 2632, null);
+cptr.stPtro(extcmdlist, 2592 + $ext_func_tab_ef_txt, __sl218);
+cptr.stPtro(extcmdlist, 2592 + $ext_func_tab_ef_desc, __sl219);
+cptr.stPtro(extcmdlist, 2592 + $ext_func_tab_ef_funct, dopickup);
+cptr.stI32o(extcmdlist, 2592 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 2592 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2640, 0);
-cptr.stPtro(extcmdlist, 2648, __sl220);
-cptr.stPtro(extcmdlist, 2656, __sl221);
-cptr.stPtro(extcmdlist, 2664, wiz_polyself);
-cptr.stI32o(extcmdlist, 2672, 7);
-cptr.stPtro(extcmdlist, 2680, null);
+cptr.stPtro(extcmdlist, 2640 + $ext_func_tab_ef_txt, __sl220);
+cptr.stPtro(extcmdlist, 2640 + $ext_func_tab_ef_desc, __sl221);
+cptr.stPtro(extcmdlist, 2640 + $ext_func_tab_ef_funct, wiz_polyself);
+cptr.stI32o(extcmdlist, 2640 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 2640 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2688, 240);
-cptr.stPtro(extcmdlist, 2696, __sl222);
-cptr.stPtro(extcmdlist, 2704, __sl223);
-cptr.stPtro(extcmdlist, 2712, dopray);
-cptr.stI32o(extcmdlist, 2720, 3);
-cptr.stPtro(extcmdlist, 2728, null);
+cptr.stPtro(extcmdlist, 2688 + $ext_func_tab_ef_txt, __sl222);
+cptr.stPtro(extcmdlist, 2688 + $ext_func_tab_ef_desc, __sl223);
+cptr.stPtro(extcmdlist, 2688 + $ext_func_tab_ef_funct, dopray);
+cptr.stI32o(extcmdlist, 2688 + $ext_func_tab_flags, 3);
+cptr.stPtro(extcmdlist, 2688 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2736, 16);
-cptr.stPtro(extcmdlist, 2744, __sl224);
-cptr.stPtro(extcmdlist, 2752, __sl225);
-cptr.stPtro(extcmdlist, 2760, doprev_message);
-cptr.stI32o(extcmdlist, 2768, 4105);
-cptr.stPtro(extcmdlist, 2776, null);
+cptr.stPtro(extcmdlist, 2736 + $ext_func_tab_ef_txt, __sl224);
+cptr.stPtro(extcmdlist, 2736 + $ext_func_tab_ef_desc, __sl225);
+cptr.stPtro(extcmdlist, 2736 + $ext_func_tab_ef_funct, doprev_message);
+cptr.stI32o(extcmdlist, 2736 + $ext_func_tab_flags, 4105);
+cptr.stPtro(extcmdlist, 2736 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2784, 80);
-cptr.stPtro(extcmdlist, 2792, __sl226);
-cptr.stPtro(extcmdlist, 2800, __sl227);
-cptr.stPtro(extcmdlist, 2808, doputon);
-cptr.stI32o(extcmdlist, 2816, 0);
-cptr.stPtro(extcmdlist, 2824, null);
+cptr.stPtro(extcmdlist, 2784 + $ext_func_tab_ef_txt, __sl226);
+cptr.stPtro(extcmdlist, 2784 + $ext_func_tab_ef_desc, __sl227);
+cptr.stPtro(extcmdlist, 2784 + $ext_func_tab_ef_funct, doputon);
+cptr.stI32o(extcmdlist, 2784 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 2784 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2832, 113);
-cptr.stPtro(extcmdlist, 2840, __sl228);
-cptr.stPtro(extcmdlist, 2848, __sl229);
-cptr.stPtro(extcmdlist, 2856, dodrink);
-cptr.stI32o(extcmdlist, 2864, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 2872, null);
+cptr.stPtro(extcmdlist, 2832 + $ext_func_tab_ef_txt, __sl228);
+cptr.stPtro(extcmdlist, 2832 + $ext_func_tab_ef_desc, __sl229);
+cptr.stPtro(extcmdlist, 2832 + $ext_func_tab_ef_funct, dodrink);
+cptr.stI32o(extcmdlist, 2832 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 2832 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2880, 0);
-cptr.stPtro(extcmdlist, 2888, __sl230);
-cptr.stPtro(extcmdlist, 2896, __sl231);
-cptr.stPtro(extcmdlist, 2904, done2);
-cptr.stI32o(extcmdlist, 2912, 43);
-cptr.stPtro(extcmdlist, 2920, null);
+cptr.stPtro(extcmdlist, 2880 + $ext_func_tab_ef_txt, __sl230);
+cptr.stPtro(extcmdlist, 2880 + $ext_func_tab_ef_desc, __sl231);
+cptr.stPtro(extcmdlist, 2880 + $ext_func_tab_ef_funct, done2);
+cptr.stI32o(extcmdlist, 2880 + $ext_func_tab_flags, 43);
+cptr.stPtro(extcmdlist, 2880 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2928, 81);
-cptr.stPtro(extcmdlist, 2936, __sl232);
-cptr.stPtro(extcmdlist, 2944, __sl233);
-cptr.stPtro(extcmdlist, 2952, dowieldquiver);
-cptr.stI32o(extcmdlist, 2960, 0);
-cptr.stPtro(extcmdlist, 2968, null);
+cptr.stPtro(extcmdlist, 2928 + $ext_func_tab_ef_txt, __sl232);
+cptr.stPtro(extcmdlist, 2928 + $ext_func_tab_ef_desc, __sl233);
+cptr.stPtro(extcmdlist, 2928 + $ext_func_tab_ef_funct, dowieldquiver);
+cptr.stI32o(extcmdlist, 2928 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 2928 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 2976, 114);
-cptr.stPtro(extcmdlist, 2984, __sl234);
-cptr.stPtro(extcmdlist, 2992, __sl235);
-cptr.stPtro(extcmdlist, 3000, doread);
-cptr.stI32o(extcmdlist, 3008, 0);
-cptr.stPtro(extcmdlist, 3016, null);
+cptr.stPtro(extcmdlist, 2976 + $ext_func_tab_ef_txt, __sl234);
+cptr.stPtro(extcmdlist, 2976 + $ext_func_tab_ef_desc, __sl235);
+cptr.stPtro(extcmdlist, 2976 + $ext_func_tab_ef_funct, doread);
+cptr.stI32o(extcmdlist, 2976 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 2976 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3024, 18);
-cptr.stPtro(extcmdlist, 3032, __sl236);
-cptr.stPtro(extcmdlist, 3040, __sl237);
-cptr.stPtro(extcmdlist, 3048, doredraw);
-cptr.stI32o(extcmdlist, 3056, 4105);
-cptr.stPtro(extcmdlist, 3064, null);
+cptr.stPtro(extcmdlist, 3024 + $ext_func_tab_ef_txt, __sl236);
+cptr.stPtro(extcmdlist, 3024 + $ext_func_tab_ef_desc, __sl237);
+cptr.stPtro(extcmdlist, 3024 + $ext_func_tab_ef_funct, doredraw);
+cptr.stI32o(extcmdlist, 3024 + $ext_func_tab_flags, 4105);
+cptr.stPtro(extcmdlist, 3024 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3072, 82);
-cptr.stPtro(extcmdlist, 3080, __sl238);
-cptr.stPtro(extcmdlist, 3088, __sl239);
-cptr.stPtro(extcmdlist, 3096, doremring);
-cptr.stI32o(extcmdlist, 3104, 0);
-cptr.stPtro(extcmdlist, 3112, null);
+cptr.stPtro(extcmdlist, 3072 + $ext_func_tab_ef_txt, __sl238);
+cptr.stPtro(extcmdlist, 3072 + $ext_func_tab_ef_desc, __sl239);
+cptr.stPtro(extcmdlist, 3072 + $ext_func_tab_ef_funct, doremring);
+cptr.stI32o(extcmdlist, 3072 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 3072 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3120, 1);
-cptr.stPtro(extcmdlist, 3128, __sl240);
-cptr.stPtro(extcmdlist, 3136, __sl241);
-cptr.stPtro(extcmdlist, 3144, do_repeat);
-cptr.stI32o(extcmdlist, 3152, 9);
-cptr.stPtro(extcmdlist, 3160, null);
+cptr.stPtro(extcmdlist, 3120 + $ext_func_tab_ef_txt, __sl240);
+cptr.stPtro(extcmdlist, 3120 + $ext_func_tab_ef_desc, __sl241);
+cptr.stPtro(extcmdlist, 3120 + $ext_func_tab_ef_funct, do_repeat);
+cptr.stI32o(extcmdlist, 3120 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 3120 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3168, 109);
-cptr.stPtro(extcmdlist, 3176, __sl242);
-cptr.stPtro(extcmdlist, 3184, __sl243);
-cptr.stPtro(extcmdlist, 3192, do_reqmenu);
-cptr.stI32o(extcmdlist, 3200, NHM.PREFIXCMD);
-cptr.stPtro(extcmdlist, 3208, null);
+cptr.stPtro(extcmdlist, 3168 + $ext_func_tab_ef_txt, __sl242);
+cptr.stPtro(extcmdlist, 3168 + $ext_func_tab_ef_desc, __sl243);
+cptr.stPtro(extcmdlist, 3168 + $ext_func_tab_ef_funct, do_reqmenu);
+cptr.stI32o(extcmdlist, 3168 + $ext_func_tab_flags, NHM.PREFIXCMD);
+cptr.stPtro(extcmdlist, 3168 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3216, 31);
-cptr.stPtro(extcmdlist, 3224, __sl244);
-cptr.stPtro(extcmdlist, 3232, __sl245);
-cptr.stPtro(extcmdlist, 3240, dotravel_target);
-cptr.stI32o(extcmdlist, 3248, 0);
-cptr.stPtro(extcmdlist, 3256, null);
+cptr.stPtro(extcmdlist, 3216 + $ext_func_tab_ef_txt, __sl244);
+cptr.stPtro(extcmdlist, 3216 + $ext_func_tab_ef_desc, __sl245);
+cptr.stPtro(extcmdlist, 3216 + $ext_func_tab_ef_funct, dotravel_target);
+cptr.stI32o(extcmdlist, 3216 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 3216 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3264, 210);
-cptr.stPtro(extcmdlist, 3272, __sl246);
-cptr.stPtro(extcmdlist, 3280, __sl247);
-cptr.stPtro(extcmdlist, 3288, doride);
-cptr.stI32o(extcmdlist, 3296, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 3304, null);
+cptr.stPtro(extcmdlist, 3264 + $ext_func_tab_ef_txt, __sl246);
+cptr.stPtro(extcmdlist, 3264 + $ext_func_tab_ef_desc, __sl247);
+cptr.stPtro(extcmdlist, 3264 + $ext_func_tab_ef_funct, doride);
+cptr.stI32o(extcmdlist, 3264 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 3264 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3312, 242);
-cptr.stPtro(extcmdlist, 3320, __sl248);
-cptr.stPtro(extcmdlist, 3328, __sl249);
-cptr.stPtro(extcmdlist, 3336, dorub);
-cptr.stI32o(extcmdlist, 3344, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 3352, null);
+cptr.stPtro(extcmdlist, 3312 + $ext_func_tab_ef_txt, __sl248);
+cptr.stPtro(extcmdlist, 3312 + $ext_func_tab_ef_desc, __sl249);
+cptr.stPtro(extcmdlist, 3312 + $ext_func_tab_ef_funct, dorub);
+cptr.stI32o(extcmdlist, 3312 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 3312 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3360, 71);
-cptr.stPtro(extcmdlist, 3368, __sl250);
-cptr.stPtro(extcmdlist, 3376, __sl251);
-cptr.stPtro(extcmdlist, 3384, do_run);
-cptr.stI32o(extcmdlist, 3392, NHM.PREFIXCMD);
-cptr.stPtro(extcmdlist, 3400, null);
+cptr.stPtro(extcmdlist, 3360 + $ext_func_tab_ef_txt, __sl250);
+cptr.stPtro(extcmdlist, 3360 + $ext_func_tab_ef_desc, __sl251);
+cptr.stPtro(extcmdlist, 3360 + $ext_func_tab_ef_funct, do_run);
+cptr.stI32o(extcmdlist, 3360 + $ext_func_tab_flags, NHM.PREFIXCMD);
+cptr.stPtro(extcmdlist, 3360 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3408, 103);
-cptr.stPtro(extcmdlist, 3416, __sl252);
-cptr.stPtro(extcmdlist, 3424, __sl253);
-cptr.stPtro(extcmdlist, 3432, do_rush);
-cptr.stI32o(extcmdlist, 3440, NHM.PREFIXCMD);
-cptr.stPtro(extcmdlist, 3448, null);
+cptr.stPtro(extcmdlist, 3408 + $ext_func_tab_ef_txt, __sl252);
+cptr.stPtro(extcmdlist, 3408 + $ext_func_tab_ef_desc, __sl253);
+cptr.stPtro(extcmdlist, 3408 + $ext_func_tab_ef_funct, do_rush);
+cptr.stI32o(extcmdlist, 3408 + $ext_func_tab_flags, NHM.PREFIXCMD);
+cptr.stPtro(extcmdlist, 3408 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3456, 83);
-cptr.stPtro(extcmdlist, 3464, __sl254);
-cptr.stPtro(extcmdlist, 3472, __sl255);
-cptr.stPtro(extcmdlist, 3480, dosave);
-cptr.stI32o(extcmdlist, 3488, 41);
-cptr.stPtro(extcmdlist, 3496, null);
+cptr.stPtro(extcmdlist, 3456 + $ext_func_tab_ef_txt, __sl254);
+cptr.stPtro(extcmdlist, 3456 + $ext_func_tab_ef_desc, __sl255);
+cptr.stPtro(extcmdlist, 3456 + $ext_func_tab_ef_funct, dosave);
+cptr.stI32o(extcmdlist, 3456 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 3456 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3504, 0);
-cptr.stPtro(extcmdlist, 3512, __sl256);
-cptr.stPtro(extcmdlist, 3520, __sl257);
-cptr.stPtro(extcmdlist, 3528, do_write_config_file);
-cptr.stI32o(extcmdlist, 3536, 41);
-cptr.stPtro(extcmdlist, 3544, null);
+cptr.stPtro(extcmdlist, 3504 + $ext_func_tab_ef_txt, __sl256);
+cptr.stPtro(extcmdlist, 3504 + $ext_func_tab_ef_desc, __sl257);
+cptr.stPtro(extcmdlist, 3504 + $ext_func_tab_ef_funct, do_write_config_file);
+cptr.stI32o(extcmdlist, 3504 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 3504 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3552, 115);
-cptr.stPtro(extcmdlist, 3560, __sl258);
-cptr.stPtro(extcmdlist, 3568, __sl259);
-cptr.stPtro(extcmdlist, 3576, dosearch);
-cptr.stI32o(extcmdlist, 3584, 129);
-cptr.stPtro(extcmdlist, 3592, __sl260);
+cptr.stPtro(extcmdlist, 3552 + $ext_func_tab_ef_txt, __sl258);
+cptr.stPtro(extcmdlist, 3552 + $ext_func_tab_ef_desc, __sl259);
+cptr.stPtro(extcmdlist, 3552 + $ext_func_tab_ef_funct, dosearch);
+cptr.stI32o(extcmdlist, 3552 + $ext_func_tab_flags, 129);
+cptr.stPtro(extcmdlist, 3552 + $ext_func_tab_f_text, __sl260);
 cptr.st1o(extcmdlist, 3600, 42);
-cptr.stPtro(extcmdlist, 3608, __sl261);
-cptr.stPtro(extcmdlist, 3616, __sl262);
-cptr.stPtro(extcmdlist, 3624, doprinuse);
-cptr.stI32o(extcmdlist, 3632, 137);
-cptr.stPtro(extcmdlist, 3640, null);
+cptr.stPtro(extcmdlist, 3600 + $ext_func_tab_ef_txt, __sl261);
+cptr.stPtro(extcmdlist, 3600 + $ext_func_tab_ef_desc, __sl262);
+cptr.stPtro(extcmdlist, 3600 + $ext_func_tab_ef_funct, doprinuse);
+cptr.stI32o(extcmdlist, 3600 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3600 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3648, NHC.AMULET_SYM);
-cptr.stPtro(extcmdlist, 3656, __sl263);
-cptr.stPtro(extcmdlist, 3664, __sl264);
-cptr.stPtro(extcmdlist, 3672, dopramulet);
-cptr.stI32o(extcmdlist, 3680, 137);
-cptr.stPtro(extcmdlist, 3688, null);
+cptr.stPtro(extcmdlist, 3648 + $ext_func_tab_ef_txt, __sl263);
+cptr.stPtro(extcmdlist, 3648 + $ext_func_tab_ef_desc, __sl264);
+cptr.stPtro(extcmdlist, 3648 + $ext_func_tab_ef_funct, dopramulet);
+cptr.stI32o(extcmdlist, 3648 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3648 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3696, NHC.ARMOR_SYM);
-cptr.stPtro(extcmdlist, 3704, __sl265);
-cptr.stPtro(extcmdlist, 3712, __sl266);
-cptr.stPtro(extcmdlist, 3720, doprarm);
-cptr.stI32o(extcmdlist, 3728, 137);
-cptr.stPtro(extcmdlist, 3736, null);
+cptr.stPtro(extcmdlist, 3696 + $ext_func_tab_ef_txt, __sl265);
+cptr.stPtro(extcmdlist, 3696 + $ext_func_tab_ef_desc, __sl266);
+cptr.stPtro(extcmdlist, 3696 + $ext_func_tab_ef_funct, doprarm);
+cptr.stI32o(extcmdlist, 3696 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3696 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3744, NHC.RING_SYM);
-cptr.stPtro(extcmdlist, 3752, __sl267);
-cptr.stPtro(extcmdlist, 3760, __sl268);
-cptr.stPtro(extcmdlist, 3768, doprring);
-cptr.stI32o(extcmdlist, 3776, 137);
-cptr.stPtro(extcmdlist, 3784, null);
+cptr.stPtro(extcmdlist, 3744 + $ext_func_tab_ef_txt, __sl267);
+cptr.stPtro(extcmdlist, 3744 + $ext_func_tab_ef_desc, __sl268);
+cptr.stPtro(extcmdlist, 3744 + $ext_func_tab_ef_funct, doprring);
+cptr.stI32o(extcmdlist, 3744 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3744 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3792, NHC.TOOL_SYM);
-cptr.stPtro(extcmdlist, 3800, __sl269);
-cptr.stPtro(extcmdlist, 3808, __sl270);
-cptr.stPtro(extcmdlist, 3816, doprtool);
-cptr.stI32o(extcmdlist, 3824, 137);
-cptr.stPtro(extcmdlist, 3832, null);
+cptr.stPtro(extcmdlist, 3792 + $ext_func_tab_ef_txt, __sl269);
+cptr.stPtro(extcmdlist, 3792 + $ext_func_tab_ef_desc, __sl270);
+cptr.stPtro(extcmdlist, 3792 + $ext_func_tab_ef_funct, doprtool);
+cptr.stI32o(extcmdlist, 3792 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3792 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3840, NHC.WEAPON_SYM);
-cptr.stPtro(extcmdlist, 3848, __sl271);
-cptr.stPtro(extcmdlist, 3856, __sl272);
-cptr.stPtro(extcmdlist, 3864, doprwep);
-cptr.stI32o(extcmdlist, 3872, 137);
-cptr.stPtro(extcmdlist, 3880, null);
+cptr.stPtro(extcmdlist, 3840 + $ext_func_tab_ef_txt, __sl271);
+cptr.stPtro(extcmdlist, 3840 + $ext_func_tab_ef_desc, __sl272);
+cptr.stPtro(extcmdlist, 3840 + $ext_func_tab_ef_funct, doprwep);
+cptr.stI32o(extcmdlist, 3840 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3840 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3888, 33);
-cptr.stPtro(extcmdlist, 3896, __sl273);
-cptr.stPtro(extcmdlist, 3904, __sl274);
-cptr.stPtro(extcmdlist, 3912, dosh_core);
-cptr.stI32o(extcmdlist, 3920, 41);
-cptr.stPtro(extcmdlist, 3928, null);
+cptr.stPtro(extcmdlist, 3888 + $ext_func_tab_ef_txt, __sl273);
+cptr.stPtro(extcmdlist, 3888 + $ext_func_tab_ef_desc, __sl274);
+cptr.stPtro(extcmdlist, 3888 + $ext_func_tab_ef_funct, dosh_core);
+cptr.stI32o(extcmdlist, 3888 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 3888 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3936, NHC.GOLD_SYM);
-cptr.stPtro(extcmdlist, 3944, __sl275);
-cptr.stPtro(extcmdlist, 3952, __sl276);
-cptr.stPtro(extcmdlist, 3960, doprgold);
-cptr.stI32o(extcmdlist, 3968, 137);
-cptr.stPtro(extcmdlist, 3976, null);
+cptr.stPtro(extcmdlist, 3936 + $ext_func_tab_ef_txt, __sl275);
+cptr.stPtro(extcmdlist, 3936 + $ext_func_tab_ef_desc, __sl276);
+cptr.stPtro(extcmdlist, 3936 + $ext_func_tab_ef_funct, doprgold);
+cptr.stI32o(extcmdlist, 3936 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 3936 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 3984, NHC.SPBOOK_SYM);
-cptr.stPtro(extcmdlist, 3992, __sl277);
-cptr.stPtro(extcmdlist, 4000, __sl278);
-cptr.stPtro(extcmdlist, 4008, dovspell);
-cptr.stI32o(extcmdlist, 4016, 9);
-cptr.stPtro(extcmdlist, 4024, null);
+cptr.stPtro(extcmdlist, 3984 + $ext_func_tab_ef_txt, __sl277);
+cptr.stPtro(extcmdlist, 3984 + $ext_func_tab_ef_desc, __sl278);
+cptr.stPtro(extcmdlist, 3984 + $ext_func_tab_ef_funct, dovspell);
+cptr.stI32o(extcmdlist, 3984 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 3984 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4032, 94);
-cptr.stPtro(extcmdlist, 4040, __sl279);
-cptr.stPtro(extcmdlist, 4048, __sl280);
-cptr.stPtro(extcmdlist, 4056, doidtrap);
-cptr.stI32o(extcmdlist, 4064, 9);
-cptr.stPtro(extcmdlist, 4072, null);
+cptr.stPtro(extcmdlist, 4032 + $ext_func_tab_ef_txt, __sl279);
+cptr.stPtro(extcmdlist, 4032 + $ext_func_tab_ef_desc, __sl280);
+cptr.stPtro(extcmdlist, 4032 + $ext_func_tab_ef_funct, doidtrap);
+cptr.stI32o(extcmdlist, 4032 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 4032 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4080, 243);
-cptr.stPtro(extcmdlist, 4088, __sl281);
-cptr.stPtro(extcmdlist, 4096, __sl282);
-cptr.stPtro(extcmdlist, 4104, dosit);
-cptr.stI32o(extcmdlist, 4112, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 4120, null);
+cptr.stPtro(extcmdlist, 4080 + $ext_func_tab_ef_txt, __sl281);
+cptr.stPtro(extcmdlist, 4080 + $ext_func_tab_ef_desc, __sl282);
+cptr.stPtro(extcmdlist, 4080 + $ext_func_tab_ef_funct, dosit);
+cptr.stI32o(extcmdlist, 4080 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 4080 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4128, 0);
-cptr.stPtro(extcmdlist, 4136, __sl283);
-cptr.stPtro(extcmdlist, 4144, __sl284);
-cptr.stPtro(extcmdlist, 4152, wiz_show_stats);
-cptr.stI32o(extcmdlist, 4160, 7);
-cptr.stPtro(extcmdlist, 4168, null);
+cptr.stPtro(extcmdlist, 4128 + $ext_func_tab_ef_txt, __sl283);
+cptr.stPtro(extcmdlist, 4128 + $ext_func_tab_ef_desc, __sl284);
+cptr.stPtro(extcmdlist, 4128 + $ext_func_tab_ef_funct, wiz_show_stats);
+cptr.stI32o(extcmdlist, 4128 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 4128 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4176, 26);
-cptr.stPtro(extcmdlist, 4184, __sl285);
-cptr.stPtro(extcmdlist, 4192, __sl286);
-cptr.stPtro(extcmdlist, 4200, dosuspend_core);
-cptr.stI32o(extcmdlist, 4208, 41);
-cptr.stPtro(extcmdlist, 4216, null);
+cptr.stPtro(extcmdlist, 4176 + $ext_func_tab_ef_txt, __sl285);
+cptr.stPtro(extcmdlist, 4176 + $ext_func_tab_ef_desc, __sl286);
+cptr.stPtro(extcmdlist, 4176 + $ext_func_tab_ef_funct, dosuspend_core);
+cptr.stI32o(extcmdlist, 4176 + $ext_func_tab_flags, 41);
+cptr.stPtro(extcmdlist, 4176 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4224, 120);
-cptr.stPtro(extcmdlist, 4232, __sl287);
-cptr.stPtro(extcmdlist, 4240, __sl288);
-cptr.stPtro(extcmdlist, 4248, doswapweapon);
-cptr.stI32o(extcmdlist, 4256, 0);
-cptr.stPtro(extcmdlist, 4264, null);
+cptr.stPtro(extcmdlist, 4224 + $ext_func_tab_ef_txt, __sl287);
+cptr.stPtro(extcmdlist, 4224 + $ext_func_tab_ef_desc, __sl288);
+cptr.stPtro(extcmdlist, 4224 + $ext_func_tab_ef_funct, doswapweapon);
+cptr.stI32o(extcmdlist, 4224 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 4224 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4272, 84);
-cptr.stPtro(extcmdlist, 4280, __sl289);
-cptr.stPtro(extcmdlist, 4288, __sl290);
-cptr.stPtro(extcmdlist, 4296, dotakeoff);
-cptr.stI32o(extcmdlist, 4304, 0);
-cptr.stPtro(extcmdlist, 4312, null);
+cptr.stPtro(extcmdlist, 4272 + $ext_func_tab_ef_txt, __sl289);
+cptr.stPtro(extcmdlist, 4272 + $ext_func_tab_ef_desc, __sl290);
+cptr.stPtro(extcmdlist, 4272 + $ext_func_tab_ef_funct, dotakeoff);
+cptr.stI32o(extcmdlist, 4272 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 4272 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4320, 65);
-cptr.stPtro(extcmdlist, 4328, __sl291);
-cptr.stPtro(extcmdlist, 4336, __sl292);
-cptr.stPtro(extcmdlist, 4344, doddoremarm);
-cptr.stI32o(extcmdlist, 4352, 0);
-cptr.stPtro(extcmdlist, 4360, null);
+cptr.stPtro(extcmdlist, 4320 + $ext_func_tab_ef_txt, __sl291);
+cptr.stPtro(extcmdlist, 4320 + $ext_func_tab_ef_desc, __sl292);
+cptr.stPtro(extcmdlist, 4320 + $ext_func_tab_ef_funct, doddoremarm);
+cptr.stI32o(extcmdlist, 4320 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 4320 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4368, 20);
-cptr.stPtro(extcmdlist, 4376, __sl293);
-cptr.stPtro(extcmdlist, 4384, __sl294);
-cptr.stPtro(extcmdlist, 4392, dotelecmd);
-cptr.stI32o(extcmdlist, 4400, 129);
-cptr.stPtro(extcmdlist, 4408, null);
+cptr.stPtro(extcmdlist, 4368 + $ext_func_tab_ef_txt, __sl293);
+cptr.stPtro(extcmdlist, 4368 + $ext_func_tab_ef_desc, __sl294);
+cptr.stPtro(extcmdlist, 4368 + $ext_func_tab_ef_funct, dotelecmd);
+cptr.stI32o(extcmdlist, 4368 + $ext_func_tab_flags, 129);
+cptr.stPtro(extcmdlist, 4368 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4416, 127);
-cptr.stPtro(extcmdlist, 4424, __sl295);
-cptr.stPtro(extcmdlist, 4432, __sl296);
-cptr.stPtro(extcmdlist, 4440, doterrain);
-cptr.stI32o(extcmdlist, 4448, 11);
-cptr.stPtro(extcmdlist, 4456, null);
+cptr.stPtro(extcmdlist, 4416 + $ext_func_tab_ef_txt, __sl295);
+cptr.stPtro(extcmdlist, 4416 + $ext_func_tab_ef_desc, __sl296);
+cptr.stPtro(extcmdlist, 4416 + $ext_func_tab_ef_funct, doterrain);
+cptr.stI32o(extcmdlist, 4416 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 4416 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4464, 0);
-cptr.stPtro(extcmdlist, 4472, __sl297);
-cptr.stPtro(extcmdlist, 4480, __sl298);
-cptr.stPtro(extcmdlist, 4488, dotherecmdmenu);
-cptr.stI32o(extcmdlist, 4496, 2058);
-cptr.stPtro(extcmdlist, 4504, null);
+cptr.stPtro(extcmdlist, 4464 + $ext_func_tab_ef_txt, __sl297);
+cptr.stPtro(extcmdlist, 4464 + $ext_func_tab_ef_desc, __sl298);
+cptr.stPtro(extcmdlist, 4464 + $ext_func_tab_ef_funct, dotherecmdmenu);
+cptr.stI32o(extcmdlist, 4464 + $ext_func_tab_flags, 2058);
+cptr.stPtro(extcmdlist, 4464 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4512, 116);
-cptr.stPtro(extcmdlist, 4520, __sl299);
-cptr.stPtro(extcmdlist, 4528, __sl300);
-cptr.stPtro(extcmdlist, 4536, dothrow);
-cptr.stI32o(extcmdlist, 4544, 0);
-cptr.stPtro(extcmdlist, 4552, null);
+cptr.stPtro(extcmdlist, 4512 + $ext_func_tab_ef_txt, __sl299);
+cptr.stPtro(extcmdlist, 4512 + $ext_func_tab_ef_desc, __sl300);
+cptr.stPtro(extcmdlist, 4512 + $ext_func_tab_ef_funct, dothrow);
+cptr.stI32o(extcmdlist, 4512 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 4512 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4560, 0);
-cptr.stPtro(extcmdlist, 4568, __sl301);
-cptr.stPtro(extcmdlist, 4576, __sl302);
-cptr.stPtro(extcmdlist, 4584, wiz_timeout_queue);
-cptr.stI32o(extcmdlist, 4592, 7);
-cptr.stPtro(extcmdlist, 4600, null);
+cptr.stPtro(extcmdlist, 4560 + $ext_func_tab_ef_txt, __sl301);
+cptr.stPtro(extcmdlist, 4560 + $ext_func_tab_ef_desc, __sl302);
+cptr.stPtro(extcmdlist, 4560 + $ext_func_tab_ef_funct, wiz_timeout_queue);
+cptr.stI32o(extcmdlist, 4560 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 4560 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4608, 212);
-cptr.stPtro(extcmdlist, 4616, __sl303);
-cptr.stPtro(extcmdlist, 4624, __sl304);
-cptr.stPtro(extcmdlist, 4632, dotip);
-cptr.stI32o(extcmdlist, 4640, 130);
-cptr.stPtro(extcmdlist, 4648, null);
+cptr.stPtro(extcmdlist, 4608 + $ext_func_tab_ef_txt, __sl303);
+cptr.stPtro(extcmdlist, 4608 + $ext_func_tab_ef_desc, __sl304);
+cptr.stPtro(extcmdlist, 4608 + $ext_func_tab_ef_funct, dotip);
+cptr.stI32o(extcmdlist, 4608 + $ext_func_tab_flags, 130);
+cptr.stPtro(extcmdlist, 4608 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4656, 0);
-cptr.stPtro(extcmdlist, 4664, __sl305);
-cptr.stPtro(extcmdlist, 4672, __sl306);
-cptr.stPtro(extcmdlist, 4680, dotoggleoption);
-cptr.stI32o(extcmdlist, 4688, 16393);
-cptr.stPtro(extcmdlist, 4696, null);
+cptr.stPtro(extcmdlist, 4656 + $ext_func_tab_ef_txt, __sl305);
+cptr.stPtro(extcmdlist, 4656 + $ext_func_tab_ef_desc, __sl306);
+cptr.stPtro(extcmdlist, 4656 + $ext_func_tab_ef_funct, dotoggleoption);
+cptr.stI32o(extcmdlist, 4656 + $ext_func_tab_flags, 16393);
+cptr.stPtro(extcmdlist, 4656 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4704, 95);
-cptr.stPtro(extcmdlist, 4712, __sl307);
-cptr.stPtro(extcmdlist, 4720, __sl308);
-cptr.stPtro(extcmdlist, 4728, dotravel);
-cptr.stI32o(extcmdlist, 4736, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 4744, null);
+cptr.stPtro(extcmdlist, 4704 + $ext_func_tab_ef_txt, __sl307);
+cptr.stPtro(extcmdlist, 4704 + $ext_func_tab_ef_desc, __sl308);
+cptr.stPtro(extcmdlist, 4704 + $ext_func_tab_ef_funct, dotravel);
+cptr.stI32o(extcmdlist, 4704 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 4704 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4752, 244);
-cptr.stPtro(extcmdlist, 4760, __sl309);
-cptr.stPtro(extcmdlist, 4768, __sl310);
-cptr.stPtro(extcmdlist, 4776, doturn);
-cptr.stI32o(extcmdlist, 4784, 3);
-cptr.stPtro(extcmdlist, 4792, null);
+cptr.stPtro(extcmdlist, 4752 + $ext_func_tab_ef_txt, __sl309);
+cptr.stPtro(extcmdlist, 4752 + $ext_func_tab_ef_desc, __sl310);
+cptr.stPtro(extcmdlist, 4752 + $ext_func_tab_ef_funct, doturn);
+cptr.stI32o(extcmdlist, 4752 + $ext_func_tab_flags, 3);
+cptr.stPtro(extcmdlist, 4752 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4800, 88);
-cptr.stPtro(extcmdlist, 4808, __sl311);
-cptr.stPtro(extcmdlist, 4816, __sl312);
-cptr.stPtro(extcmdlist, 4824, dotwoweapon);
-cptr.stI32o(extcmdlist, 4832, 0);
-cptr.stPtro(extcmdlist, 4840, null);
+cptr.stPtro(extcmdlist, 4800 + $ext_func_tab_ef_txt, __sl311);
+cptr.stPtro(extcmdlist, 4800 + $ext_func_tab_ef_desc, __sl312);
+cptr.stPtro(extcmdlist, 4800 + $ext_func_tab_ef_funct, dotwoweapon);
+cptr.stI32o(extcmdlist, 4800 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 4800 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4848, 245);
-cptr.stPtro(extcmdlist, 4856, __sl313);
-cptr.stPtro(extcmdlist, 4864, __sl314);
-cptr.stPtro(extcmdlist, 4872, dountrap);
-cptr.stI32o(extcmdlist, 4880, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 4888, null);
+cptr.stPtro(extcmdlist, 4848 + $ext_func_tab_ef_txt, __sl313);
+cptr.stPtro(extcmdlist, 4848 + $ext_func_tab_ef_desc, __sl314);
+cptr.stPtro(extcmdlist, 4848 + $ext_func_tab_ef_funct, dountrap);
+cptr.stI32o(extcmdlist, 4848 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 4848 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4896, 60);
-cptr.stPtro(extcmdlist, 4904, __sl315);
-cptr.stPtro(extcmdlist, 4912, __sl316);
-cptr.stPtro(extcmdlist, 4920, doup);
-cptr.stI32o(extcmdlist, 4928, NHM.CMD_M_PREFIX);
-cptr.stPtro(extcmdlist, 4936, null);
+cptr.stPtro(extcmdlist, 4896 + $ext_func_tab_ef_txt, __sl315);
+cptr.stPtro(extcmdlist, 4896 + $ext_func_tab_ef_desc, __sl316);
+cptr.stPtro(extcmdlist, 4896 + $ext_func_tab_ef_funct, doup);
+cptr.stI32o(extcmdlist, 4896 + $ext_func_tab_flags, NHM.CMD_M_PREFIX);
+cptr.stPtro(extcmdlist, 4896 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4944, 214);
-cptr.stPtro(extcmdlist, 4952, __sl317);
-cptr.stPtro(extcmdlist, 4960, __sl318);
-cptr.stPtro(extcmdlist, 4968, dovanquished);
-cptr.stI32o(extcmdlist, 4976, 139);
-cptr.stPtro(extcmdlist, 4984, null);
+cptr.stPtro(extcmdlist, 4944 + $ext_func_tab_ef_txt, __sl317);
+cptr.stPtro(extcmdlist, 4944 + $ext_func_tab_ef_desc, __sl318);
+cptr.stPtro(extcmdlist, 4944 + $ext_func_tab_ef_funct, dovanquished);
+cptr.stI32o(extcmdlist, 4944 + $ext_func_tab_flags, 139);
+cptr.stPtro(extcmdlist, 4944 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 4992, 246);
-cptr.stPtro(extcmdlist, 5000, __sl319);
-cptr.stPtro(extcmdlist, 5008, __sl320);
-cptr.stPtro(extcmdlist, 5016, doextversion);
-cptr.stI32o(extcmdlist, 5024, 11);
-cptr.stPtro(extcmdlist, 5032, null);
+cptr.stPtro(extcmdlist, 4992 + $ext_func_tab_ef_txt, __sl319);
+cptr.stPtro(extcmdlist, 4992 + $ext_func_tab_ef_desc, __sl320);
+cptr.stPtro(extcmdlist, 4992 + $ext_func_tab_ef_funct, doextversion);
+cptr.stI32o(extcmdlist, 4992 + $ext_func_tab_flags, 11);
+cptr.stPtro(extcmdlist, 4992 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5040, 86);
-cptr.stPtro(extcmdlist, 5048, __sl321);
-cptr.stPtro(extcmdlist, 5056, __sl322);
-cptr.stPtro(extcmdlist, 5064, doversion);
-cptr.stI32o(extcmdlist, 5072, 137);
-cptr.stPtro(extcmdlist, 5080, null);
+cptr.stPtro(extcmdlist, 5040 + $ext_func_tab_ef_txt, __sl321);
+cptr.stPtro(extcmdlist, 5040 + $ext_func_tab_ef_desc, __sl322);
+cptr.stPtro(extcmdlist, 5040 + $ext_func_tab_ef_funct, doversion);
+cptr.stI32o(extcmdlist, 5040 + $ext_func_tab_flags, 137);
+cptr.stPtro(extcmdlist, 5040 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5088, 0);
-cptr.stPtro(extcmdlist, 5096, __sl323);
-cptr.stPtro(extcmdlist, 5104, __sl324);
-cptr.stPtro(extcmdlist, 5112, wiz_show_vision);
-cptr.stI32o(extcmdlist, 5120, 7);
-cptr.stPtro(extcmdlist, 5128, null);
+cptr.stPtro(extcmdlist, 5088 + $ext_func_tab_ef_txt, __sl323);
+cptr.stPtro(extcmdlist, 5088 + $ext_func_tab_ef_desc, __sl324);
+cptr.stPtro(extcmdlist, 5088 + $ext_func_tab_ef_funct, wiz_show_vision);
+cptr.stI32o(extcmdlist, 5088 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 5088 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5136, 46);
-cptr.stPtro(extcmdlist, 5144, __sl325);
-cptr.stPtro(extcmdlist, 5152, __sl326);
-cptr.stPtro(extcmdlist, 5160, donull);
-cptr.stI32o(extcmdlist, 5168, 129);
-cptr.stPtro(extcmdlist, 5176, __sl327);
+cptr.stPtro(extcmdlist, 5136 + $ext_func_tab_ef_txt, __sl325);
+cptr.stPtro(extcmdlist, 5136 + $ext_func_tab_ef_desc, __sl326);
+cptr.stPtro(extcmdlist, 5136 + $ext_func_tab_ef_funct, donull);
+cptr.stI32o(extcmdlist, 5136 + $ext_func_tab_flags, 129);
+cptr.stPtro(extcmdlist, 5136 + $ext_func_tab_f_text, __sl327);
 cptr.st1o(extcmdlist, 5184, 87);
-cptr.stPtro(extcmdlist, 5192, __sl328);
-cptr.stPtro(extcmdlist, 5200, __sl329);
-cptr.stPtro(extcmdlist, 5208, dowear);
-cptr.stI32o(extcmdlist, 5216, 0);
-cptr.stPtro(extcmdlist, 5224, null);
+cptr.stPtro(extcmdlist, 5184 + $ext_func_tab_ef_txt, __sl328);
+cptr.stPtro(extcmdlist, 5184 + $ext_func_tab_ef_desc, __sl329);
+cptr.stPtro(extcmdlist, 5184 + $ext_func_tab_ef_funct, dowear);
+cptr.stI32o(extcmdlist, 5184 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 5184 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5232, 38);
-cptr.stPtro(extcmdlist, 5240, __sl330);
-cptr.stPtro(extcmdlist, 5248, __sl331);
-cptr.stPtro(extcmdlist, 5256, dowhatdoes);
-cptr.stI32o(extcmdlist, 5264, 9);
-cptr.stPtro(extcmdlist, 5272, null);
+cptr.stPtro(extcmdlist, 5232 + $ext_func_tab_ef_txt, __sl330);
+cptr.stPtro(extcmdlist, 5232 + $ext_func_tab_ef_desc, __sl331);
+cptr.stPtro(extcmdlist, 5232 + $ext_func_tab_ef_funct, dowhatdoes);
+cptr.stI32o(extcmdlist, 5232 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 5232 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5280, 47);
-cptr.stPtro(extcmdlist, 5288, __sl332);
-cptr.stPtro(extcmdlist, 5296, __sl333);
-cptr.stPtro(extcmdlist, 5304, dowhatis);
-cptr.stI32o(extcmdlist, 5312, 9);
-cptr.stPtro(extcmdlist, 5320, null);
+cptr.stPtro(extcmdlist, 5280 + $ext_func_tab_ef_txt, __sl332);
+cptr.stPtro(extcmdlist, 5280 + $ext_func_tab_ef_desc, __sl333);
+cptr.stPtro(extcmdlist, 5280 + $ext_func_tab_ef_funct, dowhatis);
+cptr.stI32o(extcmdlist, 5280 + $ext_func_tab_flags, 9);
+cptr.stPtro(extcmdlist, 5280 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5328, 119);
-cptr.stPtro(extcmdlist, 5336, __sl334);
-cptr.stPtro(extcmdlist, 5344, __sl335);
-cptr.stPtro(extcmdlist, 5352, dowield);
-cptr.stI32o(extcmdlist, 5360, 0);
-cptr.stPtro(extcmdlist, 5368, null);
+cptr.stPtro(extcmdlist, 5328 + $ext_func_tab_ef_txt, __sl334);
+cptr.stPtro(extcmdlist, 5328 + $ext_func_tab_ef_desc, __sl335);
+cptr.stPtro(extcmdlist, 5328 + $ext_func_tab_ef_funct, dowield);
+cptr.stI32o(extcmdlist, 5328 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 5328 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5376, 247);
-cptr.stPtro(extcmdlist, 5384, __sl336);
-cptr.stPtro(extcmdlist, 5392, __sl337);
-cptr.stPtro(extcmdlist, 5400, dowipe);
-cptr.stI32o(extcmdlist, 5408, NHM.AUTOCOMPLETE);
-cptr.stPtro(extcmdlist, 5416, null);
+cptr.stPtro(extcmdlist, 5376 + $ext_func_tab_ef_txt, __sl336);
+cptr.stPtro(extcmdlist, 5376 + $ext_func_tab_ef_desc, __sl337);
+cptr.stPtro(extcmdlist, 5376 + $ext_func_tab_ef_funct, dowipe);
+cptr.stI32o(extcmdlist, 5376 + $ext_func_tab_flags, NHM.AUTOCOMPLETE);
+cptr.stPtro(extcmdlist, 5376 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5424, 0);
-cptr.stPtro(extcmdlist, 5432, __sl338);
-cptr.stPtro(extcmdlist, 5440, __sl339);
-cptr.stPtro(extcmdlist, 5448, doborn);
-cptr.stI32o(extcmdlist, 5456, 5);
-cptr.stPtro(extcmdlist, 5464, null);
+cptr.stPtro(extcmdlist, 5424 + $ext_func_tab_ef_txt, __sl338);
+cptr.stPtro(extcmdlist, 5424 + $ext_func_tab_ef_desc, __sl339);
+cptr.stPtro(extcmdlist, 5424 + $ext_func_tab_ef_funct, doborn);
+cptr.stI32o(extcmdlist, 5424 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5424 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5472, 0);
-cptr.stPtro(extcmdlist, 5480, __sl340);
-cptr.stPtro(extcmdlist, 5488, __sl341);
-cptr.stPtro(extcmdlist, 5496, wiz_debug_cmd_bury);
-cptr.stI32o(extcmdlist, 5504, 7);
-cptr.stPtro(extcmdlist, 5512, null);
+cptr.stPtro(extcmdlist, 5472 + $ext_func_tab_ef_txt, __sl340);
+cptr.stPtro(extcmdlist, 5472 + $ext_func_tab_ef_desc, __sl341);
+cptr.stPtro(extcmdlist, 5472 + $ext_func_tab_ef_funct, wiz_debug_cmd_bury);
+cptr.stI32o(extcmdlist, 5472 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 5472 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5520, 0);
-cptr.stPtro(extcmdlist, 5528, __sl342);
-cptr.stPtro(extcmdlist, 5536, __sl343);
-cptr.stPtro(extcmdlist, 5544, dowizcast);
-cptr.stI32o(extcmdlist, 5552, 5);
-cptr.stPtro(extcmdlist, 5560, null);
+cptr.stPtro(extcmdlist, 5520 + $ext_func_tab_ef_txt, __sl342);
+cptr.stPtro(extcmdlist, 5520 + $ext_func_tab_ef_desc, __sl343);
+cptr.stPtro(extcmdlist, 5520 + $ext_func_tab_ef_funct, dowizcast);
+cptr.stI32o(extcmdlist, 5520 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5520 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5568, 0);
-cptr.stPtro(extcmdlist, 5576, __sl344);
-cptr.stPtro(extcmdlist, 5584, __sl345);
-cptr.stPtro(extcmdlist, 5592, wiz_custom);
-cptr.stI32o(extcmdlist, 5600, 37);
-cptr.stPtro(extcmdlist, 5608, null);
+cptr.stPtro(extcmdlist, 5568 + $ext_func_tab_ef_txt, __sl344);
+cptr.stPtro(extcmdlist, 5568 + $ext_func_tab_ef_desc, __sl345);
+cptr.stPtro(extcmdlist, 5568 + $ext_func_tab_ef_funct, wiz_custom);
+cptr.stI32o(extcmdlist, 5568 + $ext_func_tab_flags, 37);
+cptr.stPtro(extcmdlist, 5568 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5616, 5);
-cptr.stPtro(extcmdlist, 5624, __sl346);
-cptr.stPtro(extcmdlist, 5632, __sl347);
-cptr.stPtro(extcmdlist, 5640, wiz_detect);
-cptr.stI32o(extcmdlist, 5648, 5);
-cptr.stPtro(extcmdlist, 5656, null);
+cptr.stPtro(extcmdlist, 5616 + $ext_func_tab_ef_txt, __sl346);
+cptr.stPtro(extcmdlist, 5616 + $ext_func_tab_ef_desc, __sl347);
+cptr.stPtro(extcmdlist, 5616 + $ext_func_tab_ef_funct, wiz_detect);
+cptr.stI32o(extcmdlist, 5616 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5616 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5664, 0);
-cptr.stPtro(extcmdlist, 5672, __sl348);
-cptr.stPtro(extcmdlist, 5680, __sl349);
-cptr.stPtro(extcmdlist, 5688, wiz_display_macros);
-cptr.stI32o(extcmdlist, 5696, 7);
-cptr.stPtro(extcmdlist, 5704, null);
+cptr.stPtro(extcmdlist, 5664 + $ext_func_tab_ef_txt, __sl348);
+cptr.stPtro(extcmdlist, 5664 + $ext_func_tab_ef_desc, __sl349);
+cptr.stPtro(extcmdlist, 5664 + $ext_func_tab_ef_funct, wiz_display_macros);
+cptr.stI32o(extcmdlist, 5664 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 5664 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5712, 0);
-cptr.stPtro(extcmdlist, 5720, __sl350);
-cptr.stPtro(extcmdlist, 5728, __sl351);
-cptr.stPtro(extcmdlist, 5736, wiz_flip_level);
-cptr.stI32o(extcmdlist, 5744, 5);
-cptr.stPtro(extcmdlist, 5752, null);
+cptr.stPtro(extcmdlist, 5712 + $ext_func_tab_ef_txt, __sl350);
+cptr.stPtro(extcmdlist, 5712 + $ext_func_tab_ef_desc, __sl351);
+cptr.stPtro(extcmdlist, 5712 + $ext_func_tab_ef_funct, wiz_flip_level);
+cptr.stI32o(extcmdlist, 5712 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5712 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5760, 7);
-cptr.stPtro(extcmdlist, 5768, __sl352);
-cptr.stPtro(extcmdlist, 5776, __sl353);
-cptr.stPtro(extcmdlist, 5784, wiz_genesis);
-cptr.stI32o(extcmdlist, 5792, 5);
-cptr.stPtro(extcmdlist, 5800, null);
+cptr.stPtro(extcmdlist, 5760 + $ext_func_tab_ef_txt, __sl352);
+cptr.stPtro(extcmdlist, 5760 + $ext_func_tab_ef_desc, __sl353);
+cptr.stPtro(extcmdlist, 5760 + $ext_func_tab_ef_funct, wiz_genesis);
+cptr.stI32o(extcmdlist, 5760 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5760 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5808, 9);
-cptr.stPtro(extcmdlist, 5816, __sl354);
-cptr.stPtro(extcmdlist, 5824, __sl355);
-cptr.stPtro(extcmdlist, 5832, wiz_identify);
-cptr.stI32o(extcmdlist, 5840, 5);
-cptr.stPtro(extcmdlist, 5848, null);
+cptr.stPtro(extcmdlist, 5808 + $ext_func_tab_ef_txt, __sl354);
+cptr.stPtro(extcmdlist, 5808 + $ext_func_tab_ef_desc, __sl355);
+cptr.stPtro(extcmdlist, 5808 + $ext_func_tab_ef_funct, wiz_identify);
+cptr.stI32o(extcmdlist, 5808 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 5808 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5856, 0);
-cptr.stPtro(extcmdlist, 5864, __sl356);
-cptr.stPtro(extcmdlist, 5872, __sl357);
-cptr.stPtro(extcmdlist, 5880, wiz_intrinsic);
-cptr.stI32o(extcmdlist, 5888, 7);
-cptr.stPtro(extcmdlist, 5896, null);
+cptr.stPtro(extcmdlist, 5856 + $ext_func_tab_ef_txt, __sl356);
+cptr.stPtro(extcmdlist, 5856 + $ext_func_tab_ef_desc, __sl357);
+cptr.stPtro(extcmdlist, 5856 + $ext_func_tab_ef_funct, wiz_intrinsic);
+cptr.stI32o(extcmdlist, 5856 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 5856 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5904, 0);
-cptr.stPtro(extcmdlist, 5912, __sl358);
-cptr.stPtro(extcmdlist, 5920, __sl359);
-cptr.stPtro(extcmdlist, 5928, wiz_kill);
-cptr.stI32o(extcmdlist, 5936, 167);
-cptr.stPtro(extcmdlist, 5944, null);
+cptr.stPtro(extcmdlist, 5904 + $ext_func_tab_ef_txt, __sl358);
+cptr.stPtro(extcmdlist, 5904 + $ext_func_tab_ef_desc, __sl359);
+cptr.stPtro(extcmdlist, 5904 + $ext_func_tab_ef_funct, wiz_kill);
+cptr.stI32o(extcmdlist, 5904 + $ext_func_tab_flags, 167);
+cptr.stPtro(extcmdlist, 5904 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 5952, 22);
-cptr.stPtro(extcmdlist, 5960, __sl360);
-cptr.stPtro(extcmdlist, 5968, __sl361);
-cptr.stPtro(extcmdlist, 5976, wiz_level_tele);
-cptr.stI32o(extcmdlist, 5984, 133);
-cptr.stPtro(extcmdlist, 5992, null);
+cptr.stPtro(extcmdlist, 5952 + $ext_func_tab_ef_txt, __sl360);
+cptr.stPtro(extcmdlist, 5952 + $ext_func_tab_ef_desc, __sl361);
+cptr.stPtro(extcmdlist, 5952 + $ext_func_tab_ef_funct, wiz_level_tele);
+cptr.stI32o(extcmdlist, 5952 + $ext_func_tab_flags, 133);
+cptr.stPtro(extcmdlist, 5952 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6000, 0);
-cptr.stPtro(extcmdlist, 6008, __sl362);
-cptr.stPtro(extcmdlist, 6016, __sl363);
-cptr.stPtro(extcmdlist, 6024, wiz_load_splua);
-cptr.stI32o(extcmdlist, 6032, 37);
-cptr.stPtro(extcmdlist, 6040, null);
+cptr.stPtro(extcmdlist, 6000 + $ext_func_tab_ef_txt, __sl362);
+cptr.stPtro(extcmdlist, 6000 + $ext_func_tab_ef_desc, __sl363);
+cptr.stPtro(extcmdlist, 6000 + $ext_func_tab_ef_funct, wiz_load_splua);
+cptr.stI32o(extcmdlist, 6000 + $ext_func_tab_flags, 37);
+cptr.stPtro(extcmdlist, 6000 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6048, 0);
-cptr.stPtro(extcmdlist, 6056, __sl364);
-cptr.stPtro(extcmdlist, 6064, __sl365);
-cptr.stPtro(extcmdlist, 6072, wiz_load_lua);
-cptr.stI32o(extcmdlist, 6080, 37);
-cptr.stPtro(extcmdlist, 6088, null);
+cptr.stPtro(extcmdlist, 6048 + $ext_func_tab_ef_txt, __sl364);
+cptr.stPtro(extcmdlist, 6048 + $ext_func_tab_ef_desc, __sl365);
+cptr.stPtro(extcmdlist, 6048 + $ext_func_tab_ef_funct, wiz_load_lua);
+cptr.stI32o(extcmdlist, 6048 + $ext_func_tab_flags, 37);
+cptr.stPtro(extcmdlist, 6048 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6096, 0);
-cptr.stPtro(extcmdlist, 6104, __sl366);
-cptr.stPtro(extcmdlist, 6112, __sl367);
-cptr.stPtro(extcmdlist, 6120, wiz_objprobs);
-cptr.stI32o(extcmdlist, 6128, 5);
-cptr.stPtro(extcmdlist, 6136, null);
+cptr.stPtro(extcmdlist, 6096 + $ext_func_tab_ef_txt, __sl366);
+cptr.stPtro(extcmdlist, 6096 + $ext_func_tab_ef_desc, __sl367);
+cptr.stPtro(extcmdlist, 6096 + $ext_func_tab_ef_funct, wiz_objprobs);
+cptr.stI32o(extcmdlist, 6096 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 6096 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6144, 0);
-cptr.stPtro(extcmdlist, 6152, __sl368);
-cptr.stPtro(extcmdlist, 6160, __sl369);
-cptr.stPtro(extcmdlist, 6168, wiz_makemap);
-cptr.stI32o(extcmdlist, 6176, 5);
-cptr.stPtro(extcmdlist, 6184, null);
+cptr.stPtro(extcmdlist, 6144 + $ext_func_tab_ef_txt, __sl368);
+cptr.stPtro(extcmdlist, 6144 + $ext_func_tab_ef_desc, __sl369);
+cptr.stPtro(extcmdlist, 6144 + $ext_func_tab_ef_funct, wiz_makemap);
+cptr.stI32o(extcmdlist, 6144 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 6144 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6192, 6);
-cptr.stPtro(extcmdlist, 6200, __sl370);
-cptr.stPtro(extcmdlist, 6208, __sl371);
-cptr.stPtro(extcmdlist, 6216, wiz_map);
-cptr.stI32o(extcmdlist, 6224, 5);
-cptr.stPtro(extcmdlist, 6232, null);
+cptr.stPtro(extcmdlist, 6192 + $ext_func_tab_ef_txt, __sl370);
+cptr.stPtro(extcmdlist, 6192 + $ext_func_tab_ef_desc, __sl371);
+cptr.stPtro(extcmdlist, 6192 + $ext_func_tab_ef_funct, wiz_map);
+cptr.stI32o(extcmdlist, 6192 + $ext_func_tab_flags, 5);
+cptr.stPtro(extcmdlist, 6192 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6240, 0);
-cptr.stPtro(extcmdlist, 6248, __sl372);
-cptr.stPtro(extcmdlist, 6256, __sl373);
-cptr.stPtro(extcmdlist, 6264, wiz_mon_diff);
-cptr.stI32o(extcmdlist, 6272, 7);
-cptr.stPtro(extcmdlist, 6280, null);
+cptr.stPtro(extcmdlist, 6240 + $ext_func_tab_ef_txt, __sl372);
+cptr.stPtro(extcmdlist, 6240 + $ext_func_tab_ef_desc, __sl373);
+cptr.stPtro(extcmdlist, 6240 + $ext_func_tab_ef_funct, wiz_mon_diff);
+cptr.stI32o(extcmdlist, 6240 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6240 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6288, 0);
-cptr.stPtro(extcmdlist, 6296, __sl374);
-cptr.stPtro(extcmdlist, 6304, __sl375);
-cptr.stPtro(extcmdlist, 6312, wiz_rumor_check);
-cptr.stI32o(extcmdlist, 6320, 7);
-cptr.stPtro(extcmdlist, 6328, null);
+cptr.stPtro(extcmdlist, 6288 + $ext_func_tab_ef_txt, __sl374);
+cptr.stPtro(extcmdlist, 6288 + $ext_func_tab_ef_desc, __sl375);
+cptr.stPtro(extcmdlist, 6288 + $ext_func_tab_ef_funct, wiz_rumor_check);
+cptr.stI32o(extcmdlist, 6288 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6288 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6336, 0);
-cptr.stPtro(extcmdlist, 6344, __sl376);
-cptr.stPtro(extcmdlist, 6352, __sl377);
-cptr.stPtro(extcmdlist, 6360, wiz_show_seenv);
-cptr.stI32o(extcmdlist, 6368, 7);
-cptr.stPtro(extcmdlist, 6376, null);
+cptr.stPtro(extcmdlist, 6336 + $ext_func_tab_ef_txt, __sl376);
+cptr.stPtro(extcmdlist, 6336 + $ext_func_tab_ef_desc, __sl377);
+cptr.stPtro(extcmdlist, 6336 + $ext_func_tab_ef_funct, wiz_show_seenv);
+cptr.stI32o(extcmdlist, 6336 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6336 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6384, 0);
-cptr.stPtro(extcmdlist, 6392, __sl378);
-cptr.stPtro(extcmdlist, 6400, __sl379);
-cptr.stPtro(extcmdlist, 6408, wiz_show_nhuuid);
-cptr.stI32o(extcmdlist, 6416, 6);
-cptr.stPtro(extcmdlist, 6424, null);
+cptr.stPtro(extcmdlist, 6384 + $ext_func_tab_ef_txt, __sl378);
+cptr.stPtro(extcmdlist, 6384 + $ext_func_tab_ef_desc, __sl379);
+cptr.stPtro(extcmdlist, 6384 + $ext_func_tab_ef_funct, wiz_show_nhuuid);
+cptr.stI32o(extcmdlist, 6384 + $ext_func_tab_flags, 6);
+cptr.stPtro(extcmdlist, 6384 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6432, 0);
-cptr.stPtro(extcmdlist, 6440, __sl380);
-cptr.stPtro(extcmdlist, 6448, __sl381);
-cptr.stPtro(extcmdlist, 6456, wiz_smell);
-cptr.stI32o(extcmdlist, 6464, 7);
-cptr.stPtro(extcmdlist, 6472, null);
+cptr.stPtro(extcmdlist, 6432 + $ext_func_tab_ef_txt, __sl380);
+cptr.stPtro(extcmdlist, 6432 + $ext_func_tab_ef_desc, __sl381);
+cptr.stPtro(extcmdlist, 6432 + $ext_func_tab_ef_funct, wiz_smell);
+cptr.stI32o(extcmdlist, 6432 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6432 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6480, 0);
-cptr.stPtro(extcmdlist, 6488, __sl382);
-cptr.stPtro(extcmdlist, 6496, __sl383);
-cptr.stPtro(extcmdlist, 6504, wiz_telekinesis);
-cptr.stI32o(extcmdlist, 6512, 7);
-cptr.stPtro(extcmdlist, 6520, null);
+cptr.stPtro(extcmdlist, 6480 + $ext_func_tab_ef_txt, __sl382);
+cptr.stPtro(extcmdlist, 6480 + $ext_func_tab_ef_desc, __sl383);
+cptr.stPtro(extcmdlist, 6480 + $ext_func_tab_ef_funct, wiz_telekinesis);
+cptr.stI32o(extcmdlist, 6480 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6480 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6528, 0);
-cptr.stPtro(extcmdlist, 6536, __sl384);
-cptr.stPtro(extcmdlist, 6544, __sl385);
-cptr.stPtro(extcmdlist, 6552, wiz_where);
-cptr.stI32o(extcmdlist, 6560, 7);
-cptr.stPtro(extcmdlist, 6568, null);
+cptr.stPtro(extcmdlist, 6528 + $ext_func_tab_ef_txt, __sl384);
+cptr.stPtro(extcmdlist, 6528 + $ext_func_tab_ef_desc, __sl385);
+cptr.stPtro(extcmdlist, 6528 + $ext_func_tab_ef_funct, wiz_where);
+cptr.stI32o(extcmdlist, 6528 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6528 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6576, 23);
-cptr.stPtro(extcmdlist, 6584, __sl386);
-cptr.stPtro(extcmdlist, 6592, __sl387);
-cptr.stPtro(extcmdlist, 6600, wiz_wish);
-cptr.stI32o(extcmdlist, 6608, 133);
-cptr.stPtro(extcmdlist, 6616, null);
+cptr.stPtro(extcmdlist, 6576 + $ext_func_tab_ef_txt, __sl386);
+cptr.stPtro(extcmdlist, 6576 + $ext_func_tab_ef_desc, __sl387);
+cptr.stPtro(extcmdlist, 6576 + $ext_func_tab_ef_funct, wiz_wish);
+cptr.stI32o(extcmdlist, 6576 + $ext_func_tab_flags, 133);
+cptr.stPtro(extcmdlist, 6576 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6624, 0);
-cptr.stPtro(extcmdlist, 6632, __sl388);
-cptr.stPtro(extcmdlist, 6640, __sl389);
-cptr.stPtro(extcmdlist, 6648, wiz_show_wmodes);
-cptr.stI32o(extcmdlist, 6656, 7);
-cptr.stPtro(extcmdlist, 6664, null);
+cptr.stPtro(extcmdlist, 6624 + $ext_func_tab_ef_txt, __sl388);
+cptr.stPtro(extcmdlist, 6624 + $ext_func_tab_ef_desc, __sl389);
+cptr.stPtro(extcmdlist, 6624 + $ext_func_tab_ef_funct, wiz_show_wmodes);
+cptr.stI32o(extcmdlist, 6624 + $ext_func_tab_flags, 7);
+cptr.stPtro(extcmdlist, 6624 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6672, 122);
-cptr.stPtro(extcmdlist, 6680, __sl390);
-cptr.stPtro(extcmdlist, 6688, __sl391);
-cptr.stPtro(extcmdlist, 6696, dozap);
-cptr.stI32o(extcmdlist, 6704, 0);
-cptr.stPtro(extcmdlist, 6712, null);
+cptr.stPtro(extcmdlist, 6672 + $ext_func_tab_ef_txt, __sl390);
+cptr.stPtro(extcmdlist, 6672 + $ext_func_tab_ef_desc, __sl391);
+cptr.stPtro(extcmdlist, 6672 + $ext_func_tab_ef_funct, dozap);
+cptr.stI32o(extcmdlist, 6672 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 6672 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6720, 0);
-cptr.stPtro(extcmdlist, 6728, __sl392);
-cptr.stPtro(extcmdlist, 6736, __sl393);
-cptr.stPtro(extcmdlist, 6744, do_move_west);
-cptr.stI32o(extcmdlist, 6752, 1408);
-cptr.stPtro(extcmdlist, 6760, null);
+cptr.stPtro(extcmdlist, 6720 + $ext_func_tab_ef_txt, __sl392);
+cptr.stPtro(extcmdlist, 6720 + $ext_func_tab_ef_desc, __sl393);
+cptr.stPtro(extcmdlist, 6720 + $ext_func_tab_ef_funct, do_move_west);
+cptr.stI32o(extcmdlist, 6720 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6720 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6768, 0);
-cptr.stPtro(extcmdlist, 6776, __sl394);
-cptr.stPtro(extcmdlist, 6784, __sl395);
-cptr.stPtro(extcmdlist, 6792, do_move_northwest);
-cptr.stI32o(extcmdlist, 6800, 1408);
-cptr.stPtro(extcmdlist, 6808, null);
+cptr.stPtro(extcmdlist, 6768 + $ext_func_tab_ef_txt, __sl394);
+cptr.stPtro(extcmdlist, 6768 + $ext_func_tab_ef_desc, __sl395);
+cptr.stPtro(extcmdlist, 6768 + $ext_func_tab_ef_funct, do_move_northwest);
+cptr.stI32o(extcmdlist, 6768 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6768 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6816, 0);
-cptr.stPtro(extcmdlist, 6824, __sl396);
-cptr.stPtro(extcmdlist, 6832, __sl397);
-cptr.stPtro(extcmdlist, 6840, do_move_north);
-cptr.stI32o(extcmdlist, 6848, 1408);
-cptr.stPtro(extcmdlist, 6856, null);
+cptr.stPtro(extcmdlist, 6816 + $ext_func_tab_ef_txt, __sl396);
+cptr.stPtro(extcmdlist, 6816 + $ext_func_tab_ef_desc, __sl397);
+cptr.stPtro(extcmdlist, 6816 + $ext_func_tab_ef_funct, do_move_north);
+cptr.stI32o(extcmdlist, 6816 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6816 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6864, 0);
-cptr.stPtro(extcmdlist, 6872, __sl398);
-cptr.stPtro(extcmdlist, 6880, __sl399);
-cptr.stPtro(extcmdlist, 6888, do_move_northeast);
-cptr.stI32o(extcmdlist, 6896, 1408);
-cptr.stPtro(extcmdlist, 6904, null);
+cptr.stPtro(extcmdlist, 6864 + $ext_func_tab_ef_txt, __sl398);
+cptr.stPtro(extcmdlist, 6864 + $ext_func_tab_ef_desc, __sl399);
+cptr.stPtro(extcmdlist, 6864 + $ext_func_tab_ef_funct, do_move_northeast);
+cptr.stI32o(extcmdlist, 6864 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6864 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6912, 0);
-cptr.stPtro(extcmdlist, 6920, __sl400);
-cptr.stPtro(extcmdlist, 6928, __sl401);
-cptr.stPtro(extcmdlist, 6936, do_move_east);
-cptr.stI32o(extcmdlist, 6944, 1408);
-cptr.stPtro(extcmdlist, 6952, null);
+cptr.stPtro(extcmdlist, 6912 + $ext_func_tab_ef_txt, __sl400);
+cptr.stPtro(extcmdlist, 6912 + $ext_func_tab_ef_desc, __sl401);
+cptr.stPtro(extcmdlist, 6912 + $ext_func_tab_ef_funct, do_move_east);
+cptr.stI32o(extcmdlist, 6912 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6912 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 6960, 0);
-cptr.stPtro(extcmdlist, 6968, __sl402);
-cptr.stPtro(extcmdlist, 6976, __sl403);
-cptr.stPtro(extcmdlist, 6984, do_move_southeast);
-cptr.stI32o(extcmdlist, 6992, 1408);
-cptr.stPtro(extcmdlist, 7000, null);
+cptr.stPtro(extcmdlist, 6960 + $ext_func_tab_ef_txt, __sl402);
+cptr.stPtro(extcmdlist, 6960 + $ext_func_tab_ef_desc, __sl403);
+cptr.stPtro(extcmdlist, 6960 + $ext_func_tab_ef_funct, do_move_southeast);
+cptr.stI32o(extcmdlist, 6960 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 6960 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7008, 0);
-cptr.stPtro(extcmdlist, 7016, __sl404);
-cptr.stPtro(extcmdlist, 7024, __sl405);
-cptr.stPtro(extcmdlist, 7032, do_move_south);
-cptr.stI32o(extcmdlist, 7040, 1408);
-cptr.stPtro(extcmdlist, 7048, null);
+cptr.stPtro(extcmdlist, 7008 + $ext_func_tab_ef_txt, __sl404);
+cptr.stPtro(extcmdlist, 7008 + $ext_func_tab_ef_desc, __sl405);
+cptr.stPtro(extcmdlist, 7008 + $ext_func_tab_ef_funct, do_move_south);
+cptr.stI32o(extcmdlist, 7008 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 7008 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7056, 0);
-cptr.stPtro(extcmdlist, 7064, __sl406);
-cptr.stPtro(extcmdlist, 7072, __sl407);
-cptr.stPtro(extcmdlist, 7080, do_move_southwest);
-cptr.stI32o(extcmdlist, 7088, 1408);
-cptr.stPtro(extcmdlist, 7096, null);
+cptr.stPtro(extcmdlist, 7056 + $ext_func_tab_ef_txt, __sl406);
+cptr.stPtro(extcmdlist, 7056 + $ext_func_tab_ef_desc, __sl407);
+cptr.stPtro(extcmdlist, 7056 + $ext_func_tab_ef_funct, do_move_southwest);
+cptr.stI32o(extcmdlist, 7056 + $ext_func_tab_flags, 1408);
+cptr.stPtro(extcmdlist, 7056 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7104, 0);
-cptr.stPtro(extcmdlist, 7112, __sl408);
-cptr.stPtro(extcmdlist, 7120, __sl409);
-cptr.stPtro(extcmdlist, 7128, do_rush_west);
-cptr.stI32o(extcmdlist, 7136, 1152);
-cptr.stPtro(extcmdlist, 7144, null);
+cptr.stPtro(extcmdlist, 7104 + $ext_func_tab_ef_txt, __sl408);
+cptr.stPtro(extcmdlist, 7104 + $ext_func_tab_ef_desc, __sl409);
+cptr.stPtro(extcmdlist, 7104 + $ext_func_tab_ef_funct, do_rush_west);
+cptr.stI32o(extcmdlist, 7104 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7104 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7152, 0);
-cptr.stPtro(extcmdlist, 7160, __sl410);
-cptr.stPtro(extcmdlist, 7168, __sl411);
-cptr.stPtro(extcmdlist, 7176, do_rush_northwest);
-cptr.stI32o(extcmdlist, 7184, 1152);
-cptr.stPtro(extcmdlist, 7192, null);
+cptr.stPtro(extcmdlist, 7152 + $ext_func_tab_ef_txt, __sl410);
+cptr.stPtro(extcmdlist, 7152 + $ext_func_tab_ef_desc, __sl411);
+cptr.stPtro(extcmdlist, 7152 + $ext_func_tab_ef_funct, do_rush_northwest);
+cptr.stI32o(extcmdlist, 7152 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7152 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7200, 0);
-cptr.stPtro(extcmdlist, 7208, __sl412);
-cptr.stPtro(extcmdlist, 7216, __sl413);
-cptr.stPtro(extcmdlist, 7224, do_rush_north);
-cptr.stI32o(extcmdlist, 7232, 1152);
-cptr.stPtro(extcmdlist, 7240, null);
+cptr.stPtro(extcmdlist, 7200 + $ext_func_tab_ef_txt, __sl412);
+cptr.stPtro(extcmdlist, 7200 + $ext_func_tab_ef_desc, __sl413);
+cptr.stPtro(extcmdlist, 7200 + $ext_func_tab_ef_funct, do_rush_north);
+cptr.stI32o(extcmdlist, 7200 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7200 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7248, 0);
-cptr.stPtro(extcmdlist, 7256, __sl414);
-cptr.stPtro(extcmdlist, 7264, __sl415);
-cptr.stPtro(extcmdlist, 7272, do_rush_northeast);
-cptr.stI32o(extcmdlist, 7280, 1152);
-cptr.stPtro(extcmdlist, 7288, null);
+cptr.stPtro(extcmdlist, 7248 + $ext_func_tab_ef_txt, __sl414);
+cptr.stPtro(extcmdlist, 7248 + $ext_func_tab_ef_desc, __sl415);
+cptr.stPtro(extcmdlist, 7248 + $ext_func_tab_ef_funct, do_rush_northeast);
+cptr.stI32o(extcmdlist, 7248 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7248 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7296, 0);
-cptr.stPtro(extcmdlist, 7304, __sl416);
-cptr.stPtro(extcmdlist, 7312, __sl417);
-cptr.stPtro(extcmdlist, 7320, do_rush_east);
-cptr.stI32o(extcmdlist, 7328, 1152);
-cptr.stPtro(extcmdlist, 7336, null);
+cptr.stPtro(extcmdlist, 7296 + $ext_func_tab_ef_txt, __sl416);
+cptr.stPtro(extcmdlist, 7296 + $ext_func_tab_ef_desc, __sl417);
+cptr.stPtro(extcmdlist, 7296 + $ext_func_tab_ef_funct, do_rush_east);
+cptr.stI32o(extcmdlist, 7296 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7296 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7344, 0);
-cptr.stPtro(extcmdlist, 7352, __sl418);
-cptr.stPtro(extcmdlist, 7360, __sl419);
-cptr.stPtro(extcmdlist, 7368, do_rush_southeast);
-cptr.stI32o(extcmdlist, 7376, 1152);
-cptr.stPtro(extcmdlist, 7384, null);
+cptr.stPtro(extcmdlist, 7344 + $ext_func_tab_ef_txt, __sl418);
+cptr.stPtro(extcmdlist, 7344 + $ext_func_tab_ef_desc, __sl419);
+cptr.stPtro(extcmdlist, 7344 + $ext_func_tab_ef_funct, do_rush_southeast);
+cptr.stI32o(extcmdlist, 7344 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7344 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7392, 0);
-cptr.stPtro(extcmdlist, 7400, __sl420);
-cptr.stPtro(extcmdlist, 7408, __sl421);
-cptr.stPtro(extcmdlist, 7416, do_rush_south);
-cptr.stI32o(extcmdlist, 7424, 1152);
-cptr.stPtro(extcmdlist, 7432, null);
+cptr.stPtro(extcmdlist, 7392 + $ext_func_tab_ef_txt, __sl420);
+cptr.stPtro(extcmdlist, 7392 + $ext_func_tab_ef_desc, __sl421);
+cptr.stPtro(extcmdlist, 7392 + $ext_func_tab_ef_funct, do_rush_south);
+cptr.stI32o(extcmdlist, 7392 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7392 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7440, 0);
-cptr.stPtro(extcmdlist, 7448, __sl422);
-cptr.stPtro(extcmdlist, 7456, __sl423);
-cptr.stPtro(extcmdlist, 7464, do_rush_southwest);
-cptr.stI32o(extcmdlist, 7472, 1152);
-cptr.stPtro(extcmdlist, 7480, null);
+cptr.stPtro(extcmdlist, 7440 + $ext_func_tab_ef_txt, __sl422);
+cptr.stPtro(extcmdlist, 7440 + $ext_func_tab_ef_desc, __sl423);
+cptr.stPtro(extcmdlist, 7440 + $ext_func_tab_ef_funct, do_rush_southwest);
+cptr.stI32o(extcmdlist, 7440 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7440 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7488, 0);
-cptr.stPtro(extcmdlist, 7496, __sl424);
-cptr.stPtro(extcmdlist, 7504, __sl425);
-cptr.stPtro(extcmdlist, 7512, do_run_west);
-cptr.stI32o(extcmdlist, 7520, 1152);
-cptr.stPtro(extcmdlist, 7528, null);
+cptr.stPtro(extcmdlist, 7488 + $ext_func_tab_ef_txt, __sl424);
+cptr.stPtro(extcmdlist, 7488 + $ext_func_tab_ef_desc, __sl425);
+cptr.stPtro(extcmdlist, 7488 + $ext_func_tab_ef_funct, do_run_west);
+cptr.stI32o(extcmdlist, 7488 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7488 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7536, 0);
-cptr.stPtro(extcmdlist, 7544, __sl426);
-cptr.stPtro(extcmdlist, 7552, __sl427);
-cptr.stPtro(extcmdlist, 7560, do_run_northwest);
-cptr.stI32o(extcmdlist, 7568, 1152);
-cptr.stPtro(extcmdlist, 7576, null);
+cptr.stPtro(extcmdlist, 7536 + $ext_func_tab_ef_txt, __sl426);
+cptr.stPtro(extcmdlist, 7536 + $ext_func_tab_ef_desc, __sl427);
+cptr.stPtro(extcmdlist, 7536 + $ext_func_tab_ef_funct, do_run_northwest);
+cptr.stI32o(extcmdlist, 7536 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7536 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7584, 0);
-cptr.stPtro(extcmdlist, 7592, __sl428);
-cptr.stPtro(extcmdlist, 7600, __sl429);
-cptr.stPtro(extcmdlist, 7608, do_run_north);
-cptr.stI32o(extcmdlist, 7616, 1152);
-cptr.stPtro(extcmdlist, 7624, null);
+cptr.stPtro(extcmdlist, 7584 + $ext_func_tab_ef_txt, __sl428);
+cptr.stPtro(extcmdlist, 7584 + $ext_func_tab_ef_desc, __sl429);
+cptr.stPtro(extcmdlist, 7584 + $ext_func_tab_ef_funct, do_run_north);
+cptr.stI32o(extcmdlist, 7584 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7584 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7632, 0);
-cptr.stPtro(extcmdlist, 7640, __sl430);
-cptr.stPtro(extcmdlist, 7648, __sl431);
-cptr.stPtro(extcmdlist, 7656, do_run_northeast);
-cptr.stI32o(extcmdlist, 7664, 1152);
-cptr.stPtro(extcmdlist, 7672, null);
+cptr.stPtro(extcmdlist, 7632 + $ext_func_tab_ef_txt, __sl430);
+cptr.stPtro(extcmdlist, 7632 + $ext_func_tab_ef_desc, __sl431);
+cptr.stPtro(extcmdlist, 7632 + $ext_func_tab_ef_funct, do_run_northeast);
+cptr.stI32o(extcmdlist, 7632 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7632 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7680, 0);
-cptr.stPtro(extcmdlist, 7688, __sl432);
-cptr.stPtro(extcmdlist, 7696, __sl433);
-cptr.stPtro(extcmdlist, 7704, do_run_east);
-cptr.stI32o(extcmdlist, 7712, 1152);
-cptr.stPtro(extcmdlist, 7720, null);
+cptr.stPtro(extcmdlist, 7680 + $ext_func_tab_ef_txt, __sl432);
+cptr.stPtro(extcmdlist, 7680 + $ext_func_tab_ef_desc, __sl433);
+cptr.stPtro(extcmdlist, 7680 + $ext_func_tab_ef_funct, do_run_east);
+cptr.stI32o(extcmdlist, 7680 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7680 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7728, 0);
-cptr.stPtro(extcmdlist, 7736, __sl434);
-cptr.stPtro(extcmdlist, 7744, __sl435);
-cptr.stPtro(extcmdlist, 7752, do_run_southeast);
-cptr.stI32o(extcmdlist, 7760, 1152);
-cptr.stPtro(extcmdlist, 7768, null);
+cptr.stPtro(extcmdlist, 7728 + $ext_func_tab_ef_txt, __sl434);
+cptr.stPtro(extcmdlist, 7728 + $ext_func_tab_ef_desc, __sl435);
+cptr.stPtro(extcmdlist, 7728 + $ext_func_tab_ef_funct, do_run_southeast);
+cptr.stI32o(extcmdlist, 7728 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7728 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7776, 0);
-cptr.stPtro(extcmdlist, 7784, __sl436);
-cptr.stPtro(extcmdlist, 7792, __sl437);
-cptr.stPtro(extcmdlist, 7800, do_run_south);
-cptr.stI32o(extcmdlist, 7808, 1152);
-cptr.stPtro(extcmdlist, 7816, null);
+cptr.stPtro(extcmdlist, 7776 + $ext_func_tab_ef_txt, __sl436);
+cptr.stPtro(extcmdlist, 7776 + $ext_func_tab_ef_desc, __sl437);
+cptr.stPtro(extcmdlist, 7776 + $ext_func_tab_ef_funct, do_run_south);
+cptr.stI32o(extcmdlist, 7776 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7776 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7824, 0);
-cptr.stPtro(extcmdlist, 7832, __sl438);
-cptr.stPtro(extcmdlist, 7840, __sl439);
-cptr.stPtro(extcmdlist, 7848, do_run_southwest);
-cptr.stI32o(extcmdlist, 7856, 1152);
-cptr.stPtro(extcmdlist, 7864, null);
+cptr.stPtro(extcmdlist, 7824 + $ext_func_tab_ef_txt, __sl438);
+cptr.stPtro(extcmdlist, 7824 + $ext_func_tab_ef_desc, __sl439);
+cptr.stPtro(extcmdlist, 7824 + $ext_func_tab_ef_funct, do_run_southwest);
+cptr.stI32o(extcmdlist, 7824 + $ext_func_tab_flags, 1152);
+cptr.stPtro(extcmdlist, 7824 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7872, 0);
-cptr.stPtro(extcmdlist, 7880, __sl440);
-cptr.stPtro(extcmdlist, 7888, null);
-cptr.stPtro(extcmdlist, 7896, doclicklook);
-cptr.stI32o(extcmdlist, 7904, 2112);
-cptr.stPtro(extcmdlist, 7912, null);
+cptr.stPtro(extcmdlist, 7872 + $ext_func_tab_ef_txt, __sl440);
+cptr.stPtro(extcmdlist, 7872 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 7872 + $ext_func_tab_ef_funct, doclicklook);
+cptr.stI32o(extcmdlist, 7872 + $ext_func_tab_flags, 2112);
+cptr.stPtro(extcmdlist, 7872 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7920, 0);
-cptr.stPtro(extcmdlist, 7928, __sl441);
-cptr.stPtro(extcmdlist, 7936, null);
-cptr.stPtro(extcmdlist, 7944, domouseaction);
-cptr.stI32o(extcmdlist, 7952, 2112);
-cptr.stPtro(extcmdlist, 7960, null);
+cptr.stPtro(extcmdlist, 7920 + $ext_func_tab_ef_txt, __sl441);
+cptr.stPtro(extcmdlist, 7920 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 7920 + $ext_func_tab_ef_funct, domouseaction);
+cptr.stI32o(extcmdlist, 7920 + $ext_func_tab_flags, 2112);
+cptr.stPtro(extcmdlist, 7920 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 7968, 0);
-cptr.stPtro(extcmdlist, 7976, __sl442);
-cptr.stPtro(extcmdlist, 7984, null);
-cptr.stPtro(extcmdlist, 7992, adjust_split);
-cptr.stI32o(extcmdlist, 8000, NHM.INTERNALCMD);
-cptr.stPtro(extcmdlist, 8008, null);
+cptr.stPtro(extcmdlist, 7968 + $ext_func_tab_ef_txt, __sl442);
+cptr.stPtro(extcmdlist, 7968 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 7968 + $ext_func_tab_ef_funct, adjust_split);
+cptr.stI32o(extcmdlist, 7968 + $ext_func_tab_flags, NHM.INTERNALCMD);
+cptr.stPtro(extcmdlist, 7968 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 8016, 0);
-cptr.stPtro(extcmdlist, 8024, __sl443);
-cptr.stPtro(extcmdlist, 8032, null);
-cptr.stPtro(extcmdlist, 8040, dip_into);
-cptr.stI32o(extcmdlist, 8048, NHM.INTERNALCMD);
-cptr.stPtro(extcmdlist, 8056, null);
+cptr.stPtro(extcmdlist, 8016 + $ext_func_tab_ef_txt, __sl443);
+cptr.stPtro(extcmdlist, 8016 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 8016 + $ext_func_tab_ef_funct, dip_into);
+cptr.stI32o(extcmdlist, 8016 + $ext_func_tab_flags, NHM.INTERNALCMD);
+cptr.stPtro(extcmdlist, 8016 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 8064, 0);
-cptr.stPtro(extcmdlist, 8072, __sl444);
-cptr.stPtro(extcmdlist, 8080, null);
-cptr.stPtro(extcmdlist, 8088, ia_dotakeoff);
-cptr.stI32o(extcmdlist, 8096, NHM.INTERNALCMD);
-cptr.stPtro(extcmdlist, 8104, null);
+cptr.stPtro(extcmdlist, 8064 + $ext_func_tab_ef_txt, __sl444);
+cptr.stPtro(extcmdlist, 8064 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 8064 + $ext_func_tab_ef_funct, ia_dotakeoff);
+cptr.stI32o(extcmdlist, 8064 + $ext_func_tab_flags, NHM.INTERNALCMD);
+cptr.stPtro(extcmdlist, 8064 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 8112, 0);
-cptr.stPtro(extcmdlist, 8120, __sl445);
-cptr.stPtro(extcmdlist, 8128, null);
-cptr.stPtro(extcmdlist, 8136, remarm_swapwep);
-cptr.stI32o(extcmdlist, 8144, NHM.INTERNALCMD);
-cptr.stPtro(extcmdlist, 8152, null);
+cptr.stPtro(extcmdlist, 8112 + $ext_func_tab_ef_txt, __sl445);
+cptr.stPtro(extcmdlist, 8112 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 8112 + $ext_func_tab_ef_funct, remarm_swapwep);
+cptr.stI32o(extcmdlist, 8112 + $ext_func_tab_flags, NHM.INTERNALCMD);
+cptr.stPtro(extcmdlist, 8112 + $ext_func_tab_f_text, null);
 cptr.st1o(extcmdlist, 8160, 0);
-cptr.stPtro(extcmdlist, 8168, null);
-cptr.stPtro(extcmdlist, 8176, null);
-cptr.stPtro(extcmdlist, 8184, donull);
-cptr.stI32o(extcmdlist, 8192, 0);
-cptr.stPtro(extcmdlist, 8200, null);
+cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_ef_txt, null);
+cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_ef_desc, null);
+cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_ef_funct, donull);
+cptr.stI32o(extcmdlist, 8160 + $ext_func_tab_flags, 0);
+cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_f_text, null);
 
 /** C ref: cmd.c:2070 — int (*[10][3])(void) */
 const move_funcs = (function () { const flat = new Uint8Array(10 * 3 * 8); const a = []; for (let r = 0; r < 10; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
@@ -2987,20 +3100,20 @@ let extcmdlist_length = (171 - 1) | 0;
 
 /** C ref: cmd.c:2101 — @param {CInt} i @returns {CPtr} */
 export function extcmds_getentry(i) {
-    if (i < 0 || i > extcmdlist_length ? 1 : 0)
+    if (i < 0 || i > extcmdlist_length)
         return null;
     return cptr.add(extcmdlist, i, 48);
 }
 
 /** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr} */
 function cmdbind_get(key) {
-    let bind = cptr.ldPtro(gc, 240);
+    let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     if (!key)
         return null;
     while (bind) {
         if (cptr.ld1u(bind) == key)
             return bind;
-        bind = cptr.ldPtro(bind, 24);
+        bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
     return bind;
 }
@@ -3010,58 +3123,58 @@ function cmdbind_add(key, extcmd, user) {
     let bind = cmdbind_get(key);
     if (!key)
         return;
-    if (!extcmd && bind ? 1 : 0) {
+    if (!extcmd && bind) {
         cmdbind_remove(key);
         return;
     }
     if (bind) {
-        cptr.stPtro(bind, 16, extcmd);
-        cptr.st1o(bind, 1, user);
-        if (cptr.ldPtro(bind, 8)) {
-            cptr.free(cptr.ldPtro(bind, 8));
-            cptr.stPtro(bind, 8, null);
+        cptr.stPtro(bind, $Cmd_bind_cmd, extcmd);
+        cptr.st1o(bind, $Cmd_bind_userbind, user);
+        if (cptr.ldPtro(bind, $Cmd_bind_param)) {
+            cptr.free(cptr.ldPtro(bind, $Cmd_bind_param));
+            cptr.stPtro(bind, $Cmd_bind_param, null);
         }
         return;
     } else {
         bind = alloc(32);
         cptr.st1(bind, key);
-        cptr.st1o(bind, 1, user);
-        cptr.stPtro(bind, 8, null);
-        cptr.stPtro(bind, 16, extcmd);
-        cptr.stPtro(bind, 24, cptr.ldPtro(gc, 240));
-        cptr.stPtro(gc, 240, bind);
+        cptr.st1o(bind, $Cmd_bind_userbind, user);
+        cptr.stPtro(bind, $Cmd_bind_param, null);
+        cptr.stPtro(bind, $Cmd_bind_cmd, extcmd);
+        cptr.stPtro(bind, $Cmd_bind_next, cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds));
+        cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds, bind);
     }
 }
 
 /** C ref: cmd.c:2158 — @param {CUInt} key */
 function cmdbind_remove(key) {
-    let bind = cptr.ldPtro(gc, 240);
+    let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let prev = null;
     while (bind) {
         if (cptr.ld1u(bind) == key) {
             if (prev)
-                cptr.stPtro(prev, 24, cptr.ldPtro(bind, 24));
+                cptr.stPtro(prev, $Cmd_bind_next, cptr.ldPtro(bind, $Cmd_bind_next));
             else
-                cptr.stPtro(gc, 240, cptr.ldPtro(bind, 24));
-            if (cptr.ldPtro(bind, 8))
-                cptr.free(cptr.ldPtro(bind, 8));
+                cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds, cptr.ldPtro(bind, $Cmd_bind_next));
+            if (cptr.ldPtro(bind, $Cmd_bind_param))
+                cptr.free(cptr.ldPtro(bind, $Cmd_bind_param));
             cptr.free(bind);
             return;
         }
         prev = bind;
-        bind = cptr.ldPtro(bind, 24);
+        bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
 }
 
 /** C ref: cmd.c:2180 */
 export function cmdbind_freeall() {
     let next;
-    while (cptr.ldPtro(gc, 240)) {
-        next = cptr.ldPtro(cptr.ldPtro(gc, 240), 24);
-        if (cptr.ldPtro(cptr.ldPtro(gc, 240), 8))
-            cptr.free(cptr.ldPtro(cptr.ldPtro(gc, 240), 8));
-        cptr.free(cptr.ldPtro(gc, 240));
-        cptr.stPtro(gc, 240, next);
+    while (cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds)) {
+        next = cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_next);
+        if (cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_param))
+            cptr.free(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_param));
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds));
+        cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds, next);
     }
 }
 
@@ -3069,7 +3182,7 @@ export function cmdbind_freeall() {
 function cmdbind_swapkeys(key1, key2) {
     let bind1 = cmdbind_get(key1);
     let bind2 = cmdbind_get(key2);
-    if (bind1 && bind2 ? 1 : 0) {
+    if (bind1 && bind2) {
         cptr.st1(bind1, key2);
         cptr.st1(bind2, key1);
     }
@@ -3077,20 +3190,20 @@ function cmdbind_swapkeys(key1, key2) {
 
 /** C ref: cmd.c:2208 @returns {CInt} */
 export function count_bind_keys() {
-    let bind = cptr.ldPtro(gc, 240);
+    let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let i;
     let nbinds = 0;
     let keys = new Uint8Array(256);
     void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
-        if ((cptr.ld1so(bind, 1) && cptr.ldPtro(bind, 16) ? 1 : 0) && cptr.ld1u(cptr.ldPtro(bind, 16)) != cptr.ld1u(bind) ? 1 : 0) {
+        if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
             nbinds++;
         }
-        bind = cptr.ldPtro(bind, 24);
+        bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
     for (i = 0; i < extcmdlist_length; i++)
-        if (cptr.ld1uo(extcmdlist, i, 48) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, 48), 1) ? 1 : 0)
+        if (cptr.ld1uo(extcmdlist, i, 48) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, 48), 1))
             nbinds++;
     return nbinds;
 }
@@ -3101,38 +3214,38 @@ export function get_changed_key_binds(sbuf) {
     let i;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(128);
-    let bind = cptr.ldPtro(gc, 240);
+    let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let keys = new Uint8Array(256);
     void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
     if (!sbuf)
-        win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT);
+        win = create_nhwindow()(NHM.NHW_TEXT);
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
-        if ((cptr.ld1so(bind, 1) && cptr.ldPtro(bind, 16) ? 1 : 0) && cptr.ld1u(cptr.ldPtro(bind, 16)) != cptr.ld1u(bind) ? 1 : 0) {
-            if (((cptr.ldI32o(cptr.ldPtro(bind, 16), 32) & NHM.CMD_PARAM) >>> 0) != 0)
-                void cptr.sprintf(cptr.decay(buf), __sl448, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, 16), 8), cptr.ldPtro(bind, 8), sbuf ? __sl449 : __sl0);
+        if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
+            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0)
+                void cptr.sprintf(cptr.decay(buf), __sl448, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(bind, $Cmd_bind_param), sbuf ? __sl449 : __sl0);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl450, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, 16), 8), sbuf ? __sl449 : __sl0);
+                void cptr.sprintf(cptr.decay(buf), __sl450, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), sbuf ? __sl449 : __sl0);
             if (sbuf)
                 strbuf_append(sbuf, cptr.decay(buf));
             else
-                (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
         }
-        bind = cptr.ldPtro(bind, 24);
+        bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
     for (i = 0; i < extcmdlist_length; i++) {
         let ec = cptr.add(extcmdlist, i, 48);
-        if (cptr.ld1u(ec) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1u(ec), 1) ? 1 : 0) {
+        if (cptr.ld1u(ec) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1u(ec), 1)) {
             void cptr.sprintf(cptr.decay(buf), __sl451, key2txt(cptr.ld1u(ec), cptr.decay(buf2)), sbuf ? __sl449 : __sl0);
             if (sbuf)
                 strbuf_append(sbuf, cptr.decay(buf));
             else
-                (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+                putstr()(win, 0, cptr.decay(buf));
         }
     }
     if (!sbuf) {
-        (cptr.ldPtro(windowprocs, 120))(win, 1);
-        (cptr.ldPtro(windowprocs, 128))(win);
+        display_nhwindow()(win, 1);
+        destroy_nhwindow()(win);
     }
 }
 
@@ -3151,16 +3264,16 @@ function handler_rebind_keys_add(keyfirst) {
     if (keyfirst) {
         pline(__sl452);
         key = uchar(pgetchar());
-        if (!key || key == 27 ? 1 : 0)
+        if (!key || key == 27)
             return;
     }
-    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(win, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    win = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(win, 0n);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (key) {
         let bind = cmdbind_get(key);
-        if (bind && cptr.ldPtro(bind, 16) ? 1 : 0) {
-            void cptr.sprintf(cptr.decay(buf), __sl453, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, 16), 8));
+        if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd)) {
+            void cptr.sprintf(cptr.decay(buf), __sl453, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt));
         } else {
             void cptr.sprintf(cptr.decay(buf), __sl454, key2txt(key, cptr.decay(buf2)));
         }
@@ -3172,19 +3285,19 @@ function handler_rebind_keys_add(keyfirst) {
     add_menu_str(win, __sl0);
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, 48);
-        if (((cptr.ldI32o(ec, 32) & 1104) >>> 0) != 0)
+        if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 1104) >>> 0) != 0)
             continue;
         cptr.stI32(any, ((i + 1) | 0));
-        void cptr.sprintf(cptr.decay(buf), __sl456, cptr.ldPtro(ec, 8), cptr.ldPtro(ec, 16));
+        void cptr.sprintf(cptr.decay(buf), __sl456, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
         add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
     if (key)
         void cptr.sprintf(cptr.decay(buf), __sl457, key2txt(key, cptr.decay(buf2)));
     else
         void cptr.sprintf(cptr.decay(buf), __sl458);
-    (cptr.ldPtro(windowprocs, 184))(win, cptr.decay(buf));
+    end_menu()(win, cptr.decay(buf));
     npick = select_menu(win, NHM.PICK_ONE, picks);
-    (cptr.ldPtro(windowprocs, 128))(win);
+    destroy_nhwindow()(win);
     if (npick > 0) {
         let prevcmd;
         let cmdstr = new Uint8Array(256);
@@ -3197,30 +3310,30 @@ function handler_rebind_keys_add(keyfirst) {
                 break __lbl_bindit;
             } else {
                 ec = cptr.add(extcmdlist, (i - 1) | 0, 48);
-                if (((cptr.ldI32o(ec, 32) & NHM.CMD_PARAM) >>> 0) != 0) {
+                if (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0) {
                     let parambuf = new Uint8Array(256);
                     let querybuf = new Uint8Array(256);
                     cptr.st1o(cptr.decay(parambuf), 0, 0, 1);
-                    void cptr.sprintf(cptr.decay(querybuf), __sl460, cptr.ldPtro(ec, 8));
+                    void cptr.sprintf(cptr.decay(querybuf), __sl460, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
                     getlin(cptr.decay(querybuf), cptr.decay(parambuf));
                     void mungspaces(cptr.decay(parambuf));
-                    nh_snprintf(__sl461, 2376, cptr.decay(cmdstr), 255n, __sl462, cptr.ldPtro(ec, 8), cptr.decay(parambuf));
+                    nh_snprintf(__sl461, 2376, cptr.decay(cmdstr), 255n, __sl462, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.decay(parambuf));
                     cptr.st1o(cptr.decay(cmdstr), 255, 0, 1);
                 } else {
-                    void cptr.strcat(cptr.decay(cmdstr), cptr.ldPtro(ec, 8));
+                    void cptr.strcat(cptr.decay(cmdstr), cptr.ldPtro(ec, $ext_func_tab_ef_txt));
                 }
             }
         }
         if (!key) {
             pline(__sl452);
             key = uchar(pgetchar());
-            if (!key || key == 27 ? 1 : 0)
+            if (!key || key == 27)
                 return;
         }
         prevcmd = cmdbind_get(key);
         if (bind_key(key, cptr.decay(cmdstr), 1)) {
-            if (prevcmd && !cptr.eq(cptr.ldPtro(prevcmd, 16), ec) ? 1 : 0) {
-                pline(__sl463, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(prevcmd, 16), 8), cptr.decay(cmdstr));
+            if (prevcmd && !cptr.eq(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), ec)) {
+                pline(__sl463, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.decay(cmdstr));
             } else if (!prevcmd) {
                 pline(__sl464, key2txt(key, cptr.decay(buf2)), cptr.decay(cmdstr));
             }
@@ -3239,9 +3352,9 @@ export function handler_rebind_keys() {
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
     __lbl_redo_rebind: while (true) {
-        win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(win, 0n);
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        win = create_nhwindow()(NHM.NHW_MENU);
+        start_menu()(win, 0n);
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, 1);
         add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl466, NHM.MENU_ITEMFLAGS_NONE);
         cptr.stI32(any, 2);
@@ -3250,13 +3363,13 @@ export function handler_rebind_keys() {
             cptr.stI32(any, 3);
             add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl468, NHM.MENU_ITEMFLAGS_NONE);
         }
-        (cptr.ldPtro(windowprocs, 184))(win, __sl469);
+        end_menu()(win, __sl469);
         npick = select_menu(win, NHM.PICK_ONE, picks);
-        (cptr.ldPtro(windowprocs, 128))(win);
+        destroy_nhwindow()(win);
         if (npick > 0) {
             i = cptr.ldI32(picks.v);
             cptr.free(picks.v);
-            if (i == 1 || i == 2 ? 1 : 0) {
+            if (i == 1 || i == 2) {
                 handler_rebind_keys_add(schar((i == 1)));
             } else if (i == 3) {
                 get_changed_key_binds(null);
@@ -3277,31 +3390,31 @@ export function handler_change_autocompletions() {
     let clr = NHM.NO_COLOR;
     let ec;
     let buf = new Uint8Array(256);
-    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(win, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    win = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(win, 0n);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, 48);
-        if (((cptr.ldI32o(ec, 32) & 80) >>> 0) != 0)
+        if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
             continue;
-        if (cptr.strlen(cptr.ldPtro(ec, 8)) < 2n)
+        if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
             continue;
         cptr.stI32(any, ((i + 1) | 0));
-        void cptr.sprintf(cptr.decay(buf), __sl470, ((cptr.ldI32o(ec, 32) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32, cptr.ldPtro(ec, 8), cptr.ldPtro(ec, 16));
-        add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), ((cptr.ldI32o(ec, 32) & NHM.AUTOCOMPLETE) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        void cptr.sprintf(cptr.decay(buf), __sl470, ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
+        add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(win, __sl471);
+    end_menu()(win, __sl471);
     n = select_menu(win, NHM.PICK_ANY, picks);
     if (n >= 0) {
         let j;
         for (i = 0; i < extcmdlist_length; i++) {
             let setit = 0;
             ec = cptr.add(extcmdlist, i, 48);
-            if (((cptr.ldI32o(ec, 32) & 80) >>> 0) != 0)
+            if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
                 continue;
-            if (cptr.strlen(cptr.ldPtro(ec, 8)) < 2n)
+            if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), __sl472, cptr.ldPtro(ec, 8));
+            void cptr.sprintf(cptr.decay(buf), __sl472, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
             for (j = 0; j < n; ++j) {
                 if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32o(picks.v, j, 24) - 1) | 0), 48))) {
                     parseautocomplete(cptr.decay(buf), 1);
@@ -3316,7 +3429,7 @@ export function handler_change_autocompletions() {
         if (n > 0)
             cptr.free(picks.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(win);
+    destroy_nhwindow()(win);
 }
 
 const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
@@ -3330,23 +3443,23 @@ export function extcmds_match(findstr, ecmflags, matchlist) {
     let ignoreac = schar(((ecmflags & NHM.ECM_IGNOREAC) != 0));
     let exactmatch = schar(((ecmflags & NHM.ECM_EXACTMATCH) != 0));
     let no1charcmd = schar(((ecmflags & NHM.ECM_NO1CHARCMD) != 0));
-    for (i = 0; cptr.ldPtro2(extcmdlist, i, 48, 8); i++) {
-        if ((cptr.ldI32o2(extcmdlist, i, 48, 32) & 80) >>> 0)
+    for (i = 0; cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt); i++) {
+        if ((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & 80) >>> 0)
             continue;
-        if (!cptr.ld1so(flags, 10) && ((cptr.ldI32o2(extcmdlist, i, 48, 32) & NHM.WIZMODECMD) >>> 0) ? 1 : 0)
+        if (!wizard() && ((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
             continue;
-        if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, 48, 32) & NHM.AUTOCOMPLETE) >>> 0) ? 1 : 0)
+        if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0))
             continue;
-        if (no1charcmd && (cptr.strlen(cptr.ldPtro2(extcmdlist, i, 48, 8)) == 1n) ? 1 : 0)
+        if (no1charcmd && (cptr.strlen(cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt)) == 1n))
             continue;
         if (!findstr) {
             cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
         } else if (exactmatch) {
-            if (!strncmpi((findstr), (cptr.ldPtro2(extcmdlist, i, 48, 8)), -1)) {
+            if (!strncmpi((findstr), (cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt)), -1)) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         } else {
-            if (!strncmpi(findstr, cptr.ldPtro2(extcmdlist, i, 48, 8), fslen)) {
+            if (!strncmpi(findstr, cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt), fslen)) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         }
@@ -3374,27 +3487,27 @@ export function key2extcmddesc(key) {
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl252);
     else if (movecmd(schar((k = key)), NHC.MV_RUN))
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl250);
-    if (digit(schar(key)) || (cptr.ld1so(gc, 220) && digit(schar((127 & (key)))) ? 1 : 0) ? 1 : 0) {
+    if (digit(schar(key)) || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) && digit(schar((127 & (key)))))) {
         cptr.st1o(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 0, 1);
-        if (!cptr.ld1so(gc, 220))
+        if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl475);
-        else if (key == 53 || key == M_5 ? 1 : 0)
-            void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl476, (!!cptr.ld1so(gc, 221) ^ (key == M_5)) ? __sl250 : __sl252);
-        else if (key == 48 || (cptr.ld1so(gc, 221) && key == M_0 ? 1 : 0) ? 1 : 0)
+        else if (key == 53 || key == M_5)
+            void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl476, (!!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ^ (key == M_5)) ? __sl250 : __sl252);
+        else if (key == 48 || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) && key == M_0))
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl477);
         if (cptr.ld1s(cptr.decay(__static_key2extcmddesc_key2cmdbuf)))
             return cptr.decay(__static_key2extcmddesc_key2cmdbuf);
     }
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
-        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, 138) ? 1 : 0)
+        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
             continue;
         j = cptr.ldI32o(misc_keys, i, 24);
-        if (key == uchar(cptr.ld1so2(gc, j, 1, 264)))
+        if (key == uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys)))
             return cptr.ldPtro2(misc_keys, i, 24, 8);
     }
-    if (((cmdbind = cmdbind_get(key)) !== null && cptr.ldPtro(cmdbind, 16) ? 1 : 0) && (txt = cptr.ldPtro(cptr.ldPtro(cmdbind, 16), 8)) !== null ? 1 : 0) {
-        void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl478, cptr.ldPtro(cptr.ldPtro(cmdbind, 16), 16), txt);
-        if (!strncmpi(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl479, 7) && !strncmpi((txt), (__sl242), -1) ? 1 : 0)
+    if ((cmdbind = cmdbind_get(key)) !== null && cptr.ldPtro(cmdbind, $Cmd_bind_cmd) && (txt = cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_txt)) !== null) {
+        void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl478, cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_desc), txt);
+        if (!strncmpi(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl479, 7) && !strncmpi((txt), (__sl242), -1))
             void strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl479, __sl480);
         return strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl481, __sl0);
     }
@@ -3404,21 +3517,21 @@ export function key2extcmddesc(key) {
 /** C ref: cmd.c:2624 — @param {CInt} btn @param {CPtr} command @returns {CInt} */
 export function bind_mousebtn(btn, command) {
     let extcmd;
-    if (btn < 1 || btn > NHM.NUM_MOUSE_BUTTONS ? 1 : 0) {
+    if (btn < 1 || btn > NHM.NUM_MOUSE_BUTTONS) {
         config_error_add(__sl482, NHM.NUM_MOUSE_BUTTONS);
         return 0;
     }
     btn--;
     if (!strncmpi((command), (__sl459), -1)) {
-        cptr.stPtro2(gc, btn, 8, 248, null);
+        cptr.stPtro2(gc, btn, 8, $instance_globals_c_Cmd + $cmd_mousebtn, null);
         return 1;
     }
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48)) {
-        if (strncmpi((command), (cptr.ldPtro(extcmd, 8)), -1))
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+        if (strncmpi((command), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1))
             continue;
-        if (!((cptr.ldI32o(extcmd, 32) & NHM.MOUSECMD) >>> 0))
+        if (!((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.MOUSECMD) >>> 0))
             continue;
-        cptr.stPtro2(gc, btn, 8, 248, extcmd);
+        cptr.stPtro2(gc, btn, 8, $instance_globals_c_Cmd + $cmd_mousebtn, extcmd);
         return 1;
     }
     return 0;
@@ -3438,18 +3551,18 @@ export function bind_key(key, command, user) {
     len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
     buf = alloc(Number(BigInt.asUintN(32, len)));
     void __builtin___strncpy_chk(buf, command, BigInt.asUintN(64, len), __builtin_object_size(buf, 1));
-    if (((p = cptr.strchr(buf, 40)) !== null && (lastp = cptr.strrchr(buf, 41)) !== null ? 1 : 0) && (cptr.cmp(lastp, p) > 0) ? 1 : 0) {
+    if ((p = cptr.strchr(buf, 40)) !== null && (lastp = cptr.strrchr(buf, 41)) !== null && (cptr.cmp(lastp, p) > 0)) {
         cptr.st1(p, 0);
         cptr.st1(lastp, 0);
         p = cptr.add(p, 1);
     }
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48)) {
-        if (strncmpi((buf), (cptr.ldPtro(extcmd, 8)), -1))
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+        if (strncmpi((buf), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1))
             continue;
-        if (((cptr.ldI32o(extcmd, 32) & NHM.INTERNALCMD) >>> 0) != 0)
+        if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.INTERNALCMD) >>> 0) != 0)
             continue;
         cmdbind_add(key, extcmd, user);
-        if (((cptr.ldI32o(extcmd, 32) & NHM.CMD_PARAM) >>> 0) != 0) {
+        if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0) {
             if (!p) {
                 config_error_add(__sl483, buf);
             } else {
@@ -3458,12 +3571,12 @@ export function bind_key(key, command, user) {
                 if (maxlen <= 1) {
                     config_error_add(__sl484);
                 } else {
-                    cptr.stPtro(bind, 8, alloc(maxlen >>> 0));
-                    void __builtin___strncpy_chk(cptr.ldPtro(bind, 8), p, BigInt.asUintN(64, BigInt(maxlen)), __builtin_object_size(cptr.ldPtro(bind, 8), 1));
-                    cptr.st1o(cptr.ldPtro(bind, 8), (maxlen - 1) | 0, 0);
+                    cptr.stPtro(bind, $Cmd_bind_param, alloc(maxlen >>> 0));
+                    void __builtin___strncpy_chk(cptr.ldPtro(bind, $Cmd_bind_param), p, BigInt.asUintN(64, BigInt(maxlen)), __builtin_object_size(cptr.ldPtro(bind, $Cmd_bind_param), 1));
+                    cptr.st1o(cptr.ldPtro(bind, $Cmd_bind_param), (maxlen - 1) | 0, 0);
                 }
             }
-        } else if (p && cptr.strlen(p) > 0n ? 1 : 0)
+        } else if (p && cptr.strlen(p) > 0n)
             config_error_add(__sl485, buf);
         cptr.free(buf);
         return 1;
@@ -3475,10 +3588,10 @@ export function bind_key(key, command, user) {
 /** C ref: cmd.c:2732 — @param {CUInt} key @param {CPtr} fn @returns {CInt} */
 function bind_key_fn(key, fn) {
     let extcmd;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48)) {
-        if (cptr.ldPtro(extcmd, 24) !== fn)
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+        if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) !== fn)
             continue;
-        if (((cptr.ldI32o(extcmd, 32) & NHM.INTERNALCMD) >>> 0) != 0)
+        if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.INTERNALCMD) >>> 0) != 0)
             continue;
         cmdbind_add(key, extcmd, 0);
         return 1;
@@ -3489,7 +3602,7 @@ function bind_key_fn(key, fn) {
 /** C ref: cmd.c:2750 */
 function commands_init() {
     let extcmd;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ld1u(extcmd))
             cmdbind_add(cptr.ld1u(extcmd), extcmd, 0);
     void bind_mousebtn(1, __sl297);
@@ -3517,7 +3630,7 @@ function keylist_func_has_key(extcmd, skip_keys_used) {
     for (i = 0; i < 256; ++i) {
         if (cptr.ld1so(skip_keys_used, i))
             continue;
-        if (((bind = cmdbind_get(uchar(i))) !== null) && (cptr.eq(cptr.ldPtro(bind, 16), extcmd)) ? 1 : 0)
+        if (((bind = cmdbind_get(uchar(i))) !== null) && (cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), extcmd)))
             return 1;
     }
     return 0;
@@ -3537,26 +3650,26 @@ function keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
         cptr.st1o(cptr.decay(keys_already_used), i, cptr.ld1so(keys_used, i), 1);
         if (cptr.ld1so(keys_used, i))
             continue;
-        if (key == 32 && !cptr.ld1so(flags, 35) ? 1 : 0)
+        if (key == 32 && !cptr.ld1so(flags, $flag_rest_on_space))
             continue;
         bind = cmdbind_get(key);
-        if (bind && cptr.ldPtro(bind, 16) !== null ? 1 : 0) {
-            if ((incl_flags && !((cptr.ldI32o(cptr.ldPtro(bind, 16), 32) & incl_flags >>> 0) >>> 0) ? 1 : 0) || (excl_flags && ((cptr.ldI32o(cptr.ldPtro(bind, 16), 32) & excl_flags >>> 0) >>> 0) ? 1 : 0) ? 1 : 0)
+        if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd) !== null) {
+            if ((incl_flags && !((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) || (excl_flags && ((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
                 continue;
             if (docount) {
                 count++;
                 continue;
             }
-            if (((cptr.ldI32o(cptr.ldPtro(bind, 16), 32) & NHM.CMD_PARAM) >>> 0) != 0)
-                void cptr.sprintf(cptr.decay(buf), __sl486, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, 16), 8), cptr.ldPtro(cptr.ldPtro(bind, 16), 16), cptr.ldPtro(bind, 8));
+            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0)
+                void cptr.sprintf(cptr.decay(buf), __sl486, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc), cptr.ldPtro(bind, $Cmd_bind_param));
             else
-                void cptr.sprintf(cptr.decay(buf), __sl487, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, 16), 8), cptr.ldPtro(cptr.ldPtro(bind, 16), 16));
-            (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+                void cptr.sprintf(cptr.decay(buf), __sl487, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc));
+            putstr()(datawin, 0, cptr.decay(buf));
             cptr.st1o(keys_used, i, 1);
         }
     }
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48)) {
-        if ((incl_flags && !((cptr.ldI32o(extcmd, 32) & incl_flags >>> 0) >>> 0) ? 1 : 0) || (excl_flags && ((cptr.ldI32o(extcmd, 32) & excl_flags >>> 0) >>> 0) ? 1 : 0) ? 1 : 0)
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+        if ((incl_flags && !((cptr.ldI32o(extcmd, $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) || (excl_flags && ((cptr.ldI32o(extcmd, $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
             continue;
         if (keylist_func_has_key(extcmd, cptr.decay(keys_already_used)))
             continue;
@@ -3564,8 +3677,8 @@ function keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             count++;
             continue;
         }
-        void cptr.sprintf(cptr.decay(buf), __sl488, cptr.ldPtro(extcmd, 8), cptr.ldPtro(extcmd, 16));
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+        void cptr.sprintf(cptr.decay(buf), __sl488, cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), cptr.ldPtro(extcmd, $ext_func_tab_ef_desc));
+        putstr()(datawin, 0, cptr.decay(buf));
     }
     return count;
 }
@@ -3590,98 +3703,98 @@ export function dokeylist() {
     void cptr.memcpy(cptr.decay(mov_seen), cptr.decay(keys_used), 256n);
     spkey_gap = 0;
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
-        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, 138) ? 1 : 0)
+        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
             continue;
         j = cptr.ldI32o(misc_keys, i, 24);
-        key = uchar(cptr.ld1so2(gc, j, 1, 264));
-        if ((key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) ? 1 : 0) && !cptr.ldI32o(pfx_seen, key, 4) ? 1 : 0) {
+        key = uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys));
+        if (key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) && !cptr.ldI32o(pfx_seen, key, 4)) {
             cptr.st1o(cptr.decay(keys_used), key, 1, 1);
             cptr.stI32o(pfx_seen, key, j, 4);
         } else
             spkey_gap = 1;
     }
-    datawin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
+    datawin = create_nhwindow()(NHM.NHW_TEXT);
+    putstr()(datawin, 0, __sl0);
     void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl490);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
-        if (spkey_gap || !keylist_func_has_key(extcmd, cptr.decay(keys_used)) ? 1 : 0) {
+    putstr()(datawin, 0, cptr.decay(buf));
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+        if (spkey_gap || !keylist_func_has_key(extcmd, cptr.decay(keys_used))) {
             void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl491);
-            (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+            putstr()(datawin, 0, cptr.decay(buf));
             break;
         }
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl492);
+    putstr()(datawin, 0, __sl0);
+    putstr()(datawin, 0, __sl492);
     show_direction_keys(datawin, 46, 0);
-    if (!cptr.ld1so(iflags, 138)) {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl493);
+    if (!cptr.ld1so(iflags, $instance_flags_num_pad)) {
+        putstr()(datawin, 0, __sl0);
+        putstr()(datawin, 0, __sl493);
         void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl494);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+        putstr()(datawin, 0, cptr.decay(buf));
         void cptr.strcpy(cptr.decay(buf), __sl495);
     } else {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
+        putstr()(datawin, 0, __sl0);
         void cptr.strcpy(cptr.decay(buf), __sl496);
     }
     void cptr.strcat(cptr.decay(buf), __sl497);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+    putstr()(datawin, 0, cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __sl489, __sl0, __sl498);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl499);
+    putstr()(datawin, 0, cptr.decay(buf));
+    putstr()(datawin, 0, __sl0);
+    putstr()(datawin, 0, __sl499);
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
-        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, 138) ? 1 : 0)
+        if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
             continue;
         j = cptr.ldI32o(misc_keys, i, 24);
-        key = uchar(cptr.ld1so2(gc, j, 1, 264));
-        if ((key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) ? 1 : 0) && (cptr.ldI32o(pfx_seen, key, 4) == j) ? 1 : 0) {
+        key = uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys));
+        if (key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) && (cptr.ldI32o(pfx_seen, key, 4) == j)) {
             void cptr.sprintf(cptr.decay(buf), __sl500, key2txt(key, cptr.decay(buf2)), cptr.ldPtro2(misc_keys, i, 24, 8));
-            (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+            putstr()(datawin, 0, cptr.decay(buf));
         }
     }
     key = 3;
     void cptr.sprintf(cptr.decay(buf), __sl501, key2txt(key, cptr.decay(buf2)));
     void cptr.strcat(cptr.decay(buf), __sl502);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+    putstr()(datawin, 0, cptr.decay(buf));
     if (spkey_gap) {
         for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
-            if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, 138) ? 1 : 0)
+            if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
                 continue;
             j = cptr.ldI32o(misc_keys, i, 24);
-            key = uchar(cptr.ld1so2(gc, j, 1, 264));
-            if (!key || (cptr.ldI32o(pfx_seen, key, 4) != j) ? 1 : 0) {
+            key = uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys));
+            if (!key || (cptr.ldI32o(pfx_seen, key, 4) != j)) {
                 void cptr.sprintf(cptr.decay(buf2), __sl503, spkey_name(j));
                 nh_snprintf(__sl504, 2976, cptr.decay(buf), 256n, __sl505, cptr.decay(buf2), cptr.ldPtro2(misc_keys, i, 24, 8));
-                (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+                putstr()(datawin, 0, cptr.decay(buf));
             }
         }
     }
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
+    putstr()(datawin, 0, __sl0);
     show_menu_controls(datawin, 1);
     if (keylist_putcmds(datawin, 1, NHM.GENERALCMD, 1092, cptr.decay(keys_used))) {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl506);
+        putstr()(datawin, 0, __sl0);
+        putstr()(datawin, 0, __sl506);
         void keylist_putcmds(datawin, 0, NHM.GENERALCMD, 1092, cptr.decay(keys_used));
     }
     if (keylist_putcmds(datawin, 1, 0, 1100, cptr.decay(keys_used))) {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl507);
+        putstr()(datawin, 0, __sl0);
+        putstr()(datawin, 0, __sl507);
         void keylist_putcmds(datawin, 0, 0, 1100, cptr.decay(keys_used));
     }
-    if (cptr.ld1so(flags, 10) && keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)) ? 1 : 0) {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl508);
+    if (wizard() && keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used))) {
+        putstr()(datawin, 0, __sl0);
+        putstr()(datawin, 0, __sl508);
         void keylist_putcmds(datawin, 0, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used));
     }
-    (cptr.ldPtro(windowprocs, 120))(datawin, 0);
-    (cptr.ldPtro(windowprocs, 128))(datawin);
+    display_nhwindow()(datawin, 0);
+    destroy_nhwindow()(datawin);
 }
 
 /** C ref: cmd.c:3016 — @param {CPtr} fn @returns {CPtr} */
 export function ext_func_tab_from_func(fn) {
     let extcmd;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
-        if (cptr.ldPtro(extcmd, 24) === fn)
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+        if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn)
             return extcmd;
     return null;
 }
@@ -3696,21 +3809,21 @@ export function cmd_from_func(fn) {
     let i;
     let ret = 0;
     let bind;
-    for (bind = cptr.ldPtro(gc, 240); bind; bind = cptr.ldPtro(bind, 24)) {
+    for (bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds); bind; bind = cptr.ldPtro(bind, $Cmd_bind_next)) {
         i = cptr.ld1u(bind);
         if (i == 32)
             continue;
-        if (((i >= 48 && i <= 57 ? 1 : 0) || (i == 45 && fn === do_fight ? 1 : 0) ? 1 : 0) && !cptr.ld1so(gc, 220) ? 1 : 0)
+        if (((i >= 48 && i <= 57) || (i == 45 && fn === do_fight)) && !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
             continue;
-        if (cptr.ldPtro(bind, 16) && cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === fn ? 1 : 0) {
-            if (i >= 32 && i <= 126 ? 1 : 0)
+        if (cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn) {
+            if (i >= 32 && i <= 126)
                 return schar(i);
             else {
                 ret = schar(i);
             }
         }
     }
-    if (((bind = cmdbind_get(32)) !== null && cptr.ldPtro(bind, 16) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === fn ? 1 : 0)
+    if ((bind = cmdbind_get(32)) !== null && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn)
         return 32;
     return ret;
 }
@@ -3720,9 +3833,9 @@ const __static_cmd_from_ecname_cmdnamebuf = new Uint8Array(128); /** C ref: cmd.
 /** C ref: cmd.c:3071 — @param {CPtr} ecname @returns {CPtr} */
 export function cmd_from_ecname(ecname) {
     let extcmd;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
-        if (!strcmp(cptr.ldPtro(extcmd, 8), ecname)) {
-            let key = cmd_from_func(cptr.ldPtro(extcmd, 24));
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+        if (!strcmp(cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), ecname)) {
+            let key = cmd_from_func(cptr.ldPtro(extcmd, $ext_func_tab_ef_funct));
             if (key)
                 void cptr.sprintf(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), __sl472, visctrl(key));
             else
@@ -3737,10 +3850,10 @@ export function cmd_from_ecname(ecname) {
 export function ecname_from_fn(fn) {
     let extcmd;
     let cmdptr = null;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
-        if (cptr.ldPtro(extcmd, 24) === fn) {
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+        if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
-            return cptr.ldPtro(cmdptr, 8);
+            return cptr.ldPtro(cmdptr, $ext_func_tab_ef_txt);
         }
     return null;
 }
@@ -3750,10 +3863,10 @@ export function cmdname_from_func(fn, outbuf, fullname) {
     let extcmd;
     let cmdptr = null;
     let res = null;
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48))
-        if (cptr.ldPtro(extcmd, 24) === fn) {
+    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+        if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
-            res = cptr.ldPtro(cmdptr, 8);
+            res = cptr.ldPtro(cmdptr, $ext_func_tab_ef_txt);
             break;
         }
     if (!res) {
@@ -3767,23 +3880,23 @@ export function cmdname_from_func(fn, outbuf, fullname) {
         do {
             if (++len >= maxlen)
                 break;
-            for (extcmd = matchcmd; cptr.ldPtro(extcmd, 8); extcmd = cptr.add(extcmd, 1, 48)) {
+            for (extcmd = matchcmd; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
                 if (cptr.eq(extcmd, cmdptr))
                     continue;
-                if (((cptr.ldI32o(extcmd, 32) & NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 || (((cptr.ldI32o(extcmd, 32) & NHM.WIZMODECMD) >>> 0) != 0 && !cptr.ld1so(flags, 10) ? 1 : 0) ? 1 : 0)
+                if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 || (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 && !wizard()))
                     continue;
-                if (!cptr.strncmp(res, cptr.ldPtro(extcmd, 8), BigInt(len >>> 0))) {
+                if (!cptr.strncmp(res, cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), BigInt(len >>> 0))) {
                     matchcmd = extcmd;
                     break;
                 }
             }
-        } while (cptr.ldPtro(extcmd, 8));
+        } while (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt));
         copynchars(outbuf, res, len | 0);
         do {
             if (debugcore(__sl511, 1)) {
-                let save_plnmsg = cptr.ldI32o(iflags, 40);
+                let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__sl512, res, outbuf);
-                cptr.stI32o(iflags, 40, save_plnmsg);
+                cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         } while (0);
         res = outbuf;
@@ -3887,9 +4000,9 @@ cptr.stPtro(spkeys_binds, 456, __sl540);
 export function bind_specialkey(key, command) {
     let i;
     for (i = 0; i < 29; i++) {
-        if (!cptr.ldPtro2(spkeys_binds, i, 16, 8) || strcmp(command, cptr.ldPtro2(spkeys_binds, i, 16, 8)) ? 1 : 0)
+        if (!cptr.ldPtro2(spkeys_binds, i, 16, 8) || strcmp(command, cptr.ldPtro2(spkeys_binds, i, 16, 8)))
             continue;
-        cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, 264, schar(key));
+        cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, $instance_globals_c_Cmd + $cmd_spkeys, schar(key));
         return 1;
     }
     return 0;
@@ -3927,7 +4040,7 @@ export function key2txt(c, txt) {
 export function parseautocomplete(autocomplete, condition) {
     let efp;
     let autoc;
-    if ((autoc = cptr.strchr(autocomplete, 44)) !== null || (autoc = cptr.strchr(autocomplete, 58)) !== null ? 1 : 0) {
+    if ((autoc = cptr.strchr(autocomplete, 44)) !== null || (autoc = cptr.strchr(autocomplete, 58)) !== null) {
         cptr.st1(cptr.postinc(() => autoc, (v) => { autoc = v; }), 0);
         parseautocomplete(autoc, condition);
     }
@@ -3939,32 +4052,32 @@ export function parseautocomplete(autocomplete, condition) {
         autocomplete = trimspaces(autocomplete);
         condition = schar((!condition));
     }
-    for (efp = extcmdlist; cptr.ldPtro(efp, 8); efp = cptr.add(efp, 1, 48)) {
-        if (!strcmp(autocomplete, cptr.ldPtro(efp, 8))) {
-            if (condition == (((cptr.ldI32o(efp, 32) & NHM.AUTOCOMPLETE) >>> 0) ? 0 : 1)) {
-                if (((cptr.ldI32o(efp, 32) & NHM.AUTOCOMP_ADJ) >>> 0))
-                    cptr.stI32o(efp, 32, cptr.ldI32o(efp, 32) & 4294959103);
+    for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
+        if (!strcmp(autocomplete, cptr.ldPtro(efp, $ext_func_tab_ef_txt))) {
+            if (condition == (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? 0 : 1)) {
+                if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0))
+                    cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) & 4294959103);
                 else
-                    cptr.stI32o(efp, 32, cptr.ldI32o(efp, 32) | NHM.AUTOCOMP_ADJ);
+                    cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMP_ADJ);
             }
             if (condition)
-                cptr.stI32o(efp, 32, cptr.ldI32o(efp, 32) | NHM.AUTOCOMPLETE);
+                cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMPLETE);
             else
-                cptr.stI32o(efp, 32, cptr.ldI32o(efp, 32) & 4294967293);
+                cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) & 4294967293);
             return;
         }
     }
     raw_printf(__sl546, autocomplete);
-    (cptr.ldPtro(windowprocs, 216))();
+    wait_synch()();
 }
 
 /** C ref: cmd.c:3296 — @param {CPtr} sbuf */
 export function all_options_autocomplete(sbuf) {
     let efp;
     let buf = new Uint8Array(256);
-    for (efp = extcmdlist; cptr.ldPtro(efp, 8); efp = cptr.add(efp, 1, 48))
-        if (((cptr.ldI32o(efp, 32) & NHM.AUTOCOMP_ADJ) >>> 0) != 0) {
-            void cptr.sprintf(cptr.decay(buf), __sl547, ((cptr.ldI32o(efp, 32) & NHM.AUTOCOMPLETE) >>> 0) ? __sl0 : __sl548, cptr.ldPtro(efp, 8));
+    for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48))
+        if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) != 0) {
+            void cptr.sprintf(cptr.decay(buf), __sl547, ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? __sl0 : __sl548, cptr.ldPtro(efp, $ext_func_tab_ef_txt));
             strbuf_append(sbuf, cptr.decay(buf));
         }
 }
@@ -3973,8 +4086,8 @@ export function all_options_autocomplete(sbuf) {
 export function count_autocompletions() {
     let efp;
     let n = 0;
-    for (efp = extcmdlist; cptr.ldPtro(efp, 8); efp = cptr.add(efp, 1, 48))
-        if (((cptr.ldI32o(efp, 32) & NHM.AUTOCOMP_ADJ) >>> 0) != 0)
+    for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48))
+        if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) != 0)
             n++;
     return n;
 }
@@ -3987,12 +4100,12 @@ export function lock_mouse_buttons(savebtns) {
     let i;
     if (savebtns) {
         for (i = 0; i < NHM.NUM_MOUSE_BUTTONS; i++) {
-            cptr.stPtro(__static_lock_mouse_buttons_mousebtn, i, cptr.ldPtro2(gc, i, 8, 248), 8);
-            cptr.stPtro2(gc, i, 8, 248, null);
+            cptr.stPtro(__static_lock_mouse_buttons_mousebtn, i, cptr.ldPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn), 8);
+            cptr.stPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn, null);
         }
     } else {
         for (i = 0; i < NHM.NUM_MOUSE_BUTTONS; i++)
-            cptr.stPtro2(gc, i, 8, 248, cptr.ldPtro(__static_lock_mouse_buttons_mousebtn, i, 8));
+            cptr.stPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn, cptr.ldPtro(__static_lock_mouse_buttons_mousebtn, i, 8));
     }
 }
 
@@ -4021,10 +4134,10 @@ export function reset_commands(initial) {
     let mode;
     if (initial) {
         updated = 1;
-        cptr.st1o(gc, 220, 0);
-        cptr.st1o(gc, 221, cptr.st1o(gc, 222, cptr.st1o(gc, 223, 0)));
+        cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_num_pad, 0);
+        cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat, cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_phone_layout, cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, 0)));
         for (i = 0; i < 29; i++)
-            cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, 264, schar(cptr.ld1uo2(spkeys_binds, i, 16, 4)));
+            cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, $instance_globals_c_Cmd + $cmd_spkeys, schar(cptr.ld1uo2(spkeys_binds, i, 16, 4)));
         commands_init();
     } else {
         if (__static_reset_commands_backed_dir_cmd) {
@@ -4034,33 +4147,33 @@ export function reset_commands(initial) {
                 }
             }
         }
-        flagtemp = cptr.ld1so(iflags, 138);
-        if (flagtemp != cptr.ld1so(gc, 220)) {
-            cptr.st1o(gc, 220, flagtemp);
+        flagtemp = cptr.ld1so(iflags, $instance_flags_num_pad);
+        if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
+            cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_num_pad, flagtemp);
             ++updated;
         }
-        flagtemp = schar(((cptr.ld1uo(iflags, 173) & 1) ? !cptr.ld1so(gc, 220) : 0));
-        if (flagtemp != cptr.ld1so(gc, 223)) {
-            cptr.st1o(gc, 223, flagtemp);
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz)) {
+            cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, flagtemp);
             ++updated;
             for (i = 0; i < 6; i++) {
                 c = cptr.ldI32o(__static_reset_commands_ylist, i, 4) & 255;
                 cmdbind_swapkeys(uchar(c), uchar(((c + 1) | 0)));
             }
         }
-        flagtemp = schar(((cptr.ld1uo(iflags, 173) & 1) ? cptr.ld1so(gc, 220) : 0));
-        if (flagtemp != cptr.ld1so(gc, 221)) {
-            cptr.st1o(gc, 221, flagtemp);
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat)) {
+            cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat, flagtemp);
             ++updated;
             c = 176;
-            if (cptr.ld1so(gc, 221))
+            if (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat))
                 cmdbind_add(uchar(c), ext_func_tab_from_func(dotypeinv), 0);
             else
                 cmdbind_remove(uchar(c));
         }
-        flagtemp = schar(((cptr.ld1uo(iflags, 173) & 2) ? cptr.ld1so(gc, 220) : 0));
-        if (flagtemp != cptr.ld1so(gc, 222)) {
-            cptr.st1o(gc, 222, flagtemp);
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 2) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout)) {
+            cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_phone_layout, flagtemp);
             ++updated;
             for (i = 0; i < 3; i++) {
                 c = (49 + i) | 0;
@@ -4071,14 +4184,14 @@ export function reset_commands(initial) {
         }
     }
     if (updated)
-        (cptr.stI32o(gc, 216, cptr.ldI32o(gc, 216) + 1)) - (1);
-    cptr.stPtro(gc, 224, !cptr.ld1so(gc, 220) ? (!cptr.ld1so(gc, 223) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1so(gc, 222) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
-    cptr.stPtro(gc, 232, !cptr.ld1so(gc, 220) ? cptr.ldPtro(gc, 224) : cptr.decay(__static_reset_commands_sdir));
+        (cptr.stI32o(gc, $instance_globals_c_Cmd, cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1)) - (1);
+    cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
+    cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_alphadirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars) : cptr.decay(__static_reset_commands_sdir));
     for (dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
         for (mode = NHC.MV_WALK; mode < NHC.N_MOVEMODES; mode++) {
-            let di = uchar(cptr.ld1so(cptr.ldPtro(gc, 224), dir));
+            let di = uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), dir));
             let bind;
-            if (!cptr.ld1so(gc, 220)) {
+            if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
                 if (mode == NHC.MV_RUN)
                     di = uchar(highc(schar(di)));
                 else if (mode == NHC.MV_RUSH)
@@ -4091,7 +4204,7 @@ export function reset_commands(initial) {
             }
             cptr.st1o(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, di, 1);
             if ((bind = cmdbind_get(di)) !== null)
-                cptr.stPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, cptr.ldPtro(bind, 16), 8);
+                cptr.stPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, cptr.ldPtro(bind, $Cmd_bind_cmd), 8);
             else
                 cptr.stPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, null, 8);
             cmdbind_remove(di);
@@ -4099,38 +4212,38 @@ export function reset_commands(initial) {
     }
     __static_reset_commands_backed_dir_cmd = 1;
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
-        void bind_key_fn(uchar(cptr.ld1so(cptr.ldPtro(gc, 224), i)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8));
-        if (!cptr.ld1so(gc, 220)) {
-            void bind_key_fn(uchar(highc(cptr.ld1so(cptr.ldPtro(gc, 224), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
-            void bind_key_fn(uchar((31 & (cptr.ld1so(cptr.ldPtro(gc, 224), i)))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8));
+        void bind_key_fn(uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8));
+        if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
+            void bind_key_fn(uchar(highc(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
+            void bind_key_fn(uchar((31 & (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8));
         } else {
-            void bind_key_fn(uchar((((cptr.ld1so(cptr.ldPtro(gc, 224), i)) - 128) | 0)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
+            void bind_key_fn(uchar((((cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)) - 128) | 0)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
         }
     }
     update_rest_on_space();
-    cptr.st1o(gc, 293, cmd_from_func(doextcmd));
+    cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_extcmd_char, cmd_from_func(doextcmd));
 }
 
 let __static_update_rest_on_space_restonspace = cptr.alloc(48); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
 cptr.st1(__static_update_rest_on_space_restonspace, 32);
-cptr.stPtro(__static_update_rest_on_space_restonspace, 8, __sl325);
-cptr.stPtro(__static_update_rest_on_space_restonspace, 16, __sl549);
-cptr.stPtro(__static_update_rest_on_space_restonspace, 24, donull);
-cptr.stI32o(__static_update_rest_on_space_restonspace, 32, 129);
-cptr.stPtro(__static_update_rest_on_space_restonspace, 40, __sl327);
+cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_txt, __sl325);
+cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_desc, __sl549);
+cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_funct, donull);
+cptr.stI32o(__static_update_rest_on_space_restonspace, $ext_func_tab_flags, 129);
+cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_f_text, __sl327);
 let __static_update_rest_on_space_unrestonspace = null; /** C ref: cmd.c:3493 — struct ext_func_tab * (function-static) */
 
 /** C ref: cmd.c:3483 */
 export function update_rest_on_space() {
     let bind = cmdbind_get(32);
-    if (bind && !cptr.eq(cptr.ldPtro(bind, 16), __static_update_rest_on_space_restonspace) ? 1 : 0)
-        __static_update_rest_on_space_unrestonspace = cptr.ldPtro(bind, 16);
-    cmdbind_add(32, cptr.ld1so(flags, 35) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0);
+    if (bind && !cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), __static_update_rest_on_space_restonspace))
+        __static_update_rest_on_space_unrestonspace = cptr.ldPtro(bind, $Cmd_bind_cmd);
+    cmdbind_add(32, cptr.ld1so(flags, $flag_rest_on_space) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0);
 }
 
 /** C ref: cmd.c:3509 — @param {CPtr} ec @returns {CInt} */
 function accept_menu_prefix(ec) {
-    return schar((ec && (((cptr.ldI32o(ec, 32) & NHM.CMD_M_PREFIX) >>> 0) != 0) ? 1 : 0));
+    return schar((ec && (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_M_PREFIX) >>> 0) != 0) ? 1 : 0));
 }
 
 let __static_randomkey_i = 0; /** C ref: cmd.c:3519 — unsigned int (function-static) */
@@ -4139,7 +4252,7 @@ let __static_randomkey_last_c = 0; /** C ref: cmd.c:3520 — char (function-stat
 /** C ref: cmd.c:3517 @returns {CInt} */
 export function randomkey() {
     let c;
-    if (((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16 ? 1 : 0) && cptr.ldI32o(program_state, 104) == NHC.commandInp ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3525, __sl550), rn2(5)) : rn2(5)) ? 1 : 0)
+    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3525, __sl550), rn2(5)) : rn2(5)))
         return __static_randomkey_last_c;
     switch ((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3528, __sl550), rn2(16)) : rn2(16))) {
         default:
@@ -4182,10 +4295,10 @@ export function randomkey() {
         c = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3567, __sl550), rn2(10)) : rn2(10)) + 48) | 0));
         break;
         case 14:
-        c = schar((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3571, __sl550), rnd(cptr.ld1so(iflags, 366) ? 255 : 127)) : rnd(cptr.ld1so(iflags, 366) ? 255 : 127)));
+        c = schar((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3571, __sl550), rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127)) : rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127)));
         break;
     }
-    if (cptr.ldI32o(program_state, 104) == NHC.commandInp)
+    if (cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp)
         __static_randomkey_last_c = c;
     return c;
 }
@@ -4215,16 +4328,16 @@ export function rnd_extcmd_idx() {
 
 /** C ref: cmd.c:3607 — @param {CInt} reset_cmdq */
 function reset_cmd_vars(reset_cmdq) {
-    cptr.stI32o(svc, 8, 0);
-    cptr.st1o(svc, 75, cptr.st1o(svc, 74, 0));
-    cptr.st1o(svc, 78, cptr.st1o(svc, 79, 0));
-    cptr.stI64o(gd, 16, 0n);
-    cptr.stI64o(gm, 8, 0n);
-    cptr.st1o(iflags, 135, 0);
-    cptr.st1o(svc, 72, cptr.st1o(svc, 73, 0));
-    if (cptr.ldPtro(gt, 368)) {
-        selection_free(cptr.ldPtro(gt, 368), 1);
-        cptr.stPtro(gt, 368, null);
+    cptr.stI32o(svc, $context_info_run, 0);
+    cptr.st1o(svc, $context_info_nopick, cptr.st1o(svc, $context_info_forcefight, 0));
+    cptr.st1o(svc, $context_info_move, cptr.st1o(svc, $context_info_mv, 0));
+    cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
+    cptr.stI64o(gm, $instance_globals_m_multi, 0n);
+    cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+    cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
+    if (cptr.ldPtro(gt, $instance_globals_t_travelmap)) {
+        selection_free(cptr.ldPtro(gt, $instance_globals_t_travelmap), 1);
+        cptr.stPtro(gt, $instance_globals_t_travelmap, null);
     }
     if (reset_cmdq) {
         cmdq_clear(NHC.CQ_CANNED);
@@ -4246,13 +4359,13 @@ export function rhack(key) {
         prefix_seen = null;
         was_m_prefix = 0;
         func = dummyfunction;
-        cptr.st1o(iflags, 135, 0);
-        cptr.st1o(svc, 75, 0);
+        cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+        cptr.st1o(svc, $context_info_nopick, 0);
         __pc = 1;
         continue;
         }
         case 1 /* got_prefix_input: */: {
-        if (cptr.ldI32o(program_state, 8))
+        if (cptr.ldI32o(program_state, $sinfo_done_hup))
             end_of_input();
         if ((cmdq = cmdq_pop()) !== null) { __pc = 4; continue; }
         __pc = 5; continue;
@@ -4260,7 +4373,7 @@ export function rhack(key) {
         case 4: {
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
-        if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD && (cmdq_ec = cptr.ldPtro(cq, 16)) !== null ? 1 : 0) { __pc = 7; continue; }
+        if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD && (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !== null) { __pc = 7; continue; }
         __pc = 6; continue;
         }
         case 7: {
@@ -4269,7 +4382,7 @@ export function rhack(key) {
         continue;
         }
         case 6: {
-        key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, 4) : 0;
+        key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, $_cmd_queue_key) : 0;
         __pc = 3;
         continue;
         }
@@ -4279,7 +4392,7 @@ export function rhack(key) {
         }
         case 9: {
         key = parse();
-        if (!key && cmdq_peek(NHC.CQ_CANNED) ? 1 : 0) { __pc = 11; continue; }
+        if (!key && cmdq_peek(NHC.CQ_CANNED)) { __pc = 11; continue; }
         __pc = 10; continue;
         }
         case 11: {
@@ -4296,16 +4409,16 @@ export function rhack(key) {
         continue;
         }
         case 3: {
-        if ((!key || key == -1 ? 1 : 0) || key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264) ? 1 : 0) {
-            if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264))
-                cptr.st1o(iflags, 84, cptr.ld1so(iflags, 83));
+        if (!key || key == -1 || key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+            if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+                cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
             else
-                (cptr.ldPtro(windowprocs, 272))();
+                nhbell()();
             reset_cmd_vars(1);
             return;
         }
-        cptr.st1o(svc, 72, cptr.st1o(svc, 73, 0));
-        cptr.stPtro(gc, 320, cmdbind_get(uchar((key & 255))));
+        cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
+        cptr.stPtro(gc, $instance_globals_c_cmd_bind, cmdbind_get(uchar((key & 255))));
         __pc = 2;
         continue;
         }
@@ -4313,7 +4426,7 @@ export function rhack(key) {
         if (cmdq_ec)
             tlist = cmdq_ec;
         else
-            tlist = cptr.ldPtro(gc, 320) ? cptr.ldPtro(cptr.ldPtro(gc, 320), 16) : null;
+            tlist = cptr.ldPtro(gc, $instance_globals_c_cmd_bind) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_cmd) : null;
         if (tlist !== null) { __pc = 13; continue; }
         __pc = 12; continue;
         }
@@ -4328,19 +4441,19 @@ export function rhack(key) {
         continue;
         }
         case 16: {
-        if ((prefix_seen && !((cptr.ldI32o(tlist, 32) & NHM.PREFIXCMD) >>> 0) ? 1 : 0) && !((cptr.ldI32o(tlist, 32) & (was_m_prefix ? NHM.CMD_M_PREFIX : NHM.CMD_gGF_PREFIX) >>> 0) >>> 0) ? 1 : 0) { __pc = 18; continue; }
+        if (prefix_seen && !((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) && !((cptr.ldI32o(tlist, $ext_func_tab_flags) & (was_m_prefix ? NHM.CMD_M_PREFIX : NHM.CMD_gGF_PREFIX) >>> 0) >>> 0)) { __pc = 18; continue; }
         __pc = 19; continue;
         }
         case 18: {
-        pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, 24));
-        which = (pfxidx != 0) ? visctrl(pfxidx) : ((cptr.ldPtro(prefix_seen, 24) === do_reqmenu) ? __sl552 : cptr.ldPtro(prefix_seen, 8));
+        pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct));
+        which = (pfxidx != 0) ? visctrl(pfxidx) : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu) ? __sl552 : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
         if (was_m_prefix) {
-            custompline(NHM.SUPPRESS_HISTORY, __sl553, cptr.ldPtro(tlist, 8), which);
+            custompline(NHM.SUPPRESS_HISTORY, __sl553, cptr.ldPtro(tlist, $ext_func_tab_ef_txt), which);
         } else {
             ch = cptr.ld1u(tlist);
-            up = schar((ch == 60 || cptr.ldPtro(tlist, 24) === doup ? 1 : 0));
-            down = schar((ch == 62 || cptr.ldPtro(tlist, 24) === dodown ? 1 : 0));
-            pline(__sl554, which, (up || down ? 1 : 0) ? __sl555 : __sl0);
+            up = schar((ch == 60 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === doup ? 1 : 0));
+            down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown ? 1 : 0));
+            pline(__sl554, which, (up || down) ? __sl555 : __sl0);
         }
         res = NHM.ECMD_FAIL;
         prefix_seen = null;
@@ -4348,28 +4461,28 @@ export function rhack(key) {
         continue;
         }
         case 19: {
-        func = cptr.ldPtro((tlist), 24);
-        if ((cptr.ldPtro(tlist, 40) && !cptr.ldPtro(go, 56) ? 1 : 0) && cptr.ldI64o(gm, 8) ? 1 : 0)
-            set_occupation(func, cptr.ldPtro(tlist, 40), cptr.ldI64o(gm, 8));
-        cptr.stPtro(ge, 8, null);
-        if ((!cptr.ldI32(gi) && func !== do_repeat ? 1 : 0) && func !== doextcmd ? 1 : 0) {
+        func = cptr.ldPtro((tlist), $ext_func_tab_ef_funct);
+        if (cptr.ldPtro(tlist, $ext_func_tab_f_text) && !cptr.ldPtro(go, $instance_globals_o_occupation) && cptr.ldI64o(gm, $instance_globals_m_multi))
+            set_occupation(func, cptr.ldPtro(tlist, $ext_func_tab_f_text), cptr.ldI64o(gm, $instance_globals_m_multi));
+        cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+        if (!cptr.ldI32(gi) && func !== do_repeat && func !== doextcmd) {
             if (!prefix_seen)
                 cmdq_clear(NHC.CQ_REPEAT);
-            cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), 24));
+            cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct));
         } else {
             if (func === doextcmd) {
                 cmdq_clear(NHC.CQ_REPEAT);
             }
         }
-        if (((cptr.ldI32o(tlist, 32) & NHM.CMD_INSANE) >>> 0) != 0)
-            cptr.st1o(iflags, 84, cptr.ld1so(iflags, 83));
+        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.CMD_INSANE) >>> 0) != 0)
+            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
         res = (func)();
-        if (cptr.ldPtro(ge, 8)) {
-            tlist = cptr.ldPtro(ge, 8), cptr.stPtro(ge, 8, null);
-            cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), 24));
+        if (cptr.ldPtro(ge, $instance_globals_e_ext_tlist)) {
+            tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist), cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+            cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct));
             cmdq_shift(NHC.CQ_REPEAT);
         }
-        if (((cptr.ldI32o(tlist, 32) & NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
+        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
         __pc = 22; continue;
         }
         case 21: {
@@ -4386,28 +4499,28 @@ export function rhack(key) {
         continue;
         }
         case 22: {
-        if (!((cptr.ldI32o(tlist, 32) & NHM.MOVEMENTCMD) >>> 0) && cptr.ldI64o(gd, 16) ? 1 : 0) {
+        if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) && cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
             ;
-        } else if ((((cptr.ldI64o(gd, 16) & 3n) != 0n) && !cptr.ld1so(svc, 72) ? 1 : 0) && !dxdy_moveok() ? 1 : 0) {
+        } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) && !cptr.ld1so(svc, $context_info_travel) && !dxdy_moveok()) {
             You_cant(__sl556);
             reset_cmd_vars(1);
             return;
-        } else if ((cptr.ldI64o(gd, 16) & 1n) != 0n) {
-            if (cptr.ldI64o(gm, 8))
-                cptr.st1o(svc, 79, 1);
+        } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 1n) != 0n) {
+            if (cptr.ldI64o(gm, $instance_globals_m_multi))
+                cptr.st1o(svc, $context_info_mv, 1);
             domove();
-            cptr.st1o(svc, 74, 0);
-            cptr.st1o(iflags, 135, 0);
+            cptr.st1o(svc, $context_info_forcefight, 0);
+            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
             return;
-        } else if ((cptr.ldI64o(gd, 16) & 2n) != 0n) {
+        } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n) != 0n) {
             if (firsttime) {
-                if (!cptr.ldI64o(gm, 8))
-                    cptr.stI64o(gm, 8, 80n);
-                cptr.stI32o(u, 44, 0);
+                if (!cptr.ldI64o(gm, $instance_globals_m_multi))
+                    cptr.stI64o(gm, $instance_globals_m_multi, 80n);
+                cptr.stI32o(u, $you_last_str_turn, 0);
             }
-            cptr.st1o(svc, 79, 1);
+            cptr.st1o(svc, $context_info_mv, 1);
             domove();
-            cptr.st1o(iflags, 135, 0);
+            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
             return;
         }
         __pc = 20;
@@ -4426,12 +4539,12 @@ export function rhack(key) {
         if ((res & 6) != 0) {
             reset_cmd_vars(1);
         } else if ((res & 1) == NHM.ECMD_OK) {
-            reset_cmd_vars(schar((cptr.ldI64o(gm, 8) < 0n)));
+            reset_cmd_vars(schar((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)));
         }
         if ((res & NHM.ECMD_TIME) != 0) {
-            cptr.st1o(svc, 78, 1);
+            cptr.st1o(svc, $context_info_move, 1);
             if (func !== dokick) {
-                cptr.stI16(gk, 0), cptr.stI16o(gk, 2, 0);
+                cptr.stI16(gk, 0), cptr.stI16o(gk, $nhcoord_y, 0);
             }
         }
         return;
@@ -4444,10 +4557,10 @@ export function rhack(key) {
             custompline(NHM.SUPPRESS_HISTORY, __sl557, visctrl(schar(key)));
             cmdq_clear(NHC.CQ_CANNED);
             cmdq_clear(NHC.CQ_REPEAT);
-            cptr.st1o(iflags, 84, cptr.ld1so(iflags, 83));
+            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
         }
-        cptr.st1o(svc, 78, 0);
-        cptr.stI64o(gm, 8, 0n);
+        cptr.st1o(svc, $context_info_move, 0);
+        cptr.stI64o(gm, $instance_globals_m_multi, 0n);
         return;
         __pc = -1;
         continue;
@@ -4461,16 +4574,16 @@ export function rhack(key) {
 export function xytodir(x, y) {
     let dd;
     for (dd = 0; dd < ((NHC.N_DIRS_Z - 2) | 0); dd++)
-        if (x == cptr.ld1so(cptr.decay(xdir), dd, 1) && y == cptr.ld1so(cptr.decay(ydir), dd, 1) ? 1 : 0)
+        if (x == cptr.ld1so(cptr.decay(xdir), dd, 1) && y == cptr.ld1so(cptr.decay(ydir), dd, 1))
             return dd;
     return NHC.DIR_ERR;
 }
 
 /** C ref: cmd.c:3859 — @param {CPtr} cc @param {CInt} dd */
 export function dirtocoord(cc, dd) {
-    if (dd > NHC.DIR_ERR && dd < NHC.N_DIRS_Z ? 1 : 0) {
+    if (dd > NHC.DIR_ERR && dd < NHC.N_DIRS_Z) {
         cptr.stI16(cc, i16(cptr.ld1so(cptr.decay(xdir), dd, 1)));
-        cptr.stI16o(cc, 2, i16(cptr.ld1so(cptr.decay(ydir), dd, 1)));
+        cptr.stI16o(cc, $coord_y, i16(cptr.ld1so(cptr.decay(ydir), dd, 1)));
     }
 }
 
@@ -4478,11 +4591,11 @@ export function dirtocoord(cc, dd) {
 export function movecmd(sym, mode) {
     let d = NHC.DIR_ERR;
     let bind = cmdbind_get(uchar(sym));
-    if (bind && cptr.ldPtro(bind, 16) ? 1 : 0) {
-        let fnc = cptr.ldPtro(cptr.ldPtro(bind, 16), 24);
+    if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd)) {
+        let fnc = cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct);
         if (mode == NHC.MV_ANY) {
             for (d = ((NHC.N_DIRS_Z - 1) | 0); d > NHC.DIR_ERR; d--)
-                if ((fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_WALK, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUN, 8) ? 1 : 0) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUSH, 8) ? 1 : 0)
+                if (fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_WALK, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUN, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUSH, 8))
                     break;
         } else {
             for (d = ((NHC.N_DIRS_Z - 1) | 0); d > NHC.DIR_ERR; d--)
@@ -4491,27 +4604,27 @@ export function movecmd(sym, mode) {
         }
     }
     if (d != NHC.DIR_ERR) {
-        cptr.stI32o(u, 4, cptr.ld1so(cptr.decay(xdir), d, 1));
-        cptr.stI32o(u, 8, cptr.ld1so(cptr.decay(ydir), d, 1));
-        cptr.stI32o(u, 12, cptr.ld1so(cptr.decay(zdir), d, 1));
-        return !cptr.ldI32o(u, 12);
+        cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), d, 1));
+        cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), d, 1));
+        cptr.stI32o(u, $you_dz, cptr.ld1so(cptr.decay(zdir), d, 1));
+        return !cptr.ldI32o(u, $you_dz);
     }
-    cptr.stI32o(u, 12, 0);
+    cptr.stI32o(u, $you_dz, 0);
     return 0;
 }
 
 /** C ref: cmd.c:3902 @returns {CInt} */
 export function dxdy_moveok() {
-    if ((cptr.ldI32o(u, 4) && cptr.ldI32o(u, 8) ? 1 : 0) && ((cptr.ldI32o(u, 1808)) == NHC.PM_GRID_BUG) ? 1 : 0)
-        cptr.stI32o(u, 4, cptr.stI32o(u, 8, 0));
-    return cptr.ldI32o(u, 4) || cptr.ldI32o(u, 8) ? 1 : 0;
+    if (cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
+        cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
+    return cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) ? 1 : 0;
 }
 
 /** C ref: cmd.c:3911 — @param {CInt} c @returns {CInt} */
 export function redraw_cmd(c) {
     let uc = uchar(c);
     let bind = cmdbind_get(uc);
-    return schar(((bind && cptr.ldPtro(bind, 16) ? 1 : 0) && cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === doredraw ? 1 : 0));
+    return schar((bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doredraw ? 1 : 0));
 }
 
 /** C ref: cmd.c:3931 — @param {CPtr} prompt @param {CPtr} emsg @param {CInt} x @param {CInt} y @param {CPtr} cc @returns {CInt} */
@@ -4519,14 +4632,14 @@ export function get_adjacent_loc(prompt, emsg, x, y, cc) {
     let new_x;
     let new_y;
     if (!getdir(prompt)) {
-        pline(__sl472, cptr.ldPtro(c_common_strings, 64));
+        pline(__sl472, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         return 0;
     }
-    new_x = i16(((x + cptr.ldI32o(u, 4)) | 0));
-    new_y = i16(((y + cptr.ldI32o(u, 8)) | 0));
-    if (cc && isok(new_x, new_y) ? 1 : 0) {
+    new_x = i16(((x + cptr.ldI32o(u, $you_dx)) | 0));
+    new_y = i16(((y + cptr.ldI32o(u, $you_dy)) | 0));
+    if (cc && isok(new_x, new_y)) {
         cptr.stI16(cc, new_x);
-        cptr.stI16o(cc, 2, new_y);
+        cptr.stI16o(cc, $coord_y, new_y);
     } else {
         if (emsg)
             pline(__sl472, emsg);
@@ -4548,13 +4661,13 @@ export function getdir(s) {
         }
         case 4: {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_DIR) {
-            if (!cptr.ld1so(cmdq, 7)) {
-                dirsym = cptr.ld1so(cptr.ldPtro(gc, 224), xytodir(cptr.ld1so(cmdq, 5), cptr.ld1so(cmdq, 6)));
+            if (!cptr.ld1so(cmdq, $_cmd_queue_dirz)) {
+                dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), xytodir(cptr.ld1so(cmdq, $_cmd_queue_dirx), cptr.ld1so(cmdq, $_cmd_queue_diry)));
             } else {
-                dirsym = cptr.ld1so(cptr.ldPtro(gc, 224), (cptr.ld1so(cmdq, 7) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (cptr.ld1so(cmdq, $_cmd_queue_dirz) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP);
             }
         } else if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
-            dirsym = cptr.ld1so(cmdq, 4);
+            dirsym = cptr.ld1so(cmdq, $_cmd_queue_key);
         } else {
             cmdq_clear(NHC.CQ_CANNED);
             dirsym = 0;
@@ -4570,26 +4683,26 @@ export function getdir(s) {
         continue;
         }
         case 1 /* retry: */: {
-        cptr.stI32o(program_state, 104, NHC.getdirInp);
-        if (cptr.ldI32(gi) || cptr.ld1s(readchar_queue) ? 1 : 0) {
+        cptr.stI32o(program_state, $sinfo_input_state, NHC.getdirInp);
+        if (cptr.ldI32(gi) || cptr.ld1s(readchar_queue)) {
             dirsym = readchar();
         } else {
-            dirsym = yn_function((s && cptr.ld1s(s) != 94 ? 1 : 0) ? s : __sl559, null, 0, 0);
-            if (cptr.ld1so(iflags, 15) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3996, __sl560), rn2(20)) : rn2(20)) ? 1 : 0) {
+            dirsym = yn_function((s && cptr.ld1s(s) != 94) ? s : __sl559, null, 0, 0);
+            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3996, __sl560), rn2(20)) : rn2(20))) {
                 switch ((rng_log_enabled() ? (rng_log_set_caller(__sl511, 3997, __sl560), rn2(20)) : rn2(20))) {
                     case 0:
-                    dirsym = cptr.ld1so2(gc, (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3999, __sl560), rn2(2)) : rn2(2)) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, 264);
+                    dirsym = cptr.ld1so2(gc, (rng_log_enabled() ? (rng_log_set_caller(__sl511, 3999, __sl560), rn2(2)) : rn2(2)) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
                     break;
                     case 1:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, 224), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4002, __sl560), rn2(2)) : rn2(2)) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4002, __sl560), rn2(2)) : rn2(2)) ? NHC.DIR_DOWN : NHC.DIR_UP);
                     break;
                     default:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, 224), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4005, __sl560), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0))));
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4005, __sl560), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0))));
                     break;
                 }
             }
         }
-        (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
+        clear_nhwindow()(WIN_MESSAGE.v);
         if (redraw_cmd(dirsym)) { __pc = 6; continue; }
         __pc = 5; continue;
         }
@@ -4606,35 +4719,35 @@ export function getdir(s) {
         continue;
         }
         case 2 /* got_dirsym: */: {
-        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, 264) || dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF2, 1, 264) ? 1 : 0) { __pc = 8; continue; }
+        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys) || dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF2, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 8; continue; }
         __pc = 9; continue;
         }
         case 8: {
-        cptr.stI32o(u, 4, cptr.stI32o(u, 8, cptr.stI32o(u, 12, 0)));
+        cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
         __pc = 7;
         continue;
         }
         case 9: {
-        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_MOUSE, 1, 264)) { __pc = 11; continue; }
+        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_MOUSE, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
         qbuf = new Uint8Array(128);
         cc = cptr.alloc(4);
-        void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, 264)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, 264)));
-        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, 2, cptr.ldI16o(u, 2));
+        void cptr.sprintf(cptr.decay(qbuf), __sl561, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
         pos = getpos(cc, 1, cptr.decay(qbuf));
         if (pos < 0) {
-            cptr.stI32o(u, 4, cptr.stI32o(u, 8, cptr.stI32o(u, 12, 0)));
+            cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
             mod = 0;
         } else {
-            cptr.stI32o(u, 4, (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
-            cptr.stI32o(u, 8, (cptr.ldI16o(cc, 2) - cptr.ldI16o(u, 2)) | 0);
-            if (!cptr.ldI32o(iflags, 28)) {
-                cptr.stI32o(u, 4, sgn(cptr.ldI32o(u, 4)));
-                cptr.stI32o(u, 8, sgn(cptr.ldI32o(u, 8)));
+            cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
+            cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0);
+            if (!cptr.ldI32o(iflags, $instance_flags_getdir_click)) {
+                cptr.stI32o(u, $you_dx, sgn(cptr.ldI32o(u, $you_dx)));
+                cptr.stI32o(u, $you_dy, sgn(cptr.ldI32o(u, $you_dy)));
             }
-            cptr.stI32o(u, 12, 0);
+            cptr.stI32o(u, $you_dz, 0);
             switch ((pos + NHC.NHKF_GETPOS_PICK) | 0) {
                 case NHC.NHKF_GETPOS_PICK_Q:
                 case NHC.NHKF_GETPOS_PICK_O:
@@ -4651,14 +4764,14 @@ export function getdir(s) {
                 break;
             }
         }
-        if (cptr.ldI32o(iflags, 28))
-            cptr.stI32o(iflags, 28, mod);
+        if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
+            cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
         return (pos >= 0);
         __pc = 10;
         continue;
         }
         case 12: {
-        if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) && !cptr.ldI32o(u, 12) ? 1 : 0) { __pc = 14; continue; }
+        if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) && !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
         __pc = 15; continue;
         }
         case 14: {
@@ -4667,12 +4780,12 @@ export function getdir(s) {
         __pc = 16; continue;
         }
         case 17: {
-        help_requested = schar((dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_HELP, 1, 264)));
-        if (help_requested || cptr.ld1so(iflags, 178) ? 1 : 0) { __pc = 19; continue; }
+        help_requested = schar((dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        if (help_requested || cptr.ld1so(iflags, $instance_flags_cmdassist)) { __pc = 19; continue; }
         __pc = 18; continue;
         }
         case 19: {
-        did_help = help_dir(schar(((s && cptr.ld1s(s) == 94 ? 1 : 0) ? dirsym : 0)), uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264)), help_requested ? null : __sl563);
+        did_help = help_dir(schar(((s && cptr.ld1s(s) == 94) ? dirsym : 0)), uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)), help_requested ? null : __sl563);
         if (help_requested) { __pc = 21; continue; }
         __pc = 20; continue;
         }
@@ -4697,7 +4810,7 @@ export function getdir(s) {
         continue;
         }
         case 15: {
-        if (is_mov && !dxdy_moveok() ? 1 : 0) {
+        if (is_mov && !dxdy_moveok()) {
             You_cant(__sl565);
             return 0;
         }
@@ -4713,7 +4826,7 @@ export function getdir(s) {
         continue;
         }
         case 7: {
-        if (!cptr.ldI32o(u, 12))
+        if (!cptr.ldI32o(u, $you_dz))
             confdir(0);
         return 1;
         __pc = -1;
@@ -4731,22 +4844,22 @@ function show_direction_keys(win, centerchar, nodiag) {
         centerchar = 32;
     if (nodiag) {
         void cptr.sprintf(cptr.decay(buf), __sl566, visctrl(cmd_from_func(do_move_north)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl567);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl567);
         void cptr.sprintf(cptr.decay(buf), __sl568, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl567);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl567);
         void cptr.sprintf(cptr.decay(buf), __sl566, visctrl(cmd_from_func(do_move_south)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     } else {
         void cptr.sprintf(cptr.decay(buf), __sl569, visctrl(cmd_from_func(do_move_northwest)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_northeast)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl570);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl570);
         void cptr.sprintf(cptr.decay(buf), __sl568, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl571);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl571);
         void cptr.sprintf(cptr.decay(buf), __sl569, visctrl(cmd_from_func(do_move_southwest)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_southeast)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        putstr()(win, 0, cptr.decay(buf));
     }
     ;
 }
@@ -4762,65 +4875,65 @@ function help_dir(sym, spkey, msg) {
     let explain;
     let dothat;
     let prefixhandling;
-    prefixhandling = schar((spkey != cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264)));
+    prefixhandling = schar((spkey != cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
     dothat = __sl572;
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (void (prefixhandling));
-    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT);
+    win = create_nhwindow()(NHM.NHW_TEXT);
     if (!win)
         return 0;
     if (cptr.ld1s(cptr.decay(buf))) {
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl0);
     } else if (msg) {
         void cptr.sprintf(cptr.decay(buf), __sl573, msg);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
+        putstr()(win, 0, cptr.decay(buf));
+        putstr()(win, 0, __sl0);
     }
-    if (!prefixhandling && (letter(sym) || sym == 91 ? 1 : 0) ? 1 : 0) {
+    if (!prefixhandling && (letter(sym) || sym == 91)) {
         sym = highc(sym);
         ctrl = schar(((((sym - 65) | 0) + 1) | 0));
-        if ((explain = dowhatdoes_core(ctrl, cptr.decay(buf2))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || cptr.ld1so(flags, 10) ? 1 : 0) ? 1 : 0) {
+        if ((explain = dowhatdoes_core(ctrl, cptr.decay(buf2))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
             void cptr.sprintf(cptr.decay(buf), __sl574, sym, cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) ? __sl0 : __sl575);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, explain);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl576);
+            putstr()(win, 0, cptr.decay(buf));
+            putstr()(win, 0, __sl0);
+            putstr()(win, 0, explain);
+            putstr()(win, 0, __sl0);
+            putstr()(win, 0, __sl576);
             void cptr.sprintf(cptr.decay(buf), __sl577, sym);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
+            putstr()(win, 0, cptr.decay(buf));
+            putstr()(win, 0, __sl0);
         }
     }
-    void cptr.sprintf(cptr.decay(buf), __sl578, prefixhandling ? __sl579 : __sl0, prefixhandling ? dothat : __sl0, ((cptr.ldI32o(u, 1808)) == NHC.PM_GRID_BUG) ? __sl580 : __sl0);
-    (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-    show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, 1808)) == NHC.PM_GRID_BUG)));
+    void cptr.sprintf(cptr.decay(buf), __sl578, prefixhandling ? __sl579 : __sl0, prefixhandling ? dothat : __sl0, ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? __sl580 : __sl0);
+    putstr()(win, 0, cptr.decay(buf));
+    show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG)));
     if (!prefixhandling) {
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl581);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl582);
+        putstr()(win, 0, __sl0);
+        putstr()(win, 0, __sl581);
+        putstr()(win, 0, __sl582);
         if (!prefixhandling) {
-            let selfi = cptr.ld1so(gc, 220) ? NHC.NHKF_GETDIR_SELF2 : NHC.NHKF_GETDIR_SELF;
-            void cptr.sprintf(cptr.decay(buf), __sl583, visctrl(cptr.ld1so2(gc, selfi, 1, 264)));
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            let selfi = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? NHC.NHKF_GETDIR_SELF2 : NHC.NHKF_GETDIR_SELF;
+            void cptr.sprintf(cptr.decay(buf), __sl583, visctrl(cptr.ld1so2(gc, selfi, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            putstr()(win, 0, cptr.decay(buf));
         }
     }
     if (msg) {
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl0);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl584);
+        putstr()(win, 0, __sl0);
+        putstr()(win, 0, __sl584);
     }
-    (cptr.ldPtro(windowprocs, 120))(win, 0);
-    (cptr.ldPtro(windowprocs, 128))(win);
+    display_nhwindow()(win, 0);
+    destroy_nhwindow()(win);
     return 1;
 }
 
 /** C ref: cmd.c:4300 — @param {CInt} force_impairment */
 export function confdir(force_impairment) {
-    if (force_impairment || u_maybe_impaired() ? 1 : 0) {
-        let kmax = ((cptr.ldI32o(u, 1808)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
+    if (force_impairment || u_maybe_impaired()) {
+        let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
         let k = cptr.ld1so(cptr.decay(dirs_ord), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4304, __sl585), rn2(kmax)) : rn2(kmax)), 1);
-        cptr.stI32o(u, 4, cptr.ld1so(cptr.decay(xdir), k, 1));
-        cptr.stI32o(u, 8, cptr.ld1so(cptr.decay(ydir), k, 1));
+        cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
+        cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), k, 1));
     }
     return;
 }
@@ -4839,20 +4952,20 @@ cptr.stPtro(__static_directionname_dirnames, 72, __sl315); /** C ref: cmd.c:4315
 
 /** C ref: cmd.c:4313 — @param {CInt} dir @returns {CPtr} */
 export function directionname(dir) {
-    if (dir < 0 || dir >= NHC.N_DIRS_Z ? 1 : 0)
+    if (dir < 0 || dir >= NHC.N_DIRS_Z)
         return __sl586;
     return cptr.ldPtro(__static_directionname_dirnames, dir, 8);
 }
 
 /** C ref: cmd.c:4326 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function isok(x, y) {
-    return ((x >= 1 && x <= 79 ? 1 : 0) && y >= 0 ? 1 : 0) && y <= 20 ? 1 : 0;
+    return x >= 1 && x <= 79 && y >= 0 && y <= 20 ? 1 : 0;
 }
 
 /** C ref: cmd.c:4334 @returns {CInt} */
 function doherecmdmenu() {
     let ch = here_cmd_menu();
-    return (ch && ch != 27 ? 1 : 0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+    return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:4343 @returns {CInt} */
@@ -4860,28 +4973,28 @@ function dotherecmdmenu() {
     let ch;
     let dir;
     let click;
-    let x = cptr.ldI16o(gc, 296);
-    let y = cptr.ldI16o(gc, 298);
-    cptr.stI32o(iflags, 28, 3);
+    let x = cptr.ldI16o(gc, $instance_globals_c_clicklook_cc);
+    let y = cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y);
+    cptr.stI32o(iflags, $instance_flags_getdir_click, 3);
     if (isok(x, y)) {
-        if (x == cptr.ldI16(u) && y == cptr.ldI16o(u, 2) ? 1 : 0)
+        if (x == cptr.ldI16(u) && y == cptr.ldI16o(u, $you_uy))
             ch = here_cmd_menu();
         else
-            ch = there_cmd_menu(x, y, cptr.ldI32o(iflags, 28));
-        cptr.stI16o(gc, 296, cptr.stI16o(gc, 298, -1));
-        cptr.stI32o(iflags, 28, 0);
-        return (ch && ch != 27 ? 1 : 0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+            ch = there_cmd_menu(x, y, cptr.ldI32o(iflags, $instance_flags_getdir_click));
+        cptr.stI16o(gc, $instance_globals_c_clicklook_cc, cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1));
+        cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
+        return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
     dir = getdir(null);
-    click = cptr.ldI32o(iflags, 28);
-    cptr.stI32o(iflags, 28, 0);
-    if (!dir || !isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, 4)) | 0)), i16(((cptr.ldI16o(u, 2) + cptr.ldI32o(u, 8)) | 0))) ? 1 : 0)
+    click = cptr.ldI32o(iflags, $instance_flags_getdir_click);
+    cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
+    if (!dir || !isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))))
         return NHM.ECMD_CANCEL;
-    if (cptr.ldI32o(u, 4) || cptr.ldI32o(u, 8) ? 1 : 0)
-        ch = there_cmd_menu(i16(((cptr.ldI16(u) + cptr.ldI32o(u, 4)) | 0)), i16(((cptr.ldI16o(u, 2) + cptr.ldI32o(u, 8)) | 0)), click);
+    if (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy))
+        ch = there_cmd_menu(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)), click);
     else
         ch = here_cmd_menu();
-    return (ch && ch != 27 ? 1 : 0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+    return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:4378 — enum */
@@ -4927,7 +5040,7 @@ export const MCMD_TRAVEL = 36;
 function mcmd_addmenu(win, act, txt) {
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, act);
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, txt, NHM.MENU_ITEMFLAGS_NONE);
 }
@@ -4936,49 +5049,49 @@ function mcmd_addmenu(win, act, txt) {
 function there_cmd_menu_self(win, x, y, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, 1684);
+    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
     let stway = stairway_at(x, y);
     let ttmp;
-    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0))
+    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         return K;
-    if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK) ? 1 : 0) && can_reach_floor(0) ? 1 : 0) {
-        void cptr.sprintf(cptr.decay(buf), __sl595, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, 24, 8));
+    if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK)) && can_reach_floor(0)) {
+        void cptr.sprintf(cptr.decay(buf), __sl595, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, 24, $symdef_explanation));
         mcmd_addmenu(win, NHC.MCMD_QUAFF, cptr.decay(buf)), ++K;
     }
-    if (((typ) == NHC.FOUNTAIN) && can_reach_floor(0) ? 1 : 0)
+    if (((typ) == NHC.FOUNTAIN) && can_reach_floor(0))
         mcmd_addmenu(win, NHC.MCMD_DIP, __sl596), ++K;
     if (((typ) == NHC.THRONE))
         mcmd_addmenu(win, NHC.MCMD_SIT, __sl597), ++K;
     if (((typ) == NHC.ALTAR))
         mcmd_addmenu(win, NHC.MCMD_OFFER, __sl598), ++K;
-    if (stway && cptr.ld1so(stway, 8) ? 1 : 0) {
-        void cptr.sprintf(cptr.decay(buf), __sl599, cptr.ld1so(stway, 9) ? __sl77 : __sl76);
+    if (stway && cptr.ld1so(stway, $stairway_up)) {
+        void cptr.sprintf(cptr.decay(buf), __sl599, cptr.ld1so(stway, $stairway_isladder) ? __sl77 : __sl76);
         mcmd_addmenu(win, NHC.MCMD_UP, cptr.decay(buf)), ++K;
     }
-    if (stway && !cptr.ld1so(stway, 8) ? 1 : 0) {
-        void cptr.sprintf(cptr.decay(buf), __sl600, cptr.ld1so(stway, 9) ? __sl77 : __sl76);
+    if (stway && !cptr.ld1so(stway, $stairway_up)) {
+        void cptr.sprintf(cptr.decay(buf), __sl600, cptr.ld1so(stway, $stairway_isladder) ? __sl77 : __sl76);
         mcmd_addmenu(win, NHC.MCMD_DOWN, cptr.decay(buf)), ++K;
     }
-    if (cptr.ldPtro(u, 2424)) {
-        void cptr.sprintf(cptr.decay(buf), __sl601, x_monnam(cptr.ldPtro(u, 2424), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
+    if (cptr.ldPtro(u, $you_usteed)) {
+        void cptr.sprintf(cptr.decay(buf), __sl601, x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
         mcmd_addmenu(win, NHC.MCMD_DISMOUNT, cptr.decay(buf)), ++K;
     }
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, 62160) !== null)) {
-        let otmp = cptr.ldPtro3(svl, x, 168, y, 8, 62160);
-        void cptr.sprintf(cptr.decay(buf), __sl602, cptr.ldPtro(otmp, 8) ? __sl603 : doname(otmp));
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
+        let otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+        void cptr.sprintf(cptr.decay(buf), __sl602, cptr.ldPtro(otmp, $obj_v) ? __sl603 : doname(otmp));
         mcmd_addmenu(win, NHC.MCMD_PICKUP, cptr.decay(buf)), ++K;
-        if ((cptr.ldI16o((otmp), 32) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), 32) <= NHC.BAG_OF_TRICKS ? 1 : 0)) {
+        if ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), $obj_otyp) <= NHC.BAG_OF_TRICKS)) {
             void cptr.sprintf(cptr.decay(buf), __sl604, doname(otmp));
             mcmd_addmenu(win, NHC.MCMD_LOOT, cptr.decay(buf)), ++K;
             void cptr.sprintf(cptr.decay(buf), __sl605, doname(otmp));
             mcmd_addmenu(win, NHC.MCMD_TIP, cptr.decay(buf)), ++K;
         }
-        if (cptr.ld1so(otmp, 49) == NHC.FOOD_CLASS) {
+        if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS) {
             void cptr.sprintf(cptr.decay(buf), __sl606, doname(otmp));
             mcmd_addmenu(win, NHC.MCMD_EAT, cptr.decay(buf)), ++K;
         }
     }
-    if (cptr.ldPtro(gi, 8)) {
+    if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         mcmd_addmenu(win, NHC.MCMD_INVENTORY, __sl607), ++K;
         mcmd_addmenu(win, NHC.MCMD_DROP, __sl608), ++K;
     }
@@ -4987,8 +5100,8 @@ function there_cmd_menu_self(win, x, y, act) {
     mcmd_addmenu(win, NHC.MCMD_LOOK_HERE, __sl611), ++K;
     if (num_spells() > 0)
         mcmd_addmenu(win, NHC.MCMD_CAST_SPELL, __sl612), ++K;
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, 24) & 1) | 0 ? 1 : 0) {
-        if (((cptr.ldI32o(ttmp, 20) & 31) | 0) != NHC.VIBRATING_SQUARE)
+    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
+        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_HERE, __sl613), ++K;
     }
     return K;
@@ -4998,64 +5111,64 @@ function there_cmd_menu_self(win, x, y, act) {
 function there_cmd_menu_next2u(win, x, y, mod, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, 1684);
+    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
     let ttmp;
     let mtmp;
-    if (!(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= 2))
+    if (!(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
         return K;
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
-        let dm = (cptr.ldI32o3(svl, x, 756, y, 36, 1688) & 31) | 0;
+        let dm = (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
         if ((dm & 12)) {
             mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __sl614), ++K;
             key_or_pick = schar((carrying(NHC.SKELETON_KEY) || carrying(NHC.LOCK_PICK) ? 1 : 0));
             card = schar((carrying(NHC.CREDIT_CARD) !== null));
-            if (key_or_pick || card ? 1 : 0) {
+            if (key_or_pick || card) {
                 void cptr.sprintf(cptr.decay(buf), __sl615, key_or_pick ? __sl616 : __sl0);
                 mcmd_addmenu(win, NHC.MCMD_LOCK_DOOR, upstart(cptr.decay(buf))), ++K;
             }
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_DOOR, __sl617), ++K;
             mcmd_addmenu(win, NHC.MCMD_KICK_DOOR, __sl618), ++K;
-        } else if ((dm & NHM.D_ISOPEN) && (mod == NHM.CLICK_2) ? 1 : 0) {
+        } else if ((dm & NHM.D_ISOPEN) && (mod == NHM.CLICK_2)) {
             mcmd_addmenu(win, NHC.MCMD_CLOSE_DOOR, __sl619), ++K;
         }
     }
     if (typ <= NHC.SCORR)
         mcmd_addmenu(win, NHC.MCMD_SEARCH, __sl620), ++K;
-    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, 24) & 1) | 0 ? 1 : 0) {
+    if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
         mcmd_addmenu(win, NHC.MCMD_LOOK_TRAP, __sl621), ++K;
-        if (((cptr.ldI32o(ttmp, 20) & 31) | 0) != NHC.VIBRATING_SQUARE)
+        if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
             mcmd_addmenu(win, NHC.MCMD_UNTRAP_TRAP, __sl613), ++K;
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __sl622), ++K;
     }
-    if (cptr.ldI32o3(svl, x, 756, y, 36, 1680) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
+    if (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __sl623), ++K;
-    mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, 75600));
-    if (mtmp && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
+    mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+    if (mtmp && !(canseemon(mtmp) || sensemon(mtmp)))
         mtmp = null;
-    if (mtmp && which_armor(mtmp, 1048576n) ? 1 : 0) {
+    if (mtmp && which_armor(mtmp, 1048576n)) {
         let mnam = x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0);
-        if (!cptr.ldPtro(u, 2424)) {
+        if (!cptr.ldPtro(u, $you_usteed)) {
             void cptr.sprintf(cptr.decay(buf), __sl624, mnam);
             mcmd_addmenu(win, NHC.MCMD_RIDE, cptr.decay(buf)), ++K;
         }
         void cptr.sprintf(cptr.decay(buf), __sl625, mnam);
         mcmd_addmenu(win, NHC.MCMD_REMOVE_SADDLE, cptr.decay(buf)), ++K;
     }
-    if (((mtmp && can_saddle(mtmp) ? 1 : 0) && !which_armor(mtmp, 1048576n) ? 1 : 0) && carrying(NHC.SADDLE) ? 1 : 0) {
+    if (mtmp && can_saddle(mtmp) && !which_armor(mtmp, 1048576n) && carrying(NHC.SADDLE)) {
         void cptr.sprintf(cptr.decay(buf), __sl626, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_APPLY_SADDLE, cptr.decay(buf)), ++K;
     }
-    if (mtmp && ((cptr.ldI32o(mtmp, 168) & 1) | 0 || cptr.ld1so(mtmp, 65) ? 1 : 0) ? 1 : 0) {
+    if (mtmp && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) {
         void cptr.sprintf(cptr.decay(buf), __sl627, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf)), ++K;
         void cptr.sprintf(cptr.decay(buf), __sl628, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, cptr.decay(buf)), ++K;
-        void cptr.sprintf(cptr.decay(buf), __sl629, !(cptr.ldPtro((mtmp), 312) && (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) ? 1 : 0) ? __sl630 : __sl631, mon_nam(mtmp));
+        void cptr.sprintf(cptr.decay(buf), __sl629, !(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? __sl630 : __sl631, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_NAME, cptr.decay(buf)), ++K;
     }
-    if ((mtmp && !((cptr.ldI32o(mtmp, 168) & 1) | 0 || cptr.ld1so(mtmp, 65) ? 1 : 0) ? 1 : 0) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF) ? 1 : 0) {
+    if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.sprintf(cptr.decay(buf), __sl632, mtmp ? mon_nam(mtmp) : __sl633);
         mcmd_addmenu(win, NHC.MCMD_ATTACK_NEXT2U, cptr.decay(buf)), ++K;
         cptr.stI32(act, NHC.MCMD_ATTACK_NEXT2U);
@@ -5068,7 +5181,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
 function there_cmd_menu_far(win, x, y, mod) {
     let K = 0;
     if (mod == NHM.CLICK_1) {
-        if (linedup(cptr.ldI16(u), cptr.ldI16o(u, 2), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16o(u, 2), x, y) < 324 ? 1 : 0)
+        if (linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) < 324)
             mcmd_addmenu(win, NHC.MCMD_THROW_OBJ, __sl634), ++K;
         mcmd_addmenu(win, NHC.MCMD_TRAVEL, __sl635), ++K;
     }
@@ -5078,8 +5191,8 @@ function there_cmd_menu_far(win, x, y, mod) {
 /** C ref: cmd.c:4639 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr} act @returns {CInt} */
 function there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
-    if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2 ? 1 : 0) {
-        if ((!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) || (cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? 1 : 0) || glyph_at(x, y) != (((((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) || !cptr.ld1so(flags, 169) ? 1 : 0) ? cptr.ldI32o(u, 1808) : cptr.ldI16o(gu, 368)) + (((((((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)) ? (cptr.ldI32o(u, 1860) & 1) | 0 : cptr.ld1so(flags, 13)) ? 1 : 0))) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0)
+    if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
+        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
             mcmd_addmenu(win, NHC.MCMD_LOOK_AT, __sl636), ++K;
     }
     return K;
@@ -5101,8 +5214,8 @@ function act_on_act(act, dx, dy) {
     }
     switch (act) {
         case NHC.MCMD_TRAVEL:
-        cptr.stI16o(iflags, 76, cptr.stI16o(u, 16, i16(((cptr.ldI16(u) + dx) | 0))));
-        cptr.stI16o(iflags, 78, cptr.stI16o(u, 18, i16(((cptr.ldI16o(u, 2) + dy) | 0))));
+        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0))));
+        cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))));
         cmdq_add_ec(NHC.CQ_CANNED, dotravel_target);
         break;
         case NHC.MCMD_THROW_OBJ:
@@ -5122,7 +5235,7 @@ function act_on_act(act, dx, dy) {
             otmp = carrying(NHC.CREDIT_CARD);
         if (otmp) {
             cmdq_add_ec(NHC.CQ_CANNED, doapply);
-            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, 50));
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
             cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0);
             cmdq_add_key(NHC.CQ_CANNED, 121);
         }
@@ -5167,7 +5280,7 @@ function act_on_act(act, dx, dy) {
         case NHC.MCMD_APPLY_SADDLE:
         if ((otmp = carrying(NHC.SADDLE)) !== null) {
             cmdq_add_ec(NHC.CQ_CANNED, doapply);
-            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, 50));
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
             cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0);
         }
         break;
@@ -5235,8 +5348,8 @@ function act_on_act(act, dx, dy) {
         cmdq_add_ec(NHC.CQ_CANNED, dolook);
         break;
         case NHC.MCMD_LOOK_AT:
-        cptr.stI16o(gc, 296, i16(((cptr.ldI16(u) + dx) | 0)));
-        cptr.stI16o(gc, 298, i16(((cptr.ldI16o(u, 2) + dy) | 0)));
+        cptr.stI16o(gc, $instance_globals_c_clicklook_cc, i16(((cptr.ldI16(u) + dx) | 0)));
+        cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0)));
         cmdq_add_ec(NHC.CQ_CANNED, doclicklook);
         break;
         case NHC.MCMD_UNTRAP_HERE:
@@ -5263,38 +5376,38 @@ function there_cmd_menu(x, y, mod) {
     let K = 0;
     let picks = cptr.box(null);
     let dx = i16(((x - cptr.ldI16(u)) | 0));
-    let dy = i16(((y - cptr.ldI16o(u, 2)) | 0));
+    let dy = i16(((y - cptr.ldI16o(u, $you_uy)) | 0));
     let act = cptr.box(NHC.MCMD_NOTHING);
-    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(win, 0n);
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0))
+    win = create_nhwindow()(NHM.NHW_MENU);
+    start_menu()(win, 0n);
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         K = (K + there_cmd_menu_self(win, x, y, act)) | 0;
-    else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= 2))
+    else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
         K = (K + there_cmd_menu_next2u(win, x, y, mod, act)) | 0;
     else
         K = (K + there_cmd_menu_far(win, x, y, mod)) | 0;
     K = (K + there_cmd_menu_common(win, x, y, mod, act)) | 0;
     if (!K) {
-        if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= 2) && test_move(cptr.ldI16(u), cptr.ldI16o(u, 2), dx, dy, NHM.TEST_MOVE) ? 1 : 0) {
+        if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE)) {
             let dir = xytodir(dx, dy);
             cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8));
-        } else if (cptr.ld1so(flags, 170)) {
-            cptr.stI16o(iflags, 76, cptr.stI16o(u, 16, x));
-            cptr.stI16o(iflags, 78, cptr.stI16o(u, 18, y));
+        } else if (cptr.ld1so(flags, $flag_travelcmd)) {
+            cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, x));
+            cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, y));
             cmdq_add_ec(NHC.CQ_CANNED, dotravel_target);
         }
         npick = 0;
         ch = 0;
-    } else if ((K == 1 && act.v != NHC.MCMD_NOTHING ? 1 : 0) && act.v != NHC.MCMD_TRAVEL ? 1 : 0) {
-        (cptr.ldPtro(windowprocs, 128))(win);
+    } else if (K == 1 && act.v != NHC.MCMD_NOTHING && act.v != NHC.MCMD_TRAVEL) {
+        destroy_nhwindow()(win);
         act_on_act(act.v, dx, dy);
         return 0;
     } else {
-        (cptr.ldPtro(windowprocs, 184))(win, __sl637);
+        end_menu()(win, __sl637);
         npick = select_menu(win, NHM.PICK_ONE, picks);
         ch = 27;
     }
-    (cptr.ldPtro(windowprocs, 128))(win);
+    destroy_nhwindow()(win);
     if (npick > 0) {
         act.v = cptr.ldI32(picks.v);
         cptr.free(picks.v);
@@ -5306,16 +5419,16 @@ function there_cmd_menu(x, y, mod) {
 
 /** C ref: cmd.c:4899 @returns {CInt} */
 function here_cmd_menu() {
-    there_cmd_menu(cptr.ldI16(u), cptr.ldI16o(u, 2), NHM.CLICK_1);
+    there_cmd_menu(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.CLICK_1);
     return 0;
 }
 
 /** C ref: cmd.c:4906 — @param {CInt} x @param {CInt} y @param {CInt} mod */
 export function click_to_cmd(x, y, mod) {
-    cptr.stI16o(gc, 296, x);
-    cptr.stI16o(gc, 298, y);
-    if (cptr.ldPtro2(gc, (mod - 1) | 0, 8, 248))
-        cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.ldPtro2(gc, (mod - 1) | 0, 8, 248), 24));
+    cptr.stI16o(gc, $instance_globals_c_clicklook_cc, x);
+    cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, y);
+    if (cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn))
+        cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn), $ext_func_tab_ef_funct));
 }
 
 /** C ref: cmd.c:4916 @returns {CInt} */
@@ -5324,32 +5437,32 @@ function domouseaction() {
     let y;
     let o;
     let dir;
-    x = i16(((cptr.ldI16o(gc, 296) - cptr.ldI16(u)) | 0));
-    y = i16(((cptr.ldI16o(gc, 298) - cptr.ldI16o(u, 2)) | 0));
-    if (cptr.ld1so(flags, 170)) {
-        if (Math.abs(x) <= 1 && Math.abs(y) <= 1 ? 1 : 0) {
+    x = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc) - cptr.ldI16(u)) | 0));
+    y = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0));
+    if (cptr.ld1so(flags, $flag_travelcmd)) {
+        if (Math.abs(x) <= 1 && Math.abs(y) <= 1) {
             x = i16(sgn(x)), y = i16(sgn(y));
         } else {
-            cptr.stI16o(iflags, 76, cptr.stI16o(u, 16, i16(((cptr.ldI16(u) + x) | 0))));
-            cptr.stI16o(iflags, 78, cptr.stI16o(u, 18, i16(((cptr.ldI16o(u, 2) + y) | 0))));
+            cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + x) | 0))));
+            cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + y) | 0))));
             cmdq_add_ec(NHC.CQ_CANNED, dotravel_target);
             return NHM.ECMD_OK;
         }
-        if (x == 0 && y == 0 ? 1 : 0) {
-            if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.SINK) ? 1 : 0) {
+        if (x == 0 && y == 0) {
+            if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
                 cmdq_add_ec(NHC.CQ_CANNED, dodrink);
                 return NHM.ECMD_OK;
-            } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.THRONE)) {
+            } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
                 cmdq_add_ec(NHC.CQ_CANNED, dosit);
                 return NHM.ECMD_OK;
-            } else if (On_stairs_up(cptr.ldI16(u), cptr.ldI16o(u, 2))) {
+            } else if (On_stairs_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                 cmdq_add_ec(NHC.CQ_CANNED, doup);
                 return NHM.ECMD_OK;
-            } else if (On_stairs_dn(cptr.ldI16(u), cptr.ldI16o(u, 2))) {
+            } else if (On_stairs_dn(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                 cmdq_add_ec(NHC.CQ_CANNED, dodown);
                 return NHM.ECMD_OK;
-            } else if ((o = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, 2), 8, 62160))) !== null) {
-                cmdq_add_ec(NHC.CQ_CANNED, (cptr.ldI16o((o), 32) >= NHC.LARGE_BOX && cptr.ldI16o((o), 32) <= NHC.BAG_OF_TRICKS ? 1 : 0) ? doloot : dopickup);
+            } else if ((o = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null) {
+                cmdq_add_ec(NHC.CQ_CANNED, (cptr.ldI16o((o), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((o), $obj_otyp) <= NHC.BAG_OF_TRICKS) ? doloot : dopickup);
                 return NHM.ECMD_OK;
             } else {
                 cmdq_add_ec(NHC.CQ_CANNED, donull);
@@ -5357,18 +5470,18 @@ function domouseaction() {
             }
         }
         dir = xytodir(x, y);
-        if (!(cptr.ldPtro3(svl, (cptr.ldI16(u) + x) | 0, 168, (cptr.ldI16o(u, 2) + y) | 0, 8, 75600)) && !test_move(cptr.ldI16(u), cptr.ldI16o(u, 2), x, y, NHM.TEST_MOVE) ? 1 : 0) {
-            if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, 2) + y) | 0, 36, 1684)) == NHC.DOOR)) {
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, 2) + y) | 0, 36, 1688) & 31) | 0) & NHM.D_LOCKED) {
+        if (!(cptr.ldPtro3(svl, (cptr.ldI16(u) + x) | 0, 168, (cptr.ldI16o(u, $you_uy) + y) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) && !test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, NHM.TEST_MOVE)) {
+            if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
                     cmdq_add_ec(NHC.CQ_CANNED, dokick);
                     return NHM.ECMD_OK;
                 }
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, 2) + y) | 0, 36, 1688) & 31) | 0) & NHM.D_CLOSED) {
+                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED) {
                     cmdq_add_ec(NHC.CQ_CANNED, doopen);
                     return NHM.ECMD_OK;
                 }
             }
-            if (cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, 2) + y) | 0, 36, 1684) <= NHC.SCORR) {
+            if (cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.SCORR) {
                 cmdq_add_ec(NHC.CQ_CANNED, dosearch);
                 return NHM.ECMD_OK;
             }
@@ -5386,7 +5499,7 @@ function domouseaction() {
             x = 0, y = -1;
         else
             x = i16(sgn(x)), y = i16(sgn(y));
-        if (x == 0 && y == 0 ? 1 : 0) {
+        if (x == 0 && y == 0) {
             cmdq_add_ec(NHC.CQ_CANNED, donull);
             return NHM.ECMD_OK;
         }
@@ -5400,7 +5513,7 @@ function domouseaction() {
 export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let qbuf = new Uint8Array(128);
     let key;
-    let save_input_state = cptr.ldI32o(program_state, 104);
+    let save_input_state = cptr.ldI32o(program_state, $sinfo_input_state);
     let cnt = 0n;
     let first = inkey ? BigInt(((inkey - 48) | 0)) : 0n;
     let backspaced = 0;
@@ -5414,47 +5527,47 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
             key = inkey;
             inkey = 0;
         } else {
-            cptr.stI32o(program_state, 104, save_input_state);
+            cptr.stI32o(program_state, $sinfo_input_state, save_input_state);
             key = readchar();
         }
         if (digit(schar(key))) {
             let dgt = BigInt(((key - 48) | 0));
-            cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n ? 1 : 0) ? 1 : 0) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
+            cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
             if (cnt < 0n)
                 cnt = 0n;
-            else if (maxcount > 0n && cnt > maxcount ? 1 : 0)
+            else if (maxcount > 0n && cnt > maxcount)
                 cnt = maxcount;
             showzero = schar((key == 48));
-        } else if (key == 8 || key == 127 ? 1 : 0) {
-            if (!cnt && !echoalways ? 1 : 0)
+        } else if (key == 8 || key == 127) {
+            if (!cnt && !echoalways)
                 break;
             showzero = 0;
             cnt = cnt / 10n;
             backspaced = 1;
-        } else if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264)) {
+        } else if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
             break;
-        } else if (!allowchars || cptr.strchr(allowchars, key) ? 1 : 0) {
+        } else if (!allowchars || cptr.strchr(allowchars, key)) {
             cptr.stI64(count, cnt);
             if (cptr.ldI64(count) != cnt)
                 impossible(__sl638);
             break;
         }
-        if ((cnt > 9n || backspaced ? 1 : 0) || echoalways ? 1 : 0) {
-            (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
-            if ((backspaced && !cnt ? 1 : 0) && !showzero ? 1 : 0) {
+        if (cnt > 9n || backspaced || echoalways) {
+            clear_nhwindow()(WIN_MESSAGE.v);
+            if (backspaced && !cnt && !showzero) {
                 void cptr.sprintf(cptr.decay(qbuf), __sl639);
             } else {
                 void cptr.sprintf(cptr.decay(qbuf), __sl640, cnt);
                 backspaced = 0;
             }
             custompline(NHM.SUPPRESS_HISTORY, __sl472, cptr.decay(qbuf));
-            (cptr.ldPtro(windowprocs, 208))();
+            mark_synch()();
         }
     }
-    if (historicmsg || (conditionalmsg && cptr.ldI64(count) != first ? 1 : 0) ? 1 : 0) {
+    if (historicmsg || (conditionalmsg && cptr.ldI64(count) != first)) {
         void cptr.sprintf(cptr.decay(qbuf), __sl641, cptr.ldI64(count));
         void key2txt(uchar(key), eos(cptr.decay(qbuf)));
-        (cptr.ldPtro(windowprocs, 352))(cptr.decay(qbuf), 0);
+        putmsghistory()(cptr.decay(qbuf), 0);
     }
     return schar(key);
 }
@@ -5463,55 +5576,55 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
 function parse() {
     let foo;
     let bind;
-    cptr.st1o(iflags, 92, 1);
-    cptr.stI64o(gc, 328, 0n);
-    cptr.st1o(svc, 78, 1);
+    cptr.st1o(iflags, $instance_flags_in_parse, 1);
+    cptr.stI64o(gc, $instance_globals_c_command_count, 0n);
+    cptr.st1o(svc, $context_info_move, 1);
     flush_screen(1);
-    cptr.stI32o(program_state, 104, NHC.commandInp);
-    if (!cptr.ld1so(gc, 220) || (foo = readchar()) == cptr.ld1so2(gc, NHC.NHKF_COUNT, 1, 264) ? 1 : 0) {
-        cptr.stI32o(program_state, 104, NHC.commandInp);
-        foo = get_count(null, 0, 32767n, cptr.add(gc, 328), NHM.GC_NOFLAGS);
+    cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
+    if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) || (foo = readchar()) == cptr.ld1so2(gc, NHC.NHKF_COUNT, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+        cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
+        foo = get_count(null, 0, 32767n, cptr.add(gc, $instance_globals_c_command_count), NHM.GC_NOFLAGS);
     }
-    cptr.stI64(gl, cptr.ldI64o(gc, 328));
-    if (foo == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, 264)) {
-        (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
-        cptr.stI64o(gc, 328, 0n);
+    cptr.stI64(gl, cptr.ldI64o(gc, $instance_globals_c_command_count));
+    if (foo == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+        clear_nhwindow()(WIN_MESSAGE.v);
+        cptr.stI64o(gc, $instance_globals_c_command_count, 0n);
         cptr.stI64(gl, 0n);
     } else if (cptr.ldI32(gi)) {
-        cptr.stI64o(gc, 328, cptr.ldI64(gl));
-    } else if ((((foo && (bind = cmdbind_get(uchar((foo & 255)))) !== null ? 1 : 0) && bind ? 1 : 0) && cptr.ldPtro(bind, 16) ? 1 : 0) && ((cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === do_repeat || cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === doprev_message ? 1 : 0) || cptr.ldPtro(cptr.ldPtro(bind, 16), 24) === doextcmd ? 1 : 0) ? 1 : 0) {
-        cptr.stI64o(gc, 328, cptr.ldI64(gl));
+        cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
+    } else if (foo && (bind = cmdbind_get(uchar((foo & 255)))) !== null && bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && (cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === do_repeat || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doprev_message || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doextcmd)) {
+        cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
     }
-    cptr.stI64o(gm, 8, cptr.ldI64o(gc, 328));
-    if (cptr.ldI64o(gm, 8))
-        (cptr.stI64o(gm, 8, cptr.ldI64o(gm, 8) + -1n)) - (-1n);
-    cptr.stI32o(gc, 316, foo);
-    (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
-    cptr.st1o(iflags, 92, 0);
-    return cptr.ldI32o(gc, 316);
+    cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gc, $instance_globals_c_command_count));
+    if (cptr.ldI64o(gm, $instance_globals_m_multi))
+        (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n)) - (-1n);
+    cptr.stI32o(gc, $instance_globals_c_cmd_key, foo);
+    clear_nhwindow()(WIN_MESSAGE.v);
+    cptr.st1o(iflags, $instance_flags_in_parse, 0);
+    return cptr.ldI32o(gc, $instance_globals_c_cmd_key);
 }
 
 /** C ref: cmd.c:5159 — @param {CInt} sig_unused */
 export function hangup(sig_unused) {
-    if (cptr.ldI32o(program_state, 24))
-        cptr.stI32o(program_state, 44, 0);
+    if (cptr.ldI32o(program_state, $sinfo_exiting))
+        cptr.stI32o(program_state, $sinfo_in_moveloop, 0);
     nhwindows_hangup();
-    (cptr.stI32o(program_state, 8, cptr.ldI32o(program_state, 8) + 1)) - (1);
-    if (cptr.ldI32o(program_state, 44) && cptr.ldI32o(program_state, 16) ? 1 : 0)
+    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) - (1);
+    if (cptr.ldI32o(program_state, $sinfo_in_moveloop) && cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         return;
     end_of_input();
 }
 
 /** C ref: cmd.c:5183 */
 export function end_of_input() {
-    if ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16o(svd, 1880))))
-        cptr.stI32o(program_state, 16, 0);
-    if (cptr.ldI32o(program_state, 16))
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()))
+        cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
+    if (cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         void dosave0();
-    if (cptr.ldPtro(soundprocs, 32))
-        (cptr.ldPtro(soundprocs, 32))(__sl642);
-    if (cptr.ld1so(iflags, 81))
-        (cptr.ldPtro(windowprocs, 80))(null);
+    if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
+        (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__sl642);
+    if (cptr.ld1so(iflags, $instance_flags_window_inited))
+        exit_nhwindows()(null);
     clearlocks();
     nh_terminate(0);
     return;
@@ -5521,7 +5634,7 @@ export function end_of_input() {
 function readchar_core(x, y, mod) {
     let sym;
     __lbl_readchar_done: {
-        if (cptr.ld1so(iflags, 15)) {
+        if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             sym = randomkey();
             break __lbl_readchar_done;
         }
@@ -5530,29 +5643,29 @@ function readchar_core(x, y, mod) {
         else if (cptr.ldI32(gi))
             sym = pgetchar();
         else
-            sym = (cptr.ldPtro(windowprocs, 264))(x, y, mod);
+            sym = nh_poskey()(x, y, mod);
         if (sym == -1) {
             let cnt = 20;
             do {
                 clearerr(__stdinp);
                 sym = pgetchar();
-            } while (--cnt && sym == -1 ? 1 : 0);
+            } while (--cnt && sym == -1);
         }
         if (sym == -1) {
             hangup(0);
             sym = 27;
-        } else if ((sym == 27 && cptr.ld1so(iflags, 125) ? 1 : 0) && cptr.ldI32o(program_state, 104) != NHC.otherInp ? 1 : 0) {
+        } else if (sym == 27 && cptr.ld1so(iflags, $instance_flags_altmeta) && cptr.ldI32o(program_state, $sinfo_input_state) != NHC.otherInp) {
             sym = cptr.ld1s(readchar_queue) ? cptr.ld1s(cptr.postinc(() => readchar_queue, (v) => { readchar_queue = v; })) : pgetchar();
-            if (sym == -1 || sym == 0 ? 1 : 0)
+            if (sym == -1 || sym == 0)
                 sym = 27;
             else if (sym != 27)
                 sym |= 128;
         } else if (sym == 0) {
-            cptr.stI16o(gc, 296, cptr.stI16o(gc, 298, -1));
+            cptr.stI16o(gc, $instance_globals_c_clicklook_cc, cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1));
             click_to_cmd(cptr.ldI16(x), cptr.ldI16(y), cptr.ldI32(mod));
         }
     }
-    cptr.stI32o(program_state, 104, NHC.otherInp);
+    cptr.stI32o(program_state, $sinfo_input_state, NHC.otherInp);
     return schar(sym);
 }
 
@@ -5560,7 +5673,7 @@ function readchar_core(x, y, mod) {
 export function readchar() {
     let ch;
     let x = cptr.box(cptr.ldI16(u));
-    let y = cptr.box(cptr.ldI16o(u, 2));
+    let y = cptr.box(cptr.ldI16o(u, $you_uy));
     let mod = cptr.box(0);
     ch = readchar_core(x, y, mod);
     return ch;
@@ -5569,7 +5682,7 @@ export function readchar() {
 /** C ref: cmd.c:5288 — @param {CPtr} x @param {CPtr} y @param {CPtr} mod @returns {CInt} */
 export function readchar_poskey(x, y, mod) {
     let ch;
-    cptr.stI32o(program_state, 104, NHC.getposInp);
+    cptr.stI32o(program_state, $sinfo_input_state, NHC.getposInp);
     ch = readchar_core(x, y, mod);
     return ch;
 }
@@ -5577,76 +5690,76 @@ export function readchar_poskey(x, y, mod) {
 /** C ref: cmd.c:5299 @returns {CInt} */
 function dotravel() {
     let cc = cptr.alloc(4);
-    cptr.stI16(cc, cptr.ldI16o(iflags, 76));
-    cptr.stI16o(cc, 2, cptr.ldI16o(iflags, 78));
-    if (cptr.ldI16(cc) == 0 && cptr.ldI16o(cc, 2) == 0 ? 1 : 0) {
+    cptr.stI16(cc, cptr.ldI16o(iflags, $instance_flags_travelcc));
+    cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y));
+    if (cptr.ldI16(cc) == 0 && cptr.ldI16o(cc, $nhcoord_y) == 0) {
         cptr.stI16(cc, cptr.ldI16(u));
-        cptr.stI16o(cc, 2, cptr.ldI16o(u, 2));
+        cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     }
-    cptr.st1o(iflags, 74, 1);
-    if (cptr.ld1so(iflags, 135)) {
-        let gfilt = cptr.ldI32o(iflags, 32);
-        cptr.stI32o(iflags, 32, NHC.GFILTER_VIEW);
+    cptr.st1o(iflags, $instance_flags_getloc_travelmode, 1);
+    if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
+        let gfilt = cptr.ldI32o(iflags, $instance_flags_getloc_filter);
+        cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
         if (!getpos_menu(cc, NHC.GLOC_INTERESTING)) {
-            cptr.stI32o(iflags, 32, gfilt);
-            cptr.st1o(iflags, 74, 0);
+            cptr.stI32o(iflags, $instance_flags_getloc_filter, gfilt);
+            cptr.st1o(iflags, $instance_flags_getloc_travelmode, 0);
             return NHM.ECMD_OK;
         }
-        cptr.stI32o(iflags, 32, gfilt);
+        cptr.stI32o(iflags, $instance_flags_getloc_filter, gfilt);
     } else {
         pline(__sl643);
         if (getpos(cc, 1, __sl644) < 0) {
-            cptr.st1o(iflags, 74, 0);
+            cptr.st1o(iflags, $instance_flags_getloc_travelmode, 0);
             return NHM.ECMD_CANCEL;
         }
     }
-    cptr.stI16o(iflags, 76, cptr.stI16o(u, 16, cptr.ldI16(cc)));
-    cptr.stI16o(iflags, 78, cptr.stI16o(u, 18, cptr.ldI16o(cc, 2)));
+    cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, cptr.ldI16(cc)));
+    cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, cptr.ldI16o(cc, $nhcoord_y)));
     return dotravel_target();
 }
 
 /** C ref: cmd.c:5348 @returns {CInt} */
 function dotravel_target() {
-    if (!isok(cptr.ldI16o(iflags, 76), cptr.ldI16o(iflags, 78))) {
+    if (!isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
         pline(__sl645);
         return NHM.ECMD_OK;
-    } else if (((cptr.ldI16o(iflags, 76)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, 78)) == cptr.ldI16o(u, 2) ? 1 : 0)) {
+    } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
         You(__sl646);
-        cptr.stI16o(iflags, 76, cptr.stI16o(iflags, 78, 0));
+        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
         return NHM.ECMD_OK;
     }
-    cptr.st1o(iflags, 74, 0);
-    cptr.st1o(svc, 72, 1);
-    cptr.st1o(svc, 73, 1);
-    cptr.stI32o(svc, 8, 8);
-    cptr.st1o(svc, 75, 1);
-    cptr.stI64o(gd, 16, cptr.ldI64o(gd, 16) | 2n);
-    if (!cptr.ldI64o(gm, 8))
-        cptr.stI64o(gm, 8, 80n);
-    cptr.stI32o(u, 44, 0);
-    cptr.st1o(svc, 79, 1);
+    cptr.st1o(iflags, $instance_flags_getloc_travelmode, 0);
+    cptr.st1o(svc, $context_info_travel, 1);
+    cptr.st1o(svc, $context_info_travel1, 1);
+    cptr.stI32o(svc, $context_info_run, 8);
+    cptr.st1o(svc, $context_info_nopick, 1);
+    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
+    if (!cptr.ldI64o(gm, $instance_globals_m_multi))
+        cptr.stI64o(gm, $instance_globals_m_multi, 80n);
+    cptr.stI32o(u, $you_last_str_turn, 0);
+    cptr.st1o(svc, $context_info_mv, 1);
     domove();
     return NHM.ECMD_TIME;
 }
 
 /** C ref: cmd.c:5381 @returns {CInt} */
 function doclicklook() {
-    if (!isok(cptr.ldI16o(gc, 296), cptr.ldI16o(gc, 298)))
+    if (!isok(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)))
         return NHM.ECMD_OK;
-    cptr.st1o(svc, 78, 0);
-    auto_describe(cptr.ldI16o(gc, 296), cptr.ldI16o(gc, 298));
+    cptr.st1o(svc, $context_info_move, 0);
+    auto_describe(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y));
     return NHM.ECMD_OK;
 }
 
 /** C ref: cmd.c:5394 — @param {CPtr} resp @returns {CInt} */
 function yn_menuable_resp(resp) {
-    return schar(((cptr.ld1so(iflags, 10) && cptr.ld1so(iflags, 81) ? 1 : 0) && ((((cptr.eq(resp, cptr.decay(ynchars)) || cptr.eq(resp, cptr.decay(ynqchars)) ? 1 : 0) || cptr.eq(resp, cptr.decay(ynaqchars)) ? 1 : 0) || cptr.eq(resp, cptr.decay(rightleftchars)) ? 1 : 0) || cptr.eq(resp, cptr.decay(hidespinchars)) ? 1 : 0) ? 1 : 0));
+    return schar((cptr.ld1so(iflags, $instance_flags_query_menu) && cptr.ld1so(iflags, $instance_flags_window_inited) && (cptr.eq(resp, cptr.decay(ynchars)) || cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(rightleftchars)) || cptr.eq(resp, cptr.decay(hidespinchars))) ? 1 : 0));
 }
 
 /** C ref: cmd.c:5402 — @param {CInt} win @param {CInt} key @param {CPtr} text @param {CInt} def */
 function yn_func_menu_opt(win, key, text, def) {
     let any = cptr.alloc(8);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, key);
     add_menu(win, nul_glyphinfo.v, any, key, 0, NHM.ATR_NONE, NHM.NO_COLOR, text, (def == key) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
 }
@@ -5654,11 +5767,11 @@ function yn_func_menu_opt(win, key, text, def) {
 /** C ref: cmd.c:5419 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @param {CPtr} res @returns {CInt} */
 function yn_function_menu(query, resp, def, res) {
     if (yn_menuable_resp(resp)) {
-        let win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
+        let win = create_nhwindow()(NHM.NHW_MENU);
         let sel = cptr.box(0);
         let n;
         let keybuf = new Uint8Array(128);
-        (cptr.ldPtro(windowprocs, 168))(win, 0n);
+        start_menu()(win, 0n);
         if (cptr.eq(resp, cptr.decay(rightleftchars))) {
             yn_func_menu_opt(win, 114, __sl647, def);
             yn_func_menu_opt(win, 108, __sl648, def);
@@ -5671,21 +5784,21 @@ function yn_function_menu(query, resp, def, res) {
         }
         if (cptr.eq(resp, cptr.decay(ynaqchars)))
             yn_func_menu_opt(win, 97, __sl653, def);
-        if ((cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) ? 1 : 0) || cptr.eq(resp, cptr.decay(hidespinchars)) ? 1 : 0)
+        if (cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(hidespinchars)))
             yn_func_menu_opt(win, 113, __sl654, def);
-        (cptr.ldPtro(windowprocs, 184))(win, query);
+        end_menu()(win, query);
         n = select_menu(win, NHM.PICK_ONE, sel);
-        (cptr.ldPtro(windowprocs, 128))(win);
+        destroy_nhwindow()(win);
         if (n > 0) {
             cptr.st1(res, cptr.ld1so(sel.v, 0, 24));
-            if (n > 1 && cptr.ld1s(res) == def ? 1 : 0)
+            if (n > 1 && cptr.ld1s(res) == def)
                 cptr.st1(res, cptr.ld1so(sel.v, 1, 24));
             cptr.free(sel.v);
         } else {
             cptr.st1(res, def);
         }
         pline(__sl629, query, key2txt(uchar(cptr.ld1s(res)), cptr.decay(keybuf)));
-        (cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v);
+        clear_nhwindow()(WIN_MESSAGE.v);
         return 1;
     }
     return 0;
@@ -5697,29 +5810,29 @@ export function yn_function(query, resp, def, addcmdq) {
     let qbuf = new Uint8Array(128);
     let cq = cptr.alloc(32);
     let cmdq;
-    let idx = cptr.ldI32o(gs, 980);
+    let idx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
     let dumplog_buf = new Uint8Array(144);
-    cptr.stI32o(iflags, 40, NHC.PLNMSG_UNKNOWN);
+    cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
     if (cptr.strlen(query) >= 128n) {
         paniclog(__sl655, query);
         void __builtin___strncpy_chk(cptr.decay(qbuf), query, 124n, __builtin_object_size(cptr.decay(qbuf), 1));
         void cptr.strcpy(cptr.add(cptr.decay(qbuf), 124, 1), __sl656);
         query = cptr.decay(qbuf);
     }
-    if (addcmdq && (cmdq = cmdq_pop()) !== null ? 1 : 0) {
+    if (addcmdq && (cmdq = cmdq_pop()) !== null) {
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
     } else {
         cptr.stI32(cq, NHC.CMDQ_USER_INPUT);
-        cptr.st1o(cq, 4, 0);
+        cptr.st1o(cq, $_cmd_queue_key, 0);
     }
     if (cptr.ldI32(cq) != NHC.CMDQ_USER_INPUT) {
         if (cptr.ldI32(cq) == NHC.CMDQ_KEY)
-            res.v = cptr.ld1so(cq, 4);
+            res.v = cptr.ld1so(cq, $_cmd_queue_key);
         else
             cmdq_clear(NHC.CQ_CANNED);
         addcmdq = 0;
-    } else if (((cptr.ld1so(iflags, 15) && resp ? 1 : 0) && cptr.ld1s(resp) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 5513, __sl657), rn2(20)) : rn2(20)) ? 1 : 0) {
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && (rng_log_enabled() ? (rng_log_set_caller(__sl511, 5513, __sl657), rn2(20)) : rn2(20))) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
         let ridx = (rng_log_enabled() ? (rng_log_set_caller(__sl511, 5514, __sl657), rn2(ln)) : rn2(ln));
         res.v = cptr.ld1so(resp, ridx);
@@ -5733,30 +5846,30 @@ export function yn_function(query, resp, def, addcmdq) {
         }
     } else {
         if (!yn_function_menu(query, resp, def, res)) {
-            res.v = (cptr.ldPtro(windowprocs, 288))(query, resp, def);
+            res.v = (cptr.ldPtro(windowprocs, $window_procs_win_yn_function))(query, resp, def);
         }
     }
     if (addcmdq)
         cmdq_add_key(NHC.CQ_REPEAT, res.v);
-    if (idx == cptr.ldI32o(gs, 980)) {
+    if (idx == cptr.ldI32o(gs, $instance_globals_s_saved_pline_index)) {
         void cptr.sprintf(cptr.decay(dumplog_buf), __sl658, query);
         void key2txt(uchar(res.v), eos(cptr.decay(dumplog_buf)));
         dumplogmsg(cptr.decay(dumplog_buf));
     }
-    if (((resp && cptr.ld1s(resp) ? 1 : 0) && res.v ? 1 : 0) && !cptr.strchr(resp, res.v) ? 1 : 0) {
+    if (resp && cptr.ld1s(resp) && res.v && !cptr.strchr(resp, res.v)) {
         let altres = def ? def : 27;
-        if (!cptr.ldI32(gi) || cptr.ld1so(flags, 10) ? 1 : 0) {
-            let fuzzing = cptr.ld1so(iflags, 15);
+        if (!cptr.ldI32(gi) || wizard()) {
+            let fuzzing = cptr.ld1so(iflags, $instance_flags_debug_fuzzer);
             let dbg_buf = new Uint8Array(256);
             nh_snprintf(__sl657, 5570, cptr.decay(dbg_buf), 256n, __sl659, query, resp ? resp : __sl0, def ? visctrl(def) : __sl0);
             paniclog(__sl660, cptr.decay(dbg_buf));
-            cptr.st1o(iflags, 15, NHC.fuzzer_impossible_continue);
+            cptr.st1o(iflags, $instance_flags_debug_fuzzer, NHC.fuzzer_impossible_continue);
             impossible(__sl661, visctrl(res.v), visctrl(schar(altres)));
-            cptr.st1o(iflags, 15, fuzzing);
+            cptr.st1o(iflags, $instance_flags_debug_fuzzer, fuzzing);
         }
         res.v = schar(altres);
     }
-    cptr.stI32o(program_state, 104, NHC.otherInp);
+    cptr.stI32o(program_state, $sinfo_input_state, NHC.otherInp);
     return res.v;
 }
 
@@ -5768,7 +5881,7 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
         let qbuf = new Uint8Array(128);
         let ans = new Uint8Array(256);
         let promptprefix = __sl0;
-        let responsetype = (((cptr.ldI32o(flags, 80) & NHM.PARANOID_CONFIRM) >>> 0) != 0) ? (accept_q ? __sl662 : __sl663) : (accept_q ? __sl664 : __sl665);
+        let responsetype = ParanoidConfirm() ? (accept_q ? __sl662 : __sl663) : (accept_q ? __sl664 : __sl665);
         let k;
         let trylimit = 6;
         copynchars(cptr.decay(pbuf), prompt, 255);
@@ -5785,18 +5898,18 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
                 c = 121;
                 break;
             }
-            if (!strncmpi(cptr.decay((ans)), (__sl230), -1) || cptr.ld1s(cptr.decay(ans)) == 27 ? 1 : 0) {
+            if (!strncmpi(cptr.decay((ans)), (__sl230), -1) || cptr.ld1s(cptr.decay(ans)) == 27) {
                 c = 113;
                 break;
             }
             promptprefix = __sl670;
-        } while (((((cptr.ldI32o(flags, 80) & NHM.PARANOID_CONFIRM) >>> 0) != 0) && strncmpi(cptr.decay((ans)), (__sl671), -1) ? 1 : 0) && --trylimit ? 1 : 0);
+        } while (ParanoidConfirm() && strncmpi(cptr.decay((ans)), (__sl671), -1) && --trylimit);
     } else if (accept_q) {
         c = yn_function(prompt, cptr.decay(ynqchars), 110, 0);
     } else {
         c = yn_function(prompt, cptr.decay(ynchars), 110, 0);
     }
-    if (c != 121 && (c != 113 || !accept_q ? 1 : 0) ? 1 : 0)
+    if (c != 121 && (c != 113 || !accept_q))
         c = 110;
     return c;
 }
@@ -5808,12 +5921,12 @@ export function paranoid_query(be_paranoid, prompt) {
 
 /** C ref: cmd.c:5662 @returns {CInt} */
 function dosuspend_core() {
-    if ((cptr.ldPtro(windowprocs, 392))()) {
+    if ((cptr.ldPtro(windowprocs, $window_procs_win_can_suspend))()) {
         let now = getnow();
-        cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, 8)));
-        cptr.stI64o(urealtime, 8, now);
+        cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+        cptr.stI64o(urealtime, $u_realtime_start_timing, now);
         dosuspend();
-        cptr.stI64o(urealtime, 8, getnow());
+        cptr.stI64o(urealtime, $u_realtime_start_timing, getnow());
     } else
         Norep(cptr.decay(cmdnotavail), __sl672);
     return NHM.ECMD_OK;
@@ -5822,10 +5935,10 @@ function dosuspend_core() {
 /** C ref: cmd.c:5682 @returns {CInt} */
 function dosh_core() {
     let now = getnow();
-    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, 8)));
-    cptr.stI64o(urealtime, 8, now);
+    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+    cptr.stI64o(urealtime, $u_realtime_start_timing, now);
     dosh();
-    cptr.stI64o(urealtime, 8, getnow());
+    cptr.stI64o(urealtime, $u_realtime_start_timing, getnow());
     return NHM.ECMD_OK;
 }
 

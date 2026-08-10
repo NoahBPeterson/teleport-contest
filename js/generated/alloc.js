@@ -17,7 +17,7 @@ const __sl4 = cptr.lit("Overflow at %s:%d");
 export function alloc(lth) {
     let ptr;
     do {
-        if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n ? 1 : 0)
+        if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n)
             lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)));
     } while (0);
     ptr = cptr.malloc(BigInt(lth >>> 0));
@@ -30,11 +30,11 @@ export function alloc(lth) {
 export function re_alloc(oldptr, newlth) {
     let newptr;
     do {
-        if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n ? 1 : 0)
+        if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n)
             newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)));
     } while (0);
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
-    if (newlth && !newptr ? 1 : 0)
+    if (newlth && !newptr)
         panic(__sl1, newlth);
     return newptr;
 }

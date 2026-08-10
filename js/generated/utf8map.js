@@ -7,11 +7,28 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { gc, gg, gs, hexdd } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { glyphmap, map_glyphinfo, nul_glyphinfo } from './display.js';
 import { decode_glyph } from './windows.js';
 import { apply_customizations, find_matching_customization } from './glyphs.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $classic_representation_symidx = FLD.classic_representation_symidx, $custom_urep_u = FLD.custom_urep_u,
+    $customization_detail_next = FLD.customization_detail_next,
+    $gbuf_entry_glyphinfo = FLD.gbuf_entry_glyphinfo, $glyph_map_entry_sym = FLD.glyph_map_entry_sym,
+    $glyph_map_entry_u = FLD.glyph_map_entry_u, $glyph_map_u = FLD.glyph_map_u,
+    $glyphinfo_gm = FLD.glyphinfo_gm,
+    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+    $instance_globals_s_sym_customizations = FLD.instance_globals_s_sym_customizations,
+    $symset_customization_count = FLD.symset_customization_count,
+    $symset_customization_custtype = FLD.symset_customization_custtype,
+    $symset_customization_details = FLD.symset_customization_details,
+    $symset_customization_details_end = FLD.symset_customization_details_end,
+    $unicode_representation_utf8str = FLD.unicode_representation_utf8str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");
@@ -21,13 +38,13 @@ export function unicode_val(cp) {
     let dp;
     let cval = 0;
     let dcount;
-    if (cp && cptr.ld1s(cp) ? 1 : 0) {
+    if (cp && cptr.ld1s(cp)) {
         cval = (dcount = 0);
-        if ((((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117 ? 1 : 0) && cptr.ld1so(cp, 1) == 43 ? 1 : 0) && cptr.ld1so(cp, 2) ? 1 : 0) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null ? 1 : 0) {
+        if ((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117) && cptr.ld1so(cp, 1) == 43 && cptr.ld1so(cp, 2) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
             cp = cptr.add(cp, 2);
             do {
                 cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
-            } while ((cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null ? 1 : 0) && ++dcount < 7 ? 1 : 0);
+            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 7);
         }
     }
     return cval;
@@ -36,18 +53,18 @@ export function unicode_val(cp) {
 /** C ref: utf8map.c:37 — @param {CPtr} gmap @param {CUInt} utf32ch @param {CPtr} utf8str @returns {CInt} */
 export function set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
-    if (!tmpgm || !utf32ch ? 1 : 0)
+    if (!tmpgm || !utf32ch)
         return 0;
-    if (cptr.ldPtro(gmap, 24) === null) {
-        cptr.stPtro(gmap, 24, alloc(16));
-        cptr.stPtro(cptr.ldPtro(gmap, 24), 8, null);
+    if (cptr.ldPtro(gmap, $glyph_map_u) === null) {
+        cptr.stPtro(gmap, $glyph_map_u, alloc(16));
+        cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, null);
     }
-    if (cptr.ldPtro(cptr.ldPtro(gmap, 24), 8) !== null) {
-        cptr.free(cptr.ldPtro(cptr.ldPtro(gmap, 24), 8));
-        cptr.stPtro(cptr.ldPtro(gmap, 24), 8, null);
+    if (cptr.ldPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str) !== null) {
+        cptr.free(cptr.ldPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str));
+        cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, null);
     }
-    cptr.stPtro(cptr.ldPtro(gmap, 24), 8, dupstr(utf8str));
-    cptr.stI32(cptr.ldPtro(gmap, 24), utf32ch);
+    cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, dupstr(utf8str));
+    cptr.stI32(cptr.ldPtro(gmap, $glyph_map_u), utf32ch);
     return 1;
 }
 
@@ -57,18 +74,18 @@ export function free_all_glyphmap_u() {
     let x;
     let y;
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (cptr.ldPtro2(glyphmap, glyph, 32, 24)) {
-            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8)) {
-                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8));
-                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, 32, 24), 8, null);
+        if (cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u)) {
+            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str)) {
+                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str));
+                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str, null);
             }
-            cptr.free(cptr.ldPtro2(glyphmap, glyph, 32, 24));
-            cptr.stPtro2(glyphmap, glyph, 32, 24, null);
+            cptr.free(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u));
+            cptr.stPtro2(glyphmap, glyph, 32, $glyph_map_entry_u, null);
         }
     }
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
-            cptr.stPtro3(gg, y, 4480, x, 56, 48, null);
+            cptr.stPtro3(gg, y, 4480, x, 56, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
         }
     }
 }
@@ -79,7 +96,7 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
     if (!str)
         return cptr.strcpy(buf, __sl0);
-    while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0) {
+    while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0) {
         if (cptr.ld1s(str) == 92) {
             let dcount;
             let so;
@@ -91,15 +108,15 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtro(glyphinfo, 40) && cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8) ? 1 : 0) {
-                        let ucp = cptr.ldPtro(cptr.ldPtro(glyphinfo, 40), 8);
-                        while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0 ? 1 : 0)
+                    if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) && cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str)) {
+                        let ucp = cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str);
+                        while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
                             cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
                         if (retflags)
                             cptr.stI32(retflags, 1);
                     } else {
-                        so = cptr.ldI32o(glyphinfo, 24);
-                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, 680)));
+                        so = cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
+                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms)));
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }
@@ -124,54 +141,54 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
 
 /** C ref: utf8map.c:148 — @param {CPtr} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr} utf8str @param {*} which_set @returns {CInt} */
 export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
-    let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), NHC.custom_ureps, 32);
+    let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, 128), NHC.custom_ureps, 32);
     let details;
     let newdetails = null;
-    if (!cptr.ldPtro(gdc, 16)) {
+    if (!cptr.ldPtro(gdc, $symset_customization_details)) {
         cptr.stPtr(gdc, dupstr(customization_name));
-        cptr.stI32o(gdc, 12, NHC.custom_ureps);
-        cptr.stPtro(gdc, 16, null);
-        cptr.stPtro(gdc, 24, null);
+        cptr.stI32o(gdc, $symset_customization_custtype, NHC.custom_ureps);
+        cptr.stPtro(gdc, $symset_customization_details, null);
+        cptr.stPtro(gdc, $symset_customization_details_end, null);
     }
     details = find_matching_customization(customization_name, NHC.custom_ureps, which_set);
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
-                if (cptr.ldPtro(details, 16))
-                    cptr.free(cptr.ldPtro(details, 16));
+                if (cptr.ldPtro(details, $custom_urep_u + $unicode_representation_utf8str))
+                    cptr.free(cptr.ldPtro(details, $custom_urep_u + $unicode_representation_utf8str));
                 if (utf32ch) {
-                    cptr.stPtro(details, 16, dupstr(utf8str));
-                    cptr.stI32o(details, 8, utf32ch);
+                    cptr.stPtro(details, $custom_urep_u + $unicode_representation_utf8str, dupstr(utf8str));
+                    cptr.stI32o(details, $custom_urep_u, utf32ch);
                 } else {
-                    cptr.stPtro(details, 16, null);
-                    cptr.stI32o(details, 8, 0);
+                    cptr.stPtro(details, $custom_urep_u + $unicode_representation_utf8str, null);
+                    cptr.stI32o(details, $custom_urep_u, 0);
                 }
                 return 1;
             }
-            details = cptr.ldPtro(details, 24);
+            details = cptr.ldPtro(details, $customization_detail_next);
         }
     }
     newdetails = alloc(32);
     cptr.stI32(newdetails, glyphidx);
-    if (utf8str && cptr.ld1u(utf8str) ? 1 : 0) {
-        cptr.stPtro(newdetails, 16, dupstr(utf8str));
+    if (utf8str && cptr.ld1u(utf8str)) {
+        cptr.stPtro(newdetails, $custom_urep_u + $unicode_representation_utf8str, dupstr(utf8str));
     } else {
-        cptr.stPtro(newdetails, 16, null);
+        cptr.stPtro(newdetails, $custom_urep_u + $unicode_representation_utf8str, null);
     }
-    cptr.stI32o(newdetails, 8, utf32ch);
-    cptr.stPtro(newdetails, 24, null);
-    if (cptr.eq(cptr.ldPtro(gdc, 16), (null))) {
-        cptr.stPtro(gdc, 16, newdetails);
+    cptr.stI32o(newdetails, $custom_urep_u, utf32ch);
+    cptr.stPtro(newdetails, $customization_detail_next, null);
+    if (cptr.eq(cptr.ldPtro(gdc, $symset_customization_details), (null))) {
+        cptr.stPtro(gdc, $symset_customization_details, newdetails);
     } else {
-        cptr.stPtro(cptr.ldPtro(gdc, 24), 24, newdetails);
+        cptr.stPtro(cptr.ldPtro(gdc, $symset_customization_details_end), $customization_detail_next, newdetails);
     }
-    cptr.stPtro(gdc, 24, newdetails);
-    (cptr.stI32o(gdc, 8, cptr.ldI32o(gdc, 8) + 1)) - (1);
+    cptr.stPtro(gdc, $symset_customization_details_end, newdetails);
+    (cptr.stI32o(gdc, $symset_customization_count, cptr.ldI32o(gdc, $symset_customization_count) + 1)) - (1);
     return 1;
 }
 
 /** C ref: utf8map.c:211 */
 export function reset_customsymbols() {
     free_all_glyphmap_u();
-    apply_customizations(cptr.ldI32o(gc, 428), NHC.do_custom_symbols);
+    apply_customizations(cptr.ldI32o(gc, $instance_globals_c_currentgraphics), NHC.do_custom_symbols);
 }

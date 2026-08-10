@@ -9,62 +9,67 @@
 
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { alloc } from './alloc.js';
 import { panic } from './end.js';
 import { lowc } from './hacklib.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $strbuf_t_buf = FLD.strbuf_t_buf, $strbuf_t_str = FLD.strbuf_t_str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("%s:%d string too long");
 
 /** C ref: strutil.c:9 — @param {CPtr} strbuf */
 export function strbuf_init(strbuf) {
-    cptr.stPtro(strbuf, 8, null);
+    cptr.stPtro(strbuf, $strbuf_t_str, null);
     cptr.stI32(strbuf, 0);
 }
 
 /** C ref: strutil.c:17 — @param {CPtr} strbuf @param {CPtr} str */
 export function* strbuf_append(strbuf, str) {
     let len = (Number(BigInt.asIntN(32, cptr.strlen(str))) + 1) | 0;
-    (yield* strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, 8) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, 8)))) : 0)) | 0));
-    void cptr.strcat(cptr.ldPtro(strbuf, 8), str);
+    (yield* strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, $strbuf_t_str) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str)))) : 0)) | 0));
+    void cptr.strcat(cptr.ldPtro(strbuf, $strbuf_t_str), str);
 }
 
 /** C ref: strutil.c:28 — @param {CPtr} strbuf @param {CInt} len */
 export function* strbuf_reserve(strbuf, len) {
-    if (cptr.eq(cptr.ldPtro(strbuf, 8), (null))) {
-        cptr.stPtro(strbuf, 8, cptr.add(strbuf, 16));
-        cptr.st1o(cptr.ldPtro(strbuf, 8), 0, 0);
+    if (cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null))) {
+        cptr.stPtro(strbuf, $strbuf_t_str, cptr.add(strbuf, $strbuf_t_buf));
+        cptr.st1o(cptr.ldPtro(strbuf, $strbuf_t_str), 0, 0);
         cptr.stI32(strbuf, 256);
     }
     if (len > cptr.ldI32(strbuf)) {
-        let oldbuf = cptr.ldPtro(strbuf, 8);
+        let oldbuf = cptr.ldPtro(strbuf, $strbuf_t_str);
         cptr.stI32(strbuf, (len + 256) | 0);
-        cptr.stPtro(strbuf, 8, (yield* alloc(cptr.ldI32(strbuf) >>> 0)));
-        void cptr.strcpy(cptr.ldPtro(strbuf, 8), oldbuf);
-        if (!cptr.eq(oldbuf, cptr.add(strbuf, 16)))
+        cptr.stPtro(strbuf, $strbuf_t_str, (yield* alloc(cptr.ldI32(strbuf) >>> 0)));
+        void cptr.strcpy(cptr.ldPtro(strbuf, $strbuf_t_str), oldbuf);
+        if (!cptr.eq(oldbuf, cptr.add(strbuf, $strbuf_t_buf)))
             cptr.free(oldbuf);
     }
 }
 
 /** C ref: strutil.c:49 — @param {CPtr} strbuf */
 export function strbuf_empty(strbuf) {
-    if (!cptr.eq(cptr.ldPtro(strbuf, 8), (null)) && !cptr.eq(cptr.ldPtro(strbuf, 8), cptr.add(strbuf, 16)) ? 1 : 0)
-        cptr.free(cptr.ldPtro(strbuf, 8));
+    if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) && !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
+        cptr.free(cptr.ldPtro(strbuf, $strbuf_t_str));
     strbuf_init(strbuf);
 }
 
 /** C ref: strutil.c:58 — @param {CPtr} strbuf */
 export function* strbuf_nl_to_crlf(strbuf) {
-    if (cptr.ldPtro(strbuf, 8)) {
-        let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, 8))));
+    if (cptr.ldPtro(strbuf, $strbuf_t_str)) {
+        let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str))));
         let count = 0;
-        let cp = cptr.ldPtro(strbuf, 8);
+        let cp = cptr.ldPtro(strbuf, $strbuf_t_str);
         while (cptr.ld1s(cp))
             if (cptr.ld1s(cptr.postinc(() => cp, (v) => { cp = v; })) == 10)
                 count++;
         if (count) {
             (yield* strbuf_reserve(strbuf, (((len + count) | 0) + 1) | 0));
-            for (cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, 8), len), count); count; cp = cptr.add(cp, -1))
+            for (cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, $strbuf_t_str), len), count); count; cp = cptr.add(cp, -1))
                 if ((cptr.st1(cp, cptr.ld1so(cp, -count))) == 10) {
                     cptr.st1(cptr.predec(() => cp, (v) => { cp = v; }), 13);
                     --count;
@@ -104,8 +109,8 @@ function* pmatch_internal(patrn, strng, ci, sk) {
         if (!p)
             return schar((s == 0));
         else if (p == 42)
-            return schar(((!cptr.ld1s(patrn) || (yield* pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk)) ? 1 : 0) ? 1 : (s ? (yield* pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk)) : 0)));
-        else if ((ci ? lowc(p) != lowc(s) : p != s) && (p != 63 || !s ? 1 : 0) ? 1 : 0)
+            return schar(((!cptr.ld1s(patrn) || (yield* pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk))) ? 1 : (s ? (yield* pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk)) : 0)));
+        else if ((ci ? lowc(p) != lowc(s) : p != s) && (p != 63 || !s))
             return 0;
         else
             continue __lbl_pmatch_top;

@@ -6,6 +6,8 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { exit_nhwindows, raw_print, resume_nhwindows, suspend_nhwindows, wait_synch, wizard } from './nhprop.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
@@ -16,6 +18,19 @@ import { lowc } from './hacklib.js';
 import { done1, nh_terminate } from './end.js';
 import { sysopt } from './sys.js';
 import { check_user_string } from './unixmain.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $flag_debug = FLD.flag_debug, $instance_flags_window_inited = FLD.instance_flags_window_inited,
+    $instance_globals_l_lock = FLD.instance_globals_l_lock,
+    $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
+    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $stat_st_mtimespec = FLD.stat_st_mtimespec,
+    $sysopt_s_shellers = FLD.sysopt_s_shellers,
+    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("tty");
@@ -54,7 +69,7 @@ function veryold(fd) {
     if (fstat(fd, buf))
         return 0;
     void time(date);
-    if (BigInt.asIntN(64, date.v - cptr.ldI64o(buf, 48)) < 259200n) {
+    if (BigInt.asIntN(64, date.v - cptr.ldI64o(buf, $stat_st_mtimespec)) < 259200n) {
         let lockedpid = cptr.box(0);
         if (BigInt.asUintN(64, cptr.read(fd, lockedpid, 4n)) != 4n)
             return 0;
@@ -66,13 +81,13 @@ function veryold(fd) {
 /** C ref: unixunix.c:80 @returns {CInt} */
 function eraseoldlocks() {
     let i;
-    cptr.stI32o(program_state, 12, 0);
+    cptr.stI32o(program_state, $sinfo_preserve_locks, 0);
     for (i = 1; i <= 513; i++) {
-        set_levelfile_name(cptr.add(gl, 16), i);
-        void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
+        set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), i);
+        void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
     }
-    set_levelfile_name(cptr.add(gl, 16), 0);
-    if (unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0)))
+    set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
+    if (unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0)))
         return 0;
     return 1;
 }
@@ -88,22 +103,22 @@ export function getlock() {
     let fq_lock;
     __lbl_gotlock: {
         if (!strcmp(cptr.ldPtr(windowprocs), __sl0))
-            if (!isatty(0) && !getenv(__sl1) ? 1 : 0)
+            if (!isatty(0) && !getenv(__sl1))
                 error(__sl2);
         if (!lock_file(__sl3, NHM.LOCKPREFIX, 10)) {
-            (cptr.ldPtro(windowprocs, 216))();
+            wait_synch()();
             error(__sl4, __sl5);
         }
-        if (!cptr.ldI32o(gl, 8))
-            void cptr.sprintf(cptr.add(gl, 16), __sl6, getuid(), svp);
-        regularize(cptr.add(gl, 16));
-        set_levelfile_name(cptr.add(gl, 16), 0);
-        if (cptr.ldI32o(gl, 8)) {
-            if (cptr.ldI32o(gl, 8) > 25)
-                cptr.stI32o(gl, 8, 25);
+        if (!cptr.ldI32o(gl, $instance_globals_l_locknum))
+            void cptr.sprintf(cptr.add(gl, $instance_globals_l_lock), __sl6, getuid(), svp);
+        regularize(cptr.add(gl, $instance_globals_l_lock));
+        set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
+        if (cptr.ldI32o(gl, $instance_globals_l_locknum)) {
+            if (cptr.ldI32o(gl, $instance_globals_l_locknum) > 25)
+                cptr.stI32o(gl, $instance_globals_l_locknum, 25);
             do {
-                cptr.st1o2(gl, 0, 1, 16, schar(((97 + i++) | 0)));
-                fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
+                cptr.st1o2(gl, 0, 1, $instance_globals_l_lock, schar(((97 + i++) | 0)));
+                fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
                 if ((fd = open(fq_lock, 0)) == -1) {
                     if ((cptr.ldI32(__error())) == 2)
                         break __lbl_gotlock;
@@ -113,13 +128,13 @@ export function getlock() {
                 }
                 too_old = veryold(fd);
                 void close(fd);
-                if (too_old && eraseoldlocks() ? 1 : 0)
+                if (too_old && eraseoldlocks())
                     break __lbl_gotlock;
-            } while (i < cptr.ldI32o(gl, 8));
+            } while (i < cptr.ldI32o(gl, $instance_globals_l_locknum));
             unlock_file(__sl3);
             error(__sl8);
         } else {
-            fq_lock = fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0);
+            fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
             if ((fd = open(fq_lock, 0)) == -1) {
                 if ((cptr.ldI32(__error())) == 2)
                     break __lbl_gotlock;
@@ -129,10 +144,10 @@ export function getlock() {
             }
             too_old = veryold(fd);
             void close(fd);
-            if (too_old && eraseoldlocks() ? 1 : 0)
+            if (too_old && eraseoldlocks())
                 break __lbl_gotlock;
             unlock_file(__sl3);
-            if (cptr.ld1so(iflags, 81)) {
+            if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
                 c = yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1);
             } else {
                 void raw_printf(__sl9, cptr.decay(__static_getlock_destroy_old_game_prompt));
@@ -141,11 +156,11 @@ export function getlock() {
                     let tmp;
                     void putchar(c);
                     void fflush(__stdoutp);
-                    while ((tmp = getchar()) != 10 && tmp != -1 ? 1 : 0)
+                    while ((tmp = getchar()) != 10 && tmp != -1)
                         ;
                 }
             }
-            if (c == 121 || c == 89 ? 1 : 0) {
+            if (c == 121 || c == 89) {
                 if (eraseoldlocks()) {
                     break __lbl_gotlock;
                 } else {
@@ -179,14 +194,14 @@ export function ask_about_panic_save() {
     let c = 0;
     pline(__sl14);
     pline(__sl15);
-    if (cptr.ld1so(iflags, 81)) {
+    if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
         c = yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __sl16, 110, 0);
     } else {
         raw_printf(__sl17, cptr.decay(__static_ask_about_panic_save_Instead_prompt));
         void fflush(__stdoutp);
         do {
             c = getchar();
-            if ((c == -1 || c == 27 ? 1 : 0) || c == 0 ? 1 : 0)
+            if (c == -1 || c == 27 || c == 0)
                 break;
             c = lowc(schar(c));
         } while (!cptr.strchr(__sl18, c));
@@ -194,8 +209,8 @@ export function ask_about_panic_save() {
     if (c != 121) {
         delete_levelfile(0);
         unlock_file(__sl3);
-        if (cptr.ld1so(iflags, 81))
-            (cptr.ldPtro(windowprocs, 80))(null);
+        if (cptr.ld1so(iflags, $instance_flags_window_inited))
+            exit_nhwindows()(null);
         nh_terminate(0);
     }
     return;
@@ -204,14 +219,14 @@ export function ask_about_panic_save() {
 /** C ref: unixunix.c:297 — @param {CPtr} s */
 export function regularize(s) {
     let lp;
-    while (((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null ? 1 : 0) || (lp = cptr.strchr(s, 32)) !== null ? 1 : 0)
+    while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
         cptr.st1(lp, 95);
 }
 
 /** C ref: unixunix.c:344 @returns {CInt} */
 export function dosh() {
     let str;
-    if ((!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) ? 1 : 0) || !check_user_string(cptr.ldPtro(sysopt, 40)) ? 1 : 0) {
+    if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
         Norep(__sl19);
         return 0;
     }
@@ -220,7 +235,7 @@ export function dosh() {
             void execl(str, str, null);
         else
             void execl(__sl21, __sl22, null);
-        (cptr.ldPtro(windowprocs, 240))(__sl23);
+        raw_print()(__sl23);
         exit(1);
     }
     return 0;
@@ -229,7 +244,7 @@ export function dosh() {
 /** C ref: unixunix.c:370 — @param {CInt} wt @returns {CInt} */
 export function child(wt) {
     let f;
-    (cptr.ldPtro(windowprocs, 88))(null);
+    suspend_nhwindows()(null);
     if ((f = fork()) == 0) {
         void setgid(getgid());
         void setuid(getuid());
@@ -244,13 +259,13 @@ export function child(wt) {
     void signal(3, 1);
     void wait(null);
     void signal(2, done1);
-    if (cptr.ld1so(flags, 10))
+    if (wizard())
         void signal(3, null);
     if (wt) {
-        (cptr.ldPtro(windowprocs, 240))(__sl5);
-        (cptr.ldPtro(windowprocs, 216))();
+        raw_print()(__sl5);
+        wait_synch()();
     }
-    (cptr.ldPtro(windowprocs, 96))();
+    resume_nhwindows()();
     return 0;
 }
 

@@ -13,6 +13,8 @@ import * as cptr from '../cptr.js';
 import * as cjmp from '../cjmp.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
+import { create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd, svl, svm, svn, svs, u } from './decl.js';
 import { impossible, livelog_printf, pline, verbalize } from './pline.js';
 import { lua_atpanic, lua_callk, lua_createtable, lua_error, lua_gc, lua_getallocf, lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_isstring, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawset, lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settable, lua_settop, lua_setwarnf, lua_toboolean, lua_tointegerx, lua_tolstring, lua_type } from './lapi.js';
@@ -58,6 +60,70 @@ import { luaopen_string } from './lstrlib.js';
 import { luaopen_math } from './lmathlib.js';
 import { luaopen_utf8 } from './lutf8lib.js';
 import { luaopen_debug } from './ldblib.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $const_globals_zeroany = FLD.const_globals_zeroany, $d_level_dlevel = FLD.d_level_dlevel,
+    $dlevel_t_monlist = FLD.dlevel_t_monlist, $e_fnname = FLD.e_fnname, $flag_debug = FLD.flag_debug,
+    $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
+    $instance_flags_debug_mongen = FLD.instance_flags_debug_mongen,
+    $instance_flags_debug_overwrite_stairs = FLD.instance_flags_debug_overwrite_stairs,
+    $instance_flags_debug_prevent_pline = FLD.instance_flags_debug_prevent_pline,
+    $instance_flags_in_lua = FLD.instance_flags_in_lua,
+    $instance_flags_last_msg = FLD.instance_flags_last_msg,
+    $instance_globals_g_gmst_disco = FLD.instance_globals_g_gmst_disco,
+    $instance_globals_g_gmst_invent = FLD.instance_globals_g_gmst_invent,
+    $instance_globals_g_gmst_moves = FLD.instance_globals_g_gmst_moves,
+    $instance_globals_g_gmst_mvitals = FLD.instance_globals_g_gmst_mvitals,
+    $instance_globals_g_gmst_spl_book = FLD.instance_globals_g_gmst_spl_book,
+    $instance_globals_g_gmst_stored = FLD.instance_globals_g_gmst_stored,
+    $instance_globals_g_gmst_ubak = FLD.instance_globals_g_gmst_ubak,
+    $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
+    $instance_globals_i_invent = FLD.instance_globals_i_invent,
+    $instance_globals_l_lastinvnr = FLD.instance_globals_l_lastinvnr,
+    $instance_globals_l_loglua = FLD.instance_globals_l_loglua,
+    $instance_globals_l_lua_copyright = FLD.instance_globals_l_lua_copyright,
+    $instance_globals_l_lua_sid = FLD.instance_globals_l_lua_sid,
+    $instance_globals_l_lua_ver = FLD.instance_globals_l_lua_ver,
+    $instance_globals_l_lua_warnbuf = FLD.instance_globals_l_lua_warnbuf,
+    $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
+    $instance_globals_m_multi = FLD.instance_globals_m_multi,
+    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+    $instance_globals_saved_d_disco = FLD.instance_globals_saved_d_disco,
+    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+    $instance_globals_u_urole = FLD.instance_globals_u_urole, $luaL_Reg_func = FLD.luaL_Reg_func,
+    $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_name = FLD.lua_Debug_name,
+    $lua_Debug_short_src = FLD.lua_Debug_short_src, $monst_mhp = FLD.monst_mhp,
+    $mvitals_mvflags = FLD.mvitals_mvflags, $nhcoord_y = FLD.nhcoord_y,
+    $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
+    $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
+    $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps, $nhl_user_data_flags = FLD.nhl_user_data_flags,
+    $nhl_user_data_jb = FLD.nhl_user_data_jb, $nhl_user_data_memlimit = FLD.nhl_user_data_memlimit,
+    $nhl_user_data_name = FLD.nhl_user_data_name, $nhl_user_data_osteps = FLD.nhl_user_data_osteps,
+    $nhl_user_data_perpcall = FLD.nhl_user_data_perpcall, $nhl_user_data_sid = FLD.nhl_user_data_sid,
+    $nhl_user_data_statctr = FLD.nhl_user_data_statctr, $nhl_user_data_steps = FLD.nhl_user_data_steps,
+    $obj_owornmask = FLD.obj_owornmask, $objclass_oc_class = FLD.objclass_oc_class,
+    $objclass_oc_uname = FLD.objclass_oc_uname, $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge,
+    $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit,
+    $rm_roomno = FLD.rm_roomno, $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+    $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
+    $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev, $stairway_up = FLD.stairway_up,
+    $trap_launch = FLD.trap_launch, $trap_madeby_u = FLD.trap_madeby_u, $trap_once = FLD.trap_once,
+    $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
+    $trap_vl = FLD.trap_vl, $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
+    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
+    $you_mtimedone = FLD.you_mtimedone, $you_nv_range = FLD.you_nv_range, $you_tx = FLD.you_tx,
+    $you_ty = FLD.you_ty, $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax, $you_uhave = FLD.you_uhave,
+    $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhunger = FLD.you_uhunger,
+    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck,
+    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uy = FLD.you_uy,
+    $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("start_new_game");
@@ -406,10 +472,10 @@ let luapat = null;
 
 /** C ref: nhlua.c:142 */
 export function* l_nhcore_init() {
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, 4, 1048576); cptr.stI32o(sbi, 8, 0); cptr.stI32o(sbi, 12, 1048576);
-    if ((cptr.stPtro(gl, 216, (yield* nhl_init(sbi)))) !== null) {
-        if (!(yield* nhl_loadlua(cptr.ldPtro(gl, 216), __sl7))) {
-            cptr.stPtro(gl, 216, null);
+    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+    if ((cptr.stPtro(gl, $instance_globals_l_luacore, (yield* nhl_init(sbi)))) !== null) {
+        if (!(yield* nhl_loadlua(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl7))) {
+            cptr.stPtro(gl, $instance_globals_l_luacore, null);
         } else {
             let i;
             for (i = 0; i < NHC.NUM_NHCORE_CALLS; i++)
@@ -421,9 +487,9 @@ export function* l_nhcore_init() {
 
 /** C ref: nhlua.c:161 */
 export function* l_nhcore_done() {
-    if (cptr.ldPtro(gl, 216)) {
-        (yield* nhl_done(cptr.ldPtro(gl, 216)));
-        cptr.stPtro(gl, 216, null);
+    if (cptr.ldPtro(gl, $instance_globals_l_luacore)) {
+        (yield* nhl_done(cptr.ldPtro(gl, $instance_globals_l_luacore)));
+        cptr.stPtro(gl, $instance_globals_l_luacore, null);
     }
     (yield* end_luapat());
 }
@@ -431,18 +497,18 @@ export function* l_nhcore_done() {
 /** C ref: nhlua.c:171 — @param {CInt} callidx */
 export function* l_nhcore_call(callidx) {
     let ltyp;
-    if (((callidx < 0 || callidx >= NHC.NUM_NHCORE_CALLS ? 1 : 0) || !cptr.ldPtro(gl, 216) ? 1 : 0) || !cptr.ld1so(cptr.decay(nhcore_call_available), callidx, 1) ? 1 : 0)
+    if (callidx < 0 || callidx >= NHC.NUM_NHCORE_CALLS || !cptr.ldPtro(gl, $instance_globals_l_luacore) || !cptr.ld1so(cptr.decay(nhcore_call_available), callidx, 1))
         return;
-    (yield* lua_getglobal(cptr.ldPtro(gl, 216), __sl9));
-    if (!(lua_type(cptr.ldPtro(gl, 216), -1) == 5)) {
-        (yield* nhl_done(cptr.ldPtro(gl, 216)));
-        cptr.stPtro(gl, 216, null);
+    (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl9));
+    if (!(lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1) == 5)) {
+        (yield* nhl_done(cptr.ldPtro(gl, $instance_globals_l_luacore)));
+        cptr.stPtro(gl, $instance_globals_l_luacore, null);
         return;
     }
-    (yield* lua_getfield(cptr.ldPtro(gl, 216), -1, cptr.ldPtro(nhcore_call_names, callidx, 8)));
-    ltyp = lua_type(cptr.ldPtro(gl, 216), -1);
+    (yield* lua_getfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, cptr.ldPtro(nhcore_call_names, callidx, 8)));
+    ltyp = lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1);
     if (ltyp == 6) {
-        (yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 0, 1, __sl10, NHC.NHLpa_panic));
+        (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 1, __sl10, NHC.NHLpa_panic));
     } else {
         cptr.st1o(cptr.decay(nhcore_call_available), callidx, 0, 1);
     }
@@ -454,8 +520,8 @@ export function* nhl_error(L, msg) {
     let buf = new Uint8Array(512);
     lua_getstack(L, 1, ar);
     (yield* lua_getinfo(L, __sl11, ar));
-    void cptr.sprintf(cptr.decay(buf), __sl12, msg, cptr.ldI32o(ar, 48));
-    void cptr.sprintf(eos(cptr.decay(buf)), __sl13, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 512n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 2n)))))), cptr.add(ar, 68));
+    void cptr.sprintf(cptr.decay(buf), __sl12, msg, cptr.ldI32o(ar, $lua_Debug_currentline));
+    void cptr.sprintf(eos(cptr.decay(buf)), __sl13, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 512n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 2n)))))), cptr.add(ar, $lua_Debug_short_src));
     (yield* lua_pushstring(L, cptr.decay(buf)));
     void (yield* lua_error(L));
 }
@@ -487,7 +553,7 @@ export function* get_table_mapchr_opt(L, name, defval) {
     let ter;
     let typ;
     ter = (yield* get_table_str_opt(L, name, cptr.decay(emptystr)));
-    if (ter && cptr.ld1s(ter) ? 1 : 0) {
+    if (ter && cptr.ld1s(ter)) {
         typ = check_mapchr(ter);
         if (typ == NHC.INVALID_TYPE)
             (yield* nhl_error(L, __sl14));
@@ -513,7 +579,7 @@ cptr.stPtro(__static_nhl_get_timertype_timerstr, 72, null); /** C ref: nhlua.c:2
 /** C ref: nhlua.c:276 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
 export function* nhl_get_timertype(L, idx) {
     let ret = i16((yield* luaL_checkoption(L, idx, null, __static_nhl_get_timertype_timerstr)));
-    if (ret < 0 || ret >= NHC.NUM_TIME_FUNCS ? 1 : 0)
+    if (ret < 0 || ret >= NHC.NUM_TIME_FUNCS)
         (yield* nhl_error(L, __sl15));
     return ret;
 }
@@ -645,7 +711,7 @@ export function splev_chr2typ(c) {
 
 /** C ref: nhlua.c:395 — @param {CPtr} s @returns {CInt} */
 export function check_mapchr(s) {
-    if (s && cptr.strlen(s) == 1n ? 1 : 0)
+    if (s && cptr.strlen(s) == 1n)
         return splev_chr2typ(cptr.ld1so(s, 0));
     return NHC.INVALID_TYPE;
 }
@@ -676,26 +742,26 @@ function* nhl_gettrap(L) {
         let ttmp = t_at(x.v, y.v);
         if (ttmp) {
             (yield* lua_createtable(L, 0, 0));
-            (yield* nhl_add_table_entry_int(L, __sl31, BigInt(cptr.ldI16o(ttmp, 8))));
-            (yield* nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI16o(ttmp, 10))));
-            (yield* nhl_add_table_entry_int(L, __sl33, BigInt((cptr.ldI32o(ttmp, 20) & 31) >>> 0)));
-            (yield* nhl_add_table_entry_str(L, __sl34, get_trapname_bytype((cptr.ldI32o(ttmp, 20) & 31) | 0)));
-            (yield* nhl_add_table_entry_bool(L, __sl35, schar((cptr.ldI32o(ttmp, 24) & 1))));
-            (yield* nhl_add_table_entry_bool(L, __sl36, schar((cptr.ldI32o(ttmp, 32) & 1))));
-            (yield* nhl_add_table_entry_bool(L, __sl37, schar((cptr.ldI32o(ttmp, 28) & 1))));
-            switch ((cptr.ldI32o(ttmp, 20) & 31) | 0) {
+            (yield* nhl_add_table_entry_int(L, __sl31, BigInt(cptr.ldI16o(ttmp, $trap_tx))));
+            (yield* nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI16o(ttmp, $trap_ty))));
+            (yield* nhl_add_table_entry_int(L, __sl33, BigInt((cptr.ldI32o(ttmp, $trap_ttyp) & 31) >>> 0)));
+            (yield* nhl_add_table_entry_str(L, __sl34, get_trapname_bytype((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)));
+            (yield* nhl_add_table_entry_bool(L, __sl35, schar((cptr.ldI32o(ttmp, $trap_tseen) & 1))));
+            (yield* nhl_add_table_entry_bool(L, __sl36, schar((cptr.ldI32o(ttmp, $trap_madeby_u) & 1))));
+            (yield* nhl_add_table_entry_bool(L, __sl37, schar((cptr.ldI32o(ttmp, $trap_once) & 1))));
+            switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
                 case NHC.SQKY_BOARD:
-                (yield* nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI16o(ttmp, 36))));
+                (yield* nhl_add_table_entry_int(L, __sl38, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
                 break;
                 case NHC.ROLLING_BOULDER_TRAP:
-                (yield* nhl_add_table_entry_int(L, __sl39, BigInt(cptr.ldI16o(ttmp, 16))));
-                (yield* nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ldI16o(ttmp, 18))));
-                (yield* nhl_add_table_entry_int(L, __sl41, BigInt(cptr.ldI16o(ttmp, 36))));
-                (yield* nhl_add_table_entry_int(L, __sl42, BigInt(cptr.ldI16o(ttmp, 38))));
+                (yield* nhl_add_table_entry_int(L, __sl39, BigInt(cptr.ldI16o(ttmp, $trap_launch))));
+                (yield* nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ldI16o(ttmp, $trap_launch + $nhcoord_y))));
+                (yield* nhl_add_table_entry_int(L, __sl41, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
+                (yield* nhl_add_table_entry_int(L, __sl42, BigInt(cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y))));
                 break;
                 case NHC.PIT:
                 case NHC.SPIKED_PIT:
-                (yield* nhl_add_table_entry_int(L, __sl43, BigInt(cptr.ld1uo(ttmp, 36) >>> 0)));
+                (yield* nhl_add_table_entry_int(L, __sl43, BigInt(cptr.ld1uo(ttmp, $trap_vl) >>> 0)));
                 break;
             }
             return 1;
@@ -737,7 +803,7 @@ export function* nhl_get_xy_params(L, x, y) {
         cptr.stI64(x, (yield* lua_tointegerx(L, 1, null)));
         cptr.stI64(y, (yield* lua_tointegerx(L, 2, null)));
         ret = 1;
-    } else if (argc == 1 && lua_type(L, 1) == 5 ? 1 : 0) {
+    } else if (argc == 1 && lua_type(L, 1) == 5) {
         let ax = cptr.box(0n);
         let ay = cptr.box(0n);
         ret = (yield* get_coord(L, 1, ax, ay));
@@ -763,42 +829,42 @@ function* nhl_getmap(L) {
     if (isok(x.v, y.v)) {
         let buf = new Uint8Array(256);
         (yield* lua_createtable(L, 0, 0));
-        (yield* nhl_add_table_entry_int(L, __sl46, BigInt(cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1680))));
-        (yield* nhl_add_table_entry_int(L, __sl47, BigInt(cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684))));
-        (yield* nhl_add_table_entry_str(L, __sl48, levltyp_to_name(cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684))));
-        void cptr.sprintf(cptr.decay(buf), __sl25, splev_typ2chr(cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)));
+        (yield* nhl_add_table_entry_int(L, __sl46, BigInt(cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level))));
+        (yield* nhl_add_table_entry_int(L, __sl47, BigInt(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ))));
+        (yield* nhl_add_table_entry_str(L, __sl48, levltyp_to_name(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ))));
+        void cptr.sprintf(cptr.decay(buf), __sl25, splev_typ2chr(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)));
         (yield* nhl_add_table_entry_str(L, __sl49, cptr.decay(buf)));
-        (yield* nhl_add_table_entry_int(L, __sl50, BigInt(cptr.ld1uo3(svl, x.v, 756, y.v, 36, 1685) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __sl51, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1692) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __sl52, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1696) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __sl53, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1700) & 1))));
-        (yield* nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1704) & 63) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __sl55, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1708) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __sl56, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1712) & 1))));
+        (yield* nhl_add_table_entry_int(L, __sl50, BigInt(cptr.ld1uo3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_seenv) >>> 0)));
+        (yield* nhl_add_table_entry_bool(L, __sl51, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_horizontal) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __sl52, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_lit) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __sl53, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_waslit) & 1))));
+        (yield* nhl_add_table_entry_int(L, __sl54, BigInt((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) >>> 0)));
+        (yield* nhl_add_table_entry_bool(L, __sl55, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_edge) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __sl56, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_candig) & 1))));
         (yield* nhl_add_table_entry_bool(L, __sl57, schar((t_at(x.v, y.v) ? 1 : 0))));
         (yield* lua_pushstring(L, __sl58));
         (yield* lua_createtable(L, 0, 0));
-        if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)) == NHC.DOOR)) {
-            (yield* nhl_add_table_entry_bool(L, __sl59, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) == NHM.D_NODOOR))));
-            (yield* nhl_add_table_entry_bool(L, __sl60, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.D_BROKEN))));
-            (yield* nhl_add_table_entry_bool(L, __sl61, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.D_ISOPEN))));
-            (yield* nhl_add_table_entry_bool(L, __sl62, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.D_CLOSED))));
-            (yield* nhl_add_table_entry_bool(L, __sl63, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.D_LOCKED))));
-            (yield* nhl_add_table_entry_bool(L, __sl64, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.D_TRAPPED))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)) == NHC.ALTAR)) {
-            (yield* nhl_add_table_entry_bool(L, __sl65, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.AM_SHRINE))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)) == NHC.THRONE)) {
-            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.T_LOOTED))));
-        } else if (cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684) == NHC.TREE) {
-            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.TREE_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __sl67, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.TREE_SWARM))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)) == NHC.FOUNTAIN)) {
-            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.F_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __sl68, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.F_WARNED))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, 1684)) == NHC.SINK)) {
-            (yield* nhl_add_table_entry_bool(L, __sl69, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.S_LPUDDING))));
-            (yield* nhl_add_table_entry_bool(L, __sl70, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.S_LDWASHER))));
-            (yield* nhl_add_table_entry_bool(L, __sl71, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, 1688) & 31) | 0) & NHM.S_LRING))));
+        if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+            (yield* nhl_add_table_entry_bool(L, __sl59, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR))));
+            (yield* nhl_add_table_entry_bool(L, __sl60, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_BROKEN))));
+            (yield* nhl_add_table_entry_bool(L, __sl61, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN))));
+            (yield* nhl_add_table_entry_bool(L, __sl62, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED))));
+            (yield* nhl_add_table_entry_bool(L, __sl63, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED))));
+            (yield* nhl_add_table_entry_bool(L, __sl64, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED))));
+        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
+            (yield* nhl_add_table_entry_bool(L, __sl65, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE))));
+        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
+            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.T_LOOTED))));
+        } else if (cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.TREE) {
+            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_LOOTED))));
+            (yield* nhl_add_table_entry_bool(L, __sl67, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_SWARM))));
+        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
+            (yield* nhl_add_table_entry_bool(L, __sl66, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))));
+            (yield* nhl_add_table_entry_bool(L, __sl68, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))));
+        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
+            (yield* nhl_add_table_entry_bool(L, __sl69, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LPUDDING))));
+            (yield* nhl_add_table_entry_bool(L, __sl70, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LDWASHER))));
+            (yield* nhl_add_table_entry_bool(L, __sl71, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING))));
         }
         (yield* lua_settable(L, -3));
         return 1;
@@ -821,10 +887,10 @@ function* nhl_impossible(L) {
 /** C ref: nhlua.c:636 — @param {CPtr} L @returns {CInt} */
 function* nhl_pline(L) {
     let argc = lua_gettop(L);
-    if (argc == 1 || argc == 2 ? 1 : 0) {
+    if (argc == 1 || argc == 2) {
         (yield* pline(__sl72, ((yield* luaL_checklstring(L, 1, null)))));
         if (lua_toboolean(L, 2))
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1)));
+            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
     } else
         (yield* nhl_error(L, __sl73));
     return 0;
@@ -891,7 +957,7 @@ function* nhl_menu(L) {
     let any = cptr.alloc(8);
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    if (argc < 2 || argc > 4 ? 1 : 0) {
+    if (argc < 2 || argc > 4) {
         (yield* nhl_error(L, __sl73));
         return 0;
     }
@@ -901,8 +967,8 @@ function* nhl_menu(L) {
     if (lua_isstring(L, 3))
         pick = (yield* luaL_checkoption(L, 3, __sl75, __static_nhl_menu_pickX));
     (yield* luaL_checktype(L, argc, 5));
-    tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(tmpwin, 0n)));
+    tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+    (yield* Y.icall(start_menu()(tmpwin, 0n)));
     (yield* lua_pushnil(L));
     while ((yield* lua_next(L, argc)) != 0) {
         let str = __sl74;
@@ -920,19 +986,19 @@ function* nhl_menu(L) {
             str = ((yield* luaL_checklstring(L, -1, null)));
             key = ((yield* luaL_checklstring(L, -2, null)));
         }
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         if (cptr.ld1s(key))
             cptr.st1(any, cptr.ld1so(key, 0));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, str, ((cptr.ld1s(defval) && cptr.ld1s(key) ? 1 : 0) && cptr.ld1so(defval, 0) == cptr.ld1so(key, 0) ? 1 : 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, str, (cptr.ld1s(defval) && cptr.ld1s(key) && cptr.ld1so(defval, 0) == cptr.ld1so(key, 0)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
         (yield* lua_settop(L, -2));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(tmpwin, prompt)));
+    (yield* Y.icall(end_menu()(tmpwin, prompt)));
     pick_cnt = (yield* select_menu(tmpwin, pick, picks));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin)));
+    (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
         let buf = new Uint8Array(2);
         cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 0, 24), 1);
-        if (((pick == NHM.PICK_ONE && pick_cnt > 1 ? 1 : 0) && cptr.ld1s(defval) ? 1 : 0) && cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, 24) ? 1 : 0)
+        if (pick == NHM.PICK_ONE && pick_cnt > 1 && cptr.ld1s(defval) && cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, 24))
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 1, 24), 1);
         cptr.st1o(cptr.decay(buf), 1, 0, 1);
         (yield* lua_pushstring(L, cptr.decay(buf)));
@@ -951,8 +1017,8 @@ function* nhl_text(L) {
     if (argc > 0) {
         let picks = cptr.box(null);
         let tmpwin;
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(tmpwin, 0n)));
+        tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+        (yield* Y.icall(start_menu()(tmpwin, 0n)));
         while (lua_gettop(L) > 0) {
             let ostr = (yield* dupstr(((yield* luaL_checklstring(L, 1, null)))));
             let ptr;
@@ -960,25 +1026,25 @@ function* nhl_text(L) {
             let lstr = cptr.add(cptr.add(str, cptr.strlen(str)), -(1));
             do {
                 let nlp = cptr.strchr(str, 10);
-                if (nlp && (cptr.diff(nlp, str)) <= 76n ? 1 : 0) {
+                if (nlp && (cptr.diff(nlp, str)) <= 76n) {
                     ptr = nlp;
                 } else {
                     ptr = cptr.add(str, 76);
                     if (cptr.cmp(ptr, lstr) > 0)
                         ptr = lstr;
                 }
-                while ((cptr.cmp(ptr, str) > 0) && !(cptr.ld1s(ptr) == 32 || cptr.ld1s(ptr) == 10 ? 1 : 0) ? 1 : 0)
+                while ((cptr.cmp(ptr, str) > 0) && !(cptr.ld1s(ptr) == 32 || cptr.ld1s(ptr) == 10))
                     ptr = cptr.add(ptr, -1);
                 cptr.st1(ptr, 0);
                 (yield* add_menu_str(tmpwin, str));
                 str = cptr.add(ptr, 1);
-            } while (cptr.ld1s(str) && cptr.cmp(str, lstr) <= 0 ? 1 : 0);
+            } while (cptr.ld1s(str) && cptr.cmp(str, lstr) <= 0);
             (yield* lua_settop(L, -2));
             cptr.free(ostr);
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(tmpwin, null)));
+        (yield* Y.icall(end_menu()(tmpwin, null)));
         void (yield* select_menu(tmpwin, NHM.PICK_NONE, picks));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin)));
+        (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     }
     return 0;
 }
@@ -1043,11 +1109,11 @@ function nhl_lua_rnglog_ctx_enabled() {
         return schar((__static_nhl_lua_rnglog_ctx_enabled_enabled ? 1 : 0));
     env = getenv(__sl80);
     if (env) {
-        __static_nhl_lua_rnglog_ctx_enabled_enabled = (cptr.ld1s(env) && strcmp(env, __sl81) ? 1 : 0) ? 1 : 0;
+        __static_nhl_lua_rnglog_ctx_enabled_enabled = (cptr.ld1s(env) && strcmp(env, __sl81)) ? 1 : 0;
         return schar((__static_nhl_lua_rnglog_ctx_enabled_enabled ? 1 : 0));
     }
     rnglog = getenv(__sl82);
-    __static_nhl_lua_rnglog_ctx_enabled_enabled = (rnglog && cptr.ld1s(rnglog) ? 1 : 0) ? 1 : 0;
+    __static_nhl_lua_rnglog_ctx_enabled_enabled = (rnglog && cptr.ld1s(rnglog)) ? 1 : 0;
     return schar((__static_nhl_lua_rnglog_ctx_enabled_enabled ? 1 : 0));
 }
 
@@ -1076,52 +1142,52 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
     nh_snprintf(__sl84, 972, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf), 256n, __sl72, __sl83);
     nh_snprintf(__sl84, 973, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), 256n, __sl72, __sl83);
     nh_snprintf(__sl84, 974, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), 256n, __sl72, __sl83);
-    if (lua_getstack(L, 1, ar) && (yield* lua_getinfo(L, __sl85, ar)) ? 1 : 0) {
-        if (cptr.add(ar, 68) && cptr.ld1so(ar, 68) ? 1 : 0) {
-            let src_start = cptr.add(ar, 68);
-            let src_len = cptr.strlen(cptr.add(ar, 68));
-            if (((src_len >= 11n && !cptr.strncmp(src_start, __sl86, 9n) ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93 ? 1 : 0) {
+    if (lua_getstack(L, 1, ar) && (yield* lua_getinfo(L, __sl85, ar))) {
+        if (cptr.add(ar, $lua_Debug_short_src) && cptr.ld1so(ar, $lua_Debug_short_src)) {
+            let src_start = cptr.add(ar, $lua_Debug_short_src);
+            let src_len = cptr.strlen(cptr.add(ar, $lua_Debug_short_src));
+            if (src_len >= 11n && !cptr.strncmp(src_start, __sl86, 9n) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
                 src_start = cptr.add(src_start, 9);
                 src_len -= 11n;
             }
-            if (src_len >= 1n && cptr.ld1so(src_start, 0) == 64 ? 1 : 0) {
+            if (src_len >= 1n && cptr.ld1so(src_start, 0) == 64) {
                 src_start = cptr.add(src_start, 1);
                 src_len--;
             }
-            if ((src_len >= 2n && cptr.ld1so(src_start, 0) == 40 ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41 ? 1 : 0) {
+            if (src_len >= 2n && cptr.ld1so(src_start, 0) == 40 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
                 src_start = cptr.add(src_start, 1);
                 src_len -= 2n;
             }
             nh_snprintf(__sl84, 1001, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), 256n, __sl87, Number(BigInt.asIntN(32, src_len)), src_start);
         }
-        line1 = cptr.ldI32o(ar, 48);
-        if ((cptr.ldPtro(ar, 8) && cptr.ld1s(cptr.ldPtro(ar, 8)) ? 1 : 0) && (((cptr.ld1so(cptr.ldPtro(ar, 8), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar, 8), 0) <= 90 ? 1 : 0) || (cptr.ld1so(cptr.ldPtro(ar, 8), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar, 8), 0) <= 122 ? 1 : 0) ? 1 : 0) || cptr.ld1so(cptr.ldPtro(ar, 8), 0) == 95 ? 1 : 0) ? 1 : 0) {
-            nh_snprintf(__sl84, 1008, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf), 256n, __sl72, cptr.ldPtro(ar, 8));
+        line1 = cptr.ldI32o(ar, $lua_Debug_currentline);
+        if (cptr.ldPtro(ar, $lua_Debug_name) && cptr.ld1s(cptr.ldPtro(ar, $lua_Debug_name)) && ((cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 90) || (cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 122) || cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) == 95)) {
+            nh_snprintf(__sl84, 1008, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf), 256n, __sl72, cptr.ldPtro(ar, $lua_Debug_name));
             name1 = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf);
         }
         have1 = 1;
     }
-    if (lua_getstack(L, 2, ar2) && (yield* lua_getinfo(L, __sl85, ar2)) ? 1 : 0) {
-        if (cptr.add(ar2, 68) && cptr.ld1so(ar2, 68) ? 1 : 0) {
-            let src_start = cptr.add(ar2, 68);
-            let src_len = cptr.strlen(cptr.add(ar2, 68));
-            if (((src_len >= 11n && !cptr.strncmp(src_start, __sl86, 9n) ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93 ? 1 : 0) {
+    if (lua_getstack(L, 2, ar2) && (yield* lua_getinfo(L, __sl85, ar2))) {
+        if (cptr.add(ar2, $lua_Debug_short_src) && cptr.ld1so(ar2, $lua_Debug_short_src)) {
+            let src_start = cptr.add(ar2, $lua_Debug_short_src);
+            let src_len = cptr.strlen(cptr.add(ar2, $lua_Debug_short_src));
+            if (src_len >= 11n && !cptr.strncmp(src_start, __sl86, 9n) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
                 src_start = cptr.add(src_start, 9);
                 src_len -= 11n;
             }
-            if (src_len >= 1n && cptr.ld1so(src_start, 0) == 64 ? 1 : 0) {
+            if (src_len >= 1n && cptr.ld1so(src_start, 0) == 64) {
                 src_start = cptr.add(src_start, 1);
                 src_len--;
             }
-            if ((src_len >= 2n && cptr.ld1so(src_start, 0) == 40 ? 1 : 0) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41 ? 1 : 0) {
+            if (src_len >= 2n && cptr.ld1so(src_start, 0) == 40 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
                 src_start = cptr.add(src_start, 1);
                 src_len -= 2n;
             }
             nh_snprintf(__sl84, 1037, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), 256n, __sl87, Number(BigInt.asIntN(32, src_len)), src_start);
         }
-        line2 = cptr.ldI32o(ar2, 48);
-        if ((cptr.ldPtro(ar2, 8) && cptr.ld1s(cptr.ldPtro(ar2, 8)) ? 1 : 0) && (((cptr.ld1so(cptr.ldPtro(ar2, 8), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar2, 8), 0) <= 90 ? 1 : 0) || (cptr.ld1so(cptr.ldPtro(ar2, 8), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar2, 8), 0) <= 122 ? 1 : 0) ? 1 : 0) || cptr.ld1so(cptr.ldPtro(ar2, 8), 0) == 95 ? 1 : 0) ? 1 : 0) {
-            nh_snprintf(__sl84, 1044, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf), 256n, __sl72, cptr.ldPtro(ar2, 8));
+        line2 = cptr.ldI32o(ar2, $lua_Debug_currentline);
+        if (cptr.ldPtro(ar2, $lua_Debug_name) && cptr.ld1s(cptr.ldPtro(ar2, $lua_Debug_name)) && ((cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 90) || (cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 122) || cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) == 95)) {
+            nh_snprintf(__sl84, 1044, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf), 256n, __sl72, cptr.ldPtro(ar2, $lua_Debug_name));
             name2 = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf);
         }
         have2 = 1;
@@ -1190,7 +1256,7 @@ function* nhl_is_genocided(L) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
         let mgend = cptr.box(0);
         let i = (yield* name_to_mon(paramstr, mgend));
-        (yield* lua_pushboolean(L, ((i != NHC.NON_PM) && (cptr.ld1uo2(svm, i, 12, 18) & NHM.G_GENOD) ? 1 : 0) ? 1 : 0));
+        (yield* lua_pushboolean(L, (i != NHC.NON_PM) && (cptr.ld1uo2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
     } else {
         (yield* nhl_error(L, __sl73));
     }
@@ -1204,9 +1270,9 @@ function* nhl_get_debug_themerm_name(L) {
         let dbg_themerm = null;
         let is_fill = schar(lua_toboolean(L, 1));
         (yield* lua_settop(L, -2));
-        if (cptr.ld1so(flags, 10))
+        if (wizard())
             dbg_themerm = getenv(is_fill ? __sl92 : __sl93);
-        if (!dbg_themerm || !cptr.ld1s(dbg_themerm) ? 1 : 0) {
+        if (!dbg_themerm || !cptr.ld1s(dbg_themerm)) {
             (yield* lua_pushnil(L));
         } else {
             (yield* lua_pushstring(L, dbg_themerm));
@@ -1252,7 +1318,7 @@ export function* get_table_str_opt(L, name, defval) {
     let ltyp;
     (yield* lua_getfield(L, -1, name));
     ltyp = lua_type(L, -1);
-    if (ltyp == 4 || ltyp == 0 ? 1 : 0) {
+    if (ltyp == 4 || ltyp == 0) {
         ret = ((yield* luaL_optlstring(L, -1, (defval), null)));
     } else if (ltyp == 6) {
         (yield* nhl_pcall_handle(L, 0, 1, __sl95, NHC.NHLpa_panic));
@@ -1287,7 +1353,7 @@ export function* get_table_boolean(L, name) {
         ret = lua_toboolean(L, -1);
     } else if (ltyp == 3) {
         ret = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, -1))));
-        if (ret < 0 || ret > 1 ? 1 : 0)
+        if (ret < 0 || ret > 1)
             ret = -1;
     }
     (yield* lua_settop(L, -2));
@@ -1322,7 +1388,7 @@ function* nhl_dnum_name(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
         let dnum = (yield* luaL_checkinteger(L, 1));
-        if (dnum >= 0n && dnum < BigInt(cptr.ldI32(svn)) ? 1 : 0)
+        if (dnum >= 0n && dnum < BigInt(cptr.ldI32(svn)))
             (yield* lua_pushstring(L, cptr.add(svd, dnum, 112)));
         else
             (yield* lua_pushstring(L, __sl74));
@@ -1336,7 +1402,7 @@ function* nhl_int_to_pm_name(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
         let i = (yield* luaL_checkinteger(L, 1));
-        if (i >= 0n && i <= 382n ? 1 : 0)
+        if (i >= 0n && i <= 382n)
             (yield* lua_pushstring(L, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0)));
         else
             (yield* lua_pushstring(L, __sl74));
@@ -1351,9 +1417,9 @@ function* nhl_int_to_obj_name(L) {
     if (argc == 1) {
         let buf = new Uint8Array(8);
         let i = (yield* luaL_checkinteger(L, 1));
-        if ((i >= 0n && i < 481n ? 1 : 0) && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)) ? 1 : 0) {
+        if (i >= 0n && i < 481n && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))) {
             (yield* lua_pushstring(L, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))));
-            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(def_oc_syms, cptr.ld1so2(objects, i, 120, 70), 24), 1);
+            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(def_oc_syms, cptr.ld1so2(objects, i, 120, $objclass_oc_class), 24), 1);
             cptr.st1o(cptr.decay(buf), 1, 0, 1);
             (yield* lua_pushstring(L, cptr.decay(buf)));
         } else {
@@ -1370,32 +1436,32 @@ function* nhl_variable(L) {
     let argc = lua_gettop(L);
     let typ;
     let key;
-    if (!cptr.ldPtro(gl, 216)) {
+    if (!cptr.ldPtro(gl, $instance_globals_l_luacore)) {
         (yield* panic(__sl103));
         return 0;
     }
-    (yield* lua_getglobal(cptr.ldPtro(gl, 216), __sl104));
-    if (!(lua_type(cptr.ldPtro(gl, 216), -1) == 5)) {
+    (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl104));
+    if (!(lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1) == 5)) {
         (yield* impossible(__sl105));
         return 0;
     }
     if (argc == 1) {
         key = ((yield* luaL_checklstring(L, 1, null)));
-        (yield* lua_getfield(cptr.ldPtro(gl, 216), -1, key));
-        typ = lua_type(cptr.ldPtro(gl, 216), -1);
+        (yield* lua_getfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, key));
+        typ = lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1);
         if (typ == 4)
-            (yield* lua_pushstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, 216), -1, null))));
+            (yield* lua_pushstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
         else if (typ == 0)
             (yield* lua_pushnil(L));
         else if (typ == 1)
-            (yield* lua_pushboolean(L, lua_toboolean(cptr.ldPtro(gl, 216), -1)));
+            (yield* lua_pushboolean(L, lua_toboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), -1)));
         else if (typ == 3)
-            (yield* lua_pushinteger(L, (yield* lua_tointegerx(cptr.ldPtro(gl, 216), -1, null))));
+            (yield* lua_pushinteger(L, (yield* lua_tointegerx(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
         else if (typ == 5) {
-            (yield* lua_getglobal(cptr.ldPtro(gl, 216), __sl106));
-            (yield* lua_pushvalue(cptr.ldPtro(gl, 216), -2));
-            (yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 1, 1, __sl107, NHC.NHLpa_panic));
-            (yield* luaL_loadstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, 216), -1, null))));
+            (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl106));
+            (yield* lua_pushvalue(cptr.ldPtro(gl, $instance_globals_l_luacore), -2));
+            (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 1, 1, __sl107, NHC.NHLpa_panic));
+            (yield* luaL_loadstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
             (yield* nhl_pcall_handle(L, 0, 1, __sl108, NHC.NHLpa_panic));
         } else
             (yield* nhl_error(L, __sl109));
@@ -1404,24 +1470,24 @@ function* nhl_variable(L) {
         key = ((yield* luaL_checklstring(L, 1, null)));
         typ = lua_type(L, -1);
         if (typ == 4) {
-            (yield* lua_pushstring(cptr.ldPtro(gl, 216), (yield* lua_tolstring(L, -1, null))));
-            (yield* lua_setfield(cptr.ldPtro(gl, 216), -2, key));
+            (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tolstring(L, -1, null))));
+            (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 0) {
-            (yield* lua_pushnil(cptr.ldPtro(gl, 216)));
-            (yield* lua_setfield(cptr.ldPtro(gl, 216), -2, key));
+            (yield* lua_pushnil(cptr.ldPtro(gl, $instance_globals_l_luacore)));
+            (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 1) {
-            (yield* lua_pushboolean(cptr.ldPtro(gl, 216), lua_toboolean(L, -1)));
-            (yield* lua_setfield(cptr.ldPtro(gl, 216), -2, key));
+            (yield* lua_pushboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), lua_toboolean(L, -1)));
+            (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 3) {
-            (yield* lua_pushinteger(cptr.ldPtro(gl, 216), (yield* lua_tointegerx(L, -1, null))));
-            (yield* lua_setfield(cptr.ldPtro(gl, 216), -2, key));
+            (yield* lua_pushinteger(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tointegerx(L, -1, null))));
+            (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 5) {
             (yield* lua_getglobal(L, __sl110));
             (yield* lua_pushstring(L, key));
             (yield* lua_pushvalue(L, -3));
             (yield* nhl_pcall_handle(L, 2, 1, __sl111, NHC.NHLpa_panic));
-            (yield* luaL_loadstring(cptr.ldPtro(gl, 216), (yield* lua_tolstring(L, -1, null))));
-            (yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 0, 0, __sl112, NHC.NHLpa_panic));
+            (yield* luaL_loadstring(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tolstring(L, -1, null))));
+            (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 0, __sl112, NHC.NHLpa_panic));
         } else
             (yield* nhl_error(L, __sl113));
         return 0;
@@ -1433,18 +1499,18 @@ function* nhl_variable(L) {
 /** C ref: nhlua.c:1451 @returns {CPtr} */
 export function* get_nh_lua_variables() {
     let key = null;
-    if (!cptr.ldPtro(gl, 216)) {
+    if (!cptr.ldPtro(gl, $instance_globals_l_luacore)) {
         (yield* panic(__sl103));
         return key;
     }
-    (yield* lua_getglobal(cptr.ldPtro(gl, 216), __sl115));
-    if (lua_type(cptr.ldPtro(gl, 216), -1) == 6) {
-        if ((yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 0, 1, __sl116, NHC.NHLpa_impossible))) {
+    (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __sl115));
+    if (lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1) == 6) {
+        if ((yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 1, __sl116, NHC.NHLpa_impossible))) {
             return key;
         }
-        key = (yield* dupstr((yield* lua_tolstring(cptr.ldPtro(gl, 216), -1, null))));
+        key = (yield* dupstr((yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
     }
-    (yield* lua_settop(cptr.ldPtro(gl, 216), -2));
+    (yield* lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), -2));
     return key;
 }
 
@@ -1468,29 +1534,29 @@ export function* restore_luadata(nhfp) {
     ;
     lua_data = (yield* alloc(lua_data_len.v));
     (yield* sfi_char(nhfp, lua_data, __sl119, lua_data_len.v | 0));
-    if (!cptr.ldPtro(gl, 216))
+    if (!cptr.ldPtro(gl, $instance_globals_l_luacore))
         (yield* l_nhcore_init());
-    (yield* luaL_loadstring(cptr.ldPtro(gl, 216), lua_data));
+    (yield* luaL_loadstring(cptr.ldPtro(gl, $instance_globals_l_luacore), lua_data));
     cptr.free(lua_data);
-    (yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 0, 0, __sl120, NHC.NHLpa_panic));
+    (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 0, __sl120, NHC.NHLpa_panic));
 }
 
 /** C ref: nhlua.c:1523 — @param {CPtr} L @returns {CInt} */
 function* nhl_stairways(L) {
-    let tmp = cptr.ldPtro(gs, 8);
+    let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     let i = 1;
     (yield* lua_createtable(L, 0, 0));
     while (tmp) {
         (yield* lua_pushinteger(L, BigInt(i)));
         (yield* lua_createtable(L, 0, 0));
-        (yield* nhl_add_table_entry_bool(L, __sl121, cptr.ld1so(tmp, 8)));
-        (yield* nhl_add_table_entry_bool(L, __sl122, cptr.ld1so(tmp, 9)));
+        (yield* nhl_add_table_entry_bool(L, __sl121, cptr.ld1so(tmp, $stairway_up)));
+        (yield* nhl_add_table_entry_bool(L, __sl122, cptr.ld1so(tmp, $stairway_isladder)));
         (yield* nhl_add_table_entry_int(L, __sl123, BigInt(cptr.ldI16(tmp))));
-        (yield* nhl_add_table_entry_int(L, __sl124, BigInt(cptr.ldI16o(tmp, 2))));
-        (yield* nhl_add_table_entry_int(L, __sl125, BigInt(cptr.ldI16o(tmp, 4))));
-        (yield* nhl_add_table_entry_int(L, __sl126, BigInt(cptr.ldI16o(tmp, 6))));
+        (yield* nhl_add_table_entry_int(L, __sl124, BigInt(cptr.ldI16o(tmp, $stairway_sy))));
+        (yield* nhl_add_table_entry_int(L, __sl125, BigInt(cptr.ldI16o(tmp, $stairway_tolev))));
+        (yield* nhl_add_table_entry_int(L, __sl126, BigInt(cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel))));
         (yield* lua_settable(L, -3));
-        tmp = cptr.ldPtro(tmp, 16);
+        tmp = cptr.ldPtro(tmp, $stairway_next);
         i++;
     }
     return 1;
@@ -1533,7 +1599,7 @@ function* nhl_doturn(L) {
         domulti = schar(lua_toboolean(L, 1));
     do {
         (yield* moveloop_core());
-    } while (domulti && cptr.ldI64o(gm, 8) ? 1 : 0);
+    } while (domulti && cptr.ldI64o(gm, $instance_globals_m_multi));
     return 0;
 }
 
@@ -1543,13 +1609,13 @@ function* nhl_debug_flags(L) {
     (yield* lcheck_param_table(L));
     val = (yield* get_table_boolean_opt(L, __sl129, -1));
     if (val != -1) {
-        cptr.st1o(iflags, 86, schar((!schar(val))));
-        if (cptr.ld1so(iflags, 86)) {
+        cptr.st1o(iflags, $instance_flags_debug_mongen, schar((!schar(val))));
+        if (cptr.ld1so(iflags, $instance_flags_debug_mongen)) {
             let mtmp;
             let mtmp2;
-            for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = mtmp2) {
+            for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
                 mtmp2 = cptr.ldPtr(mtmp);
-                if ((cptr.ldI32o((mtmp), 52) < 1))
+                if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
                 (yield* mongone(mtmp));
             }
@@ -1557,15 +1623,15 @@ function* nhl_debug_flags(L) {
     }
     val = (yield* get_table_boolean_opt(L, __sl130, -1));
     if (val != -1) {
-        cptr.st1o(iflags, 87, schar((!schar(val))));
+        cptr.st1o(iflags, $instance_flags_debug_hunger, schar((!schar(val))));
     }
     val = (yield* get_table_boolean_opt(L, __sl131, -1));
     if (val != -1) {
-        cptr.st1o(iflags, 85, schar(val));
+        cptr.st1o(iflags, $instance_flags_debug_overwrite_stairs, schar(val));
     }
     val = (yield* get_table_boolean_opt(L, __sl132, -1));
     if (val != -1) {
-        cptr.st1o(iflags, 88, schar(val));
+        cptr.st1o(iflags, $instance_flags_debug_prevent_pline, schar(val));
     }
     return 0;
 }
@@ -1576,7 +1642,7 @@ function* nhl_flip_level(L) {
     let flp = 0;
     if (argc == 1)
         flp = Number(BigInt.asIntN(32, (yield* lua_tointegerx(L, 1, null))));
-    (yield* flip_level(flp, schar((!cptr.ld1so(gi, 4)))));
+    (yield* flip_level(flp, schar((!cptr.ld1so(gi, $instance_globals_i_in_mklev)))));
     return 0;
 }
 
@@ -1621,7 +1687,7 @@ function* nhl_timer_peek_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0)
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v))
         when = spot_time_expires(x.v, y.v, timertype);
     (yield* lua_pushinteger(L, when));
     return 1;
@@ -1642,7 +1708,7 @@ function* nhl_timer_stop_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0)
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v))
         (yield* spot_stop_timers(x.v, y.v, timertype));
     return 0;
 }
@@ -1663,7 +1729,7 @@ function* nhl_timer_start_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v) ? 1 : 0) {
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v)) {
         let where = (BigInt(x.v) << 16n) | BigInt(y.v);
         (yield* spot_stop_timers(x.v, y.v, timertype));
         void (yield* start_timer(when, NHC.TIMER_LEVEL, NHC.MELT_ICE_AWAY, long_to_any(where)));
@@ -1690,11 +1756,11 @@ function* nhl_callback(L) {
     let rm;
     let fn;
     let cb;
-    if (!cptr.ldPtro(gl, 216)) {
+    if (!cptr.ldPtro(gl, $instance_globals_l_luacore)) {
         (yield* panic(__sl103));
         return 0;
     }
-    if (argc == 2 || argc == 3 ? 1 : 0) {
+    if (argc == 2 || argc == 3) {
         if (argc == 2) {
             rm = 0;
             fn = ((yield* luaL_checklstring(L, -1, null)));
@@ -1716,10 +1782,10 @@ function* nhl_callback(L) {
         } else {
             (cptr.stI32o(nhcb_counts, i, cptr.ldI32o(nhcb_counts, i, 4) + 1, 4)) - (1);
         }
-        (yield* lua_getglobal(cptr.ldPtro(gl, 216), rm ? __sl138 : __sl139));
-        (yield* lua_pushstring(cptr.ldPtro(gl, 216), cb));
-        (yield* lua_pushstring(cptr.ldPtro(gl, 216), fn));
-        (yield* nhl_pcall_handle(cptr.ldPtro(gl, 216), 2, 0, __sl140, NHC.NHLpa_panic));
+        (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), rm ? __sl138 : __sl139));
+        (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cb));
+        (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), fn));
+        (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 2, 0, __sl140, NHC.NHLpa_panic));
     }
     return 0;
 }
@@ -1733,66 +1799,66 @@ function* nhl_gamestate(L) {
     let otyp;
     do {
         if ((yield* debugcore(__sl141, 1))) {
-            let save_plnmsg = cptr.ldI32o(iflags, 40);
-            (yield* pline(__sl142, cptr.ldI16o(u, 24), cptr.ldI16o(u, 26), reststate ? 84 : 70, cptr.ld1so(gg, 94576) ? 116 : 102));
-            cptr.stI32o(iflags, 40, save_plnmsg);
+            let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
+            (yield* pline(__sl142, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel), reststate ? 84 : 70, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? 116 : 102));
+            cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     } while (0);
-    if (reststate && cptr.ld1so(gg, 94576) ? 1 : 0) {
-        let cur_uz = cptr.alloc(4); cptr.memcpy(cur_uz, cptr.add(u, 24), 4);
-        let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, 28), 4);
-        cptr.stI64o(svm, 8, cptr.ldI64o(gg, 94584));
-        (yield* pline(__sl143, cptr.ldI64o(svm, 8)));
-        cptr.stI64o(gg, 94584, 0n);
-        cptr.stI32o(gl, 64, 51);
-        while (cptr.ldPtro(gi, 8))
-            (yield* useupall(cptr.ldPtro(gi, 8)));
-        while (!cptr.eq((otmp = cptr.ldPtro(gg, 94592)), (null))) {
-            wornmask = cptr.ldI64o(otmp, 192);
-            cptr.stI64o(otmp, 192, 0n);
-            (yield* extract_nobj(otmp, cptr.add(gg, 94592)));
+    if (reststate && cptr.ld1so(gg, $instance_globals_g_gmst_stored)) {
+        let cur_uz = cptr.alloc(4); cptr.memcpy(cur_uz, cptr.add(u, $you_uz), 4);
+        let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, $you_uz0), 4);
+        cptr.stI64o(svm, $instance_globals_saved_m_moves, cptr.ldI64o(gg, $instance_globals_g_gmst_moves));
+        (yield* pline(__sl143, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
+        cptr.stI64o(gg, $instance_globals_g_gmst_moves, 0n);
+        cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);
+        while (cptr.ldPtro(gi, $instance_globals_i_invent))
+            (yield* useupall(cptr.ldPtro(gi, $instance_globals_i_invent)));
+        while (!cptr.eq((otmp = cptr.ldPtro(gg, $instance_globals_g_gmst_invent)), (null))) {
+            wornmask = cptr.ldI64o(otmp, $obj_owornmask);
+            cptr.stI64o(otmp, $obj_owornmask, 0n);
+            (yield* extract_nobj(otmp, cptr.add(gg, $instance_globals_g_gmst_invent)));
             (yield* addinv_nomerge(otmp));
             if (wornmask)
                 (yield* setworn(otmp, wornmask));
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, 94600), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1906, __sl146) : void 0);
-        void cptr.memcpy(u, cptr.ldPtro(gg, 94600), 2864n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, 94608), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1908, __sl147) : void 0);
-        void cptr.memcpy(cptr.add(svd, 1940), cptr.ldPtro(gg, 94608), 962n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, 94616), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1911, __sl148) : void 0);
-        void cptr.memcpy(cptr.add(svm, 16), cptr.ldPtro(gg, 94616), 4596n);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1906, __sl146) : void 0);
+        void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1908, __sl147) : void 0);
+        void cptr.memcpy(cptr.add(svd, $instance_globals_saved_d_disco), cptr.ldPtro(gg, $instance_globals_g_gmst_disco), 962n);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))), 0n) ? __assert_rtn(__sl144, __sl145, 1911, __sl148) : void 0);
+        void cptr.memcpy(cptr.add(svm, $instance_globals_saved_m_mvitals), cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), 4596n);
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
-            if (cptr.ldPtro2(objects, otyp, 120, 8)) {
-                cptr.free(cptr.ldPtro2(objects, otyp, 120, 8));
-                cptr.stPtro2(objects, otyp, 120, 8, null);
+            if (cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname)) {
+                cptr.free(cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname));
+                cptr.stPtro2(objects, otyp, 120, $objclass_oc_uname, null);
             }
-        cptr.memcpy(cptr.add(u, 24), cur_uz, 4), cptr.memcpy(cptr.add(u, 28), cur_uz0, 4);
+        cptr.memcpy(cptr.add(u, $you_uz), cur_uz, 4), cptr.memcpy(cptr.add(u, $you_uz0), cur_uz0, 4);
         (yield* init_uhunger());
         (yield* free_tutorial());
-        cptr.st1o(gg, 94576, 0);
-        void cptr.memcpy(svs, cptr.add(gg, 94624), 344n);
-    } else if (!reststate && !cptr.ld1so(gg, 94576) ? 1 : 0) {
-        cptr.stI64o(gg, 94584, cptr.ldI64o(svm, 8));
-        while (!cptr.eq((otmp = cptr.ldPtro(gi, 8)), (null))) {
-            wornmask = cptr.ldI64o(otmp, 192);
+        cptr.st1o(gg, $instance_globals_g_gmst_stored, 0);
+        void cptr.memcpy(svs, cptr.add(gg, $instance_globals_g_gmst_spl_book), 344n);
+    } else if (!reststate && !cptr.ld1so(gg, $instance_globals_g_gmst_stored)) {
+        cptr.stI64o(gg, $instance_globals_g_gmst_moves, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
+        while (!cptr.eq((otmp = cptr.ldPtro(gi, $instance_globals_i_invent)), (null))) {
+            wornmask = cptr.ldI64o(otmp, $obj_owornmask);
             (yield* setnotworn(otmp));
             (yield* freeinv(otmp));
-            cptr.stI64o(otmp, 192, wornmask);
-            cptr.stPtr(otmp, cptr.ldPtro(gg, 94592));
-            cptr.stPtro(gg, 94592, otmp);
+            cptr.stI64o(otmp, $obj_owornmask, wornmask);
+            cptr.stPtr(otmp, cptr.ldPtro(gg, $instance_globals_g_gmst_invent));
+            cptr.stPtro(gg, $instance_globals_g_gmst_invent, otmp);
         }
-        cptr.stI32o(gl, 64, 51);
-        cptr.stPtro(gg, 94600, (yield* alloc(2864)));
-        void cptr.memcpy(cptr.ldPtro(gg, 94600), u, 2864n);
-        cptr.stPtro(gg, 94608, (yield* alloc(962)));
-        void cptr.memcpy(cptr.ldPtro(gg, 94608), cptr.add(svd, 1940), 962n);
-        cptr.stPtro(gg, 94616, (yield* alloc(4596)));
-        void cptr.memcpy(cptr.ldPtro(gg, 94616), cptr.add(svm, 16), 4596n);
-        void cptr.memcpy(cptr.add(gg, 94624), svs, 344n);
+        cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);
+        cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2864)));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2864n);
+        cptr.stPtro(gg, $instance_globals_g_gmst_disco, (yield* alloc(962)));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), cptr.add(svd, $instance_globals_saved_d_disco), 962n);
+        cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(4596)));
+        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), cptr.add(svm, $instance_globals_saved_m_mvitals), 4596n);
+        void cptr.memcpy(cptr.add(gg, $instance_globals_g_gmst_spl_book), svs, 344n);
         void __builtin___memset_chk(svs, 0, 344n, __builtin_object_size(svs, 0));
-        cptr.st1o(gg, 94576, 1);
+        cptr.st1o(gg, $instance_globals_g_gmst_stored, 1);
     } else {
-        (yield* impossible(__sl149, reststate ? __sl150 : __sl151, cptr.ld1so(gg, 94576) ? __sl152 : __sl153));
+        (yield* impossible(__sl149, reststate ? __sl150 : __sl151, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? __sl152 : __sl153));
     }
     (yield* update_inventory());
     return 0;
@@ -1801,17 +1867,17 @@ function* nhl_gamestate(L) {
 /** C ref: nhlua.c:1963 */
 export function* free_tutorial() {
     let otmp;
-    while ((otmp = cptr.ldPtro(gg, 94592)) !== null) {
-        (yield* extract_nobj(otmp, cptr.add(gg, 94592)));
-        cptr.stI64o(otmp, 192, 0n);
+    while ((otmp = cptr.ldPtro(gg, $instance_globals_g_gmst_invent)) !== null) {
+        (yield* extract_nobj(otmp, cptr.add(gg, $instance_globals_g_gmst_invent)));
+        cptr.stI64o(otmp, $obj_owornmask, 0n);
         (yield* obfree(otmp, null));
     }
-    if (cptr.ldPtro(gg, 94600))
-        cptr.free(cptr.ldPtro(gg, 94600)), cptr.stPtro(gg, 94600, null);
-    if (cptr.ldPtro(gg, 94608))
-        cptr.free(cptr.ldPtro(gg, 94608)), cptr.stPtro(gg, 94608, null);
-    if (cptr.ldPtro(gg, 94616))
-        cptr.free(cptr.ldPtro(gg, 94616)), cptr.stPtro(gg, 94616, null);
+    if (cptr.ldPtro(gg, $instance_globals_g_gmst_ubak))
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak)), cptr.stPtro(gg, $instance_globals_g_gmst_ubak, null);
+    if (cptr.ldPtro(gg, $instance_globals_g_gmst_disco))
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_disco)), cptr.stPtro(gg, $instance_globals_g_gmst_disco, null);
+    if (cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals))
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals)), cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, null);
 }
 
 /** C ref: nhlua.c:1991 — @param {CInt} entering */
@@ -1825,87 +1891,87 @@ export function* tutorial(entering) {
 /** C ref: nhlua.c:2002 — struct luaL_Reg[41] */
 const nhl_functions = cptr.alloc(41 * 16);
 cptr.stPtro(nhl_functions, 0, __sl154);
-cptr.stPtro(nhl_functions, 8, nhl_test);
+cptr.stPtro(nhl_functions, 0 + $luaL_Reg_func, nhl_test);
 cptr.stPtro(nhl_functions, 16, __sl155);
-cptr.stPtro(nhl_functions, 24, nhl_getmap);
+cptr.stPtro(nhl_functions, 16 + $luaL_Reg_func, nhl_getmap);
 cptr.stPtro(nhl_functions, 32, __sl156);
-cptr.stPtro(nhl_functions, 40, nhl_gettrap);
+cptr.stPtro(nhl_functions, 32 + $luaL_Reg_func, nhl_gettrap);
 cptr.stPtro(nhl_functions, 48, __sl157);
-cptr.stPtro(nhl_functions, 56, nhl_deltrap);
+cptr.stPtro(nhl_functions, 48 + $luaL_Reg_func, nhl_deltrap);
 cptr.stPtro(nhl_functions, 64, __sl158);
-cptr.stPtro(nhl_functions, 72, nhl_timer_has_at);
+cptr.stPtro(nhl_functions, 64 + $luaL_Reg_func, nhl_timer_has_at);
 cptr.stPtro(nhl_functions, 80, __sl159);
-cptr.stPtro(nhl_functions, 88, nhl_timer_peek_at);
+cptr.stPtro(nhl_functions, 80 + $luaL_Reg_func, nhl_timer_peek_at);
 cptr.stPtro(nhl_functions, 96, __sl160);
-cptr.stPtro(nhl_functions, 104, nhl_timer_stop_at);
+cptr.stPtro(nhl_functions, 96 + $luaL_Reg_func, nhl_timer_stop_at);
 cptr.stPtro(nhl_functions, 112, __sl161);
-cptr.stPtro(nhl_functions, 120, nhl_timer_start_at);
+cptr.stPtro(nhl_functions, 112 + $luaL_Reg_func, nhl_timer_start_at);
 cptr.stPtro(nhl_functions, 128, __sl162);
-cptr.stPtro(nhl_functions, 136, nhl_abs_coord);
+cptr.stPtro(nhl_functions, 128 + $luaL_Reg_func, nhl_abs_coord);
 cptr.stPtro(nhl_functions, 144, __sl163);
-cptr.stPtro(nhl_functions, 152, nhl_impossible);
+cptr.stPtro(nhl_functions, 144 + $luaL_Reg_func, nhl_impossible);
 cptr.stPtro(nhl_functions, 160, __sl164);
-cptr.stPtro(nhl_functions, 168, nhl_pline);
+cptr.stPtro(nhl_functions, 160 + $luaL_Reg_func, nhl_pline);
 cptr.stPtro(nhl_functions, 176, __sl165);
-cptr.stPtro(nhl_functions, 184, nhl_verbalize);
+cptr.stPtro(nhl_functions, 176 + $luaL_Reg_func, nhl_verbalize);
 cptr.stPtro(nhl_functions, 192, __sl166);
-cptr.stPtro(nhl_functions, 200, nhl_menu);
+cptr.stPtro(nhl_functions, 192 + $luaL_Reg_func, nhl_menu);
 cptr.stPtro(nhl_functions, 208, __sl77);
-cptr.stPtro(nhl_functions, 216, nhl_text);
+cptr.stPtro(nhl_functions, 208 + $luaL_Reg_func, nhl_text);
 cptr.stPtro(nhl_functions, 224, __sl167);
-cptr.stPtro(nhl_functions, 232, nhl_getlin);
+cptr.stPtro(nhl_functions, 224 + $luaL_Reg_func, nhl_getlin);
 cptr.stPtro(nhl_functions, 240, __sl168);
-cptr.stPtro(nhl_functions, 248, nhl_get_cmd_key);
+cptr.stPtro(nhl_functions, 240 + $luaL_Reg_func, nhl_get_cmd_key);
 cptr.stPtro(nhl_functions, 256, __sl169);
-cptr.stPtro(nhl_functions, 264, nhl_callback);
+cptr.stPtro(nhl_functions, 256 + $luaL_Reg_func, nhl_callback);
 cptr.stPtro(nhl_functions, 272, __sl170);
-cptr.stPtro(nhl_functions, 280, nhl_gamestate);
+cptr.stPtro(nhl_functions, 272 + $luaL_Reg_func, nhl_gamestate);
 cptr.stPtro(nhl_functions, 288, __sl171);
-cptr.stPtro(nhl_functions, 296, nhl_makeplural);
+cptr.stPtro(nhl_functions, 288 + $luaL_Reg_func, nhl_makeplural);
 cptr.stPtro(nhl_functions, 304, __sl172);
-cptr.stPtro(nhl_functions, 312, nhl_makesingular);
+cptr.stPtro(nhl_functions, 304 + $luaL_Reg_func, nhl_makesingular);
 cptr.stPtro(nhl_functions, 320, __sl173);
-cptr.stPtro(nhl_functions, 328, nhl_s_suffix);
+cptr.stPtro(nhl_functions, 320 + $luaL_Reg_func, nhl_s_suffix);
 cptr.stPtro(nhl_functions, 336, __sl174);
-cptr.stPtro(nhl_functions, 344, nhl_ing_suffix);
+cptr.stPtro(nhl_functions, 336 + $luaL_Reg_func, nhl_ing_suffix);
 cptr.stPtro(nhl_functions, 352, __sl175);
-cptr.stPtro(nhl_functions, 360, nhl_an);
+cptr.stPtro(nhl_functions, 352 + $luaL_Reg_func, nhl_an);
 cptr.stPtro(nhl_functions, 368, __sl176);
-cptr.stPtro(nhl_functions, 376, nhl_rn2);
+cptr.stPtro(nhl_functions, 368 + $luaL_Reg_func, nhl_rn2);
 cptr.stPtro(nhl_functions, 384, __sl177);
-cptr.stPtro(nhl_functions, 392, nhl_random);
+cptr.stPtro(nhl_functions, 384 + $luaL_Reg_func, nhl_random);
 cptr.stPtro(nhl_functions, 400, __sl178);
-cptr.stPtro(nhl_functions, 408, nhl_level_difficulty);
+cptr.stPtro(nhl_functions, 400 + $luaL_Reg_func, nhl_level_difficulty);
 cptr.stPtro(nhl_functions, 416, __sl179);
-cptr.stPtro(nhl_functions, 424, nhl_is_genocided);
+cptr.stPtro(nhl_functions, 416 + $luaL_Reg_func, nhl_is_genocided);
 cptr.stPtro(nhl_functions, 432, __sl180);
-cptr.stPtro(nhl_functions, 440, nhl_get_debug_themerm_name);
+cptr.stPtro(nhl_functions, 432 + $luaL_Reg_func, nhl_get_debug_themerm_name);
 cptr.stPtro(nhl_functions, 448, __sl181);
-cptr.stPtro(nhl_functions, 456, nhl_parse_config);
+cptr.stPtro(nhl_functions, 448 + $luaL_Reg_func, nhl_parse_config);
 cptr.stPtro(nhl_functions, 464, __sl182);
-cptr.stPtro(nhl_functions, 472, nhl_get_config);
+cptr.stPtro(nhl_functions, 464 + $luaL_Reg_func, nhl_get_config);
 cptr.stPtro(nhl_functions, 480, __sl183);
-cptr.stPtro(nhl_functions, 488, l_get_config_errors);
+cptr.stPtro(nhl_functions, 480 + $luaL_Reg_func, l_get_config_errors);
 cptr.stPtro(nhl_functions, 496, __sl184);
-cptr.stPtro(nhl_functions, 504, nhl_dnum_name);
+cptr.stPtro(nhl_functions, 496 + $luaL_Reg_func, nhl_dnum_name);
 cptr.stPtro(nhl_functions, 512, __sl185);
-cptr.stPtro(nhl_functions, 520, nhl_int_to_pm_name);
+cptr.stPtro(nhl_functions, 512 + $luaL_Reg_func, nhl_int_to_pm_name);
 cptr.stPtro(nhl_functions, 528, __sl186);
-cptr.stPtro(nhl_functions, 536, nhl_int_to_obj_name);
+cptr.stPtro(nhl_functions, 528 + $luaL_Reg_func, nhl_int_to_obj_name);
 cptr.stPtro(nhl_functions, 544, __sl187);
-cptr.stPtro(nhl_functions, 552, nhl_variable);
+cptr.stPtro(nhl_functions, 544 + $luaL_Reg_func, nhl_variable);
 cptr.stPtro(nhl_functions, 560, __sl188);
-cptr.stPtro(nhl_functions, 568, nhl_stairways);
+cptr.stPtro(nhl_functions, 560 + $luaL_Reg_func, nhl_stairways);
 cptr.stPtro(nhl_functions, 576, __sl189);
-cptr.stPtro(nhl_functions, 584, nhl_pushkey);
+cptr.stPtro(nhl_functions, 576 + $luaL_Reg_func, nhl_pushkey);
 cptr.stPtro(nhl_functions, 592, __sl190);
-cptr.stPtro(nhl_functions, 600, nhl_doturn);
+cptr.stPtro(nhl_functions, 592 + $luaL_Reg_func, nhl_doturn);
 cptr.stPtro(nhl_functions, 608, __sl191);
-cptr.stPtro(nhl_functions, 616, nhl_debug_flags);
+cptr.stPtro(nhl_functions, 608 + $luaL_Reg_func, nhl_debug_flags);
 cptr.stPtro(nhl_functions, 624, __sl192);
-cptr.stPtro(nhl_functions, 632, nhl_flip_level);
+cptr.stPtro(nhl_functions, 624 + $luaL_Reg_func, nhl_flip_level);
 cptr.stPtro(nhl_functions, 640, null);
-cptr.stPtro(nhl_functions, 648, null);
+cptr.stPtro(nhl_functions, 640 + $luaL_Reg_func, null);
 
 /** C ref: nhlua.c:2057 — struct undefined {  } (memory model v0.5) */
 
@@ -1944,7 +2010,7 @@ function* init_nhc_data(L) {
 
 /** C ref: nhlua.c:2094 — @param {CPtr} L @param {CInt} anytype @param {CPtr} src @returns {CInt} */
 function* nhl_push_anything(L, anytype, src) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, 536), 8);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     switch (anytype) {
         case NHC.ANY_INT:
         cptr.stI32(any, cptr.ldI32(src));
@@ -1967,73 +2033,73 @@ cptr.stPtro(__static_nhl_meta_u_index_ustruct, 0, __sl209);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 8, u);
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 16, NHC.ANY_UCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 24, __sl210);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 32, cptr.add(u, 2));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 32, cptr.add(u, $you_uy));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 40, NHC.ANY_UCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 48, __sl211);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 56, cptr.add(u, 4));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 56, cptr.add(u, $you_dx));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 64, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 72, __sl212);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 80, cptr.add(u, 8));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 80, cptr.add(u, $you_dy));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 88, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 96, __sl213);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 104, cptr.add(u, 12));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 104, cptr.add(u, $you_dz));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 112, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 120, __sl31);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 128, cptr.add(u, 16));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 128, cptr.add(u, $you_tx));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 136, NHC.ANY_UCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 144, __sl32);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 152, cptr.add(u, 18));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 152, cptr.add(u, $you_ty));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 160, NHC.ANY_UCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 168, __sl214);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 176, cptr.add(u, 48));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 176, cptr.add(u, $you_ulevel));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 184, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 192, __sl215);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 200, cptr.add(u, 52));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 200, cptr.add(u, $you_ulevelmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 208, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 216, __sl216);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 224, cptr.add(u, 104));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 224, cptr.add(u, $you_uhunger));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 232, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 240, __sl217);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 248, cptr.add(u, 1776));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 248, cptr.add(u, $you_nv_range));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 256, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 264, __sl218);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 272, cptr.add(u, 1780));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 272, cptr.add(u, $you_xray_range));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 280, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 288, __sl219);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 296, cptr.add(u, 1804));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 296, cptr.add(u, $you_umonster));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 304, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 312, __sl220);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 320, cptr.add(u, 1808));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 320, cptr.add(u, $you_umonnum));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 328, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 336, __sl221);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 344, cptr.add(u, 1812));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 344, cptr.add(u, $you_mh));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 352, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 360, __sl222);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 368, cptr.add(u, 1816));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 368, cptr.add(u, $you_mhmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 376, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 384, __sl223);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 392, cptr.add(u, 1820));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 392, cptr.add(u, $you_mtimedone));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 400, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 408, __sl126);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 416, cptr.add(u, 26));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 416, cptr.add(u, $you_uz + $d_level_dlevel));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 424, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 432, __sl125);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 440, cptr.add(u, 24));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 440, cptr.add(u, $you_uz));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 448, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 456, __sl224);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 464, cptr.add(u, 2186));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 464, cptr.add(u, $you_uluck));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 472, NHC.ANY_SCHAR);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 480, __sl225);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 488, cptr.add(u, 2196));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 488, cptr.add(u, $you_uhp));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 496, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 504, __sl226);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 512, cptr.add(u, 2200));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 512, cptr.add(u, $you_uhpmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 520, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 528, __sl227);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 536, cptr.add(u, 2208));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 536, cptr.add(u, $you_uen));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 544, NHC.ANY_INT);
 cptr.stPtro(__static_nhl_meta_u_index_ustruct, 552, __sl228);
-cptr.stPtro(__static_nhl_meta_u_index_ustruct, 560, cptr.add(u, 2212));
+cptr.stPtro(__static_nhl_meta_u_index_ustruct, 560, cptr.add(u, $you_uenmax));
 cptr.stI32o(__static_nhl_meta_u_index_ustruct, 568, NHC.ANY_INT); /** C ref: nhlua.c:2124 — struct (unnamed struct at /Users/noahpeterson/Documents/Projects/teleport-contest-research/original-contest-to-fork/nethack-c/recorder/src/nhlua.c:2120:18)[24] (function-static) */
 
 /** C ref: nhlua.c:2118 — @param {CPtr} L @returns {CInt} */
@@ -2045,22 +2111,22 @@ function* nhl_meta_u_index(L) {
             return (yield* nhl_push_anything(L, cptr.ldI32o2(__static_nhl_meta_u_index_ustruct, i, 24, 16), cptr.ldPtro2(__static_nhl_meta_u_index_ustruct, i, 24, 8)));
         }
     if (!strcmp(tkey, __sl202)) {
-        (yield* nhl_push_obj(L, cptr.ldPtro(gi, 8)));
+        (yield* nhl_push_obj(L, cptr.ldPtro(gi, $instance_globals_i_invent)));
         return 1;
     } else if (!strcmp(tkey, __sl203)) {
-        (yield* lua_pushstring(L, cptr.ldPtro(gu, 8)));
+        (yield* lua_pushstring(L, cptr.ldPtro(gu, $instance_globals_u_urole)));
         return 1;
     } else if (!strcmp(tkey, __sl204)) {
-        (yield* lua_pushinteger(L, cptr.ldI64o(svm, 8)));
+        (yield* lua_pushinteger(L, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
         return 1;
     } else if (!strcmp(tkey, __sl205)) {
-        (yield* lua_pushinteger(L, BigInt((cptr.ldI32o(u, 1944) & 1) >>> 0)));
+        (yield* lua_pushinteger(L, BigInt((cptr.ldI32o(u, $you_uhave) & 1) >>> 0)));
         return 1;
     } else if (!strcmp(tkey, __sl206)) {
-        (yield* lua_pushinteger(L, BigInt(depth(cptr.add(u, 24)))));
+        (yield* lua_pushinteger(L, BigInt(depth(cptr.add(u, $you_uz)))));
         return 1;
     } else if (!strcmp(tkey, __sl207)) {
-        (yield* lua_pushboolean(L, Invocation_lev(cptr.add(u, 24))));
+        (yield* lua_pushboolean(L, Invocation_lev(cptr.add(u, $you_uz))));
         return 1;
     }
     (yield* nhl_error(L, __sl208));
@@ -2075,8 +2141,8 @@ function* nhl_meta_u_newindex(L) {
 
 /** C ref: nhlua.c:2195 — @param {CPtr} L @returns {CInt} */
 function* nhl_u_clear_inventory(L) {
-    while (cptr.ldPtro(gi, 8))
-        (yield* useupall(cptr.ldPtro(gi, 8)));
+    while (cptr.ldPtro(gi, $instance_globals_i_invent))
+        (yield* useupall(cptr.ldPtro(gi, $instance_globals_i_invent)));
     return 0;
 }
 
@@ -2088,11 +2154,11 @@ function* nhl_u_giveobj(L) {
 /** C ref: nhlua.c:2210 — struct luaL_Reg[3] */
 const nhl_u_functions = cptr.alloc(3 * 16);
 cptr.stPtro(nhl_u_functions, 0, __sl230);
-cptr.stPtro(nhl_u_functions, 8, nhl_u_clear_inventory);
+cptr.stPtro(nhl_u_functions, 0 + $luaL_Reg_func, nhl_u_clear_inventory);
 cptr.stPtro(nhl_u_functions, 16, __sl231);
-cptr.stPtro(nhl_u_functions, 24, nhl_u_giveobj);
+cptr.stPtro(nhl_u_functions, 16 + $luaL_Reg_func, nhl_u_giveobj);
 cptr.stPtro(nhl_u_functions, 32, null);
-cptr.stPtro(nhl_u_functions, 40, null);
+cptr.stPtro(nhl_u_functions, 32 + $luaL_Reg_func, null);
 
 /** C ref: nhlua.c:2217 — @param {CPtr} L */
 function* init_u_data(L) {
@@ -2125,38 +2191,38 @@ export function* nhl_pcall(L, nargs, nresults, name) {
     (yield* lua_pushcclosure(L, (traceback_handler), 0));
     lua_rotate(L, 1, 1);
     void lua_getallocf(L, nud);
-    if (nud.v && name ? 1 : 0) {
-        cptr.stPtro(nud.v, 40, name);
+    if (nud.v && name) {
+        cptr.stPtro(nud.v, $nhl_user_data_name, name);
     }
-    if (nud.v && (cptr.ldI32o(nud.v, 16) || cptr.ldI32o(nud.v, 24) ? 1 : 0) ? 1 : 0) {
-        if (cptr.ldI32o(nud.v, 24)) {
-            cptr.stI32o(nud.v, 16, cptr.ldI32o(nud.v, 24));
-            cptr.stI32o(nud.v, 28, 0);
+    if (nud.v && (cptr.ldI32o(nud.v, $nhl_user_data_steps) || cptr.ldI32o(nud.v, $nhl_user_data_perpcall))) {
+        if (cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
+            cptr.stI32o(nud.v, $nhl_user_data_steps, cptr.ldI32o(nud.v, $nhl_user_data_perpcall));
+            cptr.stI32o(nud.v, $nhl_user_data_statctr, 0);
         }
         {
-            const __sj1 = cjmp.idOf(cptr.add(nud.v, 48));
+            const __sj1 = cjmp.idOf(cptr.add(nud.v, $nhl_user_data_jb));
             let __sv1 = 0;
             try {
                 if (__sv1) {
-                    (yield* panic(__sl235, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40) ? cptr.ldPtro(nud.v, 40) : __sl236));
+                    (yield* panic(__sl235, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236));
                 }
             } catch (__e1) {
                 if (!cjmp.matches(__e1, __sj1)) throw __e1;
                 __sv1 = cjmp.jbval(__e1);
                 if (__sv1) {
-                    (yield* panic(__sl235, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40) ? cptr.ldPtro(nud.v, 40) : __sl236));
+                    (yield* panic(__sl235, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236));
                 }
             }
         }
     }
     rv = (yield* lua_pcallk(L, (nargs), (nresults), 1, 0n, null));
     (lua_rotate(L, 1, -1), (yield* lua_settop(L, -2)));
-    if ((nud.v && cptr.ldI32o(nud.v, 24) ? 1 : 0) && cptr.ldI32o(gl, 480) ? 1 : 0) {
-        let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, 28), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
-        (yield* livelog_printf(32768n, __sl237, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40), ic));
+    if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_perpcall) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
+        let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
+        (yield* livelog_printf(32768n, __sl237, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic));
     }
-    if ((nud.v && cptr.ldI32o(nud.v, 12) ? 1 : 0) && cptr.ldI32o(gl, 480) ? 1 : 0) {
-        (yield* livelog_printf(32768n, __sl238, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
+    if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
+        (yield* livelog_printf(32768n, __sl238, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
     }
     return rv;
 }
@@ -2169,10 +2235,10 @@ export function* nhl_pcall_handle(L, nargs, nresults, name, npa) {
         void lua_getallocf(L, nud);
         switch (npa) {
             case NHC.NHLpa_panic:
-            (yield* panic(__sl239, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40) ? cptr.ldPtro(nud.v, 40) : __sl236, (yield* lua_tolstring(L, -1, null))));
+            (yield* panic(__sl239, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236, (yield* lua_tolstring(L, -1, null))));
             break;
             case NHC.NHLpa_impossible:
-            (yield* impossible(__sl240, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40) ? cptr.ldPtro(nud.v, 40) : __sl236, (yield* lua_tolstring(L, -1, null))));
+            (yield* impossible(__sl240, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __sl236, (yield* lua_tolstring(L, -1, null))));
             (yield* lua_settop(L, -2));
         }
     }
@@ -2209,7 +2275,7 @@ export function* nhl_loadlua(L, fname) {
         cptr.st1o(buf, 0, 0);
         bufin = (bufout = buf);
         ct = 0n;
-        while (buflen > 0n || ct ? 1 : 0) {
+        while (buflen > 0n || ct) {
             if ((cnt = BigInt.asIntN(64, fread(bufin, 1n, BigInt.asUintN(64, (BigInt((Number(BigInt.asIntN(32, buflen)))) < 8192n ? BigInt((Number(BigInt.asIntN(32, buflen)))) : 8192n)), fh))) < 0n)
                 break;
             buflen -= cnt;
@@ -2269,7 +2335,7 @@ export function* nhl_init(sbi) {
     let L = (yield* nhlL_newstate(sbi, __sl248));
     if (!L)
         return null;
-    cptr.st1o(iflags, 5, 1);
+    cptr.st1o(iflags, $instance_flags_in_lua, 1);
     (yield* nhlL_openlibs(L, cptr.ldI32(sbi)));
     (yield* lua_createtable(L, 0, 0));
     (yield* luaL_setfuncs(L, nhl_functions, 0));
@@ -2295,20 +2361,20 @@ export function* nhl_done(L) {
     if (L) {
         let nud = cptr.box(null);
         void lua_getallocf(L, nud);
-        if (cptr.ldI32o(gl, 480)) {
-            if (nud.v && cptr.ldI32o(nud.v, 20) ? 1 : 0) {
-                let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, 28), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
-                (yield* livelog_printf(32768n, __sl252, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40), ic));
+        if (cptr.ldI32o(gl, $instance_globals_l_loglua)) {
+            if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_osteps)) {
+                let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);
+                (yield* livelog_printf(32768n, __sl252, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic));
             }
-            if ((nud.v && cptr.ldI32o(nud.v, 12) ? 1 : 0) && !cptr.ldI32o(nud.v, 24) ? 1 : 0) {
-                (yield* livelog_printf(32768n, __sl253, cptr.ldI32o(nud.v, 32), cptr.ldPtro(nud.v, 40), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
+            if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && !cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
+                (yield* livelog_printf(32768n, __sl253, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
             }
         }
         (yield* lua_close(L));
         if (nud.v)
             (yield* nhl_alloc((null), nud.v, 0n, 0n));
     }
-    cptr.st1o(iflags, 5, 0);
+    cptr.st1o(iflags, $instance_flags_in_lua, 0);
 }
 
 /** C ref: nhlua.c:2546 — @param {CPtr} name @param {CPtr} sbi @returns {CInt} */
@@ -2331,8 +2397,8 @@ export function* load_lua(name, sbi) {
 
 /** C ref: nhlua.c:2570 @returns {CPtr} */
 export function* get_lua_version() {
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_VERSION); cptr.stI32o(sbi, 4, 1048576); cptr.stI32o(sbi, 8, 0); cptr.stI32o(sbi, 12, 1048576);
-    if (cptr.ld1so2(gl, 0, 1, 552) == 0) {
+    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_VERSION); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+    if (cptr.ld1so2(gl, 0, 1, $instance_globals_l_lua_ver) == 0) {
         let L = (yield* nhl_init(sbi));
         if (L) {
             let len = cptr.box(0n);
@@ -2349,20 +2415,20 @@ export function* get_lua_version() {
                 else
                     vs = __sl257, len.v = cptr.strlen(vs);
             }
-            if (vs && len.v < 20n ? 1 : 0) {
+            if (vs && len.v < 20n) {
                 if (!(yield* strncmpi(vs, __sl258, 3))) {
                     vs = cptr.add(vs, 3);
-                    if (cptr.ld1s(vs) == 45 || cptr.ld1s(vs) == 32 ? 1 : 0)
+                    if (cptr.ld1s(vs) == 45 || cptr.ld1s(vs) == 32)
                         vs = cptr.add(vs, 1);
                 }
-                void cptr.strcpy(cptr.add(gl, 552), vs);
+                void cptr.strcpy(cptr.add(gl, $instance_globals_l_lua_ver), vs);
             }
         }
         (yield* nhl_done(L));
         if (1)
-            void cptr.strcpy(cptr.add(gl, 572), __sl259);
+            void cptr.strcpy(cptr.add(gl, $instance_globals_l_lua_copyright), __sl259);
     }
-    return cptr.add(gl, 552);
+    return cptr.add(gl, $instance_globals_l_lua_ver);
 }
 
 /** C ref: nhlua.c:2647 — enum */
@@ -2375,156 +2441,156 @@ export const EOT = 2;
 /** C ref: nhlua.c:2654 — struct e[10] */
 const ct_base_base = cptr.alloc(10 * 16);
 cptr.stI32o(ct_base_base, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 8, __sl260);
+cptr.stPtro(ct_base_base, 0 + $e_fnname, __sl260);
 cptr.stI32o(ct_base_base, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 24, __sl261);
+cptr.stPtro(ct_base_base, 16 + $e_fnname, __sl261);
 cptr.stI32o(ct_base_base, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 40, __sl262);
+cptr.stPtro(ct_base_base, 32 + $e_fnname, __sl262);
 cptr.stI32o(ct_base_base, 48, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 56, __sl263);
+cptr.stPtro(ct_base_base, 48 + $e_fnname, __sl263);
 cptr.stI32o(ct_base_base, 64, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 72, __sl264);
+cptr.stPtro(ct_base_base, 64 + $e_fnname, __sl264);
 cptr.stI32o(ct_base_base, 80, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 88, __sl265);
+cptr.stPtro(ct_base_base, 80 + $e_fnname, __sl265);
 cptr.stI32o(ct_base_base, 96, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 104, __sl266);
+cptr.stPtro(ct_base_base, 96 + $e_fnname, __sl266);
 cptr.stI32o(ct_base_base, 112, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 120, __sl267);
+cptr.stPtro(ct_base_base, 112 + $e_fnname, __sl267);
 cptr.stI32o(ct_base_base, 128, NHC.IFFLAG);
-cptr.stPtro(ct_base_base, 136, __sl268);
+cptr.stPtro(ct_base_base, 128 + $e_fnname, __sl268);
 cptr.stI32o(ct_base_base, 144, NHC.EOT);
-cptr.stPtro(ct_base_base, 152, null);
+cptr.stPtro(ct_base_base, 144 + $e_fnname, null);
 
 /** C ref: nhlua.c:2668 — struct e[5] */
 const ct_base_error = cptr.alloc(5 * 16);
 cptr.stI32o(ct_base_error, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_error, 8, __sl269);
+cptr.stPtro(ct_base_error, 0 + $e_fnname, __sl269);
 cptr.stI32o(ct_base_error, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_error, 24, __sl270);
+cptr.stPtro(ct_base_error, 16 + $e_fnname, __sl270);
 cptr.stI32o(ct_base_error, 32, NHC.NEVER);
-cptr.stPtro(ct_base_error, 40, __sl271);
+cptr.stPtro(ct_base_error, 32 + $e_fnname, __sl271);
 cptr.stI32o(ct_base_error, 48, NHC.NEVER);
-cptr.stPtro(ct_base_error, 56, __sl272);
+cptr.stPtro(ct_base_error, 48 + $e_fnname, __sl272);
 cptr.stI32o(ct_base_error, 64, NHC.EOT);
-cptr.stPtro(ct_base_error, 72, null);
+cptr.stPtro(ct_base_error, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2679 — struct e[7] */
 const ct_base_meta = cptr.alloc(7 * 16);
 cptr.stI32o(ct_base_meta, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 8, __sl273);
+cptr.stPtro(ct_base_meta, 0 + $e_fnname, __sl273);
 cptr.stI32o(ct_base_meta, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 24, __sl274);
+cptr.stPtro(ct_base_meta, 16 + $e_fnname, __sl274);
 cptr.stI32o(ct_base_meta, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 40, __sl275);
+cptr.stPtro(ct_base_meta, 32 + $e_fnname, __sl275);
 cptr.stI32o(ct_base_meta, 48, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 56, __sl276);
+cptr.stPtro(ct_base_meta, 48 + $e_fnname, __sl276);
 cptr.stI32o(ct_base_meta, 64, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 72, __sl277);
+cptr.stPtro(ct_base_meta, 64 + $e_fnname, __sl277);
 cptr.stI32o(ct_base_meta, 80, NHC.IFFLAG);
-cptr.stPtro(ct_base_meta, 88, __sl278);
+cptr.stPtro(ct_base_meta, 80 + $e_fnname, __sl278);
 cptr.stI32o(ct_base_meta, 96, NHC.EOT);
-cptr.stPtro(ct_base_meta, 104, null);
+cptr.stPtro(ct_base_meta, 96 + $e_fnname, null);
 
 /** C ref: nhlua.c:2690 — struct e[2] */
 const ct_base_iffy = cptr.alloc(2 * 16);
 cptr.stI32o(ct_base_iffy, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_iffy, 8, __sl279);
+cptr.stPtro(ct_base_iffy, 0 + $e_fnname, __sl279);
 cptr.stI32o(ct_base_iffy, 16, NHC.EOT);
-cptr.stPtro(ct_base_iffy, 24, null);
+cptr.stPtro(ct_base_iffy, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2698 — struct e[4] */
 const ct_base_unsafe = cptr.alloc(4 * 16);
 cptr.stI32o(ct_base_unsafe, 0, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 8, __sl280);
+cptr.stPtro(ct_base_unsafe, 0 + $e_fnname, __sl280);
 cptr.stI32o(ct_base_unsafe, 16, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 24, __sl281);
+cptr.stPtro(ct_base_unsafe, 16 + $e_fnname, __sl281);
 cptr.stI32o(ct_base_unsafe, 32, NHC.IFFLAG);
-cptr.stPtro(ct_base_unsafe, 40, __sl282);
+cptr.stPtro(ct_base_unsafe, 32 + $e_fnname, __sl282);
 cptr.stI32o(ct_base_unsafe, 48, NHC.EOT);
-cptr.stPtro(ct_base_unsafe, 56, null);
+cptr.stPtro(ct_base_unsafe, 48 + $e_fnname, null);
 
 /** C ref: nhlua.c:2713 — struct e[17] */
 const ct_debug_debug = cptr.alloc(17 * 16);
 cptr.stI32o(ct_debug_debug, 0, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 8, __sl283);
+cptr.stPtro(ct_debug_debug, 0 + $e_fnname, __sl283);
 cptr.stI32o(ct_debug_debug, 16, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 24, __sl284);
+cptr.stPtro(ct_debug_debug, 16 + $e_fnname, __sl284);
 cptr.stI32o(ct_debug_debug, 32, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 40, __sl285);
+cptr.stPtro(ct_debug_debug, 32 + $e_fnname, __sl285);
 cptr.stI32o(ct_debug_debug, 48, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 56, __sl286);
+cptr.stPtro(ct_debug_debug, 48 + $e_fnname, __sl286);
 cptr.stI32o(ct_debug_debug, 64, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 72, __sl287);
+cptr.stPtro(ct_debug_debug, 64 + $e_fnname, __sl287);
 cptr.stI32o(ct_debug_debug, 80, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 88, __sl288);
+cptr.stPtro(ct_debug_debug, 80 + $e_fnname, __sl288);
 cptr.stI32o(ct_debug_debug, 96, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 104, __sl273);
+cptr.stPtro(ct_debug_debug, 96 + $e_fnname, __sl273);
 cptr.stI32o(ct_debug_debug, 112, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 120, __sl289);
+cptr.stPtro(ct_debug_debug, 112 + $e_fnname, __sl289);
 cptr.stI32o(ct_debug_debug, 128, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 136, __sl290);
+cptr.stPtro(ct_debug_debug, 128 + $e_fnname, __sl290);
 cptr.stI32o(ct_debug_debug, 144, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 152, __sl291);
+cptr.stPtro(ct_debug_debug, 144 + $e_fnname, __sl291);
 cptr.stI32o(ct_debug_debug, 160, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 168, __sl292);
+cptr.stPtro(ct_debug_debug, 160 + $e_fnname, __sl292);
 cptr.stI32o(ct_debug_debug, 176, NHC.NEVER);
-cptr.stPtro(ct_debug_debug, 184, __sl293);
+cptr.stPtro(ct_debug_debug, 176 + $e_fnname, __sl293);
 cptr.stI32o(ct_debug_debug, 192, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 200, __sl294);
+cptr.stPtro(ct_debug_debug, 192 + $e_fnname, __sl294);
 cptr.stI32o(ct_debug_debug, 208, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 216, __sl278);
+cptr.stPtro(ct_debug_debug, 208 + $e_fnname, __sl278);
 cptr.stI32o(ct_debug_debug, 224, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 232, __sl295);
+cptr.stPtro(ct_debug_debug, 224 + $e_fnname, __sl295);
 cptr.stI32o(ct_debug_debug, 240, NHC.IFFLAG);
-cptr.stPtro(ct_debug_debug, 248, __sl296);
+cptr.stPtro(ct_debug_debug, 240 + $e_fnname, __sl296);
 cptr.stI32o(ct_debug_debug, 256, NHC.EOT);
-cptr.stPtro(ct_debug_debug, 264, null);
+cptr.stPtro(ct_debug_debug, 256 + $e_fnname, null);
 
 /** C ref: nhlua.c:2732 — struct e[2] */
 const ct_debug_safe = cptr.alloc(2 * 16);
 cptr.stI32o(ct_debug_safe, 0, NHC.IFFLAG);
-cptr.stPtro(ct_debug_safe, 8, __sl297);
+cptr.stPtro(ct_debug_safe, 0 + $e_fnname, __sl297);
 cptr.stI32o(ct_debug_safe, 16, NHC.EOT);
-cptr.stPtro(ct_debug_safe, 24, null);
+cptr.stPtro(ct_debug_safe, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2738 — struct e[5] */
 const ct_os_time = cptr.alloc(5 * 16);
 cptr.stI32o(ct_os_time, 0, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 8, __sl298);
+cptr.stPtro(ct_os_time, 0 + $e_fnname, __sl298);
 cptr.stI32o(ct_os_time, 16, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 24, __sl299);
+cptr.stPtro(ct_os_time, 16 + $e_fnname, __sl299);
 cptr.stI32o(ct_os_time, 32, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 40, __sl300);
+cptr.stPtro(ct_os_time, 32 + $e_fnname, __sl300);
 cptr.stI32o(ct_os_time, 48, NHC.IFFLAG);
-cptr.stPtro(ct_os_time, 56, __sl301);
+cptr.stPtro(ct_os_time, 48 + $e_fnname, __sl301);
 cptr.stI32o(ct_os_time, 64, NHC.EOT);
-cptr.stPtro(ct_os_time, 72, null);
+cptr.stPtro(ct_os_time, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2746 — struct e[8] */
 const ct_os_files = cptr.alloc(8 * 16);
 cptr.stI32o(ct_os_files, 0, NHC.NEVER);
-cptr.stPtro(ct_os_files, 8, __sl302);
+cptr.stPtro(ct_os_files, 0 + $e_fnname, __sl302);
 cptr.stI32o(ct_os_files, 16, NHC.NEVER);
-cptr.stPtro(ct_os_files, 24, __sl303);
+cptr.stPtro(ct_os_files, 16 + $e_fnname, __sl303);
 cptr.stI32o(ct_os_files, 32, NHC.NEVER);
-cptr.stPtro(ct_os_files, 40, __sl304);
+cptr.stPtro(ct_os_files, 32 + $e_fnname, __sl304);
 cptr.stI32o(ct_os_files, 48, NHC.IFFLAG);
-cptr.stPtro(ct_os_files, 56, __sl305);
+cptr.stPtro(ct_os_files, 48 + $e_fnname, __sl305);
 cptr.stI32o(ct_os_files, 64, NHC.IFFLAG);
-cptr.stPtro(ct_os_files, 72, __sl306);
+cptr.stPtro(ct_os_files, 64 + $e_fnname, __sl306);
 cptr.stI32o(ct_os_files, 80, NHC.NEVER);
-cptr.stPtro(ct_os_files, 88, __sl307);
+cptr.stPtro(ct_os_files, 80 + $e_fnname, __sl307);
 cptr.stI32o(ct_os_files, 96, NHC.NEVER);
-cptr.stPtro(ct_os_files, 104, __sl308);
+cptr.stPtro(ct_os_files, 96 + $e_fnname, __sl308);
 cptr.stI32o(ct_os_files, 112, NHC.EOT);
-cptr.stPtro(ct_os_files, 120, null);
+cptr.stPtro(ct_os_files, 112 + $e_fnname, null);
 
 /** C ref: nhlua.c:2762 — @param {CPtr} L @param {CInt} flag @param {CInt} tndx @param {CPtr} todo */
 function* nhl_clearfromtable(L, flag, tndx, todo) {
     while (cptr.ldI32(todo) != NHC.EOT) {
         (yield* lua_pushnil(L));
-        if (cptr.ldI32(todo) == NHC.NEVER || !flag ? 1 : 0) {
-            (yield* lua_setfield(L, tndx, cptr.ldPtro(todo, 8)));
+        if (cptr.ldI32(todo) == NHC.NEVER || !flag) {
+            (yield* lua_setfield(L, tndx, cptr.ldPtro(todo, $e_fnname)));
         }
         todo = cptr.add(todo, 1, 16);
     }
@@ -2632,8 +2698,8 @@ function* nhl_alloc(ud, ptr, osize, nsize) {
         }
         return (null);
     }
-    if ((nud && cptr.ldPtr(nud) ? 1 : 0) && cptr.ldI32o(nud, 12) ? 1 : 0) {
-        if ((yield* nhl_getmeminuse(cptr.ldPtr(nud))) > cptr.ldI32o(nud, 12))
+    if (nud && cptr.ldPtr(nud) && cptr.ldI32o(nud, $nhl_user_data_memlimit)) {
+        if ((yield* nhl_getmeminuse(cptr.ldPtr(nud))) > cptr.ldI32o(nud, $nhl_user_data_memlimit))
             return (null);
     }
     return (yield* re_alloc(ptr, Number(BigInt.asUintN(32, nsize))));
@@ -2651,16 +2717,16 @@ function* nhl_panic(L) {
 /** C ref: nhlua.c:3171 — @param {CPtr} userdata @param {CPtr} msg_fragment @param {CInt} to_be_continued */
 function* nhl_warn(userdata, msg_fragment, to_be_continued) {
     let fraglen;
-    let buflen = cptr.strlen(cptr.add(gl, 224));
-    if (msg_fragment && buflen < 255n ? 1 : 0) {
+    let buflen = cptr.strlen(cptr.add(gl, $instance_globals_l_lua_warnbuf));
+    if (msg_fragment && buflen < 255n) {
         fraglen = cptr.strlen(msg_fragment);
         if (BigInt.asUintN(64, buflen + fraglen) > 255n)
             fraglen = BigInt.asUintN(64, 255n - buflen);
-        void __builtin___strncat_chk(cptr.add(gl, 224), msg_fragment, fraglen, __builtin_object_size(cptr.add(gl, 224), 1));
+        void __builtin___strncat_chk(cptr.add(gl, $instance_globals_l_lua_warnbuf), msg_fragment, fraglen, __builtin_object_size(cptr.add(gl, $instance_globals_l_lua_warnbuf), 1));
     }
     if (!to_be_continued) {
-        (yield* paniclog(__sl320, cptr.add(gl, 224)));
-        cptr.st1o2(gl, 0, 1, 224, 0);
+        (yield* paniclog(__sl320, cptr.add(gl, $instance_globals_l_lua_warnbuf)));
+        cptr.st1o2(gl, 0, 1, $instance_globals_l_lua_warnbuf, 0);
     }
 }
 
@@ -2668,30 +2734,30 @@ function* nhl_warn(userdata, msg_fragment, to_be_continued) {
 function nhl_hookfn(L, ar) {
     let nud = cptr.box(0);
     void lua_getallocf(L, nud);
-    if (cptr.ldI32o(nud.v, 16) <= NHM.NHL_SB_STEPSIZE)
-        cjmp.longjmp(cptr.add(nud.v, 48), 1);
-    cptr.stI32o(nud.v, 16, (cptr.ldI32o(nud.v, 16) - NHM.NHL_SB_STEPSIZE) | 0);
-    (cptr.stI32o(nud.v, 28, cptr.ldI32o(nud.v, 28) + 1)) - (1);
+    if (cptr.ldI32o(nud.v, $nhl_user_data_steps) <= NHM.NHL_SB_STEPSIZE)
+        cjmp.longjmp(cptr.add(nud.v, $nhl_user_data_jb), 1);
+    cptr.stI32o(nud.v, $nhl_user_data_steps, (cptr.ldI32o(nud.v, $nhl_user_data_steps) - NHM.NHL_SB_STEPSIZE) | 0);
+    (cptr.stI32o(nud.v, $nhl_user_data_statctr, cptr.ldI32o(nud.v, $nhl_user_data_statctr) + 1)) - (1);
 }
 
 /** C ref: nhlua.c:3207 — @param {CPtr} sbi @param {CPtr} name @returns {CPtr} */
 function* nhlL_newstate(sbi, name) {
     let nud = null;
-    if ((cptr.ldI32o(sbi, 4) || cptr.ldI32o(sbi, 8) ? 1 : 0) || cptr.ldI32o(sbi, 12) ? 1 : 0) {
+    if (cptr.ldI32o(sbi, $nhl_sandbox_info_memlimit) || cptr.ldI32o(sbi, $nhl_sandbox_info_steps) || cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
         nud = (yield* nhl_alloc((null), (null), 0n, 240n));
         if (!nud)
             return null;
         cptr.stPtr(nud, null);
-        cptr.stI32o(nud, 12, cptr.ldI32o(sbi, 4));
-        cptr.stI32o(nud, 24, 0);
-        cptr.stI32o(nud, 16, 0);
-        cptr.stI32o(nud, 20, 0);
-        cptr.stI32o(nud, 8, cptr.ldI32(sbi));
-        cptr.stI32o(nud, 28, 0);
+        cptr.stI32o(nud, $nhl_user_data_memlimit, cptr.ldI32o(sbi, $nhl_sandbox_info_memlimit));
+        cptr.stI32o(nud, $nhl_user_data_perpcall, 0);
+        cptr.stI32o(nud, $nhl_user_data_steps, 0);
+        cptr.stI32o(nud, $nhl_user_data_osteps, 0);
+        cptr.stI32o(nud, $nhl_user_data_flags, cptr.ldI32(sbi));
+        cptr.stI32o(nud, $nhl_user_data_statctr, 0);
         if (name) {
-            cptr.stPtro(nud, 40, name);
+            cptr.stPtro(nud, $nhl_user_data_name, name);
         }
-        cptr.stI32o(nud, 32, cptr.stI32o(gl, 484, cptr.ldI32o(gl, 484) + 1));
+        cptr.stI32o(nud, $nhl_user_data_sid, cptr.stI32o(gl, $instance_globals_l_lua_sid, cptr.ldI32o(gl, $instance_globals_l_lua_sid) + 1));
     }
     let L = (yield* lua_newstate(nhl_alloc, nud));
     if (!L)
@@ -2700,14 +2766,14 @@ function* nhlL_newstate(sbi, name) {
         cptr.stPtr(nud, L);
     lua_atpanic(L, nhl_panic);
     lua_setwarnf(L, nhl_warn, L);
-    if (nud && (cptr.ldI32o(sbi, 8) || cptr.ldI32o(sbi, 12) ? 1 : 0) ? 1 : 0) {
-        if (cptr.ldI32o(sbi, 8) && cptr.ldI32o(sbi, 12) ? 1 : 0)
+    if (nud && (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) || cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))) {
+        if (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) && cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))
             (yield* impossible(__sl322));
-        if (cptr.ldI32o(sbi, 12)) {
-            cptr.stI32o(nud, 24, cptr.ldI32o(sbi, 12));
+        if (cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
+            cptr.stI32o(nud, $nhl_user_data_perpcall, cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall));
         } else {
-            cptr.stI32o(nud, 16, cptr.ldI32o(sbi, 8));
-            cptr.stI32o(nud, 20, cptr.ldI32o(sbi, 8));
+            cptr.stI32o(nud, $nhl_user_data_steps, cptr.ldI32o(sbi, $nhl_sandbox_info_steps));
+            cptr.stI32o(nud, $nhl_user_data_osteps, cptr.ldI32o(sbi, $nhl_sandbox_info_steps));
         }
         lua_sethook(L, nhl_hookfn, 8, NHM.NHL_SB_STEPSIZE);
     }

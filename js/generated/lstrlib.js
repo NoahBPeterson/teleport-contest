@@ -6,9 +6,21 @@
 import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as FLD from './nhfield.js';
 import { luaL_addlstring, luaL_addstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_buffinitsize, luaL_checkinteger, luaL_checklstring, luaL_checknumber, luaL_checkstack, luaL_checktype, luaL_checkversion_, luaL_error, luaL_getmetafield, luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_pushresultsize, luaL_setfuncs, luaL_tolstring, luaL_typeerror } from './lauxlib.js';
 import { lua_arith, lua_callk, lua_createtable, lua_dump, lua_gettable, lua_gettop, lua_isinteger, lua_isstring, lua_newuserdatauv, lua_pushcclosure, lua_pushinteger, lua_pushlstring, lua_pushnil, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rotate, lua_setfield, lua_setmetatable, lua_settop, lua_stringtonumber, lua_toboolean, lua_tointegerx, lua_tolstring, lua_tonumberx, lua_topointer, lua_touserdata, lua_type, lua_typename } from './lapi.js';
 import { flags, gm } from './decl.js';
+
+// struct field offsets used below, bound at module scope so V8 folds them
+// (values from ./nhfield.js, which is the whole table)
+const $GMatchState_lastmatch = FLD.GMatchState_lastmatch, $GMatchState_ms = FLD.GMatchState_ms,
+    $GMatchState_p = FLD.GMatchState_p, $Header_islittle = FLD.Header_islittle,
+    $Header_maxalign = FLD.Header_maxalign, $MatchState_L = FLD.MatchState_L,
+    $MatchState_capture = FLD.MatchState_capture, $MatchState_level = FLD.MatchState_level,
+    $MatchState_matchdepth = FLD.MatchState_matchdepth, $MatchState_p_end = FLD.MatchState_p_end,
+    $MatchState_src_end = FLD.MatchState_src_end, $luaL_Buffer_n = FLD.luaL_Buffer_n,
+    $luaL_Buffer_size = FLD.luaL_Buffer_size, $luaL_Reg_func = FLD.luaL_Reg_func,
+    $str_Writer_B = FLD.str_Writer_B;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");
@@ -253,9 +265,9 @@ function writer(L, b, size, ud) {
     let state = ud;
     if (!cptr.ldI32(state)) {
         cptr.stI32(state, 1);
-        luaL_buffinit(L, cptr.add(state, 8));
+        luaL_buffinit(L, cptr.add(state, $str_Writer_B));
     }
-    luaL_addlstring(cptr.add(state, 8), b, size);
+    luaL_addlstring(cptr.add(state, $str_Writer_B), b, size);
     return 0;
 }
 
@@ -268,7 +280,7 @@ function str_dump(L) {
     cptr.stI32(state, 0);
     if ((__builtin_expect(BigInt(((lua_dump(L, writer, state, strip) != 0) != 0)), 0n)))
         return luaL_error(L, __sl4);
-    luaL_pushresult(cptr.add(state, 8));
+    luaL_pushresult(cptr.add(state, $str_Writer_B));
     return 1;
 }
 
@@ -295,7 +307,7 @@ function trymt(L, mtname) {
 
 /** C ref: lstrlib.c:288 — @param {CPtr} L @param {CInt} op @param {CPtr} mtname @returns {CInt} */
 function arith(L, op, mtname) {
-    if (tonum(L, 1) && tonum(L, 2) ? 1 : 0)
+    if (tonum(L, 1) && tonum(L, 2))
         lua_arith(L, op);
     else
         trymt(L, mtname);
@@ -345,25 +357,25 @@ function arith_unm(L) {
 /** C ref: lstrlib.c:330 — luaL_Reg[10] */
 const stringmetamethods = cptr.alloc(10 * 16);
 cptr.stPtro(stringmetamethods, 0, __sl6);
-cptr.stPtro(stringmetamethods, 8, arith_add);
+cptr.stPtro(stringmetamethods, 0 + $luaL_Reg_func, arith_add);
 cptr.stPtro(stringmetamethods, 16, __sl7);
-cptr.stPtro(stringmetamethods, 24, arith_sub);
+cptr.stPtro(stringmetamethods, 16 + $luaL_Reg_func, arith_sub);
 cptr.stPtro(stringmetamethods, 32, __sl8);
-cptr.stPtro(stringmetamethods, 40, arith_mul);
+cptr.stPtro(stringmetamethods, 32 + $luaL_Reg_func, arith_mul);
 cptr.stPtro(stringmetamethods, 48, __sl9);
-cptr.stPtro(stringmetamethods, 56, arith_mod);
+cptr.stPtro(stringmetamethods, 48 + $luaL_Reg_func, arith_mod);
 cptr.stPtro(stringmetamethods, 64, __sl10);
-cptr.stPtro(stringmetamethods, 72, arith_pow);
+cptr.stPtro(stringmetamethods, 64 + $luaL_Reg_func, arith_pow);
 cptr.stPtro(stringmetamethods, 80, __sl11);
-cptr.stPtro(stringmetamethods, 88, arith_div);
+cptr.stPtro(stringmetamethods, 80 + $luaL_Reg_func, arith_div);
 cptr.stPtro(stringmetamethods, 96, __sl12);
-cptr.stPtro(stringmetamethods, 104, arith_idiv);
+cptr.stPtro(stringmetamethods, 96 + $luaL_Reg_func, arith_idiv);
 cptr.stPtro(stringmetamethods, 112, __sl13);
-cptr.stPtro(stringmetamethods, 120, arith_unm);
+cptr.stPtro(stringmetamethods, 112 + $luaL_Reg_func, arith_unm);
 cptr.stPtro(stringmetamethods, 128, __sl14);
-cptr.stPtro(stringmetamethods, 136, null);
+cptr.stPtro(stringmetamethods, 128 + $luaL_Reg_func, null);
 cptr.stPtro(stringmetamethods, 144, null);
-cptr.stPtro(stringmetamethods, 152, null);
+cptr.stPtro(stringmetamethods, 144 + $luaL_Reg_func, null);
 
 /** C ref: lstrlib.c:358 — struct MatchState { src_init, src_end, p_end, L, matchdepth, level, capture } (memory model v0.5) */
 
@@ -372,18 +384,18 @@ cptr.stPtro(stringmetamethods, 152, null);
 /** C ref: lstrlib.c:386 — @param {CPtr} ms @param {CInt} l @returns {CInt} */
 function check_capture(ms, l) {
     l = (l - 49) | 0;
-    if ((__builtin_expect(BigInt((((l < 0 || l >= cptr.ld1uo(ms, 36) ? 1 : 0) || cptr.ldI64o2(ms, l, 16, 48) == -1n ? 1 : 0) != 0)), 0n)))
-        return luaL_error(cptr.ldPtro(ms, 24), __sl15, (l + 1) | 0);
+    if ((__builtin_expect(BigInt(((l < 0 || l >= cptr.ld1uo(ms, $MatchState_level) || cptr.ldI64o2(ms, l, 16, $MatchState_capture + 8) == -1n ? 1 : 0) != 0)), 0n)))
+        return luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl15, (l + 1) | 0);
     return l;
 }
 
 /** C ref: lstrlib.c:395 — @param {CPtr} ms @returns {CInt} */
 function capture_to_close(ms) {
-    let level = cptr.ld1uo(ms, 36);
+    let level = cptr.ld1uo(ms, $MatchState_level);
     for (level--; level >= 0; level--)
-        if (cptr.ldI64o2(ms, level, 16, 48) == -1n)
+        if (cptr.ldI64o2(ms, level, 16, $MatchState_capture + 8) == -1n)
             return level;
-    return luaL_error(cptr.ldPtro(ms, 24), __sl16);
+    return luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl16);
 }
 
 /** C ref: lstrlib.c:403 — @param {CPtr} ms @param {CPtr} p @returns {CPtr} */
@@ -391,8 +403,8 @@ function classend(ms, p) {
     switch (cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; }))) {
         case 37:
         {
-            if ((__builtin_expect(BigInt(((cptr.eq(p, cptr.ldPtro(ms, 16))) != 0)), 0n)))
-                luaL_error(cptr.ldPtro(ms, 24), __sl17);
+            if ((__builtin_expect(BigInt(((cptr.eq(p, cptr.ldPtro(ms, $MatchState_p_end))) != 0)), 0n)))
+                luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl17);
             return cptr.add(p, 1);
         }
         case 91:
@@ -400,9 +412,9 @@ function classend(ms, p) {
             if (cptr.ld1s(p) == 94)
                 p = cptr.add(p, 1);
             do {
-                if ((__builtin_expect(BigInt(((cptr.eq(p, cptr.ldPtro(ms, 16))) != 0)), 0n)))
-                    luaL_error(cptr.ldPtro(ms, 24), __sl18);
-                if (cptr.ld1s((cptr.postinc(() => p, (v) => { p = v; }))) == 37 && cptr.cmp(p, cptr.ldPtro(ms, 16)) < 0 ? 1 : 0)
+                if ((__builtin_expect(BigInt(((cptr.eq(p, cptr.ldPtro(ms, $MatchState_p_end))) != 0)), 0n)))
+                    luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl18);
+                if (cptr.ld1s((cptr.postinc(() => p, (v) => { p = v; }))) == 37 && cptr.cmp(p, cptr.ldPtro(ms, $MatchState_p_end)) < 0)
                     p = cptr.add(p, 1);
             } while (cptr.ld1s(p) != 93);
             return cptr.add(p, 1);
@@ -469,9 +481,9 @@ function matchbracketclass(c, p, ec) {
             p = cptr.add(p, 1);
             if (match_class(c, (uchar((cptr.ld1s(p))))))
                 return sig;
-        } else if ((cptr.ld1s((cptr.add(p, 1))) == 45) && (cptr.cmp(cptr.add(p, 2), ec) < 0) ? 1 : 0) {
+        } else if ((cptr.ld1s((cptr.add(p, 1))) == 45) && (cptr.cmp(cptr.add(p, 2), ec) < 0)) {
             p = cptr.add(p, 2);
-            if ((uchar((cptr.ld1s((cptr.add(p, -(2))))))) <= c && c <= (uchar((cptr.ld1s(p)))) ? 1 : 0)
+            if ((uchar((cptr.ld1s((cptr.add(p, -(2))))))) <= c && c <= (uchar((cptr.ld1s(p)))))
                 return sig;
         } else if ((uchar((cptr.ld1s(p)))) == c)
             return sig;
@@ -481,7 +493,7 @@ function matchbracketclass(c, p, ec) {
 
 /** C ref: lstrlib.c:470 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CPtr} ep @returns {CInt} */
 function singlematch(ms, s, p, ep) {
-    if (cptr.cmp(s, cptr.ldPtro(ms, 8)) >= 0)
+    if (cptr.cmp(s, cptr.ldPtro(ms, $MatchState_src_end)) >= 0)
         return 0;
     else {
         let c = (uchar((cptr.ld1s(s))));
@@ -500,15 +512,15 @@ function singlematch(ms, s, p, ep) {
 
 /** C ref: lstrlib.c:486 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @returns {CPtr} */
 function matchbalance(ms, s, p) {
-    if ((__builtin_expect(BigInt(((cptr.cmp(p, cptr.add(cptr.ldPtro(ms, 16), -(1))) >= 0) != 0)), 0n)))
-        luaL_error(cptr.ldPtro(ms, 24), __sl19);
+    if ((__builtin_expect(BigInt(((cptr.cmp(p, cptr.add(cptr.ldPtro(ms, $MatchState_p_end), -(1))) >= 0) != 0)), 0n)))
+        luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl19);
     if (cptr.ld1s(s) != cptr.ld1s(p))
         return null;
     else {
         let b = cptr.ld1s(p);
         let e = cptr.ld1s((cptr.add(p, 1)));
         let cont = 1;
-        while (cptr.cmp(cptr.preinc(() => s, (v) => { s = v; }), cptr.ldPtro(ms, 8)) < 0) {
+        while (cptr.cmp(cptr.preinc(() => s, (v) => { s = v; }), cptr.ldPtro(ms, $MatchState_src_end)) < 0) {
             if (cptr.ld1s(s) == e) {
                 if (--cont == 0)
                     return cptr.add(s, 1);
@@ -549,14 +561,14 @@ function min_expand(ms, s, p, ep) {
 /** C ref: lstrlib.c:534 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CInt} what @returns {CPtr} */
 function start_capture(ms, s, p, what) {
     let res;
-    let level = cptr.ld1uo(ms, 36);
+    let level = cptr.ld1uo(ms, $MatchState_level);
     if (level >= 32)
-        luaL_error(cptr.ldPtro(ms, 24), __sl20);
-    cptr.stPtro2(ms, level, 16, 40, s);
-    cptr.stI64o2(ms, level, 16, 48, BigInt(what));
-    cptr.st1o(ms, 36, uchar(((level + 1) | 0)));
+        luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl20);
+    cptr.stPtro2(ms, level, 16, $MatchState_capture, s);
+    cptr.stI64o2(ms, level, 16, $MatchState_capture + 8, BigInt(what));
+    cptr.st1o(ms, $MatchState_level, uchar(((level + 1) | 0)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
-        (cptr.st1o(ms, 36, cptr.ld1uo(ms, 36) + -1)) - (-1);
+        (cptr.st1o(ms, $MatchState_level, cptr.ld1uo(ms, $MatchState_level) + -1)) - (-1);
     return res;
 }
 
@@ -564,9 +576,9 @@ function start_capture(ms, s, p, what) {
 function end_capture(ms, s, p) {
     let l = capture_to_close(ms);
     let res;
-    cptr.stI64o2(ms, l, 16, 48, cptr.diff(s, cptr.ldPtro2(ms, l, 16, 40)));
+    cptr.stI64o2(ms, l, 16, $MatchState_capture + 8, cptr.diff(s, cptr.ldPtro2(ms, l, 16, $MatchState_capture)));
     if (cptr.eq((res = match(ms, s, p)), (null)))
-        cptr.stI64o2(ms, l, 16, 48, -1n);
+        cptr.stI64o2(ms, l, 16, $MatchState_capture + 8, -1n);
     return res;
 }
 
@@ -574,8 +586,8 @@ function end_capture(ms, s, p) {
 function match_capture(ms, s, l) {
     let len;
     l = check_capture(ms, l);
-    len = BigInt.asUintN(64, cptr.ldI64o2(ms, l, 16, 48));
-    if (BigInt.asUintN(64, (cptr.diff(cptr.ldPtro(ms, 8), s))) >= len && memcmp(cptr.ldPtro2(ms, l, 16, 40), s, len) == 0 ? 1 : 0)
+    len = BigInt.asUintN(64, cptr.ldI64o2(ms, l, 16, $MatchState_capture + 8));
+    if (BigInt.asUintN(64, (cptr.diff(cptr.ldPtro(ms, $MatchState_src_end), s))) >= len && memcmp(cptr.ldPtro2(ms, l, 16, $MatchState_capture), s, len) == 0)
         return cptr.add(s, len);
     else
         return null;
@@ -588,13 +600,13 @@ function match(ms, s, p) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        if ((__builtin_expect(BigInt((((cptr.stI32o(ms, 32, cptr.ldI32o(ms, 32) + -1)) - (-1) == 0) != 0)), 0n)))
-            luaL_error(cptr.ldPtro(ms, 24), __sl21);
+        if ((__builtin_expect(BigInt((((cptr.stI32o(ms, $MatchState_matchdepth, cptr.ldI32o(ms, $MatchState_matchdepth) + -1)) - (-1) == 0) != 0)), 0n)))
+            luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl21);
         __pc = 1;
         continue;
         }
         case 1 /* init: */: {
-        if (!cptr.eq(p, cptr.ldPtro(ms, 16))) { __pc = 4; continue; }
+        if (!cptr.eq(p, cptr.ldPtro(ms, $MatchState_p_end))) { __pc = 4; continue; }
         __pc = 3; continue;
         }
         case 4: {
@@ -621,7 +633,7 @@ function match(ms, s, p) {
         continue;
         }
         case 9: {
-        if (!cptr.eq((cptr.add(p, 1)), cptr.ldPtro(ms, 16))) { __pc = 13; continue; }
+        if (!cptr.eq((cptr.add(p, 1)), cptr.ldPtro(ms, $MatchState_p_end))) { __pc = 13; continue; }
         __pc = 12; continue;
         }
         case 13: {
@@ -630,7 +642,7 @@ function match(ms, s, p) {
         continue;
         }
         case 12: {
-        s = (cptr.eq(s, cptr.ldPtro(ms, 8))) ? s : null;
+        s = (cptr.eq(s, cptr.ldPtro(ms, $MatchState_src_end))) ? s : null;
         { __pc = 5; continue; }
         __pc = 10;
         continue;
@@ -670,10 +682,10 @@ function match(ms, s, p) {
         case 17: {
         p = cptr.add(p, 2);
         if ((__builtin_expect(BigInt(((cptr.ld1s(p) != 91) != 0)), 0n)))
-            luaL_error(cptr.ldPtro(ms, 24), __sl22);
+            luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl22);
         ep = classend(ms, p);
         previous = schar(((cptr.eq(s, cptr.ldPtr(ms))) ? 0 : cptr.ld1s((cptr.add(s, -(1))))));
-        if (!matchbracketclass((uchar((previous))), p, cptr.add(ep, -(1))) && matchbracketclass((uchar((cptr.ld1s(s)))), p, cptr.add(ep, -(1))) ? 1 : 0) { __pc = 32; continue; }
+        if (!matchbracketclass((uchar((previous))), p, cptr.add(ep, -(1))) && matchbracketclass((uchar((cptr.ld1s(s)))), p, cptr.add(ep, -(1)))) { __pc = 32; continue; }
         __pc = 31; continue;
         }
         case 32: {
@@ -760,7 +772,7 @@ function match(ms, s, p) {
         __pc = 37; continue;
         }
         case 36: {
-        if ((cptr.ld1s(ep) == 42 || cptr.ld1s(ep) == 63 ? 1 : 0) || cptr.ld1s(ep) == 45 ? 1 : 0) { __pc = 39; continue; }
+        if (cptr.ld1s(ep) == 42 || cptr.ld1s(ep) == 63 || cptr.ld1s(ep) == 45) { __pc = 39; continue; }
         __pc = 40; continue;
         }
         case 39: {
@@ -844,7 +856,7 @@ function match(ms, s, p) {
         continue;
         }
         case 3: {
-        (cptr.stI32o(ms, 32, cptr.ldI32o(ms, 32) + 1)) - (1);
+        (cptr.stI32o(ms, $MatchState_matchdepth, cptr.ldI32o(ms, $MatchState_matchdepth) + 1)) - (1);
         return s;
         __pc = -1;
         continue;
@@ -864,7 +876,7 @@ function lmemfind(s1, l1, s2, l2) {
         let init;
         l2--;
         l1 = BigInt.asUintN(64, l1 - l2);
-        while (l1 > 0n && !cptr.eq((init = memchr(s1, cptr.ld1s(s2), l1)), (null)) ? 1 : 0) {
+        while (l1 > 0n && !cptr.eq((init = memchr(s1, cptr.ld1s(s2), l1)), (null))) {
             init = cptr.add(init, 1);
             if (memcmp(init, cptr.add(s2, 1), l2) == 0)
                 return cptr.add(init, -(1));
@@ -879,18 +891,18 @@ function lmemfind(s1, l1, s2, l2) {
 
 /** C ref: lstrlib.c:702 — @param {CPtr} ms @param {CInt} i @param {CPtr} s @param {CPtr} e @param {CPtr} cap @returns {*} */
 function get_onecapture(ms, i, s, e, cap) {
-    if (i >= cptr.ld1uo(ms, 36)) {
+    if (i >= cptr.ld1uo(ms, $MatchState_level)) {
         if ((__builtin_expect(BigInt(((i != 0) != 0)), 0n)))
-            luaL_error(cptr.ldPtro(ms, 24), __sl15, (i + 1) | 0);
+            luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl15, (i + 1) | 0);
         cptr.stPtr(cap, s);
         return BigInt.asUintN(64, cptr.diff(e, s));
     } else {
-        let capl = cptr.ldI64o2(ms, i, 16, 48);
-        cptr.stPtr(cap, cptr.ldPtro2(ms, i, 16, 40));
+        let capl = cptr.ldI64o2(ms, i, 16, $MatchState_capture + 8);
+        cptr.stPtr(cap, cptr.ldPtro2(ms, i, 16, $MatchState_capture));
         if ((__builtin_expect(BigInt(((capl == -1n) != 0)), 0n)))
-            luaL_error(cptr.ldPtro(ms, 24), __sl23);
+            luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl23);
         else if (capl == -2n)
-            lua_pushinteger(cptr.ldPtro(ms, 24), BigInt.asIntN(64, (cptr.diff(cptr.ldPtro2(ms, i, 16, 40), cptr.ldPtr(ms))) + 1n));
+            lua_pushinteger(cptr.ldPtro(ms, $MatchState_L), BigInt.asIntN(64, (cptr.diff(cptr.ldPtro2(ms, i, 16, $MatchState_capture), cptr.ldPtr(ms))) + 1n));
         return BigInt.asUintN(64, capl);
     }
 }
@@ -900,14 +912,14 @@ function push_onecapture(ms, i, s, e) {
     let cap = cptr.box(0);
     let l = BigInt.asIntN(64, get_onecapture(ms, i, s, e, cap));
     if (l != -2n)
-        lua_pushlstring(cptr.ldPtro(ms, 24), cap.v, BigInt.asUintN(64, l));
+        lua_pushlstring(cptr.ldPtro(ms, $MatchState_L), cap.v, BigInt.asUintN(64, l));
 }
 
 /** C ref: lstrlib.c:735 — @param {CPtr} ms @param {CPtr} s @param {CPtr} e @returns {CInt} */
 function push_captures(ms, s, e) {
     let i;
-    let nlevels = (cptr.ld1uo(ms, 36) == 0 && s ? 1 : 0) ? 1 : cptr.ld1uo(ms, 36);
-    luaL_checkstack(cptr.ldPtro(ms, 24), nlevels, __sl20);
+    let nlevels = (cptr.ld1uo(ms, $MatchState_level) == 0 && s) ? 1 : cptr.ld1uo(ms, $MatchState_level);
+    luaL_checkstack(cptr.ldPtro(ms, $MatchState_L), nlevels, __sl20);
     for (i = 0; i < nlevels; i++)
         push_onecapture(ms, i, s, e);
     return nlevels;
@@ -926,16 +938,16 @@ function nospecials(p, l) {
 
 /** C ref: lstrlib.c:757 — @param {CPtr} ms @param {CPtr} L @param {CPtr} s @param {CLongLong} ls @param {CPtr} p @param {CLongLong} lp */
 function prepstate(ms, L, s, ls, p, lp) {
-    cptr.stPtro(ms, 24, L);
-    cptr.stI32o(ms, 32, 200);
+    cptr.stPtro(ms, $MatchState_L, L);
+    cptr.stI32o(ms, $MatchState_matchdepth, 200);
     cptr.stPtr(ms, s);
-    cptr.stPtro(ms, 8, cptr.add(s, ls));
-    cptr.stPtro(ms, 16, cptr.add(p, lp));
+    cptr.stPtro(ms, $MatchState_src_end, cptr.add(s, ls));
+    cptr.stPtro(ms, $MatchState_p_end, cptr.add(p, lp));
 }
 
 /** C ref: lstrlib.c:767 — @param {CPtr} ms */
 function reprepstate(ms) {
-    cptr.st1o(ms, 36, 0);
+    cptr.st1o(ms, $MatchState_level, 0);
     (void 0);
 }
 
@@ -950,7 +962,7 @@ function str_find_aux(L, find) {
         lua_pushnil(L);
         return 1;
     }
-    if (find && (lua_toboolean(L, 4) || nospecials(p, lp.v) ? 1 : 0) ? 1 : 0) {
+    if (find && (lua_toboolean(L, 4) || nospecials(p, lp.v))) {
         let s2 = lmemfind(cptr.add(s, init), BigInt.asUintN(64, ls.v - init), p, lp.v);
         if (s2) {
             lua_pushinteger(L, BigInt.asIntN(64, (cptr.diff(s2, s)) + 1n));
@@ -977,7 +989,7 @@ function str_find_aux(L, find) {
                 } else
                     return push_captures(ms, s1, res);
             }
-        } while (cptr.cmp(cptr.postinc(() => s1, (v) => { s1 = v; }), cptr.ldPtro(ms, 8)) < 0 && !anchor ? 1 : 0);
+        } while (cptr.cmp(cptr.postinc(() => s1, (v) => { s1 = v; }), cptr.ldPtro(ms, $MatchState_src_end)) < 0 && !anchor);
     }
     lua_pushnil(L);
     return 1;
@@ -1001,13 +1013,13 @@ function str_match(L) {
 function gmatch_aux(L) {
     let gm = lua_touserdata(L, -1001003);
     let src;
-    cptr.stPtro(gm, 48, L);
-    for (src = cptr.ldPtr(gm); cptr.cmp(src, cptr.ldPtro(gm, 32)) <= 0; src = cptr.add(src, 1)) {
+    cptr.stPtro(gm, $GMatchState_ms + $MatchState_L, L);
+    for (src = cptr.ldPtr(gm); cptr.cmp(src, cptr.ldPtro(gm, $GMatchState_ms + $MatchState_src_end)) <= 0; src = cptr.add(src, 1)) {
         let e;
-        reprepstate(cptr.add(gm, 24));
-        if (!cptr.eq((e = match(cptr.add(gm, 24), src, cptr.ldPtro(gm, 8))), (null)) && !cptr.eq(e, cptr.ldPtro(gm, 16)) ? 1 : 0) {
-            cptr.stPtr(gm, cptr.stPtro(gm, 16, e));
-            return push_captures(cptr.add(gm, 24), src, e);
+        reprepstate(cptr.add(gm, $GMatchState_ms));
+        if (!cptr.eq((e = match(cptr.add(gm, $GMatchState_ms), src, cptr.ldPtro(gm, $GMatchState_p))), (null)) && !cptr.eq(e, cptr.ldPtro(gm, $GMatchState_lastmatch))) {
+            cptr.stPtr(gm, cptr.stPtro(gm, $GMatchState_lastmatch, e));
+            return push_captures(cptr.add(gm, $GMatchState_ms), src, e);
         }
     }
     return 0;
@@ -1025,10 +1037,10 @@ function gmatch(L) {
     gm = lua_newuserdatauv(L, 576n, 0);
     if (init > ls.v)
         init = BigInt.asUintN(64, ls.v + 1n);
-    prepstate(cptr.add(gm, 24), L, s, ls.v, p, lp.v);
+    prepstate(cptr.add(gm, $GMatchState_ms), L, s, ls.v, p, lp.v);
     cptr.stPtr(gm, cptr.add(s, init));
-    cptr.stPtro(gm, 8, p);
-    cptr.stPtro(gm, 16, null);
+    cptr.stPtro(gm, $GMatchState_p, p);
+    cptr.stPtro(gm, $GMatchState_lastmatch, null);
     lua_pushcclosure(L, gmatch_aux, 3);
     return 1;
 }
@@ -1036,14 +1048,14 @@ function gmatch(L) {
 /** C ref: lstrlib.c:871 — @param {CPtr} ms @param {CPtr} b @param {CPtr} s @param {CPtr} e */
 function add_s(ms, b, s, e) {
     let l = cptr.box(0n);
-    let L = cptr.ldPtro(ms, 24);
+    let L = cptr.ldPtro(ms, $MatchState_L);
     let news = lua_tolstring(L, 3, l);
     let p;
     while (!cptr.eq((p = memchr(news, 37, l.v)), (null))) {
         luaL_addlstring(b, news, BigInt.asUintN(64, cptr.diff(p, news)));
         p = cptr.add(p, 1);
         if (cptr.ld1s(p) == 37)
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(p)))));
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(p)))));
         else if (cptr.ld1s(p) == 48)
             luaL_addlstring(b, s, BigInt.asUintN(64, cptr.diff(e, s)));
         else if (isdigit((uchar((cptr.ld1s(p)))))) {
@@ -1063,7 +1075,7 @@ function add_s(ms, b, s, e) {
 
 /** C ref: lstrlib.c:906 — @param {CPtr} ms @param {CPtr} b @param {CPtr} s @param {CPtr} e @param {CInt} tr @returns {CInt} */
 function add_value(ms, b, s, e, tr) {
-    let L = cptr.ldPtro(ms, 24);
+    let L = cptr.ldPtro(ms, $MatchState_L);
     switch (tr) {
         case 6:
         {
@@ -1111,7 +1123,7 @@ function str_gsub(L) {
     let changed = 0;
     let ms = cptr.alloc(552);
     let b = cptr.alloc(1056);
-    (void ((__builtin_expect(BigInt(((((tr == 3 || tr == 4 ? 1 : 0) || tr == 6 ? 1 : 0) || tr == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 3, (__sl27)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((tr == 3 || tr == 4 || tr == 6 || tr == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 3, (__sl27)) ? 1 : 0));
     luaL_buffinit(L, b);
     if (anchor) {
         p = cptr.add(p, 1);
@@ -1121,12 +1133,12 @@ function str_gsub(L) {
     while (n < max_s) {
         let e;
         reprepstate(ms);
-        if (!cptr.eq((e = match(ms, src, p)), (null)) && !cptr.eq(e, lastmatch) ? 1 : 0) {
+        if (!cptr.eq((e = match(ms, src, p)), (null)) && !cptr.eq(e, lastmatch)) {
             n++;
             changed = add_value(ms, b, src, e, tr) | changed;
             src = (lastmatch = e);
-        } else if (cptr.cmp(src, cptr.ldPtro(ms, 8)) < 0)
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))))));
+        } else if (cptr.cmp(src, cptr.ldPtro(ms, $MatchState_src_end)) < 0)
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))))));
         else
             break;
         if (anchor)
@@ -1135,7 +1147,7 @@ function str_gsub(L) {
     if (!changed)
         lua_pushvalue(L, 1);
     else {
-        luaL_addlstring(b, src, BigInt.asUintN(64, cptr.diff(cptr.ldPtro(ms, 8), src)));
+        luaL_addlstring(b, src, BigInt.asUintN(64, cptr.diff(cptr.ldPtro(ms, $MatchState_src_end), src)));
         luaL_pushresult(b);
     }
     lua_pushinteger(L, n);
@@ -1144,11 +1156,11 @@ function str_gsub(L) {
 
 /** C ref: lstrlib.c:1122 — @param {CPtr} b @param {CPtr} s @param {CLongLong} len */
 function addquoted(b, s, len) {
-    (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 34)));
+    (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 34)));
     while (len--) {
-        if ((cptr.ld1s(s) == 34 || cptr.ld1s(s) == 92 ? 1 : 0) || cptr.ld1s(s) == 10 ? 1 : 0) {
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 92)));
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(s)))));
+        if (cptr.ld1s(s) == 34 || cptr.ld1s(s) == 92 || cptr.ld1s(s) == 10) {
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 92)));
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(s)))));
         } else if (iscntrl((uchar((cptr.ld1s(s)))))) {
             let buff = new Uint8Array(10);
             if (!isdigit((uchar((cptr.ld1s((cptr.add(s, 1))))))))
@@ -1157,10 +1169,10 @@ function addquoted(b, s, len) {
                 cptr.snprintf(cptr.decay(buff), 10n, __sl29, (uchar((cptr.ld1s(s)))));
             luaL_addstring(b, cptr.decay(buff));
         } else
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(s)))));
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(s)))));
         s = cptr.add(s, 1);
     }
-    (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 34)));
+    (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 34)));
 }
 
 /** C ref: lstrlib.c:1151 — @param {CPtr} L @param {CPtr} buff @param {CDouble} n @returns {CInt} */
@@ -1206,7 +1218,7 @@ function addliteral(L, b, arg) {
                 let format = (n == -9223372036854775808n) ? __sl35 : __sl36;
                 nb = cptr.snprintf(buff, 120n, format, n);
             }
-            (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((nb)))));
+            (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((nb)))));
             break;
         }
         case 0:
@@ -1239,7 +1251,7 @@ function checkformat(L, form, flags, precision) {
     spec = cptr.add(spec, strspn(spec, flags));
     if (cptr.ld1s(spec) != 48) {
         spec = get2digits(spec);
-        if (cptr.ld1s(spec) == 46 && precision ? 1 : 0) {
+        if (cptr.ld1s(spec) == 46 && precision) {
             spec = cptr.add(spec, 1);
             spec = get2digits(spec);
         }
@@ -1294,7 +1306,7 @@ function str_format(L) {
         __pc = 7; continue;
         }
         case 6: {
-        (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
+        (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
         __pc = 5;
         continue;
         }
@@ -1303,7 +1315,7 @@ function str_format(L) {
         __pc = 10; continue;
         }
         case 9: {
-        (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
+        (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => strfrmt, (v) => { strfrmt = v; }))))));
         __pc = 8;
         continue;
         }
@@ -1446,7 +1458,7 @@ function str_format(L) {
         else {
             (void ((__builtin_expect(BigInt(((l.v == cptr.strlen(s)) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl50)) ? 1 : 0));
             checkformat(L, cptr.decay(form), __sl42, 1);
-            if (cptr.eq(cptr.strchr(cptr.decay(form), 46), (null)) && l.v >= 100n ? 1 : 0) {
+            if (cptr.eq(cptr.strchr(cptr.decay(form), 46), (null)) && l.v >= 100n) {
                 luaL_addvalue(b);
             } else {
                 nb = cptr.snprintf(buff, BigInt.asUintN(64, BigInt(maxitem)), cptr.decay(form), s);
@@ -1464,7 +1476,7 @@ function str_format(L) {
         }
         case 11: {
         (void 0);
-        (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((nb)))));
+        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((nb)))));
         __pc = 8;
         continue;
         }
@@ -1525,7 +1537,7 @@ function getnum(fmt, df) {
         let a = 0;
         do {
             a = (Math.imul(a, 10) + ((cptr.ld1s((cptr.postinc(() => cptr.ldPtr(fmt), (v) => { cptr.stPtr(fmt, v); }))) - 48) | 0)) | 0;
-        } while (digit(cptr.ld1s(cptr.ldPtr(fmt))) && a <= 214748363 ? 1 : 0);
+        } while (digit(cptr.ld1s(cptr.ldPtr(fmt))) && a <= 214748363);
         return a;
     }
 }
@@ -1541,8 +1553,8 @@ function getnumlimit(h, fmt, df) {
 /** C ref: lstrlib.c:1478 — @param {CPtr} L @param {CPtr} h */
 function initheader(L, h) {
     cptr.stPtr(h, L);
-    cptr.stI32o(h, 8, cptr.ld1s(nativeendian));
-    cptr.stI32o(h, 12, 1);
+    cptr.stI32o(h, $Header_islittle, cptr.ld1s(nativeendian));
+    cptr.stI32o(h, $Header_maxalign, 1);
 }
 
 /** C ref: lstrlib.c:1488 — @param {CPtr} h @param {CPtr} fmt @param {CPtr} size @returns {*} */
@@ -1610,18 +1622,18 @@ function getoption(h, fmt, size) {
         case 32:
         break;
         case 60:
-        cptr.stI32o(h, 8, 1);
+        cptr.stI32o(h, $Header_islittle, 1);
         break;
         case 62:
-        cptr.stI32o(h, 8, 0);
+        cptr.stI32o(h, $Header_islittle, 0);
         break;
         case 61:
-        cptr.stI32o(h, 8, cptr.ld1s(nativeendian));
+        cptr.stI32o(h, $Header_islittle, cptr.ld1s(nativeendian));
         break;
         case 33:
         {
             let maxalign = 8;
-            cptr.stI32o(h, 12, getnumlimit(h, fmt, maxalign));
+            cptr.stI32o(h, $Header_maxalign, getnumlimit(h, fmt, maxalign));
             break;
         }
         default:
@@ -1635,14 +1647,14 @@ function getdetails(h, totalsize, fmt, psize, ntoalign) {
     let opt = getoption(h, fmt, psize);
     let align = cptr.box(cptr.ldI32(psize));
     if (opt == NHC.Kpaddalign) {
-        if ((cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == NHC.Kchar ? 1 : 0) || align.v == 0 ? 1 : 0)
+        if (cptr.ld1s(cptr.ldPtr(fmt)) == 0 || getoption(h, fmt, align) == NHC.Kchar || align.v == 0)
             luaL_argerror(cptr.ldPtr(h), 1, __sl55);
     }
-    if (align.v <= 1 || opt == NHC.Kchar ? 1 : 0)
+    if (align.v <= 1 || opt == NHC.Kchar)
         cptr.stI32(ntoalign, 0);
     else {
-        if (align.v > cptr.ldI32o(h, 12))
-            align.v = cptr.ldI32o(h, 12);
+        if (align.v > cptr.ldI32o(h, $Header_maxalign))
+            align.v = cptr.ldI32o(h, $Header_maxalign);
         if ((__builtin_expect(BigInt((((align.v & ((align.v - 1) | 0)) != 0) != 0)), 0n)))
             luaL_argerror(cptr.ldPtr(h), 1, __sl56);
         cptr.stI32(ntoalign, ((align.v - Number(BigInt.asIntN(32, (totalsize & BigInt.asUintN(64, BigInt(((align.v - 1) | 0))))))) | 0) & ((align.v - 1) | 0));
@@ -1659,11 +1671,11 @@ function packint(b, n, islittle, size, neg) {
         n >>= 8n;
         cptr.st1o(buff, islittle ? i : (((size - 1) | 0) - i) | 0, Number(BigInt.asIntN(8, (n & 255n))));
     }
-    if (neg && size > 8 ? 1 : 0) {
+    if (neg && size > 8) {
         for (i = 8; i < size; i++)
             cptr.st1o(buff, islittle ? i : (((size - 1) | 0) - i) | 0, -1);
     }
-    (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((size)))));
+    (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((size)))));
 }
 
 /** C ref: lstrlib.c:1589 — @param {CPtr} dest @param {CPtr} src @param {CInt} size @param {CInt} islittle */
@@ -1693,7 +1705,7 @@ function str_pack(L) {
         let opt = getdetails(h, totalsize, fmt, size, ntoalign);
         totalsize += BigInt.asUintN(64, BigInt(((ntoalign.v + size.v) | 0)));
         while (ntoalign.v-- > 0)
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 0)));
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 0)));
         arg++;
         switch (opt) {
             case NHC.Kint:
@@ -1703,7 +1715,7 @@ function str_pack(L) {
                     let lim = 1n << BigInt((((Math.imul(size.v, 8)) - 1) | 0));
                     (void ((__builtin_expect(BigInt(((-lim <= n && n < lim ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl57)) ? 1 : 0));
                 }
-                packint(b, BigInt.asUintN(64, n), cptr.ldI32o(h, 8), size.v, (n < 0n));
+                packint(b, BigInt.asUintN(64, n), cptr.ldI32o(h, $Header_islittle), size.v, (n < 0n));
                 break;
             }
             case NHC.Kuint:
@@ -1711,31 +1723,31 @@ function str_pack(L) {
                 let n = luaL_checkinteger(L, arg);
                 if (size.v < 8)
                     (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, n) < (1n << BigInt.asUintN(64, BigInt((Math.imul(size.v, 8)))))) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl58)) ? 1 : 0));
-                packint(b, BigInt.asUintN(64, n), cptr.ldI32o(h, 8), size.v, 0);
+                packint(b, BigInt.asUintN(64, n), cptr.ldI32o(h, $Header_islittle), size.v, 0);
                 break;
             }
             case NHC.Kfloat:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 4n);
-                copywithendian(buff, f, 4, cptr.ldI32o(h, 8));
-                (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((size.v)))));
+                copywithendian(buff, f, 4, cptr.ldI32o(h, $Header_islittle));
+                (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
             case NHC.Knumber:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
-                copywithendian(buff, f, 8, cptr.ldI32o(h, 8));
-                (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((size.v)))));
+                copywithendian(buff, f, 8, cptr.ldI32o(h, $Header_islittle));
+                (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
             case NHC.Kdouble:
             {
                 let f = cptr.box(luaL_checknumber(L, arg));
                 let buff = luaL_prepbuffsize(b, 8n);
-                copywithendian(buff, f, 8, cptr.ldI32o(h, 8));
-                (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((size.v)))));
+                copywithendian(buff, f, 8, cptr.ldI32o(h, $Header_islittle));
+                (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((size.v)))));
                 break;
             }
             case NHC.Kchar:
@@ -1745,7 +1757,7 @@ function str_pack(L) {
                 (void ((__builtin_expect(BigInt(((len.v <= BigInt.asUintN(64, BigInt(size.v))) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl59)) ? 1 : 0));
                 luaL_addlstring(b, s, len.v);
                 while (len.v++ < BigInt.asUintN(64, BigInt(size.v)))
-                    (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 0)));
+                    (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 0)));
                 break;
             }
             case NHC.Kstring:
@@ -1753,7 +1765,7 @@ function str_pack(L) {
                 let len = cptr.box(0n);
                 let s = luaL_checklstring(L, arg, len);
                 (void ((__builtin_expect(BigInt(((size.v >= 8 || len.v < (1n << BigInt.asUintN(64, BigInt((Math.imul(size.v, 8))))) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl60)) ? 1 : 0));
-                packint(b, len.v, cptr.ldI32o(h, 8), size.v, 0);
+                packint(b, len.v, cptr.ldI32o(h, $Header_islittle), size.v, 0);
                 luaL_addlstring(b, s, len.v);
                 totalsize += len.v;
                 break;
@@ -1764,12 +1776,12 @@ function str_pack(L) {
                 let s = luaL_checklstring(L, arg, len);
                 (void ((__builtin_expect(BigInt(((cptr.strlen(s) == len.v) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl50)) ? 1 : 0));
                 luaL_addlstring(b, s, len.v);
-                (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 0)));
+                (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 0)));
                 totalsize += BigInt.asUintN(64, len.v + 1n);
                 break;
             }
             case NHC.Kpadding:
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), 0)));
+            (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 0)));
             case NHC.Kpaddalign:
             case NHC.Knop:
             arg--;
@@ -1814,7 +1826,7 @@ function unpackint(L, str, islittle, size, issigned) {
             res = (BigInt.asUintN(64, (res ^ mask) - mask));
         }
     } else if (size > 8) {
-        let mask = (!issigned || BigInt.asIntN(64, res) >= 0n ? 1 : 0) ? 0 : 255;
+        let mask = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
         for (i = limit; i < size; i++) {
             if ((__builtin_expect(BigInt(((uchar(cptr.ld1so(str, islittle ? i : (((size - 1) | 0) - i) | 0)) != mask) != 0)), 0n)))
                 luaL_error(L, __sl63, size);
@@ -1845,28 +1857,28 @@ function str_unpack(L) {
             case NHC.Kint:
             case NHC.Kuint:
             {
-                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32o(h, 8), size.v, (opt == NHC.Kint));
+                let res = unpackint(L, cptr.add(data, pos), cptr.ldI32o(h, $Header_islittle), size.v, (opt == NHC.Kint));
                 lua_pushinteger(L, res);
                 break;
             }
             case NHC.Kfloat:
             {
                 let f = cptr.box(0);
-                copywithendian(f, cptr.add(data, pos), 4, cptr.ldI32o(h, 8));
+                copywithendian(f, cptr.add(data, pos), 4, cptr.ldI32o(h, $Header_islittle));
                 lua_pushnumber(L, f.v);
                 break;
             }
             case NHC.Knumber:
             {
                 let f = cptr.box(0);
-                copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32o(h, 8));
+                copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32o(h, $Header_islittle));
                 lua_pushnumber(L, f.v);
                 break;
             }
             case NHC.Kdouble:
             {
                 let f = cptr.box(0);
-                copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32o(h, 8));
+                copywithendian(f, cptr.add(data, pos), 8, cptr.ldI32o(h, $Header_islittle));
                 lua_pushnumber(L, f.v);
                 break;
             }
@@ -1877,7 +1889,7 @@ function str_unpack(L) {
             }
             case NHC.Kstring:
             {
-                let len = BigInt.asUintN(64, unpackint(L, cptr.add(data, pos), cptr.ldI32o(h, 8), size.v, 0));
+                let len = BigInt.asUintN(64, unpackint(L, cptr.add(data, pos), cptr.ldI32o(h, $Header_islittle), size.v, 0));
                 (void ((__builtin_expect(BigInt(((len <= BigInt.asUintN(64, BigInt.asUintN(64, ld.v - pos) - BigInt.asUintN(64, BigInt(size.v)))) != 0)), 1n)) || luaL_argerror(L, 2, (__sl65)) ? 1 : 0));
                 lua_pushlstring(L, cptr.add(cptr.add(data, pos), size.v), len);
                 pos += len;
@@ -1906,41 +1918,41 @@ function str_unpack(L) {
 /** C ref: lstrlib.c:1830 — luaL_Reg[18] */
 const strlib = cptr.alloc(18 * 16);
 cptr.stPtro(strlib, 0, __sl68);
-cptr.stPtro(strlib, 8, str_byte);
+cptr.stPtro(strlib, 0 + $luaL_Reg_func, str_byte);
 cptr.stPtro(strlib, 16, __sl69);
-cptr.stPtro(strlib, 24, str_char);
+cptr.stPtro(strlib, 16 + $luaL_Reg_func, str_char);
 cptr.stPtro(strlib, 32, __sl70);
-cptr.stPtro(strlib, 40, str_dump);
+cptr.stPtro(strlib, 32 + $luaL_Reg_func, str_dump);
 cptr.stPtro(strlib, 48, __sl71);
-cptr.stPtro(strlib, 56, str_find);
+cptr.stPtro(strlib, 48 + $luaL_Reg_func, str_find);
 cptr.stPtro(strlib, 64, __sl72);
-cptr.stPtro(strlib, 72, str_format);
+cptr.stPtro(strlib, 64 + $luaL_Reg_func, str_format);
 cptr.stPtro(strlib, 80, __sl73);
-cptr.stPtro(strlib, 88, gmatch);
+cptr.stPtro(strlib, 80 + $luaL_Reg_func, gmatch);
 cptr.stPtro(strlib, 96, __sl74);
-cptr.stPtro(strlib, 104, str_gsub);
+cptr.stPtro(strlib, 96 + $luaL_Reg_func, str_gsub);
 cptr.stPtro(strlib, 112, __sl75);
-cptr.stPtro(strlib, 120, str_len);
+cptr.stPtro(strlib, 112 + $luaL_Reg_func, str_len);
 cptr.stPtro(strlib, 128, __sl76);
-cptr.stPtro(strlib, 136, str_lower);
+cptr.stPtro(strlib, 128 + $luaL_Reg_func, str_lower);
 cptr.stPtro(strlib, 144, __sl77);
-cptr.stPtro(strlib, 152, str_match);
+cptr.stPtro(strlib, 144 + $luaL_Reg_func, str_match);
 cptr.stPtro(strlib, 160, __sl78);
-cptr.stPtro(strlib, 168, str_rep);
+cptr.stPtro(strlib, 160 + $luaL_Reg_func, str_rep);
 cptr.stPtro(strlib, 176, __sl79);
-cptr.stPtro(strlib, 184, str_reverse);
+cptr.stPtro(strlib, 176 + $luaL_Reg_func, str_reverse);
 cptr.stPtro(strlib, 192, __sl80);
-cptr.stPtro(strlib, 200, str_sub);
+cptr.stPtro(strlib, 192 + $luaL_Reg_func, str_sub);
 cptr.stPtro(strlib, 208, __sl81);
-cptr.stPtro(strlib, 216, str_upper);
+cptr.stPtro(strlib, 208 + $luaL_Reg_func, str_upper);
 cptr.stPtro(strlib, 224, __sl82);
-cptr.stPtro(strlib, 232, str_pack);
+cptr.stPtro(strlib, 224 + $luaL_Reg_func, str_pack);
 cptr.stPtro(strlib, 240, __sl83);
-cptr.stPtro(strlib, 248, str_packsize);
+cptr.stPtro(strlib, 240 + $luaL_Reg_func, str_packsize);
 cptr.stPtro(strlib, 256, __sl84);
-cptr.stPtro(strlib, 264, str_unpack);
+cptr.stPtro(strlib, 256 + $luaL_Reg_func, str_unpack);
 cptr.stPtro(strlib, 272, null);
-cptr.stPtro(strlib, 280, null);
+cptr.stPtro(strlib, 272 + $luaL_Reg_func, null);
 
 /** C ref: lstrlib.c:1852 — @param {CPtr} L */
 function createmetatable(L) {
