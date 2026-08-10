@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { canspotmon, completelyburns, explosion_to_glyph, is_vampshifter, nonliving } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, Cold_resistance, Deaf, Disint_resistance, Fire_resistance, Half_physical_damage, Hallucination, Invulnerable, Poison_resistance, Role_switch, Shock_resistance, Upolyd, nh_delay_output, sokoban_dnum } from './nhprop.js';
 import { disp, flags, gb, gi, gm, gt, gu, gv, gy, iflags, shield_static, svc, svd, svk, svl, u, uball, uchain, xdir, ydir } from './decl.js';
 import { mons } from './monst.js';
@@ -195,7 +196,7 @@ function* explosionmask(m, adtyp, olet) {
                 res = NHC.EXPL_HERO;
             break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS) ? ((((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(m, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(m, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(m, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 1 : 0) : Disint_resistance())
+            if ((olet == NHC.WAND_CLASS) ? (nonliving(cptr.ldPtro(m, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 1 : 0) : Disint_resistance())
                 res = NHC.EXPL_HERO;
             break;
             case NHM.AD_ELEC:
@@ -231,7 +232,7 @@ function* explosionmask(m, adtyp, olet) {
                 res = NHC.EXPL_MON;
             break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS) ? ((((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(m, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(m, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(m, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) || (cptr.ldI16o((m), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((m), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((m), $monst_cham) == NHC.PM_VLAD_THE_IMPALER) ? 1 : 0) : !!(yield* Resists_Elem(m, NHC.DISINT_RES)))
+            if ((olet == NHC.WAND_CLASS) ? (nonliving(cptr.ldPtro(m, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) & 256n) != 0n) || is_vampshifter(m) ? 1 : 0) : !!(yield* Resists_Elem(m, NHC.DISINT_RES)))
                 res = NHC.EXPL_MON;
             break;
             case NHM.AD_ELEC:
@@ -458,7 +459,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
             if (mtmp) {
                 cptr.stI32o(cptr.decay(explmask[i]), j, cptr.ldI32o(cptr.decay(explmask[i]), j, 4) | (yield* explosionmask(mtmp, adtyp, olet)), 4);
             }
-            if (mtmp && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8), xx) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
+            if (mtmp && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8), xx) & NHM.IN_SIGHT) != 0) && !canspotmon(mtmp))
                 (yield* map_invisible(xx, yy));
             else if (!mtmp)
                 void (yield* unmap_invisible(xx, yy));
@@ -474,7 +475,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     continue;
                 xx = i16(((((x + i) | 0) - 1) | 0));
                 yy = i16(((((y + j) | 0) - 1) | 0));
-                (yield* tmp_at(i16((starting ? -1 : -6)), i16((((((cptr.ldI32o(cptr.decay(explosion[i]), j, 4)) - NHC.S_expl_tl) | 0) + (((expltype) == NHC.EXPL_FROSTY) ? NHC.GLYPH_EXPLODE_FROSTY_OFF : (((expltype) == NHC.EXPL_MAGICAL) ? NHC.GLYPH_EXPLODE_MAGICAL_OFF : (((expltype) == NHC.EXPL_WET) ? NHC.GLYPH_EXPLODE_WET_OFF : (((expltype) == NHC.EXPL_MUDDY) ? NHC.GLYPH_EXPLODE_MUDDY_OFF : (((expltype) == NHC.EXPL_NOXIOUS) ? NHC.GLYPH_EXPLODE_NOXIOUS_OFF : NHC.GLYPH_EXPLODE_FIERY_OFF)))))) | 0))));
+                (yield* tmp_at(i16((starting ? -1 : -6)), i16(explosion_to_glyph(expltype, cptr.ldI32o(cptr.decay(explosion[i]), j, 4)))));
                 (yield* tmp_at(xx, yy));
                 starting = 0;
             }
@@ -496,7 +497,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     xx = i16(((((x + i) | 0) - 1) | 0));
                     yy = i16(((((y + j) | 0) - 1) | 0));
                     if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) & (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
-                        (yield* show_glyph(xx, yy, (((((cptr.ldI32o(cptr.decay(explosion[i]), j, 4)) - NHC.S_expl_tl) | 0) + (((expltype) == NHC.EXPL_FROSTY) ? NHC.GLYPH_EXPLODE_FROSTY_OFF : (((expltype) == NHC.EXPL_MAGICAL) ? NHC.GLYPH_EXPLODE_MAGICAL_OFF : (((expltype) == NHC.EXPL_WET) ? NHC.GLYPH_EXPLODE_WET_OFF : (((expltype) == NHC.EXPL_MUDDY) ? NHC.GLYPH_EXPLODE_MUDDY_OFF : (((expltype) == NHC.EXPL_NOXIOUS) ? NHC.GLYPH_EXPLODE_NOXIOUS_OFF : NHC.GLYPH_EXPLODE_FIERY_OFF)))))) | 0)));
+                        (yield* show_glyph(xx, yy, explosion_to_glyph(expltype, cptr.ldI32o(cptr.decay(explosion[i]), j, 4))));
                 }
         } else {
             (yield* Y.icall(nh_delay_output()()));
@@ -576,12 +577,12 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - ((mdam + itemdmg) | 0)) | 0);
                 }
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-                    let xkflg = ((adtyp == NHM.AD_FIRE && (cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_PAPER_GOLEM, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_STRAW_GOLEM, 96)))) ? NHM.XKILL_NOCORPSE : 0);
+                    let xkflg = ((adtyp == NHM.AD_FIRE && completelyburns(cptr.ldPtro(mtmp, $monst_data))) ? NHM.XKILL_NOCORPSE : 0);
                     if (!cptr.ld1so(svc, $context_info_mon_moving)) {
                         (yield* xkilled(mtmp, NHM.XKILL_GIVEMSG | xkflg));
                     } else if (mdef && cptr.eq(mtmp, mdef)) {
-                        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) || (canseemon(mtmp) || sensemon(mtmp)))
-                            (yield* pline(__sl35, (yield* Monnam(mtmp)), xkflg ? __sl36 : ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl37 : __sl38)));
+                        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) || canspotmon(mtmp))
+                            (yield* pline(__sl35, (yield* Monnam(mtmp)), xkflg ? __sl36 : (nonliving(cptr.ldPtro(mtmp, $monst_data)) ? __sl37 : __sl38)));
                         (yield* xkilled(mtmp, 5 | xkflg));
                     } else {
                         if (xkflg)

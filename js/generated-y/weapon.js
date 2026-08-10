@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { bimanual, greatest_erosion, is_ammo, is_axe, is_graystone, is_pick, is_plural, is_spear, is_weptool, is_wet_towel, touch_petrifies } from './nhmacrofn.js';
 import { Upolyd, create_nhwindow, destroy_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { You, You_feel, Your, impossible, pline, pline_mon } from './pline.js';
 import { handle_tip } from './hack.js';
@@ -281,15 +282,15 @@ export function* weapon_descr(obj) {
         descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER || cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16)) : ((cptr.ldI32o(obj, $obj_globby) & 1) | 0 ? __sl22 : cptr.ldPtro2(def_oc_syms, cptr.ld1so(obj, $obj_oclass), 24, $class_sym_name));
         break;
         case NHC.P_SLING:
-        if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20))
-            descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK || (cptr.ldI16o((obj), $obj_otyp) == NHC.LUCKSTONE || cptr.ldI16o((obj), $obj_otyp) == NHC.LOADSTONE || cptr.ldI16o((obj), $obj_otyp) == NHC.FLINT || cptr.ldI16o((obj), $obj_otyp) == NHC.TOUCHSTONE)) ? __sl23 : ((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) ? __sl24 : cptr.ldPtro2(def_oc_syms, cptr.ld1so(obj, $obj_oclass), 24, $class_sym_name));
+        if (is_ammo(obj))
+            descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK || is_graystone(obj)) ? __sl23 : ((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) ? __sl24 : cptr.ldPtro2(def_oc_syms, cptr.ld1so(obj, $obj_oclass), 24, $class_sym_name));
         break;
         case NHC.P_BOW:
-        if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20))
+        if (is_ammo(obj))
             descr = __sl25;
         break;
         case NHC.P_CROSSBOW:
-        if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20))
+        if (is_ammo(obj))
             descr = __sl26;
         break;
         case NHC.P_FLAIL:
@@ -310,13 +311,13 @@ export function* weapon_descr(obj) {
 export function* hitval(otmp, mon) {
     let tmp = 0;
     let ptr = cptr.ldPtro(mon, $monst_data);
-    let Is_weapon = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((otmp), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) ? 1 : 0));
+    let Is_weapon = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp) ? 1 : 0));
     if (Is_weapon)
         tmp = (tmp + cptr.ld1so(otmp, $obj_spe)) | 0;
     tmp = (tmp + cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_oc1)) | 0;
     if (Is_weapon && (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
         tmp = (tmp + 2) | 0;
-    if ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_SPEAR) && cptr.strchr(cptr.decay(kebabable), cptr.ld1so(ptr, $permonst_mlet)))
+    if (is_spear(otmp) && cptr.strchr(cptr.decay(kebabable), cptr.ld1so(ptr, $permonst_mlet)))
         tmp = (tmp + 2) | 0;
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TRIDENT && ((cptr.ldU64o((ptr), $permonst_mflags1) & 2n) != 0n)) {
         if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)))
@@ -324,7 +325,7 @@ export function* hitval(otmp, mon) {
         else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_SNAKE)
             tmp = (tmp + 2) | 0;
     }
-    if (((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE) && (((cptr.ldU64o((ptr), $permonst_mflags1) & 8n) != 0n) && ((cptr.ldU64o((ptr), $permonst_mflags1) & 2097152n) != 0n)))
+    if (is_pick(otmp) && (((cptr.ldU64o((ptr), $permonst_mflags1) & 8n) != 0n) && ((cptr.ldU64o((ptr), $permonst_mflags1) & 2097152n) != 0n)))
         tmp = (tmp + 2) | 0;
     if (cptr.ld1so(otmp, $obj_oartifact))
         tmp = (tmp + (yield* spec_abon(otmp, mon))) | 0;
@@ -336,7 +337,7 @@ export function* dmgval(otmp, mon) {
     let tmp = 0;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let ptr = cptr.ldPtro(mon, $monst_data);
-    let Is_weapon = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((otmp), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) ? 1 : 0));
+    let Is_weapon = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp) ? 1 : 0));
     if (otyp == NHC.CREAM_PIE)
         return 0;
     if ((cptr.ld1uo((ptr), $permonst_msize) >= NHM.MZ_LARGE)) {
@@ -427,7 +428,7 @@ export function* dmgval(otmp, mon) {
         let bonus = 0;
         if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
             bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__sl29, 328, __sl30), rnd(4)) : rnd(4))) | 0;
-        if (((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_AXE) && (cptr.eq((ptr), cptr.add(mons, NHC.PM_WOOD_GOLEM, 96))))
+        if (is_axe(otmp) && (cptr.eq((ptr), cptr.add(mons, NHC.PM_WOOD_GOLEM, 96))))
             bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__sl29, 330, __sl30), rnd(4)) : rnd(4))) | 0;
         if (((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER && mon_hates_silver(mon))
             bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__sl29, 332, __sl30), rnd(20)) : rnd(20))) | 0;
@@ -438,7 +439,7 @@ export function* dmgval(otmp, mon) {
         tmp = (tmp + bonus) | 0;
     }
     if (tmp > 0) {
-        tmp = (tmp - (((cptr.ldI32o((otmp), $obj_oeroded) & 3) | 0) > ((cptr.ldI32o((otmp), $obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((otmp), $obj_oeroded) & 3) | 0 : (cptr.ldI32o((otmp), $obj_oeroded2) & 3) | 0)) | 0;
+        tmp = (tmp - greatest_erosion(otmp)) | 0;
         if (tmp < 1)
             tmp = 1;
     }
@@ -517,7 +518,7 @@ function* oselect(mtmp, type) {
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.ldI16o(otmp, $obj_otyp) != type)
             continue;
-        if ((type == NHC.CORPSE || type == NHC.EGG) && (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.NON_PM || !(cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))))
+        if ((type == NHC.CORPSE || type == NHC.EGG) && (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.NON_PM || !touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))))
             continue;
         if (!(yield* can_touch_safely(mtmp, otmp)))
             continue;
@@ -854,7 +855,7 @@ export function* mon_wield_item(mon) {
             if (canseemon(mon)) {
                 let welded_buf = new Uint8Array(256);
                 let mon_hand = (yield* mbodypart(mon, NHC.HAND));
-                if (((cptr.ld1so(mw_tmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(mw_tmp, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(mw_tmp, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))
+                if (bimanual(mw_tmp))
                     mon_hand = (yield* makeplural(mon_hand));
                 void cptr.sprintf(cptr.decay(welded_buf), __sl42, (yield* otense(mw_tmp, __sl43)), (cptr.ldPtro2(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), 48, $Gender_his)), mon_hand);
                 if (cptr.ldI16o(obj, $obj_otyp) == NHC.PICK_AXE) {
@@ -883,9 +884,9 @@ export function* mon_wield_item(mon) {
             cptr.stI64o(obj, $obj_owornmask, cptr.ldI64o(obj, $obj_owornmask) & (-257n));
             if (newly_welded) {
                 let mon_hand = (yield* mbodypart(mon, NHC.HAND));
-                if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))
+                if (bimanual(obj))
                     mon_hand = (yield* makeplural(mon_hand));
-                (yield* pline(__sl50, (yield* Tobjnam(obj, __sl51)), (cptr.ldI64o((obj), $obj_quan) != 1n || (cptr.ld1so((obj), $obj_oartifact) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD))) ? __sl52 : __sl53, (yield* s_suffix((yield* mon_nam(mon)))), mon_hand));
+                (yield* pline(__sl50, (yield* Tobjnam(obj, __sl51)), is_plural(obj) ? __sl52 : __sl53, (yield* s_suffix((yield* mon_nam(mon)))), mon_hand));
                 cptr.stI32o(obj, $obj_bknown, 1);
             }
         }
@@ -972,7 +973,7 @@ function* finish_towel_change(obj, newspe) {
     newspe = ((newspe) < 7 ? (newspe) : 7);
     cptr.st1o(obj, $obj_spe, schar(((newspe) > 0 ? (newspe) : 0)));
     if (cptr.eq(obj, uwep.v))
-        cptr.st1o(gu, $instance_globals_u_unweapon, schar((!(cptr.ldI16o((obj), $obj_otyp) == NHC.TOWEL && cptr.ld1so((obj), $obj_spe) > 0))));
+        cptr.st1o(gu, $instance_globals_u_unweapon, schar((!is_wet_towel(obj))));
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
         (yield* update_inventory());
 }
@@ -1492,7 +1493,7 @@ export function* skill_init(class_skill) {
         cptr.stI16o2(u, skill, 6, $you_weapon_skills + $skills_advance, 0);
     }
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
-        if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20))
+        if (is_ammo(obj))
             continue;
         skill = weapon_type(obj);
         if (skill != NHC.P_NONE)

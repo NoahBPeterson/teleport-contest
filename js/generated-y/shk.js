@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_WALL, Is_candle, Is_container, SchroedingersBox, canspotmon, has_eshk, has_mgivenname, has_omid, helpless, is_pick, ismnum, m_next2u } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Conflict, Deaf, Detect_monsters, Displaced, Fast, Invis, Passes_walls, Punished, Underwater, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mark_synch, nh_delay_output, putstr, start_menu, wait_synch } from './nhprop.js';
 import { findgold, mdrop_special_objs, mpickobj, remove_worn_item } from './steal.js';
 import { c_common_strings, cg, disp, flags, ga, gb, gc, gf, gi, gk, gm, gr, gs, gt, gu, gv, gy, iflags, program_state, svl, svm, svp, svr, u, uarm, uarmc, uarmh, uarmu, uball, ubirthday, uchain, uswapwep, ynaqchars, ynchars } from './decl.js';
@@ -948,9 +949,9 @@ export function* u_left_shop(leavestring, newlev) {
     eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if (!cptr.ldI32o(eshkp, $eshk_billct) && !cptr.ldI64o(eshkp, $eshk_debit))
         return;
-    if (!cptr.ld1s(leavestring) && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!cptr.ld1s(leavestring) && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         let not_upset = schar((!cptr.ld1so(eshkp, $eshk_surcharge)));
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(not_upset ? __sl23 : __sl24, svp));
         } else {
@@ -1098,11 +1099,11 @@ export function* u_entered_shop(enterstring) {
         void __builtin___strncpy_chk(cptr.add(eshkp, $eshk_customer), svp, 32n, __builtin_object_size(cptr.add(eshkp, $eshk_customer), 1));
         pacify_shk(shkp, 1);
     }
-    if ((((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) || cptr.ld1so(eshkp, $eshk_following))
+    if ((helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) || cptr.ld1so(eshkp, $eshk_following))
         return;
     if (Invis()) {
         (yield* pline(__sl42, (yield* Shknam(shkp))));
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl43));
         } else {
@@ -1112,14 +1113,14 @@ export function* u_entered_shop(enterstring) {
     }
     rt = cptr.ld1so2(svr, (cptr.ld1s(enterstring) - NHM.ROOMOFFSET) | 0, 224, $mkroom_rtype);
     if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl45, svp, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         } else {
             (yield* pline(__sl46, (yield* Shknam(shkp)), cptr.ldPtro(angrytexts, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 820, __sl48), rn2(3)) : rn2(3)), 8), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         }
     } else if (cptr.ld1so(eshkp, $eshk_surcharge)) {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl49, svp, (yield* mbodypart(shkp, NHC.EYE))));
         } else {
@@ -1133,7 +1134,7 @@ export function* u_entered_shop(enterstring) {
             (yield* pline(__sl52, (yield* Shknam(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his))));
         }
     } else {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             set_voice(shkp, 0, 80, 0);
             (yield* verbalize(__sl53, Hello(shkp), svp, (cptr.stI32o(eshkp, $eshk_visitct, cptr.ldI32o(eshkp, $eshk_visitct) + 1)) - (1) ? __sl54 : __sl8, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (rt - NHC.SHOPBASE) | 0, 112)));
         } else {
@@ -1165,7 +1166,7 @@ export function* u_entered_shop(enterstring) {
                 if (!Blind())
                     (yield* discover_object(NHC.DWARVISH_MATTOCK, 1, 1, 1));
             }
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(not_upset ? __sl59 : __sl60, tool, (((cnt) == 1) ? __sl8 : __sl61)));
             } else {
@@ -1173,7 +1174,7 @@ export function* u_entered_shop(enterstring) {
             }
             should_block = 1;
         } else if (cptr.ldPtro(u, $you_usteed)) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(not_upset ? __sl65 : __sl66, (yield* y_monnam(cptr.ldPtro(u, $you_usteed)))));
             } else {
@@ -1194,12 +1195,12 @@ let __static_pick_pick_pickmovetime = 0n; /** C ref: shk.c:929 — long (functio
 /** C ref: shk.c:921 — @param {CPtr} obj */
 export function* pick_pick(obj) {
     let shkp;
-    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 || !((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE))
+    if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 || !is_pick(obj))
         return;
     shkp = (yield* shop_keeper(cptr.ld1so(u, $you_ushops)));
     if (shkp && (yield* inhishop(shkp))) {
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) != __static_pick_pick_pickmovetime) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl69, (yield* cad(0))));
             } else {
@@ -1287,13 +1288,13 @@ export function* shop_keeper(rmno) {
     let shkp;
     shkp = (rmno >= NHM.ROOMOFFSET) ? cptr.ldPtro2(svr, (rmno - NHM.ROOMOFFSET) | 0, 224, $mkroom_resident) : null;
     if (shkp) {
-        if ((cptr.ldPtro((shkp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)))) {
+        if (has_eshk(shkp)) {
             if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
                 if (!cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_surcharge))
                     rile_shk(shkp);
             }
         } else {
-            (yield* impossible(__sl79, (cptr.ldI32o(shkp, $monst_isshk) & 1) | 0 ? __sl80 : __sl81, rmno, cptr.ld1so2(svr, (rmno - NHM.ROOMOFFSET) | 0, 224, $mkroom_rtype), cptr.ldI16o(shkp, $monst_mnum), (cptr.ldPtro((shkp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((shkp), $monst_mextra)))) ? (cptr.ldPtr(cptr.ldPtro((shkp), $monst_mextra))) : __sl82));
+            (yield* impossible(__sl79, (cptr.ldI32o(shkp, $monst_isshk) & 1) | 0 ? __sl80 : __sl81, rmno, cptr.ld1so2(svr, (rmno - NHM.ROOMOFFSET) | 0, 224, $mkroom_rtype), cptr.ldI16o(shkp, $monst_mnum), has_mgivenname(shkp) ? (cptr.ldPtr(cptr.ldPtro((shkp), $monst_mextra))) : __sl82));
             return null;
         }
     }
@@ -1386,7 +1387,7 @@ export function* obfree(obj, merge) {
         book_disappears(obj);
     if ((cptr.ldPtro((obj), $obj_cobj) !== null))
         (yield* delete_contents(obj));
-    if ((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS))
+    if (Is_container(obj))
         maybe_reset_pick(obj);
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
         cptr.stI32o(obj, $obj_corpsenm, 0);
@@ -1402,7 +1403,7 @@ export function* obfree(obj, merge) {
         if (!merge) {
             cptr.st1o(bp, $bill_x_useup, 1);
             cptr.stI32o(obj, $obj_unpaid, 0);
-            if ((cptr.ldI32o(obj, $obj_globby) & 1) | 0 && !cptr.ldI32o(obj, $obj_owt) && (cptr.ldPtro((obj), $obj_oextra) && (cptr.ldI32o(cptr.ldPtro((obj), $obj_oextra), $oextra_omid))))
+            if ((cptr.ldI32o(obj, $obj_globby) & 1) | 0 && !cptr.ldI32o(obj, $obj_owt) && has_omid(obj))
                 cptr.stI32o(obj, $obj_owt, (cptr.ldI32o(cptr.ldPtro((obj), $obj_oextra), $oextra_omid)));
             (yield* add_to_billobjs(obj));
             return;
@@ -1517,8 +1518,8 @@ function rile_shk(shkp) {
 
 /** C ref: shk.c:1381 — @param {CPtr} shkp @param {CInt} verbosely */
 function* rouse_shk(shkp, verbosely) {
-    if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1))) {
-        if (verbosely && (canseemon(shkp) || sensemon(shkp)))
+    if (helpless(shkp)) {
+        if (verbosely && canspotmon(shkp))
             (yield* pline(__sl92, (yield* Shknam(shkp)), (cptr.ldI32o(shkp, $monst_msleeping) & 1) | 0 ? __sl93 : __sl94));
         cptr.stI32o(shkp, $monst_msleeping, 0);
         cptr.stI32o(shkp, $monst_mfrozen, 0);
@@ -1541,7 +1542,7 @@ export function* make_happy_shk(shkp, silentkops) {
         void cptr.strcpy(cptr.decay(shk_nam), (yield* shkname(shkp)));
         if (on_level(cptr.add(eshkp, $eshk_shoplevel), cptr.add(u, $you_uz))) {
             (yield* home_shk(shkp, 0));
-            if ((canseemon(shkp) || sensemon(shkp))) {
+            if (canspotmon(shkp)) {
                 (yield* pline(__sl95, (yield* Shknam(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his))));
                 vanished = 0;
             }
@@ -1782,13 +1783,13 @@ export function* dopay() {
         nxtm = (resident = null);
         for (shkp = next_shkp(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist), 0); shkp; shkp = next_shkp(cptr.ldPtr(shkp), 0)) {
             sk++;
-            if ((dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+            if (m_next2u(shkp)) {
                 if (nxtm && (!((cptr.ldI32o((nxtm), $monst_mpeaceful) & 1))))
                     continue;
                 nexttosk++;
                 nxtm = shkp;
             }
-            if ((canseemon(shkp) || sensemon(shkp)))
+            if (canspotmon(shkp))
                 seensk++;
             if ((yield* inhishop(shkp)) && (cptr.ld1so(u, $you_ushops) == cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom)))
                 resident = shkp;
@@ -1811,10 +1812,10 @@ export function* dopay() {
         }
         if (seensk == 1) {
             for (shkp = next_shkp(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist), 0); shkp; shkp = next_shkp(cptr.ldPtr(shkp), 0))
-                if ((canseemon(shkp) || sensemon(shkp)))
+                if (canspotmon(shkp))
                     break;
             (__builtin_expect(BigInt((!(!cptr.eq(shkp, (null))))), 0n) ? __assert_rtn(__sl110, __sl47, 1805, __sl111) : void 0);
-            if (!cptr.eq(shkp, resident) && !(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+            if (!cptr.eq(shkp, resident) && !m_next2u(shkp)) {
                 (yield* pline(__sl112, (yield* Shknam(shkp))));
                 return NHM.ECMD_OK;
             }
@@ -1839,7 +1840,7 @@ export function* dopay() {
                 return NHM.ECMD_OK;
             }
             mtmp = (cptr.ldPtro3(svl, cx, 168, cy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-            if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) && (!mtmp || !(canseemon(mtmp) || sensemon(mtmp)))) {
+            if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) && (!mtmp || !canspotmon(mtmp))) {
                 (yield* You(__sl117, !Blind() ? __sl118 : __sl119));
                 return NHM.ECMD_OK;
             }
@@ -1851,7 +1852,7 @@ export function* dopay() {
                 (yield* pline(__sl121, (yield* Monnam(mtmp))));
                 return NHM.ECMD_OK;
             }
-            if (!cptr.eq(mtmp, resident) && !(dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+            if (!cptr.eq(mtmp, resident) && !m_next2u(mtmp)) {
                 (yield* pline(__sl122, (yield* Shknam(mtmp))));
                 return NHM.ECMD_OK;
             }
@@ -1872,7 +1873,7 @@ export function* dopay() {
     ltmp = cptr.ldI64o(eshkp, $eshk_robbed);
     if (ltmp || cptr.ldI32o(eshkp, $eshk_billct) || cptr.ldI64o(eshkp, $eshk_debit))
         (yield* rouse_shk(shkp, 1));
-    if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1))) {
+    if (helpless(shkp)) {
         (yield* pline(__sl92, (yield* Shknam(shkp)), (rng_log_enabled() ? (rng_log_set_caller(__sl47, 1865, __sl110), rn2(2)) : rn2(2)) ? __sl124 : __sl125));
         return NHM.ECMD_OK;
     }
@@ -1929,7 +1930,7 @@ export function* dopay() {
                     (yield* pline(cptr.decay(not_enough_money), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him))));
                 return NHM.ECMD_TIME;
             }
-            (yield* You(__sl141, (canseemon(shkp) || sensemon(shkp)) ? (yield* x_monnam(shkp, NHM.ARTICLE_THE, __sl142, 0, 0)) : (yield* shkname(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him))));
+            (yield* You(__sl141, canspotmon(shkp) ? (yield* x_monnam(shkp, NHM.ARTICLE_THE, __sl142, 0, 0)) : (yield* shkname(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him))));
             (yield* pay(1000n, shkp));
             if (cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n) || (rng_log_enabled() ? (rng_log_set_caller(__sl47, 1938, __sl110), rn2(3)) : rn2(3)))
                 (yield* make_happy_shk(shkp, 0));
@@ -1994,7 +1995,7 @@ export function* dopay() {
             pay_done = 0;
     }
     if (pay_done && !(!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) && paid.v) {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl156, (yield* s_suffix((yield* shkname(shkp)))), cptr.ldPtro(shtypes, (cptr.ldI32o(eshkp, $eshk_shoptype) - NHC.SHOPBASE) | 0, 112), !cptr.ld1so(eshkp, $eshk_surcharge) ? __sl29 : __sl28));
         } else {
@@ -2255,7 +2256,7 @@ function* reject_purchase(shkp, obj, billed_quan) {
     let intact_quan = cptr.ldI64o(obj, $obj_quan);
     (__builtin_expect(BigInt((!(intact_quan < billed_quan))), 0n) ? __assert_rtn(__sl178, __sl47, 2426, __sl179) : void 0);
     cptr.stI64o(obj, $obj_quan, BigInt.asIntN(64, billed_quan - intact_quan));
-    if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         let which = new Uint8Array(256);
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_CONTAINED)
             nh_snprintf(__sl178, 2434, cptr.decay(which), 256n, __sl180, (((intact_quan) == 1n) ? __sl8 : __sl61), (yield* thesimpleoname(cptr.ldPtro(obj, $obj_v))));
@@ -2360,7 +2361,7 @@ function* inherits(shkp, numsk, croaked, silently) {
                 cptr.st1o(cptr.decay(takes), 0, 0, 1);
                 if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 32768n) == 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 2600, __sl191), rn2(2)) : rn2(2)))
                     void cptr.sprintf(cptr.decay(takes), __sl192, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his)), (yield* mbodypart(shkp, NHC.HEAD)));
-                (yield* pline(__sl193, (yield* Shknam(shkp)), ((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) ? __sl194 : __sl8, cptr.decay(takes), !(yield* inhishop(shkp)) ? __sl195 : __sl196));
+                (yield* pline(__sl193, (yield* Shknam(shkp)), helpless(shkp) ? __sl194 : __sl8, cptr.decay(takes), !(yield* inhishop(shkp)) ? __sl195 : __sl196));
             }
             taken = uinshop;
             { __go_skip = true; break __skip_skip; }
@@ -2388,9 +2389,9 @@ function* inherits(shkp, numsk, croaked, silently) {
                 { __go_skip = true; break __skip_skip; }
             umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
             cptr.st1o(cptr.decay(takes), 0, 0, 1);
-            if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)))
+            if (helpless(shkp))
                 void cptr.strcat(cptr.decay(takes), __sl198);
-            if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+            if (!m_next2u(shkp))
                 void cptr.strcat(cptr.decay(takes), __sl199);
             void cptr.strcat(cptr.decay(takes), __sl200);
             if (loss > umoney || !loss || uinshop) {
@@ -2650,7 +2651,7 @@ export function* contained_cost(obj, shkp, price, usell, unpaid_only) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             continue;
         if (usell) {
-            if (saleable(shkp, otmp) && !(cptr.ldI32o(otmp, $obj_unpaid) & 1) && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS && !(cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(otmp, $obj_oeaten)) && !((cptr.ldI16o(otmp, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.WAX_CANDLE) && cptr.ldI64o(otmp, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost)))))
+            if (saleable(shkp, otmp) && !(cptr.ldI32o(otmp, $obj_unpaid) & 1) && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS && !(cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(otmp, $obj_oeaten)) && !(Is_candle(otmp) && cptr.ldI64o(otmp, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost)))))
                 price += (yield* set_cost(otmp, shkp));
         } else {
             if (on_floor ? (!(cptr.ldI32o(otmp, $obj_no_charge) & 1) && !freespot ? 1 : 0) : ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || !unpaid_only ? 1 : 0))
@@ -2705,7 +2706,7 @@ function* special_stock(obj, shkp, quietly) {
     if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoptype) == NHC.CANDLESHOP && cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         if (!quietly) {
             if (is_izchak(shkp, 1) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
-                if (Deaf() || (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (Deaf() || (helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     (yield* pline(__sl206, (yield* Shknam(shkp)), (cptr.ld1so(obj, $obj_spe) < 7) ? __sl207 : __sl208));
                 } else {
                     ;
@@ -2716,7 +2717,7 @@ function* special_stock(obj, shkp, quietly) {
                     }
                 }
             } else {
-                if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl212));
                 } else {
@@ -2885,7 +2886,7 @@ function* add_to_billobjs(obj) {
 /** C ref: shk.c:3387 — @param {CPtr} obj @param {CInt} ininv @param {CInt} dummy @param {CPtr} shkp */
 function* bill_box_content(obj, ininv, dummy, shkp) {
     let otmp;
-    if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((obj), $obj_spe) == 1))
+    if (SchroedingersBox(obj))
         return;
     for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
@@ -2992,7 +2993,7 @@ export function* addtobill(obj, ininv, dummy, silent) {
         (yield* add_one_tobill(obj, dummy, shkp.v));
         contentscount = 0;
     }
-    if (!Deaf() && !(((cptr.ldI32o((shkp.v), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp.v), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp.v), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) && !silent) {
+    if (!Deaf() && !(helpless(shkp.v) || cptr.ld1uo(cptr.ldPtro((shkp.v), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) && !silent) {
         let buf = new Uint8Array(256);
         if (!ltmp) {
             (yield* pline(__sl220, (yield* Shknam(shkp.v)), (yield* the((yield* xname(obj))))));
@@ -3309,7 +3310,7 @@ export function* sellobj(obj, x, y) {
     (yield* rouse_shk(shkp, 1));
     eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl269));
         } else {
@@ -3339,7 +3340,7 @@ export function* sellobj(obj, x, y) {
             offer += BigInt(cgold);
         if ((cptr.stI64o(eshkp, $eshk_robbed, cptr.ldI64o(eshkp, $eshk_robbed) - BigInt((offer < 0n)))))
             cptr.stI64o(eshkp, $eshk_robbed, 0n);
-        if (offer && !Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (offer && !Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl272));
         }
@@ -3361,7 +3362,7 @@ export function* sellobj(obj, x, y) {
             return;
         }
     }
-    if ((!saleitem && !(container && cltmp > 0n)) || cptr.ldI32o(eshkp, $eshk_billct) == NHM.BILLSZ || cptr.ld1so(obj, $obj_oclass) == NHC.BALL_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.CHAIN_CLASS || offer == 0n || (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(obj, $obj_oeaten)) || ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE) && cptr.ldI64o(obj, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost))))) {
+    if ((!saleitem && !(container && cltmp > 0n)) || cptr.ldI32o(eshkp, $eshk_billct) == NHM.BILLSZ || cptr.ld1so(obj, $obj_oclass) == NHC.BALL_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.CHAIN_CLASS || offer == 0n || (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(obj, $obj_oeaten)) || (Is_candle(obj) && cptr.ldI64o(obj, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost))))) {
         (yield* pline(__sl273, (yield* Shknam(shkp)), cgold ? __sl274 : __sl8));
         if (container)
             dropped_container(obj, shkp, 0);
@@ -3522,7 +3523,7 @@ export function* doinvbill(mode) {
 /** C ref: shk.c:4275 — @param {CPtr} obj @returns {CLongLong} */
 function* corpsenm_price_adj(obj) {
     let val = 0n;
-    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TIN || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) && ((cptr.ldI32o(obj, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(obj, $obj_corpsenm)) < NHC.NUMMONS)) {
+    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TIN || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
         let i;
         let tmp = 1n;
         let ptr = cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96);
@@ -3570,7 +3571,7 @@ function* getprice(obj, shk_buying) {
             tmp += BigInt.asIntN(64, 10n * BigInt(cptr.ld1so(obj, $obj_spe)));
         break;
         case NHC.TOOL_CLASS:
-        if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE) && cptr.ldI64o(obj, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost))))
+        if (Is_candle(obj) && cptr.ldI64o(obj, $obj_age) < BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost))))
             tmp /= 2n;
         break;
     }
@@ -3583,14 +3584,14 @@ export function* shkcatch(obj, x, y) {
     shkp = (yield* shop_keeper(inside_shop(x, y)));
     if (!shkp || !(yield* inhishop(shkp)))
         return null;
-    if (!((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ld1so(u, $you_ushops) != cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom) || !inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && dist2(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), x, y) < 3 && (cptr.ldI16o(shkp, $monst_mx) != x || cptr.ldI16o(shkp, $monst_my) != y)) {
-        if ((yield* mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG)) == 2 && !Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!helpless(shkp) && (cptr.ld1so(u, $you_ushops) != cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom) || !inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && dist2(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), x, y) < 3 && (cptr.ldI16o(shkp, $monst_mx) != x || cptr.ldI16o(shkp, $monst_my) != y)) {
+        if ((yield* mnearto(shkp, x, y, 1, NHM.RLOC_NOMSG)) == 2 && !Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
             ;
             (yield* verbalize(__sl299));
         }
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
             (yield* pline(__sl300, (yield* Shknam(shkp)), (x == cptr.ldI16o(shkp, $monst_mx) && y == cptr.ldI16o(shkp, $monst_my)) ? __sl8 : __sl301, (yield* the((yield* xname(obj))))));
-            if (!(canseemon(shkp) || sensemon(shkp)))
+            if (!canspotmon(shkp))
                 (yield* map_invisible(x, y));
             (yield* Y.icall(nh_delay_output()()));
             (yield* Y.icall(mark_synch()()));
@@ -3638,7 +3639,7 @@ export function* add_damage(x, y, cost) {
 function* shk_impaired(shkp) {
     if (!shkp || !(cptr.ldI32o(shkp, $monst_isshk) & 1) || !(yield* inhishop(shkp)))
         return 1;
-    if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_following))
+    if (helpless(shkp) || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_following))
         return 1;
     return 0;
 }
@@ -3770,7 +3771,7 @@ function* litter_scatter(litter, x, y, shkp) {
     let otmp;
     {
         if (Punished() && !(cptr.ldI32o(u, $you_uswallow) & 1) && ((cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y) || (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uball.v, $obj_ox) == x && cptr.ldI16o(uball.v, $obj_oy) == y))) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl306));
             }
@@ -3888,14 +3889,14 @@ function* repair_damage(shkp, tmp_dam, catchup) {
     if (catchup)
         return 1;
     if (seeit) {
-        if (((cptr.ld1so(tmp_dam, $damage_typ)) && (cptr.ld1so(tmp_dam, $damage_typ)) <= NHC.DBWALL)) {
+        if (IS_WALL(cptr.ld1so(tmp_dam, $damage_typ))) {
             cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
             (yield* pline(__sl311));
         } else if (((cptr.ld1so(tmp_dam, $damage_typ)) == NHC.DOOR)) {
             (yield* pline(__sl312));
         }
         (yield* newsym(x, y));
-    } else if (((cptr.ld1so(tmp_dam, $damage_typ)) && (cptr.ld1so(tmp_dam, $damage_typ)) <= NHC.DBWALL)) {
+    } else if (IS_WALL(cptr.ld1so(tmp_dam, $damage_typ))) {
         if (inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom))
             (yield* You_feel(__sl313));
         else if (!Deaf() && !(rng_log_enabled() ? (rng_log_set_caller(__sl47, 4833, __sl314), rn2(10)) : rn2(10)))
@@ -3954,7 +3955,7 @@ export function* shk_move(shkp) {
         }
         if (cptr.ld1so(eshkp, $eshk_following)) {
             if (cptr.strncmp(cptr.add(eshkp, $eshk_customer), svp, 32n)) {
-                if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl317, Hello(shkp), svp, cptr.add(eshkp, $eshk_customer)));
                 }
@@ -3962,7 +3963,7 @@ export function* shk_move(shkp) {
                 return 0;
             }
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > BigInt.asIntN(64, cptr.ldI64o(gf, $instance_globals_f_followmsg) + 4n)) {
-                if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     ;
                     (yield* verbalize(__sl318, Hello(shkp), svp));
                 } else {
@@ -4051,7 +4052,7 @@ export function* shopdig(fall) {
         return;
     }
     lang = 0;
-    if (((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || (cptr.ld1uo((cptr.ldPtro(shkp, $monst_data)), $permonst_msound) == NHC.MS_SILENT))
+    if (helpless(shkp) || (cptr.ld1uo((cptr.ldPtro(shkp, $monst_data)), $permonst_msound) == NHC.MS_SILENT))
         ;
     else if (cptr.ld1uo(cptr.ldPtro(shkp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)
         lang = 1;
@@ -4059,7 +4060,7 @@ export function* shopdig(fall) {
         lang = 2;
     if (!fall) {
         if (lang == 2) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                     (yield* verbalize(__sl324, cptr.ld1so(flags, $flag_female) ? __sl325 : __sl326));
@@ -4072,15 +4073,15 @@ export function* shopdig(fall) {
             (yield* You_feel(__sl323));
             adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
         }
-    } else if (!um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 5) && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit))) {
+    } else if (!um_dist(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 5) && !helpless(shkp) && (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit))) {
         let obj;
         let obj2;
         if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
             grabs = __sl330;
         }
-        if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+        if (!m_next2u(shkp)) {
             (yield* mnexto(shkp, NHM.RLOC_MSG));
-            if (!(dist2((cptr.ldI16o((shkp), $monst_mx)), (cptr.ldI16o((shkp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+            if (!m_next2u(shkp)) {
                 if (lang == 2)
                     (yield* pline(__sl331, (yield* Shknam(shkp))));
                 else if (lang == 1)
@@ -4136,8 +4137,8 @@ function* makekops(mm) {
 /** C ref: shk.c:5138 — @param {CPtr} shkp @param {CPtr} dmgstr @param {CInt} x @param {CInt} y @param {CInt} uinshp @param {CInt} animal @param {CInt} pursue */
 function* getcad(shkp, dmgstr, x, y, uinshp, animal, pursue) {
     let dugwall = schar((!strcmp(dmgstr, __sl336) || !strcmp(dmgstr, __sl337) ? 1 : 0));
-    if ((((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
-        if (animal && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)))
+    if ((helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+        if (animal && !helpless(shkp))
             (yield* yelp(shkp));
     } else if (pursue || uinshp || !um_dist(x, y, 1)) {
         if (!Deaf()) {
@@ -4240,7 +4241,7 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
     } else {
         if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
             if (!animal) {
-                if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+                if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                     (yield* You_hear(__sl348));
                     ;
                     (yield* verbalize(__sl299));
@@ -4275,14 +4276,14 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
         (yield* home_shk(shkp, 0));
         pacify_shk(shkp, 0);
         if (cptr.ldI16o(shkp, $monst_mx) != sx || cptr.ldI16o(shkp, $monst_my) != sy) {
-            if (was_outside && (canseemon(shkp) || sensemon(shkp)))
+            if (was_outside && canspotmon(shkp))
                 (yield* pline(__sl95, (yield* Shknam(shkp)), (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_his))));
             else if ((is_seen = schar(canseemon(shkp))) == 1 || was_seen)
                 (yield* pline(__sl92, (yield* Shknam(shkp)), !was_seen ? __sl353 : (is_seen ? __sl354 : __sl195)));
         }
     } else {
         if (!animal) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl355));
             } else {
@@ -4327,7 +4328,7 @@ export function* shop_object(x, y) {
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
         if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
             break;
-    return (otmp && (yield* costly_spot(x, y)) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? otmp : null;
+    return (otmp && (yield* costly_spot(x, y)) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? otmp : null;
 }
 
 /** C ref: shk.c:5406 — @param {CPtr} first_obj */
@@ -4434,16 +4435,16 @@ export function* shk_chat(shkp) {
     }
     eshk = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if ((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)))) {
-        (yield* pline(__sl381, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl382 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)), cptr.ldI64o(eshk, $eshk_robbed) ? __sl384 : __sl385));
+        (yield* pline(__sl381, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl382 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he)), cptr.ldI64o(eshk, $eshk_robbed) ? __sl384 : __sl385));
     } else if (cptr.ld1so(eshk, $eshk_following)) {
         if (cptr.strncmp(cptr.add(eshk, $eshk_customer), svp, 32n)) {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl386, Hello(shkp), svp, cptr.add(eshk, $eshk_customer)));
             }
             cptr.st1o(eshk, $eshk_following, 0);
         } else {
-            if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl387, Hello(shkp), svp));
             } else {
@@ -4452,24 +4453,24 @@ export function* shk_chat(shkp) {
         }
     } else if (cptr.ldI32o(eshk, $eshk_billct)) {
         let total = BigInt.asIntN(64, addupbill(shkp) + cptr.ldI64o(eshk, $eshk_debit));
-        (yield* pline(__sl389, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383, total, (yield* currency(total))));
+        (yield* pline(__sl389, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383, total, (yield* currency(total))));
     } else if (cptr.ldI64o(eshk, $eshk_debit)) {
-        (yield* pline(__sl391, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl392 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)), cptr.ldI64o(eshk, $eshk_debit), (yield* currency(cptr.ldI64o(eshk, $eshk_debit)))));
+        (yield* pline(__sl391, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl392 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_him)), cptr.ldI64o(eshk, $eshk_debit), (yield* currency(cptr.ldI64o(eshk, $eshk_debit)))));
     } else if (cptr.ldI64o(eshk, $eshk_credit)) {
         (yield* pline(__sl393, (yield* Shknam(shkp)), cptr.ldI64o(eshk, $eshk_credit), (yield* currency(cptr.ldI64o(eshk, $eshk_credit)))));
     } else if (cptr.ldI64o(eshk, $eshk_robbed)) {
-        (yield* pline(__sl394, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl396));
+        (yield* pline(__sl394, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl396));
     } else if (cptr.ld1so(eshk, $eshk_surcharge)) {
-        (yield* pline(__sl397, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl398 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he))));
+        (yield* pline(__sl397, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl398 : __sl383, (cptr.ldPtro2(genders, pronoun_gender(shkp, 3), 48, $Gender_he))));
     } else if ((shkmoney = money_cnt(cptr.ldPtro(shkp, $monst_minvent))) < 50n) {
-        (yield* pline(__sl399, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl383));
+        (yield* pline(__sl399, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl395 : __sl383));
     } else if (shkmoney > 4000n) {
-        (yield* pline(__sl400, (yield* Shknam(shkp)), (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383));
+        (yield* pline(__sl400, (yield* Shknam(shkp)), (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? __sl390 : __sl383));
     } else if (is_izchak(shkp, 0)) {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
             (yield* pline(cptr.ldPtro(Izchak_speaks, (rng_log_enabled() ? (rng_log_set_caller(__sl47, 5596, __sl401), rn2(9)) : rn2(9)), 8), (yield* shkname(shkp))));
     } else {
-        if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
+        if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL))
             (yield* pline(__sl402, (yield* Shknam(shkp))));
     }
 }
@@ -4484,7 +4485,7 @@ function* kops_gone(silent) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_KOP) {
-            if ((canseemon(mtmp) || sensemon(mtmp)))
+            if (canspotmon(mtmp))
                 cnt++;
             (yield* mongone(mtmp));
         }
@@ -4558,7 +4559,7 @@ export function* check_unpaid_usage(otmp, altusage) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5723, __sl407), rn2(3)) : rn2(3)))
             arg2 = __sl415;
     }
-    if (!Deaf() && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+    if (!Deaf() && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         ;
         (yield* verbalize(fmt, arg1, arg2, tmp, (yield* currency(tmp))));
         (yield* exercise(NHC.A_WIS, 1));
@@ -4619,7 +4620,7 @@ export function* block_door(x, y) {
     shkp = (yield* shop_keeper(schar(roomno)));
     if (!shkp || !(yield* inhishop(shkp)))
         return 0;
-    if (cptr.ldI16o(shkp, $monst_mx) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk) && cptr.ldI16o(shkp, $monst_my) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y) && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd) == x && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd + $nhcoord_y) == y && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) || cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_robbed))) {
+    if (cptr.ldI16o(shkp, $monst_mx) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk) && cptr.ldI16o(shkp, $monst_my) == cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y) && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd) == x && cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shd + $nhcoord_y) == y && !helpless(shkp) && (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) || cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct) || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_robbed))) {
         (yield* pline(__sl419, (yield* Shknam(shkp)), Invis() ? __sl420 : __sl8));
         return 1;
     }
@@ -4644,7 +4645,7 @@ export function* block_entry(x, y) {
         return 0;
     sx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk);
     sy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y);
-    if (cptr.ldI16o(shkp, $monst_mx) == sx && cptr.ldI16o(shkp, $monst_my) == sy && !((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) && (x == ((sx - 1) | 0) || x == ((sx + 1) | 0) || y == ((sy - 1) | 0) || y == ((sy + 1) | 0)) && (Invis() || carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || cptr.ldPtro(u, $you_usteed))) {
+    if (cptr.ldI16o(shkp, $monst_mx) == sx && cptr.ldI16o(shkp, $monst_my) == sy && !helpless(shkp) && (x == ((sx - 1) | 0) || x == ((sx + 1) | 0) || y == ((sy - 1) | 0) || y == ((sy + 1) | 0)) && (Invis() || carrying(NHC.PICK_AXE) || carrying(NHC.DWARVISH_MATTOCK) || cptr.ldPtro(u, $you_usteed))) {
         (yield* pline(__sl419, (yield* Shknam(shkp)), Invis() ? __sl420 : __sl8));
         return 1;
     }
@@ -4653,7 +4654,7 @@ export function* block_entry(x, y) {
 
 /** C ref: shk.c:5862 — @param {CPtr} buf @param {CPtr} obj @returns {CPtr} */
 export function* shk_your(buf, obj) {
-    let chk_pm = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ((cptr.ldI32o(obj, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(obj, $obj_corpsenm)) < NHC.NUMMONS) ? 1 : 0));
+    let chk_pm = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ismnum(cptr.ldI32o(obj, $obj_corpsenm)) ? 1 : 0));
     cptr.st1o(buf, 0, 0);
     if (chk_pm && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mflags2) & 524288n) != 0n))
         return buf;
@@ -4811,7 +4812,7 @@ export function* use_unpaid_trapobj(otmp, x, y) {
     if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
         if (!Deaf()) {
             let shkp = (yield* find_objowner(otmp, x, y));
-            if (shkp && !(((cptr.ldI32o((shkp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((shkp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+            if (shkp && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
                 ;
                 (yield* verbalize(__sl438));
             }

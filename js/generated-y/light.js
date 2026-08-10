@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Is_candle, canspotmon, ignitable } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
@@ -306,7 +307,7 @@ export function* transient_light_cleanup() {
         if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
             cptr.stI32o(mon, $monst_mtemplit, 0);
             ++mtempcount;
-            if (!(canseemon(mon) || sensemon(mon)))
+            if (!canspotmon(mon))
                 (yield* map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         }
     }
@@ -604,7 +605,7 @@ export function obj_sheds_light(obj) {
 
 /** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && ((cptr.ldI16o((obj), $obj_otyp) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), $obj_otyp) == NHC.OIL_LAMP || (cptr.ldI16o((obj), $obj_otyp) == NHC.MAGIC_LAMP && cptr.ld1so((obj), $obj_spe) > 0) || cptr.ldI16o((obj), $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((obj), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o((obj), $obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o((obj), $obj_otyp) == NHC.POT_OIL) || artifact_light(obj)) ? 1 : 0));
+    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && (ignitable(obj) || artifact_light(obj)) ? 1 : 0));
 }
 
 /** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
@@ -615,7 +616,7 @@ export function* obj_split_light_source(src, dest) {
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src)) {
             new_ls = (yield* alloc(32));
             cptr.memcpy(new_ls, ls, 32);
-            if ((cptr.ldI16o(src, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, $obj_otyp) == NHC.WAX_CANDLE)) {
+            if (Is_candle(src)) {
                 cptr.stI16o(ls, $light_source_range, i16(candle_light_range(src)));
                 cptr.stI16o(new_ls, $light_source_range, i16(candle_light_range(dest)));
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
@@ -658,7 +659,7 @@ export function candle_light_range(obj) {
     let radius;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         radius = (cptr.ld1so(obj, $obj_spe) < 4) ? 2 : ((cptr.ld1so(obj, $obj_spe) < 7) ? 3 : 4);
-    } else if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE)) {
+    } else if (Is_candle(obj)) {
         let n = cptr.ldI64o(obj, $obj_quan);
         radius = 1;
         while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS) {

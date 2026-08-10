@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { m_next2u } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Deaf, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { nh_getenv } from './options.js';
 import { alloc, dupstr } from './alloc.js';
@@ -325,7 +326,7 @@ function* newmail(info) {
                 obj = (yield* oname(obj, cptr.ldPtro(info, $mail_info_object_nam), NHM.ONAME_NO_FLAGS));
             if (cptr.ldPtro(info, $mail_info_response_cmd))
                 (yield* new_omailcmd(obj, cptr.ldPtro(info, $mail_info_response_cmd)));
-            if (!(dist2((cptr.ldI16o((md), $monst_mx)), (cptr.ldI16o((md), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+            if (!m_next2u(md)) {
                 if (!Deaf()) {
                     ;
                     (yield* verbalize(__sl16));

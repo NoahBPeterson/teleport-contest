@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { SET__IS_VALUE_VALID } from './nhmacrofn.js';
 import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
@@ -12855,7 +12856,7 @@ cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 /** C ref: options.c:9855 — @param {CPtr} optnam @param {CInt} status */
 export function* set_option_mod_status(optnam, status) {
     let k;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__sl997, status));
         return;
     }
@@ -12870,7 +12871,7 @@ export function* set_option_mod_status(optnam, status) {
 /** C ref: options.c:9881 — @param {CLongLong} optmask @param {CInt} status */
 export function* set_wc_option_mod_status(optmask, status) {
     let k = 0;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__sl998, status));
         return;
     }
@@ -12906,7 +12907,7 @@ function wc_supported(optnam) {
 /** C ref: options.c:9935 — @param {CLongLong} optmask @param {CInt} status */
 export function* set_wc2_option_mod_status(optmask, status) {
     let k = 0;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__sl999, status));
         return;
     }

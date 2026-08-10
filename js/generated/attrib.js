@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ismnum, max } from './nhmacrofn.js';
 import { BBlinded, BClairvoyant, BlindedTimeout, Blindfolded_only, EBlinded, EFast, Fixed_abil, Fumbling, HBlinded, HBlnd_resist, HClairvoyant, HConfusion, HFast, HRegeneration, HStun, Half_gas_damage, Hallucination, Poison_resistance, Race_switch, Role_switch, Sick, Upolyd, Very_fast, Vomiting, Wounded_legs, wizard } from './nhprop.js';
 import { c_common_strings, disp, flags, gi, gm, gu, gy, iflags, program_state, svc, svd, svk, svm, u, uarmc, uarmf, uarmg, uarmh, ublindf, uwep } from './decl.js';
 import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
@@ -643,7 +644,7 @@ export function losestr(num, knam, k_format) {
             setuhpmax((((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) > 1 ? ((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) : 1), 0);
         } else if (!waspolyd) {
             if (cptr.ldI32o(u, $you_uhpmax) > uhpmin)
-                setuhpmax((((cptr.ldI32o(u, $you_uhpmax) - dmg) | 0) > (uhpmin) ? ((cptr.ldI32o(u, $you_uhpmax) - dmg) | 0) : (uhpmin)), 0);
+                setuhpmax(max((cptr.ldI32o(u, $you_uhpmax) - dmg) | 0, uhpmin), 0);
         }
         cptr.st1(disp, 1);
     }
@@ -703,7 +704,7 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         return;
     }
     i = name_to_mon(pkiller, null);
-    if (((i) >= NHC.LOW_PM && (i) < NHC.NUMMONS) && (cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_UNIQ)) {
+    if (ismnum(i) && (cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_UNIQ)) {
         kprefix = NHM.KILLED_BY;
         if (!((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n))
             pkiller = the(pkiller);
@@ -720,7 +721,7 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         } else {
             let olduhp = cptr.ldI32o(u, $you_uhp);
             let newuhpmax = (cptr.ldI32o(u, $you_uhpmax) - ((loss / 2) | 0)) | 0;
-            setuhpmax(((newuhpmax) > (minuhpmax(3)) ? (newuhpmax) : (minuhpmax(3))), 1);
+            setuhpmax(max(newuhpmax, minuhpmax(3)), 1);
             loss = adjuhploss(loss, olduhp);
             losehp(loss, pkiller, schar(kprefix));
             if (adjattrib(NHC.A_CON, (typ != NHC.A_CON) ? -1 : -3, 1))
@@ -1133,7 +1134,7 @@ function innately(ability) {
 /** C ref: attrib.c:880 — @param {CInt} propidx @returns {CInt} */
 export function is_innate(propidx) {
     let innateness;
-    if (propidx == NHC.DRAIN_RES && ((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS))
+    if (propidx == NHC.DRAIN_RES && ismnum(cptr.ldI32o(u, $you_ulycn)))
         return 6;
     if (propidx == NHC.FAST && Very_fast())
         return 0;
@@ -1322,7 +1323,7 @@ export function newhp() {
 export function minuhpmax(altmin) {
     if (altmin < 1)
         altmin = 1;
-    return ((cptr.ldI32o(u, $you_ulevel)) > (altmin) ? (cptr.ldI32o(u, $you_ulevel)) : (altmin));
+    return max(cptr.ldI32o(u, $you_ulevel), altmin);
 }
 
 /** C ref: attrib.c:1157 — @param {CInt} newmax @param {CInt} even_when_polyd */

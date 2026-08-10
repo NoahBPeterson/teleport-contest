@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { bimanual, is_sword, is_weptool } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Glib, HConfusion, HStun, Hallucination, Levitation, Role_switch, Sick, Slimed, Stoned, Strangled, Ugender, Underwater, Upolyd, Wounded_legs, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed, putstr, start_menu, status_enablefield, status_update, tutorial_dnum } from './nhprop.js';
 import { acurr } from './attrib.js';
 import { WIN_STATUS, cg, disp, flags, gb, gc, gi, gm, gn, gs, gu, gv, gy, iflags, svc, svd, svl, svm, svp, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uleft, uright, uswapwep, uwep } from './decl.js';
@@ -911,7 +912,7 @@ export function weapon_status(outbuf) {
             res = __sl60;
         } else if (cptr.ldI16o(uwep.v, $obj_otyp) == NHC.AKLYS) {
             res = __sl61;
-        } else if ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_SHORT_SWORD && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_SABER)) {
+        } else if (is_sword(uwep.v)) {
             res = __sl62;
         } else {
             switch (skill) {
@@ -934,7 +935,7 @@ export function weapon_status(outbuf) {
                 break;
             }
         }
-        if ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((uwep.v), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((uwep.v), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE)) && ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0) && cptr.ld1s(res) != 50 && strncmpi(res, __sl69, 3))
+        if ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) && bimanual(uwep.v) && cptr.ld1s(res) != 50 && strncmpi(res, __sl69, 3))
             void cptr.strcat(outbuf, __sl70);
         void cptr.strcpy(p = eos(outbuf), res), res = outbuf;
         cptr.st1(p, highc(cptr.ld1s(p)));

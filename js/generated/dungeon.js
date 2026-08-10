@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Align2amask, Amask2msa, IS_AIR, IS_WALL, Msa2amask, SURFACE_AT } from './nhmacrofn.js';
 import { Blind, EAggravate_monster, Flying, Hallucination, Levitation, Sokoban, Underwater, Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, tutorial_dnum, wizard } from './nhprop.js';
 import { debugcore } from './files.js';
 import { WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs, svt, svu, u, vowels } from './decl.js';
@@ -1682,7 +1683,7 @@ export function ceiling(x, y) {
         what = __sl147;
     else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
         what = __sl148;
-    else if (((cptr.ld1so(lev, $rm_typ)) == NHC.AIR || (cptr.ld1so(lev, $rm_typ)) == NHC.CLOUD))
+    else if (IS_AIR(cptr.ld1so(lev, $rm_typ)))
         what = __sl149;
     else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))))
         what = __sl150;
@@ -1690,7 +1691,7 @@ export function ceiling(x, y) {
         what = __sl151;
     else if (Underwater())
         what = __sl152;
-    else if ((((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))) || ((cptr.ld1so(lev, $rm_typ)) && (cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
+    else if ((((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))) || IS_WALL(cptr.ld1so(lev, $rm_typ)) || ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
         what = __sl153;
     else
         what = __sl154;
@@ -1700,10 +1701,10 @@ export function ceiling(x, y) {
 /** C ref: dungeon.c:1750 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function surface(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    let levtyp = ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ));
+    let levtyp = SURFACE_AT(x, y);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && (cptr.ldI32o(u, $you_uswallow) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n))
         return (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl155 : ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __sl156 : __sl157);
-    else if (((levtyp) == NHC.AIR || (levtyp) == NHC.CLOUD))
+    else if (IS_AIR(levtyp))
         return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? __sl158 : ((levtyp == NHC.CLOUD) ? __sl159 : __sl47);
     else if (is_pool(x, y))
         return (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? __sl160 : hliquid(__sl64);
@@ -1721,7 +1722,7 @@ export function surface(x, y) {
         return __sl166;
     else if (On_stairs(x, y))
         return __sl167;
-    else if (((levtyp) && (levtyp) <= NHC.DBWALL) || levtyp == NHC.SDOOR)
+    else if (IS_WALL(levtyp) || levtyp == NHC.SDOOR)
         return __sl168;
     else if (((levtyp) == NHC.DOOR))
         return __sl169;
@@ -1857,7 +1858,7 @@ export function induced_align(pct) {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2009, __sl176), rn2(100)) : rn2(100)) < pct)
             return (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_flags + $d_flags_align) & 7);
     al = schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2012, __sl176), rn2(3)) : rn2(3)) - 1) | 0));
-    return ((((al) == -128) ? NHM.AM_NONE : (((al) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((al) + 2) | 0))) >>> 0);
+    return Align2amask(al);
 }
 
 /** C ref: dungeon.c:2017 — @param {CPtr} lev @returns {CInt} */
@@ -2513,7 +2514,7 @@ function count_feat_lastseentyp(mptr, x, y) {
         break;
         case NHC.ALTAR:
         atmp = altarmask_at(x, y) >>> 0;
-        atmp = ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && (cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv) & 255) != 255) ? NHM.MSA_NONE : (((((atmp) & NHM.AM_MASK) >>> 0) == 4) ? 3 : ((atmp) & NHM.AM_MASK) >>> 0);
+        atmp = ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && (cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv) & 255) != 255) ? NHM.MSA_NONE : Amask2msa(atmp);
         if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))
             cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, atmp);
         else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3) != atmp)
@@ -2886,7 +2887,7 @@ function print_mapseen(win, mptr, final, how, printdun) {
                 }
             }
             atmp = (cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3);
-            atmp = (((atmp) == 3) ? 4 : (atmp));
+            atmp = Msa2amask(atmp);
             if ((schar((((((atmp) & NHM.AM_MASK) >>> 0) == 0) ? -128 : (((((atmp) & NHM.AM_MASK) >>> 0) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : (((((atmp) & NHM.AM_MASK) >>> 0) | 0) - 2) | 0)))) == cptr.ld1so(u, $you_ualign))
                 void cptr.sprintf(eos(cptr.decay(buf)), __sl276, align_gname(cptr.ld1so(u, $you_ualign)));
         }

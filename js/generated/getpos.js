@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { glyph_is_cmap, glyph_is_monster, glyph_is_object, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water } from './nhmacrofn.js';
 import { clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
@@ -416,18 +417,18 @@ function cmp_coord_distu(a, b) {
 /** C ref: getpos.c:341 — @param {CInt} glyph @returns {CInt} */
 function gloc_filter_classify_glyph(glyph) {
     let c;
-    if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)))
+    if (!glyph_is_cmap(glyph))
         return 0;
     c = glyph_to_cmap(glyph);
-    if (((c) >= NHC.S_room && (c) <= NHC.S_darkroom) || ((c) >= NHC.S_upstair && (c) <= NHC.S_fountain))
+    if (is_cmap_room(c) || is_cmap_furniture(c))
         return 1;
-    else if (((c) >= NHC.S_stone && (c) <= NHC.S_trwall) || c == NHC.S_tree)
+    else if (is_cmap_wall(c) || c == NHC.S_tree)
         return 2;
-    else if (((c) >= NHC.S_corr && (c) <= NHC.S_litcorr))
+    else if (is_cmap_corr(c))
         return 3;
-    else if (((c) == NHC.S_pool || (c) == NHC.S_water))
+    else if (is_cmap_water(c))
         return 4;
-    else if (((c) == NHC.S_lava || (c) == NHC.S_lavawall))
+    else if (is_cmap_lava(c))
         return 5;
     return 0;
 }
@@ -494,24 +495,24 @@ export function gather_locs_interesting(x, y, gloc) {
     if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))))
         return 0;
     glyph = glyph_at(x, y);
-    sym = ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) ? glyph_to_cmap(glyph) : -1;
+    sym = glyph_is_cmap(glyph) ? glyph_to_cmap(glyph) : -1;
     switch (gloc) {
         default:
         case NHC.GLOC_MONS:
-        return schar((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)))) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
+        return schar((glyph_is_monster(glyph) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
         case NHC.GLOC_OBJS:
-        return schar(((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))))) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
+        return schar((glyph_is_object(glyph) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
         case NHC.GLOC_DOOR:
-        return schar((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && (((sym) >= NHC.S_vodoor && (sym) <= NHC.S_hcdoor) || ((sym) >= NHC.S_vodbridge && (sym) <= NHC.S_hcdbridge) || sym == NHC.S_ndoor) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor) ? 1 : 0));
         case NHC.GLOC_EXPLORE:
-        return schar((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (((sym) >= NHC.S_vodoor && (sym) <= NHC.S_hcdoor) || ((sym) >= NHC.S_vodbridge && (sym) <= NHC.S_hcdbridge) || sym == NHC.S_ndoor || ((sym) >= NHC.S_room && (sym) <= NHC.S_darkroom) || ((sym) >= NHC.S_corr && (sym) <= NHC.S_litcorr)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
         case NHC.GLOC_VALID:
         if (getpos_getvalid)
             return (getpos_getvalid)(x, y);
         // @FallThrough
         ;
         case NHC.GLOC_INTERESTING:
-        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && (((sym) >= NHC.S_stone && (sym) <= NHC.S_trwall) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || ((sym) == NHC.S_lava || (sym) == NHC.S_lavawall) || ((sym) == NHC.S_pool || (sym) == NHC.S_water) || sym == NHC.S_ndoor || ((sym) >= NHC.S_room && (sym) <= NHC.S_darkroom) || ((sym) >= NHC.S_corr && (sym) <= NHC.S_litcorr))) || ((glyph) == NHC.GLYPH_NOTHING_OFF) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || known_vibrating_square_at(x, y) ? 1 : 0));
+        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !((glyph_is_cmap(glyph) && (is_cmap_wall(sym) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || is_cmap_lava(sym) || is_cmap_water(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym))) || ((glyph) == NHC.GLYPH_NOTHING_OFF) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || known_vibrating_square_at(x, y) ? 1 : 0));
     }
     return 0;
 }
@@ -1045,9 +1046,9 @@ export function getpos(ccp, force, goal) {
         k = 0;
         void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
         for (sidx.v = 0; sidx.v < NHC.MAXPCHARS; sidx.v++) {
-            if (((sidx.v) >= NHC.S_stone && (sidx.v) <= NHC.S_trwall) || ((sidx.v) >= NHC.S_room && (sidx.v) <= NHC.S_darkroom) || ((sidx.v) >= NHC.S_corr && (sidx.v) <= NHC.S_litcorr) || ((sidx.v) >= NHC.S_vodoor && (sidx.v) <= NHC.S_hcdoor) || sidx.v == NHC.S_ndoor)
+            if (is_cmap_wall(sidx.v) || is_cmap_room(sidx.v) || is_cmap_corr(sidx.v) || is_cmap_door(sidx.v) || sidx.v == NHC.S_ndoor)
                 continue;
-            if (c == cptr.ld1uo(defsyms, sidx.v, 24) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && ((sidx.v) >= NHC.S_arrow_trap && (sidx.v) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && ((sidx.v) == NHC.S_engroom || (sidx.v) == NHC.S_engrcorr)))
+            if (c == cptr.ld1uo(defsyms, sidx.v, 24) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && is_cmap_trap(sidx.v)) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && is_cmap_engraving(sidx.v)))
                 cptr.st1o(cptr.decay(matching), sidx.v, schar((++k)), 1);
         }
         if (k) { __pc = 60; continue; }
@@ -1083,7 +1084,7 @@ export function getpos(ccp, force, goal) {
         }
         case 72: {
         k = glyph_at(tx.v, ty.v);
-        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 75; continue; }
+        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 75; continue; }
         __pc = 74; continue;
         }
         case 75: {
@@ -1095,7 +1096,7 @@ export function getpos(ccp, force, goal) {
         }
         case 77: {
         k = cptr.ldI32o3(svl, tx.v, 756, ty.v, 36, $instance_globals_saved_l_level);
-        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 79; continue; }
+        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 79; continue; }
         __pc = 78; continue;
         }
         case 79: {
@@ -1118,7 +1119,7 @@ export function getpos(ccp, force, goal) {
         }
         case 83: {
         k = back_to_glyph(tx.v, ty.v);
-        if (((k) >= NHC.GLYPH_CMAP_STONE_OFF && (k) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 85; continue; }
+        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 85; continue; }
         __pc = 84; continue;
         }
         case 85: {

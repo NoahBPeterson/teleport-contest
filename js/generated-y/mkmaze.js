@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { CAN_OVERWRITE_TERRAIN, IS_LAVA, IS_WALL, has_mgivenname, undestroyable_trap, within_bounded_area } from './nhmacrofn.js';
 import { Deaf, Punished, Swimming, mines_dnum, sokoban_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gb, ge, gf, gi, gl, gn, gr, gu, gv, gw, gx, gy, iflags, program_state, svb, svd, sve, svi, svl, svn, svr, svu, svx, svy, u, uball } from './decl.js';
@@ -195,7 +196,7 @@ function iswall(x, y) {
     if (!isok(x, y))
         return 0;
     type = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    return (((type) && (type) <= NHC.DBWALL) || ((type) == NHC.DOOR) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
+    return (IS_WALL(type) || ((type) == NHC.DOOR) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
 }
 
 /** C ref: mkmaze.c:59 — @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -218,10 +219,10 @@ export function* set_levltyp(x, y, newtyp) {
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_candig, 1);
             return 1;
         }
-        if ((cptr.ld1so(iflags, $instance_flags_debug_overwrite_stairs) || !((oldtyp) == NHC.LADDER || (oldtyp) == NHC.STAIRS))) {
+        if (CAN_OVERWRITE_TERRAIN(oldtyp)) {
             let was_ice = is_ice(x, y);
             cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, newtyp);
-            if (((newtyp) == NHC.LAVAPOOL || (newtyp) == NHC.LAVAWALL))
+            if (IS_LAVA(newtyp))
                 cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, 1);
             if (was_ice && newtyp != NHC.ICE) {
                 (yield* obj_ice_effects(x, y, 1));
@@ -240,7 +241,7 @@ export function* set_levltyp_lit(x, y, typ, lit) {
     let ret = (yield* set_levltyp(x, y, typ));
     if (ret && isok(x, y)) {
         if (lit != -2) {
-            if (((typ) == NHC.LAVAPOOL || (typ) == NHC.LAVAWALL))
+            if (IS_LAVA(typ))
                 lit = 1;
             else if (lit == -1)
                 lit = schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 139, __sl1), rn2(2)) : rn2(2)));
@@ -291,7 +292,7 @@ function* wall_cleanup(x1, y1, x2, y2) {
                 continue;
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
             type = uchar(cptr.ld1so(lev, $rm_typ));
-            if (((type) && (type) <= NHC.DBWALL) && type != NHC.DBWALL) {
+            if (IS_WALL(type) && type != NHC.DBWALL) {
                 if (is_solid(i16(((x - 1) | 0)), i16(((y - 1) | 0))) && is_solid(i16(((x - 1) | 0)), y) && is_solid(i16(((x - 1) | 0)), i16(((y + 1) | 0))) && is_solid(x, i16(((y - 1) | 0))) && is_solid(x, i16(((y + 1) | 0))) && is_solid(i16(((x + 1) | 0)), i16(((y - 1) | 0))) && is_solid(i16(((x + 1) | 0)), y) && is_solid(i16(((x + 1) | 0)), i16(((y + 1) | 0))))
                     cptr.st1o(lev, $rm_typ, NHC.STONE);
             }
@@ -331,7 +332,7 @@ export function* fix_wall_spines(x1, y1, x2, y2) {
         for (y = y1; y <= y2; y++) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
             type = uchar(cptr.ld1so(lev, $rm_typ));
-            if (!(((type) && (type) <= NHC.DBWALL) && type != NHC.DBWALL))
+            if (!(IS_WALL(type) && type != NHC.DBWALL))
                 continue;
             loc_f = ((x) >= (cptr.ldI16o(gb, $instance_globals_b_bughack)) && (x) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 4)) && (y) >= (cptr.ldI16o(gb, $instance_globals_b_bughack + 2)) && (y) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 6))) ? iswall : iswall_or_stone;
             cptr.stI32o(cptr.decay(locale[0]), 0, (yield* Y.icall((loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0))))), 4);
@@ -417,7 +418,7 @@ export function is_exclusion_zone(type, x, y) {
 
 /** C ref: mkmaze.c:341 — @param {CInt} x @param {CInt} y @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @returns {CInt} */
 export function bad_location(x, y, nlx, nly, nhx, nhy) {
-    return schar((occupied(x, y) || ((x) >= (nlx) && (x) <= (nhx) && (y) >= (nly) && (y) <= (nhy)) || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.AIR) ? 1 : 0));
+    return schar((occupied(x, y) || within_bounded_area(x, y, nlx, nly, nhx, nhy) || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.AIR) ? 1 : 0));
 }
 
 /** C ref: mkmaze.c:356 — @param {CInt} lx @param {CInt} ly @param {CInt} hx @param {CInt} hy @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CPtr} lev */
@@ -466,7 +467,7 @@ function* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
             return 0;
         } else {
             let t = t_at(x, y);
-            if (t && !((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.MAGIC_PORTAL || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.VIBRATING_SQUARE)) {
+            if (t && !undestroyable_trap((cptr.ldI32o(t, $trap_ttyp) & 31))) {
                 if (((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
                     cptr.stI32o(mtmp, $monst_mtrapped, 0);
                 (yield* deltrap(t));
@@ -789,7 +790,7 @@ function* stolen_booty() {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
             if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96)))
                 mtmp = (yield* christen_orc(mtmp, upstart(gang), __sl16));
         }
@@ -1238,7 +1239,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1253,7 +1254,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1268,7 +1269,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1281,7 +1282,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }

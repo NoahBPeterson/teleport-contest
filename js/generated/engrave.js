@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_AIR, SURFACE_AT, bimanual, cantwield, ceiling_hider, is_blade, is_boots, is_wet_towel, is_whirly, min } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, HConfusion, HStun, Hallucination, Levitation } from './nhprop.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { get_rnd_text, getrumor } from './rumors.js';
@@ -466,7 +467,7 @@ export function can_reach_floor(check_pit) {
         return 0;
     if (cptr.ldPtro(u, $you_usteed) && (cptr.ldI16o2(u, NHC.P_RIDING, 6, $you_weapon_skills)) < NHC.P_BASIC)
         return 0;
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) != NHC.S_MIMIC) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1n) != 0n))))
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         return 0;
     if (Flying() || cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) >= NHM.MZ_HUGE)
         return 1;
@@ -676,7 +677,7 @@ export function del_engr_at(x, y) {
 
 /** C ref: engrave.c:473 @returns {CInt} */
 export function freehand() {
-    return (!uwep.v || !welded(uwep.v) || (!((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0) && (!uarms.v || !(cptr.ldI32o(uarms.v, $obj_cursed) & 1))) ? 1 : 0);
+    return (!uwep.v || !welded(uwep.v) || (!bimanual(uwep.v) && (!uarms.v || !(cptr.ldI32o(uarms.v, $obj_cursed) & 1))) ? 1 : 0);
 }
 
 /** C ref: engrave.c:481 — @param {CPtr} obj @returns {CInt} */
@@ -692,12 +693,12 @@ function stylus_ok(obj) {
 
 /** C ref: engrave.c:503 @returns {CInt} */
 function u_can_engrave() {
-    let levtyp = ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ));
+    let levtyp = SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n)) {
             pline(__sl61);
             return 0;
-        } else if ((cptr.ld1so((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96)))) {
+        } else if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
             cant_reach_floor(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 0, 0);
             return 0;
         }
@@ -707,14 +708,14 @@ function u_can_engrave() {
     } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || ((levtyp) == NHC.FOUNTAIN)) {
         You_cant(__sl62, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         return 0;
-    } else if (((levtyp) == NHC.AIR || (levtyp) == NHC.CLOUD)) {
+    } else if (IS_AIR(levtyp)) {
         You_cant(__sl63, (levtyp == NHC.CLOUD) ? __sl64 : __sl65);
         return 0;
     } else if (!((levtyp) >= NHC.DOOR)) {
         You_cant(__sl66);
         return 0;
     }
-    if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL))) {
+    if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         You_cant(__sl67);
         return 0;
     }
@@ -749,7 +750,7 @@ function doengrave_ctx_init(de) {
         cptr.stI32o(de, $_doengrave_ctx_oetype, cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type));
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) || (cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE))
         cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGR_BLOOD);
-    cptr.st1o(de, $_doengrave_ctx_jello, schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !(((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n) || (cptr.ld1so((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96)))) ? 1 : 0)));
+    cptr.st1o(de, $_doengrave_ctx_jello, schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !(((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n) || is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) ? 1 : 0)));
     cptr.st1o(de, $_doengrave_ctx_frosted, is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
 }
 
@@ -887,7 +888,7 @@ function doengrave_sfx_item(de) {
         }
         break;
         case NHC.ARMOR_CLASS:
-        if ((cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS)) {
+        if (is_boots(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
             cptr.stI32o(de, $_doengrave_ctx_type, NHM.DUST);
             break;
         }
@@ -931,7 +932,7 @@ function doengrave_sfx_item(de) {
         case NHC.WEAPON_CLASS:
         if (is_art(cptr.ldPtro(de, $_doengrave_ctx_otmp), NHC.ART_FIRE_BRAND)) {
             cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
-        } else if ((cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_DAGGER && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_SABER)) {
+        } else if (is_blade(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
             if (welded(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
                 pline(__sl95, Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             else if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) <= -3)
@@ -957,7 +958,7 @@ function doengrave_sfx_item(de) {
             cptr.st1o(de, $_doengrave_ctx_ptext, 0);
             if (cptr.ldPtro(de, $_doengrave_ctx_oep)) {
                 if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) == NHM.DUST || cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) == NHM.ENGR_BLOOD || cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) == NHM.MARK) {
-                    if ((cptr.ldI16o((cptr.ldPtro(de, $_doengrave_ctx_otmp)), $obj_otyp) == NHC.TOWEL && cptr.ld1so((cptr.ldPtro(de, $_doengrave_ctx_otmp)), $obj_spe) > 0))
+                    if (is_wet_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
                         dry_a_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp), -1, 1);
                     if (!Blind())
                         You(__sl100);
@@ -1261,7 +1262,7 @@ function engrave() {
     dulling_wep = schar((carving && stylus && cptr.ld1so(stylus, $obj_oclass) == NHC.WEAPON_CLASS && (cptr.ldI16o(stylus, $obj_otyp) != NHC.ATHAME || (cptr.ldI32o(stylus, $obj_cursed) & 1) | 0) ? 1 : 0));
     marker = schar((stylus && cptr.ldI16o(stylus, $obj_otyp) == NHC.MAGIC_MARKER && cptr.ld1so(svc, $context_info_engraving + $engrave_info_type) == NHM.MARK ? 1 : 0));
     (cptr.stI32o(svc, $context_info_engraving + $engrave_info_actionct, cptr.ldI32o(svc, $context_info_engraving + $engrave_info_actionct) + 1)) - (1);
-    if (dulling_wep && !(cptr.ld1so(stylus, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(stylus, $obj_otyp), 120, $objclass_oc_subtyp) >= NHC.P_DAGGER && cptr.ld1so2(objects, cptr.ldI16o(stylus, $obj_otyp), 120, $objclass_oc_subtyp) <= NHC.P_SABER)) {
+    if (dulling_wep && !is_blade(stylus)) {
         impossible(__sl161);
     } else if (cptr.ld1so(svc, $context_info_engraving + $engrave_info_type) == NHM.MARK && !marker) {
         impossible(__sl162);
@@ -1269,7 +1270,7 @@ function engrave() {
     if (carving && stylus && (dulling_wep || cptr.ld1so(stylus, $obj_oclass) == NHC.RING_CLASS || cptr.ld1so(stylus, $obj_oclass) == NHC.GEM_CLASS)) {
         rate = 1;
     } else if (marker) {
-        rate = ((rate) < (Math.imul(cptr.ld1so(stylus, $obj_spe), 2)) ? (rate) : (Math.imul(cptr.ld1so(stylus, $obj_spe), 2)));
+        rate = min(rate, Math.imul(cptr.ld1so(stylus, $obj_spe), 2));
     }
     i = rate;
     for (endc = cptr.ldPtro(svc, $context_info_engraving + $engrave_info_nextc); cptr.ld1s(endc) && i > 0; endc = cptr.add(endc, 1)) {
@@ -1418,8 +1419,8 @@ export function engraving_sanity_check() {
             impossible(__sl181, x, y);
             continue;
         }
-        levtyp = ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ));
-        if (is_pool_or_lava(x, y) || ((levtyp) == NHC.AIR || (levtyp) == NHC.CLOUD) || !((levtyp) >= NHC.DOOR)) {
+        levtyp = SURFACE_AT(x, y);
+        if (is_pool_or_lava(x, y) || IS_AIR(levtyp) || !((levtyp) >= NHC.DOOR)) {
             impossible(__sl182, levtyp, surface(x, y));
             continue;
         }

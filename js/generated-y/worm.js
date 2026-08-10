@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { canspotmon, has_mcorpsenm, max } from './nhmacrofn.js';
 import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
@@ -178,10 +179,10 @@ export function* worm_move(worm) {
             whplimit = NHM.MHPMAX;
         prev_mhp = cptr.ldI32o(worm, $monst_mhp);
         cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 257, __sl1), d(2, 2)) : d(2, 2))) | 0);
-        whpcap = ((whplimit) > (cptr.ldI32o(worm, $monst_mhpmax)) ? (whplimit) : (cptr.ldI32o(worm, $monst_mhpmax)));
+        whpcap = max(whplimit, cptr.ldI32o(worm, $monst_mhpmax));
         if (cptr.ldI32o(worm, $monst_mhp) < whpcap) {
             if (cptr.ldI32o(worm, $monst_mhp) > whplimit)
-                cptr.stI32o(worm, $monst_mhp, ((prev_mhp) > (whplimit) ? (prev_mhp) : (whplimit)));
+                cptr.stI32o(worm, $monst_mhp, max(prev_mhp, whplimit));
             if (cptr.ldI32o(worm, $monst_mhp) > cptr.ldI32o(worm, $monst_mhpmax))
                 cptr.stI32o(worm, $monst_mhpmax, cptr.ldI32o(worm, $monst_mhp));
         } else {
@@ -212,7 +213,7 @@ export function* wormgone(worm) {
     (yield* toss_wsegs(cptr.ldPtro(wtails, wnum, 8), 1));
     cptr.stPtro(wheads, wnum, cptr.stPtro(wtails, wnum, null, 8), 8);
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
-    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), $monst_mextra) && (cptr.ldI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm)) != NHC.NON_PM))
+    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && has_mcorpsenm(worm))
         cptr.stI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
 }
 
@@ -268,7 +269,7 @@ export function* cutworm(worm, x, y, cuttier) {
     if (!new_worm) {
         cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
         if (cptr.ld1so(svc, $context_info_mon_moving)) {
-            if ((canseemon(worm) || sensemon(worm)))
+            if (canspotmon(worm))
                 (yield* pline(__sl6, (yield* s_suffix((yield* mon_nam(worm))))));
         } else
             (yield* You(__sl7, (yield* mon_nam(worm))));

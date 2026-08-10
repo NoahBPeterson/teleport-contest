@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { max, min } from './nhmacrofn.js';
 import { wizard } from './nhprop.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
@@ -892,8 +893,8 @@ function invalid_shop_shape(sroom) {
     let insidex = 0;
     let insidey = 0;
     let insidect = 0;
-    for (x = i16((((doorx - 1) | 0) > (cptr.ldI16(sroom)) ? ((doorx - 1) | 0) : (cptr.ldI16(sroom)))); x <= (((doorx + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hx)) ? ((doorx + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hx))); x++) {
-        for (y = i16((((doory - 1) | 0) > (cptr.ldI16o(sroom, $mkroom_ly)) ? ((doory - 1) | 0) : (cptr.ldI16o(sroom, $mkroom_ly)))); y <= (((doory + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hy)) ? ((doory + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hy))); y++) {
+    for (x = i16(max((doorx - 1) | 0, cptr.ldI16(sroom))); x <= min((doorx + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx)); x++) {
+        for (y = i16(max((doory - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly))); y <= min((doory + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy)); y++) {
             if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM) {
                 insidex = x;
                 insidey = y;
@@ -907,8 +908,8 @@ function invalid_shop_shape(sroom) {
     }
     if (insidect == 1) {
         insidect = 0;
-        for (x = i16((((insidex - 1) | 0) > (cptr.ldI16(sroom)) ? ((insidex - 1) | 0) : (cptr.ldI16(sroom)))); x <= (((insidex + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hx)) ? ((insidex + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hx))); x++) {
-            for (y = i16((((insidey - 1) | 0) > (cptr.ldI16o(sroom, $mkroom_ly)) ? ((insidey - 1) | 0) : (cptr.ldI16o(sroom, $mkroom_ly)))); y <= (((insidey + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hy)) ? ((insidey + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hy))); y++) {
+        for (x = i16(max((insidex - 1) | 0, cptr.ldI16(sroom))); x <= min((insidex + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx)); x++) {
+            for (y = i16(max((insidey - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly))); y <= min((insidey + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy)); y++) {
                 if (x == insidex && y == insidey)
                     continue;
                 if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM)

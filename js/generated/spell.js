@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_TREE, canspotmon, eyecount, is_metallic, is_vampshifter, is_whirly } from './nhmacrofn.js';
 import { Antimagic, BClairvoyant, Blind, BlindedTimeout, HConfusion, HStun, Half_physical_damage, Hallucination, Poison_resistance, Sick, Sleep_resistance, Slimed, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, start_menu, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
@@ -389,7 +390,7 @@ function confused_book(spellbook) {
 
 /** C ref: spell.c:211 — @param {CPtr} mtmp */
 function deadbook_pacify_undead(mtmp) {
-    if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || (cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+    if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
         if (sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) == sgn(cptr.ld1so(u, $you_ualign)) && dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 4)
             if (cptr.ld1so(mtmp, $monst_mtame)) {
@@ -638,7 +639,7 @@ export function study_book(spellbook) {
             dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 482, __sl47), rnd(cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2))) : rnd(cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)))) | 0;
         if (dullbook > 0) {
             eyes = body_part(NHC.EYE);
-            if ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) > 1)
+            if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 1)
                 eyes = makeplural(eyes);
             pline(__sl48, eyes);
             dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 490, __sl47), rnd(Math.imul(2, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)))) : rnd(Math.imul(2, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2))))) | 0;
@@ -1069,7 +1070,7 @@ function cast_protection() {
             } else {
                 let pm = cptr.ldPtro(u, $you_ustuck) ? cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data) : null;
                 rmtyp = cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ);
-                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, 96))) ? __sl92 : ((cptr.ld1so((pm), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((pm), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96))) ? __sl93 : ((dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __sl94 : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) ? __sl95 : __sl96)))) : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? hliquid(__sl97) : ((rmtyp == NHC.CLOUD) ? __sl98 : (((rmtyp) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (rmtyp) == NHC.STONE)) ? __sl99 : (((rmtyp) <= NHC.DBWALL) ? __sl100 : __sl101))));
+                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, 96))) ? __sl92 : (is_whirly(pm) ? __sl93 : ((dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __sl94 : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) ? __sl95 : __sl96)))) : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? hliquid(__sl97) : ((rmtyp == NHC.CLOUD) ? __sl98 : (IS_TREE(rmtyp) ? __sl99 : (((rmtyp) <= NHC.DBWALL) ? __sl100 : __sl101))));
                 pline_The(__sl102, atmosphere, an(hgolden));
             }
         }
@@ -1444,7 +1445,7 @@ function throwspell() {
         cptr.stI32o(u, $you_dx, 0);
         cptr.stI32o(u, $you_dy, 0);
         return 1;
-    } else if (((cptr.ldI16(cc) != cptr.ldI16(u) || cptr.ldI16o(cc, $nhcoord_y) != cptr.ldI16o(u, $you_uy)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && (!(mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !(canseemon(mtmp) || sensemon(mtmp)))) || ((cptr.ld1so3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+    } else if (((cptr.ldI16(cc) != cptr.ldI16(u) || cptr.ldI16o(cc, $nhcoord_y) != cptr.ldI16o(u, $you_uy)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && (!(mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !canspotmon(mtmp))) || ((cptr.ld1so3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
         Your(__sl135);
         return 0;
     }
@@ -1780,7 +1781,7 @@ function percent_success(spell) {
     splcaster = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelbase);
     special = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelheal);
     statused = (acurr(cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelstat)));
-    if (uarm.v && (((cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL) && !paladin_bonus)
+    if (uarm.v && is_metallic(uarm.v) && !paladin_bonus)
         splcaster = (splcaster + ((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE) ? (cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) / 2) | 0 : cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))) | 0;
     else if (uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE)
         splcaster = (splcaster - cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)) | 0;
@@ -1789,11 +1790,11 @@ function percent_success(spell) {
     if (uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.QUARTERSTAFF)
         splcaster = (splcaster - 3) | 0;
     if (!paladin_bonus) {
-        if (uarmh.v && (((cptr.ldI32o2(objects, cptr.ldI16o(uarmh.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarmh.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL))
+        if (uarmh.v && is_metallic(uarmh.v))
             splcaster = (splcaster + 4) | 0;
-        if (uarmg.v && (((cptr.ldI32o2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL))
+        if (uarmg.v && is_metallic(uarmg.v))
             splcaster = (splcaster + 6) | 0;
-        if (uarmf.v && (((cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL))
+        if (uarmf.v && is_metallic(uarmf.v))
             splcaster = (splcaster + 2) | 0;
     }
     if (cptr.ldI16o(svs, spell, 8) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec))

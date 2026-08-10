@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { helpless, is_lminion, m_next2u, min } from './nhmacrofn.js';
 import { Blind, Deaf, Protection_from_shape_changers } from './nhprop.js';
 import { c_color_names, gf, gm, gs, gv, svc, svd, svl, svm, u, uamul, uwep } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -247,7 +248,7 @@ export function* amulet() {
             continue;
         if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 95, __sl1), rn2(40)) : rn2(40))) {
             cptr.stI32o(mtmp, $monst_msleeping, 0);
-            if (!(dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+            if (!m_next2u(mtmp))
                 (yield* You(__sl6));
             return;
         }
@@ -531,7 +532,7 @@ export function* has_aggravatables(mon) {
             continue;
         if (in_w_tower != (yield* In_W_tower(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.add(u, $you_uz))))
             continue;
-        if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n) != 0n || ((cptr.ldI32o((mtmp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), $monst_mcanmove) & 1)))
+        if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n) != 0n || helpless(mtmp))
             return 1;
     }
     return 0;
@@ -640,7 +641,7 @@ export function* nasty(summoner) {
                     }
                     if (mtmp) {
                         if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCH_LICH, 96)) || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCHON, 96))) {
-                            tmp = ((cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, $permonst_difficulty)) < (cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, $permonst_difficulty)) ? (cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, $permonst_difficulty)) : (cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, $permonst_difficulty)));
+                            tmp = min(cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, $permonst_difficulty), cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, $permonst_difficulty));
                             if (!difcap || difcap > tmp)
                                 difcap = tmp;
                         }
@@ -682,7 +683,7 @@ export function* resurrect() {
                     cptr.stI32o(mtmp, $monst_msleeping, 0);
                 if (((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) == 1)
                     cptr.stI32o(mtmp, $monst_mfrozen, 0), cptr.stI32o(mtmp, $monst_mcanmove, 1);
-                if (!((cptr.ldI32o((mtmp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), $monst_mcanmove) & 1))) {
+                if (!helpless(mtmp)) {
                     cptr.stPtr(mmtmp, cptr.ldPtr(mtmp));
                     (yield* mon_arrive(mtmp, -1));
                     if (!cptr.ldI16o(mtmp, $monst_mx))
@@ -804,7 +805,7 @@ export function* cuss(mtmp) {
             ;
             (yield* verbalize(__sl72, cptr.ldPtro(random_malediction, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 868, __sl65), rn2(11)) : rn2(11)), 8), cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 869, __sl65), rn2(28)) : rn2(28)), 8)));
         }
-    } else if ((((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags2) & 4096n) != 0n) && mon_aligntyp(mtmp) == NHM.A_LAWFUL) && !((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_renegade))) {
+    } else if (is_lminion(mtmp) && !((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_renegade))) {
         (yield* com_pager(__sl73));
     } else {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 877, __sl65), rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)) : rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)))

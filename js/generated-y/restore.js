@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { age_is_relative, has_omid, has_omonst, is_unicorn, ismnum } from './nhmacrofn.js';
 import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
@@ -419,7 +420,7 @@ function* restobjchn(nhfp, frozen) {
         }
         if (ghostly && cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
             (yield* ghostfruit(otmp));
-        if (ghostly && !frozen && !(cptr.ldI16o((otmp), $obj_otyp) == NHC.BRASS_LANTERN || cptr.ldI16o((otmp), $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o((otmp), $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((otmp), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o((otmp), $obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o((otmp), $obj_otyp) == NHC.POT_OIL))
+        if (ghostly && !frozen && !age_is_relative(otmp))
             cptr.stI64o(otmp, $obj_age, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves)) + cptr.ldI64o(otmp, $obj_age)));
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null)) {
             let otmp3;
@@ -645,7 +646,7 @@ function* restgamestate(nhfp) {
     (yield* sfi_context_info(nhfp, svc, __sl44));
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
-    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (((cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx)) >= NHC.LOW_PM && (cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx)) < NHC.NUMMONS)) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), 96) : null);
+    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx))) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), 96) : null);
     cptr.memcpy(newgameflags, flags, 208);
     (yield* sfi_flag(nhfp, flags, __sl45));
     defer_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
@@ -1027,7 +1028,7 @@ export function* getlev(nhfp, pid, lev) {
             continue;
         if (ghostly) {
             if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1))
-                cptr.stI32o(mtmp, $monst_mpeaceful, (((cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_UNICORN && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n)) && (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) ? 1 : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0);
+                cptr.stI32o(mtmp, $monst_mpeaceful, ((is_unicorn(cptr.ldPtro(mtmp, $monst_data)) && (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) ? 1 : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0);
             set_malign(mtmp);
         } else if (elapsed > 0n) {
             (yield* mon_catchup_elapsed_time(mtmp, elapsed));
@@ -1244,12 +1245,12 @@ function reset_oattached_mids(ghostly) {
     let oldid;
     let nid = cptr.box(0);
     for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); otmp; otmp = cptr.ldPtr(otmp)) {
-        if (ghostly && (cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)))) {
+        if (ghostly && has_omonst(otmp)) {
             let mtmp = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst));
             cptr.stI32o(mtmp, $monst_m_id, 0);
             cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
         }
-        if (ghostly && (cptr.ldPtro((otmp), $obj_oextra) && (cptr.ldI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid)))) {
+        if (ghostly && has_omid(otmp)) {
             oldid = (cptr.ldI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid));
             if (lookup_id_mapping(oldid, nid))
                 cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, nid.v);

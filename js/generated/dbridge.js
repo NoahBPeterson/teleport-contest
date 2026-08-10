@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_DRAWBRIDGE, canspotmon, helpless, is_floater, likes_lava } from './nhmacrofn.js';
 import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
@@ -415,9 +416,9 @@ function e_survives_at(etmp, x, y) {
     if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST))
         return 1;
     if (is_pool(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || (cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
     if (is_lava(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || (cptr.eq(cptr.ldPtro(etmp, $entity_edata), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(cptr.ldPtro(etmp, $entity_edata), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || likes_lava(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) ? 1 : 0));
     if (is_db_wall(x, y))
         return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 8n) != 0n)));
     return 1;
@@ -455,7 +456,7 @@ function e_died(etmp, xkill_flags, how) {
         else
             xkilled(cptr.ldPtr(etmp), xkill_flags);
         if (!(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
-            let seeit = (canseemon(cptr.ldPtr(etmp)) || sensemon(cptr.ldPtr(etmp)) ? 1 : 0);
+            let seeit = canspotmon(cptr.ldPtr(etmp));
             xkill_flags |= 5;
             if (cptr.ld1so(svc, $context_info_mon_moving))
                 monkilled(cptr.ldPtr(etmp), __sl10, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS));
@@ -495,9 +496,9 @@ function e_missed(etmp, chunks) {
     }
     if (automiss(etmp))
         return 1;
-    if (((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mcanmove) & 1))))
+    if (((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !helpless(cptr.ldPtr(etmp))))
         misses = 5;
-    else if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && Levitation()))
+    else if (is_floater(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && Levitation()))
         misses = 3;
     else if (chunks && is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         misses = 2;
@@ -518,7 +519,7 @@ function e_missed(etmp, chunks) {
 /** C ref: dbridge.c:531 — @param {CPtr} etmp @returns {CInt} */
 function e_jumps(etmp) {
     let tmp = 4;
-    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mcanmove) & 1)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
+    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (helpless(cptr.ldPtr(etmp)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
         return 0;
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? HConfusion() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
@@ -555,7 +556,7 @@ function do_entity(etmp) {
     at_portcullis = is_db_wall(oldx, oldy);
     crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, 756), oldy, 36);
     if (automiss(etmp) && e_survives_at(etmp, oldx, oldy)) {
-        if (e_inview && (at_portcullis || ((cptr.ld1so(crm, $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so(crm, $rm_typ)) == NHC.DRAWBRIDGE_DOWN)))
+        if (e_inview && (at_portcullis || IS_DRAWBRIDGE(cptr.ld1so(crm, $rm_typ))))
             pline_The(__sl18, at_portcullis ? __sl19 : __sl20, e_nam(etmp));
         if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))))
             spoteffects(0);
@@ -771,7 +772,7 @@ function do_entity(etmp) {
                 You_hear(__sl54);
             }
         if (e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
-            if (e_inview && !((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && !(cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT))
+            if (e_inview && !((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && !is_floater(cptr.ldPtro(etmp, $entity_edata)))
                 pline(__sl55, E_phrase(etmp, __sl56));
             return;
         }
@@ -920,7 +921,7 @@ export function destroy_drawbridge(x, y) {
     let etmp1 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24);
     let etmp2 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24);
     lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    if (!((cptr.ld1so(lev1, $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so(lev1, $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
+    if (!IS_DRAWBRIDGE(cptr.ld1so(lev1, $rm_typ)))
         return;
     x2.v = x;
     y2.v = y;
