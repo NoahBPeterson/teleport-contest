@@ -83,9 +83,78 @@ const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
 //     assumed (docs/NOTES-resettable-state.md §1, docs/NOTES-lua-port.md).
 const SHARED = /\/data-nethackdir\/|\/lua-js\/data\//;
 
+// RESOLUTION MEMO — the hook's own cache, and the largest single item in a
+// scored session's startup that is not the game.
+//
+// Registering *any* resolve hook takes Node's loader off its internal
+// resolution fast path, so every import statement in the graph pays a full
+// resolve: pathToFileURL, normalizeString, internalModuleStat, and
+// getPackageScopeConfig walking up to the repo's package.json and JSON.parsing
+// it. The generated corpus is 169 modules but **4,982 import statements**, and
+// it pays all 4,982 of them per segment.
+//
+// They are almost all the same question. ESM resolves a relative specifier
+// against the importer's *directory*, and all 169 generated modules live in one
+// directory — so `./allmain.js` asked from any of them is one resolution, asked
+// eighty times. Keying on (directory, specifier, conditions, attributes)
+// collapses 4,982 calls to **174 distinct answers**, and on later segments to 1.
+//
+// Measured, interleaved ABBA x5 on the real graph, median (min), per segment:
+//   segment 1   438 (411) -> 315 (313) ms
+//   segment 2   429 (396) -> 316 (295)
+//   segment 3   416 (389) -> 321 (299)
+//
+// It cannot change *what* is resolved. The value cached is the untagged result;
+// the `?c2jsseg=` tag is taken from the live parent below and never from the
+// cache, so a hit still forks per segment exactly as before. And resolution is
+// a pure function of the key: the URL is `new URL(specifier, parentURL)`, and
+// the `format` Node reports follows from that URL's extension and the nearest
+// package.json `type` — both fixed once directory and specifier are. The one
+// thing that could move it is the filesystem changing underfoot mid-run, which
+// this program does not do: the VFS overlay is in memory, and the scored path
+// runs under `node --permission` with no write allowance at all.
+//
+// C2JS_RESOLVE_CACHE=0 restores the uncached hook — the A/B baseline.
+const RCACHE = new Map();
+// Read defensively at module scope: this file is imported by js/jsmain.js in
+// the browser too, where `process` is either absent or a page-supplied stub
+// (see IS_NODE above), and a bare `process.env` here would be a ReferenceError
+// before the page ever got to decide it was a browser.
+const RCACHE_ON = (typeof process === 'undefined' ? undefined
+    : process.env && process.env.C2JS_RESOLVE_CACHE) !== '0';
+const RSTAT = { calls: 0, miss: 0 };
+/** hook-cache counters, for the probes and for docs/NOTES-startup.md */
+export function resolveStats() { return { ...RSTAT, size: RCACHE.size }; }
+
 function resolve(specifier, context, nextResolve) {
-    const result = nextResolve(specifier, context);
     const parent = context.parentURL;
+    RSTAT.calls++;
+    let base;
+    if (RCACHE_ON && parent && parent.startsWith('file:')) {
+        const qq = parent.indexOf('?');
+        const bare = qq < 0 ? parent : parent.slice(0, qq);
+        // Conditions and attributes belong in the key — two imports of one
+        // specifier can legitimately resolve differently under them — but both
+        // are empty or constant for every import this program makes, and this
+        // runs 4,982 times per graph, so neither is serialised unless it is
+        // actually carrying something.
+        const attrs = context.importAttributes;
+        const key = bare.slice(0, bare.lastIndexOf('/') + 1) + '\0' + specifier
+            + '\0' + (context.conditions ? context.conditions.join(',') : '')
+            + '\0' + (attrs && Object.keys(attrs).length ? JSON.stringify(attrs) : '');
+        base = RCACHE.get(key);
+        if (base === undefined) {
+            RSTAT.miss++;
+            base = nextResolve(specifier, context);
+            RCACHE.set(key, base);
+        }
+    } else {
+        base = nextResolve(specifier, context);
+    }
+    // A hook that answers without calling nextResolve has to say so, and a
+    // fresh object each time keeps the cached one from being handed to the
+    // loader twice (nothing mutates it today, and nothing should have to check).
+    const result = { ...base, shortCircuit: true };
     if (!parent) return result;
     const q = parent.indexOf('?' + SEG_KEY + '=');
     if (q < 0) return result;
@@ -93,7 +162,8 @@ function resolve(specifier, context, nextResolve) {
     // node: builtins carry no query; already-tagged URLs are done; shared data
     // modules opt out.
     if (!url.startsWith('file:') || url.includes('?') || SHARED.test(url)) return result;
-    return { ...result, url: url + parent.slice(q), shortCircuit: true };
+    result.url = url + parent.slice(q);
+    return result;
 }
 
 let state = null; // null = untried, true/false = resolved
