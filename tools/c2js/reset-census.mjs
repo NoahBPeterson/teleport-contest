@@ -173,10 +173,65 @@ export function analyzeModule(src, opts = {}) {
             if (tokens[p]?.v === ',') { m = p + 1; continue; }
             break;
         }
-        // A DESTRUCTURING declaration — `const { a, b } = f()` or
-        // `const [x] = ...` — binds names at module scope that this walk cannot
-        // read, and the c2js emitter produces none, which is why nothing has
-        // ever met one. Two things then have to be true, and neither was:
+        // A FLAT OBJECT DESTRUCTURING — `const { a, b, c } = <init>` — binds
+        // names this walk *can* read, so it does. The emitter produces none;
+        // hand-written modules do (js/lua-js/bridge.mjs's `export const {
+        // nhRandom, mathRandom, percent, d, shuffle } = makeNhlib(rn2)`), and
+        // reporting five real bindings as one unreadable line would push the
+        // whole module into the unknown pile for no reason. Every name gets the
+        // SAME initializer and therefore the same classification, which is
+        // correct: they are five properties of one value, and a strategy that
+        // is right for the value is right for each of them.
+        //
+        // Deliberately flat only: no renaming (`{ a: b }`), no defaults
+        // (`{ a = 1 }`), no rest (`...r`), no nesting, no array pattern. Each of
+        // those changes what the bindings ARE, and a scanner that guessed would
+        // be guessing about the one thing this file exists to be exact about.
+        // Anything else falls through to the loud path below.
+        if (!bound && t2(tokens, m) === '{') {
+            const names = flatPatternNames(tokens, m);
+            if (names) {
+                let p = names.close + 1;
+                let initStart = null, initEnd = null;
+                if (tokens[p]?.v === '=') {
+                    initStart = p + 1;
+                    let d = 0;
+                    p++;
+                    while (p < tokens.length) {
+                        const q = tokens[p];
+                        if (q.t === 'punc') {
+                            if (q.v === '(' || q.v === '[' || q.v === '{') d++;
+                            else if (q.v === ')' || q.v === ']' || q.v === '}') d--;
+                            else if (d === 0 && q.v === ';') break;
+                        }
+                        p++;
+                    }
+                    initEnd = p;
+                }
+                const initToks = initStart === null ? [] : tokens.slice(initStart, initEnd);
+                const init = initToks.length ? src.slice(initToks[0].i, initToks[initToks.length - 1].j) : null;
+                for (const nt of names.toks) moduleNames.add(nt.v);
+                for (const nt of names.toks) {
+                    const cls = classify(initToks, moduleNames);
+                    decls.push({
+                        file, name: nt.v, declKw, exported,
+                        kind: cls.kind, strategy: STRATEGY[cls.kind], detail: cls.detail,
+                        init, line: lineOf(src, nt.i), declTok: exported ? k - 1 : k,
+                        pattern: true,
+                    });
+                    if (cls.kind === KIND.OTHER) {
+                        warnings.push({ file, kind: 'unclassified', detail: `${nt.v} = ${trunc(init)}` });
+                    }
+                }
+                k = p;
+                continue;
+            }
+        }
+
+        // ANY OTHER DESTRUCTURING declaration — renamed, defaulted, nested, or
+        // an array pattern — binds names at module scope that this walk cannot
+        // read, and the c2js emitter produces none. Two things then have to be
+        // true, and neither was:
         //
         //   1. It must be LOUD. Left as it is, such a declaration's bindings
         //      are simply absent from the reset — the one failure mode this
@@ -200,6 +255,31 @@ export function analyzeModule(src, opts = {}) {
         k = m;
     }
     return { decls, warnings };
+}
+
+const t2 = (tokens, i) => (tokens[i] && tokens[i].t === 'punc' ? tokens[i].v : null);
+
+/**
+ * The identifiers of a FLAT object pattern starting at the `{` at `i`.
+ * @returns {{toks: Array, close: number}|null} null when it is not flat
+ */
+function flatPatternNames(tokens, i) {
+    const toks = [];
+    let j = i + 1;
+    for (;;) {
+        const t = tokens[j];
+        if (!t) return null;
+        if (t.t === 'punc' && t.v === '}') return { toks, close: j };
+        if (t.t !== 'id') return null;                 // string key, `...`, nesting
+        if (t.v === 'true' || t.v === 'false' || t.v === 'null') return null;
+        toks.push(t);
+        j++;
+        const sep = tokens[j];
+        if (!sep || sep.t !== 'punc') return null;
+        if (sep.v === ',') { j++; continue; }
+        if (sep.v === '}') return { toks, close: j };
+        return null;                                   // `:` rename, `=` default
+    }
 }
 
 function classify(toks, moduleNames) {
@@ -366,6 +446,142 @@ export const RUNTIME_STATE = [
       reset: 'emitted __resetState — the post-pass sees it because it reads the emitted module, which is where the prelude has already been inlined' },
 ];
 
+// ------------------------------------------------- hand-written directories --
+//
+// `--dir` can be pointed at a directory the EMITTER DOES NOT WRITE, and
+// js/lua-js (roadmap 1.10) is the first one that matters: nine hand-written
+// modules that live in the same realm as the graph, hold their own state, and
+// therefore have to be put back between games exactly as js/generated and
+// js/cptr.js are. Their reset is hand-written (js/lua-js/registry.mjs's
+// __resetState) rather than emitted, so nothing derives their list — which is
+// the situation this whole file exists to refuse.
+//
+// So the list is *signed*. Every declaration the scanner cannot show to be an
+// immutable primitive needs an entry below saying which it is:
+//
+//   strategy: 'none'  — it cannot change, and `why` says how that is known
+//   strategy: 'hand'  — it can, and `reset` names the function that puts it back
+//
+// The check runs both ways. A declaration with no entry is reported as
+// UNSIGNED and counts as unclassified, so adding module state without saying
+// what happens to it fails the census. An entry naming a declaration that is no
+// longer there is reported as STALE, so an audit is a diff rather than a
+// memory — the same property RUNTIME_STATE has.
+//
+// What is signed 'none' here is not a promise that the value is deeply frozen.
+// It is that nothing in this tree writes it: the tables below are read by the
+// ports and by the bridge, never assigned into, and the frozen ones cannot be
+// even if somebody tried.
+export const HAND_WRITTEN = {
+    'js/lua-js': {
+        why: 'the Lua->JS script ports; state reset by js/lua-js/registry.mjs '
+            + '__resetState(), driven from js/boot/reset-realm.mjs',
+        modules: {
+            'bridge.mjs': {
+                cstrCache: { strategy: 'hand', reset: 'bridge.__resetState: cleared',
+                    why: 'interns cptr.lit() buffers by string, and a buffer object is what addr() gives an id to — the §3 identity hazard. Cleared so game 2 re-interns exactly as a fresh realm would' },
+                L: { strategy: 'hand', reset: 'bridge.__resetState: nulled',
+                    why: 'the port-owned lua_State, allocated out of the previous game\'s heap through its realloc' },
+                activeL: { strategy: 'hand', reset: 'bridge.__resetState: nulled',
+                    why: 'cursor at the state a library port is currently marshalling into; points into a spent game' },
+                callPool: { strategy: 'hand', reset: 'bridge.__resetState: nulled',
+                    why: 'LuaValues minted during the entry-point call in progress; there is no call in progress in a fresh realm' },
+                keptValues: { strategy: 'hand', reset: 'bridge.__resetState: replaced with []',
+                    why: 'values held past the call that made them (themerms\' one escaping selection). Dropped, not freed: free() decrements a refcount in a C heap the barrel is about to overwrite' },
+                desObjectResult: { strategy: 'hand', reset: 'bridge.__resetState: false',
+                    why: 'whether des.object() should take lspo_object\'s return value; scoped to withDesObjectResult(), so true here means a game ended inside it' },
+                COORD_FIELDS: { strategy: 'none', why: 'six field names, read by the marshaller' },
+                DES_FUNCS: { strategy: 'none', why: 'the 34 des binding names, read to build `des`' },
+                SELECTION_FUNCS: { strategy: 'none', why: 'the 24 selection binding names' },
+                OBJ_FUNCS: { strategy: 'none', why: 'the obj binding names' },
+                RESULT_FIELDS: { strategy: 'none', why: 'which fields a call\'s result table carries, by binding name; read only' },
+                DES_VALUE_FUNCS: { strategy: 'none', why: 'the one des binding that takes a value rather than a table; a Set built from a literal and only ever queried' },
+                des: { strategy: 'none', why: 'Object.freeze of a table of arrow functions — the des DSL handed to every port' },
+                selection: { strategy: 'none', why: 'Object.freeze, same shape' },
+                obj: { strategy: 'none', why: 'Object.freeze, same shape' },
+                string: { strategy: 'none', why: 'Object.freeze; one method, string.match, for dat/tut-1.lua' },
+                uTable: { strategy: 'none', why: 'Object.freeze of getters that READ u through cptr on every access — the state they expose is the game\'s, and the barrel resets it' },
+                nhc: { strategy: 'none', why: 'Object.freeze({COLNO, ROWNO})' },
+                luaTable: { strategy: 'none', why: 'the LuaValue prototype\'s method table: functions only, assigned once at module scope, never written' },
+                api: { strategy: 'none', why: 'Object.freeze of the frozen tables above plus functions; what every port receives' },
+                nhRandom: { strategy: 'none', why: 'nhlib helper closed over rn2; a function' },
+                mathRandom: { strategy: 'none', why: 'as nhRandom' },
+                percent: { strategy: 'none', why: 'as nhRandom' },
+                d: { strategy: 'none', why: 'as nhRandom' },
+                shuffle: { strategy: 'none', why: 'as nhRandom' },
+            },
+            'interp-state.mjs': {
+                candidates: { strategy: 'hand', reset: 'interp-state.__resetState: emptied in place',
+                    why: 'the last 8 sizeof(LG) allocations, i.e. pointers into the previous game\'s heap' },
+                installed: { strategy: 'hand', reset: 'interp-state.__resetState: false',
+                    why: 'THE ONE THAT BITES. The probe wraps globalThis.realloc, and harness.mjs installs a fresh one per game; left true, game 2 never re-wraps and every read-back port throws' },
+                portState: { strategy: 'hand', reset: 'interp-state.__resetState: nulled',
+                    why: 'identity of the bridge\'s own lua_State, so the probe can exclude it' },
+            },
+            'nhlib-fns.mjs': {
+                tutorial_blacklist_commands: { strategy: 'none',
+                    why: 'nhlib.lua\'s own table, ported verbatim; read by tutorial_command_blacklist()' },
+            },
+            'readback.mjs': {
+                TYPE_NAMES: { strategy: 'none', why: 'lua_type() number -> name, for the dump' },
+            },
+            'registry.mjs': {
+                PORTS: { strategy: 'none', why: 'script name -> port function, built once from the imports' },
+                READBACK: { strategy: 'none', why: 'as PORTS, for the two read-back scripts' },
+                LIBRARY: { strategy: 'none', why: 'as PORTS, for the three library scripts' },
+                LEVEL_PROBE: { strategy: 'none', why: 'C2JS_LUA_LEVELPROBE split once. env() reads process.env, which is per-PROCESS: a fresh realm in this process computes the same value' },
+                QUEST_PROBE: { strategy: 'none', why: 'as LEVEL_PROBE' },
+                QUEST_PROBE_MSGIDS: { strategy: 'none', why: 'five message ids, read by the probe' },
+                OBJ_FIELDS: { strategy: 'none', why: 'struct obj offsets for the level fingerprint; read only' },
+                MON_FIELDS: { strategy: 'none', why: 'struct monst offsets, ditto' },
+                TRAP_FIELDS: { strategy: 'none', why: 'struct trap offsets, ditto' },
+                ENGR_FIELDS: { strategy: 'none', why: 'struct engr offsets, ditto' },
+                ENGR_TEXTS: { strategy: 'none', why: 'the two engraving text offsets' },
+                loads: { strategy: 'hand', reset: 'registry.__resetState: emptied IN PLACE',
+                    why: 'the per-load trace. Emptied rather than replaced because closeTrace() and tools/lua-oracle.mjs hold this exact array — and js/boot/reset-realm.mjs slices it on the way out for the same reason it slices the RNG log' },
+                unportedLua: { strategy: 'hand', reset: 'registry.__resetState: cleared',
+                    why: 'the "which .lua still reached the parser" tally; a per-game census that must not accumulate across games' },
+                armed: { strategy: 'hand', reset: 'registry.__resetState: nulled',
+                    why: 'the load record waiting for a level fingerprint; holds a record from a game that is over' },
+                levelProbed: { strategy: 'hand', reset: 'registry.__resetState: false',
+                    why: 'whether the C2JS_LUA_LEVELPROBE levels were built; game 2 must build its own' },
+                questProbed: { strategy: 'hand', reset: 'registry.__resetState: false', why: 'as levelProbed' },
+            },
+        },
+    },
+};
+
+/** Kinds whose `const` form needs no sign-off: an immutable primitive. */
+const PRIMITIVE_KINDS = new Set([KIND.NUM, KIND.BIGINT, KIND.BOOLSTR, KIND.CONSTREF]);
+
+/**
+ * Check a hand-written directory's declarations against its signed manifest.
+ *
+ * @returns {{signed: Array, unsigned: Array, stale: Array}|null} null when the
+ *          directory has no manifest, i.e. it is emitter output and derives.
+ */
+export function signOff(dirRel, modules) {
+    const entry = HAND_WRITTEN[dirRel];
+    if (!entry) return null;
+    const signed = [], unsigned = [], stale = [];
+    const used = new Set();
+    for (const [file, decls] of modules) {
+        const table = entry.modules[file] || {};
+        for (const d of decls) {
+            const e = table[d.name];
+            if (e) { signed.push({ file, name: d.name, ...e }); used.add(file + ':' + d.name); continue; }
+            if (d.declKw === 'const' && PRIMITIVE_KINDS.has(d.kind)) continue;
+            unsigned.push({ file, name: d.name, kind: d.kind, init: d.init });
+        }
+    }
+    for (const [file, table] of Object.entries(entry.modules)) {
+        for (const name of Object.keys(table)) {
+            if (!used.has(file + ':' + name)) stale.push({ file, name });
+        }
+    }
+    return { signed, unsigned, stale };
+}
+
 // ------------------------------------------------------------------- CLI ----
 
 function summarize(modules) {
@@ -420,7 +636,20 @@ async function main(argv) {
     const resettable = order.filter(([k]) => STRATEGY[k] !== 'none' && STRATEGY[k] !== 'unknown')
         .reduce((n, [, e]) => n + e.count, 0);
     const ignored = (byKind.get(KIND.LIT) || { count: 0 }).count;
-    const unknown = (byKind.get(KIND.OTHER) || { count: 0 }).count;
+
+    // A hand-written directory does not derive; it signs. Anything the manifest
+    // accounts for stops being unclassified, and anything it fails to account
+    // for becomes unclassified even when the scanner had a shape for it.
+    const sign = signOff(dirRel, modules);
+    let unknown = (byKind.get(KIND.OTHER) || { count: 0 }).count;
+    if (sign) {
+        const signedOther = new Set(sign.signed.map((s) => s.file + ':' + s.name));
+        let stillUnknown = 0;
+        for (const [f, decls] of modules) {
+            for (const d of decls) if (d.kind === KIND.OTHER && !signedOther.has(f + ':' + d.name)) stillUnknown++;
+        }
+        unknown = stillUnknown + sign.unsigned.length + sign.stale.length;
+    }
     W(`\nreset plan: ${resettable} declarations to put back, ${ignored} immutable literals to leave alone`
         + (unknown ? `, ${unknown} UNCLASSIFIED\n` : '\n'));
 
@@ -444,7 +673,29 @@ async function main(argv) {
             }
         }
     }
-    if (opts.unknown || unknown) {
+    if (sign) {
+        const signedKey = new Set(sign.signed.map((s) => s.file + ':' + s.name));
+        W(`\n--- SIGNED hand-written state (${sign.signed.length}) — ${dirRel} ---\n`);
+        W(`    ${HAND_WRITTEN[dirRel].why}\n`);
+        for (const s of sign.signed) {
+            W(`  ${s.file}: ${s.name} [${s.strategy}]\n      ${s.why}\n`
+                + (s.reset ? `      -> ${s.reset}\n` : ''));
+        }
+        if (sign.unsigned.length) {
+            W(`\n--- UNSIGNED (${sign.unsigned.length}) — module state with nothing said about it ---\n`);
+            for (const u of sign.unsigned) W(`  ${u.file}: ${u.name} [${u.kind}] = ${trunc(u.init, 60)}\n`);
+        }
+        if (sign.stale.length) {
+            W(`\n--- STALE (${sign.stale.length}) — signed off but no longer declared ---\n`);
+            for (const s of sign.stale) W(`  ${s.file}: ${s.name}\n`);
+        }
+        const un = warnings.filter((w) => w.kind === 'unclassified'
+            && !signedKey.has(w.file + ':' + String(w.detail).split(' =')[0]));
+        if (un.length) {
+            W(`\n--- UNCLASSIFIED (${un.length}) — the scanner could not read these at all ---\n`);
+            for (const w of un) W(`  ${w.file}: ${w.detail}\n`);
+        }
+    } else if (opts.unknown || unknown) {
         const un = warnings.filter((w) => w.kind === 'unclassified');
         if (un.length) {
             W(`\n--- UNCLASSIFIED (${un.length}) — these must be resolved before the emitter is trusted ---\n`);

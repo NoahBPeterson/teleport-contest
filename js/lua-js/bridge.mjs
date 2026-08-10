@@ -102,6 +102,18 @@ const LUA_TUSERDATA = 7;
 
 // C strings are allocated per call by cptr.lit(); intern them so a script that
 // pushes "monster" 2000 times doesn't build 2000 identical byte arrays.
+//
+// THE ONE PIECE OF STATE IN THIS FILE THAT A RESET REALM HAS TO ARGUE ABOUT.
+// docs/NOTES-resettable-state.md §3 names `addr()`'s buffer ids as the subtle
+// hazard: they seed a lua_State's string hash, `math.random`'s seed2 and the
+// hash that decides `next()` iteration order, so *which buffer object* a game
+// hands to C is parity-observable. This map is a table of buffer objects that
+// outlive a game. It is cleared on reset (__resetState below) rather than
+// reasoned about, and the reason to prefer clearing is that it makes game 2
+// byte-identical to a fresh realm *by construction*: game 2 re-interns every
+// string it uses, exactly as a fresh graph's empty map would make it, so
+// nothing depends on `cptr.lit()` being free of side effects or on the order
+// in which ids happen to be handed out. `tools/reset-diff.mjs` is the referee.
 const cstrCache = new Map();
 function cstr(s) {
     let p = cstrCache.get(s);
@@ -190,8 +202,53 @@ function state() {
     return L;
 }
 
-/** Drop the port state (segment teardown / test isolation). */
-export function resetBridge() { L = null; }
+/**
+ * Put this module back to what it looked like when it finished evaluating.
+ *
+ * Called by js/lua-js/registry.mjs's __resetState(), which js/boot/reset-realm.mjs
+ * drives alongside js/generated/__reset.js's barrel: a resettable realm runs
+ * many games in ONE module graph, and every binding below would otherwise carry
+ * the previous game's value into the next one. Three of them are pointers into
+ * memory the barrel is about to restore — `L` is a lua_State the port allocated
+ * through the game's own allocator, `activeL` and `keptValues` reference values
+ * inside one — so keeping any of them would be worse than merely stale.
+ *
+ * `keptValues` is dropped rather than freed. free() decrements a reference
+ * count in the C heap, and by the time a reset runs there is no game left whose
+ * heap that is; the barrel restores those bytes wholesale a moment later.
+ *
+ * @returns {void}
+ */
+export function __resetState() {
+    cstrCache.clear();
+    L = null;
+    activeL = null;
+    callPool = null;
+    keptValues = [];
+    desObjectResult = false;
+}
+
+/**
+ * Assert this module is pristine, i.e. that it has only just evaluated.
+ *
+ * There is nothing to *copy*: every binding above has a statically known
+ * initial value, so the reset restores literals and the capture's whole job is
+ * to prove the snapshot is being taken at the right moment. A realm armed after
+ * a game had already run would otherwise reset to that game's leftovers and
+ * look correct.
+ *
+ * @returns {string[]} the names that are not pristine (empty = good)
+ */
+export function __captureState() {
+    const dirty = [];
+    if (cstrCache.size !== 0) dirty.push('cstrCache');
+    if (L !== null) dirty.push('L');
+    if (activeL !== null) dirty.push('activeL');
+    if (callPool !== null) dirty.push('callPool');
+    if (keptValues.length !== 0) dirty.push('keptValues');
+    if (desObjectResult !== false) dirty.push('desObjectResult');
+    return dirty;
+}
 
 // ---------------------------------------------------------------------------
 // JS value -> Lua stack

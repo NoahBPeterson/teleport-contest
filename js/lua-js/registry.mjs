@@ -46,8 +46,14 @@ import { gf, gu, head_engr, svl } from '../generated/decl.js';
 import { getRngLog } from '../generated/rnd.js';
 import { com_pager, qt_pager } from '../generated/questpgr.js';
 import { load_special, lspo_finalize_level, lspo_reset_level } from '../generated/sp_lev.js';
-import { runPortedScript, runProtected, setGlobal } from './bridge.mjs';
-import { installStateProbe, interpState, stateIsFresh, stateSeed } from './interp-state.mjs';
+import {
+    runPortedScript, runProtected, setGlobal,
+    __captureState as __captureBridge, __resetState as __resetBridge,
+} from './bridge.mjs';
+import {
+    installStateProbe, interpState, stateIsFresh, stateSeed,
+    __captureState as __captureProbe, __resetState as __resetProbe,
+} from './interp-state.mjs';
 import { dumpGlobal, dumpGlobals, runRealChunk } from './readback.mjs';
 import oracle from './scripts/oracle.mjs';
 import { T0_PORTS } from './scripts/t0/index.mjs';
@@ -743,4 +749,73 @@ function runQuestProbe() {
 export function closeTrace() {
     for (const r of loads) if (r.rngTo < 0) r.rngTo = getRngLog().length;
     return loads;
+}
+
+// ---------------------------------------------------------------------------
+// Resettable realms (docs/NOTES-resettable-state.md)
+// ---------------------------------------------------------------------------
+//
+// js/generated/__reset.js puts the transpiled graph back between games, and
+// js/cptr.js puts the pointer runtime back. js/lua-js is the third layer: nine
+// hand-written modules that hold their own state, in the same realm, for the
+// same reason (a top-level binding survives the game that wrote it). The
+// emitter does not rewrite them — they are not its output — so their reset is
+// written by hand, here, and driven by js/boot/reset-realm.mjs, which owns the
+// composition of "graph + runtime + ports".
+//
+// This module is the entry point because it is the one js/boot/harness.mjs
+// imports and the one that already imports the other two stateful ones. The
+// complete list of what is reset, and of what was shown not to need it, is in
+// tools/c2js/reset-census.mjs's HAND_WRITTEN table; `node
+// tools/c2js/reset-census.mjs --dir js/lua-js` checks that table against the
+// source and reports 0 unclassified only when the two agree.
+
+/**
+ * Put js/lua-js back to what it looked like when it finished evaluating.
+ *
+ * Called BEFORE the generated barrel's resetAll(), so that nothing here is
+ * still holding a pointer while the bytes behind it are being rewritten.
+ *
+ * @returns {void}
+ */
+export function __resetState() {
+    // `loads` is exported and js/boot/reset-realm.mjs hands a slice of it to
+    // the caller (the same aliasing bug §7.2 found in rnd.js's __rngLog), so
+    // emptying it in place is correct: the array object must survive, because
+    // js/boot/harness.mjs's closeTrace() and everything in tools/lua-oracle.mjs
+    // hold this binding.
+    loads.length = 0;
+    unportedLua.clear();
+    armed = null;
+    levelProbed = false;
+    questProbed = false;
+    __resetBridge();
+    __resetProbe();
+}
+
+/**
+ * Assert the whole port layer is pristine, i.e. that the realm is being armed
+ * before it has run anything.
+ *
+ * Nothing is copied: every binding involved has a statically known initial
+ * value. What this buys is that a snapshot taken at the wrong moment fails
+ * loudly here instead of silently defining "pristine" as "whatever game 1 left
+ * behind" — which is precisely the failure a reset cannot detect on its own.
+ *
+ * @returns {void}
+ * @throws {Error} naming every binding that is not pristine
+ */
+export function __captureState() {
+    const dirty = [];
+    if (loads.length !== 0) dirty.push('registry.loads');
+    if (unportedLua.size !== 0) dirty.push('registry.unportedLua');
+    if (armed !== null) dirty.push('registry.armed');
+    if (levelProbed !== false) dirty.push('registry.levelProbed');
+    if (questProbed !== false) dirty.push('registry.questProbed');
+    for (const n of __captureBridge()) dirty.push('bridge.' + n);
+    for (const n of __captureProbe()) dirty.push('interp-state.' + n);
+    if (dirty.length) {
+        throw new Error('lua-port: __captureState() on a graph that has already '
+            + 'run a game — ' + dirty.join(', '));
+    }
 }

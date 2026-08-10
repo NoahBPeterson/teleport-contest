@@ -180,7 +180,39 @@ export function stateSeed(L) {
 /** @returns {number} how many candidate blocks are being tracked (tests). */
 export function candidateCount() { return candidates.length; }
 
-/** Forget every candidate (segment teardown / test isolation). */
-export function resetStateProbe() { candidates.length = 0; portState = null; }
+/**
+ * Put this module back to what it looked like when it finished evaluating.
+ *
+ * `installed` is the one that matters, and it is not obvious. The probe wraps
+ * `globalThis.realloc`, and js/boot/harness.mjs installs a FRESH `g.realloc`
+ * closure at the top of every runBootGame(). So in a resettable realm
+ * (js/boot/reset-realm.mjs) game 2 overwrites game 1's wrapper with a bare
+ * allocator, and an `installed` flag left true makes installStateProbe() a
+ * no-op — `candidates` stays empty for the rest of the process and every
+ * read-back port (dungeon.lua, quest.lua) throws "interpreter lua_State not
+ * found". Loud, but a very long way from its cause.
+ *
+ * `candidates` and `portState` hold pointers into the previous game's heap,
+ * which the reset barrel is about to restore underneath them.
+ *
+ * @returns {void}
+ */
+export function __resetState() {
+    candidates.length = 0;
+    portState = null;
+    installed = false;
+}
+
+/**
+ * Assert this module is pristine. See js/lua-js/bridge.mjs's __captureState.
+ * @returns {string[]} the names that are not pristine (empty = good)
+ */
+export function __captureState() {
+    const dirty = [];
+    if (candidates.length !== 0) dirty.push('candidates');
+    if (portState !== null) dirty.push('portState');
+    if (installed !== false) dirty.push('installed');
+    return dirty;
+}
 
 export { LUA_TTABLE };

@@ -73,12 +73,14 @@ let __tagCounter = 0;
  * holds two realms cannot accidentally drive the wrong graph.
  */
 export class Realm {
-    constructor(tag, runBootGame, barrel, build) {
+    constructor(tag, runBootGame, barrel, build, luaPort) {
         this.tag = tag;
         /** 'sync' (the scored graph) or 'yield' (the interactive one). */
         this.build = build || 'sync';
         this.runBootGame = runBootGame;
         this._barrel = barrel;
+        /** js/lua-js/registry.mjs in THIS realm, or null — see acquire(). */
+        this._luaPort = luaPort || null;
         /** ms spent in the most recent reset(), for the profile. */
         this.lastResetMs = 0;
         /** how many games this graph has run. */
@@ -119,6 +121,10 @@ export class Realm {
     reset() {
         if (this._barrel === null) return false;
         const t0 = performance.now();
+        // The Lua-script ports first: they hold a lua_State and a table of
+        // interned C strings that live in the bytes the barrel is about to
+        // rewrite. See js/lua-js/registry.mjs's __resetState.
+        if (this._luaPort) this._luaPort.__resetState();
         this._barrel.resetAll();
         this.lastResetMs = performance.now() - t0;
         this._dirty = false;
@@ -145,10 +151,26 @@ export class Realm {
  * string) and alias nothing in the graph, which is checked at the source rather
  * than assumed: js/boot/harness.mjs's return statement is the only place a
  * result is constructed.
+ *
+ * `luaLoads` (roadmap 1.10) is the same bug a second time, and it was found by
+ * re-reading that return statement rather than by hitting it: js/lua-js/
+ * registry.mjs's closeTrace() returns its own exported `loads` array, and
+ * __resetState() empties it IN PLACE for the same reason the RNG log is refilled
+ * in place — tools/lua-oracle.mjs and the harness both hold that binding. So it
+ * gets the same slice. Its *records* are not copied and do not need to be: the
+ * reset drops the array's contents, it does not rewrite the objects that were
+ * in it, and each record is plain data the port built.
+ *
+ * `luaSource` is safe as it stands — sourceCensus() builds fresh arrays out of
+ * `loads` and `unportedLua` on every call — and is left alone, because copying
+ * something that is already a copy would only hide the next change to it.
  */
 function detach(r) {
-    if (!r || !r.rngLog) return r;
-    return { ...r, rngLog: r.rngLog.slice() };
+    if (!r) return r;
+    const out = { ...r };
+    if (r.rngLog) out.rngLog = r.rngLog.slice();
+    if (r.luaLoads) out.luaLoads = r.luaLoads.slice();
+    return out;
 }
 
 /**
@@ -197,16 +219,60 @@ export async function acquire(opts) {
     // Its absence is a build without C2JS_RESET=1, which is a supported (if
     // degraded) configuration: the realm still runs exactly one game.
     let barrel = null;
-    if (!arm) return new Realm(tag, runBootGame, null, build);
+    if (!arm) return new Realm(tag, runBootGame, null, build, null);
     try {
         barrel = await import(barrelUrl);
-        barrel.captureAll();
     } catch (e) {
         if (!isModuleNotFound(e)) throw e;
         barrel = null;
     }
 
-    return new Realm(tag, runBootGame, barrel, build);
+    // THE THIRD LAYER, AND WHY IT IS IMPORTED HERE RATHER THAN LEFT TO BOOT.
+    //
+    // js/lua-js/* (roadmap 1.10) is hand-written state in this same realm, so
+    // it needs the same treatment as the graph and as js/cptr.js — but its
+    // *evaluation* also has to happen in the same place relative to the graph's
+    // that a fresh realm puts it in, because the snapshot is taken immediately
+    // afterwards. A fresh realm's order is: graph evaluates, registry.mjs
+    // evaluates (js/boot/harness.mjs imports it right after unixmain.js, and
+    // before main()), then the game runs. So: barrel first, which is what
+    // evaluates the graph; registry second; capture third. Game 1's boot then
+    // finds both already in the module map and changes nothing.
+    //
+    // Only when there IS a barrel. Without one this realm runs exactly one game
+    // and never resets, and importing registry.mjs early would be a gratuitous
+    // reordering of a graph that nothing is going to snapshot.
+    //
+    // Only for the sync build. tools/c2js/yieldify.mjs deliberately strips the
+    // registry import out of js/boot/harness-y.mjs — js/lua-js drives
+    // js/generated/, not js/generated-y/ — so a yield realm has no port layer
+    // to reset and must not evaluate one.
+    let luaPort = null;
+    if (barrel) {
+        if (build === 'sync') luaPort = await importLuaPort(tag, fork);
+        barrel.captureAll();
+        if (luaPort) luaPort.__captureState();
+    }
+
+    return new Realm(tag, runBootGame, barrel, build, luaPort);
+}
+
+/**
+ * This realm's copy of js/lua-js/registry.mjs, or null on a tree without one.
+ *
+ * The specifier is built exactly the way js/boot/isolation.mjs's resolve hook
+ * would build it for a tagged harness importing `../lua-js/registry.mjs`, so
+ * this is the same module instance the harness will get — not a second copy.
+ */
+async function importLuaPort(tag, fork) {
+    let url = new URL('../lua-js/registry.mjs', import.meta.url).href;
+    if (fork) url = segmentSpecifier(url, tag, true);
+    try {
+        return await import(url);
+    } catch (e) {
+        if (isModuleNotFound(e)) return null;   // a tree without the ports
+        throw e;
+    }
 }
 
 function isModuleNotFound(e) {
