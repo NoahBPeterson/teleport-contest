@@ -1653,6 +1653,13 @@ export class Emitter {
    */
   helperFreeVars(code, { pureCalls = null } = {}) {
     if (/__sl|\+\+|--|rng_log/.test(code)) return null;
+    // A call through a parameter — `(rng)(NUMMONS)` from random_monster(rng) —
+    // is parity-safe here by accident (the body names the parameter once, so
+    // one call inline and one in the helper) but its callee is a value, not a
+    // name, so no analysis can say what it does. Two macros reach the RNG this
+    // way. The standing rule is to refuse what cannot be proved, and a helper
+    // module documented as holding pure loads must not quietly hold an rn2.
+    if (pureCalls && /\)\s*\(/.test(code)) return null;
     if (/[^=!<>+\-*/%&|^]=[^=]/.test(code)) return null; // assignment of any kind
     if (/^[A-Za-z_$][\w$]*$/.test(code)) return null;    // a bare alias names nothing new
     for (const m of code.matchAll(HELPER_CALLEE)) {

@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ACCESSIBLE, DEADMONSTER, IS_DOOR, IS_OBSTRUCTED, IS_POOL, IS_ROOM, IS_SDOOR, IS_STWALL, MCORPSENM, M_AP_TYPE, altar_to_glyph, cansee, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, engraving_to_defsym, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_trap, glyph_is_unexplored, infravisible, is_cmap_furniture, is_cmap_room, is_cmap_wall, mindless, monnum_to_glyph, monsndx, next2u, obj_is_generic, random_monster, spot_shows_engravings, trap_to_defsym, u_at, warning_to_glyph } from './nhmacrofn.js';
+import { ACCESSIBLE, DEADMONSTER, IS_DOOR, IS_OBSTRUCTED, IS_POOL, IS_ROOM, IS_SDOOR, IS_STWALL, MCORPSENM, M_AP_TYPE, altar_to_glyph, cansee, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, engraving_to_defsym, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_trap, glyph_is_unexplored, infravisible, is_cmap_furniture, is_cmap_room, is_cmap_wall, mindless, monnum_to_glyph, monsndx, next2u, obj_is_generic, spot_shows_engravings, trap_to_defsym, u_at, warning_to_glyph } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Detect_monsters, HConfusion, HStun, HTelepat, Hallucination, Infravision, Invisible, Protection_from_shape_changers, Punished, See_invisible, U_AP_TYPE, Ugender, Unblind_telepat, Underwater, Upolyd, Warn_of_mon, Warning, clear_nhwindow, curs, display_nhwindow, nh_delay_output, print_glyph, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, a11y, cg, disp, flags, gc, gd, gf, gg, gi, go, gs, gu, gv, gw, gy, iflags, program_state, shield_static, svc, svd, svl, svm, u, uball, uchain } from './decl.js';
 import { dist2, sgn } from './hacklib.js';
@@ -440,7 +440,7 @@ function* display_monster(x, y, mon, sightflags, worm_tail) {
             }
             case NHC.M_AP_MONSTER:
             {
-                let mndx = (Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : cptr.ldI32o(mon, $monst_mappearance) | 0);
+                let mndx = (Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : cptr.ldI32o(mon, $monst_mappearance) | 0);
                 (yield* show_glyph(x, y, monnum_to_glyph(mndx, mgendercode)));
                 break;
             }
@@ -452,17 +452,17 @@ function* display_monster(x, y, mon, sightflags, worm_tail) {
             if (worm_tail)
                 num = ((NHC.PM_LONG_WORM_TAIL + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0);
             else
-                num = (((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0);
+                num = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0);
         } else if (sightflags == 2) {
             if (worm_tail)
-                num = ((((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : NHC.PM_LONG_WORM_TAIL)) + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0);
+                num = ((((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : NHC.PM_LONG_WORM_TAIL)) + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0);
             else
-                num = (((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0);
+                num = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0);
         } else {
             if (worm_tail)
-                num = ((((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : NHC.PM_LONG_WORM_TAIL)) + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
+                num = ((((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : NHC.PM_LONG_WORM_TAIL)) + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
             else
-                num = (((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
+                num = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
         }
         (yield* show_mon_or_warn(x, y, num));
         cptr.stI32o(mon, $monst_meverseen, 1);
@@ -478,7 +478,7 @@ function* display_warning(mon) {
         let wl = Hallucination() ? (rn2_on_display_rng(5) + 1) | 0 : warning_of(mon);
         glyph = warning_to_glyph(wl);
     } else if ((Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))) {
-        glyph = (((Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
+        glyph = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mon)) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
     } else {
         (yield* impossible(__sl1));
         return;
@@ -1643,7 +1643,7 @@ export function* back_to_glyph(x, y) {
 
 /** C ref: display.c:2437 — @param {CInt} mnum @param {CInt} loc @returns {CInt} */
 function* swallow_to_glyph(mnum, loc) {
-    let m_3 = (Hallucination() ? (yield* random_monster(rn2_on_display_rng)) : mnum) << 3;
+    let m_3 = (Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : mnum) << 3;
     if (loc < NHC.S_sw_tl || NHC.S_sw_br < loc) {
         (yield* impossible(__sl52));
         loc = NHC.S_sw_br;

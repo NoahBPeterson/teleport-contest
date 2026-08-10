@@ -1006,12 +1006,6 @@ export function poisonous(ptr) { return ((cptr.ldU64o((ptr), $permonst_mflags1) 
 /** C: include/mondata.h — the `polyok(ptr)` macro body */
 export function polyok(ptr) { return ((cptr.ldU64o((ptr), $permonst_mflags2) & 1n) == 0n); }
 
-/** C: include/display.h — the `random_monster(rng)` macro body */
-export function random_monster(rng) { return ((rng)(NHC.NUMMONS)); }
-
-/** C: include/display.h — the `random_object(rng)` macro body */
-export function random_object(rng) { return (((rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0); }
-
 /** C: include/mondata.h — the `regenerates(ptr)` macro body */
 export function regenerates(ptr) { return ((cptr.ldU64o((ptr), $permonst_mflags1) & 8388608n) != 0n); }
 

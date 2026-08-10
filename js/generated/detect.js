@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, Is_box, MCORPSENM, M_AP_TYPE, OBJ_AT, SchroedingersBox, cansee, canspotmon, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_unexplored, glyph_is_warning, helpless, hides_under, is_cmap_furniture, is_hider, monsndx, monsym, random_monster, random_object, trap_to_defsym, u_at } from './nhmacrofn.js';
+import { DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, Is_box, MCORPSENM, M_AP_TYPE, OBJ_AT, SchroedingersBox, cansee, canspotmon, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_unexplored, glyph_is_warning, helpless, hides_under, is_cmap_furniture, is_hider, monsndx, monsym, trap_to_defsym, u_at } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Clairvoyant, Deaf, EDetect_monsters, HConfusion, HHallucination, HStun, Half_physical_damage, Hallucination, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, c_common_strings, cg, flags, ga, gd, gf, gi, gk, gm, gn, gs, gu, gv, gy, iflags, quitchars, svd, svl, u, ublindf, uwep } from './decl.js';
 import { back_to_glyph, canseemon, cls, docrt, feel_location, feel_newsym, flash_glyph_at, flush_screen, glyph_at, magic_map_background, map_background, map_engraving, map_invisible, map_object, map_trap, mon_visible, newsym, see_monsters, sensemon, show_glyph, swallowed, under_ground, under_water, unmap_invisible, unmap_object, warning_of, xy_set_wall_state } from './display.js';
@@ -895,9 +895,9 @@ function sense_trap(trap, x, y, src_cursed) {
             cptr.stI16o(obj, $obj_ox, x);
             cptr.stI16o(obj, $obj_oy, y);
         }
-        cptr.stI16o(obj, $obj_otyp, i16((!Hallucination() ? NHC.GOLD_PIECE : random_object(rn2))));
+        cptr.stI16o(obj, $obj_otyp, i16((!Hallucination() ? NHC.GOLD_PIECE : (((rn2)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))));
         cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 879, __sl40), rnd(10)) : rnd(10)) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 880, __sl40), rnd(2)) : rnd(2)) : 1))));
-        cptr.stI32o(obj, $obj_corpsenm, random_monster(rn2));
+        cptr.stI32o(obj, $obj_corpsenm, ((rn2)(NHC.NUMMONS)));
         map_object(obj, 1);
     } else if (trap) {
         map_trap(trap, 1);
@@ -1498,11 +1498,11 @@ function findone(zx, zy, whatfound) {
         void detect_obj_traps(cptr.ldPtro(gi, $instance_globals_i_invent), 1, 0, found_p);
     if (mtmp && (!canspotmon(mtmp) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || M_AP_TYPE(mtmp))) {
         if (M_AP_TYPE(mtmp)) {
-            flash_glyph_at(zx, zy, (((Hallucination() ? random_monster(rn2_on_display_rng) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6);
+            flash_glyph_at(zx, zy, (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6);
             seemimic(mtmp);
             cptr.postinc1(cptr.add(found_p, $found_things_num_mons));
         } else if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (is_hider(cptr.ldPtro(mtmp, $monst_data)) || hides_under(cptr.ldPtro(mtmp, $monst_data)) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
-            flash_glyph_at(zx, zy, (((Hallucination() ? random_monster(rn2_on_display_rng) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6);
+            flash_glyph_at(zx, zy, (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6);
             cptr.stI32o(mtmp, $monst_mundetected, 0);
             newsym(zx, zy);
             cptr.postinc1(cptr.add(found_p, $found_things_num_mons));
@@ -1866,7 +1866,7 @@ function reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) {
         levl_glyph = (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 ? cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) : (seenv ? back_to_glyph(x, y) : default_glyph);
         glyph = !swallowed ? glyph_at(x, y) : levl_glyph;
         if (keep_mons && u_at(x, y) && swallowed) {
-            glyph = (((Hallucination() ? random_monster(rn2_on_display_rng) : monsndx(cptr.ldPtro(u, $you_ustuck))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
+            glyph = (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : monsndx(cptr.ldPtro(u, $you_ustuck))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
         } else if ((!keep_mons && (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) || glyph_is_warning(glyph))) || glyph_is_swallow(glyph)) {
             glyph = levl_glyph;
             was_mon = 1;
