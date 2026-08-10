@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { alloc } from './alloc.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -25,7 +26,7 @@ export function regex_init() {
 export function regex_compile(s, re) {
     if (!re)
         return 0;
-    if ((cptr.stI32o(re, 32, regcomp(re, s, 5))))
+    if ((cptr.stI32o(re, FLD.nhregex_err, regcomp(re, s, 5))))
         return 0;
     return 1;
 }
@@ -34,11 +35,11 @@ export function regex_compile(s, re) {
 export function regex_error_desc(re, errbuf) {
     if (!re) {
         void cptr.strcpy(errbuf, __sl0);
-    } else if (!cptr.ldI32o(re, 32)) {
+    } else if (!cptr.ldI32o(re, FLD.nhregex_err)) {
         void cptr.strcpy(errbuf, __sl1);
     } else {
         cptr.st1o(errbuf, 0, 0);
-        regerror(cptr.ldI32o(re, 32), re, errbuf, 256n);
+        regerror(cptr.ldI32o(re, FLD.nhregex_err), re, errbuf, 256n);
         if (!cptr.ld1so(errbuf, 0))
             void cptr.strcpy(errbuf, __sl2);
     }
@@ -52,7 +53,7 @@ export function regex_match(s, re) {
         return 0;
     if ((result = regexec(re, s, 0n, null, 0))) {
         if (result != 1)
-            cptr.stI32o(re, 32, result);
+            cptr.stI32o(re, FLD.nhregex_err, result);
         return 0;
     }
     return 1;

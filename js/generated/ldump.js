@@ -5,6 +5,7 @@
 
 import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("\x1bLua");
@@ -16,9 +17,9 @@ const __sl1 = cptr.lit("\x19\x93\r\n\x1a\n");
 
 /** C ref: ldump.c:41 — @param {CPtr} D @param {CPtr} b @param {CLongLong} size */
 function dumpBlock(D, b, size) {
-    if (cptr.ldI32o(D, 28) == 0 && size > 0n) {
+    if (cptr.ldI32o(D, FLD.DumpState_status) == 0 && size > 0n) {
         (void 0);
-        cptr.stI32o(D, 28, (cptr.ldPtro(D, 8))(cptr.ldPtr(D), b, size, cptr.ldPtro(D, 16)));
+        cptr.stI32o(D, FLD.DumpState_status, (cptr.ldPtro(D, FLD.DumpState_writer))(cptr.ldPtr(D), b, size, cptr.ldPtro(D, FLD.DumpState_data)));
         (void 0);
     }
 }
@@ -63,8 +64,8 @@ function dumpString(D, s) {
     if (cptr.eq(s, (null)))
         dumpSize(D, 0n);
     else {
-        let size = (cptr.ld1uo((s), 11) != 255 ? BigInt(cptr.ld1uo((s), 11) >>> 0) : cptr.ldU64o((s), 16));
-        let str = (cptr.add((s), 24));
+        let size = (cptr.ld1uo((s), FLD.TString_shrlen) != 255 ? BigInt(cptr.ld1uo((s), FLD.TString_shrlen) >>> 0) : cptr.ldU64o((s), FLD.TString_u));
+        let str = (cptr.add((s), FLD.TString_contents));
         dumpSize(D, BigInt.asUintN(64, size + 1n));
         dumpBlock(D, str, BigInt.asUintN(64, (size) * 1n));
     }
@@ -72,18 +73,18 @@ function dumpString(D, s) {
 
 /** C ref: ldump.c:104 — @param {CPtr} D @param {CPtr} f */
 function dumpCode(D, f) {
-    dumpInt(D, cptr.ldI32o(f, 24));
-    dumpBlock(D, cptr.ldPtro(f, 64), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, 24)))) * 4n));
+    dumpInt(D, cptr.ldI32o(f, FLD.Proto_sizecode));
+    dumpBlock(D, cptr.ldPtro(f, FLD.Proto_code), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, FLD.Proto_sizecode)))) * 4n));
 }
 
 /** C ref: ldump.c:112 — @param {CPtr} D @param {CPtr} f */
 function dumpConstants(D, f) {
     let i;
-    let n = cptr.ldI32o(f, 20);
+    let n = cptr.ldI32o(f, FLD.Proto_sizek);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        let o = cptr.add(cptr.ldPtro(f, 56), i, 16);
-        let tt = (((cptr.ld1uo((o), 8))) & 63);
+        let o = cptr.add(cptr.ldPtro(f, FLD.Proto_k), i, 16);
+        let tt = (((cptr.ld1uo((o), FLD.TValue_tt_))) & 63);
         dumpByte(D, tt);
         switch (tt) {
             case 19:
@@ -105,21 +106,21 @@ function dumpConstants(D, f) {
 /** C ref: ldump.c:138 — @param {CPtr} D @param {CPtr} f */
 function dumpProtos(D, f) {
     let i;
-    let n = cptr.ldI32o(f, 32);
+    let n = cptr.ldI32o(f, FLD.Proto_sizep);
     dumpInt(D, n);
     for (i = 0; i < n; i++)
-        dumpFunction(D, cptr.ldPtro(cptr.ldPtro(f, 72), i, 8), cptr.ldPtro(f, 112));
+        dumpFunction(D, cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_p), i, 8), cptr.ldPtro(f, FLD.Proto_source));
 }
 
 /** C ref: ldump.c:147 — @param {CPtr} D @param {CPtr} f */
 function dumpUpvalues(D, f) {
     let i;
-    let n = cptr.ldI32o(f, 16);
+    let n = cptr.ldI32o(f, FLD.Proto_sizeupvalues);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 8));
-        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 9));
-        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, 80), i, 16, 10));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16, FLD.Upvaldesc_instack));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16, FLD.Upvaldesc_idx));
+        dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16, FLD.Upvaldesc_kind));
     }
 }
 
@@ -127,39 +128,39 @@ function dumpUpvalues(D, f) {
 function dumpDebug(D, f) {
     let i;
     let n;
-    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 28);
+    n = (cptr.ldI32o(D, FLD.DumpState_strip)) ? 0 : cptr.ldI32o(f, FLD.Proto_sizelineinfo);
     dumpInt(D, n);
-    dumpBlock(D, cptr.ldPtro(f, 88), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
-    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 40);
-    dumpInt(D, n);
-    for (i = 0; i < n; i++) {
-        dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
-        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 96), i, 8, 4));
-    }
-    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 36);
+    dumpBlock(D, cptr.ldPtro(f, FLD.Proto_lineinfo), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
+    n = (cptr.ldI32o(D, FLD.DumpState_strip)) ? 0 : cptr.ldI32o(f, FLD.Proto_sizeabslineinfo);
     dumpInt(D, n);
     for (i = 0; i < n; i++) {
-        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, 104), i, 16));
-        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 8));
-        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 12));
+        dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, FLD.Proto_abslineinfo), i, 8));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, FLD.Proto_abslineinfo), i, 8, FLD.AbsLineInfo_line));
     }
-    n = (cptr.ldI32o(D, 24)) ? 0 : cptr.ldI32o(f, 16);
+    n = (cptr.ldI32o(D, FLD.DumpState_strip)) ? 0 : cptr.ldI32o(f, FLD.Proto_sizelocvars);
+    dumpInt(D, n);
+    for (i = 0; i < n; i++) {
+        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_locvars), i, 16));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, FLD.Proto_locvars), i, 16, FLD.LocVar_startpc));
+        dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, FLD.Proto_locvars), i, 16, FLD.LocVar_endpc));
+    }
+    n = (cptr.ldI32o(D, FLD.DumpState_strip)) ? 0 : cptr.ldI32o(f, FLD.Proto_sizeupvalues);
     dumpInt(D, n);
     for (i = 0; i < n; i++)
-        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, 80), i, 16));
+        dumpString(D, cptr.ldPtro(cptr.ldPtro(f, FLD.Proto_upvalues), i, 16));
 }
 
 /** C ref: ldump.c:183 — @param {CPtr} D @param {CPtr} f @param {CPtr} psource */
 function dumpFunction(D, f, psource) {
-    if (cptr.ldI32o(D, 24) || cptr.eq(cptr.ldPtro(f, 112), psource))
+    if (cptr.ldI32o(D, FLD.DumpState_strip) || cptr.eq(cptr.ldPtro(f, FLD.Proto_source), psource))
         dumpString(D, null);
     else
-        dumpString(D, cptr.ldPtro(f, 112));
-    dumpInt(D, cptr.ldI32o(f, 44));
-    dumpInt(D, cptr.ldI32o(f, 48));
-    dumpByte(D, cptr.ld1uo(f, 10));
-    dumpByte(D, cptr.ld1uo(f, 11));
-    dumpByte(D, cptr.ld1uo(f, 12));
+        dumpString(D, cptr.ldPtro(f, FLD.Proto_source));
+    dumpInt(D, cptr.ldI32o(f, FLD.Proto_linedefined));
+    dumpInt(D, cptr.ldI32o(f, FLD.Proto_lastlinedefined));
+    dumpByte(D, cptr.ld1uo(f, FLD.Proto_numparams));
+    dumpByte(D, cptr.ld1uo(f, FLD.Proto_is_vararg));
+    dumpByte(D, cptr.ld1uo(f, FLD.Proto_maxstacksize));
     dumpCode(D, f);
     dumpConstants(D, f);
     dumpUpvalues(D, f);
@@ -184,12 +185,12 @@ function dumpHeader(D) {
 export function luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);
     cptr.stPtr(D, L);
-    cptr.stPtro(D, 8, w);
-    cptr.stPtro(D, 16, data);
-    cptr.stI32o(D, 24, strip);
-    cptr.stI32o(D, 28, 0);
+    cptr.stPtro(D, FLD.DumpState_writer, w);
+    cptr.stPtro(D, FLD.DumpState_data, data);
+    cptr.stI32o(D, FLD.DumpState_strip, strip);
+    cptr.stI32o(D, FLD.DumpState_status, 0);
     dumpHeader(D);
-    dumpByte(D, cptr.ldI32o(f, 16));
+    dumpByte(D, cptr.ldI32o(f, FLD.Proto_sizeupvalues));
     dumpFunction(D, f, null);
-    return cptr.ldI32o(D, 28);
+    return cptr.ldI32o(D, FLD.DumpState_status);
 }

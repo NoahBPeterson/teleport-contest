@@ -8,6 +8,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { lua_compare, lua_createtable, lua_gettop, lua_isinteger, lua_newuserdatauv, lua_pushboolean, lua_pushinteger, lua_pushnil, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_setfield, lua_settop, lua_tointegerx, lua_touserdata, lua_type } from './lapi.js';
 import { luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checknumber, luaL_checkversion_, luaL_error, luaL_optinteger, luaL_optnumber, luaL_setfuncs } from './lauxlib.js';
 import { d } from './rnd.js';
@@ -385,11 +386,11 @@ function* math_randomseed(L) {
 /** C ref: lmathlib.c:649 — luaL_Reg[3] */
 const randfuncs = cptr.alloc(3 * 16);
 cptr.stPtro(randfuncs, 0, __sl6);
-cptr.stPtro(randfuncs, 8, math_random);
+cptr.stPtro(randfuncs, 0 + FLD.luaL_Reg_func, math_random);
 cptr.stPtro(randfuncs, 16, __sl7);
-cptr.stPtro(randfuncs, 24, math_randomseed);
+cptr.stPtro(randfuncs, 16 + FLD.luaL_Reg_func, math_randomseed);
 cptr.stPtro(randfuncs, 32, null);
-cptr.stPtro(randfuncs, 40, null);
+cptr.stPtro(randfuncs, 32 + FLD.luaL_Reg_func, null);
 
 /** C ref: lmathlib.c:659 — @param {CPtr} L */
 function* setrandfunc(L) {
@@ -402,61 +403,61 @@ function* setrandfunc(L) {
 /** C ref: lmathlib.c:722 — luaL_Reg[28] */
 const mathlib = cptr.alloc(28 * 16);
 cptr.stPtro(mathlib, 0, __sl8);
-cptr.stPtro(mathlib, 8, math_abs);
+cptr.stPtro(mathlib, 0 + FLD.luaL_Reg_func, math_abs);
 cptr.stPtro(mathlib, 16, __sl9);
-cptr.stPtro(mathlib, 24, math_acos);
+cptr.stPtro(mathlib, 16 + FLD.luaL_Reg_func, math_acos);
 cptr.stPtro(mathlib, 32, __sl10);
-cptr.stPtro(mathlib, 40, math_asin);
+cptr.stPtro(mathlib, 32 + FLD.luaL_Reg_func, math_asin);
 cptr.stPtro(mathlib, 48, __sl11);
-cptr.stPtro(mathlib, 56, math_atan);
+cptr.stPtro(mathlib, 48 + FLD.luaL_Reg_func, math_atan);
 cptr.stPtro(mathlib, 64, __sl12);
-cptr.stPtro(mathlib, 72, math_ceil);
+cptr.stPtro(mathlib, 64 + FLD.luaL_Reg_func, math_ceil);
 cptr.stPtro(mathlib, 80, __sl13);
-cptr.stPtro(mathlib, 88, math_cos);
+cptr.stPtro(mathlib, 80 + FLD.luaL_Reg_func, math_cos);
 cptr.stPtro(mathlib, 96, __sl14);
-cptr.stPtro(mathlib, 104, math_deg);
+cptr.stPtro(mathlib, 96 + FLD.luaL_Reg_func, math_deg);
 cptr.stPtro(mathlib, 112, __sl15);
-cptr.stPtro(mathlib, 120, math_exp);
+cptr.stPtro(mathlib, 112 + FLD.luaL_Reg_func, math_exp);
 cptr.stPtro(mathlib, 128, __sl16);
-cptr.stPtro(mathlib, 136, math_toint);
+cptr.stPtro(mathlib, 128 + FLD.luaL_Reg_func, math_toint);
 cptr.stPtro(mathlib, 144, __sl17);
-cptr.stPtro(mathlib, 152, math_floor);
+cptr.stPtro(mathlib, 144 + FLD.luaL_Reg_func, math_floor);
 cptr.stPtro(mathlib, 160, __sl18);
-cptr.stPtro(mathlib, 168, math_fmod);
+cptr.stPtro(mathlib, 160 + FLD.luaL_Reg_func, math_fmod);
 cptr.stPtro(mathlib, 176, __sl19);
-cptr.stPtro(mathlib, 184, math_ult);
+cptr.stPtro(mathlib, 176 + FLD.luaL_Reg_func, math_ult);
 cptr.stPtro(mathlib, 192, __sl20);
-cptr.stPtro(mathlib, 200, math_log);
+cptr.stPtro(mathlib, 192 + FLD.luaL_Reg_func, math_log);
 cptr.stPtro(mathlib, 208, __sl21);
-cptr.stPtro(mathlib, 216, math_max);
+cptr.stPtro(mathlib, 208 + FLD.luaL_Reg_func, math_max);
 cptr.stPtro(mathlib, 224, __sl22);
-cptr.stPtro(mathlib, 232, math_min);
+cptr.stPtro(mathlib, 224 + FLD.luaL_Reg_func, math_min);
 cptr.stPtro(mathlib, 240, __sl23);
-cptr.stPtro(mathlib, 248, math_modf);
+cptr.stPtro(mathlib, 240 + FLD.luaL_Reg_func, math_modf);
 cptr.stPtro(mathlib, 256, __sl24);
-cptr.stPtro(mathlib, 264, math_rad);
+cptr.stPtro(mathlib, 256 + FLD.luaL_Reg_func, math_rad);
 cptr.stPtro(mathlib, 272, __sl25);
-cptr.stPtro(mathlib, 280, math_sin);
+cptr.stPtro(mathlib, 272 + FLD.luaL_Reg_func, math_sin);
 cptr.stPtro(mathlib, 288, __sl26);
-cptr.stPtro(mathlib, 296, math_sqrt);
+cptr.stPtro(mathlib, 288 + FLD.luaL_Reg_func, math_sqrt);
 cptr.stPtro(mathlib, 304, __sl27);
-cptr.stPtro(mathlib, 312, math_tan);
+cptr.stPtro(mathlib, 304 + FLD.luaL_Reg_func, math_tan);
 cptr.stPtro(mathlib, 320, __sl28);
-cptr.stPtro(mathlib, 328, math_type);
+cptr.stPtro(mathlib, 320 + FLD.luaL_Reg_func, math_type);
 cptr.stPtro(mathlib, 336, __sl6);
-cptr.stPtro(mathlib, 344, null);
+cptr.stPtro(mathlib, 336 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 352, __sl7);
-cptr.stPtro(mathlib, 360, null);
+cptr.stPtro(mathlib, 352 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 368, __sl29);
-cptr.stPtro(mathlib, 376, null);
+cptr.stPtro(mathlib, 368 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 384, __sl30);
-cptr.stPtro(mathlib, 392, null);
+cptr.stPtro(mathlib, 384 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 400, __sl31);
-cptr.stPtro(mathlib, 408, null);
+cptr.stPtro(mathlib, 400 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 416, __sl32);
-cptr.stPtro(mathlib, 424, null);
+cptr.stPtro(mathlib, 416 + FLD.luaL_Reg_func, null);
 cptr.stPtro(mathlib, 432, null);
-cptr.stPtro(mathlib, 440, null);
+cptr.stPtro(mathlib, 432 + FLD.luaL_Reg_func, null);
 
 /** C ref: lmathlib.c:768 — @param {CPtr} L @returns {CInt} */
 export function* luaopen_math(L) {

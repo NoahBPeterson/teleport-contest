@@ -6,6 +6,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/hacklib-prelude.js) ----
 // hacklib.c needs no extern stubs beyond libc: every external call it makes
@@ -731,36 +732,36 @@ cptr.stI32o(dm, 4, 4);
 cptr.stI32o(dm, 8, 8);
 cptr.stI32o(dm, 12, 8);
 cptr.stI32o(dm, 16, 8);
-cptr.stPtro(dm, 24, __sl18);
-cptr.stPtro(dm, 32, __sl18);
+cptr.stPtro(dm, 0 + FLD.datamodel_information_datamodel, __sl18);
+cptr.stPtro(dm, 0 + FLD.datamodel_information_dmplatform, __sl18);
 cptr.stI32o(dm, 40, 2);
 cptr.stI32o(dm, 44, 4);
 cptr.stI32o(dm, 48, 4);
 cptr.stI32o(dm, 52, 8);
 cptr.stI32o(dm, 56, 4);
-cptr.stPtro(dm, 64, __sl19);
-cptr.stPtro(dm, 72, __sl20);
+cptr.stPtro(dm, 40 + FLD.datamodel_information_datamodel, __sl19);
+cptr.stPtro(dm, 40 + FLD.datamodel_information_dmplatform, __sl20);
 cptr.stI32o(dm, 80, 2);
 cptr.stI32o(dm, 84, 4);
 cptr.stI32o(dm, 88, 4);
 cptr.stI32o(dm, 92, 8);
 cptr.stI32o(dm, 96, 8);
-cptr.stPtro(dm, 104, __sl21);
-cptr.stPtro(dm, 112, __sl22);
+cptr.stPtro(dm, 80 + FLD.datamodel_information_datamodel, __sl21);
+cptr.stPtro(dm, 80 + FLD.datamodel_information_dmplatform, __sl22);
 cptr.stI32o(dm, 120, 2);
 cptr.stI32o(dm, 124, 4);
 cptr.stI32o(dm, 128, 8);
 cptr.stI32o(dm, 132, 8);
 cptr.stI32o(dm, 136, 8);
-cptr.stPtro(dm, 144, __sl23);
-cptr.stPtro(dm, 152, __sl24);
+cptr.stPtro(dm, 120 + FLD.datamodel_information_datamodel, __sl23);
+cptr.stPtro(dm, 120 + FLD.datamodel_information_dmplatform, __sl24);
 cptr.stI32o(dm, 160, 2);
 cptr.stI32o(dm, 164, 8);
 cptr.stI32o(dm, 168, 8);
 cptr.stI32o(dm, 172, 8);
 cptr.stI32o(dm, 176, 8);
-cptr.stPtro(dm, 184, __sl25);
-cptr.stPtro(dm, 192, __sl26);
+cptr.stPtro(dm, 160 + FLD.datamodel_information_datamodel, __sl25);
+cptr.stPtro(dm, 160 + FLD.datamodel_information_dmplatform, __sl26);
 
 let __static_datamodel_unknown = __sl27; /** C ref: hacklib.c:1049 — char * (function-static) */
 
@@ -776,7 +777,7 @@ export function datamodel(retidx) {
                 ++matchcount;
         }
         if (matchcount == 5)
-            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, 24) : cptr.ldPtro2(dm, i, 40, 32);
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, FLD.datamodel_information_datamodel) : cptr.ldPtro2(dm, i, 40, FLD.datamodel_information_dmplatform);
     }
     return __static_datamodel_unknown;
 }
@@ -788,7 +789,7 @@ export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szp
     let i;
     for (i = 1; i < 5; ++i) {
         if (szshort == cptr.ldI32o3(dm, i, 40, 0, 4, 0) && szint == cptr.ldI32o3(dm, i, 40, 1, 4, 0) && szlong == cptr.ldI32o3(dm, i, 40, 2, 4, 0) && szll == cptr.ldI32o3(dm, i, 40, 3, 4, 0) && szptr == cptr.ldI32o3(dm, i, 40, 4, 4, 0))
-            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, 24) : cptr.ldPtro2(dm, i, 40, 32);
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, FLD.datamodel_information_datamodel) : cptr.ldPtro2(dm, i, 40, FLD.datamodel_information_dmplatform);
     }
     return __static_what_datamodel_is_this_unknown;
 }

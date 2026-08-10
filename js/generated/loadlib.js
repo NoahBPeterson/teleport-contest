@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { lua_callk, lua_copy, lua_createtable, lua_getfield, lua_isstring, lua_pushboolean, lua_pushcclosure, lua_pushfstring, lua_pushlightuserdata, lua_pushlstring, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawgeti, lua_rawseti, lua_rotate, lua_setfield, lua_setmetatable, lua_settop, lua_toboolean, lua_tolstring, lua_touserdata, lua_type } from './lapi.js';
 import { luaL_addgsub, luaL_addlstring, luaL_addstring, luaL_addvalue, luaL_buffinit, luaL_checklstring, luaL_checkversion_, luaL_error, luaL_getsubtable, luaL_gsub, luaL_len, luaL_loadfilex, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 
@@ -104,11 +105,11 @@ function setpath(L, fieldname, envname, dft) {
         luaL_buffinit(L, b);
         if (cptr.cmp(path, dftmark) < 0) {
             luaL_addlstring(b, path, BigInt.asUintN(64, cptr.diff(dftmark, path)));
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(__sl5)))));
+            (void (cptr.ldU64o((b), FLD.luaL_Buffer_n) < cptr.ldU64o((b), FLD.luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), FLD.luaL_Buffer_n, cptr.ldU64o((b), FLD.luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(__sl5)))));
         }
         luaL_addstring(b, dft);
         if (cptr.cmp(dftmark, cptr.add(cptr.add(path, len), -(2))) < 0) {
-            (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(__sl5)))));
+            (void (cptr.ldU64o((b), FLD.luaL_Buffer_n) < cptr.ldU64o((b), FLD.luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), FLD.luaL_Buffer_n, cptr.ldU64o((b), FLD.luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(__sl5)))));
             luaL_addlstring(b, cptr.add(dftmark, 2), BigInt.asUintN(64, cptr.diff((cptr.add(cptr.add(path, len), -(2))), dftmark)));
         }
         luaL_pushresult(b);
@@ -232,9 +233,9 @@ function searchpath(L, name, path, sep, dirsep) {
         name = luaL_gsub(L, name, sep, dirsep);
     luaL_buffinit(L, buff);
     luaL_addgsub(buff, path, __sl12, name);
-    (void (cptr.ldU64o((buff), 16) < cptr.ldU64o((buff), 8) || luaL_prepbuffsize((buff), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((buff)), (cptr.stU64o((buff), 16, cptr.ldU64o((buff), 16) + 1n)) - (1n), 0)));
+    (void (cptr.ldU64o((buff), FLD.luaL_Buffer_n) < cptr.ldU64o((buff), FLD.luaL_Buffer_size) || luaL_prepbuffsize((buff), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((buff)), (cptr.stU64o((buff), FLD.luaL_Buffer_n, cptr.ldU64o((buff), FLD.luaL_Buffer_n) + 1n)) - (1n), 0)));
     pathname.v = (cptr.ldPtr((buff)));
-    endpathname = cptr.add(cptr.add(pathname.v, (cptr.ldU64o((buff), 16))), -(1));
+    endpathname = cptr.add(cptr.add(pathname.v, (cptr.ldU64o((buff), FLD.luaL_Buffer_n))), -(1));
     while (!cptr.eq((filename = getnextfilename(pathname, endpathname)), (null))) {
         if (readable(filename))
             return lua_pushstring(L, filename);
@@ -361,7 +362,7 @@ function findloader(L, name) {
         luaL_addstring(msg, __sl28);
         if ((__builtin_expect(BigInt(((lua_rawgeti(L, 3, BigInt(i)) == 0) != 0)), 0n))) {
             lua_settop(L, -2);
-            (cptr.stU64o((msg), 16, cptr.ldU64o((msg), 16) - 2n));
+            (cptr.stU64o((msg), FLD.luaL_Buffer_n, cptr.ldU64o((msg), FLD.luaL_Buffer_n) - 2n));
             luaL_pushresult(msg);
             luaL_error(L, __sl29, name, lua_tolstring(L, -1, null));
         }
@@ -374,7 +375,7 @@ function findloader(L, name) {
             luaL_addvalue(msg);
         } else {
             lua_settop(L, -3);
-            (cptr.stU64o((msg), 16, cptr.ldU64o((msg), 16) - 2n));
+            (cptr.stU64o((msg), FLD.luaL_Buffer_n, cptr.ldU64o((msg), FLD.luaL_Buffer_n) - 2n));
         }
     }
 }
@@ -409,28 +410,28 @@ function ll_require(L) {
 /** C ref: loadlib.c:682 — luaL_Reg[8] */
 const pk_funcs = cptr.alloc(8 * 16);
 cptr.stPtro(pk_funcs, 0, __sl31);
-cptr.stPtro(pk_funcs, 8, ll_loadlib);
+cptr.stPtro(pk_funcs, 0 + FLD.luaL_Reg_func, ll_loadlib);
 cptr.stPtro(pk_funcs, 16, __sl32);
-cptr.stPtro(pk_funcs, 24, ll_searchpath);
+cptr.stPtro(pk_funcs, 16 + FLD.luaL_Reg_func, ll_searchpath);
 cptr.stPtro(pk_funcs, 32, __sl33);
-cptr.stPtro(pk_funcs, 40, null);
+cptr.stPtro(pk_funcs, 32 + FLD.luaL_Reg_func, null);
 cptr.stPtro(pk_funcs, 48, __sl21);
-cptr.stPtro(pk_funcs, 56, null);
+cptr.stPtro(pk_funcs, 48 + FLD.luaL_Reg_func, null);
 cptr.stPtro(pk_funcs, 64, __sl17);
-cptr.stPtro(pk_funcs, 72, null);
+cptr.stPtro(pk_funcs, 64 + FLD.luaL_Reg_func, null);
 cptr.stPtro(pk_funcs, 80, __sl26);
-cptr.stPtro(pk_funcs, 88, null);
+cptr.stPtro(pk_funcs, 80 + FLD.luaL_Reg_func, null);
 cptr.stPtro(pk_funcs, 96, __sl34);
-cptr.stPtro(pk_funcs, 104, null);
+cptr.stPtro(pk_funcs, 96 + FLD.luaL_Reg_func, null);
 cptr.stPtro(pk_funcs, 112, null);
-cptr.stPtro(pk_funcs, 120, null);
+cptr.stPtro(pk_funcs, 112 + FLD.luaL_Reg_func, null);
 
 /** C ref: loadlib.c:695 — luaL_Reg[2] */
 const ll_funcs = cptr.alloc(2 * 16);
 cptr.stPtro(ll_funcs, 0, __sl35);
-cptr.stPtro(ll_funcs, 8, ll_require);
+cptr.stPtro(ll_funcs, 0 + FLD.luaL_Reg_func, ll_require);
 cptr.stPtro(ll_funcs, 16, null);
-cptr.stPtro(ll_funcs, 24, null);
+cptr.stPtro(ll_funcs, 16 + FLD.luaL_Reg_func, null);
 
 const __static_createsearcherstable_searchers = cptr.alloc(5 * 8);
 cptr.stPtro(__static_createsearcherstable_searchers, 0, searcher_preload);

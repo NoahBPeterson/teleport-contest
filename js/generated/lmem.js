@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { luaG_runerror } from './ldebug.js';
 import { luaC_fullgc } from './lgc.js';
 import { luaD_throw } from './ldo.js';
@@ -51,18 +52,18 @@ export function luaM_toobig(L) {
 
 /** C ref: lmem.c:150 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize */
 export function luaM_free_(L, block, osize) {
-    let g = (cptr.ldPtro(L, 24));
+    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
     (void 0);
-    ((cptr.ldPtr(g))(cptr.ldPtro(g, 8), block, osize, 0n));
-    cptr.stI64o(g, 24, cptr.ldI64o(g, 24) - BigInt.asIntN(64, osize));
+    ((cptr.ldPtr(g))(cptr.ldPtro(g, FLD.global_State_ud), block, osize, 0n));
+    cptr.stI64o(g, FLD.global_State_GCdebt, cptr.ldI64o(g, FLD.global_State_GCdebt) - BigInt.asIntN(64, osize));
 }
 
 /** C ref: lmem.c:162 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
 function tryagain(L, block, osize, nsize) {
-    let g = (cptr.ldPtro(L, 24));
-    if (((((((cptr.ld1uo(((cptr.add(g, 80))), 8))) & 15)) == 0) && !cptr.ld1uo(g, 103))) {
+    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+    if (((((((cptr.ld1uo(((cptr.add(g, FLD.global_State_nilvalue))), FLD.TValue_tt_))) & 15)) == 0) && !cptr.ld1uo(g, FLD.global_State_gcstopem))) {
         luaC_fullgc(L, 1);
-        return ((cptr.ldPtr(g))(cptr.ldPtro(g, 8), block, osize, nsize));
+        return ((cptr.ldPtr(g))(cptr.ldPtro(g, FLD.global_State_ud), block, osize, nsize));
     } else
         return (null);
 }
@@ -70,16 +71,16 @@ function tryagain(L, block, osize, nsize) {
 /** C ref: lmem.c:176 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
 export function luaM_realloc_(L, block, osize, nsize) {
     let newblock;
-    let g = (cptr.ldPtro(L, 24));
+    let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
     (void 0);
-    newblock = ((cptr.ldPtr(g))(cptr.ldPtro(g, 8), block, osize, nsize));
+    newblock = ((cptr.ldPtr(g))(cptr.ldPtro(g, FLD.global_State_ud), block, osize, nsize));
     if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n ? 1 : 0) != 0)), 0n))) {
         newblock = tryagain(L, block, osize, nsize);
         if (cptr.eq(newblock, (null)))
             return (null);
     }
     (void 0);
-    cptr.stI64o(g, 24, BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(g, 24)) + nsize)) - osize)));
+    cptr.stI64o(g, FLD.global_State_GCdebt, BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(g, FLD.global_State_GCdebt)) + nsize)) - osize)));
     return newblock;
 }
 
@@ -96,14 +97,14 @@ export function luaM_malloc_(L, size, tag) {
     if (size == 0n)
         return (null);
     else {
-        let g = (cptr.ldPtro(L, 24));
-        let newblock = ((cptr.ldPtr(g))(cptr.ldPtro(g, 8), (null), BigInt.asUintN(64, BigInt(tag)), size));
+        let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
+        let newblock = ((cptr.ldPtr(g))(cptr.ldPtro(g, FLD.global_State_ud), (null), BigInt.asUintN(64, BigInt(tag)), size));
         if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null))) != 0)), 0n))) {
             newblock = tryagain(L, (null), BigInt.asUintN(64, BigInt(tag)), size);
             if (cptr.eq(newblock, (null)))
                 luaD_throw(L, 4);
         }
-        cptr.stI64o(g, 24, cptr.ldI64o(g, 24) + BigInt.asIntN(64, size));
+        cptr.stI64o(g, FLD.global_State_GCdebt, cptr.ldI64o(g, FLD.global_State_GCdebt) + BigInt.asIntN(64, size));
         return newblock;
     }
 }

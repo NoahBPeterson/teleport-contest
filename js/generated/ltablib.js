@@ -5,6 +5,7 @@
 
 import { u32div, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { lua_callk, lua_checkstack, lua_compare, lua_createtable, lua_geti, lua_getmetatable, lua_gettop, lua_isstring, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawget, lua_rotate, lua_setfield, lua_seti, lua_settop, lua_toboolean, lua_type, lua_typename } from './lapi.js';
 import { luaL_addlstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checktype, luaL_checkversion_, luaL_error, luaL_len, luaL_optinteger, luaL_optlstring, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 import { rnd } from './rnd.js';
@@ -318,21 +319,21 @@ function sort(L) {
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
 const tab_funcs = cptr.alloc(8 * 16);
 cptr.stPtro(tab_funcs, 0, __sl13);
-cptr.stPtro(tab_funcs, 8, tconcat);
+cptr.stPtro(tab_funcs, 0 + FLD.luaL_Reg_func, tconcat);
 cptr.stPtro(tab_funcs, 16, __sl14);
-cptr.stPtro(tab_funcs, 24, tinsert);
+cptr.stPtro(tab_funcs, 16 + FLD.luaL_Reg_func, tinsert);
 cptr.stPtro(tab_funcs, 32, __sl15);
-cptr.stPtro(tab_funcs, 40, tpack);
+cptr.stPtro(tab_funcs, 32 + FLD.luaL_Reg_func, tpack);
 cptr.stPtro(tab_funcs, 48, __sl16);
-cptr.stPtro(tab_funcs, 56, tunpack);
+cptr.stPtro(tab_funcs, 48 + FLD.luaL_Reg_func, tunpack);
 cptr.stPtro(tab_funcs, 64, __sl17);
-cptr.stPtro(tab_funcs, 72, tremove);
+cptr.stPtro(tab_funcs, 64 + FLD.luaL_Reg_func, tremove);
 cptr.stPtro(tab_funcs, 80, __sl18);
-cptr.stPtro(tab_funcs, 88, tmove);
+cptr.stPtro(tab_funcs, 80 + FLD.luaL_Reg_func, tmove);
 cptr.stPtro(tab_funcs, 96, __sl19);
-cptr.stPtro(tab_funcs, 104, sort);
+cptr.stPtro(tab_funcs, 96 + FLD.luaL_Reg_func, sort);
 cptr.stPtro(tab_funcs, 112, null);
-cptr.stPtro(tab_funcs, 120, null);
+cptr.stPtro(tab_funcs, 112 + FLD.luaL_Reg_func, null);
 
 /** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
 export function luaopen_table(L) {

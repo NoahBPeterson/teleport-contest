@@ -6,6 +6,7 @@
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("cmd_before");
@@ -120,16 +121,16 @@ cptr.stI32o(nhcb_counts, 0, 0);
 /** C ref: decl.c:16 — struct c_color_names */
 export let c_color_names = cptr.alloc(88);
 cptr.stPtr(c_color_names, __sl4);
-cptr.stPtro(c_color_names, 8, __sl5);
-cptr.stPtro(c_color_names, 16, __sl6);
-cptr.stPtro(c_color_names, 24, __sl7);
-cptr.stPtro(c_color_names, 32, __sl8);
-cptr.stPtro(c_color_names, 40, __sl9);
-cptr.stPtro(c_color_names, 48, __sl10);
-cptr.stPtro(c_color_names, 56, __sl11);
-cptr.stPtro(c_color_names, 64, __sl12);
-cptr.stPtro(c_color_names, 72, __sl13);
-cptr.stPtro(c_color_names, 80, __sl14);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_amber, __sl5);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_golden, __sl6);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_light_blue, __sl7);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_red, __sl8);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_green, __sl9);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_silver, __sl10);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_blue, __sl11);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_purple, __sl12);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_white, __sl13);
+cptr.stPtro(c_color_names, FLD.c_color_names_c_orange, __sl14);
 
 /** C ref: decl.c:20 — char *[16] */
 export const c_obj_colors = cptr.alloc(16 * 8);
@@ -153,19 +154,19 @@ cptr.stPtro(c_obj_colors, 120, __sl13);
 /** C ref: decl.c:39 — struct c_common_strings */
 export let c_common_strings = cptr.alloc(112);
 cptr.stPtr(c_common_strings, __sl25);
-cptr.stPtro(c_common_strings, 8, __sl26);
-cptr.stPtro(c_common_strings, 16, __sl27);
-cptr.stPtro(c_common_strings, 24, __sl28);
-cptr.stPtro(c_common_strings, 32, __sl29);
-cptr.stPtro(c_common_strings, 40, __sl30);
-cptr.stPtro(c_common_strings, 48, __sl31);
-cptr.stPtro(c_common_strings, 56, __sl32);
-cptr.stPtro(c_common_strings, 64, __sl33);
-cptr.stPtro(c_common_strings, 72, __sl34);
-cptr.stPtro(c_common_strings, 80, __sl35);
-cptr.stPtro(c_common_strings, 88, __sl36);
-cptr.stPtro(c_common_strings, 96, __sl37);
-cptr.stPtro(c_common_strings, 104, __sl38);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_nothing_seems_to_happen, __sl26);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_thats_enough_tries, __sl27);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_silly_thing_to, __sl28);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_shudder_for_moment, __sl29);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_something, __sl30);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_Something, __sl31);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_You_can_move_again, __sl32);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_Never_mind, __sl33);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_vision_clears, __sl34);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_the_your + 0, __sl35);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_the_your + 8, __sl36);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_fakename + 0, __sl37);
+cptr.stPtro(c_common_strings, FLD.c_common_strings_c_fakename + 8, __sl38);
 
 /** C ref: decl.c:54 — char[7] */
 export const disclosure_options = cptr.bytes("iavgco");
@@ -357,115 +358,115 @@ export let ARGV0 = cptr.box(null);
 /** C ref: decl.c:124 — struct Role */
 let urole_init_data = cptr.alloc(312);
 cptr.stPtr(urole_init_data, __sl60);
-cptr.stPtro(urole_init_data, 8, null);
-cptr.stPtro(urole_init_data, 16, null);
-cptr.stPtro(urole_init_data, 24, null);
-cptr.stPtro(urole_init_data, 32, null);
-cptr.stPtro(urole_init_data, 40, null);
-cptr.stPtro(urole_init_data, 48, null);
-cptr.stPtro(urole_init_data, 56, null);
-cptr.stPtro(urole_init_data, 64, null);
-cptr.stPtro(urole_init_data, 72, null);
-cptr.stPtro(urole_init_data, 80, null);
-cptr.stPtro(urole_init_data, 88, null);
-cptr.stPtro(urole_init_data, 96, null);
-cptr.stPtro(urole_init_data, 104, null);
-cptr.stPtro(urole_init_data, 112, null);
-cptr.stPtro(urole_init_data, 120, null);
-cptr.stPtro(urole_init_data, 128, null);
-cptr.stPtro(urole_init_data, 136, null);
-cptr.stPtro(urole_init_data, 144, null);
-cptr.stPtro(urole_init_data, 152, null);
-cptr.stPtro(urole_init_data, 160, __sl61);
-cptr.stPtro(urole_init_data, 168, __sl62);
-cptr.stPtro(urole_init_data, 176, __sl63);
-cptr.stPtro(urole_init_data, 184, __sl64);
-cptr.stPtro(urole_init_data, 192, __sl65);
-cptr.stPtro(urole_init_data, 200, __sl66);
-cptr.stI16o(urole_init_data, 208, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 210, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 212, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 214, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 216, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 218, NHC.NON_PM);
-cptr.stI16o(urole_init_data, 220, NHC.NON_PM);
-cptr.st1o(urole_init_data, 222, 0);
-cptr.st1o(urole_init_data, 223, 0);
-cptr.stI16o(urole_init_data, 224, 0);
-cptr.stI16o(urole_init_data, 226, 0);
-cptr.stI16o(urole_init_data, 228, 7);
-cptr.stI16o(urole_init_data, 230, 7);
-cptr.stI16o(urole_init_data, 232, 7);
-cptr.stI16o(urole_init_data, 234, 7);
-cptr.stI16o(urole_init_data, 236, 7);
-cptr.stI16o(urole_init_data, 238, 7);
-cptr.stI16o(urole_init_data, 240, 20);
-cptr.stI16o(urole_init_data, 242, 15);
-cptr.stI16o(urole_init_data, 244, 15);
-cptr.stI16o(urole_init_data, 246, 20);
-cptr.stI16o(urole_init_data, 248, 20);
-cptr.stI16o(urole_init_data, 250, 10);
-cptr.stI16o(urole_init_data, 252, 10);
-cptr.stI16o(urole_init_data, 254, 0);
-cptr.stI16o(urole_init_data, 256, 0);
-cptr.stI16o(urole_init_data, 258, 8);
-cptr.stI16o(urole_init_data, 260, 1);
-cptr.stI16o(urole_init_data, 262, 0);
-cptr.stI16o(urole_init_data, 264, 2);
-cptr.stI16o(urole_init_data, 266, 0);
-cptr.stI16o(urole_init_data, 268, 0);
-cptr.stI16o(urole_init_data, 270, 2);
-cptr.stI16o(urole_init_data, 272, 0);
-cptr.stI16o(urole_init_data, 274, 3);
-cptr.stI16o(urole_init_data, 276, 14);
-cptr.stI16o(urole_init_data, 278, 0);
-cptr.stI32o(urole_init_data, 280, 10);
-cptr.stI32o(urole_init_data, 284, 0);
-cptr.stI32o(urole_init_data, 288, 0);
-cptr.stI32o(urole_init_data, 292, 4);
-cptr.stI32o(urole_init_data, 296, NHC.A_INT);
-cptr.stI32o(urole_init_data, 300, 0);
-cptr.stI32o(urole_init_data, 304, -3);
+cptr.stPtro(urole_init_data, FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 0, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 0 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 16, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 16 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 32, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 32 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 48, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 48 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 64, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 64 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 80, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 80 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 96, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 96 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 112, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 112 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 128, null);
+cptr.stPtro(urole_init_data, FLD.Role_rank + 128 + FLD.RoleName_f, null);
+cptr.stPtro(urole_init_data, FLD.Role_lgod, __sl61);
+cptr.stPtro(urole_init_data, FLD.Role_ngod, __sl62);
+cptr.stPtro(urole_init_data, FLD.Role_cgod, __sl63);
+cptr.stPtro(urole_init_data, FLD.Role_filecode, __sl64);
+cptr.stPtro(urole_init_data, FLD.Role_homebase, __sl65);
+cptr.stPtro(urole_init_data, FLD.Role_intermed, __sl66);
+cptr.stI16o(urole_init_data, FLD.Role_mnum, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_petnum, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_ldrnum, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_guardnum, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_neminum, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_enemy1num, NHC.NON_PM);
+cptr.stI16o(urole_init_data, FLD.Role_enemy2num, NHC.NON_PM);
+cptr.st1o(urole_init_data, FLD.Role_enemy1sym, 0);
+cptr.st1o(urole_init_data, FLD.Role_enemy2sym, 0);
+cptr.stI16o(urole_init_data, FLD.Role_questarti, 0);
+cptr.stI16o(urole_init_data, FLD.Role_allow, 0);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 0, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 2, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 4, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 6, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 8, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrbase + 10, 7);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 0, 20);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 2, 15);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 4, 15);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 6, 20);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 8, 20);
+cptr.stI16o(urole_init_data, FLD.Role_attrdist + 10, 10);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv, 10);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv + FLD.RoleAdvance_inrnd, 0);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv + FLD.RoleAdvance_lofix, 0);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv + FLD.RoleAdvance_lornd, 8);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv + FLD.RoleAdvance_hifix, 1);
+cptr.stI16o(urole_init_data, FLD.Role_hpadv + FLD.RoleAdvance_hirnd, 0);
+cptr.stI16o(urole_init_data, FLD.Role_enadv, 2);
+cptr.stI16o(urole_init_data, FLD.Role_enadv + FLD.RoleAdvance_inrnd, 0);
+cptr.stI16o(urole_init_data, FLD.Role_enadv + FLD.RoleAdvance_lofix, 0);
+cptr.stI16o(urole_init_data, FLD.Role_enadv + FLD.RoleAdvance_lornd, 2);
+cptr.stI16o(urole_init_data, FLD.Role_enadv + FLD.RoleAdvance_hifix, 0);
+cptr.stI16o(urole_init_data, FLD.Role_enadv + FLD.RoleAdvance_hirnd, 3);
+cptr.stI16o(urole_init_data, FLD.Role_xlev, 14);
+cptr.stI16o(urole_init_data, FLD.Role_initrecord, 0);
+cptr.stI32o(urole_init_data, FLD.Role_spelbase, 10);
+cptr.stI32o(urole_init_data, FLD.Role_spelheal, 0);
+cptr.stI32o(urole_init_data, FLD.Role_spelshld, 0);
+cptr.stI32o(urole_init_data, FLD.Role_spelarmr, 4);
+cptr.stI32o(urole_init_data, FLD.Role_spelstat, NHC.A_INT);
+cptr.stI32o(urole_init_data, FLD.Role_spelspec, 0);
+cptr.stI32o(urole_init_data, FLD.Role_spelsbon, -3);
 
 /** C ref: decl.c:149 — struct Race */
 let urace_init_data = cptr.alloc(112);
 cptr.stPtr(urace_init_data, __sl30);
-cptr.stPtro(urace_init_data, 8, __sl67);
-cptr.stPtro(urace_init_data, 16, __sl30);
-cptr.stPtro(urace_init_data, 24, __sl64);
-cptr.stPtro(urace_init_data, 32, null);
-cptr.stPtro(urace_init_data, 40, null);
-cptr.stI16o(urace_init_data, 48, NHC.NON_PM);
-cptr.stI16o(urace_init_data, 50, NHC.NON_PM);
-cptr.stI16o(urace_init_data, 52, NHC.NON_PM);
-cptr.stI16o(urace_init_data, 54, 0);
-cptr.stI16o(urace_init_data, 56, 0);
-cptr.stI16o(urace_init_data, 58, 0);
-cptr.stI16o(urace_init_data, 60, 0);
-cptr.stI16o(urace_init_data, 62, 3);
-cptr.stI16o(urace_init_data, 64, 3);
-cptr.stI16o(urace_init_data, 66, 3);
-cptr.stI16o(urace_init_data, 68, 3);
-cptr.stI16o(urace_init_data, 70, 3);
-cptr.stI16o(urace_init_data, 72, 3);
-cptr.stI16o(urace_init_data, 74, 118);
-cptr.stI16o(urace_init_data, 76, 18);
-cptr.stI16o(urace_init_data, 78, 18);
-cptr.stI16o(urace_init_data, 80, 18);
-cptr.stI16o(urace_init_data, 82, 18);
-cptr.stI16o(urace_init_data, 84, 18);
-cptr.stI16o(urace_init_data, 86, 2);
-cptr.stI16o(urace_init_data, 88, 0);
-cptr.stI16o(urace_init_data, 90, 0);
-cptr.stI16o(urace_init_data, 92, 2);
-cptr.stI16o(urace_init_data, 94, 1);
-cptr.stI16o(urace_init_data, 96, 0);
-cptr.stI16o(urace_init_data, 98, 1);
-cptr.stI16o(urace_init_data, 100, 0);
-cptr.stI16o(urace_init_data, 102, 2);
-cptr.stI16o(urace_init_data, 104, 0);
-cptr.stI16o(urace_init_data, 106, 2);
-cptr.stI16o(urace_init_data, 108, 0);
+cptr.stPtro(urace_init_data, FLD.Race_adj, __sl67);
+cptr.stPtro(urace_init_data, FLD.Race_coll, __sl30);
+cptr.stPtro(urace_init_data, FLD.Race_filecode, __sl64);
+cptr.stPtro(urace_init_data, FLD.Race_individual, null);
+cptr.stPtro(urace_init_data, FLD.Race_individual + FLD.RoleName_f, null);
+cptr.stI16o(urace_init_data, FLD.Race_mnum, NHC.NON_PM);
+cptr.stI16o(urace_init_data, FLD.Race_mummynum, NHC.NON_PM);
+cptr.stI16o(urace_init_data, FLD.Race_zombienum, NHC.NON_PM);
+cptr.stI16o(urace_init_data, FLD.Race_allow, 0);
+cptr.stI16o(urace_init_data, FLD.Race_selfmask, 0);
+cptr.stI16o(urace_init_data, FLD.Race_lovemask, 0);
+cptr.stI16o(urace_init_data, FLD.Race_hatemask, 0);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 0, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 2, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 4, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 6, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 8, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmin + 10, 3);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 0, 118);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 2, 18);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 4, 18);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 6, 18);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 8, 18);
+cptr.stI16o(urace_init_data, FLD.Race_attrmax + 10, 18);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv, 2);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv + FLD.RoleAdvance_inrnd, 0);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv + FLD.RoleAdvance_lofix, 0);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv + FLD.RoleAdvance_lornd, 2);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv + FLD.RoleAdvance_hifix, 1);
+cptr.stI16o(urace_init_data, FLD.Race_hpadv + FLD.RoleAdvance_hirnd, 0);
+cptr.stI16o(urace_init_data, FLD.Race_enadv, 1);
+cptr.stI16o(urace_init_data, FLD.Race_enadv + FLD.RoleAdvance_inrnd, 0);
+cptr.stI16o(urace_init_data, FLD.Race_enadv + FLD.RoleAdvance_lofix, 2);
+cptr.stI16o(urace_init_data, FLD.Race_enadv + FLD.RoleAdvance_lornd, 0);
+cptr.stI16o(urace_init_data, FLD.Race_enadv + FLD.RoleAdvance_hifix, 2);
+cptr.stI16o(urace_init_data, FLD.Race_enadv + FLD.RoleAdvance_hirnd, 0);
 
 /** C ref: decl.c:170 — struct display_hints */
 export let disp = cptr.alloc(3);
@@ -474,359 +475,359 @@ cptr.st1(disp, 0);
 /** C ref: decl.c:172 — struct instance_globals_a */
 let g_init_a = cptr.alloc(280);
 cptr.stPtr(g_init_a, null);
-cptr.stI32o(g_init_a, 8, 0);
-cptr.st1o(g_init_a, 12, 0);
-cptr.stPtro(g_init_a, 16, null);
-cptr.stI64o(g_init_a, 24, 0n);
-cptr.stPtro(g_init_a, 232, null);
-cptr.stI32o(g_init_a, 240, NHM.UNDEFINED_VALUE);
-cptr.stI32o(g_init_a, 244, 0);
-cptr.stI32o(g_init_a, 248, 0);
-cptr.st1o(g_init_a, 252, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_a, 253, 0);
-cptr.stI32o(g_init_a, 256, NHC.soundlib_nosound);
-cptr.stI32o(g_init_a, 260, 0);
-cptr.stI32o(g_init_a, 264, 0);
-cptr.st1o(g_init_a, 268, 0);
-cptr.st1o(g_init_a, 272, 1);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_already_found_flag, 0);
+cptr.st1o(g_init_a, FLD.instance_globals_a_at_ladder, 0);
+cptr.stPtro(g_init_a, FLD.instance_globals_a_apelist, null);
+cptr.stI64o(g_init_a, FLD.instance_globals_a_amulets + 0, 0n);
+cptr.stPtro(g_init_a, FLD.instance_globals_a_animal_list, null);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_animal_list_count, NHM.UNDEFINED_VALUE);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_A_first_hint, 0);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_A_second_hint, 0);
+cptr.st1o(g_init_a, FLD.instance_globals_a_abort_looting, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_a, FLD.instance_globals_a_auto_credit, 0);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_active_soundlib, NHC.soundlib_nosound);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_acid_ctx, 0);
+cptr.stI32o(g_init_a, FLD.instance_globals_a_acid_ctx + FLD.h2o_ctx_unk_boom, 0);
+cptr.st1o(g_init_a, FLD.instance_globals_a_acid_ctx + FLD.h2o_ctx_ctx_valid, 0);
+cptr.st1o(g_init_a, FLD.instance_globals_a_havestate, 1);
 
 /** C ref: decl.c:206 — struct instance_globals_b */
 let g_init_b = cptr.alloc(4872);
 cptr.stPtro(g_init_b, 0, [
     { fldname: null, fldfmt: null, time: 0n, chg: 0, percent_matters: 0, percent_value: 0, anytype: NHC.ANY_INVALID, a: { a_void: null }, rawval: { a_void: null }, val: null, valwidth: 0, idxmax: 0, fld: 0, hilite_rule: null, thresholds: null }
 ]);
-cptr.st1o(g_init_b, 4752, 0);
-cptr.stI64o(g_init_b, 4760, 0n);
-cptr.stI16o(g_init_b, 4768, 0);
-cptr.stI16o(g_init_b, 4770, 0);
-cptr.stPtro(g_init_b, 4776, null);
-cptr.strcpy(cptr.add(g_init_b, 4784), __sl68);
-cptr.stI32o(g_init_b, 4800, 0);
-cptr.stI64o(g_init_b, 4808, 0n);
-cptr.stI16o(g_init_b, 4816, NHM.COLNO);
-cptr.stI16o(g_init_b, 4818, NHM.ROWNO);
-cptr.stI16o(g_init_b, 4820, 0);
-cptr.stI16o(g_init_b, 4822, 0);
-cptr.stI16o(g_init_b, 4824, NHM.COLNO);
-cptr.stI16o(g_init_b, 4826, NHM.ROWNO);
-cptr.stI16o(g_init_b, 4828, 0);
-cptr.stI16o(g_init_b, 4830, 0);
-cptr.st1o(g_init_b, 4832, 0);
-cptr.st1o(g_init_b, 4833, 0);
-cptr.stI16o(g_init_b, 4834, 0);
-cptr.stI16o(g_init_b, 4836, 0);
-cptr.stPtro(g_init_b, 4840, null);
-cptr.st1o(g_init_b, 4848, 0);
-cptr.stPtro(g_init_b, 4856, null);
-cptr.st1o(g_init_b, 4864, 0);
-cptr.st1o(g_init_b, 4865, 1);
+cptr.st1o(g_init_b, FLD.instance_globals_b_blinit, 0);
+cptr.stI64o(g_init_b, FLD.instance_globals_b_bl_hilite_moves, 0n);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bhitpos, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bhitpos + FLD.nhcoord_y, 0);
+cptr.stPtro(g_init_b, FLD.instance_globals_b_billobjs, null);
+cptr.strcpy(cptr.add(g_init_b, FLD.instance_globals_b_bones), __sl68);
+cptr.stI32o(g_init_b, FLD.instance_globals_b_bldrpush_oid, 0);
+cptr.stI64o(g_init_b, FLD.instance_globals_b_bldrpushtime, 0n);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack, NHM.COLNO);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + 2, NHM.ROWNO);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + 4, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + 6, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_delarea, NHM.COLNO);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_delarea + 2, NHM.ROWNO);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_delarea + 4, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_delarea + 6, 0);
+cptr.st1o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_in_islev, 0);
+cptr.st1o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_del_islev, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_rtype, 0);
+cptr.stI16o(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_padding, 0);
+cptr.stPtro(g_init_b, FLD.instance_globals_b_bughack + FLD.lev_region_rname, null);
+cptr.st1o(g_init_b, FLD.instance_globals_b_bucx_filter, 0);
+cptr.stPtro(g_init_b, FLD.instance_globals_b_buzzer, null);
+cptr.st1o(g_init_b, FLD.instance_globals_b_bot_disabled, 0);
+cptr.st1o(g_init_b, FLD.instance_globals_b_havestate, 1);
 
 /** C ref: decl.c:238 — struct instance_globals_c */
 let g_init_c = cptr.alloc(584);
 cptr.stPtro(g_init_c, 0, null);
-cptr.stU64o(g_init_c, 16, 0n);
-cptr.stU64o(g_init_c, 24, 0n);
-cptr.stU64o(g_init_c, 32, 0n);
-cptr.stU64o(g_init_c, 40, 0n);
-cptr.stU64o(g_init_c, 48, 0n);
-cptr.stU64o(g_init_c, 56, 0n);
-cptr.stU64o(g_init_c, 64, 0n);
-cptr.stU64o(g_init_c, 72, 0n);
-cptr.stU64o(g_init_c, 80, 0n);
-cptr.stU64o(g_init_c, 88, 0n);
-cptr.stU64o(g_init_c, 96, 0n);
-cptr.stU64o(g_init_c, 104, 0n);
-cptr.stU64o(g_init_c, 112, 0n);
-cptr.stU64o(g_init_c, 120, 0n);
-cptr.stU64o(g_init_c, 128, 0n);
-cptr.stU64o(g_init_c, 136, 0n);
-cptr.stU64o(g_init_c, 144, 0n);
-cptr.stU64o(g_init_c, 152, 0n);
-cptr.stU64o(g_init_c, 160, 0n);
-cptr.stU64o(g_init_c, 168, 0n);
-cptr.stU64o(g_init_c, 176, 0n);
-cptr.stI32o(g_init_c, 208, 0);
-cptr.stI32o(g_init_c, 216, 0);
-cptr.stI16o(g_init_c, 296, 0);
-cptr.stI16o(g_init_c, 298, 0);
-cptr.st1o(g_init_c, 300, 0);
-cptr.stI32o(g_init_c, 316, 0);
-cptr.stPtro(g_init_c, 320, null);
-cptr.stI64o(g_init_c, 328, 0n);
-cptr.stPtro(g_init_c, 336, null);
-cptr.st1o(g_init_c, 344, 0);
-cptr.stPtro(g_init_c, 408, null);
-cptr.stPtro(g_init_c, 416, null);
-cptr.stI32o(g_init_c, 424, -1);
-cptr.stI32o(g_init_c, 428, 0);
-cptr.stPtro(g_init_c, 432, null);
-cptr.stPtro(g_init_c, 440, null);
-cptr.stPtro(g_init_c, 448, null);
-cptr.st1o(g_init_c, 456, 0);
-cptr.st1o(g_init_c, 457, 0);
-cptr.stI32o(g_init_c, 460, -1);
-cptr.stI32o(g_init_c, 464, 0);
-cptr.stPtro(g_init_c, 472, null);
-cptr.stPtro(g_init_c, 480, null);
-cptr.stPtro(g_init_c, 488, null);
-cptr.st1o(g_init_c, 496, 0);
-cptr.st1o(g_init_c, 497, 0);
-cptr.stI32o(g_init_c, 564, NHC.soundlib_nosound);
-cptr.stPtro(g_init_c, 568, null);
-cptr.stI16o(g_init_c, 576, NHC.NON_PM);
-cptr.st1o(g_init_c, 578, 0);
-cptr.st1o(g_init_c, 579, 1);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 0, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 8, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 16, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 24, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 32, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 40, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 48, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 56, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 64, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 72, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 80, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 88, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 96, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 104, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 112, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 120, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 128, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 136, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 144, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 152, 0n);
+cptr.stU64o(g_init_c, FLD.instance_globals_c_cond_hilites + 160, 0n);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_condmenu_sortorder, 0);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_Cmd, 0);
+cptr.stI16o(g_init_c, FLD.instance_globals_c_clicklook_cc, 0);
+cptr.stI16o(g_init_c, FLD.instance_globals_c_clicklook_cc + FLD.nhcoord_y, 0);
+cptr.st1o(g_init_c, FLD.instance_globals_c_chosen_windowtype + 0, 0);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_cmd_key, 0);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_cmd_bind, null);
+cptr.stI64o(g_init_c, FLD.instance_globals_c_command_count, 0n);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_current_wand, null);
+cptr.st1o(g_init_c, FLD.instance_globals_c_catname + 0, 0);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_crash_email, null);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_crash_name, null);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_crash_urlmax, -1);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_currentgraphics, 0);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_cmdline_rcfile, null);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_config_section_chosen, null);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_config_section_current, null);
+cptr.st1o(g_init_c, FLD.instance_globals_c_chosen_symset_start, 0);
+cptr.st1o(g_init_c, FLD.instance_globals_c_chosen_symset_end, 0);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_cached_pickinv_win, -1);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_core_invent_state, 0);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_cmdline_windowsys, null);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_color_colorings, null);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_current_container, null);
+cptr.st1o(g_init_c, FLD.instance_globals_c_class_filter, 0);
+cptr.st1o(g_init_c, FLD.instance_globals_c_cvt_buf + 0, 0);
+cptr.stI32o(g_init_c, FLD.instance_globals_c_chosen_soundlib, NHC.soundlib_nosound);
+cptr.stPtro(g_init_c, FLD.instance_globals_c_coder, null);
+cptr.stI16o(g_init_c, FLD.instance_globals_c_corpsenm_digested, NHC.NON_PM);
+cptr.st1o(g_init_c, FLD.instance_globals_c_converted_savefile_loaded, 0);
+cptr.st1o(g_init_c, FLD.instance_globals_c_havestate, 1);
 
 /** C ref: decl.c:290 — struct instance_globals_d */
 let g_init_d = cptr.alloc(168);
 cptr.stI32(g_init_d, 0);
-cptr.stI64o(g_init_d, 8, 0n);
-cptr.stI64o(g_init_d, 16, 0n);
-cptr.stI64o(g_init_d, 24, 0n);
-cptr.st1o(g_init_d, 32, 0);
-cptr.st1o(g_init_d, 33, NHM.UNDEFINED_VALUE);
-cptr.stPtro(g_init_d, 40, null);
-cptr.stPtro(g_init_d, 48, null);
-cptr.stI32o(g_init_d, 56, 0);
-cptr.st1o(g_init_d, 60, 0);
-cptr.stI64o(g_init_d, 128, 0n);
-cptr.st1o(g_init_d, 136, 0);
-cptr.stI32o(g_init_d, 140, 0);
-cptr.st1o(g_init_d, 144, 0);
-cptr.st1o(g_init_d, 145, 0);
-cptr.st1o(g_init_d, 146, 0);
-cptr.stPtro(g_init_d, 152, null);
-cptr.st1o(g_init_d, 160, 1);
+cptr.stI64o(g_init_d, FLD.instance_globals_d_done_money, 0n);
+cptr.stI64o(g_init_d, FLD.instance_globals_d_domove_attempting, 0n);
+cptr.stI64o(g_init_d, FLD.instance_globals_d_domove_succeeded, 0n);
+cptr.st1o(g_init_d, FLD.instance_globals_d_defer_see_monsters, 0);
+cptr.st1o(g_init_d, FLD.instance_globals_d_did_dig_msg, NHM.UNDEFINED_VALUE);
+cptr.stPtro(g_init_d, FLD.instance_globals_d_dfr_pre_msg, null);
+cptr.stPtro(g_init_d, FLD.instance_globals_d_dfr_post_msg, null);
+cptr.stI32o(g_init_d, FLD.instance_globals_d_did_nothing_flag, 0);
+cptr.st1o(g_init_d, FLD.instance_globals_d_dogname + 0, 0);
+cptr.stI64o(g_init_d, FLD.instance_globals_d_done_seq, 0n);
+cptr.st1o(g_init_d, FLD.instance_globals_d_disintegested, 0);
+cptr.stI32o(g_init_d, FLD.instance_globals_d_distantname, 0);
+cptr.st1o(g_init_d, FLD.instance_globals_d_decor_fumble_override, 0);
+cptr.st1o(g_init_d, FLD.instance_globals_d_decor_levitate_override, 0);
+cptr.st1o(g_init_d, FLD.instance_globals_d_deferred_showpaths, 0);
+cptr.stPtro(g_init_d, FLD.instance_globals_d_deferred_showpaths_dir, null);
+cptr.st1o(g_init_d, FLD.instance_globals_d_havestate, 1);
 
 /** C ref: decl.c:319 — struct instance_globals_e */
 let g_init_e = cptr.alloc(40);
 cptr.stI32(g_init_e, -1);
-cptr.st1o(g_init_e, 4, 0);
-cptr.stPtro(g_init_e, 8, null);
-cptr.stPtro(g_init_e, 16, null);
-cptr.stPtro(g_init_e, 24, null);
-cptr.stI32o(g_init_e, 32, 0);
-cptr.st1o(g_init_e, 36, 1);
+cptr.st1o(g_init_e, FLD.instance_globals_e_en_via_menu, 0);
+cptr.stPtro(g_init_e, FLD.instance_globals_e_ext_tlist, null);
+cptr.stPtro(g_init_e, FLD.instance_globals_e_eatmbuf, null);
+cptr.stPtro(g_init_e, FLD.instance_globals_e_ebubbles, null);
+cptr.stI32o(g_init_e, FLD.instance_globals_e_early_raw_messages, 0);
+cptr.st1o(g_init_e, FLD.instance_globals_e_havestate, 1);
 
 /** C ref: decl.c:333 — struct instance_globals_f */
 let g_init_f = cptr.alloc(144);
 cptr.stPtr(g_init_f, null);
-cptr.stPtro(g_init_f, 8, null);
-cptr.stPtro(g_init_f, 88, null);
-cptr.st1o(g_init_f, 96, 0);
-cptr.st1o(g_init_f, 97, 0);
-cptr.stI64o(g_init_f, 104, 0n);
-cptr.stU64o(g_init_f, 112, 0n);
-cptr.stI64o(g_init_f, 120, 0n);
-cptr.stI64o(g_init_f, 128, 0n);
-cptr.st1o(g_init_f, 136, 1);
+cptr.stPtro(g_init_f, FLD.instance_globals_f_fqn_prefix + 0, null);
+cptr.stPtro(g_init_f, FLD.instance_globals_f_ffruit, null);
+cptr.st1o(g_init_f, FLD.instance_globals_f_force_save_hs, 0);
+cptr.st1o(g_init_f, FLD.instance_globals_f_far_noise, 0);
+cptr.stI64o(g_init_f, FLD.instance_globals_f_false_rumor_size, 0n);
+cptr.stU64o(g_init_f, FLD.instance_globals_f_false_rumor_start, 0n);
+cptr.stI64o(g_init_f, FLD.instance_globals_f_false_rumor_end, 0n);
+cptr.stI64o(g_init_f, FLD.instance_globals_f_followmsg, 0n);
+cptr.st1o(g_init_f, FLD.instance_globals_f_havestate, 1);
 
 /** C ref: decl.c:351 — struct instance_globals_g */
 let g_init_g = cptr.alloc(95000);
 cptr.stPtro(g_init_g, 0, [
     { gnew: 0 }
 ]);
-cptr.stI16o(g_init_g, 94080, 0);
-cptr.stI16o(g_init_g, 94122, 0);
-cptr.stI16o(g_init_g, 94164, 0);
-cptr.stI16o(g_init_g, 94166, 0);
-cptr.stPtro(g_init_g, 94168, null);
-cptr.stI32o(g_init_g, 94176, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_g, 94180, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_g, 94182, 0);
-cptr.stI16o(g_init_g, 94184, 0);
-cptr.stPtro(g_init_g, 94192, null);
-cptr.stI64o(g_init_g, 94200, 0n);
-cptr.stI64o(g_init_g, 94568, 0n);
-cptr.st1o(g_init_g, 94576, 0);
-cptr.stI64o(g_init_g, 94584, 0n);
-cptr.stPtro(g_init_g, 94592, null);
-cptr.stPtro(g_init_g, 94600, null);
-cptr.stPtro(g_init_g, 94608, null);
-cptr.stPtro(g_init_g, 94616, null);
-cptr.stI16o(g_init_g, 94624, 0);
-cptr.stPtro(g_init_g, 94968, null);
-cptr.st1o(g_init_g, 94976, 0);
-cptr.stI32o(g_init_g, 94980, 0);
-cptr.stI64o(g_init_g, 94984, 0n);
-cptr.st1o(g_init_g, 94992, 1);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gbuf_start + 0, 0);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gbuf_stop + 0, 0);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_getposx, 0);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_getposy, 0);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gloc_filter_map, null);
+cptr.stI32o(g_init_g, FLD.instance_globals_g_gloc_filter_floodfill_match_glyph, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gtyp, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gx, 0);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gy, 0);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gate_str, null);
+cptr.stI64o(g_init_g, FLD.instance_globals_g_gems + 0, 0n);
+cptr.stI64o(g_init_g, FLD.instance_globals_g_glyph_reset_timestamp, 0n);
+cptr.st1o(g_init_g, FLD.instance_globals_g_gmst_stored, 0);
+cptr.stI64o(g_init_g, FLD.instance_globals_g_gmst_moves, 0n);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gmst_invent, null);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gmst_ubak, null);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gmst_disco, null);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gmst_mvitals, null);
+cptr.stI16o(g_init_g, FLD.instance_globals_g_gmst_spl_book + 0, 0);
+cptr.stPtro(g_init_g, FLD.instance_globals_g_gamelog, null);
+cptr.st1o(g_init_g, FLD.instance_globals_g_gas_cloud_diss_within, 0);
+cptr.stI32o(g_init_g, FLD.instance_globals_g_gas_cloud_diss_seen, 0);
+cptr.stI64o(g_init_g, FLD.instance_globals_g_glyphmap_perlevel_flags, 0n);
+cptr.st1o(g_init_g, FLD.instance_globals_g_havestate, 1);
 
 /** C ref: decl.c:388 — struct instance_globals_h */
 let g_init_h = cptr.alloc(104);
 cptr.stPtr(g_init_h, null);
-cptr.stI64o(g_init_h, 8, 8n);
-cptr.st1o(g_init_h, 16, 0);
-cptr.stI32o(g_init_h, 80, 0);
-cptr.stPtro(g_init_h, 88, null);
-cptr.st1o(g_init_h, 96, 1);
+cptr.stI64o(g_init_h, FLD.instance_globals_h_hero_seq, 8n);
+cptr.st1o(g_init_h, FLD.instance_globals_h_horsename + 0, 0);
+cptr.stI32o(g_init_h, FLD.instance_globals_h_hitmsg_mid, 0);
+cptr.stPtro(g_init_h, FLD.instance_globals_h_hitmsg_prev, null);
+cptr.st1o(g_init_h, FLD.instance_globals_h_havestate, 1);
 
 /** C ref: decl.c:406 — struct instance_globals_i */
 let g_init_i = cptr.alloc(72);
 cptr.stI32(g_init_i, 0);
-cptr.st1o(g_init_i, 4, 0);
-cptr.st1o(g_init_i, 5, 0);
-cptr.stPtro(g_init_i, 8, null);
-cptr.st1o(g_init_i, 16, 0);
-cptr.stPtro(g_init_i, 24, null);
-cptr.stI32o(g_init_i, 32, 0);
-cptr.st1o(g_init_i, 36, 0);
-cptr.stI32o(g_init_i, 40, 0);
-cptr.stPtro(g_init_i, 48, null);
-cptr.stPtro(g_init_i, 56, null);
-cptr.st1o(g_init_i, 64, 0);
-cptr.st1o(g_init_i, 65, 1);
+cptr.st1o(g_init_i, FLD.instance_globals_i_in_mklev, 0);
+cptr.st1o(g_init_i, FLD.instance_globals_i_in_steed_dismounting, 0);
+cptr.stPtro(g_init_i, FLD.instance_globals_i_invent, null);
+cptr.st1o(g_init_i, FLD.instance_globals_i_initial_don, 0);
+cptr.stPtro(g_init_i, FLD.instance_globals_i_invbuf, null);
+cptr.stI32o(g_init_i, FLD.instance_globals_i_invbufsiz, 0);
+cptr.st1o(g_init_i, FLD.instance_globals_i_item_action_in_progress, 0);
+cptr.stI32o(g_init_i, FLD.instance_globals_i_in_sync_perminvent, 0);
+cptr.stPtro(g_init_i, FLD.instance_globals_i_itermonarr, null);
+cptr.stPtro(g_init_i, FLD.instance_globals_i_id_map, null);
+cptr.st1o(g_init_i, FLD.instance_globals_i_in_mk_themerooms, 0);
+cptr.st1o(g_init_i, FLD.instance_globals_i_havestate, 1);
 
 /** C ref: decl.c:429 — struct instance_globals_j */
 let g_init_j = cptr.alloc(8);
 cptr.stI32(g_init_j, 0);
-cptr.st1o(g_init_j, 4, 1);
+cptr.st1o(g_init_j, FLD.instance_globals_j_havestate, 1);
 
 /** C ref: decl.c:435 — struct instance_globals_k */
 let g_init_k = cptr.alloc(24);
 cptr.stI16(g_init_k, 0);
-cptr.stI16o(g_init_k, 2, 0);
-cptr.stPtro(g_init_k, 8, null);
-cptr.st1o(g_init_k, 16, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_k, 17, 1);
+cptr.stI16o(g_init_k, FLD.nhcoord_y, 0);
+cptr.stPtro(g_init_k, FLD.instance_globals_k_kickedobj, null);
+cptr.st1o(g_init_k, FLD.instance_globals_k_known, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_k, FLD.instance_globals_k_havestate, 1);
 
 /** C ref: decl.c:444 — struct instance_globals_l */
 let g_init_l = cptr.alloc(696);
 cptr.stI64(g_init_l, 0n);
-cptr.stI32o(g_init_l, 8, 0);
-cptr.stI32o(g_init_l, 12, NHM.UNDEFINED_VALUE);
-cptr.strcpy(cptr.add(g_init_l, 16), __sl69);
-cptr.stI32o(g_init_l, 64, 51);
-cptr.stPtro(g_init_l, 72, null);
-cptr.stPtro(g_init_l, 80, (null));
-cptr.stI32o(g_init_l, 208, 0);
-cptr.stPtro(g_init_l, 216, null);
-cptr.st1o(g_init_l, 224, 0);
-cptr.stI32o(g_init_l, 480, 0);
-cptr.stI32o(g_init_l, 484, 0);
-cptr.st1o(g_init_l, 488, 0);
-cptr.stPtro(g_init_l, 496, null);
-cptr.stPtro(g_init_l, 504, null);
-cptr.stPtro(g_init_l, 512, null);
-cptr.stPtro(g_init_l, 520, null);
-cptr.stPtro(g_init_l, 528, null);
-cptr.stI16o(g_init_l, 536, 0);
-cptr.stI16o(g_init_l, 538, 0);
-cptr.stPtro(g_init_l, 544, null);
-cptr.st1o(g_init_l, 552, 0);
-cptr.st1o(g_init_l, 572, 0);
-cptr.st1o(g_init_l, 692, 1);
+cptr.stI32o(g_init_l, FLD.instance_globals_l_locknum, 0);
+cptr.stI32o(g_init_l, FLD.instance_globals_l_lockptr, NHM.UNDEFINED_VALUE);
+cptr.strcpy(cptr.add(g_init_l, FLD.instance_globals_l_lock), __sl69);
+cptr.stI32o(g_init_l, FLD.instance_globals_l_lastinvnr, 51);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_light_base, null);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_luathemes + 0, (null));
+cptr.stI32o(g_init_l, FLD.instance_globals_l_last_hider, 0);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_luacore, null);
+cptr.st1o(g_init_l, FLD.instance_globals_l_lua_warnbuf + 0, 0);
+cptr.stI32o(g_init_l, FLD.instance_globals_l_loglua, 0);
+cptr.stI32o(g_init_l, FLD.instance_globals_l_lua_sid, 0);
+cptr.st1o(g_init_l, FLD.instance_globals_l_loot_reset_justpicked, 0);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_looseball, null);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_loosechain, null);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_lev_message, null);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_lregions, null);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_launchplace, null);
+cptr.stI16o(g_init_l, FLD.instance_globals_l_launchplace + FLD.launchplace_x, 0);
+cptr.stI16o(g_init_l, FLD.instance_globals_l_launchplace + FLD.launchplace_y, 0);
+cptr.stPtro(g_init_l, FLD.instance_globals_l_last_winchoice, null);
+cptr.st1o(g_init_l, FLD.instance_globals_l_lua_ver + 0, 0);
+cptr.st1o(g_init_l, FLD.instance_globals_l_lua_copyright + 0, 0);
+cptr.st1o(g_init_l, FLD.instance_globals_l_havestate, 1);
 
 /** C ref: decl.c:493 — struct instance_globals_m */
 let g_init_m = cptr.alloc(384);
 cptr.stI32(g_init_m, 0);
-cptr.stI32o(g_init_m, 4, 0);
-cptr.stI64o(g_init_m, 8, 0n);
-cptr.stPtro(g_init_m, 16, null);
-cptr.st1o(g_init_m, 24, 0);
-cptr.stI32o(g_init_m, 152, 0);
-cptr.stI32o(g_init_m, 156, 0);
-cptr.stI16o(g_init_m, 160, NHC.STRANGE_OBJECT);
-cptr.st1o(g_init_m, 162, 0);
-cptr.st1o(g_init_m, 164, 0);
-cptr.stPtro(g_init_m, 168, null);
-cptr.stPtro(g_init_m, 176, null);
-cptr.stPtro(g_init_m, 184, null);
-cptr.stPtro(g_init_m, 192, null);
-cptr.stPtro(g_init_m, 200, null);
-cptr.stPtro(g_init_m, 208, null);
-cptr.stI32o(g_init_m, 216, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_m, 220, 0);
-cptr.stI16o(g_init_m, 222, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_m, 224, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_m, 226, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_m, 228, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_m, 230, 0);
-cptr.stI32o(g_init_m, 232, NHM.UNDEFINED_VALUE);
-cptr.stPtro(g_init_m, 240, null);
-cptr.stPtro(g_init_m, 248, null);
-cptr.st1o(g_init_m, 256, 0);
-cptr.stPtro(g_init_m, 264, null);
-cptr.st1o(g_init_m, 304, 0);
-cptr.st1o(g_init_m, 337, 0);
-cptr.stI32o(g_init_m, 372, 0);
-cptr.st1o(g_init_m, 376, 0);
-cptr.st1o(g_init_m, 377, 1);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_mrank_sz, 0);
+cptr.stI64o(g_init_m, FLD.instance_globals_m_multi, 0n);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_multi_reason, null);
+cptr.st1o(g_init_m, FLD.instance_globals_m_multireasonbuf + 0, 0);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_m_shot, 0);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_m_shot + FLD.multishot_i, 0);
+cptr.stI16o(g_init_m, FLD.instance_globals_m_m_shot + FLD.multishot_o, NHC.STRANGE_OBJECT);
+cptr.st1o(g_init_m, FLD.instance_globals_m_m_shot + FLD.multishot_s, 0);
+cptr.st1o(g_init_m, FLD.instance_globals_m_mrg_to_wielded, 0);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_menu_colorings, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_migrating_objs, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_mydogs, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_migrating_mons, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_maploc, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_mswallower, null);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_mhitu_dieroll, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_m, FLD.instance_globals_m_made_branch, 0);
+cptr.stI16o(g_init_m, FLD.instance_globals_m_min_rx, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_m, FLD.instance_globals_m_max_rx, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_m, FLD.instance_globals_m_min_ry, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_m, FLD.instance_globals_m_max_ry, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_m, FLD.instance_globals_m_mkcorpstat_norevive, 0);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_mesg_given, NHM.UNDEFINED_VALUE);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_mtarget, null);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_marcher, null);
+cptr.st1o(g_init_m, FLD.instance_globals_m_m_using, 0);
+cptr.stPtro(g_init_m, FLD.instance_globals_m_m, null);
+cptr.st1o(g_init_m, FLD.instance_globals_m_mapped_menu_cmds + 0, 0);
+cptr.st1o(g_init_m, FLD.instance_globals_m_mapped_menu_op + 0, 0);
+cptr.stI32o(g_init_m, FLD.instance_globals_m_max_regions, 0);
+cptr.st1o(g_init_m, FLD.instance_globals_m_mentioned_water, 0);
+cptr.st1o(g_init_m, FLD.instance_globals_m_havestate, 1);
 
 /** C ref: decl.c:543 — struct instance_globals_n */
 let g_init_n = cptr.alloc(176);
 cptr.stI32(g_init_n, 0);
-cptr.stPtro(g_init_n, 8, null);
-cptr.stI32o(g_init_n, 16, 0);
-cptr.stI32o(g_init_n, 20, 0);
-cptr.stI32o(g_init_n, 56, 0);
-cptr.stI32o(g_init_n, 60, 0);
-cptr.stI64o(g_init_n, 64, 0n);
-cptr.stPtro(g_init_n, 72, null);
-cptr.stI32o(g_init_n, 80, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_n, 84, 0);
-cptr.st1o(g_init_n, 86, 0);
-cptr.st1o(g_init_n, 87, 0);
-cptr.stI32o(g_init_n, 152, 0);
-cptr.stI32o(g_init_n, 156, 0);
-cptr.stI16o(g_init_n, 160, NHC.STRANGE_OBJECT);
-cptr.stI16o(g_init_n, 162, NHC.STRANGE_OBJECT);
-cptr.stI16o(g_init_n, 164, NHC.STRANGE_OBJECT);
-cptr.stI16o(g_init_n, 166, NHC.STRANGE_OBJECT);
-cptr.st1o(g_init_n, 168, 1);
+cptr.stPtro(g_init_n, FLD.instance_globals_n_nomovemsg, null);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_nsubroom, 0);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_nowhere, 0);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_nesting, 0);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_no_sound_notified, 0);
+cptr.stI64o(g_init_n, FLD.instance_globals_n_noisetime, 0n);
+cptr.stPtro(g_init_n, FLD.instance_globals_n_new_locations, null);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_n_loc_filled, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_n, FLD.instance_globals_n_n_menu_mapped, 0);
+cptr.st1o(g_init_n, FLD.instance_globals_n_notonhead, 0);
+cptr.st1o(g_init_n, FLD.instance_globals_n_nambuf + 0, 0);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_n_ids_mapped, 0);
+cptr.stI32o(g_init_n, FLD.instance_globals_n_num_lregions, 0);
+cptr.stI16o(g_init_n, FLD.instance_globals_n_nocreate, NHC.STRANGE_OBJECT);
+cptr.stI16o(g_init_n, FLD.instance_globals_n_nocreate2, NHC.STRANGE_OBJECT);
+cptr.stI16o(g_init_n, FLD.instance_globals_n_nocreate3, NHC.STRANGE_OBJECT);
+cptr.stI16o(g_init_n, FLD.instance_globals_n_nocreate4, NHC.STRANGE_OBJECT);
+cptr.st1o(g_init_n, FLD.instance_globals_n_havestate, 1);
 
 /** C ref: decl.c:577 — struct instance_globals_o */
 let g_init_o = cptr.alloc(560);
 cptr.stPtr(g_init_o, null);
-cptr.stPtro(g_init_o, 8, null);
-cptr.stPtro(g_init_o, 56, null);
-cptr.stI32o(g_init_o, 64, 0);
-cptr.stI32o(g_init_o, 68, NHM.UNDEFINED_VALUE);
-cptr.stPtro(g_init_o, 72, null);
-cptr.stPtro(g_init_o, 80, null);
-cptr.st1o(g_init_o, 88, 0);
-cptr.st1o(g_init_o, 284, 0);
-cptr.stI16o(g_init_o, 480, 0);
-cptr.stI16o(g_init_o, 484, 0);
-cptr.stI32o(g_init_o, 520, NHC.phase_not_set);
-cptr.st1o(g_init_o, 524, 0);
-cptr.st1o(g_init_o, 525, 0);
-cptr.st1o(g_init_o, 526, 0);
-cptr.st1o(g_init_o, 527, 0);
-cptr.st1o(g_init_o, 528, 0);
-cptr.st1o(g_init_o, 529, 0);
-cptr.st1o(g_init_o, 530, 0);
-cptr.st1o(g_init_o, 531, 0);
-cptr.st1o(g_init_o, 532, 0);
-cptr.stI32o(g_init_o, 536, 0);
-cptr.stPtro(g_init_o, 544, null);
-cptr.stI32o(g_init_o, 552, 0);
-cptr.st1o(g_init_o, 556, 0);
-cptr.st1o(g_init_o, 557, 0);
-cptr.st1o(g_init_o, 558, 1);
+cptr.stPtro(g_init_o, FLD.instance_globals_o_occupants + 0, null);
+cptr.stPtro(g_init_o, FLD.instance_globals_o_occupation, null);
+cptr.stI32o(g_init_o, FLD.instance_globals_o_occtime, 0);
+cptr.stI32o(g_init_o, FLD.instance_globals_o_otg_temp, NHM.UNDEFINED_VALUE);
+cptr.stPtro(g_init_o, FLD.instance_globals_o_otg_otmp, null);
+cptr.stPtro(g_init_o, FLD.instance_globals_o_occtxt, null);
+cptr.st1o(g_init_o, FLD.instance_globals_o_ov_primary_syms + 0, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_ov_rogue_syms + 0, 0);
+cptr.stI16o(g_init_o, FLD.instance_globals_o_only, 0);
+cptr.stI16o(g_init_o, FLD.instance_globals_o_oclass_prob_totals + 0, 0);
+cptr.stI32o(g_init_o, FLD.instance_globals_o_opt_phase, NHC.phase_not_set);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_initial, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_from_file, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_need_redraw, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_need_glyph_reset, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_need_promptstyle, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_reset_customcolors, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_reset_customsymbols, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_update_basic_palette, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_opt_symset_changed, 0);
+cptr.stI32o(g_init_o, FLD.instance_globals_o_oldcap, 0);
+cptr.stPtro(g_init_o, FLD.instance_globals_o_oldfruit, null);
+cptr.stI32o(g_init_o, FLD.instance_globals_o_oracle_flg, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_override_confirmation, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_obj_zapped, 0);
+cptr.st1o(g_init_o, FLD.instance_globals_o_havestate, 1);
 
 /** C ref: decl.c:618 — struct instance_globals_p */
 let g_init_p = cptr.alloc(536);
 cptr.stI32(g_init_p, -1);
-cptr.stI32o(g_init_p, 4, -1);
-cptr.stI32o(g_init_p, 8, 0);
-cptr.st1o(g_init_p, 12, 0);
-cptr.stPtro(g_init_p, 16, null);
-cptr.stI32o(g_init_p, 24, 0);
-cptr.st1o(g_init_p, 28, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_p, 29, 0);
-cptr.stI32o(g_init_p, 228, 0);
-cptr.st1o(g_init_p, 232, 0);
-cptr.stI32o(g_init_p, 236, 0);
-cptr.stI32o(g_init_p, 240, 0);
-cptr.st1o(g_init_p, 244, 0);
-cptr.stI32o(g_init_p, 500, NHM.UNDEFINED_VALUE);
-cptr.stI32o(g_init_p, 504, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_p, 508, NHM.UNDEFINED_VALUE);
-cptr.stI32o(g_init_p, 512, NHM.UNDEFINED_VALUE);
-cptr.stI32o(g_init_p, 516, NHM.UNDEFINED_VALUE);
-cptr.stPtro(g_init_p, 520, null);
-cptr.stI32o(g_init_p, 528, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_p, 532, 1);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_polearm_range_max, -1);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_plnamelen, 0);
+cptr.st1o(g_init_p, FLD.instance_globals_p_pl_race, 0);
+cptr.stPtro(g_init_p, FLD.instance_globals_p_plinemsg_types, null);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_petname_used, 0);
+cptr.st1o(g_init_p, FLD.instance_globals_p_preferred_pet, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_p, FLD.instance_globals_p_primary_syms + 0, 0);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_perm_invent_toggling_direction, 0);
+cptr.st1o(g_init_p, FLD.instance_globals_p_picked_filter, 0);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_pickup_encumbrance, 0);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_pline_flags, 0);
+cptr.st1o(g_init_p, FLD.instance_globals_p_prevmsg + 0, 0);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_potion_nothing, NHM.UNDEFINED_VALUE);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_potion_unkn, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_p, FLD.instance_globals_p_p_aligntyp, NHM.UNDEFINED_VALUE);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_p_trouble, NHM.UNDEFINED_VALUE);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_p_type, NHM.UNDEFINED_VALUE);
+cptr.stPtro(g_init_p, FLD.instance_globals_p_propellor, null);
+cptr.stI32o(g_init_p, FLD.instance_globals_p_poly_zapped, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_p, FLD.instance_globals_p_havestate, 1);
 
 /** C ref: decl.c:653 — struct instance_globals_q */
 let g_init_q = cptr.alloc(1);
@@ -835,141 +836,141 @@ cptr.st1(g_init_q, 1);
 /** C ref: decl.c:657 — struct instance_globals_r */
 let g_init_r = cptr.alloc(408);
 cptr.st1o(g_init_r, 0, 0);
-cptr.stPtro(g_init_r, 196, [
+cptr.stPtro(g_init_r, FLD.instance_globals_r_r + 0, [
     { rlx: 0 }
 ]);
-cptr.st1o(g_init_r, 340, 0);
-cptr.stPtro(g_init_r, 344, null);
-cptr.stPtro(g_init_r, 352, null);
-cptr.st1o(g_init_r, 360, 0);
-cptr.st1o(g_init_r, 364, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_r, 366, 0);
-cptr.stI16o(g_init_r, 380, 0);
-cptr.stPtro(g_init_r, 384, null);
-cptr.st1o(g_init_r, 400, 1);
+cptr.st1o(g_init_r, FLD.instance_globals_r_ransacked, 0);
+cptr.stPtro(g_init_r, FLD.instance_globals_r_regions, null);
+cptr.stPtro(g_init_r, FLD.instance_globals_r_rip, null);
+cptr.st1o(g_init_r, FLD.instance_globals_r_role_pa + 0, 0);
+cptr.st1o(g_init_r, FLD.instance_globals_r_role_post_attribs, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_r, FLD.instance_globals_r_rfilter + 0, 0);
+cptr.stI16o(g_init_r, FLD.instance_globals_r_rfilter + FLD.role_filter_mask, 0);
+cptr.stPtro(g_init_r, FLD.instance_globals_r_repo, null);
+cptr.st1o(g_init_r, FLD.instance_globals_r_havestate, 1);
 
 /** C ref: decl.c:677 — struct instance_globals_s */
 let g_init_s = cptr.alloc(1424);
 cptr.stI32(g_init_s, 0);
-cptr.stPtro(g_init_s, 8, null);
-cptr.stI32o(g_init_s, 16, 0);
-cptr.st1o(g_init_s, 180, 0);
-cptr.stPtro(g_init_s, 184, null);
-cptr.stI16o(g_init_s, 192, 0);
-cptr.stI16o(g_init_s, 194, 0);
-cptr.stPtro(g_init_s, 200, null);
-cptr.stPtro(g_init_s, 296, [
+cptr.stPtro(g_init_s, FLD.instance_globals_s_stairs, null);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_smeq + 0, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_stoned, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_subrooms, null);
+cptr.stI16o(g_init_s, FLD.instance_globals_s_save_dlevel, 0);
+cptr.stI16o(g_init_s, FLD.instance_globals_s_save_dlevel + FLD.d_level_dlevel, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_symset + 0, null);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_sym_customizations + 0, [
     { customization_name: null }
 ]);
-cptr.stPtro(g_init_s, 424, [
+cptr.stPtro(g_init_s, FLD.instance_globals_s_sym_customizations + 128, [
     { customization_name: null }
 ]);
-cptr.st1o(g_init_s, 680, 0);
-cptr.stI32o(g_init_s, 876, 0);
-cptr.stI32o(g_init_s, 880, 0);
-cptr.st1o(g_init_s, 884, 0);
-cptr.stI32o(g_init_s, 940, 0);
-cptr.st1o(g_init_s, 944, 0);
-cptr.st1o(g_init_s, 945, 0);
-cptr.stPtro(g_init_s, 952, null);
-cptr.st1o(g_init_s, 960, 0);
-cptr.stPtro(g_init_s, 968, null);
-cptr.st1o(g_init_s, 976, 0);
-cptr.st1o(g_init_s, 977, 0);
-cptr.st1o(g_init_s, 978, 0);
-cptr.stI32o(g_init_s, 980, 0);
-cptr.stPtro(g_init_s, 984, null);
-cptr.stI32o(g_init_s, 1384, 0);
-cptr.st1o(g_init_s, 1388, 97);
-cptr.stI32o(g_init_s, 1392, NHM.SELL_NORMAL);
-cptr.stI32o(g_init_s, 1396, 0);
-cptr.stPtro(g_init_s, 1400, null);
-cptr.stI32o(g_init_s, 1408, 0);
-cptr.stI32o(g_init_s, 1412, 0);
-cptr.stI32o(g_init_s, 1416, 0);
-cptr.st1o(g_init_s, 1420, 1);
+cptr.st1o(g_init_s, FLD.instance_globals_s_showsyms + 0, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_symset_count, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_symset_which_set, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_SAVEF + 0, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_sortlootmode, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_skipdrin, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_somebody_can_move, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_symset_list, null);
+cptr.st1o(g_init_s, FLD.instance_globals_s_save_menucolors, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_save_colorings, null);
+cptr.st1o(g_init_s, FLD.instance_globals_s_simple_options_help, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_sellobj_first, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_shop_filter, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_saved_pline_index, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_saved_plines + 0, null);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_sex_change_ok, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_sell_response, 97);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_sell_how, NHM.SELL_NORMAL);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_spl_sortmode, 0);
+cptr.stPtro(g_init_s, FLD.instance_globals_s_spl_orderindx, null);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_stealoid, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_stealmid, 0);
+cptr.stI32o(g_init_s, FLD.instance_globals_s_seethru, 0);
+cptr.st1o(g_init_s, FLD.instance_globals_s_havestate, 1);
 
 /** C ref: decl.c:733 — struct instance_globals_t */
 let g_init_t = cptr.alloc(456);
 cptr.stPtr(g_init_t, null);
-cptr.st1o(g_init_t, 24, 0);
-cptr.st1o(g_init_t, 25, 0);
-cptr.st1o(g_init_t, 26, 0);
-cptr.stPtro(g_init_t, 328, null);
-cptr.stPtro(g_init_t, 336, null);
-cptr.stPtro(g_init_t, 360, null);
-cptr.stPtro(g_init_t, 368, null);
-cptr.stI32o(g_init_t, 376, 0);
-cptr.stPtro(g_init_t, 384, null);
-cptr.stI16o(g_init_t, 392, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_t, 394, NHM.UNDEFINED_VALUE);
-cptr.stI64o(g_init_t, 400, 0n);
-cptr.stU64o(g_init_t, 408, 0n);
-cptr.stI64o(g_init_t, 416, 0n);
-cptr.st1o(g_init_t, 424, 0);
-cptr.stPtro(g_init_t, 432, null);
-cptr.stI32o(g_init_t, 440, -1);
-cptr.stI32o(g_init_t, 444, 0);
-cptr.st1o(g_init_t, 448, 1);
+cptr.st1o(g_init_t, FLD.instance_globals_t_tbx, 0);
+cptr.st1o(g_init_t, FLD.instance_globals_t_tby, 0);
+cptr.st1o(g_init_t, FLD.instance_globals_t_toplines + 0, 0);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_thrownobj, null);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_tc_gbl_data, null);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_tmp_anything, null);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_travelmap, null);
+cptr.stI32o(g_init_t, FLD.instance_globals_t_this_type, 0);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_this_title, null);
+cptr.stI16o(g_init_t, FLD.instance_globals_t_trapx, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_t, FLD.instance_globals_t_trapy, NHM.UNDEFINED_VALUE);
+cptr.stI64o(g_init_t, FLD.instance_globals_t_true_rumor_size, 0n);
+cptr.stU64o(g_init_t, FLD.instance_globals_t_true_rumor_start, 0n);
+cptr.stI64o(g_init_t, FLD.instance_globals_t_true_rumor_end, 0n);
+cptr.st1o(g_init_t, FLD.instance_globals_t_themeroom_failed, 0);
+cptr.stPtro(g_init_t, FLD.instance_globals_t_timer_base, null);
+cptr.stI32o(g_init_t, FLD.instance_globals_t_toptenwin, -1);
+cptr.stI32o(g_init_t, FLD.instance_globals_t_twohits, 0);
+cptr.st1o(g_init_t, FLD.instance_globals_t_havestate, 1);
 
 /** C ref: decl.c:767 — struct instance_globals_u */
 let g_init_u = cptr.alloc(440);
 cptr.st1(g_init_u, 0);
-cptr.st1o(g_init_u, 1, 0);
-cptr.stPtro(g_init_u, 8, null);
-cptr.stPtro(g_init_u, 16, null);
-cptr.stPtro(g_init_u, 24, null);
-cptr.stPtro(g_init_u, 32, null);
-cptr.stPtro(g_init_u, 168, null);
-cptr.stPtro(g_init_u, 176, null);
-cptr.stPtro(g_init_u, 184, null);
-cptr.stPtro(g_init_u, 192, null);
-cptr.stPtro(g_init_u, 200, null);
-cptr.stPtro(g_init_u, 208, null);
-cptr.stI16o(g_init_u, 216, NHC.NON_PM);
-cptr.stI16o(g_init_u, 218, NHC.NON_PM);
-cptr.stI16o(g_init_u, 220, NHC.NON_PM);
-cptr.stI16o(g_init_u, 222, NHC.NON_PM);
-cptr.stI16o(g_init_u, 224, NHC.NON_PM);
-cptr.stI16o(g_init_u, 226, NHC.NON_PM);
-cptr.stI16o(g_init_u, 228, NHC.NON_PM);
-cptr.st1o(g_init_u, 230, 0);
-cptr.st1o(g_init_u, 231, 0);
-cptr.stI16o(g_init_u, 232, NHC.STRANGE_OBJECT);
-cptr.stI16o(g_init_u, 234, 0);
-cptr.stI16o(g_init_u, 236, 0);
-cptr.stI16o(g_init_u, 248, 0);
-cptr.stI16o(g_init_u, 260, 0);
-cptr.stI16o(g_init_u, 272, 0);
-cptr.stI16o(g_init_u, 284, 0);
-cptr.stI16o(g_init_u, 286, 0);
-cptr.stI32o(g_init_u, 288, 0);
-cptr.stI32o(g_init_u, 292, 0);
-cptr.stI32o(g_init_u, 296, 0);
-cptr.stI32o(g_init_u, 300, 0);
-cptr.stI32o(g_init_u, 304, 0);
-cptr.stI32o(g_init_u, 308, 0);
-cptr.stI32o(g_init_u, 312, 0);
-cptr.stPtro(g_init_u, 320, null);
-cptr.stPtro(g_init_u, 328, null);
-cptr.stPtro(g_init_u, 336, null);
-cptr.stPtro(g_init_u, 344, null);
-cptr.stPtro(g_init_u, 352, null);
-cptr.stPtro(g_init_u, 360, null);
-cptr.stI16o(g_init_u, 368, NHC.NON_PM);
-cptr.stI16o(g_init_u, 370, NHC.NON_PM);
-cptr.stI16o(g_init_u, 372, NHC.NON_PM);
-cptr.stI16o(g_init_u, 374, 0);
-cptr.stI16o(g_init_u, 376, 0);
-cptr.stI16o(g_init_u, 378, 0);
-cptr.stI16o(g_init_u, 380, 0);
-cptr.stI16o(g_init_u, 382, 0);
-cptr.stI16o(g_init_u, 394, 0);
-cptr.stI16o(g_init_u, 406, 0);
-cptr.stI16o(g_init_u, 418, 0);
-cptr.stI16o(g_init_u, 432, 0);
-cptr.stI16o(g_init_u, 434, 0);
-cptr.st1o(g_init_u, 436, 1);
+cptr.st1o(g_init_u, FLD.instance_globals_u_unweapon, 0);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.RoleName_f, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_rank + 0, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_rank + 0 + FLD.RoleName_f, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_lgod, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_ngod, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_cgod, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_filecode, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_homebase, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urole + FLD.Role_intermed, null);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_mnum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_petnum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_ldrnum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_guardnum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_neminum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_enemy1num, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_enemy2num, NHC.NON_PM);
+cptr.st1o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_enemy1sym, 0);
+cptr.st1o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_enemy2sym, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_questarti, NHC.STRANGE_OBJECT);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_allow, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_attrbase + 0, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_attrdist + 0, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_hpadv, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_enadv, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_xlev, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_initrecord, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelbase, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelheal, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelshld, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelarmr, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelstat, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelspec, 0);
+cptr.stI32o(g_init_u, FLD.instance_globals_u_urole + FLD.Role_spelsbon, 0);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace + FLD.Race_adj, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace + FLD.Race_coll, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace + FLD.Race_filecode, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace + FLD.Race_individual, null);
+cptr.stPtro(g_init_u, FLD.instance_globals_u_urace + FLD.Race_individual + FLD.RoleName_f, null);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_mnum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_mummynum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_zombienum, NHC.NON_PM);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_allow, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_selfmask, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_lovemask, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_hatemask, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_attrmin + 0, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_attrmax + 0, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_hpadv, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_urace + FLD.Race_enadv, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_uz_save, 0);
+cptr.stI16o(g_init_u, FLD.instance_globals_u_uz_save + FLD.d_level_dlevel, 0);
+cptr.st1o(g_init_u, FLD.instance_globals_u_havestate, 1);
 
 /** C ref: decl.c:780 — struct instance_globals_v */
 let g_init_v = cptr.alloc(200);
@@ -995,64 +996,64 @@ cptr.st1o(g_init_v, 18, 0);
 cptr.st1o(g_init_v, 19, 0);
 cptr.st1o(g_init_v, 20, 0);
 cptr.st1o(g_init_v, 21, 0);
-cptr.stPtro(g_init_v, 32, null);
-cptr.st1o(g_init_v, 80, 0);
-cptr.stI16o(g_init_v, 82, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_v, 84, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_v, 86, 0);
-cptr.stI64o(g_init_v, 88, 0n);
-cptr.st1o(g_init_v, 96, 0);
-cptr.stPtro(g_init_v, 120, null);
-cptr.stPtro(g_init_v, 128, null);
-cptr.stPtro(g_init_v, 136, null);
-cptr.st1o(g_init_v, 144, 0);
-cptr.stI32o(g_init_v, 152, 0);
-cptr.st1o(g_init_v, 192, 1);
+cptr.stPtro(g_init_v, FLD.instance_globals_v_valuables + 0, null);
+cptr.st1o(g_init_v, FLD.instance_globals_v_vis, 0);
+cptr.stI16o(g_init_v, FLD.instance_globals_v_vault_x, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_v, FLD.instance_globals_v_vault_y, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_v, FLD.instance_globals_v_vamp_rise_msg, 0);
+cptr.stI64o(g_init_v, FLD.instance_globals_v_val_for_n_or_more, 0n);
+cptr.st1o(g_init_v, FLD.instance_globals_v_valid_menu_classes + 0, 0);
+cptr.stPtro(g_init_v, FLD.instance_globals_v_viz_array, null);
+cptr.stPtro(g_init_v, FLD.instance_globals_v_viz_rmin, null);
+cptr.stPtro(g_init_v, FLD.instance_globals_v_viz_rmax, null);
+cptr.st1o(g_init_v, FLD.instance_globals_v_vision_full_recalc, 0);
+cptr.stI32o(g_init_v, FLD.instance_globals_v_voice, 0);
+cptr.st1o(g_init_v, FLD.instance_globals_v_havestate, 1);
 
 /** C ref: decl.c:805 — struct instance_globals_w */
 let g_init_w = cptr.alloc(192);
 cptr.stI32(g_init_w, 0);
-cptr.stI64o(g_init_w, 8, 0n);
-cptr.st1o(g_init_w, 16, 0);
-cptr.st1o(g_init_w, 17, 0);
-cptr.st1o(g_init_w, 23, 0);
-cptr.stI32o(g_init_w, 152, NHM.UNDEFINED_VALUE);
-cptr.stPtro(g_init_w, 160, null);
-cptr.stI32o(g_init_w, 168, NHC.wdmode_traditional);
-cptr.stI32o(g_init_w, 172, NHM.NO_COLOR);
-cptr.stI64o(g_init_w, 176, 0n);
-cptr.st1o(g_init_w, 184, 1);
+cptr.stI64o(g_init_w, FLD.instance_globals_w_wailmsg, 0n);
+cptr.st1o(g_init_w, FLD.instance_globals_w_wasinwater, 0);
+cptr.st1o(g_init_w, FLD.instance_globals_w_warnsyms + 0, 0);
+cptr.st1o(g_init_w, FLD.instance_globals_w_wizkit + 0, 0);
+cptr.stI32o(g_init_w, FLD.instance_globals_w_wc, NHM.UNDEFINED_VALUE);
+cptr.stPtro(g_init_w, FLD.instance_globals_w_wportal, null);
+cptr.stI32o(g_init_w, FLD.instance_globals_w_wsettings, NHC.wdmode_traditional);
+cptr.stI32o(g_init_w, FLD.instance_globals_w_wsettings + FLD.win_settings_map_frame_color, NHM.NO_COLOR);
+cptr.stI64o(g_init_w, FLD.instance_globals_w_were_changes, 0n);
+cptr.st1o(g_init_w, FLD.instance_globals_w_havestate, 1);
 
 /** C ref: decl.c:825 — struct instance_globals_x */
 let g_init_x = cptr.alloc(56);
 cptr.stI32(g_init_x, 78);
-cptr.stPtro(g_init_x, 8, null);
-cptr.stPtro(g_init_x, 40, null);
-cptr.stI16o(g_init_x, 48, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_x, 50, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_x, 52, 1);
+cptr.stPtro(g_init_x, FLD.instance_globals_x_xlock, null);
+cptr.stPtro(g_init_x, FLD.instance_globals_x_xnamep, null);
+cptr.stI16o(g_init_x, FLD.instance_globals_x_xstart, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_x, FLD.instance_globals_x_xsize, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_x, FLD.instance_globals_x_havestate, 1);
 
 /** C ref: decl.c:838 — struct instance_globals_y */
 let g_init_y = cptr.alloc(352);
 cptr.stI32(g_init_y, 20);
-cptr.stPtro(g_init_y, 8, null);
-cptr.stPtro(g_init_y, 328, null);
-cptr.stI32o(g_init_y, 336, 0);
-cptr.stI16o(g_init_y, 340, NHM.UNDEFINED_VALUE);
-cptr.stI16o(g_init_y, 342, NHM.UNDEFINED_VALUE);
-cptr.st1o(g_init_y, 344, 1);
+cptr.stPtro(g_init_y, FLD.instance_globals_y_youmonst, null);
+cptr.stPtro(g_init_y, FLD.instance_globals_y_you_buf, null);
+cptr.stI32o(g_init_y, FLD.instance_globals_y_you_buf_siz, 0);
+cptr.stI16o(g_init_y, FLD.instance_globals_y_ystart, NHM.UNDEFINED_VALUE);
+cptr.stI16o(g_init_y, FLD.instance_globals_y_ysize, NHM.UNDEFINED_VALUE);
+cptr.st1o(g_init_y, FLD.instance_globals_y_havestate, 1);
 
 /** C ref: decl.c:851 — struct instance_globals_z */
 let g_init_z = cptr.alloc(3);
 cptr.st1(g_init_z, 0);
-cptr.st1o(g_init_z, 1, 0);
-cptr.st1o(g_init_z, 2, 1);
+cptr.st1o(g_init_z, FLD.instance_globals_z_zap_oseen, 0);
+cptr.st1o(g_init_z, FLD.instance_globals_z_havestate, 1);
 
 /** C ref: decl.c:859 — struct instance_globals_saved_b */
 let init_svb = cptr.alloc(96);
 cptr.stPtr(init_svb, null);
-cptr.stPtro(init_svb, 8, null);
-cptr.stI32o(init_svb, 16, 0);
+cptr.stPtro(init_svb, FLD.instance_globals_saved_b_bbubbles, null);
+cptr.stI32o(init_svb, FLD.instance_globals_saved_b_bases + 0, 0);
 
 /** C ref: decl.c:867 — struct instance_globals_saved_c */
 let init_svc = cptr.alloc(720);
@@ -1061,58 +1062,58 @@ cptr.stI32(init_svc, 0);
 /** C ref: decl.c:872 — struct instance_globals_saved_d */
 let init_svd = cptr.alloc(2904);
 cptr.st1o(init_svd, 0, 0);
-cptr.st1o(init_svd, 24, 0);
-cptr.st1o(init_svd, 39, 0);
-cptr.st1o(init_svd, 54, 0);
-cptr.st1o(init_svd, 69, 0);
-cptr.stI32o(init_svd, 72, 0);
-cptr.stI16o(init_svd, 96, 0);
-cptr.stI16o(init_svd, 98, 0);
-cptr.stI16o(init_svd, 100, 0);
-cptr.stI32o(init_svd, 104, 0);
-cptr.stI32o(init_svd, 108, 0);
-cptr.stI16o(init_svd, 1792, 0);
-cptr.stI16o(init_svd, 1796, 0);
-cptr.stI16o(init_svd, 1800, 0);
-cptr.stI16o(init_svd, 1804, 0);
-cptr.stI16o(init_svd, 1808, 0);
-cptr.stI16o(init_svd, 1812, 0);
-cptr.stI16o(init_svd, 1816, 0);
-cptr.stI16o(init_svd, 1820, 0);
-cptr.stI16o(init_svd, 1824, 0);
-cptr.stI16o(init_svd, 1828, 0);
-cptr.stI16o(init_svd, 1832, 0);
-cptr.stI16o(init_svd, 1836, 0);
-cptr.stI16o(init_svd, 1840, 0);
-cptr.stI16o(init_svd, 1844, 0);
-cptr.stI16o(init_svd, 1848, 0);
-cptr.stI16o(init_svd, 1852, 0);
-cptr.stI16o(init_svd, 1856, 0);
-cptr.stI16o(init_svd, 1860, 0);
-cptr.stI16o(init_svd, 1864, 0);
-cptr.stI16o(init_svd, 1868, 0);
-cptr.stI16o(init_svd, 1872, 0);
-cptr.stI16o(init_svd, 1874, 0);
-cptr.stI16o(init_svd, 1876, 0);
-cptr.stI16o(init_svd, 1878, 0);
-cptr.stI16o(init_svd, 1880, 0);
-cptr.stI16o(init_svd, 1882, 0);
-cptr.stI16o(init_svd, 1886, 0);
-cptr.stI16o(init_svd, 1890, 0);
-cptr.stI16o(init_svd, 1894, 0);
-cptr.stI16o(init_svd, 1898, 0);
-cptr.stI16o(init_svd, 1902, 0);
-cptr.stI16o(init_svd, 1906, 0);
-cptr.stI16o(init_svd, 1908, 0);
-cptr.stI16o(init_svd, 1910, 0);
-cptr.stI16o(init_svd, 1912, 0);
-cptr.stI16o(init_svd, 1914, 0);
-cptr.stI16o(init_svd, 1916, 0);
-cptr.stI16o(init_svd, 1918, 0);
-cptr.stI16o(init_svd, 1920, 0);
-cptr.stPtro(init_svd, 1928, null);
-cptr.stI32o(init_svd, 1936, 0);
-cptr.stI16o(init_svd, 1940, 0);
+cptr.st1o(init_svd, 0 + FLD.dungeon_proto + 0, 0);
+cptr.st1o(init_svd, 0 + FLD.dungeon_fill_lvl + 0, 0);
+cptr.st1o(init_svd, 0 + FLD.dungeon_themerms + 0, 0);
+cptr.st1o(init_svd, 0 + FLD.dungeon_boneid, 0);
+cptr.stI32o(init_svd, 0 + FLD.dungeon_flags, 0);
+cptr.stI16o(init_svd, 0 + FLD.dungeon_entry_lev, 0);
+cptr.stI16o(init_svd, 0 + FLD.dungeon_num_dunlevs, 0);
+cptr.stI16o(init_svd, 0 + FLD.dungeon_dunlev_ureached, 0);
+cptr.stI32o(init_svd, 0 + FLD.dungeon_ledger_start, 0);
+cptr.stI32o(init_svd, 0 + FLD.dungeon_depth_start, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_bigroom_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_medusa_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_stronghold_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_valley_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz1_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz2_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_wiz3_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_juiblex_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_orcus_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_baalzebub_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_asmodeus_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_portal_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sanctum_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_earth_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_fire_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_tower_dnum, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sokoban_dnum, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mines_dnum, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_quest_dnum, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_tutorial_dnum, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qstart_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_qlocate_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_nemesis_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_knox_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_mineend_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_sokoend_level, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_ly, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_hx, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_hy, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_nlx, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_nly, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_nhx, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_dndest + FLD.dest_area_nhy, 0);
+cptr.stPtro(init_svd, FLD.instance_globals_saved_d_doors, null);
+cptr.stI32o(init_svd, FLD.instance_globals_saved_d_doors_alloc, 0);
+cptr.stI16o(init_svd, FLD.instance_globals_saved_d_disco + 0, 0);
 
 /** C ref: decl.c:888 — struct instance_globals_saved_e */
 let init_sve = cptr.alloc(8);
@@ -1125,7 +1126,7 @@ cptr.stI32(init_svh, 0);
 /** C ref: decl.c:898 — struct instance_globals_saved_i */
 let init_svi = cptr.alloc(4);
 cptr.stI16(init_svi, 0);
-cptr.stI16o(init_svi, 2, 0);
+cptr.stI16o(init_svi, FLD.nhcoord_y, 0);
 
 /** C ref: decl.c:903 — struct instance_globals_saved_k */
 let init_svk = cptr.alloc(272);
@@ -1134,83 +1135,83 @@ cptr.stPtr(init_svk, null);
 /** C ref: decl.c:908 — struct instance_globals_saved_l */
 let init_svl = cptr.alloc(89720);
 cptr.stPtro(init_svl, 0, [0]);
-cptr.stPtro(init_svl, 1680, [
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + 0, [
     { glyph: 0 }
 ]);
-cptr.stPtro(init_svl, 62160, [
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects + 0, [
     null
 ]);
-cptr.stPtro(init_svl, 75600, [
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters + 0, [
     null
 ]);
-cptr.stPtro(init_svl, 89040, null);
-cptr.stPtro(init_svl, 89048, null);
-cptr.stPtro(init_svl, 89056, null);
-cptr.stPtro(init_svl, 89064, null);
-cptr.stPtro(init_svl, 89072, null);
-cptr.st1o(init_svl, 89080, 0);
-cptr.st1o(init_svl, 89208, 0);
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objlist, null);
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_buriedobjlist, null);
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist, null);
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_damagelist, null);
+cptr.stPtro(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_bonesinfo, null);
+cptr.st1o(init_svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags, 0);
+cptr.st1o(init_svl, FLD.instance_globals_saved_l_level_info + 0, 0);
 
 /** C ref: decl.c:918 — struct instance_globals_saved_m */
 let init_svm = cptr.alloc(4616);
 cptr.stPtr(init_svm, null);
-cptr.stI64o(init_svm, 8, 0n);
-cptr.st1o(init_svm, 16, 0);
+cptr.stI64o(init_svm, FLD.instance_globals_saved_m_moves, 0n);
+cptr.st1o(init_svm, FLD.instance_globals_saved_m_mvitals + 0, 0);
 
 /** C ref: decl.c:926 — struct instance_globals_saved_n */
 let init_svn = cptr.alloc(52);
 cptr.stI32(init_svn, 0);
-cptr.st1o(init_svn, 4, 0);
-cptr.st1o(init_svn, 5, 0);
-cptr.st1o(init_svn, 6, 0);
-cptr.st1o(init_svn, 7, 0);
-cptr.st1o(init_svn, 8, 0);
-cptr.st1o(init_svn, 9, 0);
-cptr.st1o(init_svn, 10, 0);
-cptr.st1o(init_svn, 11, 0);
-cptr.st1o(init_svn, 12, 0);
-cptr.st1o(init_svn, 13, 0);
-cptr.st1o(init_svn, 14, 0);
-cptr.st1o(init_svn, 15, 0);
-cptr.st1o(init_svn, 16, 0);
-cptr.st1o(init_svn, 17, 0);
-cptr.st1o(init_svn, 18, 0);
-cptr.st1o(init_svn, 19, 0);
-cptr.st1o(init_svn, 20, 0);
-cptr.st1o(init_svn, 21, 0);
-cptr.st1o(init_svn, 22, 0);
-cptr.st1o(init_svn, 23, 0);
-cptr.st1o(init_svn, 24, 0);
-cptr.st1o(init_svn, 25, 0);
-cptr.st1o(init_svn, 26, 0);
-cptr.st1o(init_svn, 27, 0);
-cptr.st1o(init_svn, 28, 0);
-cptr.st1o(init_svn, 29, 0);
-cptr.st1o(init_svn, 30, 0);
-cptr.st1o(init_svn, 31, 0);
-cptr.st1o(init_svn, 32, 0);
-cptr.st1o(init_svn, 33, 0);
-cptr.st1o(init_svn, 34, 0);
-cptr.st1o(init_svn, 35, 0);
-cptr.st1o(init_svn, 36, 0);
-cptr.st1o(init_svn, 37, 0);
-cptr.st1o(init_svn, 38, 0);
-cptr.st1o(init_svn, 39, 0);
-cptr.st1o(init_svn, 40, 0);
-cptr.stI32o(init_svn, 44, 0);
-cptr.stI32o(init_svn, 48, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 0, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 1, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 2, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 3, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 4, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 5, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 6, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 7, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 8, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 9, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 10, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 11, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 12, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 13, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 14, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 15, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 16, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 17, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 18, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 19, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 20, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 21, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 22, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 23, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 24, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 25, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 26, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 27, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 28, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 29, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 30, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 31, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 32, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 33, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 34, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 35, 0);
+cptr.st1o(init_svn, FLD.instance_globals_saved_n_nhuuid + 36, 0);
+cptr.stI32o(init_svn, FLD.instance_globals_saved_n_nroom, 0);
+cptr.stI32o(init_svn, FLD.instance_globals_saved_n_n_regions, 0);
 
 /** C ref: decl.c:940 — struct instance_globals_saved_o */
 let init_svo = cptr.alloc(24);
 cptr.stI32(init_svo, 0);
-cptr.stPtro(init_svo, 8, null);
-cptr.stI64o(init_svo, 16, 0n);
+cptr.stPtro(init_svo, FLD.instance_globals_saved_o_oracle_loc, null);
+cptr.stI64o(init_svo, FLD.instance_globals_saved_o_omoves, 0n);
 
 /** C ref: decl.c:949 — struct instance_globals_saved_p */
 let init_svp = cptr.alloc(96);
 cptr.st1o(init_svp, 0, 0);
-cptr.st1o(init_svp, 32, 0);
-cptr.st1o(init_svp, 64, 0);
+cptr.st1o(init_svp, FLD.instance_globals_saved_p_pl_character + 0, 0);
+cptr.st1o(init_svp, FLD.instance_globals_saved_p_pl_fruit + 0, 0);
 
 /** C ref: decl.c:956 — struct instance_globals_saved_q */
 let init_svq = cptr.alloc(88);
@@ -1223,38 +1224,38 @@ cptr.stI16o(init_svr, 0, 0);
 /** C ref: decl.c:966 — struct instance_globals_saved_s */
 let init_svs = cptr.alloc(352);
 cptr.stI16o(init_svs, 0, 0);
-cptr.stPtro(init_svs, 344, null);
+cptr.stPtro(init_svs, FLD.instance_globals_saved_s_sp_levchn, null);
 
 /** C ref: decl.c:972 — struct instance_globals_saved_t */
 let init_svt = cptr.alloc(16);
 cptr.st1o(init_svt, 0, 0);
-cptr.stU64o(init_svt, 8, 1n);
+cptr.stU64o(init_svt, FLD.instance_globals_saved_t_timer_id, 1n);
 
 /** C ref: decl.c:979 — struct instance_globals_saved_u */
 let init_svu = cptr.alloc(16);
 cptr.stI16(init_svu, 0);
-cptr.stI16o(init_svu, 2, 0);
-cptr.stI16o(init_svu, 4, 0);
-cptr.stI16o(init_svu, 6, 0);
-cptr.stI16o(init_svu, 8, 0);
-cptr.stI16o(init_svu, 10, 0);
-cptr.stI16o(init_svu, 12, 0);
-cptr.stI16o(init_svu, 14, 0);
+cptr.stI16o(init_svu, FLD.dest_area_ly, 0);
+cptr.stI16o(init_svu, FLD.dest_area_hx, 0);
+cptr.stI16o(init_svu, FLD.dest_area_hy, 0);
+cptr.stI16o(init_svu, FLD.dest_area_nlx, 0);
+cptr.stI16o(init_svu, FLD.dest_area_nly, 0);
+cptr.stI16o(init_svu, FLD.dest_area_nhx, 0);
+cptr.stI16o(init_svu, FLD.dest_area_nhy, 0);
 
 /** C ref: decl.c:984 — struct instance_globals_saved_x */
 let init_svx = cptr.alloc(8);
 cptr.stI32(init_svx, NHM.UNDEFINED_VALUE);
-cptr.stI32o(init_svx, 4, NHM.UNDEFINED_VALUE);
+cptr.stI32o(init_svx, FLD.instance_globals_saved_x_xmax, NHM.UNDEFINED_VALUE);
 
 /** C ref: decl.c:990 — struct instance_globals_saved_w */
 let init_svw = cptr.alloc(16);
 cptr.stI64(init_svw, 0n);
-cptr.stI32o(init_svw, 8, 100);
+cptr.stI32o(init_svw, FLD.instance_globals_saved_w_wtreserved, 100);
 
 /** C ref: decl.c:995 — struct instance_globals_saved_y */
 let init_svy = cptr.alloc(8);
 cptr.stI32(init_svy, NHM.UNDEFINED_VALUE);
-cptr.stI32o(init_svy, 4, NHM.UNDEFINED_VALUE);
+cptr.stI32o(init_svy, FLD.instance_globals_saved_y_ymax, NHM.UNDEFINED_VALUE);
 
 /** C ref: decl.c:1001 — struct sinfo */
 let init_program_state = cptr.alloc(120);
@@ -1404,9 +1405,9 @@ export let program_state = cptr.alloc(120);
 /** C ref: decl.c:1055 — struct const_globals */
 export let cg = cptr.alloc(552);
 cptr.stPtr(cg, null);
-cptr.stPtro(cg, 216, null);
-cptr.stPtro(cg, 536, null);
-cptr.stI16o(cg, 544, 0);
+cptr.stPtro(cg, FLD.const_globals_zeromonst, null);
+cptr.stPtro(cg, FLD.const_globals_zeroany, null);
+cptr.stI16o(cg, FLD.const_globals_zeroNhRect, 0);
 
 /** C ref: decl.c:1074 */
 export function program_state_init() {
@@ -1461,119 +1462,119 @@ export function decl_globals_init() {
     cptr.memcpy(svw, init_svw, 16);
     cptr.memcpy(svx, init_svx, 8);
     cptr.memcpy(svy, init_svy, 8);
-    cptr.stPtro2(gv, 0, 16, 32, cptr.add(gg, 94200));
-    cptr.stI32o2(gv, 0, 16, 40, Number(BigInt.asIntN(32, (368n / 16n))));
-    cptr.stPtro2(gv, 1, 16, 32, cptr.add(ga, 24));
-    cptr.stI32o2(gv, 1, 16, 40, Number(BigInt.asIntN(32, (208n / 16n))));
-    cptr.stPtro2(gv, 2, 16, 32, null);
-    cptr.stI32o2(gv, 2, 16, 40, 0);
+    cptr.stPtro2(gv, 0, 16, FLD.instance_globals_v_valuables, cptr.add(gg, FLD.instance_globals_g_gems));
+    cptr.stI32o2(gv, 0, 16, FLD.instance_globals_v_valuables + FLD.val_list_size, Number(BigInt.asIntN(32, (368n / 16n))));
+    cptr.stPtro2(gv, 1, 16, FLD.instance_globals_v_valuables, cptr.add(ga, FLD.instance_globals_a_amulets));
+    cptr.stI32o2(gv, 1, 16, FLD.instance_globals_v_valuables + FLD.val_list_size, Number(BigInt.asIntN(32, (208n / 16n))));
+    cptr.stPtro2(gv, 2, 16, FLD.instance_globals_v_valuables, null);
+    cptr.stI32o2(gv, 2, 16, FLD.instance_globals_v_valuables + FLD.val_list_size, 0);
     do {
-        if (cptr.ld1so((g_init_a), 272) != 1) {
+        if (cptr.ld1so((g_init_a), FLD.instance_globals_a_havestate) != 1) {
             raw_printf(__sl70, __sl71);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_b), 4865) != 1) {
+        if (cptr.ld1so((g_init_b), FLD.instance_globals_b_havestate) != 1) {
             raw_printf(__sl70, __sl72);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_c), 579) != 1) {
+        if (cptr.ld1so((g_init_c), FLD.instance_globals_c_havestate) != 1) {
             raw_printf(__sl70, __sl73);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_d), 160) != 1) {
+        if (cptr.ld1so((g_init_d), FLD.instance_globals_d_havestate) != 1) {
             raw_printf(__sl70, __sl74);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_e), 36) != 1) {
+        if (cptr.ld1so((g_init_e), FLD.instance_globals_e_havestate) != 1) {
             raw_printf(__sl70, __sl75);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_f), 136) != 1) {
+        if (cptr.ld1so((g_init_f), FLD.instance_globals_f_havestate) != 1) {
             raw_printf(__sl70, __sl76);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_g), 94992) != 1) {
+        if (cptr.ld1so((g_init_g), FLD.instance_globals_g_havestate) != 1) {
             raw_printf(__sl70, __sl77);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_h), 96) != 1) {
+        if (cptr.ld1so((g_init_h), FLD.instance_globals_h_havestate) != 1) {
             raw_printf(__sl70, __sl78);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_i), 65) != 1) {
+        if (cptr.ld1so((g_init_i), FLD.instance_globals_i_havestate) != 1) {
             raw_printf(__sl70, __sl79);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_j), 4) != 1) {
+        if (cptr.ld1so((g_init_j), FLD.instance_globals_j_havestate) != 1) {
             raw_printf(__sl70, __sl80);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_k), 17) != 1) {
+        if (cptr.ld1so((g_init_k), FLD.instance_globals_k_havestate) != 1) {
             raw_printf(__sl70, __sl81);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_l), 692) != 1) {
+        if (cptr.ld1so((g_init_l), FLD.instance_globals_l_havestate) != 1) {
             raw_printf(__sl70, __sl82);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_m), 377) != 1) {
+        if (cptr.ld1so((g_init_m), FLD.instance_globals_m_havestate) != 1) {
             raw_printf(__sl70, __sl83);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_n), 168) != 1) {
+        if (cptr.ld1so((g_init_n), FLD.instance_globals_n_havestate) != 1) {
             raw_printf(__sl70, __sl84);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_o), 558) != 1) {
+        if (cptr.ld1so((g_init_o), FLD.instance_globals_o_havestate) != 1) {
             raw_printf(__sl70, __sl85);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_p), 532) != 1) {
+        if (cptr.ld1so((g_init_p), FLD.instance_globals_p_havestate) != 1) {
             raw_printf(__sl70, __sl86);
             exit(1);
         }
@@ -1587,69 +1588,69 @@ export function decl_globals_init() {
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_r), 400) != 1) {
+        if (cptr.ld1so((g_init_r), FLD.instance_globals_r_havestate) != 1) {
             raw_printf(__sl70, __sl88);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_s), 1420) != 1) {
+        if (cptr.ld1so((g_init_s), FLD.instance_globals_s_havestate) != 1) {
             raw_printf(__sl70, __sl89);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_t), 448) != 1) {
+        if (cptr.ld1so((g_init_t), FLD.instance_globals_t_havestate) != 1) {
             raw_printf(__sl70, __sl90);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_u), 436) != 1) {
+        if (cptr.ld1so((g_init_u), FLD.instance_globals_u_havestate) != 1) {
             raw_printf(__sl70, __sl91);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_v), 192) != 1) {
+        if (cptr.ld1so((g_init_v), FLD.instance_globals_v_havestate) != 1) {
             raw_printf(__sl70, __sl92);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_w), 184) != 1) {
+        if (cptr.ld1so((g_init_w), FLD.instance_globals_w_havestate) != 1) {
             raw_printf(__sl70, __sl93);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_x), 52) != 1) {
+        if (cptr.ld1so((g_init_x), FLD.instance_globals_x_havestate) != 1) {
             raw_printf(__sl70, __sl94);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_y), 344) != 1) {
+        if (cptr.ld1so((g_init_y), FLD.instance_globals_y_havestate) != 1) {
             raw_printf(__sl70, __sl95);
             exit(1);
         }
     } while (0);
     ;
     do {
-        if (cptr.ld1so((g_init_z), 2) != 1) {
+        if (cptr.ld1so((g_init_z), FLD.instance_globals_z_havestate) != 1) {
             raw_printf(__sl70, __sl96);
             exit(1);
         }
     } while (0);
     ;
-    cptr.stPtro(gs, 184, cptr.add(svr, 41, 224));
+    cptr.stPtro(gs, FLD.instance_globals_s_subrooms, cptr.add(svr, 41, 224));
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));
     __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
@@ -1661,8 +1662,8 @@ export function decl_globals_init() {
     uarmh.v = (uarms.v = (uarmg.v = (uarmf.v = (uamul.v = (uright.v = (uleft.v = null))))));
     ublindf.v = (uchain.v = (uball.v = null));
     WIN_MESSAGE.v = (WIN_STATUS.v = (WIN_MAP.v = (WIN_INVEN.v = -1)));
-    cptr.memcpy(cptr.add(gu, 8), urole_init_data, 312);
-    cptr.memcpy(cptr.add(gu, 320), urace_init_data, 112);
+    cptr.memcpy(cptr.add(gu, FLD.instance_globals_u_urole), urole_init_data, 312);
+    cptr.memcpy(cptr.add(gu, FLD.instance_globals_u_urace), urace_init_data, 112);
 }
 
 /** C ref: decl.c:1190 — struct obj */

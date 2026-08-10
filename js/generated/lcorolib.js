@@ -4,6 +4,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { lua_checkstack, lua_concat, lua_createtable, lua_error, lua_gettop, lua_pushboolean, lua_pushcclosure, lua_pushstring, lua_pushthread, lua_pushvalue, lua_rotate, lua_settop, lua_status, lua_tothread, lua_type, lua_xmove } from './lapi.js';
 import { luaL_checktype, luaL_checkversion_, luaL_error, luaL_setfuncs, luaL_typeerror, luaL_where } from './lauxlib.js';
 import { lua_isyieldable, lua_resume, lua_yieldk } from './ldo.js';
@@ -195,23 +196,23 @@ function luaB_close(L) {
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
 const co_funcs = cptr.alloc(9 * 16);
 cptr.stPtro(co_funcs, 0, __sl8);
-cptr.stPtro(co_funcs, 8, luaB_cocreate);
+cptr.stPtro(co_funcs, 0 + FLD.luaL_Reg_func, luaB_cocreate);
 cptr.stPtro(co_funcs, 16, __sl9);
-cptr.stPtro(co_funcs, 24, luaB_coresume);
+cptr.stPtro(co_funcs, 16 + FLD.luaL_Reg_func, luaB_coresume);
 cptr.stPtro(co_funcs, 32, __sl3);
-cptr.stPtro(co_funcs, 40, luaB_corunning);
+cptr.stPtro(co_funcs, 32 + FLD.luaL_Reg_func, luaB_corunning);
 cptr.stPtro(co_funcs, 48, __sl10);
-cptr.stPtro(co_funcs, 56, luaB_costatus);
+cptr.stPtro(co_funcs, 48 + FLD.luaL_Reg_func, luaB_costatus);
 cptr.stPtro(co_funcs, 64, __sl11);
-cptr.stPtro(co_funcs, 72, luaB_cowrap);
+cptr.stPtro(co_funcs, 64 + FLD.luaL_Reg_func, luaB_cowrap);
 cptr.stPtro(co_funcs, 80, __sl12);
-cptr.stPtro(co_funcs, 88, luaB_yield);
+cptr.stPtro(co_funcs, 80 + FLD.luaL_Reg_func, luaB_yield);
 cptr.stPtro(co_funcs, 96, __sl13);
-cptr.stPtro(co_funcs, 104, luaB_yieldable);
+cptr.stPtro(co_funcs, 96 + FLD.luaL_Reg_func, luaB_yieldable);
 cptr.stPtro(co_funcs, 112, __sl14);
-cptr.stPtro(co_funcs, 120, luaB_close);
+cptr.stPtro(co_funcs, 112 + FLD.luaL_Reg_func, luaB_close);
 cptr.stPtro(co_funcs, 128, null);
-cptr.stPtro(co_funcs, 136, null);
+cptr.stPtro(co_funcs, 128 + FLD.luaL_Reg_func, null);
 
 /** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
 export function luaopen_coroutine(L) {

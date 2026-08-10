@@ -6,6 +6,7 @@
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { dupstr } from './alloc.js';
 import { panic } from './end.js';
 import { gc } from './decl.js';
@@ -23,47 +24,47 @@ export let sysopt = cptr.alloc(184);
 export function sys_early_init() {
     let p;
     cptr.stPtr(sysopt, null);
-    cptr.stPtro(sysopt, 8, null);
-    cptr.stPtro(sysopt, 16, null);
+    cptr.stPtro(sysopt, FLD.sysopt_s_recover, null);
+    cptr.stPtro(sysopt, FLD.sysopt_s_wizards, null);
     if ((p = getenv(__sl0)) !== null) {
-        if (cptr.ldPtro(sysopt, 56))
-            cptr.free(cptr.ldPtro(sysopt, 56));
-        cptr.stPtro(sysopt, 56, dupstr(p));
-        cptr.stI32o(sysopt, 72, 1);
+        if (cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles))
+            cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles));
+        cptr.stPtro(sysopt, FLD.sysopt_s_debugfiles, dupstr(p));
+        cptr.stI32o(sysopt, FLD.sysopt_s_env_dbgfl, 1);
     } else {
-        cptr.stPtro(sysopt, 56, null);
-        cptr.stI32o(sysopt, 72, 0);
+        cptr.stPtro(sysopt, FLD.sysopt_s_debugfiles, null);
+        cptr.stI32o(sysopt, FLD.sysopt_s_env_dbgfl, 0);
     }
-    cptr.stPtro(sysopt, 40, null);
-    cptr.stPtro(sysopt, 32, null);
-    cptr.stPtro(sysopt, 48, null);
-    cptr.stPtro(sysopt, 64, null);
-    cptr.stI32o(sysopt, 76, 0);
-    cptr.stI32o(sysopt, 92, 0);
-    cptr.stI64o(sysopt, 96, 0n);
-    cptr.stI32o(sysopt, 104, NHM.PERSMAX);
-    cptr.stI32o(sysopt, 112, NHM.ENTRYMAX);
-    cptr.stI32o(sysopt, 116, 1);
-    cptr.stI32o(sysopt, 108, 1);
-    cptr.stI32o(sysopt, 120, 10);
-    if (cptr.ldI32o(sysopt, 108) != 0 && cptr.ldI32o(sysopt, 108) != 1)
+    cptr.stPtro(sysopt, FLD.sysopt_s_shellers, null);
+    cptr.stPtro(sysopt, FLD.sysopt_s_explorers, null);
+    cptr.stPtro(sysopt, FLD.sysopt_s_genericusers, null);
+    cptr.stPtro(sysopt, FLD.sysopt_s_msghandler, null);
+    cptr.stI32o(sysopt, FLD.sysopt_s_maxplayers, 0);
+    cptr.stI32o(sysopt, FLD.sysopt_s_bones_pools, 0);
+    cptr.stI64o(sysopt, FLD.sysopt_s_livelog, 0n);
+    cptr.stI32o(sysopt, FLD.sysopt_s_persmax, NHM.PERSMAX);
+    cptr.stI32o(sysopt, FLD.sysopt_s_entrymax, NHM.ENTRYMAX);
+    cptr.stI32o(sysopt, FLD.sysopt_s_pointsmin, 1);
+    cptr.stI32o(sysopt, FLD.sysopt_s_pers_is_uid, 1);
+    cptr.stI32o(sysopt, FLD.sysopt_s_tt_oname_maxrank, 10);
+    if (cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid) != 0 && cptr.ldI32o(sysopt, FLD.sysopt_s_pers_is_uid) != 1)
         panic(__sl1);
-    if (cptr.ldPtro(sysopt, 128))
-        cptr.free(cptr.ldPtro(sysopt, 128));
-    cptr.stPtro(sysopt, 128, dupstr(__sl2));
-    if (cptr.ldPtro(sysopt, 136))
-        cptr.free(cptr.ldPtro(sysopt, 136));
-    cptr.stPtro(sysopt, 136, dupstr(__sl3));
-    cptr.stI32o(sysopt, 152, 0);
-    cptr.stI32o(sysopt, 156, 0);
-    cptr.stPtro(sysopt, 144, null);
-    cptr.stI32o(sysopt, 84, 1);
-    cptr.stI32o(sysopt, 88, 0);
-    cptr.stI32o(sysopt, 80, 1);
-    sysopt_seduce_set(cptr.ldI32o(sysopt, 80));
-    cptr.stI32o2(sysopt, 0, 4, 160, cptr.stI32o2(sysopt, 0, 4, 168, NHC.historical));
-    cptr.stI32o(sysopt, 176, 0);
-    cptr.stI32o(sysopt, 180, 0);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath));
+    cptr.stPtro(sysopt, FLD.sysopt_s_gdbpath, dupstr(__sl2));
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_greppath))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_greppath));
+    cptr.stPtro(sysopt, FLD.sysopt_s_greppath, dupstr(__sl3));
+    cptr.stI32o(sysopt, FLD.sysopt_s_panictrace_gdb, 0);
+    cptr.stI32o(sysopt, FLD.sysopt_s_panictrace_libc, 0);
+    cptr.stPtro(sysopt, FLD.sysopt_s_crashreporturl, null);
+    cptr.stI32o(sysopt, FLD.sysopt_s_check_save_uid, 1);
+    cptr.stI32o(sysopt, FLD.sysopt_s_check_plname, 0);
+    cptr.stI32o(sysopt, FLD.sysopt_s_seduce, 1);
+    sysopt_seduce_set(cptr.ldI32o(sysopt, FLD.sysopt_s_seduce));
+    cptr.stI32o2(sysopt, 0, 4, FLD.sysopt_s_saveformat, cptr.stI32o2(sysopt, 0, 4, FLD.sysopt_s_bonesformat, NHC.historical));
+    cptr.stI32o(sysopt, FLD.sysopt_s_accessibility, 0);
+    cptr.stI32o(sysopt, FLD.sysopt_s_hideusage, 0);
     return;
 }
 
@@ -71,31 +72,31 @@ export function sys_early_init() {
 export function sysopt_release() {
     if (cptr.ldPtr(sysopt))
         cptr.free(cptr.ldPtr(sysopt)), cptr.stPtr(sysopt, null);
-    if (cptr.ldPtro(sysopt, 8))
-        cptr.free(cptr.ldPtro(sysopt, 8)), cptr.stPtro(sysopt, 8, null);
-    if (cptr.ldPtro(sysopt, 16))
-        cptr.free(cptr.ldPtro(sysopt, 16)), cptr.stPtro(sysopt, 16, null);
-    if (cptr.ldPtro(sysopt, 32))
-        cptr.free(cptr.ldPtro(sysopt, 32)), cptr.stPtro(sysopt, 32, null);
-    if (cptr.ldPtro(sysopt, 40))
-        cptr.free(cptr.ldPtro(sysopt, 40)), cptr.stPtro(sysopt, 40, null);
-    if (cptr.ldPtro(sysopt, 56))
-        cptr.free(cptr.ldPtro(sysopt, 56)), cptr.stPtro(sysopt, 56, null);
-    cptr.stI32o(sysopt, 72, 0);
-    if (cptr.ldPtro(sysopt, 64))
-        cptr.free(cptr.ldPtro(sysopt, 64)), cptr.stPtro(sysopt, 64, null);
-    if (cptr.ldPtro(sysopt, 48))
-        cptr.free(cptr.ldPtro(sysopt, 48)), cptr.stPtro(sysopt, 48, null);
-    if (cptr.ldPtro(sysopt, 128))
-        cptr.free(cptr.ldPtro(sysopt, 128)), cptr.stPtro(sysopt, 128, null);
-    if (cptr.ldPtro(sysopt, 136))
-        cptr.free(cptr.ldPtro(sysopt, 136)), cptr.stPtro(sysopt, 136, null);
-    if (cptr.ldPtro(gc, 408))
-        cptr.free(cptr.ldPtro(gc, 408)), cptr.stPtro(gc, 408, (null));
-    if (cptr.ldPtro(gc, 416))
-        cptr.free(cptr.ldPtro(gc, 416)), cptr.stPtro(gc, 416, (null));
-    if (cptr.ldPtro(sysopt, 24))
-        cptr.free(cptr.ldPtro(sysopt, 24)), cptr.stPtro(sysopt, 24, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_recover))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_recover)), cptr.stPtro(sysopt, FLD.sysopt_s_recover, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards)), cptr.stPtro(sysopt, FLD.sysopt_s_wizards, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_explorers))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers)), cptr.stPtro(sysopt, FLD.sysopt_s_explorers, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_shellers))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers)), cptr.stPtro(sysopt, FLD.sysopt_s_shellers, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_debugfiles)), cptr.stPtro(sysopt, FLD.sysopt_s_debugfiles, null);
+    cptr.stI32o(sysopt, FLD.sysopt_s_env_dbgfl, 0);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_msghandler)), cptr.stPtro(sysopt, FLD.sysopt_s_msghandler, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_genericusers))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_genericusers)), cptr.stPtro(sysopt, FLD.sysopt_s_genericusers, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath)), cptr.stPtro(sysopt, FLD.sysopt_s_gdbpath, null);
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_greppath))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_greppath)), cptr.stPtro(sysopt, FLD.sysopt_s_greppath, null);
+    if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_email))
+        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_crash_email)), cptr.stPtro(gc, FLD.instance_globals_c_crash_email, (null));
+    if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_name))
+        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_crash_name)), cptr.stPtro(gc, FLD.instance_globals_c_crash_name, (null));
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list))
+        cptr.free(cptr.ldPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list)), cptr.stPtro(sysopt, FLD.sysopt_s_fmtd_wizard_list, null);
     return;
 }
 

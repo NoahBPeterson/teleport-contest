@@ -7,6 +7,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand, what_datamodel_is_this } from './hacklib.js';
 import { nomakedefs } from './date.js';
 import { do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init } from './mdlib.js';
@@ -133,13 +134,13 @@ const __sl108 = cptr.lit("I32LP64");
 
 /** C ref: version.c:22 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
 export function version_string(buf, bufsz) {
-    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0)) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2)));
+    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string) : mdlib_version_string(buf, __sl2)));
     return buf;
 }
 
 /** C ref: version.c:35 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
 export function getversionstring(buf, bufsz) {
-    void cptr.strcpy(buf, cptr.ldPtro(nomakedefs, 48));
+    void cptr.strcpy(buf, cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_id));
     {
         let c = 0;
         let p = eos(buf);
@@ -147,10 +148,10 @@ export function getversionstring(buf, bufsz) {
         if (dotoff)
             p = cptr.add(p, -1);
         void cptr.strcpy(p, __sl3);
-        if (cptr.ldPtro(nomakedefs, 16))
-            nh_snprintf(__sl4, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl5, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, 16));
-        if (cptr.ldPtro(nomakedefs, 32))
-            nh_snprintf(__sl4, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl8, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, 32));
+        if (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_sha))
+            nh_snprintf(__sl4, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl5, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_sha));
+        if (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_prefix))
+            nh_snprintf(__sl4, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl8, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_prefix));
         if (c)
             nh_snprintf(__sl4, 71, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl1, __sl9);
         else
@@ -166,7 +167,7 @@ export function status_version(buf, bufsz, indent) {
     let name = null;
     let altname = null;
     let indentation;
-    let vflags = cptr.ldI32o(flags, 84);
+    let vflags = cptr.ldI32o(flags, FLD.flag_versinfo);
     let shownum = schar((((vflags & NHM.VI_NUMBER) >>> 0) != 0));
     let showname = schar((((vflags & NHM.VI_NAME) >>> 0) != 0));
     let showbranch = schar((((vflags & NHM.VI_BRANCH) >>> 0) != 0));
@@ -176,7 +177,7 @@ export function status_version(buf, bufsz, indent) {
             showname = 0;
     }
     if (showbranch) {
-        altname = cptr.ldPtro(nomakedefs, 24);
+        altname = cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch);
         if (!altname || !cptr.ld1s(altname))
             showbranch = 0;
     }
@@ -197,7 +198,7 @@ export function status_version(buf, bufsz, indent) {
         indentation = __sl10;
     }
     if (shownum) {
-        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0)) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2));
+        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string) : mdlib_version_string(buf, __sl2));
     }
     return buf;
 }
@@ -205,7 +206,7 @@ export function status_version(buf, bufsz, indent) {
 /** C ref: version.c:156 @returns {CInt} */
 export function doversion() {
     let buf = new Uint8Array(256);
-    if (cptr.ld1so(iflags, 135))
+    if (cptr.ld1so(iflags, FLD.instance_flags_menu_requested))
         return doextversion();
     pline(__sl1, getversionstring(cptr.decay(buf), 256n));
     return NHM.ECMD_OK;
@@ -218,7 +219,7 @@ export function doextversion() {
     let f = null;
     let buf = new Uint8Array(256);
     let p = null;
-    let win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT);
+    let win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
     let use_dlb = 1;
     let done_rt = 0;
     let done_dlb = 0;
@@ -231,17 +232,17 @@ export function doextversion() {
         cptr.st1o(p, -1, 0);
     else
         p = null;
-    (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
     if (p) {
         cptr.st1(cptr.predec(() => p, (v) => { p = v; }), 32);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, p);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, p);
     }
     if (use_dlb) {
         f = fopen(__sl12, __sl13);
         if (!f) {
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl7);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl7);
             void cptr.sprintf(cptr.decay(buf), __sl14, __sl12);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
             done_dlb = 1;
         }
     }
@@ -266,7 +267,7 @@ export function doextversion() {
         if (cptr.strchr(cptr.decay(buf), 9) !== null)
             void tabexpand(cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32) {
-            (cptr.ldPtro(windowprocs, 144))(win, 0, __sl7);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl7);
             prolog = 0;
         }
         if (prolog || !cptr.ld1s(cptr.decay(buf)))
@@ -274,12 +275,12 @@ export function doextversion() {
         if (cptr.strchr(cptr.decay(buf), 58))
             insert_rtoption(cptr.decay(buf));
         if (cptr.ld1s(cptr.decay(buf)))
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
     }
     if (use_dlb)
         void fclose(f);
-    (cptr.ldPtro(windowprocs, 120))(win, 0);
-    (cptr.ldPtro(windowprocs, 128))(win);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
     return NHM.ECMD_OK;
 }
 
@@ -310,20 +311,20 @@ export function early_version_info(pastebuf) {
 /** C ref: version.c:326 — struct rt_opt[3] */
 const rt_opts = cptr.alloc(3 * 16);
 cptr.stPtro(rt_opts, 0, __sl18);
-cptr.stPtro(rt_opts, 8, cptr.decay(regex_id));
+cptr.stPtro(rt_opts, 0 + FLD.rt_opt_value, cptr.decay(regex_id));
 cptr.stPtro(rt_opts, 16, __sl19);
-cptr.stPtro(rt_opts, 24, cptr.add(gl, 552));
+cptr.stPtro(rt_opts, 16 + FLD.rt_opt_value, cptr.add(gl, FLD.instance_globals_l_lua_ver));
 cptr.stPtro(rt_opts, 32, __sl20);
-cptr.stPtro(rt_opts, 40, cptr.add(gl, 572));
+cptr.stPtro(rt_opts, 32 + FLD.rt_opt_value, cptr.add(gl, FLD.instance_globals_l_lua_copyright));
 
 /** C ref: version.c:339 — @param {CPtr} buf */
 function insert_rtoption(buf) {
     let i;
-    if (!cptr.ld1so2(gl, 0, 1, 552))
+    if (!cptr.ld1so2(gl, 0, 1, FLD.instance_globals_l_lua_ver))
         get_lua_version();
     for (i = 0; i < 3; ++i) {
-        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, 8))) {
-            void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro2(rt_opts, i, 16, 8));
+        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, FLD.rt_opt_value))) {
+            void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro2(rt_opts, i, 16, FLD.rt_opt_value));
         }
     }
 }
@@ -333,21 +334,21 @@ export function check_version(version_data, filename, complain, utdflags) {
     if (!filename) {
         complain = 0;
     }
-    if ((cptr.ldU64o(version_data, 8) & 1073741824n) != 0n) {
-        cptr.st1o(gc, 578, 1);
-        cptr.stU64o(version_data, 8, cptr.ldU64o(version_data, 8) & 18446744072635809791n);
+    if ((cptr.ldU64o(version_data, FLD.version_info_feature_set) & 1073741824n) != 0n) {
+        cptr.st1o(gc, FLD.instance_globals_c_converted_savefile_loaded, 1);
+        cptr.stU64o(version_data, FLD.version_info_feature_set, cptr.ldU64o(version_data, FLD.version_info_feature_set) & 18446744072635809791n);
     }
-    if (cptr.ldU64(version_data) != cptr.ldU64o(nomakedefs, 56)) {
+    if (cptr.ldU64(version_data) != cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_number)) {
         if (complain) {
             pline(__sl21, filename);
             if (WIN_MESSAGE.v != -1)
-                (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1);
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
         }
         return 0;
-    } else if ((cptr.ldU64o(version_data, 8) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) != (cptr.ldU64o(nomakedefs, 64) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, 16) != cptr.ldU64o(nomakedefs, 80))) {
+    } else if ((cptr.ldU64o(version_data, FLD.version_info_feature_set) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))) != (cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, FLD.version_info_entity_count) != cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1))) {
         if (complain) {
             pline(__sl22, filename);
-            (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1);
         }
         return 0;
     }
@@ -398,7 +399,7 @@ export function copyright_banner_line(indx) {
     if (indx == 2)
         return __sl25;
     if (indx == 3)
-        return cptr.ldPtro(nomakedefs, 8);
+        return cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c);
     if (indx == 4)
         return __sl26;
     return __sl7;
@@ -411,23 +412,23 @@ export function dump_version_info() {
     if (cptr.strlen(hname) > 33n)
         hname = cptr.add(eos((hname)), -(33));
     runtime_info_init();
-    nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64o(nomakedefs, 56), (cptr.ldU64o(nomakedefs, 64) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))), cptr.ldU64o(nomakedefs, 80));
-    (cptr.ldPtro(windowprocs, 240))(cptr.decay(buf));
+    nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_number), (cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_ignored_features))), cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(buf));
     release_runtime_info();
     return;
 }
 
 /** C ref: version.c:512 — @param {CPtr} nhfp */
 export function store_version(nhfp) {
-    let version_data = cptr.alloc(24); cptr.stU64(version_data, 0n); cptr.stU64o(version_data, 8, 0n); cptr.stU64o(version_data, 16, 0n);
-    cptr.stU64(version_data, cptr.ldU64o(nomakedefs, 56));
-    cptr.stU64o(version_data, 8, cptr.ldU64o(nomakedefs, 64));
-    cptr.stU64o(version_data, 16, cptr.ldU64o(nomakedefs, 80));
-    if (cptr.ld1so(nhfp, 32))
+    let version_data = cptr.alloc(24); cptr.stU64(version_data, 0n); cptr.stU64o(version_data, FLD.version_info_feature_set, 0n); cptr.stU64o(version_data, FLD.version_info_entity_count, 0n);
+    cptr.stU64(version_data, cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_number));
+    cptr.stU64o(version_data, FLD.version_info_feature_set, cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_features));
+    cptr.stU64o(version_data, FLD.version_info_entity_count, cptr.ldU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1));
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel))
         bufoff(cptr.ldI32(nhfp));
     store_critical_bytes(nhfp);
     sfo_version_info(nhfp, version_data, __sl30);
-    if (cptr.ld1so(nhfp, 32))
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel))
         bufon(cptr.ldI32(nhfp));
     return;
 }
@@ -437,165 +438,165 @@ export function store_version(nhfp) {
 /** C ref: version.c:546 — struct critical_sizes_with_names[80] */
 export const critical_sizes = cptr.alloc(80 * 16);
 cptr.st1o(critical_sizes, 0, 0);
-cptr.stPtro(critical_sizes, 8, __sl31);
+cptr.stPtro(critical_sizes, 0 + FLD.critical_sizes_with_names_nm, __sl31);
 cptr.st1o(critical_sizes, 16, 2);
-cptr.stPtro(critical_sizes, 24, __sl32);
+cptr.stPtro(critical_sizes, 16 + FLD.critical_sizes_with_names_nm, __sl32);
 cptr.st1o(critical_sizes, 32, 4);
-cptr.stPtro(critical_sizes, 40, __sl33);
+cptr.stPtro(critical_sizes, 32 + FLD.critical_sizes_with_names_nm, __sl33);
 cptr.st1o(critical_sizes, 48, 8);
-cptr.stPtro(critical_sizes, 56, __sl34);
+cptr.stPtro(critical_sizes, 48 + FLD.critical_sizes_with_names_nm, __sl34);
 cptr.st1o(critical_sizes, 64, 8);
-cptr.stPtro(critical_sizes, 72, __sl35);
+cptr.stPtro(critical_sizes, 64 + FLD.critical_sizes_with_names_nm, __sl35);
 cptr.st1o(critical_sizes, 80, 8);
-cptr.stPtro(critical_sizes, 88, __sl36);
+cptr.stPtro(critical_sizes, 80 + FLD.critical_sizes_with_names_nm, __sl36);
 cptr.st1o(critical_sizes, 96, 1);
-cptr.stPtro(critical_sizes, 104, __sl37);
+cptr.stPtro(critical_sizes, 96 + FLD.critical_sizes_with_names_nm, __sl37);
 cptr.st1o(critical_sizes, 112, 1);
-cptr.stPtro(critical_sizes, 120, __sl38);
+cptr.stPtro(critical_sizes, 112 + FLD.critical_sizes_with_names_nm, __sl38);
 cptr.st1o(critical_sizes, 128, 2);
-cptr.stPtro(critical_sizes, 136, __sl39);
+cptr.stPtro(critical_sizes, 128 + FLD.critical_sizes_with_names_nm, __sl39);
 cptr.st1o(critical_sizes, 144, 2);
-cptr.stPtro(critical_sizes, 152, __sl40);
+cptr.stPtro(critical_sizes, 144 + FLD.critical_sizes_with_names_nm, __sl40);
 cptr.st1o(critical_sizes, 160, 4);
-cptr.stPtro(critical_sizes, 168, __sl41);
+cptr.stPtro(critical_sizes, 160 + FLD.critical_sizes_with_names_nm, __sl41);
 cptr.st1o(critical_sizes, 176, 8);
-cptr.stPtro(critical_sizes, 184, __sl42);
+cptr.stPtro(critical_sizes, 176 + FLD.critical_sizes_with_names_nm, __sl42);
 cptr.st1o(critical_sizes, 192, 1);
-cptr.stPtro(critical_sizes, 200, __sl43);
+cptr.stPtro(critical_sizes, 192 + FLD.critical_sizes_with_names_nm, __sl43);
 cptr.st1o(critical_sizes, 208, 8);
-cptr.stPtro(critical_sizes, 216, __sl44);
+cptr.stPtro(critical_sizes, 208 + FLD.critical_sizes_with_names_nm, __sl44);
 cptr.st1o(critical_sizes, 224, 1);
-cptr.stPtro(critical_sizes, 232, __sl45);
+cptr.stPtro(critical_sizes, 224 + FLD.critical_sizes_with_names_nm, __sl45);
 cptr.st1o(critical_sizes, 240, 2);
-cptr.stPtro(critical_sizes, 248, __sl46);
+cptr.stPtro(critical_sizes, 240 + FLD.critical_sizes_with_names_nm, __sl46);
 cptr.st1o(critical_sizes, 256, 4);
-cptr.stPtro(critical_sizes, 264, __sl47);
+cptr.stPtro(critical_sizes, 256 + FLD.critical_sizes_with_names_nm, __sl47);
 cptr.st1o(critical_sizes, 272, 8);
-cptr.stPtro(critical_sizes, 280, __sl48);
+cptr.stPtro(critical_sizes, 272 + FLD.critical_sizes_with_names_nm, __sl48);
 cptr.st1o(critical_sizes, 288, 8);
-cptr.stPtro(critical_sizes, 296, __sl49);
+cptr.stPtro(critical_sizes, 288 + FLD.critical_sizes_with_names_nm, __sl49);
 cptr.st1o(critical_sizes, 304, 4);
-cptr.stPtro(critical_sizes, 312, __sl50);
+cptr.stPtro(critical_sizes, 304 + FLD.critical_sizes_with_names_nm, __sl50);
 cptr.st1o(critical_sizes, 320, 2);
-cptr.stPtro(critical_sizes, 328, __sl51);
+cptr.stPtro(critical_sizes, 320 + FLD.critical_sizes_with_names_nm, __sl51);
 cptr.st1o(critical_sizes, 336, 2);
-cptr.stPtro(critical_sizes, 344, __sl52);
+cptr.stPtro(critical_sizes, 336 + FLD.critical_sizes_with_names_nm, __sl52);
 cptr.st1o(critical_sizes, 352, 1);
-cptr.stPtro(critical_sizes, 360, __sl53);
+cptr.stPtro(critical_sizes, 352 + FLD.critical_sizes_with_names_nm, __sl53);
 cptr.st1o(critical_sizes, 368, 36);
-cptr.stPtro(critical_sizes, 376, __sl54);
+cptr.stPtro(critical_sizes, 368 + FLD.critical_sizes_with_names_nm, __sl54);
 cptr.st1o(critical_sizes, 384, 8);
-cptr.stPtro(critical_sizes, 392, __sl55);
+cptr.stPtro(critical_sizes, 384 + FLD.critical_sizes_with_names_nm, __sl55);
 cptr.st1o(critical_sizes, 400, 32);
-cptr.stPtro(critical_sizes, 408, __sl56);
+cptr.stPtro(critical_sizes, 400 + FLD.critical_sizes_with_names_nm, __sl56);
 cptr.st1o(critical_sizes, 416, 40);
-cptr.stPtro(critical_sizes, 424, __sl57);
+cptr.stPtro(critical_sizes, 416 + FLD.critical_sizes_with_names_nm, __sl57);
 cptr.st1o(critical_sizes, 432, 184);
-cptr.stPtro(critical_sizes, 440, __sl58);
+cptr.stPtro(critical_sizes, 432 + FLD.critical_sizes_with_names_nm, __sl58);
 cptr.st1o(critical_sizes, 448, 208);
-cptr.stPtro(critical_sizes, 456, __sl59);
+cptr.stPtro(critical_sizes, 448 + FLD.critical_sizes_with_names_nm, __sl59);
 cptr.st1o(critical_sizes, 464, 4);
-cptr.stPtro(critical_sizes, 472, __sl60);
+cptr.stPtro(critical_sizes, 464 + FLD.critical_sizes_with_names_nm, __sl60);
 cptr.st1o(critical_sizes, 480, 32);
-cptr.stPtro(critical_sizes, 488, __sl61);
+cptr.stPtro(critical_sizes, 480 + FLD.critical_sizes_with_names_nm, __sl61);
 cptr.st1o(critical_sizes, 496, 16);
-cptr.stPtro(critical_sizes, 504, __sl62);
+cptr.stPtro(critical_sizes, 496 + FLD.critical_sizes_with_names_nm, __sl62);
 cptr.st1o(critical_sizes, 512, 114);
-cptr.stPtro(critical_sizes, 520, __sl63);
+cptr.stPtro(critical_sizes, 512 + FLD.critical_sizes_with_names_nm, __sl63);
 cptr.st1o(critical_sizes, 528, 112);
-cptr.stPtro(critical_sizes, 536, __sl64);
+cptr.stPtro(critical_sizes, 528 + FLD.critical_sizes_with_names_nm, __sl64);
 cptr.st1o(critical_sizes, 544, 4);
-cptr.stPtro(critical_sizes, 552, __sl65);
+cptr.stPtro(critical_sizes, 544 + FLD.critical_sizes_with_names_nm, __sl65);
 cptr.st1o(critical_sizes, 560, 36);
-cptr.stPtro(critical_sizes, 568, __sl66);
+cptr.stPtro(critical_sizes, 560 + FLD.critical_sizes_with_names_nm, __sl66);
 cptr.st1o(critical_sizes, 576, 64);
-cptr.stPtro(critical_sizes, 584, __sl67);
+cptr.stPtro(critical_sizes, 576 + FLD.critical_sizes_with_names_nm, __sl67);
 cptr.st1o(critical_sizes, 592, 140);
-cptr.stPtro(critical_sizes, 600, __sl68);
+cptr.stPtro(critical_sizes, 592 + FLD.critical_sizes_with_names_nm, __sl68);
 cptr.st1o(critical_sizes, 608, 8);
-cptr.stPtro(critical_sizes, 616, __sl69);
+cptr.stPtro(critical_sizes, 608 + FLD.critical_sizes_with_names_nm, __sl69);
 cptr.st1o(critical_sizes, 624, 80);
-cptr.stPtro(critical_sizes, 632, __sl70);
+cptr.stPtro(critical_sizes, 624 + FLD.critical_sizes_with_names_nm, __sl70);
 cptr.st1o(critical_sizes, 640, 56);
-cptr.stPtro(critical_sizes, 648, __sl71);
+cptr.stPtro(critical_sizes, 640 + FLD.critical_sizes_with_names_nm, __sl71);
 cptr.st1o(critical_sizes, 656, 96);
-cptr.stPtro(critical_sizes, 664, __sl72);
+cptr.stPtro(critical_sizes, 656 + FLD.critical_sizes_with_names_nm, __sl72);
 cptr.st1o(critical_sizes, 672, 48);
-cptr.stPtro(critical_sizes, 680, __sl73);
+cptr.stPtro(critical_sizes, 672 + FLD.critical_sizes_with_names_nm, __sl73);
 cptr.st1o(critical_sizes, 688, 208);
-cptr.stPtro(critical_sizes, 696, __sl74);
+cptr.stPtro(critical_sizes, 688 + FLD.critical_sizes_with_names_nm, __sl74);
 cptr.st1o(critical_sizes, 704, 48);
-cptr.stPtro(critical_sizes, 712, __sl75);
+cptr.stPtro(critical_sizes, 704 + FLD.critical_sizes_with_names_nm, __sl75);
 cptr.st1o(critical_sizes, 720, 32);
-cptr.stPtro(critical_sizes, 728, __sl76);
+cptr.stPtro(critical_sizes, 720 + FLD.critical_sizes_with_names_nm, __sl76);
 cptr.st1o(critical_sizes, 736, 16);
-cptr.stPtro(critical_sizes, 744, __sl77);
+cptr.stPtro(critical_sizes, 736 + FLD.critical_sizes_with_names_nm, __sl77);
 cptr.st1o(critical_sizes, 752, 128);
-cptr.stPtro(critical_sizes, 760, __sl78);
+cptr.stPtro(critical_sizes, 752 + FLD.critical_sizes_with_names_nm, __sl78);
 cptr.st1o(critical_sizes, 768, 32);
-cptr.stPtro(critical_sizes, 776, __sl79);
+cptr.stPtro(critical_sizes, 768 + FLD.critical_sizes_with_names_nm, __sl79);
 cptr.st1o(critical_sizes, 784, 1);
-cptr.stPtro(critical_sizes, 792, __sl80);
+cptr.stPtro(critical_sizes, 784 + FLD.critical_sizes_with_names_nm, __sl80);
 cptr.st1o(critical_sizes, 800, 52);
-cptr.stPtro(critical_sizes, 808, __sl81);
+cptr.stPtro(critical_sizes, 800 + FLD.critical_sizes_with_names_nm, __sl81);
 cptr.st1o(critical_sizes, 816, 64);
-cptr.stPtro(critical_sizes, 824, __sl82);
+cptr.stPtro(critical_sizes, 816 + FLD.critical_sizes_with_names_nm, __sl82);
 cptr.st1o(critical_sizes, 832, 8);
-cptr.stPtro(critical_sizes, 840, __sl83);
+cptr.stPtro(critical_sizes, 832 + FLD.critical_sizes_with_names_nm, __sl83);
 cptr.st1o(critical_sizes, 848, 64);
-cptr.stPtro(critical_sizes, 856, __sl84);
+cptr.stPtro(critical_sizes, 848 + FLD.critical_sizes_with_names_nm, __sl84);
 cptr.st1o(critical_sizes, 864, 224);
-cptr.stPtro(critical_sizes, 872, __sl85);
+cptr.stPtro(critical_sizes, 864 + FLD.critical_sizes_with_names_nm, __sl85);
 cptr.st1o(critical_sizes, 880, 64);
-cptr.stPtro(critical_sizes, 888, __sl86);
+cptr.stPtro(critical_sizes, 880 + FLD.critical_sizes_with_names_nm, __sl86);
 cptr.st1o(critical_sizes, 896, 12);
-cptr.stPtro(critical_sizes, 904, __sl87);
+cptr.stPtro(critical_sizes, 896 + FLD.critical_sizes_with_names_nm, __sl87);
 cptr.st1o(critical_sizes, 912, 216);
-cptr.stPtro(critical_sizes, 920, __sl88);
+cptr.stPtro(critical_sizes, 912 + FLD.critical_sizes_with_names_nm, __sl88);
 cptr.st1o(critical_sizes, 928, 120);
-cptr.stPtro(critical_sizes, 936, __sl89);
+cptr.stPtro(critical_sizes, 928 + FLD.critical_sizes_with_names_nm, __sl89);
 cptr.st1o(critical_sizes, 944, 32);
-cptr.stPtro(critical_sizes, 952, __sl90);
+cptr.stPtro(critical_sizes, 944 + FLD.critical_sizes_with_names_nm, __sl90);
 cptr.st1o(critical_sizes, 960, 88);
-cptr.stPtro(critical_sizes, 968, __sl91);
+cptr.stPtro(critical_sizes, 960 + FLD.critical_sizes_with_names_nm, __sl91);
 cptr.st1o(critical_sizes, 976, 36);
-cptr.stPtro(critical_sizes, 984, __sl92);
+cptr.stPtro(critical_sizes, 976 + FLD.critical_sizes_with_names_nm, __sl92);
 cptr.st1o(critical_sizes, 992, 8);
-cptr.stPtro(critical_sizes, 1000, __sl93);
+cptr.stPtro(critical_sizes, 992 + FLD.critical_sizes_with_names_nm, __sl93);
 cptr.st1o(critical_sizes, 1008, 24);
-cptr.stPtro(critical_sizes, 1016, __sl94);
+cptr.stPtro(critical_sizes, 1008 + FLD.critical_sizes_with_names_nm, __sl94);
 cptr.st1o(critical_sizes, 1024, 56);
-cptr.stPtro(critical_sizes, 1032, __sl95);
+cptr.stPtro(critical_sizes, 1024 + FLD.critical_sizes_with_names_nm, __sl95);
 cptr.st1o(critical_sizes, 1040, 40);
-cptr.stPtro(critical_sizes, 1048, __sl96);
+cptr.stPtro(critical_sizes, 1040 + FLD.critical_sizes_with_names_nm, __sl96);
 cptr.st1o(critical_sizes, 1056, 24);
-cptr.stPtro(critical_sizes, 1064, __sl97);
+cptr.stPtro(critical_sizes, 1056 + FLD.critical_sizes_with_names_nm, __sl97);
 cptr.st1o(critical_sizes, 1072, 8);
-cptr.stPtro(critical_sizes, 1080, __sl98);
+cptr.stPtro(critical_sizes, 1072 + FLD.critical_sizes_with_names_nm, __sl98);
 cptr.st1o(critical_sizes, 1088, 48);
-cptr.stPtro(critical_sizes, 1096, __sl99);
+cptr.stPtro(critical_sizes, 1088 + FLD.critical_sizes_with_names_nm, __sl99);
 cptr.st1o(critical_sizes, 1104, 11);
-cptr.stPtro(critical_sizes, 1112, __sl100);
+cptr.stPtro(critical_sizes, 1104 + FLD.critical_sizes_with_names_nm, __sl100);
 cptr.st1o(critical_sizes, 1120, 0);
-cptr.stPtro(critical_sizes, 1128, __sl7);
+cptr.stPtro(critical_sizes, 1120 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1136, 0);
-cptr.stPtro(critical_sizes, 1144, __sl7);
+cptr.stPtro(critical_sizes, 1136 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1152, 0);
-cptr.stPtro(critical_sizes, 1160, __sl7);
+cptr.stPtro(critical_sizes, 1152 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1168, 0);
-cptr.stPtro(critical_sizes, 1176, __sl7);
+cptr.stPtro(critical_sizes, 1168 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1184, 0);
-cptr.stPtro(critical_sizes, 1192, __sl7);
+cptr.stPtro(critical_sizes, 1184 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1200, 0);
-cptr.stPtro(critical_sizes, 1208, __sl7);
+cptr.stPtro(critical_sizes, 1200 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1216, 0);
-cptr.stPtro(critical_sizes, 1224, __sl7);
+cptr.stPtro(critical_sizes, 1216 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1232, 0);
-cptr.stPtro(critical_sizes, 1240, __sl7);
+cptr.stPtro(critical_sizes, 1232 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1248, 0);
-cptr.stPtro(critical_sizes, 1256, __sl7);
+cptr.stPtro(critical_sizes, 1248 + FLD.critical_sizes_with_names_nm, __sl7);
 cptr.st1o(critical_sizes, 1264, 0);
-cptr.stPtro(critical_sizes, 1272, __sl7);
+cptr.stPtro(critical_sizes, 1264 + FLD.critical_sizes_with_names_nm, __sl7);
 
 /** C ref: version.c:666 — unsigned char[80] */
 export const cscbuf = new Uint8Array(80);
@@ -611,8 +612,8 @@ export function store_critical_bytes(nhfp) {
     let cnt;
     let indicate = cptr.box(117);
     let csc_count = cptr.box(80);
-    if (cptr.ldI32o(nhfp, 4) & NHM.WRITING) {
-        indicate.v = schar(((cptr.ld1so(nhfp, 32)) ? 104 : ((cptr.ldI32o(nhfp, 12) == NHC.exportascii) ? 97 : 63)));
+    if (cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.WRITING) {
+        indicate.v = schar(((cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) ? 104 : ((cptr.ldI32o(nhfp, FLD.NHFILE_fnidx) == NHC.exportascii) ? 97 : 63)));
         sfo_char(nhfp, indicate, __sl101, 1);
         sfo_char(nhfp, csc_count, __sl102, 1);
         cnt = csc_count.v;
@@ -634,14 +635,14 @@ export function uptodate(nhfp, name, utdflags) {
     if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v) {
             if (!quietly)
-                raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, 8));
+                raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, FLD.critical_sizes_with_names_nm));
         }
     }
     sfi_version_info(nhfp, vers_info, __sl30);
     if (!check_version(vers_info, name, verbose, utdflags)) {
         if (verbose) {
             if ((utdflags & 16n) == 0n) {
-                (cptr.ldPtro(windowprocs, 216))();
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
             }
         }
         return NHM.SF_OUTDATED;
@@ -696,11 +697,11 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
 export function validate(nhfp, name, without_waitsynch_perfile) {
     let utdflags = 0n;
     let validsf = 0;
-    if (cptr.ld1so(nhfp, 32))
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel))
         utdflags |= 1n;
     if (without_waitsynch_perfile)
         utdflags |= 16n;
-    if (cptr.ld1so(nhfp, 33))
+    if (cptr.ld1so(nhfp, FLD.NHFILE_fieldlevel))
         utdflags |= 6n;
     validsf = uptodate(nhfp, name, utdflags);
     return validsf;

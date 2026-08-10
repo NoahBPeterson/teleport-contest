@@ -7,6 +7,7 @@ import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { cg, gb, gl, gm, gv, gy, svl, u, uskin } from './decl.js';
@@ -92,15 +93,15 @@ function new_light_core(x, y, range, type, id) {
     }
     ls = alloc(32);
     void __builtin___memset_chk(ls, 0, 32n, __builtin_object_size(ls, 0));
-    cptr.stPtr(ls, cptr.ldPtro(gl, 72));
-    cptr.stI16o(ls, 8, x);
-    cptr.stI16o(ls, 10, y);
-    cptr.stI16o(ls, 12, i16(range));
-    cptr.stI16o(ls, 16, i16(type));
-    cptr.memcpy(cptr.add(ls, 24), id, 8);
-    cptr.stI16o(ls, 14, 0);
-    cptr.stPtro(gl, 72, ls);
-    cptr.st1o(gv, 144, 1);
+    cptr.stPtr(ls, cptr.ldPtro(gl, FLD.instance_globals_l_light_base));
+    cptr.stI16o(ls, FLD.light_source_x, x);
+    cptr.stI16o(ls, FLD.light_source_y, y);
+    cptr.stI16o(ls, FLD.light_source_range, i16(range));
+    cptr.stI16o(ls, FLD.light_source_type, i16(type));
+    cptr.memcpy(cptr.add(ls, FLD.light_source_id), id, 8);
+    cptr.stI16o(ls, FLD.light_source_flags, 0);
+    cptr.stPtro(gl, FLD.instance_globals_l_light_base, ls);
+    cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
     return ls;
 }
 
@@ -108,26 +109,26 @@ function new_light_core(x, y, range, type, id) {
 export function del_light_source(type, id) {
     let curr;
     let tmp_id = cptr.alloc(8);
-    cptr.memcpy(tmp_id, cptr.add(cg, 536), 8);
+    cptr.memcpy(tmp_id, cptr.add(cg, FLD.const_globals_zeroany), 8);
     switch (type) {
         case NHC.LS_NONE:
         impossible(__sl1);
         cptr.stI32(tmp_id, 0);
         break;
         case NHC.LS_OBJECT:
-        cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), 24) : 0);
+        cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), FLD.obj_o_id) : 0);
         break;
         case NHC.LS_MONSTER:
-        cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), 16));
+        cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), FLD.monst_m_id));
         break;
         default:
         cptr.stI32(tmp_id, 0);
         break;
     }
-    for (curr = cptr.ldPtro(gl, 72); curr; curr = cptr.ldPtr(curr)) {
-        if (cptr.ldI16o(curr, 16) != type)
+    for (curr = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); curr; curr = cptr.ldPtr(curr)) {
+        if (cptr.ldI16o(curr, FLD.light_source_type) != type)
             continue;
-        if (cptr.eq(cptr.ldPtro(curr, 24), ((cptr.ldI16o(curr, 14) & 2) ? cptr.ldPtr(tmp_id) : cptr.ldPtr(id))))
+        if (cptr.eq(cptr.ldPtro(curr, FLD.light_source_id), ((cptr.ldI16o(curr, FLD.light_source_flags) & 2) ? cptr.ldPtr(tmp_id) : cptr.ldPtr(id))))
             break;
     }
     if (curr) {
@@ -141,12 +142,12 @@ export function del_light_source(type, id) {
 function delete_ls(ls) {
     let curr;
     let prev;
-    for (prev = null, curr = cptr.ldPtro(gl, 72); curr; prev = curr, curr = cptr.ldPtr(curr)) {
+    for (prev = null, curr = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); curr; prev = curr, curr = cptr.ldPtr(curr)) {
         if (cptr.eq(curr, ls)) {
             if (prev)
                 cptr.stPtr(prev, cptr.ldPtr(curr));
             else
-                cptr.stPtro(gl, 72, cptr.ldPtr(curr));
+                cptr.stPtro(gl, FLD.instance_globals_l_light_base, cptr.ldPtr(curr));
             break;
         }
     }
@@ -154,7 +155,7 @@ function delete_ls(ls) {
         (__builtin_expect(BigInt((!(cptr.eq(curr, ls)))), 0n) ? __assert_rtn(__sl3, __sl4, 157, __sl5) : void 0);
         void __builtin___memset_chk(ls, 0, 32n, __builtin_object_size(ls, 0));
         cptr.free(ls);
-        cptr.st1o(gv, 144, 1);
+        cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
     } else {
         impossible(__sl6, fmt_ptr(ls));
     }
@@ -173,41 +174,41 @@ export function do_light_sources(cs_rows) {
     let at_hero_range = 0;
     let ls;
     let row;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-        cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -2);
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
-            if (cptr.ldI16o(ls, 12) == 0 || get_obj_location(cptr.ldPtro(ls, 24), cptr.add(ls, 8), cptr.add(ls, 10), 0))
-                cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 1);
-        } else if (cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
-            if (get_mon_location(cptr.ldPtro(ls, 24), cptr.add(ls, 8), cptr.add(ls, 10), 0))
-                cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 1);
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+        cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) & -2);
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT) {
+            if (cptr.ldI16o(ls, FLD.light_source_range) == 0 || get_obj_location(cptr.ldPtro(ls, FLD.light_source_id), cptr.add(ls, FLD.light_source_x), cptr.add(ls, FLD.light_source_y), 0))
+                cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 1);
+        } else if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER) {
+            if (get_mon_location(cptr.ldPtro(ls, FLD.light_source_id), cptr.add(ls, FLD.light_source_x), cptr.add(ls, FLD.light_source_y), 0))
+                cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 1);
         }
-        if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2))) {
-            if (at_hero_range >= cptr.ldI16o(ls, 12))
-                cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -2);
+        if (((cptr.ldI16o(ls, FLD.light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, FLD.light_source_y)) == cptr.ldI16o(u, FLD.you_uy))) {
+            if (at_hero_range >= cptr.ldI16o(ls, FLD.light_source_range))
+                cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) & -2);
             else
-                at_hero_range = cptr.ldI16o(ls, 12);
+                at_hero_range = cptr.ldI16o(ls, FLD.light_source_range);
         }
-        if (cptr.ldI16o(ls, 14) & 1) {
-            limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI16o(ls, 12), 2), 2));
-            if ((max_y = i16(((cptr.ldI16o(ls, 10) + cptr.ldI16o(ls, 12)) | 0))) >= NHM.ROWNO)
+        if (cptr.ldI16o(ls, FLD.light_source_flags) & 1) {
+            limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI16o(ls, FLD.light_source_range), 2), 2));
+            if ((max_y = i16(((cptr.ldI16o(ls, FLD.light_source_y) + cptr.ldI16o(ls, FLD.light_source_range)) | 0))) >= NHM.ROWNO)
                 max_y = 20;
-            if ((y = i16(((cptr.ldI16o(ls, 10) - cptr.ldI16o(ls, 12)) | 0))) < 0)
+            if ((y = i16(((cptr.ldI16o(ls, FLD.light_source_y) - cptr.ldI16o(ls, FLD.light_source_range)) | 0))) < 0)
                 y = 0;
             for (; y <= max_y; y++) {
                 row = cptr.ldPtro(cs_rows, y, 8);
-                offset = cptr.ldI16o(limits, Math.abs((y - cptr.ldI16o(ls, 10)) | 0), 2);
-                if ((min_x = i16(((cptr.ldI16o(ls, 8) - offset) | 0))) < 1)
+                offset = cptr.ldI16o(limits, Math.abs((y - cptr.ldI16o(ls, FLD.light_source_y)) | 0), 2);
+                if ((min_x = i16(((cptr.ldI16o(ls, FLD.light_source_x) - offset) | 0))) < 1)
                     min_x = 1;
-                if ((max_x = i16(((cptr.ldI16o(ls, 8) + offset) | 0))) >= NHM.COLNO)
+                if ((max_x = i16(((cptr.ldI16o(ls, FLD.light_source_x) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
-                if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2))) {
+                if (((cptr.ldI16o(ls, FLD.light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, FLD.light_source_y)) == cptr.ldI16o(u, FLD.you_uy))) {
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 } else {
                     for (x = min_x; x <= max_x; x++)
-                        if ((cptr.ldI16o(ls, 8) == x && cptr.ldI16o(ls, 10) == y) || clear_path(cptr.ldI16o(ls, 8), cptr.ldI16o(ls, 10), x, y))
+                        if ((cptr.ldI16o(ls, FLD.light_source_x) == x && cptr.ldI16o(ls, FLD.light_source_y) == y) || clear_path(cptr.ldI16o(ls, FLD.light_source_x), cptr.ldI16o(ls, FLD.light_source_y), x, y))
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 }
             }
@@ -222,41 +223,41 @@ export function show_transient_light(obj, x, y) {
     let mon;
     let radius_squared;
     if (!obj) {
-        if ((cptr.ldI32o3(svl, x, 756, y, 36, 1696) & 1))
+        if ((cptr.ldI32o3(svl, x, 756, y, 36, FLD.instance_globals_saved_l_level + FLD.rm_lit) & 1))
             return;
-        cptr.memcpy(cameraflash, cptr.add(cg, 536), 8);
+        cptr.memcpy(cameraflash, cptr.add(cg, FLD.const_globals_zeroany), 8);
         ls = new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash);
         (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 275, __sl8) : void 0);
     } else {
-        for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-            if (cptr.ldI16o(ls, 16) != NHC.LS_OBJECT)
+        for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+            if (cptr.ldI16o(ls, FLD.light_source_type) != NHC.LS_OBJECT)
                 continue;
-            if (cptr.eq(cptr.ldPtro(ls, 24), obj))
+            if (cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), obj))
                 break;
         }
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 285, __sl9) : void 0);
-        if (!ls || cptr.ld1so(obj, 52) != NHM.OBJ_FREE) {
-            impossible(__sl10, (cptr.ldI32o(obj, 76) & 1) | 0 ? __sl11 : __sl12, simpleonames(obj), otense(obj, __sl13), !ls ? __sl14 : __sl15);
+        if (!ls || cptr.ld1so(obj, FLD.obj_where) != NHM.OBJ_FREE) {
+            impossible(__sl10, (cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0 ? __sl11 : __sl12, simpleonames(obj), otense(obj, __sl13), !ls ? __sl14 : __sl15);
             return;
         }
     }
     if (obj)
-        place_object(obj, cptr.ldI16o(gb, 4768), cptr.ldI16o(gb, 4770));
+        place_object(obj, cptr.ldI16o(gb, FLD.instance_globals_b_bhitpos), cptr.ldI16o(gb, FLD.instance_globals_b_bhitpos + FLD.nhcoord_y));
     else
-        cptr.stI16o(ls, 8, x), cptr.stI16o(ls, 10, y);
+        cptr.stI16o(ls, FLD.light_source_x, x), cptr.stI16o(ls, FLD.light_source_y, y);
     vision_recalc(0);
     flush_screen(0);
-    radius_squared = Math.imul(cptr.ldI16o(ls, 12), cptr.ldI16o(ls, 12));
-    for (mon = cptr.ldPtro(svl, 89056); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), 52) < 1) || ((cptr.ldI32o(mon, 188) & 1) | 0 && !cptr.ldI16o(mon, 28)))
+    radius_squared = Math.imul(cptr.ldI16o(ls, FLD.light_source_range), cptr.ldI16o(ls, FLD.light_source_range));
+    for (mon = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
+        if ((cptr.ldI32o((mon), FLD.monst_mhp) < 1) || ((cptr.ldI32o(mon, FLD.monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, FLD.monst_mx)))
             continue;
-        if (dist2(cptr.ldI16o(mon, 28), cptr.ldI16o(mon, 30), x, y) <= radius_squared) {
+        if (dist2(cptr.ldI16o(mon, FLD.monst_mx), cptr.ldI16o(mon, FLD.monst_my), x, y) <= radius_squared) {
             if (canseemon(mon))
-                cptr.stI32o(mon, 204, 1);
+                cptr.stI32o(mon, FLD.monst_mtemplit, 1);
         }
     }
     if (obj) {
-        (cptr.ldPtro(windowprocs, 320))();
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_delay_output))();
         remove_object(obj);
     }
 }
@@ -266,17 +267,17 @@ export function transient_light_cleanup() {
     let mon;
     let mtempcount;
     discard_flashes();
-    if (cptr.ld1so(gv, 144))
+    if (cptr.ld1so(gv, FLD.instance_globals_v_vision_full_recalc))
         vision_recalc(0);
     mtempcount = 0;
-    for (mon = cptr.ldPtro(svl, 89056); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), 52) < 1))
+    for (mon = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
+        if ((cptr.ldI32o((mon), FLD.monst_mhp) < 1))
             continue;
-        if ((cptr.ldI32o(mon, 204) & 1)) {
-            cptr.stI32o(mon, 204, 0);
+        if ((cptr.ldI32o(mon, FLD.monst_mtemplit) & 1)) {
+            cptr.stI32o(mon, FLD.monst_mtemplit, 0);
             ++mtempcount;
             if (!(canseemon(mon) || sensemon(mon)))
-                map_invisible(cptr.ldI16o(mon, 28), cptr.ldI16o(mon, 30));
+                map_invisible(cptr.ldI16o(mon, FLD.monst_mx), cptr.ldI16o(mon, FLD.monst_my));
         }
     }
     if (mtempcount)
@@ -287,9 +288,9 @@ export function transient_light_cleanup() {
 function discard_flashes() {
     let ls;
     let nxt_ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = nxt_ls) {
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = nxt_ls) {
         nxt_ls = cptr.ldPtr(ls);
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && !cptr.ldPtro(ls, 24))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && !cptr.ldPtro(ls, FLD.light_source_id))
             delete_ls(ls);
     }
 }
@@ -298,18 +299,18 @@ function discard_flashes() {
 export function find_mid(nid, fmflags) {
     let mtmp;
     if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1)
-        return cptr.add(gy, 8);
+        return cptr.add(gy, FLD.instance_globals_y_youmonst);
     if ((fmflags & NHM.FM_FMON) >>> 0)
-        for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (!(cptr.ldI32o((mtmp), 52) < 1) && cptr.ldI32o(mtmp, 16) == nid)
+        for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
+            if (!(cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) && cptr.ldI32o(mtmp, FLD.monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, 192); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (cptr.ldI32o(mtmp, 16) == nid)
+        for (mtmp = cptr.ldPtro(gm, FLD.instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
+            if (cptr.ldI32o(mtmp, FLD.monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MYDOGS) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, 184); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (cptr.ldI32o(mtmp, 16) == nid)
+        for (mtmp = cptr.ldPtro(gm, FLD.instance_globals_m_mydogs); mtmp; mtmp = cptr.ldPtr(mtmp))
+            if (cptr.ldI32o(mtmp, FLD.monst_m_id) == nid)
                 return mtmp;
     return null;
 }
@@ -317,18 +318,18 @@ export function find_mid(nid, fmflags) {
 /** C ref: light.c:398 — @param {CPtr} mon @param {CUInt} fmflags @returns {CUInt} */
 function whereis_mon(mon, fmflags) {
     let mtmp;
-    if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)))
+    if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, FLD.instance_globals_y_youmonst)))
         return NHM.FM_YOU;
     if ((fmflags & NHM.FM_FMON) >>> 0)
-        for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
                 return NHM.FM_FMON;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, 192); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (mtmp = cptr.ldPtro(gm, FLD.instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
                 return NHM.FM_MIGRATE;
     if ((fmflags & NHM.FM_MYDOGS) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, 184); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (mtmp = cptr.ldPtro(gm, FLD.instance_globals_m_mydogs); mtmp; mtmp = cptr.ldPtr(mtmp))
             if (cptr.eq(mtmp, mon))
                 return NHM.FM_MYDOGS;
     return 0;
@@ -342,30 +343,30 @@ export function save_light_sources(nhfp, range) {
     let prev;
     let curr;
     discard_flashes();
-    cptr.st1o(gv, 144, 0);
-    if ((cptr.ldI32o((nhfp), 4) & 3)) {
+    cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 0);
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & 3)) {
         count.v = maybe_write_ls(nhfp, range, 0);
         sfo_int(nhfp, count, __sl16);
         actual = maybe_write_ls(nhfp, range, 1);
         if (actual != count.v)
             panic(__sl17, count.v, actual, range);
     }
-    if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING)) {
-        for (prev = cptr.add(gl, 72); (curr = cptr.ldPtr(prev)) !== null; ) {
-            if (!cptr.ldPtro(curr, 24)) {
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & NHM.FREEING)) {
+        for (prev = cptr.add(gl, FLD.instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
+            if (!cptr.ldPtro(curr, FLD.light_source_id)) {
                 impossible(__sl18, range);
                 is_global = 0;
             } else
-                switch (cptr.ldI16o(curr, 16)) {
+                switch (cptr.ldI16o(curr, FLD.light_source_type)) {
                     case NHC.LS_OBJECT:
-                    is_global = !obj_is_local(cptr.ldPtro(curr, 24));
+                    is_global = !obj_is_local(cptr.ldPtro(curr, FLD.light_source_id));
                     break;
                     case NHC.LS_MONSTER:
-                    is_global = !(cptr.ldI16o((cptr.ldPtro(curr, 24)), 28) > 0);
+                    is_global = !(cptr.ldI16o((cptr.ldPtro(curr, FLD.light_source_id)), FLD.monst_mx) > 0);
                     break;
                     default:
                     is_global = 0;
-                    impossible(__sl19, cptr.ldI16o(curr, 16), range);
+                    impossible(__sl19, cptr.ldI16o(curr, FLD.light_source_type), range);
                     break;
                 }
             if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -388,8 +389,8 @@ export function restore_light_sources(nhfp) {
     while (count.v-- > 0) {
         ls = alloc(32);
         sfi_ls_t(nhfp, ls, __sl20);
-        cptr.stPtr(ls, cptr.ldPtro(gl, 72));
-        cptr.stPtro(gl, 72, ls);
+        cptr.stPtr(ls, cptr.ldPtro(gl, FLD.instance_globals_l_light_base));
+        cptr.stPtro(gl, FLD.instance_globals_l_light_base, ls);
     }
 }
 
@@ -398,7 +399,7 @@ export function light_stats(hdrfmt, hdrbuf, count, size) {
     let ls;
     void cptr.sprintf(hdrbuf, hdrfmt, 32n);
     cptr.stI64(count, cptr.stI64(size, 0n));
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         cptr.stI64(count, cptr.ldI64(count) + 1n);
         cptr.stI64(size, cptr.ldI64(size) + 32n);
     }
@@ -409,26 +410,26 @@ export function relink_light_sources(ghostly) {
     let which;
     let nid = cptr.box(0);
     let ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-        if (cptr.ldI16o(ls, 14) & 2) {
-            if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
-                nid.v = cptr.ldI32o(ls, 24);
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+        if (cptr.ldI16o(ls, FLD.light_source_flags) & 2) {
+            if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER) {
+                nid.v = cptr.ldI32o(ls, FLD.light_source_id);
                 if (ghostly && !lookup_id_mapping(nid.v, nid))
                     panic(__sl21);
                 which = 0;
-                if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
-                    if ((cptr.stPtro(ls, 24, find_oid(nid.v))) === null)
+                if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT) {
+                    if ((cptr.stPtro(ls, FLD.light_source_id, find_oid(nid.v))) === null)
                         which = 111;
                 } else {
-                    if ((cptr.stPtro(ls, 24, find_mid(nid.v, 15))) === null)
+                    if ((cptr.stPtro(ls, FLD.light_source_id, find_mid(nid.v, 15))) === null)
                         which = 109;
                 }
                 if (which != 0)
                     panic(__sl22, which, nid.v);
             } else {
-                panic(__sl23, cptr.ldI16o(ls, 16));
+                panic(__sl23, cptr.ldI16o(ls, FLD.light_source_type));
             }
-            cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -3);
+            cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) & -3);
         }
     }
 }
@@ -438,21 +439,21 @@ function maybe_write_ls(nhfp, range, write_it) {
     let count = 0;
     let is_global;
     let ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-        if (!cptr.ldPtro(ls, 24)) {
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+        if (!cptr.ldPtro(ls, FLD.light_source_id)) {
             impossible(__sl24, range);
             continue;
         }
-        switch (cptr.ldI16o(ls, 16)) {
+        switch (cptr.ldI16o(ls, FLD.light_source_type)) {
             case NHC.LS_OBJECT:
-            is_global = !obj_is_local(cptr.ldPtro(ls, 24));
+            is_global = !obj_is_local(cptr.ldPtro(ls, FLD.light_source_id));
             break;
             case NHC.LS_MONSTER:
-            is_global = !(cptr.ldI16o((cptr.ldPtro(ls, 24)), 28) > 0);
+            is_global = !(cptr.ldI16o((cptr.ldPtro(ls, FLD.light_source_id)), FLD.monst_mx) > 0);
             break;
             default:
             is_global = 0;
-            impossible(__sl25, cptr.ldI16o(ls, 16), range);
+            impossible(__sl25, cptr.ldI16o(ls, FLD.light_source_type), range);
             break;
         }
         if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -470,21 +471,21 @@ export function light_sources_sanity_check() {
     let mtmp;
     let otmp;
     let auint;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-        if (!cptr.ldPtro(ls, 24))
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+        if (!cptr.ldPtro(ls, FLD.light_source_id))
             panic(__sl26);
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
-            otmp = cptr.ldPtro(ls, 24);
-            auint = cptr.ldI32o(otmp, 24);
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT) {
+            otmp = cptr.ldPtro(ls, FLD.light_source_id);
+            auint = cptr.ldI32o(otmp, FLD.obj_o_id);
             if (!cptr.eq(find_oid(auint), otmp))
                 panic(__sl27, auint);
-        } else if (cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
-            mtmp = cptr.ldPtro(ls, 24);
-            auint = cptr.ldI32o(mtmp, 16);
+        } else if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER) {
+            mtmp = cptr.ldPtro(ls, FLD.light_source_id);
+            auint = cptr.ldI32o(mtmp, FLD.monst_m_id);
             if (!cptr.eq(find_mid(auint, 15), mtmp))
                 panic(__sl28, auint);
         } else {
-            panic(__sl29, cptr.ldI16o(ls, 16));
+            panic(__sl29, cptr.ldI16o(ls, FLD.light_source_type));
         }
     }
 }
@@ -494,73 +495,73 @@ function write_ls(nhfp, ls) {
     let arg_save = cptr.alloc(8);
     let otmp;
     let mtmp;
-    if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
-        if (cptr.ldI16o(ls, 14) & 2) {
+    if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER) {
+        if (cptr.ldI16o(ls, FLD.light_source_flags) & 2) {
             sfo_ls_t(nhfp, ls, __sl20);
         } else {
-            cptr.memcpy(arg_save, cptr.add(ls, 24), 8);
-            if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
-                otmp = cptr.ldPtro(ls, 24);
-                cptr.memcpy(cptr.add(ls, 24), cptr.add(cg, 536), 8);
-                cptr.stI32o(ls, 24, cptr.ldI32o(otmp, 24));
-                if (!cptr.eq(find_oid(cptr.ldI32o(ls, 24)), otmp)) {
-                    impossible(__sl30, cptr.ldI32o(ls, 24));
-                    cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 4);
+            cptr.memcpy(arg_save, cptr.add(ls, FLD.light_source_id), 8);
+            if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT) {
+                otmp = cptr.ldPtro(ls, FLD.light_source_id);
+                cptr.memcpy(cptr.add(ls, FLD.light_source_id), cptr.add(cg, FLD.const_globals_zeroany), 8);
+                cptr.stI32o(ls, FLD.light_source_id, cptr.ldI32o(otmp, FLD.obj_o_id));
+                if (!cptr.eq(find_oid(cptr.ldI32o(ls, FLD.light_source_id)), otmp)) {
+                    impossible(__sl30, cptr.ldI32o(ls, FLD.light_source_id));
+                    cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 4);
                 }
             } else {
                 let monloc = 0;
-                mtmp = cptr.ldPtro(ls, 24);
+                mtmp = cptr.ldPtro(ls, FLD.light_source_id);
                 if ((monloc = whereis_mon(mtmp, 15)) != 0) {
-                    cptr.memcpy(cptr.add(ls, 24), cptr.add(cg, 536), 8);
-                    cptr.stI32o(ls, 24, cptr.ldI32o(mtmp, 16));
-                    if (!cptr.eq(find_mid(cptr.ldI32o(ls, 24), monloc), mtmp)) {
-                        impossible(__sl31, (cptr.ldI32o((mtmp), 52) < 1) ? __sl32 : __sl33, cptr.ldI32o(ls, 24));
-                        cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 4);
+                    cptr.memcpy(cptr.add(ls, FLD.light_source_id), cptr.add(cg, FLD.const_globals_zeroany), 8);
+                    cptr.stI32o(ls, FLD.light_source_id, cptr.ldI32o(mtmp, FLD.monst_m_id));
+                    if (!cptr.eq(find_mid(cptr.ldI32o(ls, FLD.light_source_id), monloc), mtmp)) {
+                        impossible(__sl31, (cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) ? __sl32 : __sl33, cptr.ldI32o(ls, FLD.light_source_id));
+                        cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 4);
                     }
                 } else {
                     impossible(__sl34);
-                    cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 4);
+                    cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 4);
                 }
             }
-            if (cptr.ldI16o(ls, 14) & 4) {
+            if (cptr.ldI16o(ls, FLD.light_source_flags) & 4) {
             }
-            cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 2);
+            cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) | 2);
             sfo_ls_t(nhfp, ls, __sl20);
-            cptr.memcpy(cptr.add(ls, 24), arg_save, 8);
-            cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -3);
-            cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -5);
+            cptr.memcpy(cptr.add(ls, FLD.light_source_id), arg_save, 8);
+            cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) & -3);
+            cptr.stI16o(ls, FLD.light_source_flags, cptr.ldI16o(ls, FLD.light_source_flags) & -5);
         }
     } else {
-        impossible(__sl35, cptr.ldI16o(ls, 16));
+        impossible(__sl35, cptr.ldI16o(ls, FLD.light_source_type));
     }
 }
 
 /** C ref: light.c:706 — @param {CPtr} src @param {CPtr} dest */
 export function obj_move_light_source(src, dest) {
     let ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src))
-            cptr.stPtro(ls, 24, dest);
-    cptr.stI32o(src, 76, 0);
-    cptr.stI32o(dest, 76, 1);
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), src))
+            cptr.stPtro(ls, FLD.light_source_id, dest);
+    cptr.stI32o(src, FLD.obj_lamplit, 0);
+    cptr.stI32o(dest, FLD.obj_lamplit, 1);
 }
 
 /** C ref: light.c:719 @returns {CInt} */
 export function any_light_source() {
-    return schar((cptr.ldPtro(gl, 72) !== null));
+    return schar((cptr.ldPtro(gl, FLD.instance_globals_l_light_base) !== null));
 }
 
 /** C ref: light.c:729 — @param {CInt} x @param {CInt} y */
 export function snuff_light_source(x, y) {
     let ls;
     let obj;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.ldI16o(ls, 8) == x && cptr.ldI16o(ls, 10) == y) {
-            obj = cptr.ldPtro(ls, 24);
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && cptr.ldI16o(ls, FLD.light_source_x) == x && cptr.ldI16o(ls, FLD.light_source_y) == y) {
+            obj = cptr.ldPtro(ls, FLD.light_source_id);
             if (obj_is_burning(obj)) {
                 if (artifact_light(obj))
                     continue;
-                end_burn(obj, schar((cptr.ldI16o(obj, 32) != NHC.MAGIC_LAMP)));
+                end_burn(obj, schar((cptr.ldI16o(obj, FLD.obj_otyp) != NHC.MAGIC_LAMP)));
                 return;
             }
         }
@@ -573,26 +574,26 @@ export function obj_sheds_light(obj) {
 
 /** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar(((cptr.ldI32o(obj, 76) & 1) | 0 && ((cptr.ldI16o((obj), 32) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), 32) == NHC.OIL_LAMP || (cptr.ldI16o((obj), 32) == NHC.MAGIC_LAMP && cptr.ld1so((obj), 48) > 0) || cptr.ldI16o((obj), 32) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((obj), 32) == NHC.TALLOW_CANDLE || cptr.ldI16o((obj), 32) == NHC.WAX_CANDLE || cptr.ldI16o((obj), 32) == NHC.POT_OIL) || artifact_light(obj)) ? 1 : 0));
+    return schar(((cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0 && ((cptr.ldI16o((obj), FLD.obj_otyp) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), FLD.obj_otyp) == NHC.OIL_LAMP || (cptr.ldI16o((obj), FLD.obj_otyp) == NHC.MAGIC_LAMP && cptr.ld1so((obj), FLD.obj_spe) > 0) || cptr.ldI16o((obj), FLD.obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((obj), FLD.obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o((obj), FLD.obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o((obj), FLD.obj_otyp) == NHC.POT_OIL) || artifact_light(obj)) ? 1 : 0));
 }
 
 /** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
 export function obj_split_light_source(src, dest) {
     let ls;
     let new_ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src)) {
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), src)) {
             new_ls = alloc(32);
             cptr.memcpy(new_ls, ls, 32);
-            if ((cptr.ldI16o(src, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, 32) == NHC.WAX_CANDLE)) {
-                cptr.stI16o(ls, 12, i16(candle_light_range(src)));
-                cptr.stI16o(new_ls, 12, i16(candle_light_range(dest)));
-                cptr.st1o(gv, 144, 1);
+            if ((cptr.ldI16o(src, FLD.obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, FLD.obj_otyp) == NHC.WAX_CANDLE)) {
+                cptr.stI16o(ls, FLD.light_source_range, i16(candle_light_range(src)));
+                cptr.stI16o(new_ls, FLD.light_source_range, i16(candle_light_range(dest)));
+                cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
             }
-            cptr.stPtro(new_ls, 24, dest);
-            cptr.stPtr(new_ls, cptr.ldPtro(gl, 72));
-            cptr.stPtro(gl, 72, new_ls);
-            cptr.stI32o(dest, 76, 1);
+            cptr.stPtro(new_ls, FLD.light_source_id, dest);
+            cptr.stPtr(new_ls, cptr.ldPtro(gl, FLD.instance_globals_l_light_base));
+            cptr.stPtro(gl, FLD.instance_globals_l_light_base, new_ls);
+            cptr.stI32o(dest, FLD.obj_lamplit, 1);
         }
 }
 
@@ -601,10 +602,10 @@ export function obj_merge_light_sources(src, dest) {
     let ls;
     if (!cptr.eq(src, dest))
         end_burn(src, 1);
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), dest)) {
-            cptr.stI16o(ls, 12, i16(candle_light_range(dest)));
-            cptr.st1o(gv, 144, 1);
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), dest)) {
+            cptr.stI16o(ls, FLD.light_source_range, i16(candle_light_range(dest)));
+            cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
             break;
         }
 }
@@ -612,11 +613,11 @@ export function obj_merge_light_sources(src, dest) {
 /** C ref: light.c:826 — @param {CPtr} obj @param {CInt} new_radius */
 export function obj_adjust_light_radius(obj, new_radius) {
     let ls;
-    for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), obj)) {
-            if (new_radius != cptr.ldI16o(ls, 12))
-                cptr.st1o(gv, 144, 1);
-            cptr.stI16o(ls, 12, i16(new_radius));
+    for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        if (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), obj)) {
+            if (new_radius != cptr.ldI16o(ls, FLD.light_source_range))
+                cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
+            cptr.stI16o(ls, FLD.light_source_range, i16(new_radius));
             return;
         }
     impossible(__sl36, xname(obj));
@@ -625,10 +626,10 @@ export function obj_adjust_light_radius(obj, new_radius) {
 /** C ref: light.c:843 — @param {CPtr} obj @returns {CInt} */
 export function candle_light_range(obj) {
     let radius;
-    if (cptr.ldI16o(obj, 32) == NHC.CANDELABRUM_OF_INVOCATION) {
-        radius = (cptr.ld1so(obj, 48) < 4) ? 2 : ((cptr.ld1so(obj, 48) < 7) ? 3 : 4);
-    } else if ((cptr.ldI16o(obj, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, 32) == NHC.WAX_CANDLE)) {
-        let n = cptr.ldI64o(obj, 40);
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
+        radius = (cptr.ld1so(obj, FLD.obj_spe) < 4) ? 2 : ((cptr.ld1so(obj, FLD.obj_spe) < 7) ? 3 : 4);
+    } else if ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.WAX_CANDLE)) {
+        let n = cptr.ldI64o(obj, FLD.obj_quan);
         radius = 1;
         while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS) {
             radius++;
@@ -642,12 +643,12 @@ export function candle_light_range(obj) {
 /** C ref: light.c:881 — @param {CPtr} obj @returns {CInt} */
 export function arti_light_radius(obj) {
     let res;
-    if (!(cptr.ldI32o(obj, 76) & 1) || !artifact_light(obj))
+    if (!(cptr.ldI32o(obj, FLD.obj_lamplit) & 1) || !artifact_light(obj))
         return 0;
-    res = ((cptr.ldI32o(obj, 60) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, 56) & 1) ? 2 : 1));
+    res = ((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, FLD.obj_cursed) & 1) ? 2 : 1));
     if (cptr.eq(obj, uskin.v))
         res = 1;
-    else if (cptr.ldI16o(obj, 32) == NHC.GOLD_DRAGON_SCALE_MAIL)
+    else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL)
         ++res;
     return res;
 }
@@ -674,22 +675,22 @@ export function wiz_light_sources() {
     let win;
     let buf = new Uint8Array(256);
     let ls;
-    win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
+    win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
     if (win == -1)
         return NHM.ECMD_OK;
-    void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16o(u, 2));
-    (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-    (cptr.ldPtro(windowprocs, 144))(win, 0, __sl33);
-    if (cptr.ldPtro(gl, 72)) {
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl43);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl44);
-        for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
-            void cptr.sprintf(cptr.decay(buf), __sl45, cptr.ldI16o(ls, 8), cptr.ldI16o(ls, 10), cptr.ldI16o(ls, 12), cptr.ldI16o(ls, 14), (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT ? __sl46 : (cptr.ldI16o(ls, 16) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, 24)), 28) > 0) ? __sl47 : ((cptr.eq(cptr.ldPtro(ls, 24), cptr.add(gy, 8))) ? __sl48 : __sl49)) : __sl50)), fmt_ptr(cptr.ldPtro(ls, 24)));
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+    void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl33);
+    if (cptr.ldPtro(gl, FLD.instance_globals_l_light_base)) {
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl43);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl44);
+        for (ls = cptr.ldPtro(gl, FLD.instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
+            void cptr.sprintf(cptr.decay(buf), __sl45, cptr.ldI16o(ls, FLD.light_source_x), cptr.ldI16o(ls, FLD.light_source_y), cptr.ldI16o(ls, FLD.light_source_range), cptr.ldI16o(ls, FLD.light_source_flags), (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_OBJECT ? __sl46 : (cptr.ldI16o(ls, FLD.light_source_type) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, FLD.light_source_id)), FLD.monst_mx) > 0) ? __sl47 : ((cptr.eq(cptr.ldPtro(ls, FLD.light_source_id), cptr.add(gy, FLD.instance_globals_y_youmonst))) ? __sl48 : __sl49)) : __sl50)), fmt_ptr(cptr.ldPtro(ls, FLD.light_source_id)));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         }
     } else
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl51);
-    (cptr.ldPtro(windowprocs, 120))(win, 0);
-    (cptr.ldPtro(windowprocs, 128))(win);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl51);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
     return NHM.ECMD_OK;
 }

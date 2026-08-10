@@ -7,6 +7,7 @@ import { schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { cg, gc, go, gp, gr, gs, svd, u } from './decl.js';
 import { def_monsyms, def_oc_syms, def_r_oc_syms, def_warnsyms, defsyms } from './drawing.js';
 import { nul_glyphinfo, reset_glyphmap } from './display.js';
@@ -279,29 +280,29 @@ export function init_symbols() {
 export function init_showsyms() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, 680, cptr.ld1uo(defsyms, i, 24));
+        cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, FLD.instance_globals_s_showsyms, cptr.ld1uo(defsyms, i, 24));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, 680, uchar(cptr.ld1so(def_oc_syms, i, 24)));
+        cptr.st1o2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, FLD.instance_globals_s_showsyms, uchar(cptr.ld1so(def_oc_syms, i, 24)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, 680, uchar(cptr.ld1so(def_monsyms, i, 24)));
+        cptr.st1o2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, FLD.instance_globals_s_showsyms, uchar(cptr.ld1so(def_monsyms, i, 24)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gs, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, 680, cptr.ld1uo(def_warnsyms, i, 24));
+        cptr.st1o2(gs, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, FLD.instance_globals_s_showsyms, cptr.ld1uo(def_warnsyms, i, 24));
     for (i = 0; i < NHC.MAXOTHER; i++)
-        cptr.st1o2(gs, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, 680, get_othersym(i, NHC.PRIMARYSET));
+        cptr.st1o2(gs, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, FLD.instance_globals_s_showsyms, get_othersym(i, NHC.PRIMARYSET));
 }
 
 /** C ref: symbols.c:113 */
 export function init_ov_rogue_symbols() {
     let i;
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-        cptr.st1o2(go, i, 1, 284, 0);
+        cptr.st1o2(go, i, 1, FLD.instance_globals_o_ov_rogue_syms, 0);
 }
 
 /** C ref: symbols.c:122 */
 export function init_ov_primary_symbols() {
     let i;
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-        cptr.st1o2(go, i, 1, 88, 0);
+        cptr.st1o2(go, i, 1, FLD.instance_globals_o_ov_primary_syms, 0);
 }
 
 /** C ref: symbols.c:131 — @param {CInt} idx @param {CInt} which_set @returns {*} */
@@ -309,9 +310,9 @@ export function get_othersym(idx, which_set) {
     let sym = 0;
     let oidx = (idx + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0;
     if (which_set == NHC.ROGUESET)
-        sym = uchar((cptr.ld1uo2(go, oidx, 1, 284) ? cptr.ld1uo2(go, oidx, 1, 284) : cptr.ld1uo(gr, oidx, 1)));
+        sym = uchar((cptr.ld1uo2(go, oidx, 1, FLD.instance_globals_o_ov_rogue_syms) ? cptr.ld1uo2(go, oidx, 1, FLD.instance_globals_o_ov_rogue_syms) : cptr.ld1uo(gr, oidx, 1)));
     else
-        sym = uchar((cptr.ld1uo2(go, oidx, 1, 88) ? cptr.ld1uo2(go, oidx, 1, 88) : cptr.ld1uo2(gp, oidx, 1, 29)));
+        sym = uchar((cptr.ld1uo2(go, oidx, 1, FLD.instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, oidx, 1, FLD.instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gp, oidx, 1, FLD.instance_globals_p_primary_syms)));
     if (!sym) {
         switch (idx) {
             case NHC.SYM_NOTHING:
@@ -333,15 +334,15 @@ export function get_othersym(idx, which_set) {
 export function init_primary_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, 29, cptr.ld1uo(defsyms, i, 24));
+        cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, FLD.instance_globals_p_primary_syms, cptr.ld1uo(defsyms, i, 24));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o2(gp, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, 29, uchar(cptr.ld1so(def_oc_syms, i, 24)));
+        cptr.st1o2(gp, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, FLD.instance_globals_p_primary_syms, uchar(cptr.ld1so(def_oc_syms, i, 24)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o2(gp, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, 29, uchar(cptr.ld1so(def_monsyms, i, 24)));
+        cptr.st1o2(gp, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, FLD.instance_globals_p_primary_syms, uchar(cptr.ld1so(def_monsyms, i, 24)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, 29, cptr.ld1uo(def_warnsyms, i, 24));
+        cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, FLD.instance_globals_p_primary_syms, cptr.ld1uo(def_warnsyms, i, 24));
     for (i = 0; i < NHC.MAXOTHER; i++)
-        cptr.st1o2(gp, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, 29, get_othersym(i, NHC.PRIMARYSET));
+        cptr.st1o2(gp, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, FLD.instance_globals_p_primary_syms, get_othersym(i, NHC.PRIMARYSET));
     clear_symsetentry(NHC.PRIMARYSET, 0);
 }
 
@@ -361,7 +362,7 @@ export function init_rogue_symbols() {
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o(gr, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.ROGUESET), 1);
     clear_symsetentry(NHC.ROGUESET, 0);
-    cptr.stI32o2(gs, NHC.ROGUESET, 48, 232, 1);
+    cptr.stI32o2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_nocolor, 1);
 }
 
 /** C ref: symbols.c:217 — @param {CInt} whichset */
@@ -370,14 +371,14 @@ export function assign_graphics(whichset) {
     switch (whichset) {
         case NHC.ROGUESET:
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 284) ? cptr.ld1uo2(go, i, 1, 284) : cptr.ld1uo(gr, i, 1))));
-        cptr.stI32o(gc, 428, NHC.ROGUESET);
+            cptr.st1o2(gs, i, 1, FLD.instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_rogue_syms) ? cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_rogue_syms) : cptr.ld1uo(gr, i, 1))));
+        cptr.stI32o(gc, FLD.instance_globals_c_currentgraphics, NHC.ROGUESET);
         break;
         case NHC.PRIMARYSET:
         default:
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 88) ? cptr.ld1uo2(go, i, 1, 88) : cptr.ld1uo2(gp, i, 1, 29))));
-        cptr.stI32o(gc, 428, NHC.PRIMARYSET);
+            cptr.st1o2(gs, i, 1, FLD.instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gp, i, 1, FLD.instance_globals_p_primary_syms))));
+        cptr.stI32o(gc, FLD.instance_globals_c_currentgraphics, NHC.PRIMARYSET);
         break;
     }
     reset_glyphmap(NHC.gm_symchange);
@@ -388,10 +389,10 @@ export function switch_symbols(nondefault) {
     let i;
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
-            cptr.st1o2(gs, i, 1, 680, uchar((cptr.ld1uo2(go, i, 1, 88) ? cptr.ld1uo2(go, i, 1, 88) : cptr.ld1uo2(gp, i, 1, 29))));
-        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_DEC) && decgraphics_mode_callback.v)
+            cptr.st1o2(gs, i, 1, FLD.instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, i, 1, FLD.instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gp, i, 1, FLD.instance_globals_p_primary_syms))));
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) == NHC.H_DEC) && decgraphics_mode_callback.v)
             (decgraphics_mode_callback.v)();
-        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, 428), 48, 228) == NHC.H_UTF8) && utf8graphics_mode_callback.v)
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) == NHC.H_UTF8) && utf8graphics_mode_callback.v)
             (utf8graphics_mode_callback.v)();
     } else {
         init_primary_symbols();
@@ -401,41 +402,41 @@ export function switch_symbols(nondefault) {
 
 /** C ref: symbols.c:295 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_primary_symset(symp, val) {
-    cptr.st1o2(go, cptr.ldI32o(symp, 4), 1, 88, uchar(val));
+    cptr.st1o2(go, cptr.ldI32o(symp, FLD.symparse_idx), 1, FLD.instance_globals_o_ov_primary_syms, uchar(val));
 }
 
 /** C ref: symbols.c:301 — @param {CPtr} symp @param {CInt} val */
 export function update_ov_rogue_symset(symp, val) {
-    cptr.st1o2(go, cptr.ldI32o(symp, 4), 1, 284, uchar(val));
+    cptr.st1o2(go, cptr.ldI32o(symp, FLD.symparse_idx), 1, FLD.instance_globals_o_ov_rogue_syms, uchar(val));
 }
 
 /** C ref: symbols.c:307 — @param {CPtr} symp @param {CInt} val */
 export function update_primary_symset(symp, val) {
-    cptr.st1o2(gp, cptr.ldI32o(symp, 4), 1, 29, uchar(val));
+    cptr.st1o2(gp, cptr.ldI32o(symp, FLD.symparse_idx), 1, FLD.instance_globals_p_primary_syms, uchar(val));
 }
 
 /** C ref: symbols.c:313 — @param {CPtr} symp @param {CInt} val */
 export function update_rogue_symset(symp, val) {
-    cptr.st1o(gr, cptr.ldI32o(symp, 4), uchar(val), 1);
+    cptr.st1o(gr, cptr.ldI32o(symp, FLD.symparse_idx), uchar(val), 1);
 }
 
 /** C ref: symbols.c:319 — @param {CInt} which_set @param {CInt} name_too */
 export function clear_symsetentry(which_set, name_too) {
     let other_set = (which_set == NHC.PRIMARYSET) ? NHC.ROGUESET : NHC.PRIMARYSET;
-    let old_handling = cptr.ldI32o2(gs, which_set, 48, 228);
-    if (cptr.ldPtro2(gs, which_set, 48, 216))
-        cptr.free(cptr.ldPtro2(gs, which_set, 48, 216));
-    cptr.stPtro2(gs, which_set, 48, 216, null);
-    cptr.stI32o2(gs, which_set, 48, 228, NHC.H_UNK);
-    cptr.stI32o2(gs, which_set, 48, 232, 0);
-    cptr.stI32o2(gs, which_set, 48, 236, 0);
-    cptr.stI32o2(gs, which_set, 48, 240, 0);
+    let old_handling = cptr.ldI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling);
+    if (cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_desc))
+        cptr.free(cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_desc));
+    cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_desc, null);
+    cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_nocolor, 0);
+    cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_primary, 0);
+    cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_rogue, 0);
     if (name_too) {
-        if (cptr.ldPtro2(gs, which_set, 48, 208))
-            cptr.free(cptr.ldPtro2(gs, which_set, 48, 208));
-        cptr.stPtro2(gs, which_set, 48, 208, null);
+        if (cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
+            cptr.free(cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name));
+        cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, null);
     }
-    if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, 48, 228) != NHC.H_UTF8)
+    if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) != NHC.H_UTF8)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
@@ -467,600 +468,600 @@ cptr.stPtro(known_restrictions, 16, null);
 /** C ref: symbols.c:403 — struct symparse[197] */
 export const loadsyms = cptr.alloc(197 * 16);
 cptr.stI32o(loadsyms, 0, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 4, 0);
-cptr.stPtro(loadsyms, 8, __sl8);
+cptr.stI32o(loadsyms, 0 + FLD.symparse_idx, 0);
+cptr.stPtro(loadsyms, 0 + FLD.symparse_name, __sl8);
 cptr.stI32o(loadsyms, 16, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 20, 0);
-cptr.stPtro(loadsyms, 24, __sl9);
+cptr.stI32o(loadsyms, 16 + FLD.symparse_idx, 0);
+cptr.stPtro(loadsyms, 16 + FLD.symparse_name, __sl9);
 cptr.stI32o(loadsyms, 32, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 36, 1);
-cptr.stPtro(loadsyms, 40, __sl10);
+cptr.stI32o(loadsyms, 32 + FLD.symparse_idx, 1);
+cptr.stPtro(loadsyms, 32 + FLD.symparse_name, __sl10);
 cptr.stI32o(loadsyms, 48, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 52, 2);
-cptr.stPtro(loadsyms, 56, __sl11);
+cptr.stI32o(loadsyms, 48 + FLD.symparse_idx, 2);
+cptr.stPtro(loadsyms, 48 + FLD.symparse_name, __sl11);
 cptr.stI32o(loadsyms, 64, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 68, 3);
-cptr.stPtro(loadsyms, 72, __sl12);
+cptr.stI32o(loadsyms, 64 + FLD.symparse_idx, 3);
+cptr.stPtro(loadsyms, 64 + FLD.symparse_name, __sl12);
 cptr.stI32o(loadsyms, 80, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 84, 4);
-cptr.stPtro(loadsyms, 88, __sl13);
+cptr.stI32o(loadsyms, 80 + FLD.symparse_idx, 4);
+cptr.stPtro(loadsyms, 80 + FLD.symparse_name, __sl13);
 cptr.stI32o(loadsyms, 96, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 100, 4);
-cptr.stPtro(loadsyms, 104, __sl14);
+cptr.stI32o(loadsyms, 96 + FLD.symparse_idx, 4);
+cptr.stPtro(loadsyms, 96 + FLD.symparse_name, __sl14);
 cptr.stI32o(loadsyms, 112, NHC.SYM_CONTROL);
-cptr.stI32o(loadsyms, 116, 5);
-cptr.stPtro(loadsyms, 120, __sl15);
+cptr.stI32o(loadsyms, 112 + FLD.symparse_idx, 5);
+cptr.stPtro(loadsyms, 112 + FLD.symparse_name, __sl15);
 cptr.stI32o(loadsyms, 128, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 132, NHC.S_stone);
-cptr.stPtro(loadsyms, 136, __sl16);
+cptr.stI32o(loadsyms, 128 + FLD.symparse_idx, NHC.S_stone);
+cptr.stPtro(loadsyms, 128 + FLD.symparse_name, __sl16);
 cptr.stI32o(loadsyms, 144, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 148, NHC.S_vwall);
-cptr.stPtro(loadsyms, 152, __sl17);
+cptr.stI32o(loadsyms, 144 + FLD.symparse_idx, NHC.S_vwall);
+cptr.stPtro(loadsyms, 144 + FLD.symparse_name, __sl17);
 cptr.stI32o(loadsyms, 160, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 164, NHC.S_hwall);
-cptr.stPtro(loadsyms, 168, __sl18);
+cptr.stI32o(loadsyms, 160 + FLD.symparse_idx, NHC.S_hwall);
+cptr.stPtro(loadsyms, 160 + FLD.symparse_name, __sl18);
 cptr.stI32o(loadsyms, 176, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 180, NHC.S_tlcorn);
-cptr.stPtro(loadsyms, 184, __sl19);
+cptr.stI32o(loadsyms, 176 + FLD.symparse_idx, NHC.S_tlcorn);
+cptr.stPtro(loadsyms, 176 + FLD.symparse_name, __sl19);
 cptr.stI32o(loadsyms, 192, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 196, NHC.S_trcorn);
-cptr.stPtro(loadsyms, 200, __sl20);
+cptr.stI32o(loadsyms, 192 + FLD.symparse_idx, NHC.S_trcorn);
+cptr.stPtro(loadsyms, 192 + FLD.symparse_name, __sl20);
 cptr.stI32o(loadsyms, 208, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 212, NHC.S_blcorn);
-cptr.stPtro(loadsyms, 216, __sl21);
+cptr.stI32o(loadsyms, 208 + FLD.symparse_idx, NHC.S_blcorn);
+cptr.stPtro(loadsyms, 208 + FLD.symparse_name, __sl21);
 cptr.stI32o(loadsyms, 224, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 228, NHC.S_brcorn);
-cptr.stPtro(loadsyms, 232, __sl22);
+cptr.stI32o(loadsyms, 224 + FLD.symparse_idx, NHC.S_brcorn);
+cptr.stPtro(loadsyms, 224 + FLD.symparse_name, __sl22);
 cptr.stI32o(loadsyms, 240, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 244, NHC.S_crwall);
-cptr.stPtro(loadsyms, 248, __sl23);
+cptr.stI32o(loadsyms, 240 + FLD.symparse_idx, NHC.S_crwall);
+cptr.stPtro(loadsyms, 240 + FLD.symparse_name, __sl23);
 cptr.stI32o(loadsyms, 256, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 260, NHC.S_tuwall);
-cptr.stPtro(loadsyms, 264, __sl24);
+cptr.stI32o(loadsyms, 256 + FLD.symparse_idx, NHC.S_tuwall);
+cptr.stPtro(loadsyms, 256 + FLD.symparse_name, __sl24);
 cptr.stI32o(loadsyms, 272, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 276, NHC.S_tdwall);
-cptr.stPtro(loadsyms, 280, __sl25);
+cptr.stI32o(loadsyms, 272 + FLD.symparse_idx, NHC.S_tdwall);
+cptr.stPtro(loadsyms, 272 + FLD.symparse_name, __sl25);
 cptr.stI32o(loadsyms, 288, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 292, NHC.S_tlwall);
-cptr.stPtro(loadsyms, 296, __sl26);
+cptr.stI32o(loadsyms, 288 + FLD.symparse_idx, NHC.S_tlwall);
+cptr.stPtro(loadsyms, 288 + FLD.symparse_name, __sl26);
 cptr.stI32o(loadsyms, 304, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 308, NHC.S_trwall);
-cptr.stPtro(loadsyms, 312, __sl27);
+cptr.stI32o(loadsyms, 304 + FLD.symparse_idx, NHC.S_trwall);
+cptr.stPtro(loadsyms, 304 + FLD.symparse_name, __sl27);
 cptr.stI32o(loadsyms, 320, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 324, NHC.S_ndoor);
-cptr.stPtro(loadsyms, 328, __sl28);
+cptr.stI32o(loadsyms, 320 + FLD.symparse_idx, NHC.S_ndoor);
+cptr.stPtro(loadsyms, 320 + FLD.symparse_name, __sl28);
 cptr.stI32o(loadsyms, 336, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 340, NHC.S_vodoor);
-cptr.stPtro(loadsyms, 344, __sl29);
+cptr.stI32o(loadsyms, 336 + FLD.symparse_idx, NHC.S_vodoor);
+cptr.stPtro(loadsyms, 336 + FLD.symparse_name, __sl29);
 cptr.stI32o(loadsyms, 352, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 356, NHC.S_hodoor);
-cptr.stPtro(loadsyms, 360, __sl30);
+cptr.stI32o(loadsyms, 352 + FLD.symparse_idx, NHC.S_hodoor);
+cptr.stPtro(loadsyms, 352 + FLD.symparse_name, __sl30);
 cptr.stI32o(loadsyms, 368, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 372, NHC.S_vcdoor);
-cptr.stPtro(loadsyms, 376, __sl31);
+cptr.stI32o(loadsyms, 368 + FLD.symparse_idx, NHC.S_vcdoor);
+cptr.stPtro(loadsyms, 368 + FLD.symparse_name, __sl31);
 cptr.stI32o(loadsyms, 384, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 388, NHC.S_hcdoor);
-cptr.stPtro(loadsyms, 392, __sl32);
+cptr.stI32o(loadsyms, 384 + FLD.symparse_idx, NHC.S_hcdoor);
+cptr.stPtro(loadsyms, 384 + FLD.symparse_name, __sl32);
 cptr.stI32o(loadsyms, 400, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 404, NHC.S_bars);
-cptr.stPtro(loadsyms, 408, __sl33);
+cptr.stI32o(loadsyms, 400 + FLD.symparse_idx, NHC.S_bars);
+cptr.stPtro(loadsyms, 400 + FLD.symparse_name, __sl33);
 cptr.stI32o(loadsyms, 416, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 420, NHC.S_tree);
-cptr.stPtro(loadsyms, 424, __sl34);
+cptr.stI32o(loadsyms, 416 + FLD.symparse_idx, NHC.S_tree);
+cptr.stPtro(loadsyms, 416 + FLD.symparse_name, __sl34);
 cptr.stI32o(loadsyms, 432, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 436, NHC.S_room);
-cptr.stPtro(loadsyms, 440, __sl35);
+cptr.stI32o(loadsyms, 432 + FLD.symparse_idx, NHC.S_room);
+cptr.stPtro(loadsyms, 432 + FLD.symparse_name, __sl35);
 cptr.stI32o(loadsyms, 448, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 452, NHC.S_darkroom);
-cptr.stPtro(loadsyms, 456, __sl36);
+cptr.stI32o(loadsyms, 448 + FLD.symparse_idx, NHC.S_darkroom);
+cptr.stPtro(loadsyms, 448 + FLD.symparse_name, __sl36);
 cptr.stI32o(loadsyms, 464, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 468, NHC.S_engroom);
-cptr.stPtro(loadsyms, 472, __sl37);
+cptr.stI32o(loadsyms, 464 + FLD.symparse_idx, NHC.S_engroom);
+cptr.stPtro(loadsyms, 464 + FLD.symparse_name, __sl37);
 cptr.stI32o(loadsyms, 480, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 484, NHC.S_corr);
-cptr.stPtro(loadsyms, 488, __sl38);
+cptr.stI32o(loadsyms, 480 + FLD.symparse_idx, NHC.S_corr);
+cptr.stPtro(loadsyms, 480 + FLD.symparse_name, __sl38);
 cptr.stI32o(loadsyms, 496, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 500, NHC.S_litcorr);
-cptr.stPtro(loadsyms, 504, __sl39);
+cptr.stI32o(loadsyms, 496 + FLD.symparse_idx, NHC.S_litcorr);
+cptr.stPtro(loadsyms, 496 + FLD.symparse_name, __sl39);
 cptr.stI32o(loadsyms, 512, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 516, NHC.S_engrcorr);
-cptr.stPtro(loadsyms, 520, __sl40);
+cptr.stI32o(loadsyms, 512 + FLD.symparse_idx, NHC.S_engrcorr);
+cptr.stPtro(loadsyms, 512 + FLD.symparse_name, __sl40);
 cptr.stI32o(loadsyms, 528, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 532, NHC.S_upstair);
-cptr.stPtro(loadsyms, 536, __sl41);
+cptr.stI32o(loadsyms, 528 + FLD.symparse_idx, NHC.S_upstair);
+cptr.stPtro(loadsyms, 528 + FLD.symparse_name, __sl41);
 cptr.stI32o(loadsyms, 544, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 548, NHC.S_dnstair);
-cptr.stPtro(loadsyms, 552, __sl42);
+cptr.stI32o(loadsyms, 544 + FLD.symparse_idx, NHC.S_dnstair);
+cptr.stPtro(loadsyms, 544 + FLD.symparse_name, __sl42);
 cptr.stI32o(loadsyms, 560, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 564, NHC.S_upladder);
-cptr.stPtro(loadsyms, 568, __sl43);
+cptr.stI32o(loadsyms, 560 + FLD.symparse_idx, NHC.S_upladder);
+cptr.stPtro(loadsyms, 560 + FLD.symparse_name, __sl43);
 cptr.stI32o(loadsyms, 576, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 580, NHC.S_dnladder);
-cptr.stPtro(loadsyms, 584, __sl44);
+cptr.stI32o(loadsyms, 576 + FLD.symparse_idx, NHC.S_dnladder);
+cptr.stPtro(loadsyms, 576 + FLD.symparse_name, __sl44);
 cptr.stI32o(loadsyms, 592, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 596, NHC.S_brupstair);
-cptr.stPtro(loadsyms, 600, __sl45);
+cptr.stI32o(loadsyms, 592 + FLD.symparse_idx, NHC.S_brupstair);
+cptr.stPtro(loadsyms, 592 + FLD.symparse_name, __sl45);
 cptr.stI32o(loadsyms, 608, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 612, NHC.S_brdnstair);
-cptr.stPtro(loadsyms, 616, __sl46);
+cptr.stI32o(loadsyms, 608 + FLD.symparse_idx, NHC.S_brdnstair);
+cptr.stPtro(loadsyms, 608 + FLD.symparse_name, __sl46);
 cptr.stI32o(loadsyms, 624, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 628, NHC.S_brupladder);
-cptr.stPtro(loadsyms, 632, __sl47);
+cptr.stI32o(loadsyms, 624 + FLD.symparse_idx, NHC.S_brupladder);
+cptr.stPtro(loadsyms, 624 + FLD.symparse_name, __sl47);
 cptr.stI32o(loadsyms, 640, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 644, NHC.S_brdnladder);
-cptr.stPtro(loadsyms, 648, __sl48);
+cptr.stI32o(loadsyms, 640 + FLD.symparse_idx, NHC.S_brdnladder);
+cptr.stPtro(loadsyms, 640 + FLD.symparse_name, __sl48);
 cptr.stI32o(loadsyms, 656, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 660, NHC.S_altar);
-cptr.stPtro(loadsyms, 664, __sl49);
+cptr.stI32o(loadsyms, 656 + FLD.symparse_idx, NHC.S_altar);
+cptr.stPtro(loadsyms, 656 + FLD.symparse_name, __sl49);
 cptr.stI32o(loadsyms, 672, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 676, NHC.S_grave);
-cptr.stPtro(loadsyms, 680, __sl50);
+cptr.stI32o(loadsyms, 672 + FLD.symparse_idx, NHC.S_grave);
+cptr.stPtro(loadsyms, 672 + FLD.symparse_name, __sl50);
 cptr.stI32o(loadsyms, 688, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 692, NHC.S_throne);
-cptr.stPtro(loadsyms, 696, __sl51);
+cptr.stI32o(loadsyms, 688 + FLD.symparse_idx, NHC.S_throne);
+cptr.stPtro(loadsyms, 688 + FLD.symparse_name, __sl51);
 cptr.stI32o(loadsyms, 704, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 708, NHC.S_sink);
-cptr.stPtro(loadsyms, 712, __sl52);
+cptr.stI32o(loadsyms, 704 + FLD.symparse_idx, NHC.S_sink);
+cptr.stPtro(loadsyms, 704 + FLD.symparse_name, __sl52);
 cptr.stI32o(loadsyms, 720, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 724, NHC.S_fountain);
-cptr.stPtro(loadsyms, 728, __sl53);
+cptr.stI32o(loadsyms, 720 + FLD.symparse_idx, NHC.S_fountain);
+cptr.stPtro(loadsyms, 720 + FLD.symparse_name, __sl53);
 cptr.stI32o(loadsyms, 736, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 740, NHC.S_pool);
-cptr.stPtro(loadsyms, 744, __sl54);
+cptr.stI32o(loadsyms, 736 + FLD.symparse_idx, NHC.S_pool);
+cptr.stPtro(loadsyms, 736 + FLD.symparse_name, __sl54);
 cptr.stI32o(loadsyms, 752, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 756, NHC.S_ice);
-cptr.stPtro(loadsyms, 760, __sl55);
+cptr.stI32o(loadsyms, 752 + FLD.symparse_idx, NHC.S_ice);
+cptr.stPtro(loadsyms, 752 + FLD.symparse_name, __sl55);
 cptr.stI32o(loadsyms, 768, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 772, NHC.S_lava);
-cptr.stPtro(loadsyms, 776, __sl56);
+cptr.stI32o(loadsyms, 768 + FLD.symparse_idx, NHC.S_lava);
+cptr.stPtro(loadsyms, 768 + FLD.symparse_name, __sl56);
 cptr.stI32o(loadsyms, 784, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 788, NHC.S_lavawall);
-cptr.stPtro(loadsyms, 792, __sl57);
+cptr.stI32o(loadsyms, 784 + FLD.symparse_idx, NHC.S_lavawall);
+cptr.stPtro(loadsyms, 784 + FLD.symparse_name, __sl57);
 cptr.stI32o(loadsyms, 800, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 804, NHC.S_vodbridge);
-cptr.stPtro(loadsyms, 808, __sl58);
+cptr.stI32o(loadsyms, 800 + FLD.symparse_idx, NHC.S_vodbridge);
+cptr.stPtro(loadsyms, 800 + FLD.symparse_name, __sl58);
 cptr.stI32o(loadsyms, 816, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 820, NHC.S_hodbridge);
-cptr.stPtro(loadsyms, 824, __sl59);
+cptr.stI32o(loadsyms, 816 + FLD.symparse_idx, NHC.S_hodbridge);
+cptr.stPtro(loadsyms, 816 + FLD.symparse_name, __sl59);
 cptr.stI32o(loadsyms, 832, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 836, NHC.S_vcdbridge);
-cptr.stPtro(loadsyms, 840, __sl60);
+cptr.stI32o(loadsyms, 832 + FLD.symparse_idx, NHC.S_vcdbridge);
+cptr.stPtro(loadsyms, 832 + FLD.symparse_name, __sl60);
 cptr.stI32o(loadsyms, 848, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 852, NHC.S_hcdbridge);
-cptr.stPtro(loadsyms, 856, __sl61);
+cptr.stI32o(loadsyms, 848 + FLD.symparse_idx, NHC.S_hcdbridge);
+cptr.stPtro(loadsyms, 848 + FLD.symparse_name, __sl61);
 cptr.stI32o(loadsyms, 864, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 868, NHC.S_air);
-cptr.stPtro(loadsyms, 872, __sl62);
+cptr.stI32o(loadsyms, 864 + FLD.symparse_idx, NHC.S_air);
+cptr.stPtro(loadsyms, 864 + FLD.symparse_name, __sl62);
 cptr.stI32o(loadsyms, 880, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 884, NHC.S_cloud);
-cptr.stPtro(loadsyms, 888, __sl63);
+cptr.stI32o(loadsyms, 880 + FLD.symparse_idx, NHC.S_cloud);
+cptr.stPtro(loadsyms, 880 + FLD.symparse_name, __sl63);
 cptr.stI32o(loadsyms, 896, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 900, NHC.S_water);
-cptr.stPtro(loadsyms, 904, __sl64);
+cptr.stI32o(loadsyms, 896 + FLD.symparse_idx, NHC.S_water);
+cptr.stPtro(loadsyms, 896 + FLD.symparse_name, __sl64);
 cptr.stI32o(loadsyms, 912, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 916, NHC.S_arrow_trap);
-cptr.stPtro(loadsyms, 920, __sl65);
+cptr.stI32o(loadsyms, 912 + FLD.symparse_idx, NHC.S_arrow_trap);
+cptr.stPtro(loadsyms, 912 + FLD.symparse_name, __sl65);
 cptr.stI32o(loadsyms, 928, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 932, NHC.S_dart_trap);
-cptr.stPtro(loadsyms, 936, __sl66);
+cptr.stI32o(loadsyms, 928 + FLD.symparse_idx, NHC.S_dart_trap);
+cptr.stPtro(loadsyms, 928 + FLD.symparse_name, __sl66);
 cptr.stI32o(loadsyms, 944, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 948, NHC.S_falling_rock_trap);
-cptr.stPtro(loadsyms, 952, __sl67);
+cptr.stI32o(loadsyms, 944 + FLD.symparse_idx, NHC.S_falling_rock_trap);
+cptr.stPtro(loadsyms, 944 + FLD.symparse_name, __sl67);
 cptr.stI32o(loadsyms, 960, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 964, NHC.S_squeaky_board);
-cptr.stPtro(loadsyms, 968, __sl68);
+cptr.stI32o(loadsyms, 960 + FLD.symparse_idx, NHC.S_squeaky_board);
+cptr.stPtro(loadsyms, 960 + FLD.symparse_name, __sl68);
 cptr.stI32o(loadsyms, 976, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 980, NHC.S_bear_trap);
-cptr.stPtro(loadsyms, 984, __sl69);
+cptr.stI32o(loadsyms, 976 + FLD.symparse_idx, NHC.S_bear_trap);
+cptr.stPtro(loadsyms, 976 + FLD.symparse_name, __sl69);
 cptr.stI32o(loadsyms, 992, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 996, NHC.S_land_mine);
-cptr.stPtro(loadsyms, 1000, __sl70);
+cptr.stI32o(loadsyms, 992 + FLD.symparse_idx, NHC.S_land_mine);
+cptr.stPtro(loadsyms, 992 + FLD.symparse_name, __sl70);
 cptr.stI32o(loadsyms, 1008, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1012, NHC.S_rolling_boulder_trap);
-cptr.stPtro(loadsyms, 1016, __sl71);
+cptr.stI32o(loadsyms, 1008 + FLD.symparse_idx, NHC.S_rolling_boulder_trap);
+cptr.stPtro(loadsyms, 1008 + FLD.symparse_name, __sl71);
 cptr.stI32o(loadsyms, 1024, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1028, NHC.S_sleeping_gas_trap);
-cptr.stPtro(loadsyms, 1032, __sl72);
+cptr.stI32o(loadsyms, 1024 + FLD.symparse_idx, NHC.S_sleeping_gas_trap);
+cptr.stPtro(loadsyms, 1024 + FLD.symparse_name, __sl72);
 cptr.stI32o(loadsyms, 1040, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1044, NHC.S_rust_trap);
-cptr.stPtro(loadsyms, 1048, __sl73);
+cptr.stI32o(loadsyms, 1040 + FLD.symparse_idx, NHC.S_rust_trap);
+cptr.stPtro(loadsyms, 1040 + FLD.symparse_name, __sl73);
 cptr.stI32o(loadsyms, 1056, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1060, NHC.S_fire_trap);
-cptr.stPtro(loadsyms, 1064, __sl74);
+cptr.stI32o(loadsyms, 1056 + FLD.symparse_idx, NHC.S_fire_trap);
+cptr.stPtro(loadsyms, 1056 + FLD.symparse_name, __sl74);
 cptr.stI32o(loadsyms, 1072, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1076, NHC.S_pit);
-cptr.stPtro(loadsyms, 1080, __sl75);
+cptr.stI32o(loadsyms, 1072 + FLD.symparse_idx, NHC.S_pit);
+cptr.stPtro(loadsyms, 1072 + FLD.symparse_name, __sl75);
 cptr.stI32o(loadsyms, 1088, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1092, NHC.S_spiked_pit);
-cptr.stPtro(loadsyms, 1096, __sl76);
+cptr.stI32o(loadsyms, 1088 + FLD.symparse_idx, NHC.S_spiked_pit);
+cptr.stPtro(loadsyms, 1088 + FLD.symparse_name, __sl76);
 cptr.stI32o(loadsyms, 1104, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1108, NHC.S_hole);
-cptr.stPtro(loadsyms, 1112, __sl77);
+cptr.stI32o(loadsyms, 1104 + FLD.symparse_idx, NHC.S_hole);
+cptr.stPtro(loadsyms, 1104 + FLD.symparse_name, __sl77);
 cptr.stI32o(loadsyms, 1120, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1124, NHC.S_trap_door);
-cptr.stPtro(loadsyms, 1128, __sl78);
+cptr.stI32o(loadsyms, 1120 + FLD.symparse_idx, NHC.S_trap_door);
+cptr.stPtro(loadsyms, 1120 + FLD.symparse_name, __sl78);
 cptr.stI32o(loadsyms, 1136, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1140, NHC.S_teleportation_trap);
-cptr.stPtro(loadsyms, 1144, __sl79);
+cptr.stI32o(loadsyms, 1136 + FLD.symparse_idx, NHC.S_teleportation_trap);
+cptr.stPtro(loadsyms, 1136 + FLD.symparse_name, __sl79);
 cptr.stI32o(loadsyms, 1152, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1156, NHC.S_level_teleporter);
-cptr.stPtro(loadsyms, 1160, __sl80);
+cptr.stI32o(loadsyms, 1152 + FLD.symparse_idx, NHC.S_level_teleporter);
+cptr.stPtro(loadsyms, 1152 + FLD.symparse_name, __sl80);
 cptr.stI32o(loadsyms, 1168, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1172, NHC.S_magic_portal);
-cptr.stPtro(loadsyms, 1176, __sl81);
+cptr.stI32o(loadsyms, 1168 + FLD.symparse_idx, NHC.S_magic_portal);
+cptr.stPtro(loadsyms, 1168 + FLD.symparse_name, __sl81);
 cptr.stI32o(loadsyms, 1184, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1188, NHC.S_web);
-cptr.stPtro(loadsyms, 1192, __sl82);
+cptr.stI32o(loadsyms, 1184 + FLD.symparse_idx, NHC.S_web);
+cptr.stPtro(loadsyms, 1184 + FLD.symparse_name, __sl82);
 cptr.stI32o(loadsyms, 1200, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1204, NHC.S_statue_trap);
-cptr.stPtro(loadsyms, 1208, __sl83);
+cptr.stI32o(loadsyms, 1200 + FLD.symparse_idx, NHC.S_statue_trap);
+cptr.stPtro(loadsyms, 1200 + FLD.symparse_name, __sl83);
 cptr.stI32o(loadsyms, 1216, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1220, NHC.S_magic_trap);
-cptr.stPtro(loadsyms, 1224, __sl84);
+cptr.stI32o(loadsyms, 1216 + FLD.symparse_idx, NHC.S_magic_trap);
+cptr.stPtro(loadsyms, 1216 + FLD.symparse_name, __sl84);
 cptr.stI32o(loadsyms, 1232, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1236, NHC.S_anti_magic_trap);
-cptr.stPtro(loadsyms, 1240, __sl85);
+cptr.stI32o(loadsyms, 1232 + FLD.symparse_idx, NHC.S_anti_magic_trap);
+cptr.stPtro(loadsyms, 1232 + FLD.symparse_name, __sl85);
 cptr.stI32o(loadsyms, 1248, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1252, NHC.S_polymorph_trap);
-cptr.stPtro(loadsyms, 1256, __sl86);
+cptr.stI32o(loadsyms, 1248 + FLD.symparse_idx, NHC.S_polymorph_trap);
+cptr.stPtro(loadsyms, 1248 + FLD.symparse_name, __sl86);
 cptr.stI32o(loadsyms, 1264, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1268, NHC.S_vibrating_square);
-cptr.stPtro(loadsyms, 1272, __sl87);
+cptr.stI32o(loadsyms, 1264 + FLD.symparse_idx, NHC.S_vibrating_square);
+cptr.stPtro(loadsyms, 1264 + FLD.symparse_name, __sl87);
 cptr.stI32o(loadsyms, 1280, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1284, NHC.S_trapped_door);
-cptr.stPtro(loadsyms, 1288, __sl88);
+cptr.stI32o(loadsyms, 1280 + FLD.symparse_idx, NHC.S_trapped_door);
+cptr.stPtro(loadsyms, 1280 + FLD.symparse_name, __sl88);
 cptr.stI32o(loadsyms, 1296, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1300, NHC.S_trapped_chest);
-cptr.stPtro(loadsyms, 1304, __sl89);
+cptr.stI32o(loadsyms, 1296 + FLD.symparse_idx, NHC.S_trapped_chest);
+cptr.stPtro(loadsyms, 1296 + FLD.symparse_name, __sl89);
 cptr.stI32o(loadsyms, 1312, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1316, NHC.S_vbeam);
-cptr.stPtro(loadsyms, 1320, __sl90);
+cptr.stI32o(loadsyms, 1312 + FLD.symparse_idx, NHC.S_vbeam);
+cptr.stPtro(loadsyms, 1312 + FLD.symparse_name, __sl90);
 cptr.stI32o(loadsyms, 1328, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1332, NHC.S_hbeam);
-cptr.stPtro(loadsyms, 1336, __sl91);
+cptr.stI32o(loadsyms, 1328 + FLD.symparse_idx, NHC.S_hbeam);
+cptr.stPtro(loadsyms, 1328 + FLD.symparse_name, __sl91);
 cptr.stI32o(loadsyms, 1344, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1348, NHC.S_lslant);
-cptr.stPtro(loadsyms, 1352, __sl92);
+cptr.stI32o(loadsyms, 1344 + FLD.symparse_idx, NHC.S_lslant);
+cptr.stPtro(loadsyms, 1344 + FLD.symparse_name, __sl92);
 cptr.stI32o(loadsyms, 1360, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1364, NHC.S_rslant);
-cptr.stPtro(loadsyms, 1368, __sl93);
+cptr.stI32o(loadsyms, 1360 + FLD.symparse_idx, NHC.S_rslant);
+cptr.stPtro(loadsyms, 1360 + FLD.symparse_name, __sl93);
 cptr.stI32o(loadsyms, 1376, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1380, NHC.S_digbeam);
-cptr.stPtro(loadsyms, 1384, __sl94);
+cptr.stI32o(loadsyms, 1376 + FLD.symparse_idx, NHC.S_digbeam);
+cptr.stPtro(loadsyms, 1376 + FLD.symparse_name, __sl94);
 cptr.stI32o(loadsyms, 1392, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1396, NHC.S_flashbeam);
-cptr.stPtro(loadsyms, 1400, __sl95);
+cptr.stI32o(loadsyms, 1392 + FLD.symparse_idx, NHC.S_flashbeam);
+cptr.stPtro(loadsyms, 1392 + FLD.symparse_name, __sl95);
 cptr.stI32o(loadsyms, 1408, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1412, NHC.S_boomleft);
-cptr.stPtro(loadsyms, 1416, __sl96);
+cptr.stI32o(loadsyms, 1408 + FLD.symparse_idx, NHC.S_boomleft);
+cptr.stPtro(loadsyms, 1408 + FLD.symparse_name, __sl96);
 cptr.stI32o(loadsyms, 1424, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1428, NHC.S_boomright);
-cptr.stPtro(loadsyms, 1432, __sl97);
+cptr.stI32o(loadsyms, 1424 + FLD.symparse_idx, NHC.S_boomright);
+cptr.stPtro(loadsyms, 1424 + FLD.symparse_name, __sl97);
 cptr.stI32o(loadsyms, 1440, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1444, NHC.S_ss1);
-cptr.stPtro(loadsyms, 1448, __sl98);
+cptr.stI32o(loadsyms, 1440 + FLD.symparse_idx, NHC.S_ss1);
+cptr.stPtro(loadsyms, 1440 + FLD.symparse_name, __sl98);
 cptr.stI32o(loadsyms, 1456, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1460, NHC.S_ss2);
-cptr.stPtro(loadsyms, 1464, __sl99);
+cptr.stI32o(loadsyms, 1456 + FLD.symparse_idx, NHC.S_ss2);
+cptr.stPtro(loadsyms, 1456 + FLD.symparse_name, __sl99);
 cptr.stI32o(loadsyms, 1472, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1476, NHC.S_ss3);
-cptr.stPtro(loadsyms, 1480, __sl100);
+cptr.stI32o(loadsyms, 1472 + FLD.symparse_idx, NHC.S_ss3);
+cptr.stPtro(loadsyms, 1472 + FLD.symparse_name, __sl100);
 cptr.stI32o(loadsyms, 1488, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1492, NHC.S_ss4);
-cptr.stPtro(loadsyms, 1496, __sl101);
+cptr.stI32o(loadsyms, 1488 + FLD.symparse_idx, NHC.S_ss4);
+cptr.stPtro(loadsyms, 1488 + FLD.symparse_name, __sl101);
 cptr.stI32o(loadsyms, 1504, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1508, NHC.S_poisoncloud);
-cptr.stPtro(loadsyms, 1512, __sl102);
+cptr.stI32o(loadsyms, 1504 + FLD.symparse_idx, NHC.S_poisoncloud);
+cptr.stPtro(loadsyms, 1504 + FLD.symparse_name, __sl102);
 cptr.stI32o(loadsyms, 1520, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1524, NHC.S_goodpos);
-cptr.stPtro(loadsyms, 1528, __sl103);
+cptr.stI32o(loadsyms, 1520 + FLD.symparse_idx, NHC.S_goodpos);
+cptr.stPtro(loadsyms, 1520 + FLD.symparse_name, __sl103);
 cptr.stI32o(loadsyms, 1536, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1540, NHC.S_sw_tl);
-cptr.stPtro(loadsyms, 1544, __sl104);
+cptr.stI32o(loadsyms, 1536 + FLD.symparse_idx, NHC.S_sw_tl);
+cptr.stPtro(loadsyms, 1536 + FLD.symparse_name, __sl104);
 cptr.stI32o(loadsyms, 1552, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1556, NHC.S_sw_tc);
-cptr.stPtro(loadsyms, 1560, __sl105);
+cptr.stI32o(loadsyms, 1552 + FLD.symparse_idx, NHC.S_sw_tc);
+cptr.stPtro(loadsyms, 1552 + FLD.symparse_name, __sl105);
 cptr.stI32o(loadsyms, 1568, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1572, NHC.S_sw_tr);
-cptr.stPtro(loadsyms, 1576, __sl106);
+cptr.stI32o(loadsyms, 1568 + FLD.symparse_idx, NHC.S_sw_tr);
+cptr.stPtro(loadsyms, 1568 + FLD.symparse_name, __sl106);
 cptr.stI32o(loadsyms, 1584, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1588, NHC.S_sw_ml);
-cptr.stPtro(loadsyms, 1592, __sl107);
+cptr.stI32o(loadsyms, 1584 + FLD.symparse_idx, NHC.S_sw_ml);
+cptr.stPtro(loadsyms, 1584 + FLD.symparse_name, __sl107);
 cptr.stI32o(loadsyms, 1600, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1604, NHC.S_sw_mr);
-cptr.stPtro(loadsyms, 1608, __sl108);
+cptr.stI32o(loadsyms, 1600 + FLD.symparse_idx, NHC.S_sw_mr);
+cptr.stPtro(loadsyms, 1600 + FLD.symparse_name, __sl108);
 cptr.stI32o(loadsyms, 1616, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1620, NHC.S_sw_bl);
-cptr.stPtro(loadsyms, 1624, __sl109);
+cptr.stI32o(loadsyms, 1616 + FLD.symparse_idx, NHC.S_sw_bl);
+cptr.stPtro(loadsyms, 1616 + FLD.symparse_name, __sl109);
 cptr.stI32o(loadsyms, 1632, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1636, NHC.S_sw_bc);
-cptr.stPtro(loadsyms, 1640, __sl110);
+cptr.stI32o(loadsyms, 1632 + FLD.symparse_idx, NHC.S_sw_bc);
+cptr.stPtro(loadsyms, 1632 + FLD.symparse_name, __sl110);
 cptr.stI32o(loadsyms, 1648, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1652, NHC.S_sw_br);
-cptr.stPtro(loadsyms, 1656, __sl111);
+cptr.stI32o(loadsyms, 1648 + FLD.symparse_idx, NHC.S_sw_br);
+cptr.stPtro(loadsyms, 1648 + FLD.symparse_name, __sl111);
 cptr.stI32o(loadsyms, 1664, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1668, NHC.S_expl_tl);
-cptr.stPtro(loadsyms, 1672, __sl112);
+cptr.stI32o(loadsyms, 1664 + FLD.symparse_idx, NHC.S_expl_tl);
+cptr.stPtro(loadsyms, 1664 + FLD.symparse_name, __sl112);
 cptr.stI32o(loadsyms, 1680, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1684, NHC.S_expl_tc);
-cptr.stPtro(loadsyms, 1688, __sl113);
+cptr.stI32o(loadsyms, 1680 + FLD.symparse_idx, NHC.S_expl_tc);
+cptr.stPtro(loadsyms, 1680 + FLD.symparse_name, __sl113);
 cptr.stI32o(loadsyms, 1696, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1700, NHC.S_expl_tr);
-cptr.stPtro(loadsyms, 1704, __sl114);
+cptr.stI32o(loadsyms, 1696 + FLD.symparse_idx, NHC.S_expl_tr);
+cptr.stPtro(loadsyms, 1696 + FLD.symparse_name, __sl114);
 cptr.stI32o(loadsyms, 1712, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1716, NHC.S_expl_ml);
-cptr.stPtro(loadsyms, 1720, __sl115);
+cptr.stI32o(loadsyms, 1712 + FLD.symparse_idx, NHC.S_expl_ml);
+cptr.stPtro(loadsyms, 1712 + FLD.symparse_name, __sl115);
 cptr.stI32o(loadsyms, 1728, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1732, NHC.S_expl_mc);
-cptr.stPtro(loadsyms, 1736, __sl116);
+cptr.stI32o(loadsyms, 1728 + FLD.symparse_idx, NHC.S_expl_mc);
+cptr.stPtro(loadsyms, 1728 + FLD.symparse_name, __sl116);
 cptr.stI32o(loadsyms, 1744, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1748, NHC.S_expl_mr);
-cptr.stPtro(loadsyms, 1752, __sl117);
+cptr.stI32o(loadsyms, 1744 + FLD.symparse_idx, NHC.S_expl_mr);
+cptr.stPtro(loadsyms, 1744 + FLD.symparse_name, __sl117);
 cptr.stI32o(loadsyms, 1760, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1764, NHC.S_expl_bl);
-cptr.stPtro(loadsyms, 1768, __sl118);
+cptr.stI32o(loadsyms, 1760 + FLD.symparse_idx, NHC.S_expl_bl);
+cptr.stPtro(loadsyms, 1760 + FLD.symparse_name, __sl118);
 cptr.stI32o(loadsyms, 1776, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1780, NHC.S_expl_bc);
-cptr.stPtro(loadsyms, 1784, __sl119);
+cptr.stI32o(loadsyms, 1776 + FLD.symparse_idx, NHC.S_expl_bc);
+cptr.stPtro(loadsyms, 1776 + FLD.symparse_name, __sl119);
 cptr.stI32o(loadsyms, 1792, NHC.SYM_PCHAR);
-cptr.stI32o(loadsyms, 1796, NHC.S_expl_br);
-cptr.stPtro(loadsyms, 1800, __sl120);
+cptr.stI32o(loadsyms, 1792 + FLD.symparse_idx, NHC.S_expl_br);
+cptr.stPtro(loadsyms, 1792 + FLD.symparse_name, __sl120);
 cptr.stI32o(loadsyms, 1808, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1812, ((NHC.S_strange_obj + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1816, __sl121);
+cptr.stI32o(loadsyms, 1808 + FLD.symparse_idx, ((NHC.S_strange_obj + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1808 + FLD.symparse_name, __sl121);
 cptr.stI32o(loadsyms, 1824, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1828, ((NHC.S_weapon + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1832, __sl122);
+cptr.stI32o(loadsyms, 1824 + FLD.symparse_idx, ((NHC.S_weapon + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1824 + FLD.symparse_name, __sl122);
 cptr.stI32o(loadsyms, 1840, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1844, ((NHC.S_armor + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1848, __sl123);
+cptr.stI32o(loadsyms, 1840 + FLD.symparse_idx, ((NHC.S_armor + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1840 + FLD.symparse_name, __sl123);
 cptr.stI32o(loadsyms, 1856, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1860, ((NHC.S_ring + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1864, __sl124);
+cptr.stI32o(loadsyms, 1856 + FLD.symparse_idx, ((NHC.S_ring + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1856 + FLD.symparse_name, __sl124);
 cptr.stI32o(loadsyms, 1872, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1876, ((NHC.S_amulet + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1880, __sl125);
+cptr.stI32o(loadsyms, 1872 + FLD.symparse_idx, ((NHC.S_amulet + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1872 + FLD.symparse_name, __sl125);
 cptr.stI32o(loadsyms, 1888, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1892, ((NHC.S_tool + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1896, __sl126);
+cptr.stI32o(loadsyms, 1888 + FLD.symparse_idx, ((NHC.S_tool + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1888 + FLD.symparse_name, __sl126);
 cptr.stI32o(loadsyms, 1904, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1908, ((NHC.S_food + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1912, __sl127);
+cptr.stI32o(loadsyms, 1904 + FLD.symparse_idx, ((NHC.S_food + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1904 + FLD.symparse_name, __sl127);
 cptr.stI32o(loadsyms, 1920, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1924, ((NHC.S_potion + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1928, __sl128);
+cptr.stI32o(loadsyms, 1920 + FLD.symparse_idx, ((NHC.S_potion + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1920 + FLD.symparse_name, __sl128);
 cptr.stI32o(loadsyms, 1936, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1940, ((NHC.S_scroll + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1944, __sl129);
+cptr.stI32o(loadsyms, 1936 + FLD.symparse_idx, ((NHC.S_scroll + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1936 + FLD.symparse_name, __sl129);
 cptr.stI32o(loadsyms, 1952, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1956, ((NHC.S_book + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1960, __sl130);
+cptr.stI32o(loadsyms, 1952 + FLD.symparse_idx, ((NHC.S_book + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1952 + FLD.symparse_name, __sl130);
 cptr.stI32o(loadsyms, 1968, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1972, ((NHC.S_wand + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1976, __sl131);
+cptr.stI32o(loadsyms, 1968 + FLD.symparse_idx, ((NHC.S_wand + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1968 + FLD.symparse_name, __sl131);
 cptr.stI32o(loadsyms, 1984, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1988, ((NHC.S_coin + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 1992, __sl132);
+cptr.stI32o(loadsyms, 1984 + FLD.symparse_idx, ((NHC.S_coin + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 1984 + FLD.symparse_name, __sl132);
 cptr.stI32o(loadsyms, 2000, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2004, ((NHC.S_gem + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 2008, __sl133);
+cptr.stI32o(loadsyms, 2000 + FLD.symparse_idx, ((NHC.S_gem + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 2000 + FLD.symparse_name, __sl133);
 cptr.stI32o(loadsyms, 2016, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2020, ((NHC.S_rock + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 2024, __sl134);
+cptr.stI32o(loadsyms, 2016 + FLD.symparse_idx, ((NHC.S_rock + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 2016 + FLD.symparse_name, __sl134);
 cptr.stI32o(loadsyms, 2032, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2036, ((NHC.S_ball + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 2040, __sl135);
+cptr.stI32o(loadsyms, 2032 + FLD.symparse_idx, ((NHC.S_ball + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 2032 + FLD.symparse_name, __sl135);
 cptr.stI32o(loadsyms, 2048, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2052, ((NHC.S_chain + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 2056, __sl136);
+cptr.stI32o(loadsyms, 2048 + FLD.symparse_idx, ((NHC.S_chain + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 2048 + FLD.symparse_name, __sl136);
 cptr.stI32o(loadsyms, 2064, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2068, ((NHC.S_venom + (((0) + NHC.MAXPCHARS) | 0)) | 0));
-cptr.stPtro(loadsyms, 2072, __sl137);
+cptr.stI32o(loadsyms, 2064 + FLD.symparse_idx, ((NHC.S_venom + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stPtro(loadsyms, 2064 + FLD.symparse_name, __sl137);
 cptr.stI32o(loadsyms, 2080, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2084, ((NHC.S_ANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2088, __sl138);
+cptr.stI32o(loadsyms, 2080 + FLD.symparse_idx, ((NHC.S_ANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2080 + FLD.symparse_name, __sl138);
 cptr.stI32o(loadsyms, 2096, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2100, ((NHC.S_BLOB + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2104, __sl139);
+cptr.stI32o(loadsyms, 2096 + FLD.symparse_idx, ((NHC.S_BLOB + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2096 + FLD.symparse_name, __sl139);
 cptr.stI32o(loadsyms, 2112, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2116, ((NHC.S_COCKATRICE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2120, __sl140);
+cptr.stI32o(loadsyms, 2112 + FLD.symparse_idx, ((NHC.S_COCKATRICE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2112 + FLD.symparse_name, __sl140);
 cptr.stI32o(loadsyms, 2128, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2132, ((NHC.S_DOG + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2136, __sl141);
+cptr.stI32o(loadsyms, 2128 + FLD.symparse_idx, ((NHC.S_DOG + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2128 + FLD.symparse_name, __sl141);
 cptr.stI32o(loadsyms, 2144, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2148, ((NHC.S_EYE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2152, __sl142);
+cptr.stI32o(loadsyms, 2144 + FLD.symparse_idx, ((NHC.S_EYE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2144 + FLD.symparse_name, __sl142);
 cptr.stI32o(loadsyms, 2160, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2164, ((NHC.S_FELINE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2168, __sl143);
+cptr.stI32o(loadsyms, 2160 + FLD.symparse_idx, ((NHC.S_FELINE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2160 + FLD.symparse_name, __sl143);
 cptr.stI32o(loadsyms, 2176, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2180, ((NHC.S_GREMLIN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2184, __sl144);
+cptr.stI32o(loadsyms, 2176 + FLD.symparse_idx, ((NHC.S_GREMLIN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2176 + FLD.symparse_name, __sl144);
 cptr.stI32o(loadsyms, 2192, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2196, ((NHC.S_HUMANOID + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2200, __sl145);
+cptr.stI32o(loadsyms, 2192 + FLD.symparse_idx, ((NHC.S_HUMANOID + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2192 + FLD.symparse_name, __sl145);
 cptr.stI32o(loadsyms, 2208, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2212, ((NHC.S_IMP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2216, __sl146);
+cptr.stI32o(loadsyms, 2208 + FLD.symparse_idx, ((NHC.S_IMP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2208 + FLD.symparse_name, __sl146);
 cptr.stI32o(loadsyms, 2224, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2228, ((NHC.S_JELLY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2232, __sl147);
+cptr.stI32o(loadsyms, 2224 + FLD.symparse_idx, ((NHC.S_JELLY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2224 + FLD.symparse_name, __sl147);
 cptr.stI32o(loadsyms, 2240, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2244, ((NHC.S_KOBOLD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2248, __sl148);
+cptr.stI32o(loadsyms, 2240 + FLD.symparse_idx, ((NHC.S_KOBOLD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2240 + FLD.symparse_name, __sl148);
 cptr.stI32o(loadsyms, 2256, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2260, ((NHC.S_LEPRECHAUN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2264, __sl149);
+cptr.stI32o(loadsyms, 2256 + FLD.symparse_idx, ((NHC.S_LEPRECHAUN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2256 + FLD.symparse_name, __sl149);
 cptr.stI32o(loadsyms, 2272, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2276, ((NHC.S_MIMIC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2280, __sl150);
+cptr.stI32o(loadsyms, 2272 + FLD.symparse_idx, ((NHC.S_MIMIC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2272 + FLD.symparse_name, __sl150);
 cptr.stI32o(loadsyms, 2288, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2292, ((NHC.S_NYMPH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2296, __sl151);
+cptr.stI32o(loadsyms, 2288 + FLD.symparse_idx, ((NHC.S_NYMPH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2288 + FLD.symparse_name, __sl151);
 cptr.stI32o(loadsyms, 2304, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2308, ((NHC.S_ORC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2312, __sl152);
+cptr.stI32o(loadsyms, 2304 + FLD.symparse_idx, ((NHC.S_ORC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2304 + FLD.symparse_name, __sl152);
 cptr.stI32o(loadsyms, 2320, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2324, ((NHC.S_PIERCER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2328, __sl153);
+cptr.stI32o(loadsyms, 2320 + FLD.symparse_idx, ((NHC.S_PIERCER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2320 + FLD.symparse_name, __sl153);
 cptr.stI32o(loadsyms, 2336, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2340, ((NHC.S_QUADRUPED + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2344, __sl154);
+cptr.stI32o(loadsyms, 2336 + FLD.symparse_idx, ((NHC.S_QUADRUPED + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2336 + FLD.symparse_name, __sl154);
 cptr.stI32o(loadsyms, 2352, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2356, ((NHC.S_RODENT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2360, __sl155);
+cptr.stI32o(loadsyms, 2352 + FLD.symparse_idx, ((NHC.S_RODENT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2352 + FLD.symparse_name, __sl155);
 cptr.stI32o(loadsyms, 2368, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2372, ((NHC.S_SPIDER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2376, __sl156);
+cptr.stI32o(loadsyms, 2368 + FLD.symparse_idx, ((NHC.S_SPIDER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2368 + FLD.symparse_name, __sl156);
 cptr.stI32o(loadsyms, 2384, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2388, ((NHC.S_TRAPPER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2392, __sl157);
+cptr.stI32o(loadsyms, 2384 + FLD.symparse_idx, ((NHC.S_TRAPPER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2384 + FLD.symparse_name, __sl157);
 cptr.stI32o(loadsyms, 2400, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2404, ((NHC.S_UNICORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2408, __sl158);
+cptr.stI32o(loadsyms, 2400 + FLD.symparse_idx, ((NHC.S_UNICORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2400 + FLD.symparse_name, __sl158);
 cptr.stI32o(loadsyms, 2416, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2420, ((NHC.S_VORTEX + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2424, __sl159);
+cptr.stI32o(loadsyms, 2416 + FLD.symparse_idx, ((NHC.S_VORTEX + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2416 + FLD.symparse_name, __sl159);
 cptr.stI32o(loadsyms, 2432, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2436, ((NHC.S_WORM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2440, __sl160);
+cptr.stI32o(loadsyms, 2432 + FLD.symparse_idx, ((NHC.S_WORM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2432 + FLD.symparse_name, __sl160);
 cptr.stI32o(loadsyms, 2448, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2452, ((NHC.S_XAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2456, __sl161);
+cptr.stI32o(loadsyms, 2448 + FLD.symparse_idx, ((NHC.S_XAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2448 + FLD.symparse_name, __sl161);
 cptr.stI32o(loadsyms, 2464, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2468, ((NHC.S_LIGHT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2472, __sl162);
+cptr.stI32o(loadsyms, 2464 + FLD.symparse_idx, ((NHC.S_LIGHT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2464 + FLD.symparse_name, __sl162);
 cptr.stI32o(loadsyms, 2480, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2484, ((NHC.S_ZRUTY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2488, __sl163);
+cptr.stI32o(loadsyms, 2480 + FLD.symparse_idx, ((NHC.S_ZRUTY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2480 + FLD.symparse_name, __sl163);
 cptr.stI32o(loadsyms, 2496, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2500, ((NHC.S_ANGEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2504, __sl164);
+cptr.stI32o(loadsyms, 2496 + FLD.symparse_idx, ((NHC.S_ANGEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2496 + FLD.symparse_name, __sl164);
 cptr.stI32o(loadsyms, 2512, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2516, ((NHC.S_BAT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2520, __sl165);
+cptr.stI32o(loadsyms, 2512 + FLD.symparse_idx, ((NHC.S_BAT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2512 + FLD.symparse_name, __sl165);
 cptr.stI32o(loadsyms, 2528, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2532, ((NHC.S_CENTAUR + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2536, __sl166);
+cptr.stI32o(loadsyms, 2528 + FLD.symparse_idx, ((NHC.S_CENTAUR + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2528 + FLD.symparse_name, __sl166);
 cptr.stI32o(loadsyms, 2544, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2548, ((NHC.S_DRAGON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2552, __sl167);
+cptr.stI32o(loadsyms, 2544 + FLD.symparse_idx, ((NHC.S_DRAGON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2544 + FLD.symparse_name, __sl167);
 cptr.stI32o(loadsyms, 2560, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2564, ((NHC.S_ELEMENTAL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2568, __sl168);
+cptr.stI32o(loadsyms, 2560 + FLD.symparse_idx, ((NHC.S_ELEMENTAL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2560 + FLD.symparse_name, __sl168);
 cptr.stI32o(loadsyms, 2576, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2580, ((NHC.S_FUNGUS + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2584, __sl169);
+cptr.stI32o(loadsyms, 2576 + FLD.symparse_idx, ((NHC.S_FUNGUS + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2576 + FLD.symparse_name, __sl169);
 cptr.stI32o(loadsyms, 2592, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2596, ((NHC.S_GNOME + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2600, __sl170);
+cptr.stI32o(loadsyms, 2592 + FLD.symparse_idx, ((NHC.S_GNOME + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2592 + FLD.symparse_name, __sl170);
 cptr.stI32o(loadsyms, 2608, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2612, ((NHC.S_GIANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2616, __sl171);
+cptr.stI32o(loadsyms, 2608 + FLD.symparse_idx, ((NHC.S_GIANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2608 + FLD.symparse_name, __sl171);
 cptr.stI32o(loadsyms, 2624, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2628, ((NHC.S_invisible + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2632, __sl172);
+cptr.stI32o(loadsyms, 2624 + FLD.symparse_idx, ((NHC.S_invisible + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2624 + FLD.symparse_name, __sl172);
 cptr.stI32o(loadsyms, 2640, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2644, ((NHC.S_JABBERWOCK + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2648, __sl173);
+cptr.stI32o(loadsyms, 2640 + FLD.symparse_idx, ((NHC.S_JABBERWOCK + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2640 + FLD.symparse_name, __sl173);
 cptr.stI32o(loadsyms, 2656, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2660, ((NHC.S_KOP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2664, __sl174);
+cptr.stI32o(loadsyms, 2656 + FLD.symparse_idx, ((NHC.S_KOP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2656 + FLD.symparse_name, __sl174);
 cptr.stI32o(loadsyms, 2672, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2676, ((NHC.S_LICH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2680, __sl175);
+cptr.stI32o(loadsyms, 2672 + FLD.symparse_idx, ((NHC.S_LICH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2672 + FLD.symparse_name, __sl175);
 cptr.stI32o(loadsyms, 2688, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2692, ((NHC.S_MUMMY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2696, __sl176);
+cptr.stI32o(loadsyms, 2688 + FLD.symparse_idx, ((NHC.S_MUMMY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2688 + FLD.symparse_name, __sl176);
 cptr.stI32o(loadsyms, 2704, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2708, ((NHC.S_NAGA + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2712, __sl177);
+cptr.stI32o(loadsyms, 2704 + FLD.symparse_idx, ((NHC.S_NAGA + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2704 + FLD.symparse_name, __sl177);
 cptr.stI32o(loadsyms, 2720, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2724, ((NHC.S_OGRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2728, __sl178);
+cptr.stI32o(loadsyms, 2720 + FLD.symparse_idx, ((NHC.S_OGRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2720 + FLD.symparse_name, __sl178);
 cptr.stI32o(loadsyms, 2736, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2740, ((NHC.S_PUDDING + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2744, __sl179);
+cptr.stI32o(loadsyms, 2736 + FLD.symparse_idx, ((NHC.S_PUDDING + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2736 + FLD.symparse_name, __sl179);
 cptr.stI32o(loadsyms, 2752, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2756, ((NHC.S_QUANTMECH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2760, __sl180);
+cptr.stI32o(loadsyms, 2752 + FLD.symparse_idx, ((NHC.S_QUANTMECH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2752 + FLD.symparse_name, __sl180);
 cptr.stI32o(loadsyms, 2768, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2772, ((NHC.S_RUSTMONST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2776, __sl181);
+cptr.stI32o(loadsyms, 2768 + FLD.symparse_idx, ((NHC.S_RUSTMONST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2768 + FLD.symparse_name, __sl181);
 cptr.stI32o(loadsyms, 2784, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2788, ((NHC.S_SNAKE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2792, __sl182);
+cptr.stI32o(loadsyms, 2784 + FLD.symparse_idx, ((NHC.S_SNAKE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2784 + FLD.symparse_name, __sl182);
 cptr.stI32o(loadsyms, 2800, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2804, ((NHC.S_TROLL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2808, __sl183);
+cptr.stI32o(loadsyms, 2800 + FLD.symparse_idx, ((NHC.S_TROLL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2800 + FLD.symparse_name, __sl183);
 cptr.stI32o(loadsyms, 2816, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2820, ((NHC.S_UMBER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2824, __sl184);
+cptr.stI32o(loadsyms, 2816 + FLD.symparse_idx, ((NHC.S_UMBER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2816 + FLD.symparse_name, __sl184);
 cptr.stI32o(loadsyms, 2832, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2836, ((NHC.S_VAMPIRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2840, __sl185);
+cptr.stI32o(loadsyms, 2832 + FLD.symparse_idx, ((NHC.S_VAMPIRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2832 + FLD.symparse_name, __sl185);
 cptr.stI32o(loadsyms, 2848, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2852, ((NHC.S_WRAITH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2856, __sl186);
+cptr.stI32o(loadsyms, 2848 + FLD.symparse_idx, ((NHC.S_WRAITH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2848 + FLD.symparse_name, __sl186);
 cptr.stI32o(loadsyms, 2864, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2868, ((NHC.S_XORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2872, __sl187);
+cptr.stI32o(loadsyms, 2864 + FLD.symparse_idx, ((NHC.S_XORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2864 + FLD.symparse_name, __sl187);
 cptr.stI32o(loadsyms, 2880, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2884, ((NHC.S_YETI + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2888, __sl188);
+cptr.stI32o(loadsyms, 2880 + FLD.symparse_idx, ((NHC.S_YETI + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2880 + FLD.symparse_name, __sl188);
 cptr.stI32o(loadsyms, 2896, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2900, ((NHC.S_ZOMBIE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2904, __sl189);
+cptr.stI32o(loadsyms, 2896 + FLD.symparse_idx, ((NHC.S_ZOMBIE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2896 + FLD.symparse_name, __sl189);
 cptr.stI32o(loadsyms, 2912, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2916, ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2920, __sl190);
+cptr.stI32o(loadsyms, 2912 + FLD.symparse_idx, ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2912 + FLD.symparse_name, __sl190);
 cptr.stI32o(loadsyms, 2928, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2932, ((NHC.S_GHOST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2936, __sl191);
+cptr.stI32o(loadsyms, 2928 + FLD.symparse_idx, ((NHC.S_GHOST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2928 + FLD.symparse_name, __sl191);
 cptr.stI32o(loadsyms, 2944, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2948, ((NHC.S_GOLEM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2952, __sl192);
+cptr.stI32o(loadsyms, 2944 + FLD.symparse_idx, ((NHC.S_GOLEM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2944 + FLD.symparse_name, __sl192);
 cptr.stI32o(loadsyms, 2960, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2964, ((NHC.S_DEMON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2968, __sl193);
+cptr.stI32o(loadsyms, 2960 + FLD.symparse_idx, ((NHC.S_DEMON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2960 + FLD.symparse_name, __sl193);
 cptr.stI32o(loadsyms, 2976, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2980, ((NHC.S_EEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 2984, __sl194);
+cptr.stI32o(loadsyms, 2976 + FLD.symparse_idx, ((NHC.S_EEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2976 + FLD.symparse_name, __sl194);
 cptr.stI32o(loadsyms, 2992, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 2996, ((NHC.S_LIZARD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 3000, __sl195);
+cptr.stI32o(loadsyms, 2992 + FLD.symparse_idx, ((NHC.S_LIZARD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 2992 + FLD.symparse_name, __sl195);
 cptr.stI32o(loadsyms, 3008, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 3012, ((NHC.S_WORM_TAIL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 3016, __sl196);
+cptr.stI32o(loadsyms, 3008 + FLD.symparse_idx, ((NHC.S_WORM_TAIL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 3008 + FLD.symparse_name, __sl196);
 cptr.stI32o(loadsyms, 3024, NHC.SYM_MON);
-cptr.stI32o(loadsyms, 3028, ((NHC.S_MIMIC_DEF + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
-cptr.stPtro(loadsyms, 3032, __sl197);
+cptr.stI32o(loadsyms, 3024 + FLD.symparse_idx, ((NHC.S_MIMIC_DEF + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0));
+cptr.stPtro(loadsyms, 3024 + FLD.symparse_name, __sl197);
 cptr.stI32o(loadsyms, 3040, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3044, ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
-cptr.stPtro(loadsyms, 3048, __sl198);
+cptr.stI32o(loadsyms, 3040 + FLD.symparse_idx, ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
+cptr.stPtro(loadsyms, 3040 + FLD.symparse_name, __sl198);
 cptr.stI32o(loadsyms, 3056, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3060, ((NHC.SYM_UNEXPLORED + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
-cptr.stPtro(loadsyms, 3064, __sl199);
+cptr.stI32o(loadsyms, 3056 + FLD.symparse_idx, ((NHC.SYM_UNEXPLORED + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
+cptr.stPtro(loadsyms, 3056 + FLD.symparse_name, __sl199);
 cptr.stI32o(loadsyms, 3072, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3076, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
-cptr.stPtro(loadsyms, 3080, __sl200);
+cptr.stI32o(loadsyms, 3072 + FLD.symparse_idx, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
+cptr.stPtro(loadsyms, 3072 + FLD.symparse_name, __sl200);
 cptr.stI32o(loadsyms, 3088, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3092, ((NHC.SYM_INVISIBLE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
-cptr.stPtro(loadsyms, 3096, __sl172);
+cptr.stI32o(loadsyms, 3088 + FLD.symparse_idx, ((NHC.SYM_INVISIBLE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
+cptr.stPtro(loadsyms, 3088 + FLD.symparse_name, __sl172);
 cptr.stI32o(loadsyms, 3104, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3108, ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
-cptr.stPtro(loadsyms, 3112, __sl201);
+cptr.stI32o(loadsyms, 3104 + FLD.symparse_idx, ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
+cptr.stPtro(loadsyms, 3104 + FLD.symparse_name, __sl201);
 cptr.stI32o(loadsyms, 3120, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3124, 195);
-cptr.stPtro(loadsyms, 3128, __sl202);
+cptr.stI32o(loadsyms, 3120 + FLD.symparse_idx, 195);
+cptr.stPtro(loadsyms, 3120 + FLD.symparse_name, __sl202);
 cptr.stI32o(loadsyms, 3136, NHC.SYM_INVALID);
-cptr.stI32o(loadsyms, 3140, 0);
-cptr.stPtro(loadsyms, 3144, null);
+cptr.stI32o(loadsyms, 3136 + FLD.symparse_idx, 0);
+cptr.stPtro(loadsyms, 3136 + FLD.symparse_name, null);
 
 /** C ref: symbols.c:431 — @param {CPtr} buf @returns {CInt} */
 export function proc_symset_line(buf) {
-    return schar((!(schar(parse_sym_line(buf, cptr.ldI32o(gs, 880))))));
+    return schar((!(schar(parse_sym_line(buf, cptr.ldI32o(gs, FLD.instance_globals_s_symset_which_set))))));
 }
 
 /** C ref: symbols.c:438 — @param {CPtr} buf @param {CInt} which_set @returns {CInt} */
@@ -1085,9 +1086,9 @@ export function parse_sym_line(buf, which_set) {
         bufp = altp;
     if (!bufp) {
         if (strncmpi(buf, __sl10, 6) == 0) {
-            if (cptr.ld1so(gc, 456))
-                cptr.st1o(gc, 457, 1);
-            cptr.st1o(gc, 456, 0);
+            if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start))
+                cptr.st1o(gc, FLD.instance_globals_c_chosen_symset_end, 1);
+            cptr.st1o(gc, FLD.instance_globals_c_chosen_symset_start, 0);
             return 1;
         }
         config_error_add(__sl203);
@@ -1098,7 +1099,7 @@ export function parse_sym_line(buf, which_set) {
         bufp = cptr.add(bufp, 1);
     symp = match_sym(buf);
     if (!symp && cptr.ld1so(buf, 0) == 71 && cptr.ld1so(buf, 1) == 95) {
-        if (cptr.ld1so(gc, 456)) {
+        if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
             is_glyph = schar(match_glyph(buf));
         } else {
             is_glyph = 1;
@@ -1110,42 +1111,42 @@ export function parse_sym_line(buf, which_set) {
         return 0;
     }
     if (symp) {
-        if (!cptr.ldPtro2(gs, which_set, 48, 208)) {
+        if (!cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)) {
             if (cptr.ldI32(symp) == NHC.SYM_CONTROL) {
                 let tmpsp;
                 let lastsp;
-                for (lastsp = cptr.ldPtro(gs, 952); lastsp; lastsp = cptr.ldPtr(lastsp))
+                for (lastsp = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list); lastsp; lastsp = cptr.ldPtr(lastsp))
                     if (!cptr.ldPtr(lastsp))
                         break;
-                switch (cptr.ldI32o(symp, 4)) {
+                switch (cptr.ldI32o(symp, FLD.symparse_idx)) {
                     case 0:
                     tmpsp = alloc(48);
                     cptr.stPtr(tmpsp, null);
                     if (!lastsp)
-                        cptr.stPtro(gs, 952, tmpsp);
+                        cptr.stPtro(gs, FLD.instance_globals_s_symset_list, tmpsp);
                     else
                         cptr.stPtr(lastsp, tmpsp);
-                    cptr.stI32o(tmpsp, 24, (cptr.stI32o(gs, 876, cptr.ldI32o(gs, 876) + 1)) - (1));
-                    cptr.stPtro(tmpsp, 8, dupstr(bufp));
-                    cptr.stPtro(tmpsp, 16, null);
-                    cptr.stI32o(tmpsp, 28, NHC.H_UNK);
-                    cptr.stI32o(tmpsp, 32, 0);
-                    cptr.stI32o(tmpsp, 36, 0);
-                    cptr.stI32o(tmpsp, 40, 0);
+                    cptr.stI32o(tmpsp, FLD.symsetentry_idx, (cptr.stI32o(gs, FLD.instance_globals_s_symset_count, cptr.ldI32o(gs, FLD.instance_globals_s_symset_count) + 1)) - (1));
+                    cptr.stPtro(tmpsp, FLD.symsetentry_name, dupstr(bufp));
+                    cptr.stPtro(tmpsp, FLD.symsetentry_desc, null);
+                    cptr.stI32o(tmpsp, FLD.symsetentry_handling, NHC.H_UNK);
+                    cptr.stI32o(tmpsp, FLD.symsetentry_nocolor, 0);
+                    cptr.stI32o(tmpsp, FLD.symsetentry_primary, 0);
+                    cptr.stI32o(tmpsp, FLD.symsetentry_rogue, 0);
                     break;
                     case 2:
                     tmpsp = lastsp;
                     for (i = 0; cptr.ldPtro(known_handling, i, 8); ++i)
                         if (!strncmpi((cptr.ldPtro(known_handling, i, 8)), (bufp), -1)) {
                             if (tmpsp)
-                                cptr.stI32o(tmpsp, 28, i);
+                                cptr.stI32o(tmpsp, FLD.symsetentry_handling, i);
                             break;
                         }
                     break;
                     case 3:
                     tmpsp = lastsp;
-                    if (tmpsp && !cptr.ldPtro(tmpsp, 16))
-                        cptr.stPtro(tmpsp, 16, dupstr(bufp));
+                    if (tmpsp && !cptr.ldPtro(tmpsp, FLD.symsetentry_desc))
+                        cptr.stPtro(tmpsp, FLD.symsetentry_desc, dupstr(bufp));
                     break;
                     case 5:
                     tmpsp = lastsp;
@@ -1154,10 +1155,10 @@ export function parse_sym_line(buf, which_set) {
                             if (tmpsp) {
                                 switch (i) {
                                     case 0:
-                                    cptr.stI32o(tmpsp, 36, 1);
+                                    cptr.stI32o(tmpsp, FLD.symsetentry_primary, 1);
                                     break;
                                     case 1:
-                                    cptr.stI32o(tmpsp, 40, 1);
+                                    cptr.stI32o(tmpsp, FLD.symsetentry_rogue, 1);
                                     break;
                                 }
                             }
@@ -1170,10 +1171,10 @@ export function parse_sym_line(buf, which_set) {
             return 1;
         }
         if (cptr.ldI32(symp) && cptr.ldI32(symp) == NHC.SYM_CONTROL) {
-            switch (cptr.ldI32o(symp, 4)) {
+            switch (cptr.ldI32o(symp, FLD.symparse_idx)) {
                 case 0:
-                if (!strncmpi((bufp), (cptr.ldPtro2(gs, which_set, 48, 208)), -1)) {
-                    cptr.st1o(gc, 456, 1);
+                if (!strncmpi((bufp), (cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)), -1)) {
+                    cptr.st1o(gc, FLD.instance_globals_c_chosen_symset_start, 1);
                     if (which_set == NHC.ROGUESET)
                         init_rogue_symbols();
                     else if (which_set == NHC.PRIMARYSET)
@@ -1181,35 +1182,35 @@ export function parse_sym_line(buf, which_set) {
                 }
                 break;
                 case 1:
-                if (cptr.ld1so(gc, 456))
-                    cptr.st1o(gc, 457, 1);
-                cptr.st1o(gc, 456, 0);
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start))
+                    cptr.st1o(gc, FLD.instance_globals_c_chosen_symset_end, 1);
+                cptr.st1o(gc, FLD.instance_globals_c_chosen_symset_start, 0);
                 break;
                 case 2:
-                if (cptr.ld1so(gc, 456))
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start))
                     set_symhandling(bufp, which_set);
                 break;
                 case 4:
-                if (cptr.ld1so(gc, 456)) {
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
                     if (bufp) {
                         if (!strncmpi((bufp), (__sl205), -1) || !strncmpi((bufp), (__sl206), -1) || !strncmpi((bufp), (__sl207), -1))
-                            cptr.stI32o2(gs, which_set, 48, 232, 0);
+                            cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_nocolor, 0);
                         else if (!strncmpi((bufp), (__sl208), -1) || !strncmpi((bufp), (__sl209), -1) || !strncmpi((bufp), (__sl210), -1))
-                            cptr.stI32o2(gs, which_set, 48, 232, 1);
+                            cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_nocolor, 1);
                     }
                 }
                 break;
                 case 5:
-                if (cptr.ld1so(gc, 456)) {
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
                     let n = 0;
                     while (cptr.ldPtro(known_restrictions, n, 8)) {
                         if (!strncmpi((cptr.ldPtro(known_restrictions, n, 8)), (bufp), -1)) {
                             switch (n) {
                                 case 0:
-                                cptr.stI32o2(gs, which_set, 48, 236, 1);
+                                cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_primary, 1);
                                 break;
                                 case 1:
-                                cptr.stI32o2(gs, which_set, 48, 240, 1);
+                                cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_rogue, 1);
                                 break;
                             }
                             break;
@@ -1220,8 +1221,8 @@ export function parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
-            if (cptr.ldI32o2(gs, which_set, 48, 228) != NHC.H_UTF8) {
-                if (cptr.ld1so(gc, 456)) {
+            if (cptr.ldI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) != NHC.H_UTF8) {
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
                     val = sym_val(bufp);
                     if (which_set == NHC.PRIMARYSET) {
                         update_primary_symset(symp, val);
@@ -1230,12 +1231,12 @@ export function parse_sym_line(buf, which_set) {
                     }
                 }
             } else {
-                if (cptr.ld1so(gc, 456)) {
+                if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
                     void glyphrep_to_custom_map_entries(buf, glyph);
                 }
             }
         }
-    } else if (cptr.ld1so(gc, 456)) {
+    } else if (cptr.ld1so(gc, FLD.instance_globals_c_chosen_symset_start)) {
         void glyphrep_to_custom_map_entries(buf, glyph);
     }
     return 1;
@@ -1244,10 +1245,10 @@ export function parse_sym_line(buf, which_set) {
 /** C ref: symbols.c:657 — @param {CPtr} handling @param {CInt} which_set */
 export function set_symhandling(handling, which_set) {
     let i = 0;
-    cptr.stI32o2(gs, which_set, 48, 228, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling, NHC.H_UNK);
     while (cptr.ldPtro(known_handling, i, 8)) {
         if (!strncmpi((cptr.ldPtro(known_handling, i, 8)), (handling), -1)) {
-            cptr.stI32o2(gs, which_set, 48, 228, i);
+            cptr.stI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling, i);
             return;
         }
         i++;
@@ -1257,12 +1258,12 @@ export function set_symhandling(handling, which_set) {
 /** C ref: symbols.c:673 — @param {CPtr} s @param {CInt} which_set @returns {CInt} */
 export function load_symset(s, which_set) {
     clear_symsetentry(which_set, 1);
-    if (cptr.ldPtro2(gs, which_set, 48, 208))
-        cptr.free(cptr.ldPtro2(gs, which_set, 48, 208));
-    cptr.stPtro2(gs, which_set, 48, 208, dupstr(s));
+    if (cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
+        cptr.free(cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name));
+    cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(s));
     if (read_sym_file(which_set)) {
         switch_symbols(1);
-        apply_customizations(cptr.ldI32o(gc, 428), (NHC.do_custom_symbols | NHC.do_custom_colors));
+        apply_customizations(cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), (NHC.do_custom_symbols | NHC.do_custom_colors));
     } else {
         clear_symsetentry(which_set, 1);
         return 0;
@@ -1286,9 +1287,9 @@ export function savedsym_free() {
     let tmp = saved_symbols;
     let tmp2;
     while (tmp) {
-        tmp2 = cptr.ldPtro(tmp, 24);
+        tmp2 = cptr.ldPtro(tmp, FLD._savedsym_next);
         cptr.free(cptr.ldPtr(tmp));
-        cptr.free(cptr.ldPtro(tmp, 8));
+        cptr.free(cptr.ldPtro(tmp, FLD._savedsym_val));
         cptr.free(tmp);
         tmp = tmp2;
     }
@@ -1298,9 +1299,9 @@ export function savedsym_free() {
 function savedsym_find(name, which_set) {
     let tmp = saved_symbols;
     while (tmp) {
-        if (which_set == cptr.ldI32o(tmp, 16) && !strcmp(name, cptr.ldPtr(tmp)))
+        if (which_set == cptr.ldI32o(tmp, FLD._savedsym_which_set) && !strcmp(name, cptr.ldPtr(tmp)))
             return tmp;
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD._savedsym_next);
     }
     return null;
 }
@@ -1309,14 +1310,14 @@ function savedsym_find(name, which_set) {
 function savedsym_add(name, val, which_set) {
     let tmp = null;
     if ((tmp = savedsym_find(name, which_set)) !== null) {
-        cptr.free(cptr.ldPtro(tmp, 8));
-        cptr.stPtro(tmp, 8, dupstr(val));
+        cptr.free(cptr.ldPtro(tmp, FLD._savedsym_val));
+        cptr.stPtro(tmp, FLD._savedsym_val, dupstr(val));
     } else {
         tmp = alloc(32);
         cptr.stPtr(tmp, dupstr(name));
-        cptr.stPtro(tmp, 8, dupstr(val));
-        cptr.stI32o(tmp, 16, which_set);
-        cptr.stPtro(tmp, 24, saved_symbols);
+        cptr.stPtro(tmp, FLD._savedsym_val, dupstr(val));
+        cptr.stI32o(tmp, FLD._savedsym_which_set, which_set);
+        cptr.stPtro(tmp, FLD._savedsym_next, saved_symbols);
         saved_symbols = tmp;
     }
 }
@@ -1326,9 +1327,9 @@ export function savedsym_strbuf(sbuf) {
     let tmp = saved_symbols;
     let buf = new Uint8Array(256);
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __sl211, (cptr.ldI32o(tmp, 16) == NHC.ROGUESET) ? __sl212 : __sl213, cptr.ldPtr(tmp), cptr.ldPtro(tmp, 8));
+        void cptr.sprintf(cptr.decay(buf), __sl211, (cptr.ldI32o(tmp, FLD._savedsym_which_set) == NHC.ROGUESET) ? __sl212 : __sl213, cptr.ldPtr(tmp), cptr.ldPtro(tmp, FLD._savedsym_val));
         strbuf_append(sbuf, cptr.decay(buf));
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD._savedsym_next);
     }
 }
 
@@ -1386,7 +1387,7 @@ export function parsesymbols(opts, which_set) {
         return 0;
     if (symp) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) != NHC.SYM_CONTROL) {
-            if (cptr.ldI32o2(gs, which_set, 48, 228) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43)) {
+            if (cptr.ldI32o2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43)) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
                 nh_snprintf(__sl214, 836, cptr.decay(buf), 256n, __sl215, opts, strval);
@@ -1406,25 +1407,25 @@ export function parsesymbols(opts, which_set) {
 
 const __static_match_sym_alternates = cptr.alloc(10 * 16);
 cptr.stPtro(__static_match_sym_alternates, 0, __sl216);
-cptr.stPtro(__static_match_sym_alternates, 8, __sl123);
+cptr.stPtro(__static_match_sym_alternates, 0 + FLD.alternate_parse_nm, __sl123);
 cptr.stPtro(__static_match_sym_alternates, 16, __sl217);
-cptr.stPtro(__static_match_sym_alternates, 24, __sl112);
+cptr.stPtro(__static_match_sym_alternates, 16 + FLD.alternate_parse_nm, __sl112);
 cptr.stPtro(__static_match_sym_alternates, 32, __sl218);
-cptr.stPtro(__static_match_sym_alternates, 40, __sl113);
+cptr.stPtro(__static_match_sym_alternates, 32 + FLD.alternate_parse_nm, __sl113);
 cptr.stPtro(__static_match_sym_alternates, 48, __sl219);
-cptr.stPtro(__static_match_sym_alternates, 56, __sl114);
+cptr.stPtro(__static_match_sym_alternates, 48 + FLD.alternate_parse_nm, __sl114);
 cptr.stPtro(__static_match_sym_alternates, 64, __sl220);
-cptr.stPtro(__static_match_sym_alternates, 72, __sl115);
+cptr.stPtro(__static_match_sym_alternates, 64 + FLD.alternate_parse_nm, __sl115);
 cptr.stPtro(__static_match_sym_alternates, 80, __sl221);
-cptr.stPtro(__static_match_sym_alternates, 88, __sl116);
+cptr.stPtro(__static_match_sym_alternates, 80 + FLD.alternate_parse_nm, __sl116);
 cptr.stPtro(__static_match_sym_alternates, 96, __sl222);
-cptr.stPtro(__static_match_sym_alternates, 104, __sl117);
+cptr.stPtro(__static_match_sym_alternates, 96 + FLD.alternate_parse_nm, __sl117);
 cptr.stPtro(__static_match_sym_alternates, 112, __sl223);
-cptr.stPtro(__static_match_sym_alternates, 120, __sl118);
+cptr.stPtro(__static_match_sym_alternates, 112 + FLD.alternate_parse_nm, __sl118);
 cptr.stPtro(__static_match_sym_alternates, 128, __sl224);
-cptr.stPtro(__static_match_sym_alternates, 136, __sl119);
+cptr.stPtro(__static_match_sym_alternates, 128 + FLD.alternate_parse_nm, __sl119);
 cptr.stPtro(__static_match_sym_alternates, 144, __sl225);
-cptr.stPtro(__static_match_sym_alternates, 152, __sl120); /** C ref: symbols.c:857 — struct alternate_parse[10] (function-static) */
+cptr.stPtro(__static_match_sym_alternates, 144 + FLD.alternate_parse_nm, __sl120); /** C ref: symbols.c:857 — struct alternate_parse[10] (function-static) */
 
 /** C ref: symbols.c:852 — @param {CPtr} buf @returns {CPtr} */
 export function match_sym(buf) {
@@ -1443,7 +1444,7 @@ export function match_sym(buf) {
         len = BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, (cptr.diff(p, buf))))));
     }
     while (cptr.ldI32(sp)) {
-        if ((len >= cptr.strlen(cptr.ldPtro(sp, 8))) && !strncmpi(buf, cptr.ldPtro(sp, 8), Number(BigInt.asIntN(32, len))))
+        if ((len >= cptr.strlen(cptr.ldPtro(sp, FLD.symparse_name))) && !strncmpi(buf, cptr.ldPtro(sp, FLD.symparse_name), Number(BigInt.asIntN(32, len))))
             return sp;
         sp = cptr.add(sp, 1, 16);
     }
@@ -1451,7 +1452,7 @@ export function match_sym(buf) {
         if ((len >= cptr.strlen(cptr.ldPtro(__static_match_sym_alternates, i, 16))) && !strncmpi(buf, cptr.ldPtro(__static_match_sym_alternates, i, 16), Number(BigInt.asIntN(32, len)))) {
             sp = loadsyms;
             while (cptr.ldI32(sp)) {
-                if (!strcmp(cptr.ldPtro2(__static_match_sym_alternates, i, 16, 8), cptr.ldPtro(sp, 8)))
+                if (!strcmp(cptr.ldPtro2(__static_match_sym_alternates, i, 16, FLD.alternate_parse_nm), cptr.ldPtro(sp, FLD.symparse_name)))
                     return sp;
                 sp = cptr.add(sp, 1, 16);
             }
@@ -1479,25 +1480,25 @@ export function do_symset(rogueflag) {
     let defindx = 0;
     let clr = NHM.NO_COLOR;
     which_set = rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET;
-    cptr.stPtro(gs, 952, null);
-    symset_name = cptr.ldPtro2(gs, which_set, 48, 208);
-    cptr.stPtro2(gs, which_set, 48, 208, null);
+    cptr.stPtro(gs, FLD.instance_globals_s_symset_list, null);
+    symset_name = cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name);
+    cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, null);
     res = read_sym_file(which_set);
-    cptr.stPtro2(gs, which_set, 48, 208, symset_name);
-    if (res && cptr.ldPtro(gs, 952)) {
+    cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, symset_name);
+    if (res && cptr.ldPtro(gs, FLD.instance_globals_s_symset_list)) {
         let thissize;
         let biggest = 15;
         let big_desc = 0;
-        for (sl = cptr.ldPtro(gs, 952); sl; sl = cptr.ldPtr(sl)) {
-            if (rogueflag ? (cptr.ldI32o(sl, 36) & 1) | 0 : (cptr.ldI32o(sl, 40) & 1) | 0)
+        for (sl = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
+            if (rogueflag ? (cptr.ldI32o(sl, FLD.symsetentry_primary) & 1) | 0 : (cptr.ldI32o(sl, FLD.symsetentry_rogue) & 1) | 0)
                 continue;
-            if (cptr.ldI32o(sl, 28) == NHC.H_MAC)
+            if (cptr.ldI32o(sl, FLD.symsetentry_handling) == NHC.H_MAC)
                 continue;
             setcount++;
-            thissize = cptr.ldPtro(sl, 8) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sl, 8)))) : 0;
+            thissize = cptr.ldPtro(sl, FLD.symsetentry_name) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sl, FLD.symsetentry_name)))) : 0;
             if (thissize > biggest)
                 biggest = thissize;
-            thissize = cptr.ldPtro(sl, 16) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sl, 16)))) : 0;
+            thissize = cptr.ldPtro(sl, FLD.symsetentry_desc) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sl, FLD.symsetentry_desc)))) : 0;
             if (thissize > big_desc)
                 big_desc = thissize;
         }
@@ -1506,28 +1507,28 @@ export function do_symset(rogueflag) {
             return 1;
         }
         void cptr.sprintf(cptr.decay(fmtstr), __sl228, (biggest + 2) | 0);
-        tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         cptr.stI32(any, 1);
         if (!symset_name)
             defindx = cptr.ldI32(any);
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl229, (cptr.ldI32(any) == defindx) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
-        for (sl = cptr.ldPtro(gs, 952); sl; sl = cptr.ldPtr(sl)) {
-            if (rogueflag ? (cptr.ldI32o(sl, 36) & 1) | 0 : (cptr.ldI32o(sl, 40) & 1) | 0)
+        for (sl = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
+            if (rogueflag ? (cptr.ldI32o(sl, FLD.symsetentry_primary) & 1) | 0 : (cptr.ldI32o(sl, FLD.symsetentry_rogue) & 1) | 0)
                 continue;
-            if (cptr.ldI32o(sl, 28) == NHC.H_MAC)
+            if (cptr.ldI32o(sl, FLD.symsetentry_handling) == NHC.H_MAC)
                 continue;
-            if (cptr.ldPtro(sl, 8)) {
-                cptr.stI32(any, (cptr.ldI32o(sl, 24) + 2) | 0);
-                if (symset_name && !strncmpi((cptr.ldPtro(sl, 8)), (symset_name), -1))
+            if (cptr.ldPtro(sl, FLD.symsetentry_name)) {
+                cptr.stI32(any, (cptr.ldI32o(sl, FLD.symsetentry_idx) + 2) | 0);
+                if (symset_name && !strncmpi((cptr.ldPtro(sl, FLD.symsetentry_name)), (symset_name), -1))
                     defindx = cptr.ldI32(any);
-                void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.ldPtro(sl, 8), cptr.ldPtro(sl, 16) ? cptr.ldPtro(sl, 16) : __sl213);
+                void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.ldPtro(sl, FLD.symsetentry_name), cptr.ldPtro(sl, FLD.symsetentry_desc) ? cptr.ldPtro(sl, FLD.symsetentry_desc) : __sl213);
                 add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), (cptr.ldI32(any) == defindx) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
             }
         }
         void cptr.sprintf(cptr.decay(buf), __sl230, rogueflag ? __sl231 : __sl213);
-        (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf));
         n = select_menu(tmpwin, NHM.PICK_ONE, symset_pick);
         if (n > 0) {
             chosen = cptr.ldI32o(symset_pick.v, 0, 24);
@@ -1538,14 +1539,14 @@ export function do_symset(rogueflag) {
         } else if (n == 0 && defindx > 0) {
             chosen = (defindx - 2) | 0;
         }
-        (cptr.ldPtro(windowprocs, 128))(tmpwin);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
         if (chosen > -1) {
-            for (sl = cptr.ldPtro(gs, 952); sl; sl = cptr.ldPtr(sl))
-                if (cptr.ldI32o(sl, 24) == chosen)
+            for (sl = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl))
+                if (cptr.ldI32o(sl, FLD.symsetentry_idx) == chosen)
                     break;
             if (sl) {
                 clear_symsetentry(which_set, 1);
-                cptr.stPtro2(gs, which_set, 48, 208, dupstr(cptr.ldPtro(sl, 8)));
+                cptr.stPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(cptr.ldPtro(sl, FLD.symsetentry_name)));
                 ready_to_switch = 1;
             }
         } else if (chosen == -1) {
@@ -1555,16 +1556,16 @@ export function do_symset(rogueflag) {
     } else if (!res) {
         pline(__sl232, __sl233);
         return 1;
-    } else if (!cptr.ldPtro(gs, 952)) {
+    } else if (!cptr.ldPtro(gs, FLD.instance_globals_s_symset_list)) {
         There(__sl234, __sl233);
         return 1;
     }
-    while ((sl = cptr.ldPtro(gs, 952)) !== null) {
-        cptr.stPtro(gs, 952, cptr.ldPtr(sl));
-        if (cptr.ldPtro(sl, 8))
-            cptr.free(cptr.ldPtro(sl, 8)), cptr.stPtro(sl, 8, null);
-        if (cptr.ldPtro(sl, 16))
-            cptr.free(cptr.ldPtro(sl, 16)), cptr.stPtro(sl, 16, null);
+    while ((sl = cptr.ldPtro(gs, FLD.instance_globals_s_symset_list)) !== null) {
+        cptr.stPtro(gs, FLD.instance_globals_s_symset_list, cptr.ldPtr(sl));
+        if (cptr.ldPtro(sl, FLD.symsetentry_name))
+            cptr.free(cptr.ldPtro(sl, FLD.symsetentry_name)), cptr.stPtro(sl, FLD.symsetentry_name, null);
+        if (cptr.ldPtro(sl, FLD.symsetentry_desc))
+            cptr.free(cptr.ldPtro(sl, FLD.symsetentry_desc)), cptr.stPtro(sl, FLD.symsetentry_desc, null);
         cptr.free(sl);
     }
     if (nothing_to_do)
@@ -1573,7 +1574,7 @@ export function do_symset(rogueflag) {
         init_rogue_symbols();
     else
         init_primary_symbols();
-    if (cptr.ldPtro2(gs, which_set, 48, 208)) {
+    if (cptr.ldPtro2(gs, which_set, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)) {
         let ok;
         if (!glyphid_cache_status()) {
             fill_glyphid_cache();
@@ -1591,13 +1592,13 @@ export function do_symset(rogueflag) {
     }
     if (ready_to_switch)
         switch_symbols(1);
-    if ((((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800))))) {
+    if ((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level))))) {
         if (rogueflag)
             assign_graphics(NHC.ROGUESET);
     } else if (!rogueflag)
         assign_graphics(NHC.PRIMARYSET);
     apply_customizations(rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET, (NHC.do_custom_symbols | NHC.do_custom_colors));
-    (cptr.ldPtro(windowprocs, 336))(__sl235);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl235);
     return 1;
 }
 

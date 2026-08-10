@@ -10,6 +10,7 @@
 import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as FLD from './nhfield.js';
 import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { cg, gu, svd, svl, u } from './decl.js';
 import { mons } from './monst.js';
@@ -160,10 +161,10 @@ function dev_name() {
     do {
         match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
-        for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
+        for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            if (!((cptr.cmp((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, FLD.monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), 312) && (cptr.ldPtr(cptr.ldPtro((mtmp), 312))))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
+            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), FLD.monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), FLD.monst_mextra))))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), FLD.monst_mextra))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
                 match = 1;
                 break;
             }
@@ -177,7 +178,7 @@ function dev_name() {
 
 /** C ref: mplayer.c:72 — @param {CPtr} mtmp @param {CPtr} nam */
 function get_mplname(mtmp, nam) {
-    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 131072n) != 0n));
+    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags2) & 131072n) != 0n));
     let devnam;
     devnam = dev_name();
     if (!devnam)
@@ -187,11 +188,11 @@ function get_mplname(mtmp, nam) {
     else
         void cptr.strcpy(nam, devnam);
     if (fmlkind || !strcmp(nam, __sl6))
-        cptr.stI32o(mtmp, 84, 1);
+        cptr.stI32o(mtmp, FLD.monst_female, 1);
     else
-        cptr.stI32o(mtmp, 84, 0);
+        cptr.stI32o(mtmp, FLD.monst_female, 0);
     void cptr.strcat(nam, __sl46);
-    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, 26), (cptr.ldI32o((cptr.ldPtro(mtmp, 8)), 24)), schar((cptr.ldI32o(mtmp, 84) & 1))));
+    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, FLD.monst_m_lev), (cptr.ldI32o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_pmidx)), schar((cptr.ldI32o(mtmp, FLD.monst_female) & 1))));
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
@@ -200,14 +201,14 @@ function* mk_mplayer_armor(mon, typ) {
     if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = (yield* mksobj(typ, 0, 0));
-    cptr.stI32o(obj, 112, cptr.stI32o(obj, 116, 0));
+    cptr.stI32o(obj, FLD.obj_oeroded, cptr.stI32o(obj, FLD.obj_oeroded2, 0));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 103, __sl47), rn2(3)) : rn2(3)))
-        cptr.stI32o(obj, 120, 1);
+        cptr.stI32o(obj, FLD.obj_oerodeproof, 1);
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 105, __sl47), rn2(3)) : rn2(3)))
         (yield* curse(obj));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 107, __sl47), rn2(3)) : rn2(3)))
         (yield* bless(obj));
-    cptr.st1o(obj, 48, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
+    cptr.st1o(obj, FLD.obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(10)) : rn2(10)) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(3)) : rn2(3)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(5)) : rn2(5)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rn2(4)) : rn2(4)) + 4) | 0)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl40, 113, __sl47), rnd(3)) : rnd(3)))));
     void (yield* mpickobj(mon, obj));
 }
 
@@ -217,9 +218,9 @@ export function* mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
         return (null);
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null))
-        void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), 5));
-    if (!(cptr.ldI16((cptr.add(u, 24))) == cptr.ldI16((cptr.add(svd, 1868)))))
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null))
+        void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters)), 5));
+    if (!(cptr.ldI16((cptr.add(u, FLD.you_uz))) == cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_astral_level)))))
         special = 0;
     if ((mtmp = (yield* makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n)))))) !== null) {
         let weapon;
@@ -229,21 +230,21 @@ export function* mk_mplayer(ptr, x, y, special) {
         let shield;
         let quan;
         let otmp;
-        cptr.st1o(mtmp, 26, uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
-        cptr.stI32o(mtmp, 52, cptr.stI32o(mtmp, 56, ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1uo(mtmp, 26)), 10)) : d((cptr.ld1uo(mtmp, 26)), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
+        cptr.st1o(mtmp, FLD.monst_m_lev, uchar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rn2(16)) : rn2(16)) + 15) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 137, __sl48), rnd(16)) : rnd(16)))));
+        cptr.stI32o(mtmp, FLD.monst_mhp, cptr.stI32o(mtmp, FLD.monst_mhpmax, ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 138, __sl48), d((cptr.ld1uo(mtmp, FLD.monst_m_lev)), 10)) : d((cptr.ld1uo(mtmp, FLD.monst_m_lev)), 10)) + (special ? ((30 + (rng_log_enabled() ? (rng_log_set_caller(__sl40, 139, __sl48), rnd(30)) : rnd(30))) | 0) : 30)) | 0));
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = (yield* christen_monst(mtmp, cptr.decay(nam)));
             void (yield* mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR));
         }
-        cptr.stI32o(mtmp, 168, 0);
+        cptr.stI32o(mtmp, FLD.monst_mpeaceful, 0);
         set_malign(mtmp);
         weapon = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 150, __sl48), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
         armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
         cloak = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 152, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
         helm = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 154, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
         shield = i16((!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 156, __sl48), rn2(8)) : rn2(8)) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
-        switch ((cptr.ldI32o((ptr), 24))) {
+        switch ((cptr.ldI32o((ptr), FLD.permonst_pmidx))) {
             case NHC.PM_ARCHEOLOGIST:
             if ((rng_log_enabled() ? (rng_log_set_caller(__sl40, 161, __sl48), rn2(2)) : rn2(2)))
                 weapon = NHC.BULLWHIP;
@@ -339,19 +340,19 @@ export function* mk_mplayer(ptr, x, y, special) {
         }
         if (weapon != NHC.STRANGE_OBJECT) {
             otmp = (yield* mksobj(weapon, 1, 0));
-            cptr.stI32o(otmp, 112, cptr.stI32o(otmp, 116, 0));
-            cptr.st1o(otmp, 48, schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
+            cptr.stI32o(otmp, FLD.obj_oeroded, cptr.stI32o(otmp, FLD.obj_oeroded2, 0));
+            cptr.st1o(otmp, FLD.obj_spe, schar((special ? (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(5)) : rn2(5)) + 4) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__sl40, 259, __sl48), rn2(4)) : rn2(4)))));
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 260, __sl48), rn2(3)) : rn2(3)))
-                cptr.stI32o(otmp, 120, 1);
+                cptr.stI32o(otmp, FLD.obj_oerodeproof, 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
-                cptr.stI32o(otmp, 140, 1);
+                cptr.stI32o(otmp, FLD.obj_greased, 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
-            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, 32), 120, 20) & 1) | 0 && !cptr.ld1so(otmp, 51) && monmightthrowwep(otmp))
-                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR) ? 4 : 8))));
-            cptr.stI32o(otmp, 36, (yield* weight(otmp)) >>> 0);
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, FLD.obj_oartifact) && monmightthrowwep(otmp))
+                cptr.stI64o(otmp, FLD.obj_quan, cptr.ldI64o(otmp, FLD.obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8)) : rn2((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_SPEAR) ? 4 : 8))));
+            cptr.stI32o(otmp, FLD.obj_owt, (yield* weight(otmp)) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
-                cptr.st1o(otmp, 48, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
+                cptr.st1o(otmp, FLD.obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
             void (yield* mpickobj(mtmp, otmp));
         }
         if (special) {
@@ -395,7 +396,7 @@ export function* create_mplayers(num, special) {
     let x;
     let y;
     let fakemon = cptr.alloc(320);
-    cptr.memcpy(fakemon, cptr.add(cg, 216), 320);
+    cptr.memcpy(fakemon, cptr.add(cg, FLD.const_globals_zeromonst), 320);
     while (num) {
         let tryct = 0;
         pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 337, __sl50), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
@@ -422,10 +423,10 @@ cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __sl58); /** C ref: mplay
 
 /** C ref: mplayer.c:356 — @param {CPtr} mtmp */
 export function* mplayer_talk(mtmp) {
-    if ((cptr.ldI32o(mtmp, 168) & 1))
+    if ((cptr.ldI32o(mtmp, FLD.monst_mpeaceful) & 1))
         return;
     ;
-    (yield* verbalize(__sl51, cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, cptr.ldI16o(gu, 216), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));
+    (yield* verbalize(__sl51, cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 375, __sl52), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 376, __sl52), rn2(3)) : rn2(3)), 8)));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

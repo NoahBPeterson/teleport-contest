@@ -7,6 +7,7 @@ import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { carry_obj_effects, count_unpaid, freeinv, g_at, stackobj } from './invent.js';
 import { disp, flags, ga, gi, gk, gm, gn, go, gs, gt, gv, gy, iflags, svl, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
@@ -145,50 +146,50 @@ export function somegold(lmoney) {
 /** C ref: steal.c:45 — @param {CPtr} argchain @returns {CPtr} */
 export function findgold(argchain) {
     let chain = argchain;
-    while (chain && cptr.ldI16o(chain, 32) != NHC.GOLD_PIECE)
+    while (chain && cptr.ldI16o(chain, FLD.obj_otyp) != NHC.GOLD_PIECE)
         chain = cptr.ldPtr(chain);
     return chain;
 }
 
 /** C ref: steal.c:58 — @param {CPtr} mtmp */
 export function stealgold(mtmp) {
-    let fgold = g_at(cptr.ldI16(u), cptr.ldI16o(u, 2));
+    let fgold = g_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
     let ygold;
     let tmp;
     let who;
     let whose;
     let what;
-    while (fgold && cptr.ldI16o(fgold, 32) != NHC.GOLD_PIECE)
-        fgold = cptr.ldPtro(fgold, 8);
-    ygold = findgold(cptr.ldPtro(gi, 8));
-    if (fgold && (!ygold || cptr.ldI64o(fgold, 40) > cptr.ldI64o(ygold, 40) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl2), rn2(5)) : rn2(5)))) {
+    while (fgold && cptr.ldI16o(fgold, FLD.obj_otyp) != NHC.GOLD_PIECE)
+        fgold = cptr.ldPtro(fgold, FLD.obj_v);
+    ygold = findgold(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+    if (fgold && (!ygold || cptr.ldI64o(fgold, FLD.obj_quan) > cptr.ldI64o(ygold, FLD.obj_quan) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl2), rn2(5)) : rn2(5)))) {
         obj_extract_self(fgold);
         add_to_minv(mtmp, fgold);
-        newsym(cptr.ldI16(u), cptr.ldI16o(u, 2));
-        if (cptr.ldPtro(u, 2424)) {
-            who = cptr.ldPtro(u, 2424);
+        newsym(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+        if (cptr.ldPtro(u, FLD.you_usteed)) {
+            who = cptr.ldPtro(u, FLD.you_usteed);
             whose = s_suffix(y_monnam(who));
             what = makeplural(mbodypart(who, NHC.FOOT));
         } else {
-            who = cptr.add(gy, 8);
+            who = cptr.add(gy, FLD.instance_globals_y_youmonst);
             whose = __sl3;
             what = makeplural(body_part(NHC.FOOT));
         }
-        if (((cptr.ldU64o((cptr.ldPtro(who, 8)), 72) & 524288n) != 0n))
+        if (((cptr.ldU64o((cptr.ldPtro(who, FLD.monst_data)), FLD.permonst_mflags1) & 524288n) != 0n))
             what = __sl4;
         if (!cptr.strncmp(what, __sl5, 5n))
             what = cptr.add(what, 5);
-        pline(__sl6, Monnam(mtmp), (((cptr.ldI64o2(u, NHC.LEVITATION, 24, 128) || cptr.ldI64o2(u, NHC.LEVITATION, 24, 112)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, 120)) || ((cptr.ldI64o2(u, NHC.FLYING, 24, 128) || cptr.ldI64o2(u, NHC.FLYING, 24, 112) || (cptr.ldPtro(u, 2424) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, 2424), 8)), 72) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, 120))) ? __sl7 : __sl8, whose, what);
+        pline(__sl6, Monnam(mtmp), (((cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, FLD.you_uprops + FLD.prop_blocked)) || ((cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops) || (cptr.ldPtro(u, FLD.you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, FLD.you_usteed), FLD.monst_data)), FLD.permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, FLD.you_uprops + FLD.prop_blocked))) ? __sl7 : __sl8, whose, what);
         if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 94, __sl2), rn2(5)) : rn2(5))) {
             if (!tele_restrict(mtmp))
                 void rloc(mtmp, NHM.RLOC_MSG);
             monflee(mtmp, 0, 0, 0);
         }
     } else if (ygold) {
-        let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, 120, 80);
-        tmp = (BigInt.asIntN(64, BigInt.asIntN(64, somegold(money_cnt(cptr.ldPtro(gi, 8))) + BigInt(gold_price)) - 1n)) / BigInt(gold_price);
-        tmp = ((tmp) < (cptr.ldI64o(ygold, 40)) ? (tmp) : (cptr.ldI64o(ygold, 40)));
-        if (tmp < cptr.ldI64o(ygold, 40))
+        let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, 120, FLD.objclass_oc_cost);
+        tmp = (BigInt.asIntN(64, BigInt.asIntN(64, somegold(money_cnt(cptr.ldPtro(gi, FLD.instance_globals_i_invent))) + BigInt(gold_price)) - 1n)) / BigInt(gold_price);
+        tmp = ((tmp) < (cptr.ldI64o(ygold, FLD.obj_quan)) ? (tmp) : (cptr.ldI64o(ygold, FLD.obj_quan)));
+        if (tmp < cptr.ldI64o(ygold, FLD.obj_quan))
             ygold = splitobj(ygold, tmp);
         else
             setnotworn(ygold);
@@ -204,27 +205,27 @@ export function stealgold(mtmp) {
 
 /** C ref: steal.c:120 */
 export function thiefdead() {
-    cptr.stI32o(gs, 1412, 0);
+    cptr.stI32o(gs, FLD.instance_globals_s_stealmid, 0);
     if (cptr.ldPtr(ga) === stealarm) {
         cptr.stPtr(ga, unstolenarm);
-        cptr.stPtro(gn, 8, null);
+        cptr.stPtro(gn, FLD.instance_globals_n_nomovemsg, null);
     }
 }
 
 /** C ref: steal.c:133 @returns {CInt} */
 export function unresponsive() {
-    if (cptr.ldI64o(gm, 8) >= 0n)
+    if (cptr.ldI64o(gm, FLD.instance_globals_m_multi) >= 0n)
         return 0;
-    return schar((unconscious() || is_fainted() || (cptr.ldPtro(gm, 16) && (!cptr.strncmp(cptr.ldPtro(gm, 16), __sl10, 6n) || !cptr.strncmp(cptr.ldPtro(gm, 16), __sl11, 9n))) ? 1 : 0));
+    return schar((unconscious() || is_fainted() || (cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason) && (!cptr.strncmp(cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason), __sl10, 6n) || !cptr.strncmp(cptr.ldPtro(gm, FLD.instance_globals_m_multi_reason), __sl11, 9n))) ? 1 : 0));
 }
 
 /** C ref: steal.c:147 @returns {CInt} */
 function unstolenarm() {
     let obj;
-    for (obj = cptr.ldPtro(gi, 8); obj; obj = cptr.ldPtr(obj))
-        if (cptr.ldI32o(obj, 24) == cptr.ldI32o(gs, 1408))
+    for (obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
+        if (cptr.ldI32o(obj, FLD.obj_o_id) == cptr.ldI32o(gs, FLD.instance_globals_s_stealoid))
             break;
-    cptr.stI32o(gs, 1408, 0);
+    cptr.stI32o(gs, FLD.instance_globals_s_stealoid, 0);
     if (obj) {
         You(__sl12, armor_simple_name(obj));
     }
@@ -237,21 +238,21 @@ function stealarm() {
     let otmp;
     let nextobj;
     __lbl_botm: {
-        if (!cptr.ldI32o(gs, 1408) || !cptr.ldI32o(gs, 1412))
+        if (!cptr.ldI32o(gs, FLD.instance_globals_s_stealoid) || !cptr.ldI32o(gs, FLD.instance_globals_s_stealmid))
             break __lbl_botm;
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = nextobj) {
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
-            if (cptr.ldI32o(otmp, 24) == cptr.ldI32o(gs, 1408)) {
-                for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                    if (cptr.ldI32o(mtmp, 16) == cptr.ldI32o(gs, 1412)) {
-                        if ((cptr.ldI32o((mtmp), 52) < 1)) {
+            if (cptr.ldI32o(otmp, FLD.obj_o_id) == cptr.ldI32o(gs, FLD.instance_globals_s_stealoid)) {
+                for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+                    if (cptr.ldI32o(mtmp, FLD.monst_m_id) == cptr.ldI32o(gs, FLD.instance_globals_s_stealmid)) {
+                        if ((cptr.ldI32o((mtmp), FLD.monst_mhp) < 1)) {
                             impossible(__sl13);
                             break __lbl_botm;
                         }
-                        if (!dmgtype(cptr.ldPtro(mtmp, 8), NHM.AD_SITM) || dist2((cptr.ldI16o(mtmp, 28)), (cptr.ldI16o(mtmp, 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) > 2)
+                        if (!dmgtype(cptr.ldPtro(mtmp, FLD.monst_data), NHM.AD_SITM) || dist2((cptr.ldI16o(mtmp, FLD.monst_mx)), (cptr.ldI16o(mtmp, FLD.monst_my)), cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) > 2)
                             break __lbl_botm;
-                        if ((cptr.ldI32o(otmp, 64) & 1))
-                            subfrombill(otmp, shop_keeper(cptr.ld1so(u, 83)));
+                        if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1))
+                            subfrombill(otmp, shop_keeper(cptr.ld1so(u, FLD.you_ushops)));
                         freeinv(otmp);
                         pline(__sl14, Monnam(mtmp), doname(otmp));
                         void mpickobj(mtmp, otmp);
@@ -265,7 +266,7 @@ function stealarm() {
             }
         }
     }
-    cptr.stI32o(gs, 1408, cptr.stI32o(gs, 1412, 0));
+    cptr.stI32o(gs, FLD.instance_globals_s_stealoid, cptr.stI32o(gs, FLD.instance_globals_s_stealmid, 0));
     return 0;
 }
 
@@ -274,11 +275,11 @@ export function remove_worn_item(obj, unchain_ball) {
     let oldinuse;
     if (donning(obj))
         cancel_don();
-    if (!cptr.ldI64o(obj, 192))
+    if (!cptr.ldI64o(obj, FLD.obj_owornmask))
         return;
-    oldinuse = (cptr.ldI32o(obj, 144) & 1);
-    cptr.stI32o(obj, 144, 1);
-    if (cptr.ldI64o(obj, 192) & 127n) {
+    oldinuse = (cptr.ldI32o(obj, FLD.obj_in_use) & 1);
+    cptr.stI32o(obj, FLD.obj_in_use, 1);
+    if (cptr.ldI64o(obj, FLD.obj_owornmask) & 127n) {
         if (cptr.eq(obj, uskin.v)) {
             impossible(__sl15);
             skinback(1);
@@ -298,14 +299,14 @@ export function remove_worn_item(obj, unchain_ball) {
         else if (cptr.eq(obj, uarmu.v))
             void Shirt_off();
         else
-            setworn(null, cptr.ldI64o(obj, 192) & 127n);
-    } else if (cptr.ldI64o(obj, 192) & 65536n) {
+            setworn(null, cptr.ldI64o(obj, FLD.obj_owornmask) & 127n);
+    } else if (cptr.ldI64o(obj, FLD.obj_owornmask) & 65536n) {
         Amulet_off();
-    } else if (cptr.ldI64o(obj, 192) & 393216n) {
+    } else if (cptr.ldI64o(obj, FLD.obj_owornmask) & 393216n) {
         Ring_gone(obj);
-    } else if (cptr.ldI64o(obj, 192) & 524288n) {
+    } else if (cptr.ldI64o(obj, FLD.obj_owornmask) & 524288n) {
         Blindf_off(obj);
-    } else if (cptr.ldI64o(obj, 192) & 1792n) {
+    } else if (cptr.ldI64o(obj, FLD.obj_owornmask) & 1792n) {
         if (cptr.eq(obj, uwep.v))
             uwepgone();
         if (cptr.eq(obj, uswapwep.v))
@@ -313,21 +314,21 @@ export function remove_worn_item(obj, unchain_ball) {
         if (cptr.eq(obj, uquiver.v))
             uqwepgone();
     }
-    if (cptr.ldI64o(obj, 192) & 6291456n) {
+    if (cptr.ldI64o(obj, FLD.obj_owornmask) & 6291456n) {
         if (unchain_ball)
             unpunish();
-    } else if (cptr.ldI64o(obj, 192)) {
+    } else if (cptr.ldI64o(obj, FLD.obj_owornmask)) {
         setnotworn(obj);
     }
-    if (cptr.ld1so(obj, 52) == NHM.OBJ_DELETED)
+    if (cptr.ld1so(obj, FLD.obj_where) == NHM.OBJ_DELETED)
         do {
             if (debugcore(__sl0, 1)) {
-                let save_plnmsg = cptr.ldI32o(iflags, 40);
+                let save_plnmsg = cptr.ldI32o(iflags, FLD.instance_flags_last_msg);
                 pline(__sl16, simpleonames(obj));
-                cptr.stI32o(iflags, 40, save_plnmsg);
+                cptr.stI32o(iflags, FLD.instance_flags_last_msg, save_plnmsg);
             }
         } while (0);
-    cptr.stI32o(obj, 144, oldinuse);
+    cptr.stI32o(obj, FLD.obj_in_use, oldinuse);
 }
 
 /** C ref: steal.c:294 — @param {CPtr} mon @param {CPtr} obj */
@@ -347,9 +348,9 @@ function worn_item_removal(mon, obj) {
     void strsubst(cptr.decay(objbuf), __sl23, __sl22);
     if ((p = strstri(cptr.decay(objbuf), __sl24)) && (!cptr.strncmp(cptr.add(p, 5), __sl25, 5n) || !cptr.strncmp(cptr.add(p, 5), __sl26, 6n)))
         void strsubst(cptr.add(p, 2), __sl27, __sl28);
-    verb = ((cptr.ldI64o(obj, 192) & 1792n) != 0n) ? __sl29 : (((cptr.ldI64o(obj, 192) & 983040n) != 0n) ? __sl30 : __sl31);
+    verb = ((cptr.ldI64o(obj, FLD.obj_owornmask) & 1792n) != 0n) ? __sl29 : (((cptr.ldI64o(obj, FLD.obj_owornmask) & 983040n) != 0n) ? __sl30 : __sl31);
     pline(__sl32, Some_Monnam(mon), verb, cptr.decay(objbuf));
-    cptr.stI32o(iflags, 40, NHC.PLNMSG_MON_TAKES_OFF_ITEM);
+    cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_MON_TAKES_OFF_ITEM);
     remove_worn_item(obj, 1);
 }
 
@@ -369,15 +370,15 @@ export function steal(mtmp, objnambuf) {
         Monnambuf = new Uint8Array(256);
         named = 0;
         retrycnt = 0;
-        monkey_business = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 262144n) != 0n));
+        monkey_business = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 262144n) != 0n));
         seen = schar((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0));
         was_punished = schar((uball.v !== null));
         if (objnambuf)
             cptr.st1(objnambuf, 0);
-        if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, 2)))
+        if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)))
             return 0;
         void cptr.strcpy(cptr.decay(Monnambuf), Some_Monnam(mtmp));
-        if (cptr.ldPtro(go, 56))
+        if (cptr.ldPtro(go, FLD.instance_globals_o_occupation))
             void maybe_finished_meal(0);
         icnt = inv_cnt(0);
         if (!icnt || (icnt == 1 && uskin.v)) { __pc = 6; continue; }
@@ -389,12 +390,12 @@ export function steal(mtmp, objnambuf) {
         }
         case 1 /* nothing_to_steal: */: {
         if ((uball.v !== null) && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 379, __sl33), rn2(4)) : rn2(4))) {
-            (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, 52) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__sl33, __sl34, 381, __sl35) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, FLD.obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__sl33, __sl34, 381, __sl35) : void 0);
             worn_item_removal(mtmp, uchain.v);
-        } else if (cptr.ldI32o(u, 60) && cptr.ldI32o(u, 64) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
+        } else if (cptr.ldI32o(u, FLD.you_utrap) && cptr.ldI32o(u, FLD.you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
             pline(__sl36, cptr.decay(Monnambuf));
-            void openholdingtrap(cptr.add(gy, 8), dummy);
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
+            void openholdingtrap(cptr.add(gy, FLD.instance_globals_y_youmonst), dummy);
+        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
             pline(__sl37);
         } else if (inv_cnt(1) > inv_cnt(0)) {
             pline(__sl38, cptr.decay(Monnambuf));
@@ -415,7 +416,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 9: {
-        if (cptr.ldI64o2(u, NHC.ADORNED, 24, 112) & 131072n) { __pc = 11; continue; }
+        if (cptr.ldI64o2(u, NHC.ADORNED, 24, FLD.you_uprops) & 131072n) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
@@ -425,7 +426,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 12: {
-        if (cptr.ldI64o2(u, NHC.ADORNED, 24, 112) & 262144n) { __pc = 14; continue; }
+        if (cptr.ldI64o2(u, NHC.ADORNED, 24, FLD.you_uprops) & 262144n) { __pc = 14; continue; }
         __pc = 13; continue;
         }
         case 14: {
@@ -448,9 +449,9 @@ export function steal(mtmp, objnambuf) {
         }
         case 2 /* retry: */: {
         tmp = 0;
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, 49) != NHC.COIN_CLASS)
-                tmp = (tmp + ((cptr.ldI64o(otmp, 192) & 983167n) ? 5 : 1)) | 0;
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, FLD.obj_oclass) != NHC.COIN_CLASS)
+                tmp = (tmp + ((cptr.ldI64o(otmp, FLD.obj_owornmask) & 983167n) ? 5 : 1)) | 0;
         if (!tmp) { __pc = 16; continue; }
         __pc = 15; continue;
         }
@@ -461,9 +462,9 @@ export function steal(mtmp, objnambuf) {
         }
         case 15: {
         tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 421, __sl33), rn2(tmp)) : rn2(tmp));
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, 49) != NHC.COIN_CLASS) {
-                tmp = (tmp - ((cptr.ldI64o(otmp, 192) & 983167n) ? 5 : 1)) | 0;
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, FLD.obj_oclass) != NHC.COIN_CLASS) {
+                tmp = (tmp - ((cptr.ldI64o(otmp, FLD.obj_owornmask) & 983167n) ? 5 : 1)) | 0;
                 if (tmp < 0)
                     break;
             }
@@ -485,9 +486,9 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 3 /* gotobj: */: {
-        if (cptr.ldI32o(otmp, 24) == cptr.ldI32o(gs, 1408))
+        if (cptr.ldI32o(otmp, FLD.obj_o_id) == cptr.ldI32o(gs, FLD.instance_globals_s_stealoid))
             return 0;
-        if (cptr.ldI16o(otmp, 32) == NHC.BOULDER && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 80) & 134217728n) != 0n)) { __pc = 18; continue; }
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.BOULDER && !((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags2) & 134217728n) != 0n)) { __pc = 18; continue; }
         __pc = 17; continue;
         }
         case 18: {
@@ -511,10 +512,10 @@ export function steal(mtmp, objnambuf) {
         case 22: {
         if (cptr.eq(otmp, uball.v))
             ostuck = 1;
-        else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, 2816)))
+        else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, FLD.you_twoweap)))
             ostuck = 0;
         else
-            ostuck = schar((((cptr.ldI32o(otmp, 56) & 1) | 0 && cptr.ldI64o(otmp, 192)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, 1876) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, 1876) & 1) | 0) == NHM.LEFT_HANDED) ? uright.v : uleft.v)) && welded(uwep.v) && ((cptr.ld1so(uwep.v, 49) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, 49) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, 32), 120, 48) & 1) | 0)) ? 1 : 0));
+            ostuck = schar((((cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0 && cptr.ldI64o(otmp, FLD.obj_owornmask)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, FLD.you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, FLD.you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uright.v : uleft.v)) && welded(uwep.v) && ((cptr.ld1so(uwep.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0)) ? 1 : 0));
         if (ostuck || can_carry(mtmp, otmp) == 0) { __pc = 24; continue; }
         __pc = 23; continue;
         }
@@ -523,7 +524,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 4 /* cant_take: */: {
-        pline(__sl41, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, 192) & 127n) ? __sl20 : __sl22, (cptr.ldI64o(otmp, 192) & 127n) ? armor_simple_name(otmp) : yname(otmp));
+        pline(__sl41, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, FLD.obj_owornmask) & 127n) ? __sl20 : __sl22, (cptr.ldI64o(otmp, FLD.obj_owornmask) & 127n) ? armor_simple_name(otmp) : yname(otmp));
         return !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl33), rn2((((inv_cnt(0) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt(0) / 5) | 0) + 2) | 0));
         __pc = 23;
         continue;
@@ -533,11 +534,11 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 21: {
-        if (cptr.ldI16o(otmp, 32) == NHC.LEASH && cptr.ldI32o(otmp, 168)) { __pc = 26; continue; }
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.LEASH && cptr.ldI32o(otmp, FLD.obj_corpsenm)) { __pc = 26; continue; }
         __pc = 25; continue;
         }
         case 26: {
-        if (monkey_business && (cptr.ldI32o(otmp, 56) & 1) | 0) { __pc = 28; continue; }
+        if (monkey_business && (cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0) { __pc = 28; continue; }
         __pc = 27; continue;
         }
         case 28: {
@@ -554,11 +555,11 @@ export function steal(mtmp, objnambuf) {
         was_doffing = doffing(otmp);
         olddelay = stop_donning(otmp);
         stop_occupation();
-        if (cptr.ldI64o(otmp, 192) & 983167n) { __pc = 30; continue; }
+        if (cptr.ldI64o(otmp, FLD.obj_owornmask) & 983167n) { __pc = 30; continue; }
         __pc = 31; continue;
         }
         case 30: {
-        let __sw33 = cptr.ld1so(otmp, 49);
+        let __sw33 = cptr.ld1so(otmp, FLD.obj_oclass);
         if (__sw33 === (NHC.TOOL_CLASS)) { __pc = 34; continue; }
         if (__sw33 === (NHC.AMULET_CLASS)) { __pc = 35; continue; }
         if (__sw33 === (NHC.RING_CLASS)) { __pc = 36; continue; }
@@ -585,7 +586,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 38: {
-        armordelay = cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 71);
+        armordelay = cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_delay);
         if (olddelay > 0 && olddelay < armordelay)
             armordelay = olddelay;
         if (monkey_business || unresponsive()) { __pc = 41; continue; }
@@ -607,22 +608,22 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 42: {
-        curssv = (cptr.ldI32o(otmp, 56) & 1) | 0;
-        cptr.stI32o(otmp, 56, 0);
-        slowly = (armordelay >= 1 || cptr.ldI64o(gm, 8) < 0n ? 1 : 0);
-        if (cptr.ld1so(flags, 13))
+        curssv = (cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0;
+        cptr.stI32o(otmp, FLD.obj_cursed, 0);
+        slowly = (armordelay >= 1 || cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n ? 1 : 0);
+        if (cptr.ld1so(flags, FLD.flag_female))
             urgent_pline(__sl42, !seen ? __sl43 : cptr.decay(Monnambuf), curssv ? __sl44 : (!slowly ? __sl45 : (was_doffing ? __sl46 : __sl47)), armor_simple_name(otmp));
         else
             urgent_pline(__sl48, !seen ? __sl43 : Adjmonnam(mtmp, __sl49), curssv ? __sl50 : (!slowly ? __sl51 : (was_doffing ? __sl52 : __sl53)), armor_simple_name(otmp));
         named++;
         nomul(-armordelay);
-        cptr.stPtro(gm, 16, __sl54);
-        cptr.stPtro(gn, 8, null);
+        cptr.stPtro(gm, FLD.instance_globals_m_multi_reason, __sl54);
+        cptr.stPtro(gn, FLD.instance_globals_n_nomovemsg, null);
         remove_worn_item(otmp, 1);
-        cptr.stI32o(otmp, 56, curssv >>> 0);
-        if (cptr.ldI64o(gm, 8) < 0n) {
-            cptr.stI32o(gs, 1408, cptr.ldI32o(otmp, 24));
-            cptr.stI32o(gs, 1412, cptr.ldI32o(mtmp, 16));
+        cptr.stI32o(otmp, FLD.obj_cursed, curssv >>> 0);
+        if (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n) {
+            cptr.stI32o(gs, FLD.instance_globals_s_stealoid, cptr.ldI32o(otmp, FLD.obj_o_id));
+            cptr.stI32o(gs, FLD.instance_globals_s_stealmid, cptr.ldI32o(mtmp, FLD.monst_m_id));
             cptr.stPtr(ga, stealarm);
             return 0;
         }
@@ -635,7 +636,7 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 39: {
-        impossible(__sl55, cptr.ld1so(otmp, 49));
+        impossible(__sl55, cptr.ld1so(otmp, FLD.obj_oclass));
         __pc = 32;
         continue;
         }
@@ -646,12 +647,12 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 31: {
-        if (cptr.ldI64o(otmp, 192)) {
+        if (cptr.ldI64o(otmp, FLD.obj_owornmask)) {
             item = otmp;
             if (cptr.eq(otmp, uball.v))
                 item = uchain.v;
             worn_item_removal(mtmp, item);
-            if ((cptr.ldI64o(otmp, 192) & 1792n) != 0n)
+            if ((cptr.ldI64o(otmp, FLD.obj_owornmask) & 1792n) != 0n)
                 remove_worn_item(otmp, 0);
         }
         __pc = 29;
@@ -660,23 +661,23 @@ export function steal(mtmp, objnambuf) {
         case 29: {
         if (objnambuf)
             void cptr.strcpy(objnambuf, yname(otmp));
-        if (!(cptr.ldI64o2(u, NHC.CONFLICT, 24, 128) || cptr.ldI64o2(u, NHC.CONFLICT, 24, 112)) && !(was_punished && !(uball.v !== null)))
-            cptr.stI32o(mtmp, 132, 1);
-        if ((cptr.ldI32o(otmp, 64) & 1))
-            subfrombill(otmp, shop_keeper(cptr.ld1so(u, 83)));
+        if (!(cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, FLD.you_uprops)) && !(was_punished && !(uball.v !== null)))
+            cptr.stI32o(mtmp, FLD.monst_mavenge, 1);
+        if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1))
+            subfrombill(otmp, shop_keeper(cptr.ld1so(u, FLD.you_ushops)));
         freeinv(otmp);
-        if (cptr.ldI32o(iflags, 40) == NHC.PLNMSG_MON_TAKES_OFF_ITEM && cptr.ld1so(cptr.ldPtro(mtmp, 8), 28) == NHC.S_NYMPH)
+        if (cptr.ldI32o(iflags, FLD.instance_flags_last_msg) == NHC.PLNMSG_MON_TAKES_OFF_ITEM && cptr.ld1so(cptr.ldPtro(mtmp, FLD.monst_data), FLD.permonst_mlet) == NHC.S_NYMPH)
             ++named;
         urgent_pline(__sl56, named ? __sl43 : cptr.decay(Monnambuf), doname(otmp));
         encumber_msg();
-        could_petrify = (cptr.ldI16o(otmp, 32) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) ? 1 : 0);
-        cptr.stI32o(otmp, 160, NHM.LOST_STOLEN);
+        could_petrify = (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) ? 1 : 0);
+        cptr.stI32o(otmp, FLD.obj_how_lost, NHM.LOST_STOLEN);
         void mpickobj(mtmp, otmp);
-        if (could_petrify && !(cptr.ldI64o(mtmp, 296) & 16n)) {
+        if (could_petrify && !(cptr.ldI64o(mtmp, FLD.monst_misc_worn_check) & 16n)) {
             minstapetrify(mtmp, 1);
             return -1;
         }
-        return (cptr.ldI64o(gm, 8) < 0n) ? 0 : 1;
+        return (cptr.ldI64o(gm, FLD.instance_globals_m_multi) < 0n) ? 0 : 1;
         __pc = -1;
         continue;
         }
@@ -690,37 +691,37 @@ export function mpickobj(mtmp, otmp) {
     let freed_otmp;
     let snuff_otmp = 0;
     if (!otmp) {
-        impossible(__sl60, pmname(cptr.ldPtro(mtmp, 8), Mgender(mtmp)));
+        impossible(__sl60, pmname(cptr.ldPtro(mtmp, FLD.monst_data), Mgender(mtmp)));
         return 1;
     } else if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v)) {
-        impossible(__sl61, pmname(cptr.ldPtro(mtmp, 8), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __sl62 : __sl63, simpleonames(otmp));
+        impossible(__sl61, pmname(cptr.ldPtro(mtmp, FLD.monst_data), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __sl62 : __sl63, simpleonames(otmp));
         return 0;
     }
-    if (cptr.eq(otmp, cptr.ldPtro(gt, 328)))
-        cptr.stPtro(gt, 328, null);
-    else if (cptr.eq(otmp, cptr.ldPtro(gk, 8)))
-        cptr.stPtro(gk, 8, null);
-    if ((cptr.ldI32o(otmp, 64) & 1) | 0 || ((cptr.ldPtro((otmp), 16) !== null) && count_unpaid(cptr.ldPtro(otmp, 16)))) {
-        subfrombill(otmp, find_objowner(otmp, cptr.ldI16o(otmp, 28), cptr.ldI16o(otmp, 30)));
+    if (cptr.eq(otmp, cptr.ldPtro(gt, FLD.instance_globals_t_thrownobj)))
+        cptr.stPtro(gt, FLD.instance_globals_t_thrownobj, null);
+    else if (cptr.eq(otmp, cptr.ldPtro(gk, FLD.instance_globals_k_kickedobj)))
+        cptr.stPtro(gk, FLD.instance_globals_k_kickedobj, null);
+    if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1) | 0 || ((cptr.ldPtro((otmp), FLD.obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, FLD.obj_cobj)))) {
+        subfrombill(otmp, find_objowner(otmp, cptr.ldI16o(otmp, FLD.obj_ox), cptr.ldI16o(otmp, FLD.obj_oy)));
     }
-    if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, 8), NHM.AT_ENGL)) {
-        if (((cptr.ldI32o(u, 1848) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, 2416), (mtmp)))) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
+    if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, FLD.monst_data), NHM.AT_ENGL)) {
+        if (((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, FLD.you_ustuck), (mtmp)))) && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
             pline(__sl64, Tobjnam(otmp, __sl65));
         snuff_otmp = 1;
     }
-    cptr.stI32o(otmp, 68, 0);
-    if (!cptr.ld1so(mtmp, 65)) {
-        if (!canseemon(mtmp) && !cptr.eq(mtmp, cptr.ldPtro(u, 2416)))
+    cptr.stI32o(otmp, FLD.obj_no_charge, 0);
+    if (!cptr.ld1so(mtmp, FLD.monst_mtame)) {
+        if (!canseemon(mtmp) && !cptr.eq(mtmp, cptr.ldPtro(u, FLD.you_ustuck)))
             unknow_object(otmp);
-        if (((cptr.ldI32o(otmp, 160) & 7) | 0) == NHM.LOST_THROWN)
-            cptr.stI32o(otmp, 160, NHM.LOST_STOLEN);
-        else if (((cptr.ldI32o(otmp, 160) & 7) | 0) == NHM.LOST_DROPPED)
-            cptr.stI32o(otmp, 160, NHM.LOST_NONE);
+        if (((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_THROWN)
+            cptr.stI32o(otmp, FLD.obj_how_lost, NHM.LOST_STOLEN);
+        else if (((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_DROPPED)
+            cptr.stI32o(otmp, FLD.obj_how_lost, NHM.LOST_NONE);
     }
     carry_obj_effects(otmp);
     freed_otmp = add_to_minv(mtmp, otmp);
     if (snuff_otmp)
-        snuff_light_source(cptr.ldI16o(mtmp, 28), cptr.ldI16o(mtmp, 30));
+        snuff_light_source(cptr.ldI16o(mtmp, FLD.monst_mx), cptr.ldI16o(mtmp, FLD.monst_my));
     return freed_otmp;
 }
 
@@ -732,35 +733,35 @@ export function stealamulet(mtmp) {
     let real = 0;
     let fake = 0;
     let n;
-    for (n = 0, obj = cptr.ldPtro(gi, 8); obj; obj = cptr.ldPtr(obj))
-        if ((cptr.ld1so((obj), 51) >= NHC.ART_ORB_OF_DETECTION))
+    for (n = 0, obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
+        if ((cptr.ld1so((obj), FLD.obj_oartifact) >= NHC.ART_ORB_OF_DETECTION))
             ++n, otmp = obj;
     if (n > 1) {
         n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 702, __sl66), rnd(n)) : rnd(n));
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-            if ((cptr.ld1so((otmp), 51) >= NHC.ART_ORB_OF_DETECTION) && !--n)
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if ((cptr.ld1so((otmp), FLD.obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) && !--n)
                 break;
     }
     if (!otmp) {
-        if ((cptr.ldI32o(u, 1944) & 1)) {
+        if ((cptr.ldI32o(u, FLD.you_uhave) & 1)) {
             real = NHC.AMULET_OF_YENDOR;
             fake = NHC.FAKE_AMULET_OF_YENDOR;
-        } else if ((cptr.ldI32o(u, 1948) & 1)) {
+        } else if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_bell) & 1)) {
             real = NHC.BELL_OF_OPENING;
             fake = NHC.BELL;
-        } else if ((cptr.ldI32o(u, 1952) & 1)) {
+        } else if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_book) & 1)) {
             real = NHC.SPE_BOOK_OF_THE_DEAD;
-        } else if ((cptr.ldI32o(u, 1956) & 1)) {
+        } else if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_menorah) & 1)) {
             real = NHC.CANDELABRUM_OF_INVOCATION;
         } else
             return;
-        for (n = 0, obj = cptr.ldPtro(gi, 8); obj; obj = cptr.ldPtr(obj))
-            if (cptr.ldI16o(obj, 32) == real || (cptr.ldI16o(obj, 32) == fake && !(cptr.ldI32o(mtmp, 196) & 1)))
+        for (n = 0, obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
+            if (cptr.ldI16o(obj, FLD.obj_otyp) == real || (cptr.ldI16o(obj, FLD.obj_otyp) == fake && !(cptr.ldI32o(mtmp, FLD.monst_iswiz) & 1)))
                 ++n, otmp = obj;
         if (n > 1) {
             n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 728, __sl66), rnd(n)) : rnd(n));
-            for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-                if ((cptr.ldI16o(otmp, 32) == real || (cptr.ldI16o(otmp, 32) == fake && !(cptr.ldI32o(mtmp, 196) & 1))) && !--n)
+            for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if ((cptr.ldI16o(otmp, FLD.obj_otyp) == real || (cptr.ldI16o(otmp, FLD.obj_otyp) == fake && !(cptr.ldI32o(mtmp, FLD.monst_iswiz) & 1))) && !--n)
                     break;
         }
     }
@@ -770,21 +771,21 @@ export function stealamulet(mtmp) {
         if (cptr.eq(otmp, uarmu.v) && uarm.v)
             worn_item_removal(mtmp, uarm.v);
         if ((cptr.eq(otmp, uarmg.v) || ((cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) && uarmg.v)) && uwep.v) {
-            if (cptr.ld1so(u, 2816))
+            if (cptr.ld1so(u, FLD.you_twoweap))
                 worn_item_removal(mtmp, uswapwep.v);
             worn_item_removal(mtmp, uwep.v);
         }
         if ((cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) && uarmg.v)
             worn_item_removal(mtmp, uarmg.v);
-        if (cptr.ldI64o(otmp, 192))
+        if (cptr.ldI64o(otmp, FLD.obj_owornmask))
             worn_item_removal(mtmp, otmp);
-        if ((cptr.ldI32o(otmp, 64) & 1))
-            subfrombill(otmp, shop_keeper(cptr.ld1so(u, 83)));
+        if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1))
+            subfrombill(otmp, shop_keeper(cptr.ld1so(u, FLD.you_ushops)));
         freeinv(otmp);
         void cptr.strcpy(cptr.decay(buf), doname(otmp));
         void mpickobj(mtmp, otmp);
         pline(__sl14, Some_Monnam(mtmp), cptr.decay(buf));
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 33554432n) != 0n) && !tele_restrict(mtmp))
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, FLD.monst_data)), FLD.permonst_mflags1) & 33554432n) != 0n) && !tele_restrict(mtmp))
             void rloc(mtmp, NHM.RLOC_MSG);
         encumber_msg();
     }
@@ -792,18 +793,18 @@ export function stealamulet(mtmp) {
 
 /** C ref: steal.c:772 — @param {CPtr} mon @param {CPtr} obj @param {CInt} ochance @param {CInt} achance */
 export function maybe_absorb_item(mon, obj, ochance, achance) {
-    if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1so(obj, 49) == NHC.ROCK_CLASS || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
+    if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1so(obj, FLD.obj_oclass) == NHC.ROCK_CLASS || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
         return;
-    if ((cptr.ld1so((obj), 52) == NHM.OBJ_INVENT)) {
-        if (cptr.ldI64o(obj, 192))
+    if ((cptr.ld1so((obj), FLD.obj_where) == NHM.OBJ_INVENT)) {
+        if (cptr.ldI64o(obj, FLD.obj_owornmask))
             remove_worn_item(obj, 1);
-        if ((cptr.ldI32o(obj, 64) & 1))
-            subfrombill(obj, shop_keeper(cptr.ld1so(u, 83)));
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mon, 30), 8), cptr.ldI16o(mon, 28)) & NHM.IN_SIGHT) != 0)) {
-            pline(__sl67, Some_Monnam(mon), yname(obj), (cptr.ldI64o(obj, 40) > 1n) ? __sl68 : __sl69);
+        if ((cptr.ldI32o(obj, FLD.obj_unpaid) & 1))
+            subfrombill(obj, shop_keeper(cptr.ld1so(u, FLD.you_ushops)));
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), cptr.ldI16o(mon, FLD.monst_my), 8), cptr.ldI16o(mon, FLD.monst_mx)) & NHM.IN_SIGHT) != 0)) {
+            pline(__sl67, Some_Monnam(mon), yname(obj), (cptr.ldI64o(obj, FLD.obj_quan) > 1n) ? __sl68 : __sl69);
         } else {
             let hand_s = body_part(NHC.HAND);
-            if (((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj, 49) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, 32), 120, 48) & 1) | 0))
+            if (((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_big) & 1) | 0))
                 hand_s = makeplural(hand_s);
             pline(__sl70, upstart(yname(obj)), otense(obj, __sl71), hand_s);
         }
@@ -818,21 +819,21 @@ export function maybe_absorb_item(mon, obj, ochance, achance) {
 
 /** C ref: steal.c:814 — @param {CPtr} mon @param {CPtr} obj @param {CInt} verbosely */
 export function mdrop_obj(mon, obj, verbosely) {
-    let omx = cptr.ldI16o(mon, 28);
-    let omy = cptr.ldI16o(mon, 30);
-    let unwornmask = cptr.ldI64o(obj, 192);
+    let omx = cptr.ldI16o(mon, FLD.monst_mx);
+    let omy = cptr.ldI16o(mon, FLD.monst_my);
+    let unwornmask = cptr.ldI64o(obj, FLD.obj_owornmask);
     let obj_name = distant_name(obj, doname);
     extract_from_minvent(mon, obj, 0, 1);
-    if (unwornmask && cptr.ld1so(mon, 65) && (unwornmask & 1048576n) != 0n && !(cptr.ldI32o(obj, 64) & 1) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, 2), NHC.SHOPBASE), (cptr.ldI32o3(svl, omx, 756, omy, 36, 1704) & 63) | 0)) {
-        cptr.stI32o(obj, 68, 1);
+    if (unwornmask && cptr.ld1so(mon, FLD.monst_mtame) && (unwornmask & 1048576n) != 0n && !(cptr.ldI32o(obj, FLD.obj_unpaid) & 1) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), NHC.SHOPBASE), (cptr.ldI32o3(svl, omx, 756, omy, 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0)) {
+        cptr.stI32o(obj, FLD.obj_no_charge, 1);
     }
-    if (verbosely && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), omy, 8), omx) & NHM.IN_SIGHT) != 0))
+    if (verbosely && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))
         pline_mon(mon, __sl73, Monnam(mon), obj_name);
     if (!flooreffects(obj, omx, omy, __sl74)) {
         place_object(obj, omx, omy);
         stackobj(obj);
     }
-    if (!(cptr.ldI32o((mon), 52) < 1) && unwornmask)
+    if (!(cptr.ldI32o((mon), FLD.monst_mhp) < 1) && unwornmask)
         update_mon_extrinsics(mon, obj, 0, 1);
 }
 
@@ -840,10 +841,10 @@ export function mdrop_obj(mon, obj, verbosely) {
 export function mdrop_special_objs(mon) {
     let obj;
     let otmp;
-    for (obj = cptr.ldPtro(mon, 280); obj; obj = otmp) {
+    for (obj = cptr.ldPtro(mon, FLD.monst_minvent); obj; obj = otmp) {
         otmp = cptr.ldPtr(obj);
         if (obj_resists(obj, 0, 0) || is_quest_artifact(obj)) {
-            if (cptr.ldI16o(mon, 28)) {
+            if (cptr.ldI16o(mon, FLD.monst_mx)) {
                 mdrop_obj(mon, obj, 0);
             } else {
                 extract_from_minvent(mon, obj, 1, 1);
@@ -856,18 +857,18 @@ export function mdrop_special_objs(mon) {
 /** C ref: steal.c:875 — @param {CPtr} mtmp @param {CInt} show @param {CInt} is_pet */
 export function relobj(mtmp, show, is_pet) {
     let otmp;
-    let omx = cptr.ldI16o(mtmp, 28);
-    let omy = cptr.ldI16o(mtmp, 30);
-    if ((cptr.ldI32o(mtmp, 188) & 1) | 0 && (otmp = findgold(cptr.ldPtro(mtmp, 280))) !== null) {
+    let omx = cptr.ldI16o(mtmp, FLD.monst_mx);
+    let omy = cptr.ldI16o(mtmp, FLD.monst_my);
+    if ((cptr.ldI32o(mtmp, FLD.monst_isgd) & 1) | 0 && (otmp = findgold(cptr.ldPtro(mtmp, FLD.monst_minvent))) !== null) {
         if ((canseemon(mtmp) || sensemon(mtmp)))
             pline(__sl75, s_suffix(Monnam(mtmp)), canseemon(mtmp) ? __sl76 : __sl77);
         obj_extract_self(otmp);
         obfree(otmp, null);
     }
-    while ((otmp = (is_pet ? droppables(mtmp) : cptr.ldPtro(mtmp, 280))) !== null) {
-        mdrop_obj(mtmp, otmp, schar((is_pet && cptr.ld1so(flags, 48) ? 1 : 0)));
+    while ((otmp = (is_pet ? droppables(mtmp) : cptr.ldPtro(mtmp, FLD.monst_minvent))) !== null) {
+        mdrop_obj(mtmp, otmp, schar((is_pet && cptr.ld1so(flags, FLD.flag_verbose) ? 1 : 0)));
     }
-    if (show && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), omy, 8), omx) & NHM.IN_SIGHT) != 0))
+    if (show && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, FLD.instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))
         newsym(i16(omx), i16(omy));
 }
 

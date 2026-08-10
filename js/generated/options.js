@@ -7,6 +7,7 @@ import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
 import { assure_syscf_file, config_error_add, config_error_done, config_error_init, config_unmatched_ignored, get_configfile, rcfile, read_config_file } from './cfgfiles.js';
@@ -1052,4801 +1053,4801 @@ const __sl1002 = cptr.lit("windowcolors for unrecognized window type: %s");
 /** C ref: options.c:60 — struct allopt_t[218] */
 const allopt_init = cptr.alloc(218 * 104);
 cptr.stPtro(allopt_init, 0, __sl0);
-cptr.stI32o(allopt_init, 8, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12, 0);
-cptr.stI32o(allopt_init, 16, NHM.WINTYPELEN);
-cptr.stI32o(allopt_init, 20, NHC.opt_windowtype);
-cptr.stI32o(allopt_init, 24, NHC.set_gameview);
-cptr.stI32o(allopt_init, 28, NHC.CompOpt);
-cptr.stI32o(allopt_init, 32, NHC.No);
-cptr.stI32o(allopt_init, 36, NHC.Yes);
-cptr.stI32o(allopt_init, 40, NHC.No);
-cptr.stI32o(allopt_init, 44, NHC.No);
-cptr.stI32o(allopt_init, 48, 0);
-cptr.st1o(allopt_init, 52, NHC.opt_in);
-cptr.stPtro(allopt_init, 56, null);
-cptr.stPtro(allopt_init, 64, optfn_windowtype);
-cptr.stPtro(allopt_init, 72, (null));
-cptr.stPtro(allopt_init, 80, __sl1);
-cptr.stPtro(allopt_init, 88, null);
-cptr.st1o(allopt_init, 96, NHC.Off);
-cptr.st1o(allopt_init, 97, NHC.No);
-cptr.st1o(allopt_init, 98, 0);
-cptr.st1o(allopt_init, 99, 0);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_expectedbuf, NHM.WINTYPELEN);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_idx, NHC.opt_windowtype);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 0 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 0 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 0 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 0 + FLD.allopt_t_optfn, optfn_windowtype);
+cptr.stPtro(allopt_init, 0 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 0 + FLD.allopt_t_descr, __sl1);
+cptr.stPtro(allopt_init, 0 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 0 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 0 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 0 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 0 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 104, __sl2);
-cptr.stI32o(allopt_init, 112, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 116, 0);
-cptr.stI32o(allopt_init, 120, 8);
-cptr.stI32o(allopt_init, 124, NHC.opt_playmode);
-cptr.stI32o(allopt_init, 128, NHC.set_gameview);
-cptr.stI32o(allopt_init, 132, NHC.CompOpt);
-cptr.stI32o(allopt_init, 136, NHC.No);
-cptr.stI32o(allopt_init, 140, NHC.Yes);
-cptr.stI32o(allopt_init, 144, NHC.No);
-cptr.stI32o(allopt_init, 148, NHC.No);
-cptr.stI32o(allopt_init, 152, 0);
-cptr.st1o(allopt_init, 156, NHC.opt_in);
-cptr.stPtro(allopt_init, 160, null);
-cptr.stPtro(allopt_init, 168, optfn_playmode);
-cptr.stPtro(allopt_init, 176, (null));
-cptr.stPtro(allopt_init, 184, __sl3);
-cptr.stPtro(allopt_init, 192, null);
-cptr.st1o(allopt_init, 200, NHC.Off);
-cptr.st1o(allopt_init, 201, NHC.No);
-cptr.st1o(allopt_init, 202, 0);
-cptr.st1o(allopt_init, 203, 0);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_expectedbuf, 8);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_idx, NHC.opt_playmode);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 104 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 104 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 104 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 104 + FLD.allopt_t_optfn, optfn_playmode);
+cptr.stPtro(allopt_init, 104 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 104 + FLD.allopt_t_descr, __sl3);
+cptr.stPtro(allopt_init, 104 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 104 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 104 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 104 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 104 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 208, __sl4);
-cptr.stI32o(allopt_init, 216, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 220, 0);
-cptr.stI32o(allopt_init, 224, NHM.PL_NSIZ);
-cptr.stI32o(allopt_init, 228, NHC.opt_name);
-cptr.stI32o(allopt_init, 232, NHC.set_gameview);
-cptr.stI32o(allopt_init, 236, NHC.CompOpt);
-cptr.stI32o(allopt_init, 240, NHC.No);
-cptr.stI32o(allopt_init, 244, NHC.Yes);
-cptr.stI32o(allopt_init, 248, NHC.No);
-cptr.stI32o(allopt_init, 252, NHC.No);
-cptr.stI32o(allopt_init, 256, 0);
-cptr.st1o(allopt_init, 260, NHC.opt_in);
-cptr.stPtro(allopt_init, 264, null);
-cptr.stPtro(allopt_init, 272, optfn_name);
-cptr.stPtro(allopt_init, 280, (null));
-cptr.stPtro(allopt_init, 288, __sl5);
-cptr.stPtro(allopt_init, 296, null);
-cptr.st1o(allopt_init, 304, NHC.Off);
-cptr.st1o(allopt_init, 305, NHC.No);
-cptr.st1o(allopt_init, 306, 0);
-cptr.st1o(allopt_init, 307, 0);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_expectedbuf, NHM.PL_NSIZ);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_idx, NHC.opt_name);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 208 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 208 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 208 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 208 + FLD.allopt_t_optfn, optfn_name);
+cptr.stPtro(allopt_init, 208 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 208 + FLD.allopt_t_descr, __sl5);
+cptr.stPtro(allopt_init, 208 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 208 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 208 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 208 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 208 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 312, __sl6);
-cptr.stI32o(allopt_init, 320, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 324, 0);
-cptr.stI32o(allopt_init, 328, NHM.PL_CSIZ);
-cptr.stI32o(allopt_init, 332, NHC.opt_role);
-cptr.stI32o(allopt_init, 336, NHC.set_gameview);
-cptr.stI32o(allopt_init, 340, NHC.CompOpt);
-cptr.stI32o(allopt_init, 344, NHC.Yes);
-cptr.stI32o(allopt_init, 348, NHC.Yes);
-cptr.stI32o(allopt_init, 352, NHC.Yes);
-cptr.stI32o(allopt_init, 356, NHC.No);
-cptr.stI32o(allopt_init, 360, 0);
-cptr.st1o(allopt_init, 364, NHC.opt_in);
-cptr.stPtro(allopt_init, 368, null);
-cptr.stPtro(allopt_init, 376, optfn_role);
-cptr.stPtro(allopt_init, 384, __sl7);
-cptr.stPtro(allopt_init, 392, __sl8);
-cptr.stPtro(allopt_init, 400, null);
-cptr.st1o(allopt_init, 408, NHC.Off);
-cptr.st1o(allopt_init, 409, NHC.No);
-cptr.st1o(allopt_init, 410, 0);
-cptr.st1o(allopt_init, 411, 0);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_expectedbuf, NHM.PL_CSIZ);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_idx, NHC.opt_role);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 312 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 312 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 312 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 312 + FLD.allopt_t_optfn, optfn_role);
+cptr.stPtro(allopt_init, 312 + FLD.allopt_t_alias, __sl7);
+cptr.stPtro(allopt_init, 312 + FLD.allopt_t_descr, __sl8);
+cptr.stPtro(allopt_init, 312 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 312 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 312 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 312 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 312 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 416, __sl9);
-cptr.stI32o(allopt_init, 424, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 428, 0);
-cptr.stI32o(allopt_init, 432, NHM.PL_CSIZ);
-cptr.stI32o(allopt_init, 436, NHC.opt_race);
-cptr.stI32o(allopt_init, 440, NHC.set_gameview);
-cptr.stI32o(allopt_init, 444, NHC.CompOpt);
-cptr.stI32o(allopt_init, 448, NHC.Yes);
-cptr.stI32o(allopt_init, 452, NHC.Yes);
-cptr.stI32o(allopt_init, 456, NHC.Yes);
-cptr.stI32o(allopt_init, 460, NHC.No);
-cptr.stI32o(allopt_init, 464, 0);
-cptr.st1o(allopt_init, 468, NHC.opt_in);
-cptr.stPtro(allopt_init, 472, null);
-cptr.stPtro(allopt_init, 480, optfn_race);
-cptr.stPtro(allopt_init, 488, (null));
-cptr.stPtro(allopt_init, 496, __sl10);
-cptr.stPtro(allopt_init, 504, null);
-cptr.st1o(allopt_init, 512, NHC.Off);
-cptr.st1o(allopt_init, 513, NHC.No);
-cptr.st1o(allopt_init, 514, 0);
-cptr.st1o(allopt_init, 515, 0);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_expectedbuf, NHM.PL_CSIZ);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_idx, NHC.opt_race);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 416 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 416 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 416 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 416 + FLD.allopt_t_optfn, optfn_race);
+cptr.stPtro(allopt_init, 416 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 416 + FLD.allopt_t_descr, __sl10);
+cptr.stPtro(allopt_init, 416 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 416 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 416 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 416 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 416 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 520, __sl11);
-cptr.stI32o(allopt_init, 528, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 532, 0);
-cptr.stI32o(allopt_init, 536, 8);
-cptr.stI32o(allopt_init, 540, NHC.opt_gender);
-cptr.stI32o(allopt_init, 544, NHC.set_gameview);
-cptr.stI32o(allopt_init, 548, NHC.CompOpt);
-cptr.stI32o(allopt_init, 552, NHC.Yes);
-cptr.stI32o(allopt_init, 556, NHC.Yes);
-cptr.stI32o(allopt_init, 560, NHC.Yes);
-cptr.stI32o(allopt_init, 564, NHC.No);
-cptr.stI32o(allopt_init, 568, 0);
-cptr.st1o(allopt_init, 572, NHC.opt_in);
-cptr.stPtro(allopt_init, 576, null);
-cptr.stPtro(allopt_init, 584, optfn_gender);
-cptr.stPtro(allopt_init, 592, (null));
-cptr.stPtro(allopt_init, 600, __sl12);
-cptr.stPtro(allopt_init, 608, null);
-cptr.st1o(allopt_init, 616, NHC.Off);
-cptr.st1o(allopt_init, 617, NHC.No);
-cptr.st1o(allopt_init, 618, 0);
-cptr.st1o(allopt_init, 619, 0);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_expectedbuf, 8);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_idx, NHC.opt_gender);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 520 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 520 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 520 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 520 + FLD.allopt_t_optfn, optfn_gender);
+cptr.stPtro(allopt_init, 520 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 520 + FLD.allopt_t_descr, __sl12);
+cptr.stPtro(allopt_init, 520 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 520 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 520 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 520 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 520 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 624, __sl13);
-cptr.stI32o(allopt_init, 632, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 636, 0);
-cptr.stI32o(allopt_init, 640, 8);
-cptr.stI32o(allopt_init, 644, NHC.opt_alignment);
-cptr.stI32o(allopt_init, 648, NHC.set_gameview);
-cptr.stI32o(allopt_init, 652, NHC.CompOpt);
-cptr.stI32o(allopt_init, 656, NHC.Yes);
-cptr.stI32o(allopt_init, 660, NHC.Yes);
-cptr.stI32o(allopt_init, 664, NHC.Yes);
-cptr.stI32o(allopt_init, 668, NHC.No);
-cptr.stI32o(allopt_init, 672, 0);
-cptr.st1o(allopt_init, 676, NHC.opt_in);
-cptr.stPtro(allopt_init, 680, null);
-cptr.stPtro(allopt_init, 688, optfn_alignment);
-cptr.stPtro(allopt_init, 696, __sl14);
-cptr.stPtro(allopt_init, 704, __sl15);
-cptr.stPtro(allopt_init, 712, null);
-cptr.st1o(allopt_init, 720, NHC.Off);
-cptr.st1o(allopt_init, 721, NHC.No);
-cptr.st1o(allopt_init, 722, 0);
-cptr.st1o(allopt_init, 723, 0);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_expectedbuf, 8);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_idx, NHC.opt_alignment);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 624 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 624 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 624 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 624 + FLD.allopt_t_optfn, optfn_alignment);
+cptr.stPtro(allopt_init, 624 + FLD.allopt_t_alias, __sl14);
+cptr.stPtro(allopt_init, 624 + FLD.allopt_t_descr, __sl15);
+cptr.stPtro(allopt_init, 624 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 624 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 624 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 624 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 624 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 728, __sl16);
-cptr.stI32o(allopt_init, 736, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 740, 0);
-cptr.stI32o(allopt_init, 744, 0);
-cptr.stI32o(allopt_init, 748, NHC.opt_accessiblemsg);
-cptr.stI32o(allopt_init, 752, NHC.set_in_game);
-cptr.stI32o(allopt_init, 756, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 760, NHC.Yes);
-cptr.stI32o(allopt_init, 764, NHC.No);
-cptr.stI32o(allopt_init, 768, NHC.No);
-cptr.stI32o(allopt_init, 772, NHC.No);
-cptr.stI32o(allopt_init, 776, NHC.Term_False);
-cptr.st1o(allopt_init, 780, NHC.opt_out);
-cptr.stPtro(allopt_init, 784, a11y);
-cptr.stPtro(allopt_init, 792, optfn_boolean);
-cptr.stPtro(allopt_init, 800, (null));
-cptr.stPtro(allopt_init, 808, __sl17);
-cptr.stPtro(allopt_init, 816, null);
-cptr.st1o(allopt_init, 824, NHC.Off);
-cptr.st1o(allopt_init, 825, 0);
-cptr.st1o(allopt_init, 826, 0);
-cptr.st1o(allopt_init, 827, 0);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_idx, NHC.opt_accessiblemsg);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 728 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 728 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 728 + FLD.allopt_t_addr, a11y);
+cptr.stPtro(allopt_init, 728 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 728 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 728 + FLD.allopt_t_descr, __sl17);
+cptr.stPtro(allopt_init, 728 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 728 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 728 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 728 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 728 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 832, __sl18);
-cptr.stI32o(allopt_init, 840, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 844, 0);
-cptr.stI32o(allopt_init, 848, 0);
-cptr.stI32o(allopt_init, 852, NHC.opt_acoustics);
-cptr.stI32o(allopt_init, 856, NHC.set_in_game);
-cptr.stI32o(allopt_init, 860, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 864, NHC.Yes);
-cptr.stI32o(allopt_init, 868, NHC.No);
-cptr.stI32o(allopt_init, 872, NHC.No);
-cptr.stI32o(allopt_init, 876, NHC.No);
-cptr.stI32o(allopt_init, 880, NHC.Term_False);
-cptr.st1o(allopt_init, 884, NHC.opt_out);
-cptr.stPtro(allopt_init, 888, flags);
-cptr.stPtro(allopt_init, 896, optfn_boolean);
-cptr.stPtro(allopt_init, 904, (null));
-cptr.stPtro(allopt_init, 912, __sl19);
-cptr.stPtro(allopt_init, 920, null);
-cptr.st1o(allopt_init, 928, NHC.On);
-cptr.st1o(allopt_init, 929, 0);
-cptr.st1o(allopt_init, 930, 0);
-cptr.st1o(allopt_init, 931, 0);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_idx, NHC.opt_acoustics);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 832 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 832 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 832 + FLD.allopt_t_addr, flags);
+cptr.stPtro(allopt_init, 832 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 832 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 832 + FLD.allopt_t_descr, __sl19);
+cptr.stPtro(allopt_init, 832 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 832 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 832 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 832 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 832 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 936, __sl20);
-cptr.stI32o(allopt_init, 944, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 948, 0);
-cptr.stI32o(allopt_init, 952, 20);
-cptr.stI32o(allopt_init, 956, NHC.opt_align_message);
-cptr.stI32o(allopt_init, 960, NHC.set_gameview);
-cptr.stI32o(allopt_init, 964, NHC.CompOpt);
-cptr.stI32o(allopt_init, 968, NHC.Yes);
-cptr.stI32o(allopt_init, 972, NHC.Yes);
-cptr.stI32o(allopt_init, 976, NHC.No);
-cptr.stI32o(allopt_init, 980, NHC.No);
-cptr.stI32o(allopt_init, 984, 0);
-cptr.st1o(allopt_init, 988, NHC.opt_in);
-cptr.stPtro(allopt_init, 992, null);
-cptr.stPtro(allopt_init, 1000, optfn_align_message);
-cptr.stPtro(allopt_init, 1008, (null));
-cptr.stPtro(allopt_init, 1016, __sl21);
-cptr.stPtro(allopt_init, 1024, null);
-cptr.st1o(allopt_init, 1032, NHC.Off);
-cptr.st1o(allopt_init, 1033, NHC.Yes);
-cptr.st1o(allopt_init, 1034, 0);
-cptr.st1o(allopt_init, 1035, 0);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_idx, NHC.opt_align_message);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 936 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 936 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 936 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 936 + FLD.allopt_t_optfn, optfn_align_message);
+cptr.stPtro(allopt_init, 936 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 936 + FLD.allopt_t_descr, __sl21);
+cptr.stPtro(allopt_init, 936 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 936 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 936 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 936 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 936 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1040, __sl22);
-cptr.stI32o(allopt_init, 1048, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1052, 0);
-cptr.stI32o(allopt_init, 1056, 20);
-cptr.stI32o(allopt_init, 1060, NHC.opt_align_status);
-cptr.stI32o(allopt_init, 1064, NHC.set_gameview);
-cptr.stI32o(allopt_init, 1068, NHC.CompOpt);
-cptr.stI32o(allopt_init, 1072, NHC.No);
-cptr.stI32o(allopt_init, 1076, NHC.Yes);
-cptr.stI32o(allopt_init, 1080, NHC.No);
-cptr.stI32o(allopt_init, 1084, NHC.No);
-cptr.stI32o(allopt_init, 1088, 0);
-cptr.st1o(allopt_init, 1092, NHC.opt_in);
-cptr.stPtro(allopt_init, 1096, null);
-cptr.stPtro(allopt_init, 1104, optfn_align_status);
-cptr.stPtro(allopt_init, 1112, (null));
-cptr.stPtro(allopt_init, 1120, __sl23);
-cptr.stPtro(allopt_init, 1128, null);
-cptr.st1o(allopt_init, 1136, NHC.Off);
-cptr.st1o(allopt_init, 1137, NHC.Yes);
-cptr.st1o(allopt_init, 1138, 0);
-cptr.st1o(allopt_init, 1139, 0);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_idx, NHC.opt_align_status);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1040 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 1040 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1040 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 1040 + FLD.allopt_t_optfn, optfn_align_status);
+cptr.stPtro(allopt_init, 1040 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1040 + FLD.allopt_t_descr, __sl23);
+cptr.stPtro(allopt_init, 1040 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1040 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1040 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 1040 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1040 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1144, __sl24);
-cptr.stI32o(allopt_init, 1152, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1156, 0);
-cptr.stI32o(allopt_init, 1160, 20);
-cptr.stI32o(allopt_init, 1164, NHC.opt_altkeyhandling);
-cptr.stI32o(allopt_init, 1168, NHC.set_in_config);
-cptr.stI32o(allopt_init, 1172, NHC.CompOpt);
-cptr.stI32o(allopt_init, 1176, NHC.No);
-cptr.stI32o(allopt_init, 1180, NHC.Yes);
-cptr.stI32o(allopt_init, 1184, NHC.No);
-cptr.stI32o(allopt_init, 1188, NHC.No);
-cptr.stI32o(allopt_init, 1192, 0);
-cptr.st1o(allopt_init, 1196, NHC.opt_in);
-cptr.stPtro(allopt_init, 1200, null);
-cptr.stPtro(allopt_init, 1208, optfn_altkeyhandling);
-cptr.stPtro(allopt_init, 1216, __sl25);
-cptr.stPtro(allopt_init, 1224, __sl26);
-cptr.stPtro(allopt_init, 1232, null);
-cptr.st1o(allopt_init, 1240, NHC.Off);
-cptr.st1o(allopt_init, 1241, NHC.Yes);
-cptr.st1o(allopt_init, 1242, 0);
-cptr.st1o(allopt_init, 1243, 0);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_idx, NHC.opt_altkeyhandling);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1144 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 1144 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1144 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 1144 + FLD.allopt_t_optfn, optfn_altkeyhandling);
+cptr.stPtro(allopt_init, 1144 + FLD.allopt_t_alias, __sl25);
+cptr.stPtro(allopt_init, 1144 + FLD.allopt_t_descr, __sl26);
+cptr.stPtro(allopt_init, 1144 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1144 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1144 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 1144 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1144 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1248, __sl27);
-cptr.stI32o(allopt_init, 1256, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1260, 0);
-cptr.stI32o(allopt_init, 1264, 0);
-cptr.stI32o(allopt_init, 1268, NHC.opt_altmeta);
-cptr.stI32o(allopt_init, 1272, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1276, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1280, NHC.Yes);
-cptr.stI32o(allopt_init, 1284, NHC.No);
-cptr.stI32o(allopt_init, 1288, NHC.No);
-cptr.stI32o(allopt_init, 1292, NHC.No);
-cptr.stI32o(allopt_init, 1296, NHC.Term_False);
-cptr.st1o(allopt_init, 1300, NHC.opt_out);
-cptr.stPtro(allopt_init, 1304, cptr.add(iflags, 125));
-cptr.stPtro(allopt_init, 1312, optfn_boolean);
-cptr.stPtro(allopt_init, 1320, (null));
-cptr.stPtro(allopt_init, 1328, __sl28);
-cptr.stPtro(allopt_init, 1336, null);
-cptr.st1o(allopt_init, 1344, NHC.Off);
-cptr.st1o(allopt_init, 1345, 0);
-cptr.st1o(allopt_init, 1346, 0);
-cptr.st1o(allopt_init, 1347, 0);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_idx, NHC.opt_altmeta);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1248 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1248 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 1248 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_altmeta));
+cptr.stPtro(allopt_init, 1248 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1248 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1248 + FLD.allopt_t_descr, __sl28);
+cptr.stPtro(allopt_init, 1248 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1248 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1248 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1248 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1248 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1352, __sl29);
-cptr.stI32o(allopt_init, 1360, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1364, 0);
-cptr.stI32o(allopt_init, 1368, 0);
-cptr.stI32o(allopt_init, 1372, NHC.opt_armorstatus);
-cptr.stI32o(allopt_init, 1376, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1380, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1384, NHC.Yes);
-cptr.stI32o(allopt_init, 1388, NHC.No);
-cptr.stI32o(allopt_init, 1392, NHC.No);
-cptr.stI32o(allopt_init, 1396, NHC.No);
-cptr.stI32o(allopt_init, 1400, NHC.Term_False);
-cptr.st1o(allopt_init, 1404, NHC.opt_in);
-cptr.stPtro(allopt_init, 1408, cptr.add(flags, 1));
-cptr.stPtro(allopt_init, 1416, optfn_boolean);
-cptr.stPtro(allopt_init, 1424, (null));
-cptr.stPtro(allopt_init, 1432, __sl30);
-cptr.stPtro(allopt_init, 1440, null);
-cptr.st1o(allopt_init, 1448, NHC.Off);
-cptr.st1o(allopt_init, 1449, 0);
-cptr.st1o(allopt_init, 1450, 0);
-cptr.st1o(allopt_init, 1451, 0);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_idx, NHC.opt_armorstatus);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1352 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1352 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1352 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_armorstatus));
+cptr.stPtro(allopt_init, 1352 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1352 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1352 + FLD.allopt_t_descr, __sl30);
+cptr.stPtro(allopt_init, 1352 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1352 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1352 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1352 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1352 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1456, __sl31);
-cptr.stI32o(allopt_init, 1464, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1468, 0);
-cptr.stI32o(allopt_init, 1472, 0);
-cptr.stI32o(allopt_init, 1476, NHC.opt_ascii_map);
-cptr.stI32o(allopt_init, 1480, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1484, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1488, NHC.Yes);
-cptr.stI32o(allopt_init, 1492, NHC.No);
-cptr.stI32o(allopt_init, 1496, NHC.No);
-cptr.stI32o(allopt_init, 1500, NHC.No);
-cptr.stI32o(allopt_init, 1504, NHC.Term_False);
-cptr.st1o(allopt_init, 1508, NHC.opt_in);
-cptr.stPtro(allopt_init, 1512, cptr.add(iflags, 186));
-cptr.stPtro(allopt_init, 1520, optfn_boolean);
-cptr.stPtro(allopt_init, 1528, (null));
-cptr.stPtro(allopt_init, 1536, __sl32);
-cptr.stPtro(allopt_init, 1544, null);
-cptr.st1o(allopt_init, 1552, NHC.On);
-cptr.st1o(allopt_init, 1553, 0);
-cptr.st1o(allopt_init, 1554, 0);
-cptr.st1o(allopt_init, 1555, 0);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_idx, NHC.opt_ascii_map);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1456 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1456 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1456 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_ascii_map));
+cptr.stPtro(allopt_init, 1456 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1456 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1456 + FLD.allopt_t_descr, __sl32);
+cptr.stPtro(allopt_init, 1456 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1456 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 1456 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1456 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1456 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1560, __sl33);
-cptr.stI32o(allopt_init, 1568, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1572, 0);
-cptr.stI32o(allopt_init, 1576, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 1580, NHC.opt_o_autocomplete);
-cptr.stI32o(allopt_init, 1584, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1588, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 1592, NHC.No);
-cptr.stI32o(allopt_init, 1596, NHC.Yes);
-cptr.stI32o(allopt_init, 1600, NHC.No);
-cptr.stI32o(allopt_init, 1604, NHC.No);
-cptr.stI32o(allopt_init, 1608, 0);
-cptr.st1o(allopt_init, 1612, NHC.opt_in);
-cptr.stPtro(allopt_init, 1616, null);
-cptr.stPtro(allopt_init, 1624, optfn_o_autocomplete);
-cptr.stPtro(allopt_init, 1632, (null));
-cptr.stPtro(allopt_init, 1640, __sl34);
-cptr.stPtro(allopt_init, 1648, null);
-cptr.st1o(allopt_init, 1656, NHC.On);
-cptr.st1o(allopt_init, 1657, NHC.On);
-cptr.st1o(allopt_init, 1658, 0);
-cptr.st1o(allopt_init, 1659, 0);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_idx, NHC.opt_o_autocomplete);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1560 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 1560 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1560 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 1560 + FLD.allopt_t_optfn, optfn_o_autocomplete);
+cptr.stPtro(allopt_init, 1560 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1560 + FLD.allopt_t_descr, __sl34);
+cptr.stPtro(allopt_init, 1560 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1560 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 1560 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 1560 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1560 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1664, __sl35);
-cptr.stI32o(allopt_init, 1672, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 1676, 0);
-cptr.stI32o(allopt_init, 1680, 0);
-cptr.stI32o(allopt_init, 1684, NHC.opt_autodescribe);
-cptr.stI32o(allopt_init, 1688, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1692, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1696, NHC.Yes);
-cptr.stI32o(allopt_init, 1700, NHC.No);
-cptr.stI32o(allopt_init, 1704, NHC.No);
-cptr.stI32o(allopt_init, 1708, NHC.No);
-cptr.stI32o(allopt_init, 1712, NHC.Term_False);
-cptr.st1o(allopt_init, 1716, NHC.opt_out);
-cptr.stPtro(allopt_init, 1720, cptr.add(iflags, 126));
-cptr.stPtro(allopt_init, 1728, optfn_boolean);
-cptr.stPtro(allopt_init, 1736, (null));
-cptr.stPtro(allopt_init, 1744, __sl36);
-cptr.stPtro(allopt_init, 1752, null);
-cptr.st1o(allopt_init, 1760, NHC.On);
-cptr.st1o(allopt_init, 1761, 0);
-cptr.st1o(allopt_init, 1762, 0);
-cptr.st1o(allopt_init, 1763, 0);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_idx, NHC.opt_autodescribe);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1664 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1664 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 1664 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_autodescribe));
+cptr.stPtro(allopt_init, 1664 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1664 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1664 + FLD.allopt_t_descr, __sl36);
+cptr.stPtro(allopt_init, 1664 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1664 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 1664 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1664 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1664 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1768, __sl37);
-cptr.stI32o(allopt_init, 1776, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 1780, 0);
-cptr.stI32o(allopt_init, 1784, 0);
-cptr.stI32o(allopt_init, 1788, NHC.opt_autodig);
-cptr.stI32o(allopt_init, 1792, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1796, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1800, NHC.Yes);
-cptr.stI32o(allopt_init, 1804, NHC.No);
-cptr.stI32o(allopt_init, 1808, NHC.No);
-cptr.stI32o(allopt_init, 1812, NHC.No);
-cptr.stI32o(allopt_init, 1816, NHC.Term_False);
-cptr.st1o(allopt_init, 1820, NHC.opt_in);
-cptr.stPtro(allopt_init, 1824, cptr.add(flags, 2));
-cptr.stPtro(allopt_init, 1832, optfn_boolean);
-cptr.stPtro(allopt_init, 1840, (null));
-cptr.stPtro(allopt_init, 1848, __sl38);
-cptr.stPtro(allopt_init, 1856, null);
-cptr.st1o(allopt_init, 1864, NHC.Off);
-cptr.st1o(allopt_init, 1865, 0);
-cptr.st1o(allopt_init, 1866, 0);
-cptr.st1o(allopt_init, 1867, 0);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_idx, NHC.opt_autodig);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1768 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1768 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 1768 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_autodig));
+cptr.stPtro(allopt_init, 1768 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1768 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1768 + FLD.allopt_t_descr, __sl38);
+cptr.stPtro(allopt_init, 1768 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1768 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1768 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1768 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1768 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1872, __sl39);
-cptr.stI32o(allopt_init, 1880, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 1884, 0);
-cptr.stI32o(allopt_init, 1888, 0);
-cptr.stI32o(allopt_init, 1892, NHC.opt_autoopen);
-cptr.stI32o(allopt_init, 1896, NHC.set_in_game);
-cptr.stI32o(allopt_init, 1900, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 1904, NHC.Yes);
-cptr.stI32o(allopt_init, 1908, NHC.No);
-cptr.stI32o(allopt_init, 1912, NHC.No);
-cptr.stI32o(allopt_init, 1916, NHC.No);
-cptr.stI32o(allopt_init, 1920, NHC.Term_False);
-cptr.st1o(allopt_init, 1924, NHC.opt_out);
-cptr.stPtro(allopt_init, 1928, cptr.add(flags, 4));
-cptr.stPtro(allopt_init, 1936, optfn_boolean);
-cptr.stPtro(allopt_init, 1944, (null));
-cptr.stPtro(allopt_init, 1952, __sl40);
-cptr.stPtro(allopt_init, 1960, null);
-cptr.st1o(allopt_init, 1968, NHC.On);
-cptr.st1o(allopt_init, 1969, 0);
-cptr.st1o(allopt_init, 1970, 0);
-cptr.st1o(allopt_init, 1971, 0);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_idx, NHC.opt_autoopen);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1872 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1872 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 1872 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_autoopen));
+cptr.stPtro(allopt_init, 1872 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1872 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1872 + FLD.allopt_t_descr, __sl40);
+cptr.stPtro(allopt_init, 1872 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1872 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 1872 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1872 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1872 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 1976, __sl41);
-cptr.stI32o(allopt_init, 1984, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 1988, 0);
-cptr.stI32o(allopt_init, 1992, 0);
-cptr.stI32o(allopt_init, 1996, NHC.opt_autopickup);
-cptr.stI32o(allopt_init, 2000, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2004, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2008, NHC.Yes);
-cptr.stI32o(allopt_init, 2012, NHC.No);
-cptr.stI32o(allopt_init, 2016, NHC.No);
-cptr.stI32o(allopt_init, 2020, NHC.No);
-cptr.stI32o(allopt_init, 2024, NHC.Term_False);
-cptr.st1o(allopt_init, 2028, NHC.opt_out);
-cptr.stPtro(allopt_init, 2032, cptr.add(flags, 30));
-cptr.stPtro(allopt_init, 2040, optfn_boolean);
-cptr.stPtro(allopt_init, 2048, (null));
-cptr.stPtro(allopt_init, 2056, __sl42);
-cptr.stPtro(allopt_init, 2064, null);
-cptr.st1o(allopt_init, 2072, NHC.Off);
-cptr.st1o(allopt_init, 2073, 0);
-cptr.st1o(allopt_init, 2074, 0);
-cptr.st1o(allopt_init, 2075, 0);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_idx, NHC.opt_autopickup);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 1976 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 1976 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 1976 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_pickup));
+cptr.stPtro(allopt_init, 1976 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 1976 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 1976 + FLD.allopt_t_descr, __sl42);
+cptr.stPtro(allopt_init, 1976 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 1976 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 1976 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 1976 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 1976 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2080, __sl43);
-cptr.stI32o(allopt_init, 2088, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 2092, 0);
-cptr.stI32o(allopt_init, 2096, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 2100, NHC.opt_o_autopickup_exceptions);
-cptr.stI32o(allopt_init, 2104, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2108, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 2112, NHC.No);
-cptr.stI32o(allopt_init, 2116, NHC.Yes);
-cptr.stI32o(allopt_init, 2120, NHC.No);
-cptr.stI32o(allopt_init, 2124, NHC.No);
-cptr.stI32o(allopt_init, 2128, 0);
-cptr.st1o(allopt_init, 2132, NHC.opt_in);
-cptr.stPtro(allopt_init, 2136, null);
-cptr.stPtro(allopt_init, 2144, optfn_o_autopickup_exceptions);
-cptr.stPtro(allopt_init, 2152, (null));
-cptr.stPtro(allopt_init, 2160, __sl44);
-cptr.stPtro(allopt_init, 2168, null);
-cptr.st1o(allopt_init, 2176, NHC.On);
-cptr.st1o(allopt_init, 2177, NHC.On);
-cptr.st1o(allopt_init, 2178, 0);
-cptr.st1o(allopt_init, 2179, 0);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_idx, NHC.opt_o_autopickup_exceptions);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2080 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 2080 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2080 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 2080 + FLD.allopt_t_optfn, optfn_o_autopickup_exceptions);
+cptr.stPtro(allopt_init, 2080 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2080 + FLD.allopt_t_descr, __sl44);
+cptr.stPtro(allopt_init, 2080 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2080 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 2080 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 2080 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2080 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2184, __sl45);
-cptr.stI32o(allopt_init, 2192, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 2196, 0);
-cptr.stI32o(allopt_init, 2200, 0);
-cptr.stI32o(allopt_init, 2204, NHC.opt_autoquiver);
-cptr.stI32o(allopt_init, 2208, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2212, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2216, NHC.Yes);
-cptr.stI32o(allopt_init, 2220, NHC.No);
-cptr.stI32o(allopt_init, 2224, NHC.No);
-cptr.stI32o(allopt_init, 2228, NHC.No);
-cptr.stI32o(allopt_init, 2232, NHC.Term_False);
-cptr.st1o(allopt_init, 2236, NHC.opt_in);
-cptr.stPtro(allopt_init, 2240, cptr.add(flags, 3));
-cptr.stPtro(allopt_init, 2248, optfn_boolean);
-cptr.stPtro(allopt_init, 2256, (null));
-cptr.stPtro(allopt_init, 2264, __sl46);
-cptr.stPtro(allopt_init, 2272, null);
-cptr.st1o(allopt_init, 2280, NHC.Off);
-cptr.st1o(allopt_init, 2281, 0);
-cptr.st1o(allopt_init, 2282, 0);
-cptr.st1o(allopt_init, 2283, 0);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_idx, NHC.opt_autoquiver);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2184 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 2184 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2184 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_autoquiver));
+cptr.stPtro(allopt_init, 2184 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 2184 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2184 + FLD.allopt_t_descr, __sl46);
+cptr.stPtro(allopt_init, 2184 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2184 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 2184 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 2184 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2184 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2288, __sl47);
-cptr.stI32o(allopt_init, 2296, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 2300, 0);
-cptr.stI32o(allopt_init, 2304, 80);
-cptr.stI32o(allopt_init, 2308, NHC.opt_autounlock);
-cptr.stI32o(allopt_init, 2312, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2316, NHC.CompOpt);
-cptr.stI32o(allopt_init, 2320, NHC.Yes);
-cptr.stI32o(allopt_init, 2324, NHC.Yes);
-cptr.stI32o(allopt_init, 2328, NHC.No);
-cptr.stI32o(allopt_init, 2332, NHC.No);
-cptr.stI32o(allopt_init, 2336, 0);
-cptr.st1o(allopt_init, 2340, NHC.opt_out);
-cptr.stPtro(allopt_init, 2344, null);
-cptr.stPtro(allopt_init, 2352, optfn_autounlock);
-cptr.stPtro(allopt_init, 2360, (null));
-cptr.stPtro(allopt_init, 2368, __sl48);
-cptr.stPtro(allopt_init, 2376, null);
-cptr.st1o(allopt_init, 2384, NHC.Off);
-cptr.st1o(allopt_init, 2385, NHC.Yes);
-cptr.st1o(allopt_init, 2386, 0);
-cptr.st1o(allopt_init, 2387, 0);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_expectedbuf, 80);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_idx, NHC.opt_autounlock);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2288 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 2288 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 2288 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 2288 + FLD.allopt_t_optfn, optfn_autounlock);
+cptr.stPtro(allopt_init, 2288 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2288 + FLD.allopt_t_descr, __sl48);
+cptr.stPtro(allopt_init, 2288 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2288 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 2288 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 2288 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2288 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2392, __sl49);
-cptr.stI32o(allopt_init, 2400, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 2404, 0);
-cptr.stI32o(allopt_init, 2408, 0);
-cptr.stI32o(allopt_init, 2412, NHC.opt_bgcolors);
-cptr.stI32o(allopt_init, 2416, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2420, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2424, NHC.Yes);
-cptr.stI32o(allopt_init, 2428, NHC.No);
-cptr.stI32o(allopt_init, 2432, NHC.No);
-cptr.stI32o(allopt_init, 2436, NHC.No);
-cptr.stI32o(allopt_init, 2440, NHC.Term_Off);
-cptr.st1o(allopt_init, 2444, NHC.opt_out);
-cptr.stPtro(allopt_init, 2448, cptr.add(iflags, 72));
-cptr.stPtro(allopt_init, 2456, optfn_boolean);
-cptr.stPtro(allopt_init, 2464, (null));
-cptr.stPtro(allopt_init, 2472, __sl50);
-cptr.stPtro(allopt_init, 2480, null);
-cptr.st1o(allopt_init, 2488, NHC.On);
-cptr.st1o(allopt_init, 2489, 0);
-cptr.st1o(allopt_init, 2490, 0);
-cptr.st1o(allopt_init, 2491, 0);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_idx, NHC.opt_bgcolors);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2392 + FLD.allopt_t_termpref, NHC.Term_Off);
+cptr.st1o(allopt_init, 2392 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 2392 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_bgcolors));
+cptr.stPtro(allopt_init, 2392 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 2392 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2392 + FLD.allopt_t_descr, __sl50);
+cptr.stPtro(allopt_init, 2392 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2392 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 2392 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 2392 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2392 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2496, __sl51);
-cptr.stI32o(allopt_init, 2504, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 2508, 0);
-cptr.stI32o(allopt_init, 2512, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 2516, NHC.opt_o_bind_keys);
-cptr.stI32o(allopt_init, 2520, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2524, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 2528, NHC.No);
-cptr.stI32o(allopt_init, 2532, NHC.Yes);
-cptr.stI32o(allopt_init, 2536, NHC.No);
-cptr.stI32o(allopt_init, 2540, NHC.No);
-cptr.stI32o(allopt_init, 2544, 0);
-cptr.st1o(allopt_init, 2548, NHC.opt_in);
-cptr.stPtro(allopt_init, 2552, null);
-cptr.stPtro(allopt_init, 2560, optfn_o_bind_keys);
-cptr.stPtro(allopt_init, 2568, (null));
-cptr.stPtro(allopt_init, 2576, __sl52);
-cptr.stPtro(allopt_init, 2584, null);
-cptr.st1o(allopt_init, 2592, NHC.On);
-cptr.st1o(allopt_init, 2593, NHC.On);
-cptr.st1o(allopt_init, 2594, 0);
-cptr.st1o(allopt_init, 2595, 0);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_idx, NHC.opt_o_bind_keys);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2496 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 2496 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2496 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 2496 + FLD.allopt_t_optfn, optfn_o_bind_keys);
+cptr.stPtro(allopt_init, 2496 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2496 + FLD.allopt_t_descr, __sl52);
+cptr.stPtro(allopt_init, 2496 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2496 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 2496 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 2496 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2496 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2600, __sl53);
-cptr.stI32o(allopt_init, 2608, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 2612, 0);
-cptr.stI32o(allopt_init, 2616, 0);
-cptr.stI32o(allopt_init, 2620, NHC.opt_BIOS);
-cptr.stI32o(allopt_init, 2624, NHC.set_in_config);
-cptr.stI32o(allopt_init, 2628, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2632, NHC.No);
-cptr.stI32o(allopt_init, 2636, NHC.No);
-cptr.stI32o(allopt_init, 2640, NHC.No);
-cptr.stI32o(allopt_init, 2644, NHC.No);
-cptr.stI32o(allopt_init, 2648, NHC.Term_False);
-cptr.st1o(allopt_init, 2652, NHC.opt_in);
-cptr.stPtro(allopt_init, 2656, null);
-cptr.stPtro(allopt_init, 2664, optfn_boolean);
-cptr.stPtro(allopt_init, 2672, (null));
-cptr.stPtro(allopt_init, 2680, null);
-cptr.stPtro(allopt_init, 2688, null);
-cptr.st1o(allopt_init, 2696, NHC.Off);
-cptr.st1o(allopt_init, 2697, 0);
-cptr.st1o(allopt_init, 2698, 0);
-cptr.st1o(allopt_init, 2699, 0);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_idx, NHC.opt_BIOS);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2600 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 2600 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2600 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 2600 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 2600 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2600 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 2600 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2600 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 2600 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 2600 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2600 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2704, __sl54);
-cptr.stI32o(allopt_init, 2712, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 2716, 0);
-cptr.stI32o(allopt_init, 2720, 0);
-cptr.stI32o(allopt_init, 2724, NHC.opt_blind);
-cptr.stI32o(allopt_init, 2728, NHC.set_in_config);
-cptr.stI32o(allopt_init, 2732, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2736, NHC.Yes);
-cptr.stI32o(allopt_init, 2740, NHC.No);
-cptr.stI32o(allopt_init, 2744, NHC.No);
-cptr.stI32o(allopt_init, 2748, NHC.No);
-cptr.stI32o(allopt_init, 2752, NHC.Term_False);
-cptr.st1o(allopt_init, 2756, NHC.opt_in);
-cptr.stPtro(allopt_init, 2760, cptr.add(u, 2112));
-cptr.stPtro(allopt_init, 2768, optfn_boolean);
-cptr.stPtro(allopt_init, 2776, __sl55);
-cptr.stPtro(allopt_init, 2784, __sl56);
-cptr.stPtro(allopt_init, 2792, null);
-cptr.st1o(allopt_init, 2800, NHC.Off);
-cptr.st1o(allopt_init, 2801, 0);
-cptr.st1o(allopt_init, 2802, 0);
-cptr.st1o(allopt_init, 2803, 0);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_idx, NHC.opt_blind);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2704 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 2704 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2704 + FLD.allopt_t_addr, cptr.add(u, FLD.you_uroleplay));
+cptr.stPtro(allopt_init, 2704 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 2704 + FLD.allopt_t_alias, __sl55);
+cptr.stPtro(allopt_init, 2704 + FLD.allopt_t_descr, __sl56);
+cptr.stPtro(allopt_init, 2704 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2704 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 2704 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 2704 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2704 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2808, __sl57);
-cptr.stI32o(allopt_init, 2816, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 2820, 0);
-cptr.stI32o(allopt_init, 2824, 0);
-cptr.stI32o(allopt_init, 2828, NHC.opt_bones);
-cptr.stI32o(allopt_init, 2832, NHC.set_in_config);
-cptr.stI32o(allopt_init, 2836, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 2840, NHC.Yes);
-cptr.stI32o(allopt_init, 2844, NHC.No);
-cptr.stI32o(allopt_init, 2848, NHC.No);
-cptr.stI32o(allopt_init, 2852, NHC.No);
-cptr.stI32o(allopt_init, 2856, NHC.Term_False);
-cptr.st1o(allopt_init, 2860, NHC.opt_out);
-cptr.stPtro(allopt_init, 2864, cptr.add(flags, 7));
-cptr.stPtro(allopt_init, 2872, optfn_boolean);
-cptr.stPtro(allopt_init, 2880, (null));
-cptr.stPtro(allopt_init, 2888, __sl58);
-cptr.stPtro(allopt_init, 2896, null);
-cptr.st1o(allopt_init, 2904, NHC.On);
-cptr.st1o(allopt_init, 2905, 0);
-cptr.st1o(allopt_init, 2906, 0);
-cptr.st1o(allopt_init, 2907, 0);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_idx, NHC.opt_bones);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2808 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 2808 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 2808 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_bones));
+cptr.stPtro(allopt_init, 2808 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 2808 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2808 + FLD.allopt_t_descr, __sl58);
+cptr.stPtro(allopt_init, 2808 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2808 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 2808 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 2808 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2808 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 2912, __sl59);
-cptr.stI32o(allopt_init, 2920, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 2924, 0);
-cptr.stI32o(allopt_init, 2928, 1);
-cptr.stI32o(allopt_init, 2932, NHC.opt_boulder);
-cptr.stI32o(allopt_init, 2936, NHC.set_in_game);
-cptr.stI32o(allopt_init, 2940, NHC.CompOpt);
-cptr.stI32o(allopt_init, 2944, NHC.No);
-cptr.stI32o(allopt_init, 2948, NHC.Yes);
-cptr.stI32o(allopt_init, 2952, NHC.No);
-cptr.stI32o(allopt_init, 2956, NHC.No);
-cptr.stI32o(allopt_init, 2960, 0);
-cptr.st1o(allopt_init, 2964, NHC.opt_in);
-cptr.stPtro(allopt_init, 2968, null);
-cptr.stPtro(allopt_init, 2976, optfn_boulder);
-cptr.stPtro(allopt_init, 2984, (null));
-cptr.stPtro(allopt_init, 2992, __sl60);
-cptr.stPtro(allopt_init, 3000, null);
-cptr.st1o(allopt_init, 3008, NHC.Off);
-cptr.st1o(allopt_init, 3009, NHC.No);
-cptr.st1o(allopt_init, 3010, 0);
-cptr.st1o(allopt_init, 3011, 0);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_expectedbuf, 1);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_idx, NHC.opt_boulder);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 2912 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 2912 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 2912 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 2912 + FLD.allopt_t_optfn, optfn_boulder);
+cptr.stPtro(allopt_init, 2912 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 2912 + FLD.allopt_t_descr, __sl60);
+cptr.stPtro(allopt_init, 2912 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 2912 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 2912 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 2912 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 2912 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3016, __sl61);
-cptr.stI32o(allopt_init, 3024, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3028, 0);
-cptr.stI32o(allopt_init, 3032, NHM.PL_PSIZ);
-cptr.stI32o(allopt_init, 3036, NHC.opt_catname);
-cptr.stI32o(allopt_init, 3040, NHC.set_gameview);
-cptr.stI32o(allopt_init, 3044, NHC.CompOpt);
-cptr.stI32o(allopt_init, 3048, NHC.No);
-cptr.stI32o(allopt_init, 3052, NHC.Yes);
-cptr.stI32o(allopt_init, 3056, NHC.No);
-cptr.stI32o(allopt_init, 3060, NHC.No);
-cptr.stI32o(allopt_init, 3064, 0);
-cptr.st1o(allopt_init, 3068, NHC.opt_in);
-cptr.stPtro(allopt_init, 3072, null);
-cptr.stPtro(allopt_init, 3080, optfn_catname);
-cptr.stPtro(allopt_init, 3088, (null));
-cptr.stPtro(allopt_init, 3096, __sl62);
-cptr.stPtro(allopt_init, 3104, null);
-cptr.st1o(allopt_init, 3112, NHC.Off);
-cptr.st1o(allopt_init, 3113, NHC.No);
-cptr.st1o(allopt_init, 3114, 0);
-cptr.st1o(allopt_init, 3115, 0);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_expectedbuf, NHM.PL_PSIZ);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_idx, NHC.opt_catname);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3016 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 3016 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 3016 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 3016 + FLD.allopt_t_optfn, optfn_catname);
+cptr.stPtro(allopt_init, 3016 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3016 + FLD.allopt_t_descr, __sl62);
+cptr.stPtro(allopt_init, 3016 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3016 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 3016 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 3016 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3016 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3120, __sl63);
-cptr.stI32o(allopt_init, 3128, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3132, 0);
-cptr.stI32o(allopt_init, 3136, 0);
-cptr.stI32o(allopt_init, 3140, NHC.opt_checkpoint);
-cptr.stI32o(allopt_init, 3144, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3148, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3152, NHC.Yes);
-cptr.stI32o(allopt_init, 3156, NHC.No);
-cptr.stI32o(allopt_init, 3160, NHC.No);
-cptr.stI32o(allopt_init, 3164, NHC.No);
-cptr.stI32o(allopt_init, 3168, NHC.Term_False);
-cptr.st1o(allopt_init, 3172, NHC.opt_out);
-cptr.stPtro(allopt_init, 3176, cptr.add(flags, 21));
-cptr.stPtro(allopt_init, 3184, optfn_boolean);
-cptr.stPtro(allopt_init, 3192, (null));
-cptr.stPtro(allopt_init, 3200, __sl64);
-cptr.stPtro(allopt_init, 3208, null);
-cptr.st1o(allopt_init, 3216, NHC.On);
-cptr.st1o(allopt_init, 3217, 0);
-cptr.st1o(allopt_init, 3218, 0);
-cptr.st1o(allopt_init, 3219, 0);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_idx, NHC.opt_checkpoint);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3120 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3120 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 3120 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_ins_chkpt));
+cptr.stPtro(allopt_init, 3120 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3120 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3120 + FLD.allopt_t_descr, __sl64);
+cptr.stPtro(allopt_init, 3120 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3120 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3120 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3120 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3120 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3224, __sl65);
-cptr.stI32o(allopt_init, 3232, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 3236, 0);
-cptr.stI32o(allopt_init, 3240, 0);
-cptr.stI32o(allopt_init, 3244, NHC.opt_cmdassist);
-cptr.stI32o(allopt_init, 3248, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3252, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3256, NHC.Yes);
-cptr.stI32o(allopt_init, 3260, NHC.No);
-cptr.stI32o(allopt_init, 3264, NHC.No);
-cptr.stI32o(allopt_init, 3268, NHC.No);
-cptr.stI32o(allopt_init, 3272, NHC.Term_False);
-cptr.st1o(allopt_init, 3276, NHC.opt_out);
-cptr.stPtro(allopt_init, 3280, cptr.add(iflags, 178));
-cptr.stPtro(allopt_init, 3288, optfn_boolean);
-cptr.stPtro(allopt_init, 3296, (null));
-cptr.stPtro(allopt_init, 3304, __sl66);
-cptr.stPtro(allopt_init, 3312, null);
-cptr.st1o(allopt_init, 3320, NHC.On);
-cptr.st1o(allopt_init, 3321, 0);
-cptr.st1o(allopt_init, 3322, 0);
-cptr.st1o(allopt_init, 3323, 0);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_idx, NHC.opt_cmdassist);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3224 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3224 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 3224 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_cmdassist));
+cptr.stPtro(allopt_init, 3224 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3224 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3224 + FLD.allopt_t_descr, __sl66);
+cptr.stPtro(allopt_init, 3224 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3224 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3224 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3224 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3224 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3328, __sl67);
-cptr.stI32o(allopt_init, 3336, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 3340, 0);
-cptr.stI32o(allopt_init, 3344, 0);
-cptr.stI32o(allopt_init, 3348, NHC.opt_color);
-cptr.stI32o(allopt_init, 3352, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3356, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3360, NHC.Yes);
-cptr.stI32o(allopt_init, 3364, NHC.No);
-cptr.stI32o(allopt_init, 3368, NHC.No);
-cptr.stI32o(allopt_init, 3372, NHC.No);
-cptr.stI32o(allopt_init, 3376, NHC.Term_False);
-cptr.st1o(allopt_init, 3380, NHC.opt_in);
-cptr.stPtro(allopt_init, 3384, cptr.add(iflags, 184));
-cptr.stPtro(allopt_init, 3392, optfn_boolean);
-cptr.stPtro(allopt_init, 3400, __sl68);
-cptr.stPtro(allopt_init, 3408, __sl69);
-cptr.stPtro(allopt_init, 3416, null);
-cptr.st1o(allopt_init, 3424, NHC.On);
-cptr.st1o(allopt_init, 3425, 0);
-cptr.st1o(allopt_init, 3426, 0);
-cptr.st1o(allopt_init, 3427, 0);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_idx, NHC.opt_color);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3328 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3328 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 3328 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_color));
+cptr.stPtro(allopt_init, 3328 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3328 + FLD.allopt_t_alias, __sl68);
+cptr.stPtro(allopt_init, 3328 + FLD.allopt_t_descr, __sl69);
+cptr.stPtro(allopt_init, 3328 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3328 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3328 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3328 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3328 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3432, __sl70);
-cptr.stI32o(allopt_init, 3440, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3444, 0);
-cptr.stI32o(allopt_init, 3448, 0);
-cptr.stI32o(allopt_init, 3452, NHC.opt_confirm);
-cptr.stI32o(allopt_init, 3456, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3460, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3464, NHC.Yes);
-cptr.stI32o(allopt_init, 3468, NHC.No);
-cptr.stI32o(allopt_init, 3472, NHC.No);
-cptr.stI32o(allopt_init, 3476, NHC.No);
-cptr.stI32o(allopt_init, 3480, NHC.Term_False);
-cptr.st1o(allopt_init, 3484, NHC.opt_out);
-cptr.stPtro(allopt_init, 3488, cptr.add(flags, 8));
-cptr.stPtro(allopt_init, 3496, optfn_boolean);
-cptr.stPtro(allopt_init, 3504, (null));
-cptr.stPtro(allopt_init, 3512, __sl71);
-cptr.stPtro(allopt_init, 3520, null);
-cptr.st1o(allopt_init, 3528, NHC.On);
-cptr.st1o(allopt_init, 3529, 0);
-cptr.st1o(allopt_init, 3530, 0);
-cptr.st1o(allopt_init, 3531, 0);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_idx, NHC.opt_confirm);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3432 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3432 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 3432 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_confirm));
+cptr.stPtro(allopt_init, 3432 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3432 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3432 + FLD.allopt_t_descr, __sl71);
+cptr.stPtro(allopt_init, 3432 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3432 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3432 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3432 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3432 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3536, __sl72);
-cptr.stI32o(allopt_init, 3544, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3548, 0);
-cptr.stI32o(allopt_init, 3552, NHM.PL_NSIZ);
-cptr.stI32o(allopt_init, 3556, NHC.opt_crash_email);
-cptr.stI32o(allopt_init, 3560, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3564, NHC.CompOpt);
-cptr.stI32o(allopt_init, 3568, NHC.No);
-cptr.stI32o(allopt_init, 3572, NHC.Yes);
-cptr.stI32o(allopt_init, 3576, NHC.No);
-cptr.stI32o(allopt_init, 3580, NHC.No);
-cptr.stI32o(allopt_init, 3584, 0);
-cptr.st1o(allopt_init, 3588, NHC.opt_in);
-cptr.stPtro(allopt_init, 3592, null);
-cptr.stPtro(allopt_init, 3600, optfn_crash_email);
-cptr.stPtro(allopt_init, 3608, (null));
-cptr.stPtro(allopt_init, 3616, __sl73);
-cptr.stPtro(allopt_init, 3624, null);
-cptr.st1o(allopt_init, 3632, NHC.Off);
-cptr.st1o(allopt_init, 3633, NHC.No);
-cptr.st1o(allopt_init, 3634, 0);
-cptr.st1o(allopt_init, 3635, 0);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_expectedbuf, NHM.PL_NSIZ);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_idx, NHC.opt_crash_email);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3536 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 3536 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 3536 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 3536 + FLD.allopt_t_optfn, optfn_crash_email);
+cptr.stPtro(allopt_init, 3536 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3536 + FLD.allopt_t_descr, __sl73);
+cptr.stPtro(allopt_init, 3536 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3536 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 3536 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 3536 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3536 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3640, __sl74);
-cptr.stI32o(allopt_init, 3648, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3652, 0);
-cptr.stI32o(allopt_init, 3656, NHM.PL_NSIZ);
-cptr.stI32o(allopt_init, 3660, NHC.opt_crash_name);
-cptr.stI32o(allopt_init, 3664, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3668, NHC.CompOpt);
-cptr.stI32o(allopt_init, 3672, NHC.No);
-cptr.stI32o(allopt_init, 3676, NHC.Yes);
-cptr.stI32o(allopt_init, 3680, NHC.No);
-cptr.stI32o(allopt_init, 3684, NHC.No);
-cptr.stI32o(allopt_init, 3688, 0);
-cptr.st1o(allopt_init, 3692, NHC.opt_in);
-cptr.stPtro(allopt_init, 3696, null);
-cptr.stPtro(allopt_init, 3704, optfn_crash_name);
-cptr.stPtro(allopt_init, 3712, (null));
-cptr.stPtro(allopt_init, 3720, __sl75);
-cptr.stPtro(allopt_init, 3728, null);
-cptr.st1o(allopt_init, 3736, NHC.Off);
-cptr.st1o(allopt_init, 3737, NHC.No);
-cptr.st1o(allopt_init, 3738, 0);
-cptr.st1o(allopt_init, 3739, 0);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_expectedbuf, NHM.PL_NSIZ);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_idx, NHC.opt_crash_name);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3640 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 3640 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 3640 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 3640 + FLD.allopt_t_optfn, optfn_crash_name);
+cptr.stPtro(allopt_init, 3640 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3640 + FLD.allopt_t_descr, __sl75);
+cptr.stPtro(allopt_init, 3640 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3640 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 3640 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 3640 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3640 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3744, __sl76);
-cptr.stI32o(allopt_init, 3752, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 3756, 0);
-cptr.stI32o(allopt_init, 3760, NHM.PL_NSIZ);
-cptr.stI32o(allopt_init, 3764, NHC.opt_crash_urlmax);
-cptr.stI32o(allopt_init, 3768, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3772, NHC.CompOpt);
-cptr.stI32o(allopt_init, 3776, NHC.No);
-cptr.stI32o(allopt_init, 3780, NHC.Yes);
-cptr.stI32o(allopt_init, 3784, NHC.No);
-cptr.stI32o(allopt_init, 3788, NHC.No);
-cptr.stI32o(allopt_init, 3792, 0);
-cptr.st1o(allopt_init, 3796, NHC.opt_in);
-cptr.stPtro(allopt_init, 3800, null);
-cptr.stPtro(allopt_init, 3808, optfn_crash_urlmax);
-cptr.stPtro(allopt_init, 3816, (null));
-cptr.stPtro(allopt_init, 3824, __sl77);
-cptr.stPtro(allopt_init, 3832, null);
-cptr.st1o(allopt_init, 3840, NHC.Off);
-cptr.st1o(allopt_init, 3841, NHC.No);
-cptr.st1o(allopt_init, 3842, 0);
-cptr.st1o(allopt_init, 3843, 0);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_expectedbuf, NHM.PL_NSIZ);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_idx, NHC.opt_crash_urlmax);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3744 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 3744 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 3744 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 3744 + FLD.allopt_t_optfn, optfn_crash_urlmax);
+cptr.stPtro(allopt_init, 3744 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 3744 + FLD.allopt_t_descr, __sl77);
+cptr.stPtro(allopt_init, 3744 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3744 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 3744 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 3744 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3744 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3848, __sl78);
-cptr.stI32o(allopt_init, 3856, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 3860, 0);
-cptr.stI32o(allopt_init, 3864, 0);
-cptr.stI32o(allopt_init, 3868, NHC.opt_customcolors);
-cptr.stI32o(allopt_init, 3872, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3876, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3880, NHC.Yes);
-cptr.stI32o(allopt_init, 3884, NHC.No);
-cptr.stI32o(allopt_init, 3888, NHC.No);
-cptr.stI32o(allopt_init, 3892, NHC.No);
-cptr.stI32o(allopt_init, 3896, NHC.Term_False);
-cptr.st1o(allopt_init, 3900, NHC.opt_out);
-cptr.stPtro(allopt_init, 3904, cptr.add(iflags, 182));
-cptr.stPtro(allopt_init, 3912, optfn_boolean);
-cptr.stPtro(allopt_init, 3920, __sl79);
-cptr.stPtro(allopt_init, 3928, __sl80);
-cptr.stPtro(allopt_init, 3936, null);
-cptr.st1o(allopt_init, 3944, NHC.On);
-cptr.st1o(allopt_init, 3945, 0);
-cptr.st1o(allopt_init, 3946, 0);
-cptr.st1o(allopt_init, 3947, 0);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_idx, NHC.opt_customcolors);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3848 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3848 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 3848 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_customcolors));
+cptr.stPtro(allopt_init, 3848 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3848 + FLD.allopt_t_alias, __sl79);
+cptr.stPtro(allopt_init, 3848 + FLD.allopt_t_descr, __sl80);
+cptr.stPtro(allopt_init, 3848 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3848 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3848 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3848 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3848 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 3952, __sl81);
-cptr.stI32o(allopt_init, 3960, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 3964, 0);
-cptr.stI32o(allopt_init, 3968, 0);
-cptr.stI32o(allopt_init, 3972, NHC.opt_customsymbols);
-cptr.stI32o(allopt_init, 3976, NHC.set_in_game);
-cptr.stI32o(allopt_init, 3980, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 3984, NHC.Yes);
-cptr.stI32o(allopt_init, 3988, NHC.No);
-cptr.stI32o(allopt_init, 3992, NHC.No);
-cptr.stI32o(allopt_init, 3996, NHC.No);
-cptr.stI32o(allopt_init, 4000, NHC.Term_False);
-cptr.st1o(allopt_init, 4004, NHC.opt_out);
-cptr.stPtro(allopt_init, 4008, cptr.add(iflags, 183));
-cptr.stPtro(allopt_init, 4016, optfn_boolean);
-cptr.stPtro(allopt_init, 4024, __sl81);
-cptr.stPtro(allopt_init, 4032, __sl82);
-cptr.stPtro(allopt_init, 4040, null);
-cptr.st1o(allopt_init, 4048, NHC.On);
-cptr.st1o(allopt_init, 4049, 0);
-cptr.st1o(allopt_init, 4050, 0);
-cptr.st1o(allopt_init, 4051, 0);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_idx, NHC.opt_customsymbols);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 3952 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 3952 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 3952 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_customsymbols));
+cptr.stPtro(allopt_init, 3952 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 3952 + FLD.allopt_t_alias, __sl81);
+cptr.stPtro(allopt_init, 3952 + FLD.allopt_t_descr, __sl82);
+cptr.stPtro(allopt_init, 3952 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 3952 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 3952 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 3952 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 3952 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4056, __sl83);
-cptr.stI32o(allopt_init, 4064, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4068, 0);
-cptr.stI32o(allopt_init, 4072, 0);
-cptr.stI32o(allopt_init, 4076, NHC.opt_dark_room);
-cptr.stI32o(allopt_init, 4080, NHC.set_in_game);
-cptr.stI32o(allopt_init, 4084, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4088, NHC.Yes);
-cptr.stI32o(allopt_init, 4092, NHC.No);
-cptr.stI32o(allopt_init, 4096, NHC.No);
-cptr.stI32o(allopt_init, 4100, NHC.No);
-cptr.stI32o(allopt_init, 4104, NHC.Term_False);
-cptr.st1o(allopt_init, 4108, NHC.opt_out);
-cptr.stPtro(allopt_init, 4112, cptr.add(flags, 9));
-cptr.stPtro(allopt_init, 4120, optfn_boolean);
-cptr.stPtro(allopt_init, 4128, (null));
-cptr.stPtro(allopt_init, 4136, __sl84);
-cptr.stPtro(allopt_init, 4144, null);
-cptr.st1o(allopt_init, 4152, NHC.On);
-cptr.st1o(allopt_init, 4153, 0);
-cptr.st1o(allopt_init, 4154, 0);
-cptr.st1o(allopt_init, 4155, 0);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_idx, NHC.opt_dark_room);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4056 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4056 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 4056 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_dark_room));
+cptr.stPtro(allopt_init, 4056 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4056 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4056 + FLD.allopt_t_descr, __sl84);
+cptr.stPtro(allopt_init, 4056 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4056 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 4056 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4056 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4056 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4160, __sl85);
-cptr.stI32o(allopt_init, 4168, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4172, 0);
-cptr.stI32o(allopt_init, 4176, 0);
-cptr.stI32o(allopt_init, 4180, NHC.opt_deaf);
-cptr.stI32o(allopt_init, 4184, NHC.set_in_config);
-cptr.stI32o(allopt_init, 4188, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4192, NHC.Yes);
-cptr.stI32o(allopt_init, 4196, NHC.No);
-cptr.stI32o(allopt_init, 4200, NHC.No);
-cptr.stI32o(allopt_init, 4204, NHC.No);
-cptr.stI32o(allopt_init, 4208, NHC.Term_False);
-cptr.st1o(allopt_init, 4212, NHC.opt_in);
-cptr.stPtro(allopt_init, 4216, cptr.add(u, 2114));
-cptr.stPtro(allopt_init, 4224, optfn_boolean);
-cptr.stPtro(allopt_init, 4232, __sl86);
-cptr.stPtro(allopt_init, 4240, __sl87);
-cptr.stPtro(allopt_init, 4248, null);
-cptr.st1o(allopt_init, 4256, NHC.Off);
-cptr.st1o(allopt_init, 4257, 0);
-cptr.st1o(allopt_init, 4258, 0);
-cptr.st1o(allopt_init, 4259, 0);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_idx, NHC.opt_deaf);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4160 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4160 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4160 + FLD.allopt_t_addr, cptr.add(u, FLD.you_uroleplay + FLD.u_roleplay_deaf));
+cptr.stPtro(allopt_init, 4160 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4160 + FLD.allopt_t_alias, __sl86);
+cptr.stPtro(allopt_init, 4160 + FLD.allopt_t_descr, __sl87);
+cptr.stPtro(allopt_init, 4160 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4160 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4160 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4160 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4160 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4264, __sl88);
-cptr.stI32o(allopt_init, 4272, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4276, 0);
-cptr.stI32o(allopt_init, 4280, 70);
-cptr.stI32o(allopt_init, 4284, NHC.opt_DECgraphics);
-cptr.stI32o(allopt_init, 4288, NHC.set_in_config);
-cptr.stI32o(allopt_init, 4292, NHC.CompOpt);
-cptr.stI32o(allopt_init, 4296, NHC.Yes);
-cptr.stI32o(allopt_init, 4300, NHC.Yes);
-cptr.stI32o(allopt_init, 4304, NHC.No);
-cptr.stI32o(allopt_init, 4308, NHC.No);
-cptr.stI32o(allopt_init, 4312, 0);
-cptr.st1o(allopt_init, 4316, NHC.opt_in);
-cptr.stPtro(allopt_init, 4320, null);
-cptr.stPtro(allopt_init, 4328, optfn_DECgraphics);
-cptr.stPtro(allopt_init, 4336, (null));
-cptr.stPtro(allopt_init, 4344, __sl89);
-cptr.stPtro(allopt_init, 4352, null);
-cptr.st1o(allopt_init, 4360, NHC.Off);
-cptr.st1o(allopt_init, 4361, NHC.No);
-cptr.st1o(allopt_init, 4362, 0);
-cptr.st1o(allopt_init, 4363, 0);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_expectedbuf, 70);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_idx, NHC.opt_DECgraphics);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4264 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 4264 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4264 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 4264 + FLD.allopt_t_optfn, optfn_DECgraphics);
+cptr.stPtro(allopt_init, 4264 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4264 + FLD.allopt_t_descr, __sl89);
+cptr.stPtro(allopt_init, 4264 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4264 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4264 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 4264 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4264 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4368, __sl90);
-cptr.stI32o(allopt_init, 4376, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4380, 0);
-cptr.stI32o(allopt_init, 4384, 0);
-cptr.stI32o(allopt_init, 4388, NHC.opt_debug_hunger);
-cptr.stI32o(allopt_init, 4392, NHC.set_wiznofuz);
-cptr.stI32o(allopt_init, 4396, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4400, NHC.Yes);
-cptr.stI32o(allopt_init, 4404, NHC.No);
-cptr.stI32o(allopt_init, 4408, NHC.No);
-cptr.stI32o(allopt_init, 4412, NHC.No);
-cptr.stI32o(allopt_init, 4416, NHC.Term_False);
-cptr.st1o(allopt_init, 4420, NHC.opt_in);
-cptr.stPtro(allopt_init, 4424, cptr.add(iflags, 87));
-cptr.stPtro(allopt_init, 4432, optfn_boolean);
-cptr.stPtro(allopt_init, 4440, (null));
-cptr.stPtro(allopt_init, 4448, __sl91);
-cptr.stPtro(allopt_init, 4456, null);
-cptr.st1o(allopt_init, 4464, NHC.Off);
-cptr.st1o(allopt_init, 4465, 0);
-cptr.st1o(allopt_init, 4466, 0);
-cptr.st1o(allopt_init, 4467, 0);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_idx, NHC.opt_debug_hunger);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_setwhere, NHC.set_wiznofuz);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4368 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4368 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4368 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_debug_hunger));
+cptr.stPtro(allopt_init, 4368 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4368 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4368 + FLD.allopt_t_descr, __sl91);
+cptr.stPtro(allopt_init, 4368 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4368 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4368 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4368 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4368 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4472, __sl92);
-cptr.stI32o(allopt_init, 4480, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4484, 0);
-cptr.stI32o(allopt_init, 4488, 0);
-cptr.stI32o(allopt_init, 4492, NHC.opt_debug_mongen);
-cptr.stI32o(allopt_init, 4496, NHC.set_wiznofuz);
-cptr.stI32o(allopt_init, 4500, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4504, NHC.Yes);
-cptr.stI32o(allopt_init, 4508, NHC.No);
-cptr.stI32o(allopt_init, 4512, NHC.No);
-cptr.stI32o(allopt_init, 4516, NHC.No);
-cptr.stI32o(allopt_init, 4520, NHC.Term_False);
-cptr.st1o(allopt_init, 4524, NHC.opt_in);
-cptr.stPtro(allopt_init, 4528, cptr.add(iflags, 86));
-cptr.stPtro(allopt_init, 4536, optfn_boolean);
-cptr.stPtro(allopt_init, 4544, (null));
-cptr.stPtro(allopt_init, 4552, __sl93);
-cptr.stPtro(allopt_init, 4560, null);
-cptr.st1o(allopt_init, 4568, NHC.Off);
-cptr.st1o(allopt_init, 4569, 0);
-cptr.st1o(allopt_init, 4570, 0);
-cptr.st1o(allopt_init, 4571, 0);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_idx, NHC.opt_debug_mongen);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_setwhere, NHC.set_wiznofuz);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4472 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4472 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4472 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_debug_mongen));
+cptr.stPtro(allopt_init, 4472 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4472 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4472 + FLD.allopt_t_descr, __sl93);
+cptr.stPtro(allopt_init, 4472 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4472 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4472 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4472 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4472 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4576, __sl94);
-cptr.stI32o(allopt_init, 4584, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4588, 0);
-cptr.stI32o(allopt_init, 4592, 0);
-cptr.stI32o(allopt_init, 4596, NHC.opt_debug_overwrite_stairs);
-cptr.stI32o(allopt_init, 4600, NHC.set_wiznofuz);
-cptr.stI32o(allopt_init, 4604, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4608, NHC.Yes);
-cptr.stI32o(allopt_init, 4612, NHC.No);
-cptr.stI32o(allopt_init, 4616, NHC.No);
-cptr.stI32o(allopt_init, 4620, NHC.No);
-cptr.stI32o(allopt_init, 4624, NHC.Term_False);
-cptr.st1o(allopt_init, 4628, NHC.opt_in);
-cptr.stPtro(allopt_init, 4632, cptr.add(iflags, 85));
-cptr.stPtro(allopt_init, 4640, optfn_boolean);
-cptr.stPtro(allopt_init, 4648, (null));
-cptr.stPtro(allopt_init, 4656, __sl95);
-cptr.stPtro(allopt_init, 4664, null);
-cptr.st1o(allopt_init, 4672, NHC.Off);
-cptr.st1o(allopt_init, 4673, 0);
-cptr.st1o(allopt_init, 4674, 0);
-cptr.st1o(allopt_init, 4675, 0);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_idx, NHC.opt_debug_overwrite_stairs);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_setwhere, NHC.set_wiznofuz);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4576 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4576 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4576 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_debug_overwrite_stairs));
+cptr.stPtro(allopt_init, 4576 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4576 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4576 + FLD.allopt_t_descr, __sl95);
+cptr.stPtro(allopt_init, 4576 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4576 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4576 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4576 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4576 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4680, __sl96);
-cptr.stI32o(allopt_init, 4688, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4692, 0);
-cptr.stI32o(allopt_init, 4696, 14);
-cptr.stI32o(allopt_init, 4700, NHC.opt_disclose);
-cptr.stI32o(allopt_init, 4704, NHC.set_in_game);
-cptr.stI32o(allopt_init, 4708, NHC.CompOpt);
-cptr.stI32o(allopt_init, 4712, NHC.Yes);
-cptr.stI32o(allopt_init, 4716, NHC.Yes);
-cptr.stI32o(allopt_init, 4720, NHC.No);
-cptr.stI32o(allopt_init, 4724, NHC.No);
-cptr.stI32o(allopt_init, 4728, 0);
-cptr.st1o(allopt_init, 4732, NHC.opt_in);
-cptr.stPtro(allopt_init, 4736, null);
-cptr.stPtro(allopt_init, 4744, optfn_disclose);
-cptr.stPtro(allopt_init, 4752, (null));
-cptr.stPtro(allopt_init, 4760, __sl97);
-cptr.stPtro(allopt_init, 4768, null);
-cptr.st1o(allopt_init, 4776, NHC.Off);
-cptr.st1o(allopt_init, 4777, NHC.Yes);
-cptr.st1o(allopt_init, 4778, 0);
-cptr.st1o(allopt_init, 4779, 0);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_expectedbuf, 14);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_idx, NHC.opt_disclose);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4680 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 4680 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4680 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 4680 + FLD.allopt_t_optfn, optfn_disclose);
+cptr.stPtro(allopt_init, 4680 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4680 + FLD.allopt_t_descr, __sl97);
+cptr.stPtro(allopt_init, 4680 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4680 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4680 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 4680 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4680 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4784, __sl98);
-cptr.stI32o(allopt_init, 4792, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 4796, 0);
-cptr.stI32o(allopt_init, 4800, NHM.PL_PSIZ);
-cptr.stI32o(allopt_init, 4804, NHC.opt_dogname);
-cptr.stI32o(allopt_init, 4808, NHC.set_gameview);
-cptr.stI32o(allopt_init, 4812, NHC.CompOpt);
-cptr.stI32o(allopt_init, 4816, NHC.No);
-cptr.stI32o(allopt_init, 4820, NHC.Yes);
-cptr.stI32o(allopt_init, 4824, NHC.No);
-cptr.stI32o(allopt_init, 4828, NHC.No);
-cptr.stI32o(allopt_init, 4832, 0);
-cptr.st1o(allopt_init, 4836, NHC.opt_in);
-cptr.stPtro(allopt_init, 4840, null);
-cptr.stPtro(allopt_init, 4848, optfn_dogname);
-cptr.stPtro(allopt_init, 4856, (null));
-cptr.stPtro(allopt_init, 4864, __sl99);
-cptr.stPtro(allopt_init, 4872, null);
-cptr.st1o(allopt_init, 4880, NHC.Off);
-cptr.st1o(allopt_init, 4881, NHC.No);
-cptr.st1o(allopt_init, 4882, 0);
-cptr.st1o(allopt_init, 4883, 0);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_expectedbuf, NHM.PL_PSIZ);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_idx, NHC.opt_dogname);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4784 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 4784 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4784 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 4784 + FLD.allopt_t_optfn, optfn_dogname);
+cptr.stPtro(allopt_init, 4784 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4784 + FLD.allopt_t_descr, __sl99);
+cptr.stPtro(allopt_init, 4784 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4784 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4784 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 4784 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4784 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4888, __sl100);
-cptr.stI32o(allopt_init, 4896, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 4900, 0);
-cptr.stI32o(allopt_init, 4904, 0);
-cptr.stI32o(allopt_init, 4908, NHC.opt_dropped_nopick);
-cptr.stI32o(allopt_init, 4912, NHC.set_in_game);
-cptr.stI32o(allopt_init, 4916, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 4920, NHC.Yes);
-cptr.stI32o(allopt_init, 4924, NHC.No);
-cptr.stI32o(allopt_init, 4928, NHC.No);
-cptr.stI32o(allopt_init, 4932, NHC.No);
-cptr.stI32o(allopt_init, 4936, NHC.Term_False);
-cptr.st1o(allopt_init, 4940, NHC.opt_out);
-cptr.stPtro(allopt_init, 4944, cptr.add(flags, 28));
-cptr.stPtro(allopt_init, 4952, optfn_boolean);
-cptr.stPtro(allopt_init, 4960, (null));
-cptr.stPtro(allopt_init, 4968, __sl101);
-cptr.stPtro(allopt_init, 4976, null);
-cptr.st1o(allopt_init, 4984, NHC.On);
-cptr.st1o(allopt_init, 4985, 0);
-cptr.st1o(allopt_init, 4986, 0);
-cptr.st1o(allopt_init, 4987, 0);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_idx, NHC.opt_dropped_nopick);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4888 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 4888 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 4888 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_nopick_dropped));
+cptr.stPtro(allopt_init, 4888 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 4888 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4888 + FLD.allopt_t_descr, __sl101);
+cptr.stPtro(allopt_init, 4888 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4888 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 4888 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 4888 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4888 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4992, __sl102);
-cptr.stI32o(allopt_init, 5000, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5004, 0);
-cptr.stI32o(allopt_init, 5008, ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0));
-cptr.stI32o(allopt_init, 5012, NHC.opt_dungeon);
-cptr.stI32o(allopt_init, 5016, NHC.set_in_config);
-cptr.stI32o(allopt_init, 5020, NHC.CompOpt);
-cptr.stI32o(allopt_init, 5024, NHC.No);
-cptr.stI32o(allopt_init, 5028, NHC.Yes);
-cptr.stI32o(allopt_init, 5032, NHC.No);
-cptr.stI32o(allopt_init, 5036, NHC.No);
-cptr.stI32o(allopt_init, 5040, 0);
-cptr.st1o(allopt_init, 5044, NHC.opt_in);
-cptr.stPtro(allopt_init, 5048, null);
-cptr.stPtro(allopt_init, 5056, optfn_dungeon);
-cptr.stPtro(allopt_init, 5064, (null));
-cptr.stPtro(allopt_init, 5072, __sl103);
-cptr.stPtro(allopt_init, 5080, null);
-cptr.st1o(allopt_init, 5088, NHC.Off);
-cptr.st1o(allopt_init, 5089, NHC.No);
-cptr.st1o(allopt_init, 5090, 0);
-cptr.st1o(allopt_init, 5091, 0);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_expectedbuf, ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0));
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_idx, NHC.opt_dungeon);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 4992 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 4992 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 4992 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 4992 + FLD.allopt_t_optfn, optfn_dungeon);
+cptr.stPtro(allopt_init, 4992 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 4992 + FLD.allopt_t_descr, __sl103);
+cptr.stPtro(allopt_init, 4992 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 4992 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 4992 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 4992 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 4992 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5096, __sl104);
-cptr.stI32o(allopt_init, 5104, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5108, 0);
-cptr.stI32o(allopt_init, 5112, ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0));
-cptr.stI32o(allopt_init, 5116, NHC.opt_effects);
-cptr.stI32o(allopt_init, 5120, NHC.set_in_config);
-cptr.stI32o(allopt_init, 5124, NHC.CompOpt);
-cptr.stI32o(allopt_init, 5128, NHC.No);
-cptr.stI32o(allopt_init, 5132, NHC.Yes);
-cptr.stI32o(allopt_init, 5136, NHC.No);
-cptr.stI32o(allopt_init, 5140, NHC.No);
-cptr.stI32o(allopt_init, 5144, 0);
-cptr.st1o(allopt_init, 5148, NHC.opt_in);
-cptr.stPtro(allopt_init, 5152, null);
-cptr.stPtro(allopt_init, 5160, optfn_effects);
-cptr.stPtro(allopt_init, 5168, (null));
-cptr.stPtro(allopt_init, 5176, __sl105);
-cptr.stPtro(allopt_init, 5184, null);
-cptr.st1o(allopt_init, 5192, NHC.Off);
-cptr.st1o(allopt_init, 5193, NHC.No);
-cptr.st1o(allopt_init, 5194, 0);
-cptr.st1o(allopt_init, 5195, 0);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_expectedbuf, ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0));
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_idx, NHC.opt_effects);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5096 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 5096 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5096 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 5096 + FLD.allopt_t_optfn, optfn_effects);
+cptr.stPtro(allopt_init, 5096 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5096 + FLD.allopt_t_descr, __sl105);
+cptr.stPtro(allopt_init, 5096 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5096 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5096 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 5096 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5096 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5200, __sl106);
-cptr.stI32o(allopt_init, 5208, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5212, 0);
-cptr.stI32o(allopt_init, 5216, 0);
-cptr.stI32o(allopt_init, 5220, NHC.opt_eight_bit_tty);
-cptr.stI32o(allopt_init, 5224, NHC.set_in_game);
-cptr.stI32o(allopt_init, 5228, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 5232, NHC.Yes);
-cptr.stI32o(allopt_init, 5236, NHC.No);
-cptr.stI32o(allopt_init, 5240, NHC.No);
-cptr.stI32o(allopt_init, 5244, NHC.No);
-cptr.stI32o(allopt_init, 5248, NHC.Term_False);
-cptr.st1o(allopt_init, 5252, NHC.opt_in);
-cptr.stPtro(allopt_init, 5256, cptr.add(iflags, 366));
-cptr.stPtro(allopt_init, 5264, optfn_boolean);
-cptr.stPtro(allopt_init, 5272, (null));
-cptr.stPtro(allopt_init, 5280, __sl107);
-cptr.stPtro(allopt_init, 5288, null);
-cptr.st1o(allopt_init, 5296, NHC.Off);
-cptr.st1o(allopt_init, 5297, 0);
-cptr.st1o(allopt_init, 5298, 0);
-cptr.st1o(allopt_init, 5299, 0);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_idx, NHC.opt_eight_bit_tty);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5200 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 5200 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5200 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_eight_bit_input));
+cptr.stPtro(allopt_init, 5200 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 5200 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5200 + FLD.allopt_t_descr, __sl107);
+cptr.stPtro(allopt_init, 5200 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5200 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5200 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 5200 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5200 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5304, __sl108);
-cptr.stI32o(allopt_init, 5312, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5316, 0);
-cptr.stI32o(allopt_init, 5320, 0);
-cptr.stI32o(allopt_init, 5324, NHC.opt_extmenu);
-cptr.stI32o(allopt_init, 5328, NHC.set_in_game);
-cptr.stI32o(allopt_init, 5332, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 5336, NHC.Yes);
-cptr.stI32o(allopt_init, 5340, NHC.No);
-cptr.stI32o(allopt_init, 5344, NHC.No);
-cptr.stI32o(allopt_init, 5348, NHC.No);
-cptr.stI32o(allopt_init, 5352, NHC.Term_False);
-cptr.st1o(allopt_init, 5356, NHC.opt_in);
-cptr.stPtro(allopt_init, 5360, cptr.add(iflags, 177));
-cptr.stPtro(allopt_init, 5368, optfn_boolean);
-cptr.stPtro(allopt_init, 5376, (null));
-cptr.stPtro(allopt_init, 5384, __sl109);
-cptr.stPtro(allopt_init, 5392, null);
-cptr.st1o(allopt_init, 5400, NHC.Off);
-cptr.st1o(allopt_init, 5401, 0);
-cptr.st1o(allopt_init, 5402, 0);
-cptr.st1o(allopt_init, 5403, 0);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_idx, NHC.opt_extmenu);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5304 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 5304 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5304 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_extmenu));
+cptr.stPtro(allopt_init, 5304 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 5304 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5304 + FLD.allopt_t_descr, __sl109);
+cptr.stPtro(allopt_init, 5304 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5304 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5304 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 5304 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5304 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5408, __sl110);
-cptr.stI32o(allopt_init, 5416, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5420, 0);
-cptr.stI32o(allopt_init, 5424, 0);
-cptr.stI32o(allopt_init, 5428, NHC.opt_female);
-cptr.stI32o(allopt_init, 5432, NHC.set_in_config);
-cptr.stI32o(allopt_init, 5436, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 5440, NHC.Yes);
-cptr.stI32o(allopt_init, 5444, NHC.No);
-cptr.stI32o(allopt_init, 5448, NHC.No);
-cptr.stI32o(allopt_init, 5452, NHC.No);
-cptr.stI32o(allopt_init, 5456, NHC.Term_False);
-cptr.st1o(allopt_init, 5460, NHC.opt_in);
-cptr.stPtro(allopt_init, 5464, cptr.add(flags, 13));
-cptr.stPtro(allopt_init, 5472, optfn_boolean);
-cptr.stPtro(allopt_init, 5480, __sl111);
-cptr.stPtro(allopt_init, 5488, __sl112);
-cptr.stPtro(allopt_init, 5496, null);
-cptr.st1o(allopt_init, 5504, NHC.Off);
-cptr.st1o(allopt_init, 5505, 0);
-cptr.st1o(allopt_init, 5506, 0);
-cptr.st1o(allopt_init, 5507, 0);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_idx, NHC.opt_female);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5408 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 5408 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5408 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_female));
+cptr.stPtro(allopt_init, 5408 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 5408 + FLD.allopt_t_alias, __sl111);
+cptr.stPtro(allopt_init, 5408 + FLD.allopt_t_descr, __sl112);
+cptr.stPtro(allopt_init, 5408 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5408 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5408 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 5408 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5408 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5512, __sl113);
-cptr.stI32o(allopt_init, 5520, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 5524, 0);
-cptr.stI32o(allopt_init, 5528, 0);
-cptr.stI32o(allopt_init, 5532, NHC.opt_fireassist);
-cptr.stI32o(allopt_init, 5536, NHC.set_in_game);
-cptr.stI32o(allopt_init, 5540, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 5544, NHC.Yes);
-cptr.stI32o(allopt_init, 5548, NHC.No);
-cptr.stI32o(allopt_init, 5552, NHC.No);
-cptr.stI32o(allopt_init, 5556, NHC.No);
-cptr.stI32o(allopt_init, 5560, NHC.Term_False);
-cptr.st1o(allopt_init, 5564, NHC.opt_out);
-cptr.stPtro(allopt_init, 5568, cptr.add(iflags, 179));
-cptr.stPtro(allopt_init, 5576, optfn_boolean);
-cptr.stPtro(allopt_init, 5584, (null));
-cptr.stPtro(allopt_init, 5592, __sl114);
-cptr.stPtro(allopt_init, 5600, null);
-cptr.st1o(allopt_init, 5608, NHC.On);
-cptr.st1o(allopt_init, 5609, 0);
-cptr.st1o(allopt_init, 5610, 0);
-cptr.st1o(allopt_init, 5611, 0);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_idx, NHC.opt_fireassist);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5512 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 5512 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 5512 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_fireassist));
+cptr.stPtro(allopt_init, 5512 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 5512 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5512 + FLD.allopt_t_descr, __sl114);
+cptr.stPtro(allopt_init, 5512 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5512 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 5512 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 5512 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5512 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5616, __sl115);
-cptr.stI32o(allopt_init, 5624, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5628, 0);
-cptr.stI32o(allopt_init, 5632, 0);
-cptr.stI32o(allopt_init, 5636, NHC.opt_fixinv);
-cptr.stI32o(allopt_init, 5640, NHC.set_in_game);
-cptr.stI32o(allopt_init, 5644, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 5648, NHC.Yes);
-cptr.stI32o(allopt_init, 5652, NHC.No);
-cptr.stI32o(allopt_init, 5656, NHC.No);
-cptr.stI32o(allopt_init, 5660, NHC.No);
-cptr.stI32o(allopt_init, 5664, NHC.Term_False);
-cptr.st1o(allopt_init, 5668, NHC.opt_out);
-cptr.stPtro(allopt_init, 5672, cptr.add(flags, 22));
-cptr.stPtro(allopt_init, 5680, optfn_boolean);
-cptr.stPtro(allopt_init, 5688, (null));
-cptr.stPtro(allopt_init, 5696, __sl116);
-cptr.stPtro(allopt_init, 5704, null);
-cptr.st1o(allopt_init, 5712, NHC.On);
-cptr.st1o(allopt_init, 5713, 0);
-cptr.st1o(allopt_init, 5714, 0);
-cptr.st1o(allopt_init, 5715, 0);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_idx, NHC.opt_fixinv);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5616 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 5616 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 5616 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_invlet_constant));
+cptr.stPtro(allopt_init, 5616 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 5616 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5616 + FLD.allopt_t_descr, __sl116);
+cptr.stPtro(allopt_init, 5616 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5616 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 5616 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 5616 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5616 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5720, __sl117);
-cptr.stI32o(allopt_init, 5728, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5732, 0);
-cptr.stI32o(allopt_init, 5736, 40);
-cptr.stI32o(allopt_init, 5740, NHC.opt_font_map);
-cptr.stI32o(allopt_init, 5744, NHC.set_gameview);
-cptr.stI32o(allopt_init, 5748, NHC.CompOpt);
-cptr.stI32o(allopt_init, 5752, NHC.Yes);
-cptr.stI32o(allopt_init, 5756, NHC.Yes);
-cptr.stI32o(allopt_init, 5760, NHC.Yes);
-cptr.stI32o(allopt_init, 5764, NHC.No);
-cptr.stI32o(allopt_init, 5768, 0);
-cptr.st1o(allopt_init, 5772, NHC.opt_in);
-cptr.stPtro(allopt_init, 5776, null);
-cptr.stPtro(allopt_init, 5784, optfn_font_map);
-cptr.stPtro(allopt_init, 5792, (null));
-cptr.stPtro(allopt_init, 5800, __sl118);
-cptr.stPtro(allopt_init, 5808, null);
-cptr.st1o(allopt_init, 5816, NHC.Off);
-cptr.st1o(allopt_init, 5817, NHC.No);
-cptr.st1o(allopt_init, 5818, 0);
-cptr.st1o(allopt_init, 5819, 0);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_idx, NHC.opt_font_map);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5720 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 5720 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5720 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 5720 + FLD.allopt_t_optfn, optfn_font_map);
+cptr.stPtro(allopt_init, 5720 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5720 + FLD.allopt_t_descr, __sl118);
+cptr.stPtro(allopt_init, 5720 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5720 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5720 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 5720 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5720 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5824, __sl119);
-cptr.stI32o(allopt_init, 5832, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5836, 0);
-cptr.stI32o(allopt_init, 5840, 40);
-cptr.stI32o(allopt_init, 5844, NHC.opt_font_menu);
-cptr.stI32o(allopt_init, 5848, NHC.set_gameview);
-cptr.stI32o(allopt_init, 5852, NHC.CompOpt);
-cptr.stI32o(allopt_init, 5856, NHC.Yes);
-cptr.stI32o(allopt_init, 5860, NHC.Yes);
-cptr.stI32o(allopt_init, 5864, NHC.Yes);
-cptr.stI32o(allopt_init, 5868, NHC.No);
-cptr.stI32o(allopt_init, 5872, 0);
-cptr.st1o(allopt_init, 5876, NHC.opt_in);
-cptr.stPtro(allopt_init, 5880, null);
-cptr.stPtro(allopt_init, 5888, optfn_font_menu);
-cptr.stPtro(allopt_init, 5896, (null));
-cptr.stPtro(allopt_init, 5904, __sl120);
-cptr.stPtro(allopt_init, 5912, null);
-cptr.st1o(allopt_init, 5920, NHC.Off);
-cptr.st1o(allopt_init, 5921, NHC.No);
-cptr.st1o(allopt_init, 5922, 0);
-cptr.st1o(allopt_init, 5923, 0);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_idx, NHC.opt_font_menu);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5824 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 5824 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5824 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 5824 + FLD.allopt_t_optfn, optfn_font_menu);
+cptr.stPtro(allopt_init, 5824 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5824 + FLD.allopt_t_descr, __sl120);
+cptr.stPtro(allopt_init, 5824 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5824 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5824 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 5824 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5824 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5928, __sl121);
-cptr.stI32o(allopt_init, 5936, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 5940, 0);
-cptr.stI32o(allopt_init, 5944, 40);
-cptr.stI32o(allopt_init, 5948, NHC.opt_font_message);
-cptr.stI32o(allopt_init, 5952, NHC.set_gameview);
-cptr.stI32o(allopt_init, 5956, NHC.CompOpt);
-cptr.stI32o(allopt_init, 5960, NHC.Yes);
-cptr.stI32o(allopt_init, 5964, NHC.Yes);
-cptr.stI32o(allopt_init, 5968, NHC.Yes);
-cptr.stI32o(allopt_init, 5972, NHC.No);
-cptr.stI32o(allopt_init, 5976, 0);
-cptr.st1o(allopt_init, 5980, NHC.opt_in);
-cptr.stPtro(allopt_init, 5984, null);
-cptr.stPtro(allopt_init, 5992, optfn_font_message);
-cptr.stPtro(allopt_init, 6000, (null));
-cptr.stPtro(allopt_init, 6008, __sl122);
-cptr.stPtro(allopt_init, 6016, null);
-cptr.st1o(allopt_init, 6024, NHC.Off);
-cptr.st1o(allopt_init, 6025, NHC.No);
-cptr.st1o(allopt_init, 6026, 0);
-cptr.st1o(allopt_init, 6027, 0);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_idx, NHC.opt_font_message);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 5928 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 5928 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 5928 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 5928 + FLD.allopt_t_optfn, optfn_font_message);
+cptr.stPtro(allopt_init, 5928 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 5928 + FLD.allopt_t_descr, __sl122);
+cptr.stPtro(allopt_init, 5928 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 5928 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 5928 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 5928 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 5928 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6032, __sl123);
-cptr.stI32o(allopt_init, 6040, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6044, 0);
-cptr.stI32o(allopt_init, 6048, 20);
-cptr.stI32o(allopt_init, 6052, NHC.opt_font_size_map);
-cptr.stI32o(allopt_init, 6056, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6060, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6064, NHC.Yes);
-cptr.stI32o(allopt_init, 6068, NHC.Yes);
-cptr.stI32o(allopt_init, 6072, NHC.Yes);
-cptr.stI32o(allopt_init, 6076, NHC.No);
-cptr.stI32o(allopt_init, 6080, 0);
-cptr.st1o(allopt_init, 6084, NHC.opt_in);
-cptr.stPtro(allopt_init, 6088, null);
-cptr.stPtro(allopt_init, 6096, optfn_font_size_map);
-cptr.stPtro(allopt_init, 6104, (null));
-cptr.stPtro(allopt_init, 6112, __sl124);
-cptr.stPtro(allopt_init, 6120, null);
-cptr.st1o(allopt_init, 6128, NHC.Off);
-cptr.st1o(allopt_init, 6129, NHC.No);
-cptr.st1o(allopt_init, 6130, 0);
-cptr.st1o(allopt_init, 6131, 0);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_idx, NHC.opt_font_size_map);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6032 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6032 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6032 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6032 + FLD.allopt_t_optfn, optfn_font_size_map);
+cptr.stPtro(allopt_init, 6032 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6032 + FLD.allopt_t_descr, __sl124);
+cptr.stPtro(allopt_init, 6032 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6032 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6032 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6032 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6032 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6136, __sl125);
-cptr.stI32o(allopt_init, 6144, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6148, 0);
-cptr.stI32o(allopt_init, 6152, 20);
-cptr.stI32o(allopt_init, 6156, NHC.opt_font_size_menu);
-cptr.stI32o(allopt_init, 6160, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6164, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6168, NHC.Yes);
-cptr.stI32o(allopt_init, 6172, NHC.Yes);
-cptr.stI32o(allopt_init, 6176, NHC.Yes);
-cptr.stI32o(allopt_init, 6180, NHC.No);
-cptr.stI32o(allopt_init, 6184, 0);
-cptr.st1o(allopt_init, 6188, NHC.opt_in);
-cptr.stPtro(allopt_init, 6192, null);
-cptr.stPtro(allopt_init, 6200, optfn_font_size_menu);
-cptr.stPtro(allopt_init, 6208, (null));
-cptr.stPtro(allopt_init, 6216, __sl126);
-cptr.stPtro(allopt_init, 6224, null);
-cptr.st1o(allopt_init, 6232, NHC.Off);
-cptr.st1o(allopt_init, 6233, NHC.No);
-cptr.st1o(allopt_init, 6234, 0);
-cptr.st1o(allopt_init, 6235, 0);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_idx, NHC.opt_font_size_menu);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6136 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6136 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6136 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6136 + FLD.allopt_t_optfn, optfn_font_size_menu);
+cptr.stPtro(allopt_init, 6136 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6136 + FLD.allopt_t_descr, __sl126);
+cptr.stPtro(allopt_init, 6136 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6136 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6136 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6136 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6136 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6240, __sl127);
-cptr.stI32o(allopt_init, 6248, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6252, 0);
-cptr.stI32o(allopt_init, 6256, 20);
-cptr.stI32o(allopt_init, 6260, NHC.opt_font_size_message);
-cptr.stI32o(allopt_init, 6264, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6268, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6272, NHC.Yes);
-cptr.stI32o(allopt_init, 6276, NHC.Yes);
-cptr.stI32o(allopt_init, 6280, NHC.Yes);
-cptr.stI32o(allopt_init, 6284, NHC.No);
-cptr.stI32o(allopt_init, 6288, 0);
-cptr.st1o(allopt_init, 6292, NHC.opt_in);
-cptr.stPtro(allopt_init, 6296, null);
-cptr.stPtro(allopt_init, 6304, optfn_font_size_message);
-cptr.stPtro(allopt_init, 6312, (null));
-cptr.stPtro(allopt_init, 6320, __sl128);
-cptr.stPtro(allopt_init, 6328, null);
-cptr.st1o(allopt_init, 6336, NHC.Off);
-cptr.st1o(allopt_init, 6337, NHC.No);
-cptr.st1o(allopt_init, 6338, 0);
-cptr.st1o(allopt_init, 6339, 0);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_idx, NHC.opt_font_size_message);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6240 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6240 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6240 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6240 + FLD.allopt_t_optfn, optfn_font_size_message);
+cptr.stPtro(allopt_init, 6240 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6240 + FLD.allopt_t_descr, __sl128);
+cptr.stPtro(allopt_init, 6240 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6240 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6240 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6240 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6240 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6344, __sl129);
-cptr.stI32o(allopt_init, 6352, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6356, 0);
-cptr.stI32o(allopt_init, 6360, 20);
-cptr.stI32o(allopt_init, 6364, NHC.opt_font_size_status);
-cptr.stI32o(allopt_init, 6368, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6372, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6376, NHC.Yes);
-cptr.stI32o(allopt_init, 6380, NHC.Yes);
-cptr.stI32o(allopt_init, 6384, NHC.Yes);
-cptr.stI32o(allopt_init, 6388, NHC.No);
-cptr.stI32o(allopt_init, 6392, 0);
-cptr.st1o(allopt_init, 6396, NHC.opt_in);
-cptr.stPtro(allopt_init, 6400, null);
-cptr.stPtro(allopt_init, 6408, optfn_font_size_status);
-cptr.stPtro(allopt_init, 6416, (null));
-cptr.stPtro(allopt_init, 6424, __sl130);
-cptr.stPtro(allopt_init, 6432, null);
-cptr.st1o(allopt_init, 6440, NHC.Off);
-cptr.st1o(allopt_init, 6441, NHC.No);
-cptr.st1o(allopt_init, 6442, 0);
-cptr.st1o(allopt_init, 6443, 0);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_idx, NHC.opt_font_size_status);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6344 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6344 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6344 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6344 + FLD.allopt_t_optfn, optfn_font_size_status);
+cptr.stPtro(allopt_init, 6344 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6344 + FLD.allopt_t_descr, __sl130);
+cptr.stPtro(allopt_init, 6344 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6344 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6344 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6344 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6344 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6448, __sl131);
-cptr.stI32o(allopt_init, 6456, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6460, 0);
-cptr.stI32o(allopt_init, 6464, 20);
-cptr.stI32o(allopt_init, 6468, NHC.opt_font_size_text);
-cptr.stI32o(allopt_init, 6472, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6476, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6480, NHC.Yes);
-cptr.stI32o(allopt_init, 6484, NHC.Yes);
-cptr.stI32o(allopt_init, 6488, NHC.Yes);
-cptr.stI32o(allopt_init, 6492, NHC.No);
-cptr.stI32o(allopt_init, 6496, 0);
-cptr.st1o(allopt_init, 6500, NHC.opt_in);
-cptr.stPtro(allopt_init, 6504, null);
-cptr.stPtro(allopt_init, 6512, optfn_font_size_text);
-cptr.stPtro(allopt_init, 6520, (null));
-cptr.stPtro(allopt_init, 6528, __sl132);
-cptr.stPtro(allopt_init, 6536, null);
-cptr.st1o(allopt_init, 6544, NHC.Off);
-cptr.st1o(allopt_init, 6545, NHC.No);
-cptr.st1o(allopt_init, 6546, 0);
-cptr.st1o(allopt_init, 6547, 0);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_idx, NHC.opt_font_size_text);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6448 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6448 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6448 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6448 + FLD.allopt_t_optfn, optfn_font_size_text);
+cptr.stPtro(allopt_init, 6448 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6448 + FLD.allopt_t_descr, __sl132);
+cptr.stPtro(allopt_init, 6448 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6448 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6448 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6448 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6448 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6552, __sl133);
-cptr.stI32o(allopt_init, 6560, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6564, 0);
-cptr.stI32o(allopt_init, 6568, 40);
-cptr.stI32o(allopt_init, 6572, NHC.opt_font_status);
-cptr.stI32o(allopt_init, 6576, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6580, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6584, NHC.Yes);
-cptr.stI32o(allopt_init, 6588, NHC.Yes);
-cptr.stI32o(allopt_init, 6592, NHC.Yes);
-cptr.stI32o(allopt_init, 6596, NHC.No);
-cptr.stI32o(allopt_init, 6600, 0);
-cptr.st1o(allopt_init, 6604, NHC.opt_in);
-cptr.stPtro(allopt_init, 6608, null);
-cptr.stPtro(allopt_init, 6616, optfn_font_status);
-cptr.stPtro(allopt_init, 6624, (null));
-cptr.stPtro(allopt_init, 6632, __sl134);
-cptr.stPtro(allopt_init, 6640, null);
-cptr.st1o(allopt_init, 6648, NHC.Off);
-cptr.st1o(allopt_init, 6649, NHC.No);
-cptr.st1o(allopt_init, 6650, 0);
-cptr.st1o(allopt_init, 6651, 0);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_idx, NHC.opt_font_status);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6552 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6552 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6552 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6552 + FLD.allopt_t_optfn, optfn_font_status);
+cptr.stPtro(allopt_init, 6552 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6552 + FLD.allopt_t_descr, __sl134);
+cptr.stPtro(allopt_init, 6552 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6552 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6552 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6552 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6552 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6656, __sl135);
-cptr.stI32o(allopt_init, 6664, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6668, 0);
-cptr.stI32o(allopt_init, 6672, 40);
-cptr.stI32o(allopt_init, 6676, NHC.opt_font_text);
-cptr.stI32o(allopt_init, 6680, NHC.set_gameview);
-cptr.stI32o(allopt_init, 6684, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6688, NHC.Yes);
-cptr.stI32o(allopt_init, 6692, NHC.Yes);
-cptr.stI32o(allopt_init, 6696, NHC.Yes);
-cptr.stI32o(allopt_init, 6700, NHC.No);
-cptr.stI32o(allopt_init, 6704, 0);
-cptr.st1o(allopt_init, 6708, NHC.opt_in);
-cptr.stPtro(allopt_init, 6712, null);
-cptr.stPtro(allopt_init, 6720, optfn_font_text);
-cptr.stPtro(allopt_init, 6728, (null));
-cptr.stPtro(allopt_init, 6736, __sl136);
-cptr.stPtro(allopt_init, 6744, null);
-cptr.st1o(allopt_init, 6752, NHC.Off);
-cptr.st1o(allopt_init, 6753, NHC.No);
-cptr.st1o(allopt_init, 6754, 0);
-cptr.st1o(allopt_init, 6755, 0);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_idx, NHC.opt_font_text);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6656 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6656 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6656 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6656 + FLD.allopt_t_optfn, optfn_font_text);
+cptr.stPtro(allopt_init, 6656 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6656 + FLD.allopt_t_descr, __sl136);
+cptr.stPtro(allopt_init, 6656 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6656 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6656 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6656 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6656 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6760, __sl137);
-cptr.stI32o(allopt_init, 6768, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6772, 0);
-cptr.stI32o(allopt_init, 6776, 0);
-cptr.stI32o(allopt_init, 6780, NHC.opt_force_invmenu);
-cptr.stI32o(allopt_init, 6784, NHC.set_in_game);
-cptr.stI32o(allopt_init, 6788, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 6792, NHC.Yes);
-cptr.stI32o(allopt_init, 6796, NHC.No);
-cptr.stI32o(allopt_init, 6800, NHC.No);
-cptr.stI32o(allopt_init, 6804, NHC.No);
-cptr.stI32o(allopt_init, 6808, NHC.Term_False);
-cptr.st1o(allopt_init, 6812, NHC.opt_in);
-cptr.stPtro(allopt_init, 6816, cptr.add(iflags, 131));
-cptr.stPtro(allopt_init, 6824, optfn_boolean);
-cptr.stPtro(allopt_init, 6832, (null));
-cptr.stPtro(allopt_init, 6840, __sl138);
-cptr.stPtro(allopt_init, 6848, null);
-cptr.st1o(allopt_init, 6856, NHC.Off);
-cptr.st1o(allopt_init, 6857, 0);
-cptr.st1o(allopt_init, 6858, 0);
-cptr.st1o(allopt_init, 6859, 0);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_idx, NHC.opt_force_invmenu);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6760 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 6760 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6760 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_force_invmenu));
+cptr.stPtro(allopt_init, 6760 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 6760 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6760 + FLD.allopt_t_descr, __sl138);
+cptr.stPtro(allopt_init, 6760 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6760 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6760 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 6760 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6760 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6864, __sl139);
-cptr.stI32o(allopt_init, 6872, NHC.OptS_General);
-cptr.stI32o(allopt_init, 6876, 0);
-cptr.stI32o(allopt_init, 6880, NHM.PL_FSIZ);
-cptr.stI32o(allopt_init, 6884, NHC.opt_fruit);
-cptr.stI32o(allopt_init, 6888, NHC.set_in_game);
-cptr.stI32o(allopt_init, 6892, NHC.CompOpt);
-cptr.stI32o(allopt_init, 6896, NHC.No);
-cptr.stI32o(allopt_init, 6900, NHC.Yes);
-cptr.stI32o(allopt_init, 6904, NHC.No);
-cptr.stI32o(allopt_init, 6908, NHC.No);
-cptr.stI32o(allopt_init, 6912, 0);
-cptr.st1o(allopt_init, 6916, NHC.opt_in);
-cptr.stPtro(allopt_init, 6920, null);
-cptr.stPtro(allopt_init, 6928, optfn_fruit);
-cptr.stPtro(allopt_init, 6936, (null));
-cptr.stPtro(allopt_init, 6944, __sl140);
-cptr.stPtro(allopt_init, 6952, null);
-cptr.st1o(allopt_init, 6960, NHC.Off);
-cptr.st1o(allopt_init, 6961, NHC.No);
-cptr.st1o(allopt_init, 6962, 0);
-cptr.st1o(allopt_init, 6963, 0);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_section, NHC.OptS_General);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_expectedbuf, NHM.PL_FSIZ);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_idx, NHC.opt_fruit);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6864 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 6864 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6864 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 6864 + FLD.allopt_t_optfn, optfn_fruit);
+cptr.stPtro(allopt_init, 6864 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6864 + FLD.allopt_t_descr, __sl140);
+cptr.stPtro(allopt_init, 6864 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6864 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6864 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 6864 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6864 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 6968, __sl141);
-cptr.stI32o(allopt_init, 6976, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 6980, 0);
-cptr.stI32o(allopt_init, 6984, 0);
-cptr.stI32o(allopt_init, 6988, NHC.opt_fullscreen);
-cptr.stI32o(allopt_init, 6992, NHC.set_in_config);
-cptr.stI32o(allopt_init, 6996, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7000, NHC.Yes);
-cptr.stI32o(allopt_init, 7004, NHC.No);
-cptr.stI32o(allopt_init, 7008, NHC.No);
-cptr.stI32o(allopt_init, 7012, NHC.No);
-cptr.stI32o(allopt_init, 7016, NHC.Term_False);
-cptr.st1o(allopt_init, 7020, NHC.opt_in);
-cptr.stPtro(allopt_init, 7024, cptr.add(iflags, 367));
-cptr.stPtro(allopt_init, 7032, optfn_boolean);
-cptr.stPtro(allopt_init, 7040, (null));
-cptr.stPtro(allopt_init, 7048, __sl142);
-cptr.stPtro(allopt_init, 7056, null);
-cptr.st1o(allopt_init, 7064, NHC.Off);
-cptr.st1o(allopt_init, 7065, 0);
-cptr.st1o(allopt_init, 7066, 0);
-cptr.st1o(allopt_init, 7067, 0);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_idx, NHC.opt_fullscreen);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 6968 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 6968 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 6968 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_fullscreen));
+cptr.stPtro(allopt_init, 6968 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 6968 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 6968 + FLD.allopt_t_descr, __sl142);
+cptr.stPtro(allopt_init, 6968 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 6968 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 6968 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 6968 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 6968 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7072, __sl143);
-cptr.stI32o(allopt_init, 7080, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7084, 0);
-cptr.stI32o(allopt_init, 7088, 40);
-cptr.stI32o(allopt_init, 7092, NHC.opt_glyph);
-cptr.stI32o(allopt_init, 7096, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7100, NHC.CompOpt);
-cptr.stI32o(allopt_init, 7104, NHC.No);
-cptr.stI32o(allopt_init, 7108, NHC.Yes);
-cptr.stI32o(allopt_init, 7112, NHC.Yes);
-cptr.stI32o(allopt_init, 7116, NHC.No);
-cptr.stI32o(allopt_init, 7120, 0);
-cptr.st1o(allopt_init, 7124, NHC.opt_in);
-cptr.stPtro(allopt_init, 7128, null);
-cptr.stPtro(allopt_init, 7136, optfn_glyph);
-cptr.stPtro(allopt_init, 7144, (null));
-cptr.stPtro(allopt_init, 7152, __sl144);
-cptr.stPtro(allopt_init, 7160, null);
-cptr.st1o(allopt_init, 7168, NHC.Off);
-cptr.st1o(allopt_init, 7169, NHC.No);
-cptr.st1o(allopt_init, 7170, 0);
-cptr.st1o(allopt_init, 7171, 0);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_expectedbuf, 40);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_idx, NHC.opt_glyph);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7072 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 7072 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7072 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 7072 + FLD.allopt_t_optfn, optfn_glyph);
+cptr.stPtro(allopt_init, 7072 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7072 + FLD.allopt_t_descr, __sl144);
+cptr.stPtro(allopt_init, 7072 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7072 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7072 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 7072 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7072 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7176, __sl145);
-cptr.stI32o(allopt_init, 7184, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7188, 0);
-cptr.stI32o(allopt_init, 7192, 0);
-cptr.stI32o(allopt_init, 7196, NHC.opt_goldX);
-cptr.stI32o(allopt_init, 7200, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7204, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7208, NHC.Yes);
-cptr.stI32o(allopt_init, 7212, NHC.No);
-cptr.stI32o(allopt_init, 7216, NHC.No);
-cptr.stI32o(allopt_init, 7220, NHC.No);
-cptr.stI32o(allopt_init, 7224, NHC.Term_False);
-cptr.st1o(allopt_init, 7228, NHC.opt_in);
-cptr.stPtro(allopt_init, 7232, cptr.add(flags, 15));
-cptr.stPtro(allopt_init, 7240, optfn_boolean);
-cptr.stPtro(allopt_init, 7248, (null));
-cptr.stPtro(allopt_init, 7256, __sl146);
-cptr.stPtro(allopt_init, 7264, null);
-cptr.st1o(allopt_init, 7272, NHC.Off);
-cptr.st1o(allopt_init, 7273, 0);
-cptr.st1o(allopt_init, 7274, 0);
-cptr.st1o(allopt_init, 7275, 0);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_idx, NHC.opt_goldX);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7176 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7176 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7176 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_goldX));
+cptr.stPtro(allopt_init, 7176 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7176 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7176 + FLD.allopt_t_descr, __sl146);
+cptr.stPtro(allopt_init, 7176 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7176 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7176 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7176 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7176 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7280, __sl147);
-cptr.stI32o(allopt_init, 7288, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7292, 0);
-cptr.stI32o(allopt_init, 7296, 0);
-cptr.stI32o(allopt_init, 7300, NHC.opt_guicolor);
-cptr.stI32o(allopt_init, 7304, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7308, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7312, NHC.Yes);
-cptr.stI32o(allopt_init, 7316, NHC.No);
-cptr.stI32o(allopt_init, 7320, NHC.No);
-cptr.stI32o(allopt_init, 7324, NHC.No);
-cptr.stI32o(allopt_init, 7328, NHC.Term_False);
-cptr.st1o(allopt_init, 7332, NHC.opt_out);
-cptr.stPtro(allopt_init, 7336, cptr.add(iflags, 373));
-cptr.stPtro(allopt_init, 7344, optfn_boolean);
-cptr.stPtro(allopt_init, 7352, (null));
-cptr.stPtro(allopt_init, 7360, __sl148);
-cptr.stPtro(allopt_init, 7368, null);
-cptr.st1o(allopt_init, 7376, NHC.On);
-cptr.st1o(allopt_init, 7377, 0);
-cptr.st1o(allopt_init, 7378, 0);
-cptr.st1o(allopt_init, 7379, 0);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_idx, NHC.opt_guicolor);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7280 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7280 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 7280 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_guicolor));
+cptr.stPtro(allopt_init, 7280 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7280 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7280 + FLD.allopt_t_descr, __sl148);
+cptr.stPtro(allopt_init, 7280 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7280 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 7280 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7280 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7280 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7384, __sl149);
-cptr.stI32o(allopt_init, 7392, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7396, 0);
-cptr.stI32o(allopt_init, 7400, 0);
-cptr.stI32o(allopt_init, 7404, NHC.opt_help);
-cptr.stI32o(allopt_init, 7408, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7412, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7416, NHC.Yes);
-cptr.stI32o(allopt_init, 7420, NHC.No);
-cptr.stI32o(allopt_init, 7424, NHC.No);
-cptr.stI32o(allopt_init, 7428, NHC.No);
-cptr.stI32o(allopt_init, 7432, NHC.Term_False);
-cptr.st1o(allopt_init, 7436, NHC.opt_out);
-cptr.stPtro(allopt_init, 7440, cptr.add(flags, 16));
-cptr.stPtro(allopt_init, 7448, optfn_boolean);
-cptr.stPtro(allopt_init, 7456, (null));
-cptr.stPtro(allopt_init, 7464, __sl150);
-cptr.stPtro(allopt_init, 7472, null);
-cptr.st1o(allopt_init, 7480, NHC.On);
-cptr.st1o(allopt_init, 7481, 0);
-cptr.st1o(allopt_init, 7482, 0);
-cptr.st1o(allopt_init, 7483, 0);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_idx, NHC.opt_help);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7384 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7384 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 7384 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_help));
+cptr.stPtro(allopt_init, 7384 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7384 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7384 + FLD.allopt_t_descr, __sl150);
+cptr.stPtro(allopt_init, 7384 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7384 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 7384 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7384 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7384 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7488, __sl151);
-cptr.stI32o(allopt_init, 7496, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7500, 0);
-cptr.stI32o(allopt_init, 7504, 0);
-cptr.stI32o(allopt_init, 7508, NHC.opt_herecmd_menu);
-cptr.stI32o(allopt_init, 7512, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7516, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7520, NHC.Yes);
-cptr.stI32o(allopt_init, 7524, NHC.No);
-cptr.stI32o(allopt_init, 7528, NHC.No);
-cptr.stI32o(allopt_init, 7532, NHC.No);
-cptr.stI32o(allopt_init, 7536, NHC.Term_False);
-cptr.st1o(allopt_init, 7540, NHC.opt_in);
-cptr.stPtro(allopt_init, 7544, cptr.add(iflags, 2));
-cptr.stPtro(allopt_init, 7552, optfn_boolean);
-cptr.stPtro(allopt_init, 7560, (null));
-cptr.stPtro(allopt_init, 7568, __sl152);
-cptr.stPtro(allopt_init, 7576, null);
-cptr.st1o(allopt_init, 7584, NHC.Off);
-cptr.st1o(allopt_init, 7585, 0);
-cptr.st1o(allopt_init, 7586, 0);
-cptr.st1o(allopt_init, 7587, 0);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_idx, NHC.opt_herecmd_menu);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7488 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7488 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7488 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_herecmd_menu));
+cptr.stPtro(allopt_init, 7488 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7488 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7488 + FLD.allopt_t_descr, __sl152);
+cptr.stPtro(allopt_init, 7488 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7488 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7488 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7488 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7488 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7592, __sl153);
-cptr.stI32o(allopt_init, 7600, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 7604, 0);
-cptr.stI32o(allopt_init, 7608, 0);
-cptr.stI32o(allopt_init, 7612, NHC.opt_hilite_pet);
-cptr.stI32o(allopt_init, 7616, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7620, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7624, NHC.Yes);
-cptr.stI32o(allopt_init, 7628, NHC.No);
-cptr.stI32o(allopt_init, 7632, NHC.No);
-cptr.stI32o(allopt_init, 7636, NHC.No);
-cptr.stI32o(allopt_init, 7640, NHC.Term_False);
-cptr.st1o(allopt_init, 7644, NHC.opt_in);
-cptr.stPtro(allopt_init, 7648, cptr.add(iflags, 185));
-cptr.stPtro(allopt_init, 7656, optfn_boolean);
-cptr.stPtro(allopt_init, 7664, (null));
-cptr.stPtro(allopt_init, 7672, __sl154);
-cptr.stPtro(allopt_init, 7680, null);
-cptr.st1o(allopt_init, 7688, NHC.Off);
-cptr.st1o(allopt_init, 7689, 0);
-cptr.st1o(allopt_init, 7690, 0);
-cptr.st1o(allopt_init, 7691, 0);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_idx, NHC.opt_hilite_pet);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7592 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7592 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7592 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_hilite_pet));
+cptr.stPtro(allopt_init, 7592 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7592 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7592 + FLD.allopt_t_descr, __sl154);
+cptr.stPtro(allopt_init, 7592 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7592 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7592 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7592 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7592 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7696, __sl155);
-cptr.stI32o(allopt_init, 7704, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 7708, 0);
-cptr.stI32o(allopt_init, 7712, 0);
-cptr.stI32o(allopt_init, 7716, NHC.opt_hilite_pile);
-cptr.stI32o(allopt_init, 7720, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7724, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7728, NHC.Yes);
-cptr.stI32o(allopt_init, 7732, NHC.No);
-cptr.stI32o(allopt_init, 7736, NHC.No);
-cptr.stI32o(allopt_init, 7740, NHC.No);
-cptr.stI32o(allopt_init, 7744, NHC.Term_False);
-cptr.st1o(allopt_init, 7748, NHC.opt_in);
-cptr.stPtro(allopt_init, 7752, cptr.add(iflags, 132));
-cptr.stPtro(allopt_init, 7760, optfn_boolean);
-cptr.stPtro(allopt_init, 7768, (null));
-cptr.stPtro(allopt_init, 7776, __sl156);
-cptr.stPtro(allopt_init, 7784, null);
-cptr.st1o(allopt_init, 7792, NHC.Off);
-cptr.st1o(allopt_init, 7793, 0);
-cptr.st1o(allopt_init, 7794, 0);
-cptr.st1o(allopt_init, 7795, 0);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_idx, NHC.opt_hilite_pile);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7696 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7696 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7696 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_hilite_pile));
+cptr.stPtro(allopt_init, 7696 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7696 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7696 + FLD.allopt_t_descr, __sl156);
+cptr.stPtro(allopt_init, 7696 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7696 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7696 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7696 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7696 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7800, __sl157);
-cptr.stI32o(allopt_init, 7808, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 7812, 0);
-cptr.stI32o(allopt_init, 7816, 13);
-cptr.stI32o(allopt_init, 7820, NHC.opt_hilite_status);
-cptr.stI32o(allopt_init, 7824, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7828, NHC.CompOpt);
-cptr.stI32o(allopt_init, 7832, NHC.Yes);
-cptr.stI32o(allopt_init, 7836, NHC.Yes);
-cptr.stI32o(allopt_init, 7840, NHC.Yes);
-cptr.stI32o(allopt_init, 7844, NHC.No);
-cptr.stI32o(allopt_init, 7848, 0);
-cptr.st1o(allopt_init, 7852, NHC.opt_out);
-cptr.stPtro(allopt_init, 7856, null);
-cptr.stPtro(allopt_init, 7864, optfn_hilite_status);
-cptr.stPtro(allopt_init, 7872, (null));
-cptr.stPtro(allopt_init, 7880, __sl158);
-cptr.stPtro(allopt_init, 7888, null);
-cptr.st1o(allopt_init, 7896, NHC.Off);
-cptr.st1o(allopt_init, 7897, NHC.No);
-cptr.st1o(allopt_init, 7898, 0);
-cptr.st1o(allopt_init, 7899, 0);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_expectedbuf, 13);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_idx, NHC.opt_hilite_status);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7800 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 7800 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 7800 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 7800 + FLD.allopt_t_optfn, optfn_hilite_status);
+cptr.stPtro(allopt_init, 7800 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7800 + FLD.allopt_t_descr, __sl158);
+cptr.stPtro(allopt_init, 7800 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7800 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7800 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 7800 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7800 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 7904, __sl159);
-cptr.stI32o(allopt_init, 7912, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 7916, 0);
-cptr.stI32o(allopt_init, 7920, 0);
-cptr.stI32o(allopt_init, 7924, NHC.opt_hitpointbar);
-cptr.stI32o(allopt_init, 7928, NHC.set_in_game);
-cptr.stI32o(allopt_init, 7932, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 7936, NHC.Yes);
-cptr.stI32o(allopt_init, 7940, NHC.No);
-cptr.stI32o(allopt_init, 7944, NHC.No);
-cptr.stI32o(allopt_init, 7948, NHC.No);
-cptr.stI32o(allopt_init, 7952, NHC.Term_False);
-cptr.st1o(allopt_init, 7956, NHC.opt_in);
-cptr.stPtro(allopt_init, 7960, cptr.add(iflags, 372));
-cptr.stPtro(allopt_init, 7968, optfn_boolean);
-cptr.stPtro(allopt_init, 7976, (null));
-cptr.stPtro(allopt_init, 7984, __sl160);
-cptr.stPtro(allopt_init, 7992, null);
-cptr.st1o(allopt_init, 8000, NHC.Off);
-cptr.st1o(allopt_init, 8001, 0);
-cptr.st1o(allopt_init, 8002, 0);
-cptr.st1o(allopt_init, 8003, 0);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_idx, NHC.opt_hitpointbar);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 7904 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 7904 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 7904 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_hitpointbar));
+cptr.stPtro(allopt_init, 7904 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 7904 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 7904 + FLD.allopt_t_descr, __sl160);
+cptr.stPtro(allopt_init, 7904 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 7904 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 7904 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 7904 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 7904 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8008, __sl161);
-cptr.stI32o(allopt_init, 8016, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8020, 0);
-cptr.stI32o(allopt_init, 8024, NHM.PL_PSIZ);
-cptr.stI32o(allopt_init, 8028, NHC.opt_horsename);
-cptr.stI32o(allopt_init, 8032, NHC.set_gameview);
-cptr.stI32o(allopt_init, 8036, NHC.CompOpt);
-cptr.stI32o(allopt_init, 8040, NHC.No);
-cptr.stI32o(allopt_init, 8044, NHC.Yes);
-cptr.stI32o(allopt_init, 8048, NHC.No);
-cptr.stI32o(allopt_init, 8052, NHC.No);
-cptr.stI32o(allopt_init, 8056, 0);
-cptr.st1o(allopt_init, 8060, NHC.opt_in);
-cptr.stPtro(allopt_init, 8064, null);
-cptr.stPtro(allopt_init, 8072, optfn_horsename);
-cptr.stPtro(allopt_init, 8080, (null));
-cptr.stPtro(allopt_init, 8088, __sl162);
-cptr.stPtro(allopt_init, 8096, null);
-cptr.st1o(allopt_init, 8104, NHC.Off);
-cptr.st1o(allopt_init, 8105, NHC.No);
-cptr.st1o(allopt_init, 8106, 0);
-cptr.st1o(allopt_init, 8107, 0);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_expectedbuf, NHM.PL_PSIZ);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_idx, NHC.opt_horsename);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8008 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 8008 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8008 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 8008 + FLD.allopt_t_optfn, optfn_horsename);
+cptr.stPtro(allopt_init, 8008 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8008 + FLD.allopt_t_descr, __sl162);
+cptr.stPtro(allopt_init, 8008 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8008 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8008 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 8008 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8008 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8112, __sl163);
-cptr.stI32o(allopt_init, 8120, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8124, 0);
-cptr.stI32o(allopt_init, 8128, 70);
-cptr.stI32o(allopt_init, 8132, NHC.opt_IBMgraphics);
-cptr.stI32o(allopt_init, 8136, NHC.set_in_config);
-cptr.stI32o(allopt_init, 8140, NHC.CompOpt);
-cptr.stI32o(allopt_init, 8144, NHC.Yes);
-cptr.stI32o(allopt_init, 8148, NHC.Yes);
-cptr.stI32o(allopt_init, 8152, NHC.No);
-cptr.stI32o(allopt_init, 8156, NHC.No);
-cptr.stI32o(allopt_init, 8160, 0);
-cptr.st1o(allopt_init, 8164, NHC.opt_in);
-cptr.stPtro(allopt_init, 8168, null);
-cptr.stPtro(allopt_init, 8176, optfn_IBMgraphics);
-cptr.stPtro(allopt_init, 8184, (null));
-cptr.stPtro(allopt_init, 8192, __sl164);
-cptr.stPtro(allopt_init, 8200, null);
-cptr.st1o(allopt_init, 8208, NHC.Off);
-cptr.st1o(allopt_init, 8209, NHC.No);
-cptr.st1o(allopt_init, 8210, 0);
-cptr.st1o(allopt_init, 8211, 0);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_expectedbuf, 70);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_idx, NHC.opt_IBMgraphics);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8112 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 8112 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8112 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 8112 + FLD.allopt_t_optfn, optfn_IBMgraphics);
+cptr.stPtro(allopt_init, 8112 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8112 + FLD.allopt_t_descr, __sl164);
+cptr.stPtro(allopt_init, 8112 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8112 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8112 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 8112 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8112 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8216, __sl165);
-cptr.stI32o(allopt_init, 8224, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8228, 0);
-cptr.stI32o(allopt_init, 8232, 0);
-cptr.stI32o(allopt_init, 8236, NHC.opt_idlecheckpoint);
-cptr.stI32o(allopt_init, 8240, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8244, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8248, NHC.Yes);
-cptr.stI32o(allopt_init, 8252, NHC.No);
-cptr.stI32o(allopt_init, 8256, NHC.No);
-cptr.stI32o(allopt_init, 8260, NHC.No);
-cptr.stI32o(allopt_init, 8264, NHC.Term_Off);
-cptr.st1o(allopt_init, 8268, NHC.opt_in);
-cptr.stPtro(allopt_init, 8272, cptr.add(iflags, 3));
-cptr.stPtro(allopt_init, 8280, optfn_boolean);
-cptr.stPtro(allopt_init, 8288, (null));
-cptr.stPtro(allopt_init, 8296, __sl166);
-cptr.stPtro(allopt_init, 8304, null);
-cptr.st1o(allopt_init, 8312, NHC.Off);
-cptr.st1o(allopt_init, 8313, 0);
-cptr.st1o(allopt_init, 8314, 0);
-cptr.st1o(allopt_init, 8315, 0);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_idx, NHC.opt_idlecheckpoint);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8216 + FLD.allopt_t_termpref, NHC.Term_Off);
+cptr.st1o(allopt_init, 8216 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8216 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_idlecheckpoint));
+cptr.stPtro(allopt_init, 8216 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8216 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8216 + FLD.allopt_t_descr, __sl166);
+cptr.stPtro(allopt_init, 8216 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8216 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8216 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8216 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8216 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8320, __sl167);
-cptr.stI32o(allopt_init, 8328, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8332, 0);
-cptr.stI32o(allopt_init, 8336, 0);
-cptr.stI32o(allopt_init, 8340, NHC.opt_ignintr);
-cptr.stI32o(allopt_init, 8344, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8348, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8352, NHC.Yes);
-cptr.stI32o(allopt_init, 8356, NHC.No);
-cptr.stI32o(allopt_init, 8360, NHC.No);
-cptr.stI32o(allopt_init, 8364, NHC.No);
-cptr.stI32o(allopt_init, 8368, NHC.Term_False);
-cptr.st1o(allopt_init, 8372, NHC.opt_in);
-cptr.stPtro(allopt_init, 8376, cptr.add(flags, 19));
-cptr.stPtro(allopt_init, 8384, optfn_boolean);
-cptr.stPtro(allopt_init, 8392, (null));
-cptr.stPtro(allopt_init, 8400, __sl168);
-cptr.stPtro(allopt_init, 8408, null);
-cptr.st1o(allopt_init, 8416, NHC.Off);
-cptr.st1o(allopt_init, 8417, 0);
-cptr.st1o(allopt_init, 8418, 0);
-cptr.st1o(allopt_init, 8419, 0);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_idx, NHC.opt_ignintr);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8320 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8320 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8320 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_ignintr));
+cptr.stPtro(allopt_init, 8320 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8320 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8320 + FLD.allopt_t_descr, __sl168);
+cptr.stPtro(allopt_init, 8320 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8320 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8320 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8320 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8320 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8424, __sl169);
-cptr.stI32o(allopt_init, 8432, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8436, 0);
-cptr.stI32o(allopt_init, 8440, 0);
-cptr.stI32o(allopt_init, 8444, NHC.opt_implicit_uncursed);
-cptr.stI32o(allopt_init, 8448, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8452, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8456, NHC.Yes);
-cptr.stI32o(allopt_init, 8460, NHC.No);
-cptr.stI32o(allopt_init, 8464, NHC.No);
-cptr.stI32o(allopt_init, 8468, NHC.No);
-cptr.stI32o(allopt_init, 8472, NHC.Term_False);
-cptr.st1o(allopt_init, 8476, NHC.opt_out);
-cptr.stPtro(allopt_init, 8480, cptr.add(flags, 20));
-cptr.stPtro(allopt_init, 8488, optfn_boolean);
-cptr.stPtro(allopt_init, 8496, (null));
-cptr.stPtro(allopt_init, 8504, __sl170);
-cptr.stPtro(allopt_init, 8512, null);
-cptr.st1o(allopt_init, 8520, NHC.On);
-cptr.st1o(allopt_init, 8521, 0);
-cptr.st1o(allopt_init, 8522, 0);
-cptr.st1o(allopt_init, 8523, 0);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_idx, NHC.opt_implicit_uncursed);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8424 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8424 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 8424 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_implicit_uncursed));
+cptr.stPtro(allopt_init, 8424 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8424 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8424 + FLD.allopt_t_descr, __sl170);
+cptr.stPtro(allopt_init, 8424 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8424 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 8424 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8424 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8424 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8528, __sl171);
-cptr.stI32o(allopt_init, 8536, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8540, 0);
-cptr.stI32o(allopt_init, 8544, 0);
-cptr.stI32o(allopt_init, 8548, NHC.opt_legacy);
-cptr.stI32o(allopt_init, 8552, NHC.set_in_config);
-cptr.stI32o(allopt_init, 8556, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8560, NHC.Yes);
-cptr.stI32o(allopt_init, 8564, NHC.No);
-cptr.stI32o(allopt_init, 8568, NHC.No);
-cptr.stI32o(allopt_init, 8572, NHC.No);
-cptr.stI32o(allopt_init, 8576, NHC.Term_False);
-cptr.st1o(allopt_init, 8580, NHC.opt_out);
-cptr.stPtro(allopt_init, 8584, cptr.add(flags, 23));
-cptr.stPtro(allopt_init, 8592, optfn_boolean);
-cptr.stPtro(allopt_init, 8600, (null));
-cptr.stPtro(allopt_init, 8608, __sl172);
-cptr.stPtro(allopt_init, 8616, null);
-cptr.st1o(allopt_init, 8624, NHC.On);
-cptr.st1o(allopt_init, 8625, 0);
-cptr.st1o(allopt_init, 8626, 0);
-cptr.st1o(allopt_init, 8627, 0);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_idx, NHC.opt_legacy);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8528 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8528 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 8528 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_legacy));
+cptr.stPtro(allopt_init, 8528 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8528 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8528 + FLD.allopt_t_descr, __sl172);
+cptr.stPtro(allopt_init, 8528 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8528 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 8528 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8528 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8528 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8632, __sl173);
-cptr.stI32o(allopt_init, 8640, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8644, 0);
-cptr.stI32o(allopt_init, 8648, 0);
-cptr.stI32o(allopt_init, 8652, NHC.opt_lit_corridor);
-cptr.stI32o(allopt_init, 8656, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8660, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8664, NHC.Yes);
-cptr.stI32o(allopt_init, 8668, NHC.No);
-cptr.stI32o(allopt_init, 8672, NHC.No);
-cptr.stI32o(allopt_init, 8676, NHC.No);
-cptr.stI32o(allopt_init, 8680, NHC.Term_False);
-cptr.st1o(allopt_init, 8684, NHC.opt_in);
-cptr.stPtro(allopt_init, 8688, cptr.add(flags, 24));
-cptr.stPtro(allopt_init, 8696, optfn_boolean);
-cptr.stPtro(allopt_init, 8704, (null));
-cptr.stPtro(allopt_init, 8712, __sl174);
-cptr.stPtro(allopt_init, 8720, null);
-cptr.st1o(allopt_init, 8728, NHC.Off);
-cptr.st1o(allopt_init, 8729, 0);
-cptr.st1o(allopt_init, 8730, 0);
-cptr.st1o(allopt_init, 8731, 0);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_idx, NHC.opt_lit_corridor);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8632 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8632 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8632 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_lit_corridor));
+cptr.stPtro(allopt_init, 8632 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8632 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8632 + FLD.allopt_t_descr, __sl174);
+cptr.stPtro(allopt_init, 8632 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8632 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8632 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8632 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8632 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8736, __sl175);
-cptr.stI32o(allopt_init, 8744, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8748, 0);
-cptr.stI32o(allopt_init, 8752, 0);
-cptr.stI32o(allopt_init, 8756, NHC.opt_lootabc);
-cptr.stI32o(allopt_init, 8760, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8764, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8768, NHC.Yes);
-cptr.stI32o(allopt_init, 8772, NHC.No);
-cptr.stI32o(allopt_init, 8776, NHC.No);
-cptr.stI32o(allopt_init, 8780, NHC.No);
-cptr.stI32o(allopt_init, 8784, NHC.Term_False);
-cptr.st1o(allopt_init, 8788, NHC.opt_in);
-cptr.stPtro(allopt_init, 8792, cptr.add(flags, 168));
-cptr.stPtro(allopt_init, 8800, optfn_boolean);
-cptr.stPtro(allopt_init, 8808, (null));
-cptr.stPtro(allopt_init, 8816, __sl176);
-cptr.stPtro(allopt_init, 8824, null);
-cptr.st1o(allopt_init, 8832, NHC.Off);
-cptr.st1o(allopt_init, 8833, 0);
-cptr.st1o(allopt_init, 8834, 0);
-cptr.st1o(allopt_init, 8835, 0);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_idx, NHC.opt_lootabc);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8736 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8736 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8736 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_lootabc));
+cptr.stPtro(allopt_init, 8736 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8736 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8736 + FLD.allopt_t_descr, __sl176);
+cptr.stPtro(allopt_init, 8736 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8736 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8736 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8736 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8736 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8840, __sl177);
-cptr.stI32o(allopt_init, 8848, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8852, 0);
-cptr.stI32o(allopt_init, 8856, 0);
-cptr.stI32o(allopt_init, 8860, NHC.opt_mail);
-cptr.stI32o(allopt_init, 8864, NHC.set_in_game);
-cptr.stI32o(allopt_init, 8868, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 8872, NHC.Yes);
-cptr.stI32o(allopt_init, 8876, NHC.No);
-cptr.stI32o(allopt_init, 8880, NHC.No);
-cptr.stI32o(allopt_init, 8884, NHC.No);
-cptr.stI32o(allopt_init, 8888, NHC.Term_False);
-cptr.st1o(allopt_init, 8892, NHC.opt_out);
-cptr.stPtro(allopt_init, 8896, cptr.add(flags, 6));
-cptr.stPtro(allopt_init, 8904, optfn_boolean);
-cptr.stPtro(allopt_init, 8912, (null));
-cptr.stPtro(allopt_init, 8920, __sl178);
-cptr.stPtro(allopt_init, 8928, null);
-cptr.st1o(allopt_init, 8936, NHC.On);
-cptr.st1o(allopt_init, 8937, 0);
-cptr.st1o(allopt_init, 8938, 0);
-cptr.st1o(allopt_init, 8939, 0);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_idx, NHC.opt_mail);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8840 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 8840 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 8840 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_biff));
+cptr.stPtro(allopt_init, 8840 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 8840 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8840 + FLD.allopt_t_descr, __sl178);
+cptr.stPtro(allopt_init, 8840 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8840 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 8840 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 8840 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8840 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 8944, __sl179);
-cptr.stI32o(allopt_init, 8952, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 8956, 0);
-cptr.stI32o(allopt_init, 8960, 20);
-cptr.stI32o(allopt_init, 8964, NHC.opt_map_mode);
-cptr.stI32o(allopt_init, 8968, NHC.set_gameview);
-cptr.stI32o(allopt_init, 8972, NHC.CompOpt);
-cptr.stI32o(allopt_init, 8976, NHC.Yes);
-cptr.stI32o(allopt_init, 8980, NHC.Yes);
-cptr.stI32o(allopt_init, 8984, NHC.No);
-cptr.stI32o(allopt_init, 8988, NHC.No);
-cptr.stI32o(allopt_init, 8992, 0);
-cptr.st1o(allopt_init, 8996, NHC.opt_in);
-cptr.stPtro(allopt_init, 9000, null);
-cptr.stPtro(allopt_init, 9008, optfn_map_mode);
-cptr.stPtro(allopt_init, 9016, (null));
-cptr.stPtro(allopt_init, 9024, __sl180);
-cptr.stPtro(allopt_init, 9032, null);
-cptr.st1o(allopt_init, 9040, NHC.Off);
-cptr.st1o(allopt_init, 9041, NHC.No);
-cptr.st1o(allopt_init, 9042, 0);
-cptr.st1o(allopt_init, 9043, 0);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_idx, NHC.opt_map_mode);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 8944 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 8944 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 8944 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 8944 + FLD.allopt_t_optfn, optfn_map_mode);
+cptr.stPtro(allopt_init, 8944 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 8944 + FLD.allopt_t_descr, __sl180);
+cptr.stPtro(allopt_init, 8944 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 8944 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 8944 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 8944 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 8944 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9048, __sl181);
-cptr.stI32o(allopt_init, 9056, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9060, 0);
-cptr.stI32o(allopt_init, 9064, 0);
-cptr.stI32o(allopt_init, 9068, NHC.opt_mention_decor);
-cptr.stI32o(allopt_init, 9072, NHC.set_in_game);
-cptr.stI32o(allopt_init, 9076, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 9080, NHC.Yes);
-cptr.stI32o(allopt_init, 9084, NHC.No);
-cptr.stI32o(allopt_init, 9088, NHC.No);
-cptr.stI32o(allopt_init, 9092, NHC.No);
-cptr.stI32o(allopt_init, 9096, NHC.Term_False);
-cptr.st1o(allopt_init, 9100, NHC.opt_in);
-cptr.stPtro(allopt_init, 9104, cptr.add(flags, 25));
-cptr.stPtro(allopt_init, 9112, optfn_boolean);
-cptr.stPtro(allopt_init, 9120, (null));
-cptr.stPtro(allopt_init, 9128, __sl182);
-cptr.stPtro(allopt_init, 9136, null);
-cptr.st1o(allopt_init, 9144, NHC.Off);
-cptr.st1o(allopt_init, 9145, 0);
-cptr.st1o(allopt_init, 9146, 0);
-cptr.st1o(allopt_init, 9147, 0);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_idx, NHC.opt_mention_decor);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9048 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 9048 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9048 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_mention_decor));
+cptr.stPtro(allopt_init, 9048 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 9048 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9048 + FLD.allopt_t_descr, __sl182);
+cptr.stPtro(allopt_init, 9048 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9048 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9048 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 9048 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9048 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9152, __sl183);
-cptr.stI32o(allopt_init, 9160, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9164, 0);
-cptr.stI32o(allopt_init, 9168, 0);
-cptr.stI32o(allopt_init, 9172, NHC.opt_mention_map);
-cptr.stI32o(allopt_init, 9176, NHC.set_in_game);
-cptr.stI32o(allopt_init, 9180, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 9184, NHC.Yes);
-cptr.stI32o(allopt_init, 9188, NHC.No);
-cptr.stI32o(allopt_init, 9192, NHC.No);
-cptr.stI32o(allopt_init, 9196, NHC.No);
-cptr.stI32o(allopt_init, 9200, NHC.Term_False);
-cptr.st1o(allopt_init, 9204, NHC.opt_in);
-cptr.stPtro(allopt_init, 9208, cptr.add(a11y, 13));
-cptr.stPtro(allopt_init, 9216, optfn_boolean);
-cptr.stPtro(allopt_init, 9224, (null));
-cptr.stPtro(allopt_init, 9232, __sl184);
-cptr.stPtro(allopt_init, 9240, null);
-cptr.st1o(allopt_init, 9248, NHC.Off);
-cptr.st1o(allopt_init, 9249, 0);
-cptr.st1o(allopt_init, 9250, 0);
-cptr.st1o(allopt_init, 9251, 0);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_idx, NHC.opt_mention_map);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9152 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 9152 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9152 + FLD.allopt_t_addr, cptr.add(a11y, FLD.accessibility_data_glyph_updates));
+cptr.stPtro(allopt_init, 9152 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 9152 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9152 + FLD.allopt_t_descr, __sl184);
+cptr.stPtro(allopt_init, 9152 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9152 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9152 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 9152 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9152 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9256, __sl185);
-cptr.stI32o(allopt_init, 9264, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9268, 0);
-cptr.stI32o(allopt_init, 9272, 0);
-cptr.stI32o(allopt_init, 9276, NHC.opt_mention_walls);
-cptr.stI32o(allopt_init, 9280, NHC.set_in_game);
-cptr.stI32o(allopt_init, 9284, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 9288, NHC.Yes);
-cptr.stI32o(allopt_init, 9292, NHC.No);
-cptr.stI32o(allopt_init, 9296, NHC.No);
-cptr.stI32o(allopt_init, 9300, NHC.No);
-cptr.stI32o(allopt_init, 9304, NHC.Term_False);
-cptr.st1o(allopt_init, 9308, NHC.opt_in);
-cptr.stPtro(allopt_init, 9312, cptr.add(flags, 26));
-cptr.stPtro(allopt_init, 9320, optfn_boolean);
-cptr.stPtro(allopt_init, 9328, (null));
-cptr.stPtro(allopt_init, 9336, __sl186);
-cptr.stPtro(allopt_init, 9344, null);
-cptr.st1o(allopt_init, 9352, NHC.Off);
-cptr.st1o(allopt_init, 9353, 0);
-cptr.st1o(allopt_init, 9354, 0);
-cptr.st1o(allopt_init, 9355, 0);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_idx, NHC.opt_mention_walls);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9256 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 9256 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9256 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_mention_walls));
+cptr.stPtro(allopt_init, 9256 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 9256 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9256 + FLD.allopt_t_descr, __sl186);
+cptr.stPtro(allopt_init, 9256 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9256 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9256 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 9256 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9256 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9360, __sl187);
-cptr.stI32o(allopt_init, 9368, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9372, 0);
-cptr.stI32o(allopt_init, 9376, 4);
-cptr.stI32o(allopt_init, 9380, NHC.opt_menu_deselect_all);
-cptr.stI32o(allopt_init, 9384, NHC.set_in_config);
-cptr.stI32o(allopt_init, 9388, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9392, NHC.No);
-cptr.stI32o(allopt_init, 9396, NHC.Yes);
-cptr.stI32o(allopt_init, 9400, NHC.No);
-cptr.stI32o(allopt_init, 9404, NHC.No);
-cptr.stI32o(allopt_init, 9408, 0);
-cptr.st1o(allopt_init, 9412, NHC.opt_in);
-cptr.stPtro(allopt_init, 9416, null);
-cptr.stPtro(allopt_init, 9424, optfn_menu_deselect_all);
-cptr.stPtro(allopt_init, 9432, (null));
-cptr.stPtro(allopt_init, 9440, __sl188);
-cptr.stPtro(allopt_init, 9448, null);
-cptr.st1o(allopt_init, 9456, NHC.Off);
-cptr.st1o(allopt_init, 9457, NHC.No);
-cptr.st1o(allopt_init, 9458, 0);
-cptr.st1o(allopt_init, 9459, 0);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_idx, NHC.opt_menu_deselect_all);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9360 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9360 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9360 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9360 + FLD.allopt_t_optfn, optfn_menu_deselect_all);
+cptr.stPtro(allopt_init, 9360 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9360 + FLD.allopt_t_descr, __sl188);
+cptr.stPtro(allopt_init, 9360 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9360 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9360 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9360 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9360 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9464, __sl189);
-cptr.stI32o(allopt_init, 9472, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9476, 0);
-cptr.stI32o(allopt_init, 9480, 4);
-cptr.stI32o(allopt_init, 9484, NHC.opt_menu_deselect_page);
-cptr.stI32o(allopt_init, 9488, NHC.set_in_config);
-cptr.stI32o(allopt_init, 9492, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9496, NHC.No);
-cptr.stI32o(allopt_init, 9500, NHC.Yes);
-cptr.stI32o(allopt_init, 9504, NHC.No);
-cptr.stI32o(allopt_init, 9508, NHC.No);
-cptr.stI32o(allopt_init, 9512, 0);
-cptr.st1o(allopt_init, 9516, NHC.opt_in);
-cptr.stPtro(allopt_init, 9520, null);
-cptr.stPtro(allopt_init, 9528, optfn_menu_deselect_page);
-cptr.stPtro(allopt_init, 9536, (null));
-cptr.stPtro(allopt_init, 9544, __sl190);
-cptr.stPtro(allopt_init, 9552, null);
-cptr.st1o(allopt_init, 9560, NHC.Off);
-cptr.st1o(allopt_init, 9561, NHC.No);
-cptr.st1o(allopt_init, 9562, 0);
-cptr.st1o(allopt_init, 9563, 0);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_idx, NHC.opt_menu_deselect_page);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9464 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9464 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9464 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9464 + FLD.allopt_t_optfn, optfn_menu_deselect_page);
+cptr.stPtro(allopt_init, 9464 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9464 + FLD.allopt_t_descr, __sl190);
+cptr.stPtro(allopt_init, 9464 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9464 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9464 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9464 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9464 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9568, __sl191);
-cptr.stI32o(allopt_init, 9576, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9580, 0);
-cptr.stI32o(allopt_init, 9584, 4);
-cptr.stI32o(allopt_init, 9588, NHC.opt_menu_first_page);
-cptr.stI32o(allopt_init, 9592, NHC.set_in_config);
-cptr.stI32o(allopt_init, 9596, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9600, NHC.No);
-cptr.stI32o(allopt_init, 9604, NHC.Yes);
-cptr.stI32o(allopt_init, 9608, NHC.No);
-cptr.stI32o(allopt_init, 9612, NHC.No);
-cptr.stI32o(allopt_init, 9616, 0);
-cptr.st1o(allopt_init, 9620, NHC.opt_in);
-cptr.stPtro(allopt_init, 9624, null);
-cptr.stPtro(allopt_init, 9632, optfn_menu_first_page);
-cptr.stPtro(allopt_init, 9640, (null));
-cptr.stPtro(allopt_init, 9648, __sl192);
-cptr.stPtro(allopt_init, 9656, null);
-cptr.st1o(allopt_init, 9664, NHC.Off);
-cptr.st1o(allopt_init, 9665, NHC.No);
-cptr.st1o(allopt_init, 9666, 0);
-cptr.st1o(allopt_init, 9667, 0);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_idx, NHC.opt_menu_first_page);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9568 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9568 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9568 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9568 + FLD.allopt_t_optfn, optfn_menu_first_page);
+cptr.stPtro(allopt_init, 9568 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9568 + FLD.allopt_t_descr, __sl192);
+cptr.stPtro(allopt_init, 9568 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9568 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9568 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9568 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9568 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9672, __sl193);
-cptr.stI32o(allopt_init, 9680, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9684, 0);
-cptr.stI32o(allopt_init, 9688, 4);
-cptr.stI32o(allopt_init, 9692, NHC.opt_menu_headings);
-cptr.stI32o(allopt_init, 9696, NHC.set_in_game);
-cptr.stI32o(allopt_init, 9700, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9704, NHC.Yes);
-cptr.stI32o(allopt_init, 9708, NHC.Yes);
-cptr.stI32o(allopt_init, 9712, NHC.No);
-cptr.stI32o(allopt_init, 9716, NHC.No);
-cptr.stI32o(allopt_init, 9720, 0);
-cptr.st1o(allopt_init, 9724, NHC.opt_in);
-cptr.stPtro(allopt_init, 9728, null);
-cptr.stPtro(allopt_init, 9736, optfn_menu_headings);
-cptr.stPtro(allopt_init, 9744, (null));
-cptr.stPtro(allopt_init, 9752, __sl194);
-cptr.stPtro(allopt_init, 9760, null);
-cptr.st1o(allopt_init, 9768, NHC.Off);
-cptr.st1o(allopt_init, 9769, NHC.Yes);
-cptr.st1o(allopt_init, 9770, 0);
-cptr.st1o(allopt_init, 9771, 0);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_idx, NHC.opt_menu_headings);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9672 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9672 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9672 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9672 + FLD.allopt_t_optfn, optfn_menu_headings);
+cptr.stPtro(allopt_init, 9672 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9672 + FLD.allopt_t_descr, __sl194);
+cptr.stPtro(allopt_init, 9672 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9672 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9672 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 9672 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9672 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9776, __sl195);
-cptr.stI32o(allopt_init, 9784, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9788, 0);
-cptr.stI32o(allopt_init, 9792, 4);
-cptr.stI32o(allopt_init, 9796, NHC.opt_menu_invert_all);
-cptr.stI32o(allopt_init, 9800, NHC.set_in_config);
-cptr.stI32o(allopt_init, 9804, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9808, NHC.No);
-cptr.stI32o(allopt_init, 9812, NHC.Yes);
-cptr.stI32o(allopt_init, 9816, NHC.No);
-cptr.stI32o(allopt_init, 9820, NHC.No);
-cptr.stI32o(allopt_init, 9824, 0);
-cptr.st1o(allopt_init, 9828, NHC.opt_in);
-cptr.stPtro(allopt_init, 9832, null);
-cptr.stPtro(allopt_init, 9840, optfn_menu_invert_all);
-cptr.stPtro(allopt_init, 9848, (null));
-cptr.stPtro(allopt_init, 9856, __sl196);
-cptr.stPtro(allopt_init, 9864, null);
-cptr.st1o(allopt_init, 9872, NHC.Off);
-cptr.st1o(allopt_init, 9873, NHC.No);
-cptr.st1o(allopt_init, 9874, 0);
-cptr.st1o(allopt_init, 9875, 0);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_idx, NHC.opt_menu_invert_all);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9776 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9776 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9776 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9776 + FLD.allopt_t_optfn, optfn_menu_invert_all);
+cptr.stPtro(allopt_init, 9776 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9776 + FLD.allopt_t_descr, __sl196);
+cptr.stPtro(allopt_init, 9776 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9776 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9776 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9776 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9776 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9880, __sl197);
-cptr.stI32o(allopt_init, 9888, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9892, 0);
-cptr.stI32o(allopt_init, 9896, 4);
-cptr.stI32o(allopt_init, 9900, NHC.opt_menu_invert_page);
-cptr.stI32o(allopt_init, 9904, NHC.set_in_config);
-cptr.stI32o(allopt_init, 9908, NHC.CompOpt);
-cptr.stI32o(allopt_init, 9912, NHC.No);
-cptr.stI32o(allopt_init, 9916, NHC.Yes);
-cptr.stI32o(allopt_init, 9920, NHC.No);
-cptr.stI32o(allopt_init, 9924, NHC.No);
-cptr.stI32o(allopt_init, 9928, 0);
-cptr.st1o(allopt_init, 9932, NHC.opt_in);
-cptr.stPtro(allopt_init, 9936, null);
-cptr.stPtro(allopt_init, 9944, optfn_menu_invert_page);
-cptr.stPtro(allopt_init, 9952, (null));
-cptr.stPtro(allopt_init, 9960, __sl198);
-cptr.stPtro(allopt_init, 9968, null);
-cptr.st1o(allopt_init, 9976, NHC.Off);
-cptr.st1o(allopt_init, 9977, NHC.No);
-cptr.st1o(allopt_init, 9978, 0);
-cptr.st1o(allopt_init, 9979, 0);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_idx, NHC.opt_menu_invert_page);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9880 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9880 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9880 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9880 + FLD.allopt_t_optfn, optfn_menu_invert_page);
+cptr.stPtro(allopt_init, 9880 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9880 + FLD.allopt_t_descr, __sl198);
+cptr.stPtro(allopt_init, 9880 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9880 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9880 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9880 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9880 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 9984, __sl199);
-cptr.stI32o(allopt_init, 9992, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 9996, 0);
-cptr.stI32o(allopt_init, 10000, 4);
-cptr.stI32o(allopt_init, 10004, NHC.opt_menu_last_page);
-cptr.stI32o(allopt_init, 10008, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10012, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10016, NHC.No);
-cptr.stI32o(allopt_init, 10020, NHC.Yes);
-cptr.stI32o(allopt_init, 10024, NHC.No);
-cptr.stI32o(allopt_init, 10028, NHC.No);
-cptr.stI32o(allopt_init, 10032, 0);
-cptr.st1o(allopt_init, 10036, NHC.opt_in);
-cptr.stPtro(allopt_init, 10040, null);
-cptr.stPtro(allopt_init, 10048, optfn_menu_last_page);
-cptr.stPtro(allopt_init, 10056, (null));
-cptr.stPtro(allopt_init, 10064, __sl200);
-cptr.stPtro(allopt_init, 10072, null);
-cptr.st1o(allopt_init, 10080, NHC.Off);
-cptr.st1o(allopt_init, 10081, NHC.No);
-cptr.st1o(allopt_init, 10082, 0);
-cptr.st1o(allopt_init, 10083, 0);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_idx, NHC.opt_menu_last_page);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 9984 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 9984 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 9984 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 9984 + FLD.allopt_t_optfn, optfn_menu_last_page);
+cptr.stPtro(allopt_init, 9984 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 9984 + FLD.allopt_t_descr, __sl200);
+cptr.stPtro(allopt_init, 9984 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 9984 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 9984 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 9984 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 9984 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10088, __sl201);
-cptr.stI32o(allopt_init, 10096, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10100, 0);
-cptr.stI32o(allopt_init, 10104, 4);
-cptr.stI32o(allopt_init, 10108, NHC.opt_menu_next_page);
-cptr.stI32o(allopt_init, 10112, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10116, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10120, NHC.No);
-cptr.stI32o(allopt_init, 10124, NHC.Yes);
-cptr.stI32o(allopt_init, 10128, NHC.No);
-cptr.stI32o(allopt_init, 10132, NHC.No);
-cptr.stI32o(allopt_init, 10136, 0);
-cptr.st1o(allopt_init, 10140, NHC.opt_in);
-cptr.stPtro(allopt_init, 10144, null);
-cptr.stPtro(allopt_init, 10152, optfn_menu_next_page);
-cptr.stPtro(allopt_init, 10160, (null));
-cptr.stPtro(allopt_init, 10168, __sl202);
-cptr.stPtro(allopt_init, 10176, null);
-cptr.st1o(allopt_init, 10184, NHC.Off);
-cptr.st1o(allopt_init, 10185, NHC.No);
-cptr.st1o(allopt_init, 10186, 0);
-cptr.st1o(allopt_init, 10187, 0);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_idx, NHC.opt_menu_next_page);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10088 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10088 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10088 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10088 + FLD.allopt_t_optfn, optfn_menu_next_page);
+cptr.stPtro(allopt_init, 10088 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10088 + FLD.allopt_t_descr, __sl202);
+cptr.stPtro(allopt_init, 10088 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10088 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10088 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10088 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10088 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10192, __sl203);
-cptr.stI32o(allopt_init, 10200, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10204, 0);
-cptr.stI32o(allopt_init, 10208, 12);
-cptr.stI32o(allopt_init, 10212, NHC.opt_menu_objsyms);
-cptr.stI32o(allopt_init, 10216, NHC.set_in_game);
-cptr.stI32o(allopt_init, 10220, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10224, NHC.Yes);
-cptr.stI32o(allopt_init, 10228, NHC.Yes);
-cptr.stI32o(allopt_init, 10232, NHC.No);
-cptr.stI32o(allopt_init, 10236, NHC.No);
-cptr.stI32o(allopt_init, 10240, 0);
-cptr.st1o(allopt_init, 10244, NHC.opt_in);
-cptr.stPtro(allopt_init, 10248, null);
-cptr.stPtro(allopt_init, 10256, optfn_menu_objsyms);
-cptr.stPtro(allopt_init, 10264, __sl204);
-cptr.stPtro(allopt_init, 10272, __sl205);
-cptr.stPtro(allopt_init, 10280, null);
-cptr.st1o(allopt_init, 10288, NHC.Off);
-cptr.st1o(allopt_init, 10289, NHC.Yes);
-cptr.st1o(allopt_init, 10290, 0);
-cptr.st1o(allopt_init, 10291, 0);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_expectedbuf, 12);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_idx, NHC.opt_menu_objsyms);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10192 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10192 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10192 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10192 + FLD.allopt_t_optfn, optfn_menu_objsyms);
+cptr.stPtro(allopt_init, 10192 + FLD.allopt_t_alias, __sl204);
+cptr.stPtro(allopt_init, 10192 + FLD.allopt_t_descr, __sl205);
+cptr.stPtro(allopt_init, 10192 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10192 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10192 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 10192 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10192 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10296, __sl206);
-cptr.stI32o(allopt_init, 10304, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10308, 0);
-cptr.stI32o(allopt_init, 10312, 0);
-cptr.stI32o(allopt_init, 10316, NHC.opt_menu_overlay);
-cptr.stI32o(allopt_init, 10320, NHC.set_in_game);
-cptr.stI32o(allopt_init, 10324, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 10328, NHC.Yes);
-cptr.stI32o(allopt_init, 10332, NHC.No);
-cptr.stI32o(allopt_init, 10336, NHC.No);
-cptr.stI32o(allopt_init, 10340, NHC.No);
-cptr.stI32o(allopt_init, 10344, NHC.Term_False);
-cptr.st1o(allopt_init, 10348, NHC.opt_in);
-cptr.stPtro(allopt_init, 10352, cptr.add(iflags, 134));
-cptr.stPtro(allopt_init, 10360, optfn_boolean);
-cptr.stPtro(allopt_init, 10368, (null));
-cptr.stPtro(allopt_init, 10376, __sl207);
-cptr.stPtro(allopt_init, 10384, null);
-cptr.st1o(allopt_init, 10392, NHC.On);
-cptr.st1o(allopt_init, 10393, 0);
-cptr.st1o(allopt_init, 10394, 0);
-cptr.st1o(allopt_init, 10395, 0);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_idx, NHC.opt_menu_overlay);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10296 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 10296 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10296 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_menu_overlay));
+cptr.stPtro(allopt_init, 10296 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 10296 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10296 + FLD.allopt_t_descr, __sl207);
+cptr.stPtro(allopt_init, 10296 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10296 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 10296 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 10296 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10296 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10400, __sl208);
-cptr.stI32o(allopt_init, 10408, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10412, 0);
-cptr.stI32o(allopt_init, 10416, 4);
-cptr.stI32o(allopt_init, 10420, NHC.opt_menu_previous_page);
-cptr.stI32o(allopt_init, 10424, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10428, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10432, NHC.No);
-cptr.stI32o(allopt_init, 10436, NHC.Yes);
-cptr.stI32o(allopt_init, 10440, NHC.No);
-cptr.stI32o(allopt_init, 10444, NHC.No);
-cptr.stI32o(allopt_init, 10448, 0);
-cptr.st1o(allopt_init, 10452, NHC.opt_in);
-cptr.stPtro(allopt_init, 10456, null);
-cptr.stPtro(allopt_init, 10464, optfn_menu_previous_page);
-cptr.stPtro(allopt_init, 10472, (null));
-cptr.stPtro(allopt_init, 10480, __sl209);
-cptr.stPtro(allopt_init, 10488, null);
-cptr.st1o(allopt_init, 10496, NHC.Off);
-cptr.st1o(allopt_init, 10497, NHC.No);
-cptr.st1o(allopt_init, 10498, 0);
-cptr.st1o(allopt_init, 10499, 0);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_idx, NHC.opt_menu_previous_page);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10400 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10400 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10400 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10400 + FLD.allopt_t_optfn, optfn_menu_previous_page);
+cptr.stPtro(allopt_init, 10400 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10400 + FLD.allopt_t_descr, __sl209);
+cptr.stPtro(allopt_init, 10400 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10400 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10400 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10400 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10400 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10504, __sl210);
-cptr.stI32o(allopt_init, 10512, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10516, 0);
-cptr.stI32o(allopt_init, 10520, 4);
-cptr.stI32o(allopt_init, 10524, NHC.opt_menu_search);
-cptr.stI32o(allopt_init, 10528, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10532, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10536, NHC.No);
-cptr.stI32o(allopt_init, 10540, NHC.Yes);
-cptr.stI32o(allopt_init, 10544, NHC.No);
-cptr.stI32o(allopt_init, 10548, NHC.No);
-cptr.stI32o(allopt_init, 10552, 0);
-cptr.st1o(allopt_init, 10556, NHC.opt_in);
-cptr.stPtro(allopt_init, 10560, null);
-cptr.stPtro(allopt_init, 10568, optfn_menu_search);
-cptr.stPtro(allopt_init, 10576, (null));
-cptr.stPtro(allopt_init, 10584, __sl211);
-cptr.stPtro(allopt_init, 10592, null);
-cptr.st1o(allopt_init, 10600, NHC.Off);
-cptr.st1o(allopt_init, 10601, NHC.No);
-cptr.st1o(allopt_init, 10602, 0);
-cptr.st1o(allopt_init, 10603, 0);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_idx, NHC.opt_menu_search);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10504 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10504 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10504 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10504 + FLD.allopt_t_optfn, optfn_menu_search);
+cptr.stPtro(allopt_init, 10504 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10504 + FLD.allopt_t_descr, __sl211);
+cptr.stPtro(allopt_init, 10504 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10504 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10504 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10504 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10504 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10608, __sl212);
-cptr.stI32o(allopt_init, 10616, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10620, 0);
-cptr.stI32o(allopt_init, 10624, 4);
-cptr.stI32o(allopt_init, 10628, NHC.opt_menu_select_all);
-cptr.stI32o(allopt_init, 10632, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10636, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10640, NHC.No);
-cptr.stI32o(allopt_init, 10644, NHC.Yes);
-cptr.stI32o(allopt_init, 10648, NHC.No);
-cptr.stI32o(allopt_init, 10652, NHC.No);
-cptr.stI32o(allopt_init, 10656, 0);
-cptr.st1o(allopt_init, 10660, NHC.opt_in);
-cptr.stPtro(allopt_init, 10664, null);
-cptr.stPtro(allopt_init, 10672, optfn_menu_select_all);
-cptr.stPtro(allopt_init, 10680, (null));
-cptr.stPtro(allopt_init, 10688, __sl213);
-cptr.stPtro(allopt_init, 10696, null);
-cptr.st1o(allopt_init, 10704, NHC.Off);
-cptr.st1o(allopt_init, 10705, NHC.No);
-cptr.st1o(allopt_init, 10706, 0);
-cptr.st1o(allopt_init, 10707, 0);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_idx, NHC.opt_menu_select_all);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10608 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10608 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10608 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10608 + FLD.allopt_t_optfn, optfn_menu_select_all);
+cptr.stPtro(allopt_init, 10608 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10608 + FLD.allopt_t_descr, __sl213);
+cptr.stPtro(allopt_init, 10608 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10608 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10608 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10608 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10608 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10712, __sl214);
-cptr.stI32o(allopt_init, 10720, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10724, 0);
-cptr.stI32o(allopt_init, 10728, 4);
-cptr.stI32o(allopt_init, 10732, NHC.opt_menu_select_page);
-cptr.stI32o(allopt_init, 10736, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10740, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10744, NHC.No);
-cptr.stI32o(allopt_init, 10748, NHC.Yes);
-cptr.stI32o(allopt_init, 10752, NHC.No);
-cptr.stI32o(allopt_init, 10756, NHC.No);
-cptr.stI32o(allopt_init, 10760, 0);
-cptr.st1o(allopt_init, 10764, NHC.opt_in);
-cptr.stPtro(allopt_init, 10768, null);
-cptr.stPtro(allopt_init, 10776, optfn_menu_select_page);
-cptr.stPtro(allopt_init, 10784, (null));
-cptr.stPtro(allopt_init, 10792, __sl215);
-cptr.stPtro(allopt_init, 10800, null);
-cptr.st1o(allopt_init, 10808, NHC.Off);
-cptr.st1o(allopt_init, 10809, NHC.No);
-cptr.st1o(allopt_init, 10810, 0);
-cptr.st1o(allopt_init, 10811, 0);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_idx, NHC.opt_menu_select_page);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10712 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10712 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10712 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10712 + FLD.allopt_t_optfn, optfn_menu_select_page);
+cptr.stPtro(allopt_init, 10712 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10712 + FLD.allopt_t_descr, __sl215);
+cptr.stPtro(allopt_init, 10712 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10712 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10712 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10712 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10712 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10816, __sl216);
-cptr.stI32o(allopt_init, 10824, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10828, 0);
-cptr.stI32o(allopt_init, 10832, 4);
-cptr.stI32o(allopt_init, 10836, NHC.opt_menu_shift_left);
-cptr.stI32o(allopt_init, 10840, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10844, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10848, NHC.No);
-cptr.stI32o(allopt_init, 10852, NHC.Yes);
-cptr.stI32o(allopt_init, 10856, NHC.No);
-cptr.stI32o(allopt_init, 10860, NHC.No);
-cptr.stI32o(allopt_init, 10864, 0);
-cptr.st1o(allopt_init, 10868, NHC.opt_in);
-cptr.stPtro(allopt_init, 10872, null);
-cptr.stPtro(allopt_init, 10880, optfn_menu_shift_left);
-cptr.stPtro(allopt_init, 10888, (null));
-cptr.stPtro(allopt_init, 10896, __sl217);
-cptr.stPtro(allopt_init, 10904, null);
-cptr.st1o(allopt_init, 10912, NHC.Off);
-cptr.st1o(allopt_init, 10913, NHC.No);
-cptr.st1o(allopt_init, 10914, 0);
-cptr.st1o(allopt_init, 10915, 0);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_idx, NHC.opt_menu_shift_left);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10816 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10816 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10816 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10816 + FLD.allopt_t_optfn, optfn_menu_shift_left);
+cptr.stPtro(allopt_init, 10816 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10816 + FLD.allopt_t_descr, __sl217);
+cptr.stPtro(allopt_init, 10816 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10816 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10816 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10816 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10816 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 10920, __sl218);
-cptr.stI32o(allopt_init, 10928, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 10932, 0);
-cptr.stI32o(allopt_init, 10936, 4);
-cptr.stI32o(allopt_init, 10940, NHC.opt_menu_shift_right);
-cptr.stI32o(allopt_init, 10944, NHC.set_in_config);
-cptr.stI32o(allopt_init, 10948, NHC.CompOpt);
-cptr.stI32o(allopt_init, 10952, NHC.No);
-cptr.stI32o(allopt_init, 10956, NHC.Yes);
-cptr.stI32o(allopt_init, 10960, NHC.No);
-cptr.stI32o(allopt_init, 10964, NHC.No);
-cptr.stI32o(allopt_init, 10968, 0);
-cptr.st1o(allopt_init, 10972, NHC.opt_in);
-cptr.stPtro(allopt_init, 10976, null);
-cptr.stPtro(allopt_init, 10984, optfn_menu_shift_right);
-cptr.stPtro(allopt_init, 10992, (null));
-cptr.stPtro(allopt_init, 11000, __sl219);
-cptr.stPtro(allopt_init, 11008, null);
-cptr.st1o(allopt_init, 11016, NHC.Off);
-cptr.st1o(allopt_init, 11017, NHC.No);
-cptr.st1o(allopt_init, 11018, 0);
-cptr.st1o(allopt_init, 11019, 0);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_idx, NHC.opt_menu_shift_right);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 10920 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 10920 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 10920 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 10920 + FLD.allopt_t_optfn, optfn_menu_shift_right);
+cptr.stPtro(allopt_init, 10920 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 10920 + FLD.allopt_t_descr, __sl219);
+cptr.stPtro(allopt_init, 10920 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 10920 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 10920 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 10920 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 10920 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11024, __sl220);
-cptr.stI32o(allopt_init, 11032, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11036, 0);
-cptr.stI32o(allopt_init, 11040, 0);
-cptr.stI32o(allopt_init, 11044, NHC.opt_menu_tab_sep);
-cptr.stI32o(allopt_init, 11048, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 11052, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 11056, NHC.Yes);
-cptr.stI32o(allopt_init, 11060, NHC.No);
-cptr.stI32o(allopt_init, 11064, NHC.No);
-cptr.stI32o(allopt_init, 11068, NHC.No);
-cptr.stI32o(allopt_init, 11072, NHC.Term_False);
-cptr.st1o(allopt_init, 11076, NHC.opt_in);
-cptr.stPtro(allopt_init, 11080, cptr.add(iflags, 136));
-cptr.stPtro(allopt_init, 11088, optfn_boolean);
-cptr.stPtro(allopt_init, 11096, (null));
-cptr.stPtro(allopt_init, 11104, __sl221);
-cptr.stPtro(allopt_init, 11112, null);
-cptr.st1o(allopt_init, 11120, NHC.Off);
-cptr.st1o(allopt_init, 11121, 0);
-cptr.st1o(allopt_init, 11122, 0);
-cptr.st1o(allopt_init, 11123, 0);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_idx, NHC.opt_menu_tab_sep);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11024 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 11024 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11024 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_menu_tab_sep));
+cptr.stPtro(allopt_init, 11024 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 11024 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11024 + FLD.allopt_t_descr, __sl221);
+cptr.stPtro(allopt_init, 11024 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11024 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11024 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 11024 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11024 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11128, __sl222);
-cptr.stI32o(allopt_init, 11136, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11140, 0);
-cptr.stI32o(allopt_init, 11144, 0);
-cptr.stI32o(allopt_init, 11148, NHC.opt_menucolors);
-cptr.stI32o(allopt_init, 11152, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11156, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 11160, NHC.Yes);
-cptr.stI32o(allopt_init, 11164, NHC.Yes);
-cptr.stI32o(allopt_init, 11168, NHC.No);
-cptr.stI32o(allopt_init, 11172, NHC.No);
-cptr.stI32o(allopt_init, 11176, NHC.Term_False);
-cptr.st1o(allopt_init, 11180, NHC.opt_in);
-cptr.stPtro(allopt_init, 11184, cptr.add(iflags, 149));
-cptr.stPtro(allopt_init, 11192, optfn_boolean);
-cptr.stPtro(allopt_init, 11200, (null));
-cptr.stPtro(allopt_init, 11208, __sl223);
-cptr.stPtro(allopt_init, 11216, null);
-cptr.st1o(allopt_init, 11224, NHC.Off);
-cptr.st1o(allopt_init, 11225, 0);
-cptr.st1o(allopt_init, 11226, 0);
-cptr.st1o(allopt_init, 11227, 0);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_idx, NHC.opt_menucolors);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11128 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 11128 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11128 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_use_menu_color));
+cptr.stPtro(allopt_init, 11128 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 11128 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11128 + FLD.allopt_t_descr, __sl223);
+cptr.stPtro(allopt_init, 11128 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11128 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11128 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 11128 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11128 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11232, __sl224);
-cptr.stI32o(allopt_init, 11240, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 11244, 0);
-cptr.stI32o(allopt_init, 11248, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 11252, NHC.opt_o_menu_colors);
-cptr.stI32o(allopt_init, 11256, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11260, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 11264, NHC.No);
-cptr.stI32o(allopt_init, 11268, NHC.Yes);
-cptr.stI32o(allopt_init, 11272, NHC.No);
-cptr.stI32o(allopt_init, 11276, NHC.No);
-cptr.stI32o(allopt_init, 11280, 0);
-cptr.st1o(allopt_init, 11284, NHC.opt_in);
-cptr.stPtro(allopt_init, 11288, null);
-cptr.stPtro(allopt_init, 11296, optfn_o_menu_colors);
-cptr.stPtro(allopt_init, 11304, (null));
-cptr.stPtro(allopt_init, 11312, __sl225);
-cptr.stPtro(allopt_init, 11320, null);
-cptr.st1o(allopt_init, 11328, NHC.On);
-cptr.st1o(allopt_init, 11329, NHC.On);
-cptr.st1o(allopt_init, 11330, 0);
-cptr.st1o(allopt_init, 11331, 0);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_idx, NHC.opt_o_menu_colors);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11232 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 11232 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11232 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 11232 + FLD.allopt_t_optfn, optfn_o_menu_colors);
+cptr.stPtro(allopt_init, 11232 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11232 + FLD.allopt_t_descr, __sl225);
+cptr.stPtro(allopt_init, 11232 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11232 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 11232 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 11232 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11232 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11336, __sl226);
-cptr.stI32o(allopt_init, 11344, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11348, 0);
-cptr.stI32o(allopt_init, 11352, 5);
-cptr.stI32o(allopt_init, 11356, NHC.opt_menuinvertmode);
-cptr.stI32o(allopt_init, 11360, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11364, NHC.CompOpt);
-cptr.stI32o(allopt_init, 11368, NHC.No);
-cptr.stI32o(allopt_init, 11372, NHC.Yes);
-cptr.stI32o(allopt_init, 11376, NHC.No);
-cptr.stI32o(allopt_init, 11380, NHC.No);
-cptr.stI32o(allopt_init, 11384, 0);
-cptr.st1o(allopt_init, 11388, NHC.opt_in);
-cptr.stPtro(allopt_init, 11392, null);
-cptr.stPtro(allopt_init, 11400, optfn_menuinvertmode);
-cptr.stPtro(allopt_init, 11408, (null));
-cptr.stPtro(allopt_init, 11416, __sl227);
-cptr.stPtro(allopt_init, 11424, null);
-cptr.st1o(allopt_init, 11432, NHC.Off);
-cptr.st1o(allopt_init, 11433, NHC.No);
-cptr.st1o(allopt_init, 11434, 0);
-cptr.st1o(allopt_init, 11435, 0);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_expectedbuf, 5);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_idx, NHC.opt_menuinvertmode);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11336 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 11336 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11336 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 11336 + FLD.allopt_t_optfn, optfn_menuinvertmode);
+cptr.stPtro(allopt_init, 11336 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11336 + FLD.allopt_t_descr, __sl227);
+cptr.stPtro(allopt_init, 11336 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11336 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11336 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 11336 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11336 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11440, __sl228);
-cptr.stI32o(allopt_init, 11448, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11452, 0);
-cptr.stI32o(allopt_init, 11456, 13);
-cptr.stI32o(allopt_init, 11460, NHC.opt_menustyle);
-cptr.stI32o(allopt_init, 11464, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11468, NHC.CompOpt);
-cptr.stI32o(allopt_init, 11472, NHC.Yes);
-cptr.stI32o(allopt_init, 11476, NHC.Yes);
-cptr.stI32o(allopt_init, 11480, NHC.No);
-cptr.stI32o(allopt_init, 11484, NHC.No);
-cptr.stI32o(allopt_init, 11488, 0);
-cptr.st1o(allopt_init, 11492, NHC.opt_in);
-cptr.stPtro(allopt_init, 11496, null);
-cptr.stPtro(allopt_init, 11504, optfn_menustyle);
-cptr.stPtro(allopt_init, 11512, (null));
-cptr.stPtro(allopt_init, 11520, __sl229);
-cptr.stPtro(allopt_init, 11528, null);
-cptr.st1o(allopt_init, 11536, NHC.Off);
-cptr.st1o(allopt_init, 11537, NHC.Yes);
-cptr.st1o(allopt_init, 11538, 0);
-cptr.st1o(allopt_init, 11539, 0);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_expectedbuf, 13);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_idx, NHC.opt_menustyle);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11440 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 11440 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11440 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 11440 + FLD.allopt_t_optfn, optfn_menustyle);
+cptr.stPtro(allopt_init, 11440 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11440 + FLD.allopt_t_descr, __sl229);
+cptr.stPtro(allopt_init, 11440 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11440 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11440 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 11440 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11440 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11544, __sl230);
-cptr.stI32o(allopt_init, 11552, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11556, 0);
-cptr.stI32o(allopt_init, 11560, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 11564, NHC.opt_o_message_types);
-cptr.stI32o(allopt_init, 11568, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11572, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 11576, NHC.No);
-cptr.stI32o(allopt_init, 11580, NHC.Yes);
-cptr.stI32o(allopt_init, 11584, NHC.No);
-cptr.stI32o(allopt_init, 11588, NHC.No);
-cptr.stI32o(allopt_init, 11592, 0);
-cptr.st1o(allopt_init, 11596, NHC.opt_in);
-cptr.stPtro(allopt_init, 11600, null);
-cptr.stPtro(allopt_init, 11608, optfn_o_message_types);
-cptr.stPtro(allopt_init, 11616, (null));
-cptr.stPtro(allopt_init, 11624, __sl231);
-cptr.stPtro(allopt_init, 11632, null);
-cptr.st1o(allopt_init, 11640, NHC.On);
-cptr.st1o(allopt_init, 11641, NHC.On);
-cptr.st1o(allopt_init, 11642, 0);
-cptr.st1o(allopt_init, 11643, 0);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_idx, NHC.opt_o_message_types);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11544 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 11544 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11544 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 11544 + FLD.allopt_t_optfn, optfn_o_message_types);
+cptr.stPtro(allopt_init, 11544 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11544 + FLD.allopt_t_descr, __sl231);
+cptr.stPtro(allopt_init, 11544 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11544 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 11544 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 11544 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11544 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11648, __sl232);
-cptr.stI32o(allopt_init, 11656, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11660, 0);
-cptr.stI32o(allopt_init, 11664, 0);
-cptr.stI32o(allopt_init, 11668, NHC.opt_mon_movement);
-cptr.stI32o(allopt_init, 11672, NHC.set_in_game);
-cptr.stI32o(allopt_init, 11676, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 11680, NHC.Yes);
-cptr.stI32o(allopt_init, 11684, NHC.No);
-cptr.stI32o(allopt_init, 11688, NHC.No);
-cptr.stI32o(allopt_init, 11692, NHC.No);
-cptr.stI32o(allopt_init, 11696, NHC.Term_False);
-cptr.st1o(allopt_init, 11700, NHC.opt_in);
-cptr.stPtro(allopt_init, 11704, cptr.add(a11y, 12));
-cptr.stPtro(allopt_init, 11712, optfn_boolean);
-cptr.stPtro(allopt_init, 11720, (null));
-cptr.stPtro(allopt_init, 11728, __sl233);
-cptr.stPtro(allopt_init, 11736, null);
-cptr.st1o(allopt_init, 11744, NHC.Off);
-cptr.st1o(allopt_init, 11745, 0);
-cptr.st1o(allopt_init, 11746, 0);
-cptr.st1o(allopt_init, 11747, 0);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_idx, NHC.opt_mon_movement);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11648 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 11648 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11648 + FLD.allopt_t_addr, cptr.add(a11y, FLD.accessibility_data_mon_movement));
+cptr.stPtro(allopt_init, 11648 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 11648 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11648 + FLD.allopt_t_descr, __sl233);
+cptr.stPtro(allopt_init, 11648 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11648 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11648 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 11648 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11648 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11752, __sl234);
-cptr.stI32o(allopt_init, 11760, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11764, 0);
-cptr.stI32o(allopt_init, 11768, 0);
-cptr.stI32o(allopt_init, 11772, NHC.opt_monpolycontrol);
-cptr.stI32o(allopt_init, 11776, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 11780, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 11784, NHC.Yes);
-cptr.stI32o(allopt_init, 11788, NHC.No);
-cptr.stI32o(allopt_init, 11792, NHC.No);
-cptr.stI32o(allopt_init, 11796, NHC.No);
-cptr.stI32o(allopt_init, 11800, NHC.Term_False);
-cptr.st1o(allopt_init, 11804, NHC.opt_in);
-cptr.stPtro(allopt_init, 11808, cptr.add(iflags, 89));
-cptr.stPtro(allopt_init, 11816, optfn_boolean);
-cptr.stPtro(allopt_init, 11824, (null));
-cptr.stPtro(allopt_init, 11832, __sl235);
-cptr.stPtro(allopt_init, 11840, null);
-cptr.st1o(allopt_init, 11848, NHC.Off);
-cptr.st1o(allopt_init, 11849, 0);
-cptr.st1o(allopt_init, 11850, 0);
-cptr.st1o(allopt_init, 11851, 0);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_idx, NHC.opt_monpolycontrol);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11752 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 11752 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11752 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_mon_polycontrol));
+cptr.stPtro(allopt_init, 11752 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 11752 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11752 + FLD.allopt_t_descr, __sl235);
+cptr.stPtro(allopt_init, 11752 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11752 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11752 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 11752 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11752 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11856, __sl236);
-cptr.stI32o(allopt_init, 11864, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11868, 0);
-cptr.stI32o(allopt_init, 11872, 0);
-cptr.stI32o(allopt_init, 11876, NHC.opt_montelecontrol);
-cptr.stI32o(allopt_init, 11880, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 11884, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 11888, NHC.Yes);
-cptr.stI32o(allopt_init, 11892, NHC.No);
-cptr.stI32o(allopt_init, 11896, NHC.No);
-cptr.stI32o(allopt_init, 11900, NHC.No);
-cptr.stI32o(allopt_init, 11904, NHC.Term_False);
-cptr.st1o(allopt_init, 11908, NHC.opt_in);
-cptr.stPtro(allopt_init, 11912, cptr.add(iflags, 90));
-cptr.stPtro(allopt_init, 11920, optfn_boolean);
-cptr.stPtro(allopt_init, 11928, (null));
-cptr.stPtro(allopt_init, 11936, __sl237);
-cptr.stPtro(allopt_init, 11944, null);
-cptr.st1o(allopt_init, 11952, NHC.Off);
-cptr.st1o(allopt_init, 11953, 0);
-cptr.st1o(allopt_init, 11954, 0);
-cptr.st1o(allopt_init, 11955, 0);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_idx, NHC.opt_montelecontrol);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11856 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 11856 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11856 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_mon_telecontrol));
+cptr.stPtro(allopt_init, 11856 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 11856 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11856 + FLD.allopt_t_descr, __sl237);
+cptr.stPtro(allopt_init, 11856 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11856 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11856 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 11856 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11856 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 11960, __sl238);
-cptr.stI32o(allopt_init, 11968, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 11972, 0);
-cptr.stI32o(allopt_init, 11976, NHC.MAXMCLASSES);
-cptr.stI32o(allopt_init, 11980, NHC.opt_monsters);
-cptr.stI32o(allopt_init, 11984, NHC.set_in_config);
-cptr.stI32o(allopt_init, 11988, NHC.CompOpt);
-cptr.stI32o(allopt_init, 11992, NHC.No);
-cptr.stI32o(allopt_init, 11996, NHC.Yes);
-cptr.stI32o(allopt_init, 12000, NHC.No);
-cptr.stI32o(allopt_init, 12004, NHC.No);
-cptr.stI32o(allopt_init, 12008, 0);
-cptr.st1o(allopt_init, 12012, NHC.opt_in);
-cptr.stPtro(allopt_init, 12016, null);
-cptr.stPtro(allopt_init, 12024, optfn_monsters);
-cptr.stPtro(allopt_init, 12032, (null));
-cptr.stPtro(allopt_init, 12040, __sl239);
-cptr.stPtro(allopt_init, 12048, null);
-cptr.st1o(allopt_init, 12056, NHC.Off);
-cptr.st1o(allopt_init, 12057, NHC.No);
-cptr.st1o(allopt_init, 12058, 0);
-cptr.st1o(allopt_init, 12059, 0);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_expectedbuf, NHC.MAXMCLASSES);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_idx, NHC.opt_monsters);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 11960 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 11960 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 11960 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 11960 + FLD.allopt_t_optfn, optfn_monsters);
+cptr.stPtro(allopt_init, 11960 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 11960 + FLD.allopt_t_descr, __sl239);
+cptr.stPtro(allopt_init, 11960 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 11960 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 11960 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 11960 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 11960 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12064, __sl240);
-cptr.stI32o(allopt_init, 12072, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12076, 0);
-cptr.stI32o(allopt_init, 12080, 0);
-cptr.stI32o(allopt_init, 12084, NHC.opt_mouse_support);
-cptr.stI32o(allopt_init, 12088, NHC.set_in_game);
-cptr.stI32o(allopt_init, 12092, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12096, NHC.No);
-cptr.stI32o(allopt_init, 12100, NHC.Yes);
-cptr.stI32o(allopt_init, 12104, NHC.No);
-cptr.stI32o(allopt_init, 12108, NHC.No);
-cptr.stI32o(allopt_init, 12112, 0);
-cptr.st1o(allopt_init, 12116, NHC.opt_in);
-cptr.stPtro(allopt_init, 12120, null);
-cptr.stPtro(allopt_init, 12128, optfn_mouse_support);
-cptr.stPtro(allopt_init, 12136, (null));
-cptr.stPtro(allopt_init, 12144, __sl241);
-cptr.stPtro(allopt_init, 12152, null);
-cptr.st1o(allopt_init, 12160, NHC.Off);
-cptr.st1o(allopt_init, 12161, NHC.No);
-cptr.st1o(allopt_init, 12162, 0);
-cptr.st1o(allopt_init, 12163, 0);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_idx, NHC.opt_mouse_support);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12064 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12064 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12064 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12064 + FLD.allopt_t_optfn, optfn_mouse_support);
+cptr.stPtro(allopt_init, 12064 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12064 + FLD.allopt_t_descr, __sl241);
+cptr.stPtro(allopt_init, 12064 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12064 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12064 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 12064 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12064 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12168, __sl242);
-cptr.stI32o(allopt_init, 12176, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12180, 0);
-cptr.stI32o(allopt_init, 12184, 1);
-cptr.stI32o(allopt_init, 12188, NHC.opt_msg_window);
-cptr.stI32o(allopt_init, 12192, NHC.set_in_game);
-cptr.stI32o(allopt_init, 12196, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12200, NHC.Yes);
-cptr.stI32o(allopt_init, 12204, NHC.Yes);
-cptr.stI32o(allopt_init, 12208, NHC.No);
-cptr.stI32o(allopt_init, 12212, NHC.No);
-cptr.stI32o(allopt_init, 12216, 0);
-cptr.st1o(allopt_init, 12220, NHC.opt_in);
-cptr.stPtro(allopt_init, 12224, null);
-cptr.stPtro(allopt_init, 12232, optfn_msg_window);
-cptr.stPtro(allopt_init, 12240, (null));
-cptr.stPtro(allopt_init, 12248, __sl243);
-cptr.stPtro(allopt_init, 12256, null);
-cptr.st1o(allopt_init, 12264, NHC.Off);
-cptr.st1o(allopt_init, 12265, NHC.Yes);
-cptr.st1o(allopt_init, 12266, 0);
-cptr.st1o(allopt_init, 12267, 0);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_expectedbuf, 1);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_idx, NHC.opt_msg_window);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12168 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12168 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12168 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12168 + FLD.allopt_t_optfn, optfn_msg_window);
+cptr.stPtro(allopt_init, 12168 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12168 + FLD.allopt_t_descr, __sl243);
+cptr.stPtro(allopt_init, 12168 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12168 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12168 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 12168 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12168 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12272, __sl244);
-cptr.stI32o(allopt_init, 12280, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12284, 0);
-cptr.stI32o(allopt_init, 12288, 5);
-cptr.stI32o(allopt_init, 12292, NHC.opt_msghistory);
-cptr.stI32o(allopt_init, 12296, NHC.set_gameview);
-cptr.stI32o(allopt_init, 12300, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12304, NHC.Yes);
-cptr.stI32o(allopt_init, 12308, NHC.Yes);
-cptr.stI32o(allopt_init, 12312, NHC.No);
-cptr.stI32o(allopt_init, 12316, NHC.No);
-cptr.stI32o(allopt_init, 12320, 0);
-cptr.st1o(allopt_init, 12324, NHC.opt_in);
-cptr.stPtro(allopt_init, 12328, null);
-cptr.stPtro(allopt_init, 12336, optfn_msghistory);
-cptr.stPtro(allopt_init, 12344, (null));
-cptr.stPtro(allopt_init, 12352, __sl245);
-cptr.stPtro(allopt_init, 12360, null);
-cptr.st1o(allopt_init, 12368, NHC.Off);
-cptr.st1o(allopt_init, 12369, NHC.No);
-cptr.st1o(allopt_init, 12370, 0);
-cptr.st1o(allopt_init, 12371, 0);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_expectedbuf, 5);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_idx, NHC.opt_msghistory);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12272 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12272 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12272 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12272 + FLD.allopt_t_optfn, optfn_msghistory);
+cptr.stPtro(allopt_init, 12272 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12272 + FLD.allopt_t_descr, __sl245);
+cptr.stPtro(allopt_init, 12272 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12272 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12272 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 12272 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12272 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12376, __sl246);
-cptr.stI32o(allopt_init, 12384, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12388, 0);
-cptr.stI32o(allopt_init, 12392, 0);
-cptr.stI32o(allopt_init, 12396, NHC.opt_news);
-cptr.stI32o(allopt_init, 12400, NHC.set_in_config);
-cptr.stI32o(allopt_init, 12404, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 12408, NHC.Yes);
-cptr.stI32o(allopt_init, 12412, NHC.No);
-cptr.stI32o(allopt_init, 12416, NHC.No);
-cptr.stI32o(allopt_init, 12420, NHC.No);
-cptr.stI32o(allopt_init, 12424, NHC.Term_False);
-cptr.st1o(allopt_init, 12428, NHC.opt_in);
-cptr.stPtro(allopt_init, 12432, cptr.add(iflags, 137));
-cptr.stPtro(allopt_init, 12440, optfn_boolean);
-cptr.stPtro(allopt_init, 12448, (null));
-cptr.stPtro(allopt_init, 12456, __sl247);
-cptr.stPtro(allopt_init, 12464, null);
-cptr.st1o(allopt_init, 12472, NHC.Off);
-cptr.st1o(allopt_init, 12473, 0);
-cptr.st1o(allopt_init, 12474, 0);
-cptr.st1o(allopt_init, 12475, 0);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_idx, NHC.opt_news);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12376 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 12376 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12376 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_news));
+cptr.stPtro(allopt_init, 12376 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 12376 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12376 + FLD.allopt_t_descr, __sl247);
+cptr.stPtro(allopt_init, 12376 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12376 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12376 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 12376 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12376 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12480, __sl248);
-cptr.stI32o(allopt_init, 12488, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12492, 0);
-cptr.stI32o(allopt_init, 12496, 0);
-cptr.stI32o(allopt_init, 12500, NHC.opt_nudist);
-cptr.stI32o(allopt_init, 12504, NHC.set_in_config);
-cptr.stI32o(allopt_init, 12508, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 12512, NHC.Yes);
-cptr.stI32o(allopt_init, 12516, NHC.No);
-cptr.stI32o(allopt_init, 12520, NHC.No);
-cptr.stI32o(allopt_init, 12524, NHC.No);
-cptr.stI32o(allopt_init, 12528, NHC.Term_False);
-cptr.st1o(allopt_init, 12532, NHC.opt_in);
-cptr.stPtro(allopt_init, 12536, cptr.add(u, 2113));
-cptr.stPtro(allopt_init, 12544, optfn_boolean);
-cptr.stPtro(allopt_init, 12552, (null));
-cptr.stPtro(allopt_init, 12560, __sl249);
-cptr.stPtro(allopt_init, 12568, null);
-cptr.st1o(allopt_init, 12576, NHC.Off);
-cptr.st1o(allopt_init, 12577, 0);
-cptr.st1o(allopt_init, 12578, 0);
-cptr.st1o(allopt_init, 12579, 0);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_idx, NHC.opt_nudist);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12480 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 12480 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12480 + FLD.allopt_t_addr, cptr.add(u, FLD.you_uroleplay + FLD.u_roleplay_nudist));
+cptr.stPtro(allopt_init, 12480 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 12480 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12480 + FLD.allopt_t_descr, __sl249);
+cptr.stPtro(allopt_init, 12480 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12480 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12480 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 12480 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12480 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12584, __sl250);
-cptr.stI32o(allopt_init, 12592, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12596, 0);
-cptr.stI32o(allopt_init, 12600, 0);
-cptr.stI32o(allopt_init, 12604, NHC.opt_null);
-cptr.stI32o(allopt_init, 12608, NHC.set_in_game);
-cptr.stI32o(allopt_init, 12612, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 12616, NHC.Yes);
-cptr.stI32o(allopt_init, 12620, NHC.No);
-cptr.stI32o(allopt_init, 12624, NHC.No);
-cptr.stI32o(allopt_init, 12628, NHC.No);
-cptr.stI32o(allopt_init, 12632, NHC.Term_False);
-cptr.st1o(allopt_init, 12636, NHC.opt_out);
-cptr.stPtro(allopt_init, 12640, cptr.add(flags, 29));
-cptr.stPtro(allopt_init, 12648, optfn_boolean);
-cptr.stPtro(allopt_init, 12656, (null));
-cptr.stPtro(allopt_init, 12664, __sl251);
-cptr.stPtro(allopt_init, 12672, null);
-cptr.st1o(allopt_init, 12680, NHC.On);
-cptr.st1o(allopt_init, 12681, 0);
-cptr.st1o(allopt_init, 12682, 0);
-cptr.st1o(allopt_init, 12683, 0);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_idx, NHC.opt_null);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12584 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 12584 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 12584 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_null));
+cptr.stPtro(allopt_init, 12584 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 12584 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12584 + FLD.allopt_t_descr, __sl251);
+cptr.stPtro(allopt_init, 12584 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12584 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 12584 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 12584 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12584 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12688, __sl252);
-cptr.stI32o(allopt_init, 12696, NHC.OptS_General);
-cptr.stI32o(allopt_init, 12700, 0);
-cptr.stI32o(allopt_init, 12704, 1);
-cptr.stI32o(allopt_init, 12708, NHC.opt_number_pad);
-cptr.stI32o(allopt_init, 12712, NHC.set_in_game);
-cptr.stI32o(allopt_init, 12716, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12720, NHC.No);
-cptr.stI32o(allopt_init, 12724, NHC.Yes);
-cptr.stI32o(allopt_init, 12728, NHC.No);
-cptr.stI32o(allopt_init, 12732, NHC.No);
-cptr.stI32o(allopt_init, 12736, 0);
-cptr.st1o(allopt_init, 12740, NHC.opt_in);
-cptr.stPtro(allopt_init, 12744, null);
-cptr.stPtro(allopt_init, 12752, optfn_number_pad);
-cptr.stPtro(allopt_init, 12760, (null));
-cptr.stPtro(allopt_init, 12768, __sl253);
-cptr.stPtro(allopt_init, 12776, null);
-cptr.st1o(allopt_init, 12784, NHC.Off);
-cptr.st1o(allopt_init, 12785, NHC.Yes);
-cptr.st1o(allopt_init, 12786, 0);
-cptr.st1o(allopt_init, 12787, 0);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_section, NHC.OptS_General);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_expectedbuf, 1);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_idx, NHC.opt_number_pad);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12688 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12688 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12688 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12688 + FLD.allopt_t_optfn, optfn_number_pad);
+cptr.stPtro(allopt_init, 12688 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12688 + FLD.allopt_t_descr, __sl253);
+cptr.stPtro(allopt_init, 12688 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12688 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12688 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 12688 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12688 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12792, __sl254);
-cptr.stI32o(allopt_init, 12800, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12804, 0);
-cptr.stI32o(allopt_init, 12808, NHC.MAXOCLASSES);
-cptr.stI32o(allopt_init, 12812, NHC.opt_objects);
-cptr.stI32o(allopt_init, 12816, NHC.set_in_config);
-cptr.stI32o(allopt_init, 12820, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12824, NHC.No);
-cptr.stI32o(allopt_init, 12828, NHC.Yes);
-cptr.stI32o(allopt_init, 12832, NHC.No);
-cptr.stI32o(allopt_init, 12836, NHC.No);
-cptr.stI32o(allopt_init, 12840, 0);
-cptr.st1o(allopt_init, 12844, NHC.opt_in);
-cptr.stPtro(allopt_init, 12848, null);
-cptr.stPtro(allopt_init, 12856, optfn_objects);
-cptr.stPtro(allopt_init, 12864, (null));
-cptr.stPtro(allopt_init, 12872, __sl255);
-cptr.stPtro(allopt_init, 12880, null);
-cptr.st1o(allopt_init, 12888, NHC.Off);
-cptr.st1o(allopt_init, 12889, NHC.No);
-cptr.st1o(allopt_init, 12890, 0);
-cptr.st1o(allopt_init, 12891, 0);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_expectedbuf, NHC.MAXOCLASSES);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_idx, NHC.opt_objects);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12792 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12792 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12792 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12792 + FLD.allopt_t_optfn, optfn_objects);
+cptr.stPtro(allopt_init, 12792 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12792 + FLD.allopt_t_descr, __sl255);
+cptr.stPtro(allopt_init, 12792 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12792 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12792 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 12792 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12792 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 12896, __sl256);
-cptr.stI32o(allopt_init, 12904, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 12908, 0);
-cptr.stI32o(allopt_init, 12912, NHC.MAXOCLASSES);
-cptr.stI32o(allopt_init, 12916, NHC.opt_packorder);
-cptr.stI32o(allopt_init, 12920, NHC.set_in_game);
-cptr.stI32o(allopt_init, 12924, NHC.CompOpt);
-cptr.stI32o(allopt_init, 12928, NHC.No);
-cptr.stI32o(allopt_init, 12932, NHC.Yes);
-cptr.stI32o(allopt_init, 12936, NHC.No);
-cptr.stI32o(allopt_init, 12940, NHC.No);
-cptr.stI32o(allopt_init, 12944, 0);
-cptr.st1o(allopt_init, 12948, NHC.opt_in);
-cptr.stPtro(allopt_init, 12952, null);
-cptr.stPtro(allopt_init, 12960, optfn_packorder);
-cptr.stPtro(allopt_init, 12968, (null));
-cptr.stPtro(allopt_init, 12976, __sl257);
-cptr.stPtro(allopt_init, 12984, null);
-cptr.st1o(allopt_init, 12992, NHC.Off);
-cptr.st1o(allopt_init, 12993, NHC.No);
-cptr.st1o(allopt_init, 12994, 0);
-cptr.st1o(allopt_init, 12995, 0);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_expectedbuf, NHC.MAXOCLASSES);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_idx, NHC.opt_packorder);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 12896 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 12896 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 12896 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 12896 + FLD.allopt_t_optfn, optfn_packorder);
+cptr.stPtro(allopt_init, 12896 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 12896 + FLD.allopt_t_descr, __sl257);
+cptr.stPtro(allopt_init, 12896 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 12896 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 12896 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 12896 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 12896 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13000, __sl258);
-cptr.stI32o(allopt_init, 13008, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13012, 0);
-cptr.stI32o(allopt_init, 13016, 28);
-cptr.stI32o(allopt_init, 13020, NHC.opt_paranoid_confirmation);
-cptr.stI32o(allopt_init, 13024, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13028, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13032, NHC.Yes);
-cptr.stI32o(allopt_init, 13036, NHC.Yes);
-cptr.stI32o(allopt_init, 13040, NHC.Yes);
-cptr.stI32o(allopt_init, 13044, NHC.No);
-cptr.stI32o(allopt_init, 13048, 0);
-cptr.st1o(allopt_init, 13052, NHC.opt_in);
-cptr.stPtro(allopt_init, 13056, null);
-cptr.stPtro(allopt_init, 13064, optfn_paranoid_confirmation);
-cptr.stPtro(allopt_init, 13072, __sl259);
-cptr.stPtro(allopt_init, 13080, __sl260);
-cptr.stPtro(allopt_init, 13088, null);
-cptr.st1o(allopt_init, 13096, NHC.Off);
-cptr.st1o(allopt_init, 13097, NHC.Yes);
-cptr.st1o(allopt_init, 13098, 0);
-cptr.st1o(allopt_init, 13099, 0);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_expectedbuf, 28);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_idx, NHC.opt_paranoid_confirmation);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13000 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13000 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13000 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13000 + FLD.allopt_t_optfn, optfn_paranoid_confirmation);
+cptr.stPtro(allopt_init, 13000 + FLD.allopt_t_alias, __sl259);
+cptr.stPtro(allopt_init, 13000 + FLD.allopt_t_descr, __sl260);
+cptr.stPtro(allopt_init, 13000 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13000 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13000 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 13000 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13000 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13104, __sl261);
-cptr.stI32o(allopt_init, 13112, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13116, 0);
-cptr.stI32o(allopt_init, 13120, 0);
-cptr.stI32o(allopt_init, 13124, NHC.opt_pauper);
-cptr.stI32o(allopt_init, 13128, NHC.set_in_config);
-cptr.stI32o(allopt_init, 13132, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 13136, NHC.Yes);
-cptr.stI32o(allopt_init, 13140, NHC.No);
-cptr.stI32o(allopt_init, 13144, NHC.No);
-cptr.stI32o(allopt_init, 13148, NHC.No);
-cptr.stI32o(allopt_init, 13152, NHC.Term_False);
-cptr.st1o(allopt_init, 13156, NHC.opt_in);
-cptr.stPtro(allopt_init, 13160, cptr.add(u, 2115));
-cptr.stPtro(allopt_init, 13168, optfn_boolean);
-cptr.stPtro(allopt_init, 13176, (null));
-cptr.stPtro(allopt_init, 13184, __sl262);
-cptr.stPtro(allopt_init, 13192, null);
-cptr.st1o(allopt_init, 13200, NHC.Off);
-cptr.st1o(allopt_init, 13201, 0);
-cptr.st1o(allopt_init, 13202, 0);
-cptr.st1o(allopt_init, 13203, 0);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_idx, NHC.opt_pauper);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13104 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 13104 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13104 + FLD.allopt_t_addr, cptr.add(u, FLD.you_uroleplay + FLD.u_roleplay_pauper));
+cptr.stPtro(allopt_init, 13104 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 13104 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13104 + FLD.allopt_t_descr, __sl262);
+cptr.stPtro(allopt_init, 13104 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13104 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13104 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 13104 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13104 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13208, __sl263);
-cptr.stI32o(allopt_init, 13216, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13220, 0);
-cptr.stI32o(allopt_init, 13224, 0);
-cptr.stI32o(allopt_init, 13228, NHC.opt_perm_invent);
-cptr.stI32o(allopt_init, 13232, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13236, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 13240, NHC.Yes);
-cptr.stI32o(allopt_init, 13244, NHC.No);
-cptr.stI32o(allopt_init, 13248, NHC.No);
-cptr.stI32o(allopt_init, 13252, NHC.No);
-cptr.stI32o(allopt_init, 13256, NHC.Term_Off);
-cptr.st1o(allopt_init, 13260, NHC.opt_in);
-cptr.stPtro(allopt_init, 13264, cptr.add(iflags, 139));
-cptr.stPtro(allopt_init, 13272, optfn_boolean);
-cptr.stPtro(allopt_init, 13280, (null));
-cptr.stPtro(allopt_init, 13288, __sl264);
-cptr.stPtro(allopt_init, 13296, null);
-cptr.st1o(allopt_init, 13304, NHC.Off);
-cptr.st1o(allopt_init, 13305, 0);
-cptr.st1o(allopt_init, 13306, 0);
-cptr.st1o(allopt_init, 13307, 0);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_idx, NHC.opt_perm_invent);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13208 + FLD.allopt_t_termpref, NHC.Term_Off);
+cptr.st1o(allopt_init, 13208 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13208 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_perm_invent));
+cptr.stPtro(allopt_init, 13208 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 13208 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13208 + FLD.allopt_t_descr, __sl264);
+cptr.stPtro(allopt_init, 13208 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13208 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13208 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 13208 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13208 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13312, __sl265);
-cptr.stI32o(allopt_init, 13320, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13324, 0);
-cptr.stI32o(allopt_init, 13328, 20);
-cptr.stI32o(allopt_init, 13332, NHC.opt_perminv_mode);
-cptr.stI32o(allopt_init, 13336, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13340, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13344, NHC.Yes);
-cptr.stI32o(allopt_init, 13348, NHC.Yes);
-cptr.stI32o(allopt_init, 13352, NHC.No);
-cptr.stI32o(allopt_init, 13356, NHC.No);
-cptr.stI32o(allopt_init, 13360, 0);
-cptr.st1o(allopt_init, 13364, NHC.opt_in);
-cptr.stPtro(allopt_init, 13368, null);
-cptr.stPtro(allopt_init, 13376, optfn_perminv_mode);
-cptr.stPtro(allopt_init, 13384, (null));
-cptr.stPtro(allopt_init, 13392, __sl266);
-cptr.stPtro(allopt_init, 13400, null);
-cptr.st1o(allopt_init, 13408, NHC.Off);
-cptr.st1o(allopt_init, 13409, NHC.Yes);
-cptr.st1o(allopt_init, 13410, 0);
-cptr.st1o(allopt_init, 13411, 0);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_idx, NHC.opt_perminv_mode);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13312 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13312 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13312 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13312 + FLD.allopt_t_optfn, optfn_perminv_mode);
+cptr.stPtro(allopt_init, 13312 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13312 + FLD.allopt_t_descr, __sl266);
+cptr.stPtro(allopt_init, 13312 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13312 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13312 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 13312 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13312 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13416, __sl267);
-cptr.stI32o(allopt_init, 13424, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13428, 0);
-cptr.stI32o(allopt_init, 13432, 88);
-cptr.stI32o(allopt_init, 13436, NHC.opt_petattr);
-cptr.stI32o(allopt_init, 13440, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13444, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13448, NHC.No);
-cptr.stI32o(allopt_init, 13452, NHC.Yes);
-cptr.stI32o(allopt_init, 13456, NHC.No);
-cptr.stI32o(allopt_init, 13460, NHC.No);
-cptr.stI32o(allopt_init, 13464, 0);
-cptr.st1o(allopt_init, 13468, NHC.opt_in);
-cptr.stPtro(allopt_init, 13472, null);
-cptr.stPtro(allopt_init, 13480, optfn_petattr);
-cptr.stPtro(allopt_init, 13488, (null));
-cptr.stPtro(allopt_init, 13496, __sl268);
-cptr.stPtro(allopt_init, 13504, null);
-cptr.st1o(allopt_init, 13512, NHC.Off);
-cptr.st1o(allopt_init, 13513, NHC.Yes);
-cptr.st1o(allopt_init, 13514, 0);
-cptr.st1o(allopt_init, 13515, 0);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_expectedbuf, 88);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_idx, NHC.opt_petattr);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13416 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13416 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13416 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13416 + FLD.allopt_t_optfn, optfn_petattr);
+cptr.stPtro(allopt_init, 13416 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13416 + FLD.allopt_t_descr, __sl268);
+cptr.stPtro(allopt_init, 13416 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13416 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13416 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 13416 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13416 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13520, __sl269);
-cptr.stI32o(allopt_init, 13528, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13532, 0);
-cptr.stI32o(allopt_init, 13536, 4);
-cptr.stI32o(allopt_init, 13540, NHC.opt_pettype);
-cptr.stI32o(allopt_init, 13544, NHC.set_gameview);
-cptr.stI32o(allopt_init, 13548, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13552, NHC.Yes);
-cptr.stI32o(allopt_init, 13556, NHC.Yes);
-cptr.stI32o(allopt_init, 13560, NHC.No);
-cptr.stI32o(allopt_init, 13564, NHC.No);
-cptr.stI32o(allopt_init, 13568, 0);
-cptr.st1o(allopt_init, 13572, NHC.opt_in);
-cptr.stPtro(allopt_init, 13576, null);
-cptr.stPtro(allopt_init, 13584, optfn_pettype);
-cptr.stPtro(allopt_init, 13592, __sl270);
-cptr.stPtro(allopt_init, 13600, __sl271);
-cptr.stPtro(allopt_init, 13608, null);
-cptr.st1o(allopt_init, 13616, NHC.Off);
-cptr.st1o(allopt_init, 13617, NHC.No);
-cptr.st1o(allopt_init, 13618, 0);
-cptr.st1o(allopt_init, 13619, 0);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_idx, NHC.opt_pettype);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13520 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13520 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13520 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13520 + FLD.allopt_t_optfn, optfn_pettype);
+cptr.stPtro(allopt_init, 13520 + FLD.allopt_t_alias, __sl270);
+cptr.stPtro(allopt_init, 13520 + FLD.allopt_t_descr, __sl271);
+cptr.stPtro(allopt_init, 13520 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13520 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13520 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 13520 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13520 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13624, __sl272);
-cptr.stI32o(allopt_init, 13632, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 13636, 0);
-cptr.stI32o(allopt_init, 13640, 20);
-cptr.stI32o(allopt_init, 13644, NHC.opt_pickup_burden);
-cptr.stI32o(allopt_init, 13648, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13652, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13656, NHC.No);
-cptr.stI32o(allopt_init, 13660, NHC.Yes);
-cptr.stI32o(allopt_init, 13664, NHC.No);
-cptr.stI32o(allopt_init, 13668, NHC.No);
-cptr.stI32o(allopt_init, 13672, 0);
-cptr.st1o(allopt_init, 13676, NHC.opt_in);
-cptr.stPtro(allopt_init, 13680, null);
-cptr.stPtro(allopt_init, 13688, optfn_pickup_burden);
-cptr.stPtro(allopt_init, 13696, (null));
-cptr.stPtro(allopt_init, 13704, __sl273);
-cptr.stPtro(allopt_init, 13712, null);
-cptr.st1o(allopt_init, 13720, NHC.Off);
-cptr.st1o(allopt_init, 13721, NHC.Yes);
-cptr.st1o(allopt_init, 13722, 0);
-cptr.st1o(allopt_init, 13723, 0);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_idx, NHC.opt_pickup_burden);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13624 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13624 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13624 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13624 + FLD.allopt_t_optfn, optfn_pickup_burden);
+cptr.stPtro(allopt_init, 13624 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13624 + FLD.allopt_t_descr, __sl273);
+cptr.stPtro(allopt_init, 13624 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13624 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13624 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 13624 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13624 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13728, __sl274);
-cptr.stI32o(allopt_init, 13736, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 13740, 0);
-cptr.stI32o(allopt_init, 13744, 0);
-cptr.stI32o(allopt_init, 13748, NHC.opt_pickup_stolen);
-cptr.stI32o(allopt_init, 13752, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13756, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 13760, NHC.Yes);
-cptr.stI32o(allopt_init, 13764, NHC.No);
-cptr.stI32o(allopt_init, 13768, NHC.No);
-cptr.stI32o(allopt_init, 13772, NHC.No);
-cptr.stI32o(allopt_init, 13776, NHC.Term_False);
-cptr.st1o(allopt_init, 13780, NHC.opt_out);
-cptr.stPtro(allopt_init, 13784, cptr.add(flags, 31));
-cptr.stPtro(allopt_init, 13792, optfn_boolean);
-cptr.stPtro(allopt_init, 13800, (null));
-cptr.stPtro(allopt_init, 13808, __sl275);
-cptr.stPtro(allopt_init, 13816, null);
-cptr.st1o(allopt_init, 13824, NHC.On);
-cptr.st1o(allopt_init, 13825, 0);
-cptr.st1o(allopt_init, 13826, 0);
-cptr.st1o(allopt_init, 13827, 0);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_idx, NHC.opt_pickup_stolen);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13728 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 13728 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 13728 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_pickup_stolen));
+cptr.stPtro(allopt_init, 13728 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 13728 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13728 + FLD.allopt_t_descr, __sl275);
+cptr.stPtro(allopt_init, 13728 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13728 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 13728 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 13728 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13728 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13832, __sl276);
-cptr.stI32o(allopt_init, 13840, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 13844, 0);
-cptr.stI32o(allopt_init, 13848, 0);
-cptr.stI32o(allopt_init, 13852, NHC.opt_pickup_thrown);
-cptr.stI32o(allopt_init, 13856, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13860, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 13864, NHC.Yes);
-cptr.stI32o(allopt_init, 13868, NHC.No);
-cptr.stI32o(allopt_init, 13872, NHC.No);
-cptr.stI32o(allopt_init, 13876, NHC.No);
-cptr.stI32o(allopt_init, 13880, NHC.Term_False);
-cptr.st1o(allopt_init, 13884, NHC.opt_out);
-cptr.stPtro(allopt_init, 13888, cptr.add(flags, 32));
-cptr.stPtro(allopt_init, 13896, optfn_boolean);
-cptr.stPtro(allopt_init, 13904, (null));
-cptr.stPtro(allopt_init, 13912, __sl277);
-cptr.stPtro(allopt_init, 13920, null);
-cptr.st1o(allopt_init, 13928, NHC.On);
-cptr.st1o(allopt_init, 13929, 0);
-cptr.st1o(allopt_init, 13930, 0);
-cptr.st1o(allopt_init, 13931, 0);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_idx, NHC.opt_pickup_thrown);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13832 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 13832 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 13832 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_pickup_thrown));
+cptr.stPtro(allopt_init, 13832 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 13832 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13832 + FLD.allopt_t_descr, __sl277);
+cptr.stPtro(allopt_init, 13832 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13832 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 13832 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 13832 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13832 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 13936, __sl278);
-cptr.stI32o(allopt_init, 13944, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 13948, 0);
-cptr.stI32o(allopt_init, 13952, NHC.MAXOCLASSES);
-cptr.stI32o(allopt_init, 13956, NHC.opt_pickup_types);
-cptr.stI32o(allopt_init, 13960, NHC.set_in_game);
-cptr.stI32o(allopt_init, 13964, NHC.CompOpt);
-cptr.stI32o(allopt_init, 13968, NHC.No);
-cptr.stI32o(allopt_init, 13972, NHC.Yes);
-cptr.stI32o(allopt_init, 13976, NHC.No);
-cptr.stI32o(allopt_init, 13980, NHC.No);
-cptr.stI32o(allopt_init, 13984, 0);
-cptr.st1o(allopt_init, 13988, NHC.opt_in);
-cptr.stPtro(allopt_init, 13992, null);
-cptr.stPtro(allopt_init, 14000, optfn_pickup_types);
-cptr.stPtro(allopt_init, 14008, (null));
-cptr.stPtro(allopt_init, 14016, __sl279);
-cptr.stPtro(allopt_init, 14024, null);
-cptr.st1o(allopt_init, 14032, NHC.Off);
-cptr.st1o(allopt_init, 14033, NHC.Yes);
-cptr.st1o(allopt_init, 14034, 0);
-cptr.st1o(allopt_init, 14035, 0);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_expectedbuf, NHC.MAXOCLASSES);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_idx, NHC.opt_pickup_types);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 13936 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 13936 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 13936 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 13936 + FLD.allopt_t_optfn, optfn_pickup_types);
+cptr.stPtro(allopt_init, 13936 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 13936 + FLD.allopt_t_descr, __sl279);
+cptr.stPtro(allopt_init, 13936 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 13936 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 13936 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 13936 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 13936 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14040, __sl280);
-cptr.stI32o(allopt_init, 14048, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14052, 0);
-cptr.stI32o(allopt_init, 14056, 24);
-cptr.stI32o(allopt_init, 14060, NHC.opt_pile_limit);
-cptr.stI32o(allopt_init, 14064, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14068, NHC.CompOpt);
-cptr.stI32o(allopt_init, 14072, NHC.Yes);
-cptr.stI32o(allopt_init, 14076, NHC.Yes);
-cptr.stI32o(allopt_init, 14080, NHC.No);
-cptr.stI32o(allopt_init, 14084, NHC.No);
-cptr.stI32o(allopt_init, 14088, 0);
-cptr.st1o(allopt_init, 14092, NHC.opt_in);
-cptr.stPtro(allopt_init, 14096, null);
-cptr.stPtro(allopt_init, 14104, optfn_pile_limit);
-cptr.stPtro(allopt_init, 14112, (null));
-cptr.stPtro(allopt_init, 14120, __sl281);
-cptr.stPtro(allopt_init, 14128, null);
-cptr.st1o(allopt_init, 14136, NHC.Off);
-cptr.st1o(allopt_init, 14137, NHC.No);
-cptr.st1o(allopt_init, 14138, 0);
-cptr.st1o(allopt_init, 14139, 0);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_expectedbuf, 24);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_idx, NHC.opt_pile_limit);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14040 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 14040 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14040 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 14040 + FLD.allopt_t_optfn, optfn_pile_limit);
+cptr.stPtro(allopt_init, 14040 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14040 + FLD.allopt_t_descr, __sl281);
+cptr.stPtro(allopt_init, 14040 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14040 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14040 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 14040 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14040 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14144, __sl282);
-cptr.stI32o(allopt_init, 14152, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14156, 0);
-cptr.stI32o(allopt_init, 14160, 12);
-cptr.stI32o(allopt_init, 14164, NHC.opt_player_selection);
-cptr.stI32o(allopt_init, 14168, NHC.set_gameview);
-cptr.stI32o(allopt_init, 14172, NHC.CompOpt);
-cptr.stI32o(allopt_init, 14176, NHC.No);
-cptr.stI32o(allopt_init, 14180, NHC.Yes);
-cptr.stI32o(allopt_init, 14184, NHC.No);
-cptr.stI32o(allopt_init, 14188, NHC.No);
-cptr.stI32o(allopt_init, 14192, 0);
-cptr.st1o(allopt_init, 14196, NHC.opt_in);
-cptr.stPtro(allopt_init, 14200, null);
-cptr.stPtro(allopt_init, 14208, optfn_player_selection);
-cptr.stPtro(allopt_init, 14216, (null));
-cptr.stPtro(allopt_init, 14224, __sl283);
-cptr.stPtro(allopt_init, 14232, null);
-cptr.st1o(allopt_init, 14240, NHC.Off);
-cptr.st1o(allopt_init, 14241, NHC.No);
-cptr.st1o(allopt_init, 14242, 0);
-cptr.st1o(allopt_init, 14243, 0);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_expectedbuf, 12);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_idx, NHC.opt_player_selection);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14144 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 14144 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14144 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 14144 + FLD.allopt_t_optfn, optfn_player_selection);
+cptr.stPtro(allopt_init, 14144 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14144 + FLD.allopt_t_descr, __sl283);
+cptr.stPtro(allopt_init, 14144 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14144 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14144 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 14144 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14144 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14248, __sl284);
-cptr.stI32o(allopt_init, 14256, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14260, 0);
-cptr.stI32o(allopt_init, 14264, 0);
-cptr.stI32o(allopt_init, 14268, NHC.opt_popup_dialog);
-cptr.stI32o(allopt_init, 14272, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14276, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14280, NHC.Yes);
-cptr.stI32o(allopt_init, 14284, NHC.No);
-cptr.stI32o(allopt_init, 14288, NHC.No);
-cptr.stI32o(allopt_init, 14292, NHC.No);
-cptr.stI32o(allopt_init, 14296, NHC.Term_False);
-cptr.st1o(allopt_init, 14300, NHC.opt_in);
-cptr.stPtro(allopt_init, 14304, cptr.add(iflags, 365));
-cptr.stPtro(allopt_init, 14312, optfn_boolean);
-cptr.stPtro(allopt_init, 14320, (null));
-cptr.stPtro(allopt_init, 14328, null);
-cptr.stPtro(allopt_init, 14336, null);
-cptr.st1o(allopt_init, 14344, NHC.Off);
-cptr.st1o(allopt_init, 14345, 0);
-cptr.st1o(allopt_init, 14346, 0);
-cptr.st1o(allopt_init, 14347, 0);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_idx, NHC.opt_popup_dialog);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14248 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14248 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14248 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_popup_dialog));
+cptr.stPtro(allopt_init, 14248 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14248 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14248 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 14248 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14248 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14248 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14248 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14248 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14352, __sl285);
-cptr.stI32o(allopt_init, 14360, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14364, 0);
-cptr.stI32o(allopt_init, 14368, 0);
-cptr.stI32o(allopt_init, 14372, NHC.opt_preload_tiles);
-cptr.stI32o(allopt_init, 14376, NHC.set_in_config);
-cptr.stI32o(allopt_init, 14380, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14384, NHC.Yes);
-cptr.stI32o(allopt_init, 14388, NHC.No);
-cptr.stI32o(allopt_init, 14392, NHC.No);
-cptr.stI32o(allopt_init, 14396, NHC.No);
-cptr.stI32o(allopt_init, 14400, NHC.Term_False);
-cptr.st1o(allopt_init, 14404, NHC.opt_out);
-cptr.stPtro(allopt_init, 14408, cptr.add(iflags, 188));
-cptr.stPtro(allopt_init, 14416, optfn_boolean);
-cptr.stPtro(allopt_init, 14424, (null));
-cptr.stPtro(allopt_init, 14432, null);
-cptr.stPtro(allopt_init, 14440, null);
-cptr.st1o(allopt_init, 14448, NHC.On);
-cptr.st1o(allopt_init, 14449, 0);
-cptr.st1o(allopt_init, 14450, 0);
-cptr.st1o(allopt_init, 14451, 0);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_idx, NHC.opt_preload_tiles);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14352 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14352 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 14352 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_preload_tiles));
+cptr.stPtro(allopt_init, 14352 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14352 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14352 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 14352 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14352 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 14352 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14352 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14352 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14456, __sl286);
-cptr.stI32o(allopt_init, 14464, NHC.OptS_General);
-cptr.stI32o(allopt_init, 14468, 0);
-cptr.stI32o(allopt_init, 14472, 0);
-cptr.stI32o(allopt_init, 14476, NHC.opt_price_quotes);
-cptr.stI32o(allopt_init, 14480, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14484, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14488, NHC.Yes);
-cptr.stI32o(allopt_init, 14492, NHC.No);
-cptr.stI32o(allopt_init, 14496, NHC.No);
-cptr.stI32o(allopt_init, 14500, NHC.No);
-cptr.stI32o(allopt_init, 14504, NHC.Term_False);
-cptr.st1o(allopt_init, 14508, NHC.opt_in);
-cptr.stPtro(allopt_init, 14512, cptr.add(iflags, 141));
-cptr.stPtro(allopt_init, 14520, optfn_boolean);
-cptr.stPtro(allopt_init, 14528, (null));
-cptr.stPtro(allopt_init, 14536, __sl287);
-cptr.stPtro(allopt_init, 14544, null);
-cptr.st1o(allopt_init, 14552, NHC.Off);
-cptr.st1o(allopt_init, 14553, 0);
-cptr.st1o(allopt_init, 14554, 0);
-cptr.st1o(allopt_init, 14555, 0);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_section, NHC.OptS_General);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_idx, NHC.opt_price_quotes);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14456 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14456 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14456 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_pricequotes));
+cptr.stPtro(allopt_init, 14456 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14456 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14456 + FLD.allopt_t_descr, __sl287);
+cptr.stPtro(allopt_init, 14456 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14456 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14456 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14456 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14456 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14560, __sl288);
-cptr.stI32o(allopt_init, 14568, NHC.OptS_Behavior);
-cptr.stI32o(allopt_init, 14572, 0);
-cptr.stI32o(allopt_init, 14576, 0);
-cptr.stI32o(allopt_init, 14580, NHC.opt_pushweapon);
-cptr.stI32o(allopt_init, 14584, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14588, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14592, NHC.Yes);
-cptr.stI32o(allopt_init, 14596, NHC.No);
-cptr.stI32o(allopt_init, 14600, NHC.No);
-cptr.stI32o(allopt_init, 14604, NHC.No);
-cptr.stI32o(allopt_init, 14608, NHC.Term_False);
-cptr.st1o(allopt_init, 14612, NHC.opt_in);
-cptr.stPtro(allopt_init, 14616, cptr.add(flags, 33));
-cptr.stPtro(allopt_init, 14624, optfn_boolean);
-cptr.stPtro(allopt_init, 14632, (null));
-cptr.stPtro(allopt_init, 14640, __sl289);
-cptr.stPtro(allopt_init, 14648, null);
-cptr.st1o(allopt_init, 14656, NHC.Off);
-cptr.st1o(allopt_init, 14657, 0);
-cptr.st1o(allopt_init, 14658, 0);
-cptr.st1o(allopt_init, 14659, 0);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_section, NHC.OptS_Behavior);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_idx, NHC.opt_pushweapon);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14560 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14560 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14560 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_pushweapon));
+cptr.stPtro(allopt_init, 14560 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14560 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14560 + FLD.allopt_t_descr, __sl289);
+cptr.stPtro(allopt_init, 14560 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14560 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14560 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14560 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14560 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14664, __sl290);
-cptr.stI32o(allopt_init, 14672, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14676, 0);
-cptr.stI32o(allopt_init, 14680, 0);
-cptr.stI32o(allopt_init, 14684, NHC.opt_query_menu);
-cptr.stI32o(allopt_init, 14688, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14692, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14696, NHC.Yes);
-cptr.stI32o(allopt_init, 14700, NHC.No);
-cptr.stI32o(allopt_init, 14704, NHC.No);
-cptr.stI32o(allopt_init, 14708, NHC.No);
-cptr.stI32o(allopt_init, 14712, NHC.Term_False);
-cptr.st1o(allopt_init, 14716, NHC.opt_in);
-cptr.stPtro(allopt_init, 14720, cptr.add(iflags, 10));
-cptr.stPtro(allopt_init, 14728, optfn_boolean);
-cptr.stPtro(allopt_init, 14736, (null));
-cptr.stPtro(allopt_init, 14744, __sl291);
-cptr.stPtro(allopt_init, 14752, null);
-cptr.st1o(allopt_init, 14760, NHC.Off);
-cptr.st1o(allopt_init, 14761, 0);
-cptr.st1o(allopt_init, 14762, 0);
-cptr.st1o(allopt_init, 14763, 0);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_idx, NHC.opt_query_menu);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14664 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14664 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14664 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_query_menu));
+cptr.stPtro(allopt_init, 14664 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14664 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14664 + FLD.allopt_t_descr, __sl291);
+cptr.stPtro(allopt_init, 14664 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14664 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14664 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14664 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14664 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14768, __sl292);
-cptr.stI32o(allopt_init, 14776, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14780, 0);
-cptr.stI32o(allopt_init, 14784, 0);
-cptr.stI32o(allopt_init, 14788, NHC.opt_quick_farsight);
-cptr.stI32o(allopt_init, 14792, NHC.set_in_game);
-cptr.stI32o(allopt_init, 14796, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14800, NHC.Yes);
-cptr.stI32o(allopt_init, 14804, NHC.No);
-cptr.stI32o(allopt_init, 14808, NHC.No);
-cptr.stI32o(allopt_init, 14812, NHC.No);
-cptr.stI32o(allopt_init, 14816, NHC.Term_False);
-cptr.st1o(allopt_init, 14820, NHC.opt_in);
-cptr.stPtro(allopt_init, 14824, cptr.add(flags, 34));
-cptr.stPtro(allopt_init, 14832, optfn_boolean);
-cptr.stPtro(allopt_init, 14840, (null));
-cptr.stPtro(allopt_init, 14848, __sl293);
-cptr.stPtro(allopt_init, 14856, null);
-cptr.st1o(allopt_init, 14864, NHC.Off);
-cptr.st1o(allopt_init, 14865, 0);
-cptr.st1o(allopt_init, 14866, 0);
-cptr.st1o(allopt_init, 14867, 0);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_idx, NHC.opt_quick_farsight);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14768 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14768 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14768 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_quick_farsight));
+cptr.stPtro(allopt_init, 14768 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14768 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14768 + FLD.allopt_t_descr, __sl293);
+cptr.stPtro(allopt_init, 14768 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14768 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14768 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14768 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14768 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14872, __sl294);
-cptr.stI32o(allopt_init, 14880, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14884, 0);
-cptr.stI32o(allopt_init, 14888, 0);
-cptr.stI32o(allopt_init, 14892, NHC.opt_rawio);
-cptr.stI32o(allopt_init, 14896, NHC.set_in_config);
-cptr.stI32o(allopt_init, 14900, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 14904, NHC.No);
-cptr.stI32o(allopt_init, 14908, NHC.No);
-cptr.stI32o(allopt_init, 14912, NHC.No);
-cptr.stI32o(allopt_init, 14916, NHC.No);
-cptr.stI32o(allopt_init, 14920, NHC.Term_False);
-cptr.st1o(allopt_init, 14924, NHC.opt_in);
-cptr.stPtro(allopt_init, 14928, null);
-cptr.stPtro(allopt_init, 14936, optfn_boolean);
-cptr.stPtro(allopt_init, 14944, (null));
-cptr.stPtro(allopt_init, 14952, null);
-cptr.stPtro(allopt_init, 14960, null);
-cptr.st1o(allopt_init, 14968, NHC.Off);
-cptr.st1o(allopt_init, 14969, 0);
-cptr.st1o(allopt_init, 14970, 0);
-cptr.st1o(allopt_init, 14971, 0);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_idx, NHC.opt_rawio);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14872 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14872 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14872 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 14872 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14872 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14872 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 14872 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14872 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14872 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14872 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14872 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 14976, __sl295);
-cptr.stI32o(allopt_init, 14984, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 14988, 0);
-cptr.stI32o(allopt_init, 14992, 0);
-cptr.stI32o(allopt_init, 14996, NHC.opt_reroll);
-cptr.stI32o(allopt_init, 15000, NHC.set_in_config);
-cptr.stI32o(allopt_init, 15004, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 15008, NHC.Yes);
-cptr.stI32o(allopt_init, 15012, NHC.No);
-cptr.stI32o(allopt_init, 15016, NHC.No);
-cptr.stI32o(allopt_init, 15020, NHC.No);
-cptr.stI32o(allopt_init, 15024, NHC.Term_False);
-cptr.st1o(allopt_init, 15028, NHC.opt_in);
-cptr.stPtro(allopt_init, 15032, cptr.add(u, 2116));
-cptr.stPtro(allopt_init, 15040, optfn_boolean);
-cptr.stPtro(allopt_init, 15048, (null));
-cptr.stPtro(allopt_init, 15056, __sl296);
-cptr.stPtro(allopt_init, 15064, null);
-cptr.st1o(allopt_init, 15072, NHC.Off);
-cptr.st1o(allopt_init, 15073, 0);
-cptr.st1o(allopt_init, 15074, 0);
-cptr.st1o(allopt_init, 15075, 0);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_idx, NHC.opt_reroll);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 14976 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 14976 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 14976 + FLD.allopt_t_addr, cptr.add(u, FLD.you_uroleplay + FLD.u_roleplay_reroll));
+cptr.stPtro(allopt_init, 14976 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 14976 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 14976 + FLD.allopt_t_descr, __sl296);
+cptr.stPtro(allopt_init, 14976 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 14976 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 14976 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 14976 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 14976 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15080, __sl297);
-cptr.stI32o(allopt_init, 15088, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15092, 0);
-cptr.stI32o(allopt_init, 15096, 0);
-cptr.stI32o(allopt_init, 15100, NHC.opt_rest_on_space);
-cptr.stI32o(allopt_init, 15104, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15108, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 15112, NHC.Yes);
-cptr.stI32o(allopt_init, 15116, NHC.No);
-cptr.stI32o(allopt_init, 15120, NHC.No);
-cptr.stI32o(allopt_init, 15124, NHC.No);
-cptr.stI32o(allopt_init, 15128, NHC.Term_False);
-cptr.st1o(allopt_init, 15132, NHC.opt_in);
-cptr.stPtro(allopt_init, 15136, cptr.add(flags, 35));
-cptr.stPtro(allopt_init, 15144, optfn_boolean);
-cptr.stPtro(allopt_init, 15152, (null));
-cptr.stPtro(allopt_init, 15160, __sl298);
-cptr.stPtro(allopt_init, 15168, null);
-cptr.st1o(allopt_init, 15176, NHC.Off);
-cptr.st1o(allopt_init, 15177, 0);
-cptr.st1o(allopt_init, 15178, 0);
-cptr.st1o(allopt_init, 15179, 0);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_idx, NHC.opt_rest_on_space);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15080 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 15080 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15080 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_rest_on_space));
+cptr.stPtro(allopt_init, 15080 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 15080 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15080 + FLD.allopt_t_descr, __sl298);
+cptr.stPtro(allopt_init, 15080 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15080 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15080 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 15080 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15080 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15184, __sl299);
-cptr.stI32o(allopt_init, 15192, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15196, 0);
-cptr.stI32o(allopt_init, 15200, 70);
-cptr.stI32o(allopt_init, 15204, NHC.opt_roguesymset);
-cptr.stI32o(allopt_init, 15208, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15212, NHC.CompOpt);
-cptr.stI32o(allopt_init, 15216, NHC.No);
-cptr.stI32o(allopt_init, 15220, NHC.Yes);
-cptr.stI32o(allopt_init, 15224, NHC.No);
-cptr.stI32o(allopt_init, 15228, NHC.No);
-cptr.stI32o(allopt_init, 15232, 0);
-cptr.st1o(allopt_init, 15236, NHC.opt_in);
-cptr.stPtro(allopt_init, 15240, null);
-cptr.stPtro(allopt_init, 15248, optfn_roguesymset);
-cptr.stPtro(allopt_init, 15256, (null));
-cptr.stPtro(allopt_init, 15264, __sl300);
-cptr.stPtro(allopt_init, 15272, null);
-cptr.st1o(allopt_init, 15280, NHC.Off);
-cptr.st1o(allopt_init, 15281, NHC.Yes);
-cptr.st1o(allopt_init, 15282, 0);
-cptr.st1o(allopt_init, 15283, 0);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_expectedbuf, 70);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_idx, NHC.opt_roguesymset);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15184 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 15184 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15184 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 15184 + FLD.allopt_t_optfn, optfn_roguesymset);
+cptr.stPtro(allopt_init, 15184 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15184 + FLD.allopt_t_descr, __sl300);
+cptr.stPtro(allopt_init, 15184 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15184 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15184 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 15184 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15184 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15288, __sl301);
-cptr.stI32o(allopt_init, 15296, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15300, 0);
-cptr.stI32o(allopt_init, 15304, 9);
-cptr.stI32o(allopt_init, 15308, NHC.opt_runmode);
-cptr.stI32o(allopt_init, 15312, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15316, NHC.CompOpt);
-cptr.stI32o(allopt_init, 15320, NHC.Yes);
-cptr.stI32o(allopt_init, 15324, NHC.Yes);
-cptr.stI32o(allopt_init, 15328, NHC.No);
-cptr.stI32o(allopt_init, 15332, NHC.No);
-cptr.stI32o(allopt_init, 15336, 0);
-cptr.st1o(allopt_init, 15340, NHC.opt_in);
-cptr.stPtro(allopt_init, 15344, null);
-cptr.stPtro(allopt_init, 15352, optfn_runmode);
-cptr.stPtro(allopt_init, 15360, (null));
-cptr.stPtro(allopt_init, 15368, __sl302);
-cptr.stPtro(allopt_init, 15376, null);
-cptr.st1o(allopt_init, 15384, NHC.Off);
-cptr.st1o(allopt_init, 15385, NHC.Yes);
-cptr.st1o(allopt_init, 15386, 0);
-cptr.st1o(allopt_init, 15387, 0);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_expectedbuf, 9);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_idx, NHC.opt_runmode);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15288 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 15288 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15288 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 15288 + FLD.allopt_t_optfn, optfn_runmode);
+cptr.stPtro(allopt_init, 15288 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15288 + FLD.allopt_t_descr, __sl302);
+cptr.stPtro(allopt_init, 15288 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15288 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15288 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 15288 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15288 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15392, __sl303);
-cptr.stI32o(allopt_init, 15400, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15404, 0);
-cptr.stI32o(allopt_init, 15408, 0);
-cptr.stI32o(allopt_init, 15412, NHC.opt_safe_pet);
-cptr.stI32o(allopt_init, 15416, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15420, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 15424, NHC.Yes);
-cptr.stI32o(allopt_init, 15428, NHC.No);
-cptr.stI32o(allopt_init, 15432, NHC.No);
-cptr.stI32o(allopt_init, 15436, NHC.No);
-cptr.stI32o(allopt_init, 15440, NHC.Term_False);
-cptr.st1o(allopt_init, 15444, NHC.opt_out);
-cptr.stPtro(allopt_init, 15448, cptr.add(flags, 36));
-cptr.stPtro(allopt_init, 15456, optfn_boolean);
-cptr.stPtro(allopt_init, 15464, (null));
-cptr.stPtro(allopt_init, 15472, __sl304);
-cptr.stPtro(allopt_init, 15480, null);
-cptr.st1o(allopt_init, 15488, NHC.On);
-cptr.st1o(allopt_init, 15489, 0);
-cptr.st1o(allopt_init, 15490, 0);
-cptr.st1o(allopt_init, 15491, 0);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_idx, NHC.opt_safe_pet);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15392 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 15392 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 15392 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_safe_dog));
+cptr.stPtro(allopt_init, 15392 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 15392 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15392 + FLD.allopt_t_descr, __sl304);
+cptr.stPtro(allopt_init, 15392 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15392 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 15392 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 15392 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15392 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15496, __sl305);
-cptr.stI32o(allopt_init, 15504, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15508, 0);
-cptr.stI32o(allopt_init, 15512, 0);
-cptr.stI32o(allopt_init, 15516, NHC.opt_safe_wait);
-cptr.stI32o(allopt_init, 15520, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15524, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 15528, NHC.Yes);
-cptr.stI32o(allopt_init, 15532, NHC.No);
-cptr.stI32o(allopt_init, 15536, NHC.No);
-cptr.stI32o(allopt_init, 15540, NHC.No);
-cptr.stI32o(allopt_init, 15544, NHC.Term_False);
-cptr.st1o(allopt_init, 15548, NHC.opt_out);
-cptr.stPtro(allopt_init, 15552, cptr.add(flags, 37));
-cptr.stPtro(allopt_init, 15560, optfn_boolean);
-cptr.stPtro(allopt_init, 15568, (null));
-cptr.stPtro(allopt_init, 15576, __sl306);
-cptr.stPtro(allopt_init, 15584, null);
-cptr.st1o(allopt_init, 15592, NHC.On);
-cptr.st1o(allopt_init, 15593, 0);
-cptr.st1o(allopt_init, 15594, 0);
-cptr.st1o(allopt_init, 15595, 0);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_idx, NHC.opt_safe_wait);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15496 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 15496 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 15496 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_safe_wait));
+cptr.stPtro(allopt_init, 15496 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 15496 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15496 + FLD.allopt_t_descr, __sl306);
+cptr.stPtro(allopt_init, 15496 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15496 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 15496 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 15496 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15496 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15600, __sl307);
-cptr.stI32o(allopt_init, 15608, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15612, 0);
-cptr.stI32o(allopt_init, 15616, 0);
-cptr.stI32o(allopt_init, 15620, NHC.opt_sanity_check);
-cptr.stI32o(allopt_init, 15624, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 15628, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 15632, NHC.Yes);
-cptr.stI32o(allopt_init, 15636, NHC.No);
-cptr.stI32o(allopt_init, 15640, NHC.No);
-cptr.stI32o(allopt_init, 15644, NHC.No);
-cptr.stI32o(allopt_init, 15648, NHC.Term_False);
-cptr.st1o(allopt_init, 15652, NHC.opt_in);
-cptr.stPtro(allopt_init, 15656, cptr.add(iflags, 83));
-cptr.stPtro(allopt_init, 15664, optfn_boolean);
-cptr.stPtro(allopt_init, 15672, (null));
-cptr.stPtro(allopt_init, 15680, __sl308);
-cptr.stPtro(allopt_init, 15688, null);
-cptr.st1o(allopt_init, 15696, NHC.Off);
-cptr.st1o(allopt_init, 15697, 0);
-cptr.st1o(allopt_init, 15698, 0);
-cptr.st1o(allopt_init, 15699, 0);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_idx, NHC.opt_sanity_check);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15600 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 15600 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15600 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_sanity_check));
+cptr.stPtro(allopt_init, 15600 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 15600 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15600 + FLD.allopt_t_descr, __sl308);
+cptr.stPtro(allopt_init, 15600 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15600 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15600 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 15600 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15600 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15704, __sl309);
-cptr.stI32o(allopt_init, 15712, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15716, 0);
-cptr.stI32o(allopt_init, 15720, 32);
-cptr.stI32o(allopt_init, 15724, NHC.opt_scores);
-cptr.stI32o(allopt_init, 15728, NHC.set_in_game);
-cptr.stI32o(allopt_init, 15732, NHC.CompOpt);
-cptr.stI32o(allopt_init, 15736, NHC.No);
-cptr.stI32o(allopt_init, 15740, NHC.Yes);
-cptr.stI32o(allopt_init, 15744, NHC.No);
-cptr.stI32o(allopt_init, 15748, NHC.No);
-cptr.stI32o(allopt_init, 15752, 0);
-cptr.st1o(allopt_init, 15756, NHC.opt_in);
-cptr.stPtro(allopt_init, 15760, null);
-cptr.stPtro(allopt_init, 15768, optfn_scores);
-cptr.stPtro(allopt_init, 15776, (null));
-cptr.stPtro(allopt_init, 15784, __sl310);
-cptr.stPtro(allopt_init, 15792, null);
-cptr.st1o(allopt_init, 15800, NHC.Off);
-cptr.st1o(allopt_init, 15801, NHC.No);
-cptr.st1o(allopt_init, 15802, 0);
-cptr.st1o(allopt_init, 15803, 0);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_expectedbuf, 32);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_idx, NHC.opt_scores);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15704 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 15704 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15704 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 15704 + FLD.allopt_t_optfn, optfn_scores);
+cptr.stPtro(allopt_init, 15704 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15704 + FLD.allopt_t_descr, __sl310);
+cptr.stPtro(allopt_init, 15704 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15704 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15704 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 15704 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15704 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15808, __sl311);
-cptr.stI32o(allopt_init, 15816, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15820, 0);
-cptr.stI32o(allopt_init, 15824, 20);
-cptr.stI32o(allopt_init, 15828, NHC.opt_scroll_amount);
-cptr.stI32o(allopt_init, 15832, NHC.set_gameview);
-cptr.stI32o(allopt_init, 15836, NHC.CompOpt);
-cptr.stI32o(allopt_init, 15840, NHC.Yes);
-cptr.stI32o(allopt_init, 15844, NHC.Yes);
-cptr.stI32o(allopt_init, 15848, NHC.No);
-cptr.stI32o(allopt_init, 15852, NHC.No);
-cptr.stI32o(allopt_init, 15856, 0);
-cptr.st1o(allopt_init, 15860, NHC.opt_in);
-cptr.stPtro(allopt_init, 15864, null);
-cptr.stPtro(allopt_init, 15872, optfn_scroll_amount);
-cptr.stPtro(allopt_init, 15880, (null));
-cptr.stPtro(allopt_init, 15888, __sl312);
-cptr.stPtro(allopt_init, 15896, null);
-cptr.st1o(allopt_init, 15904, NHC.Off);
-cptr.st1o(allopt_init, 15905, NHC.No);
-cptr.st1o(allopt_init, 15906, 0);
-cptr.st1o(allopt_init, 15907, 0);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_idx, NHC.opt_scroll_amount);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15808 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 15808 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15808 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 15808 + FLD.allopt_t_optfn, optfn_scroll_amount);
+cptr.stPtro(allopt_init, 15808 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15808 + FLD.allopt_t_descr, __sl312);
+cptr.stPtro(allopt_init, 15808 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15808 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15808 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 15808 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15808 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 15912, __sl313);
-cptr.stI32o(allopt_init, 15920, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 15924, 0);
-cptr.stI32o(allopt_init, 15928, 20);
-cptr.stI32o(allopt_init, 15932, NHC.opt_scroll_margin);
-cptr.stI32o(allopt_init, 15936, NHC.set_gameview);
-cptr.stI32o(allopt_init, 15940, NHC.CompOpt);
-cptr.stI32o(allopt_init, 15944, NHC.Yes);
-cptr.stI32o(allopt_init, 15948, NHC.Yes);
-cptr.stI32o(allopt_init, 15952, NHC.No);
-cptr.stI32o(allopt_init, 15956, NHC.No);
-cptr.stI32o(allopt_init, 15960, 0);
-cptr.st1o(allopt_init, 15964, NHC.opt_in);
-cptr.stPtro(allopt_init, 15968, null);
-cptr.stPtro(allopt_init, 15976, optfn_scroll_margin);
-cptr.stPtro(allopt_init, 15984, (null));
-cptr.stPtro(allopt_init, 15992, __sl314);
-cptr.stPtro(allopt_init, 16000, null);
-cptr.st1o(allopt_init, 16008, NHC.Off);
-cptr.st1o(allopt_init, 16009, NHC.No);
-cptr.st1o(allopt_init, 16010, 0);
-cptr.st1o(allopt_init, 16011, 0);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_idx, NHC.opt_scroll_margin);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 15912 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 15912 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 15912 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 15912 + FLD.allopt_t_optfn, optfn_scroll_margin);
+cptr.stPtro(allopt_init, 15912 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 15912 + FLD.allopt_t_descr, __sl314);
+cptr.stPtro(allopt_init, 15912 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 15912 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 15912 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 15912 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 15912 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16016, __sl315);
-cptr.stI32o(allopt_init, 16024, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16028, 0);
-cptr.stI32o(allopt_init, 16032, 0);
-cptr.stI32o(allopt_init, 16036, NHC.opt_selectsaved);
-cptr.stI32o(allopt_init, 16040, NHC.set_in_config);
-cptr.stI32o(allopt_init, 16044, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16048, NHC.Yes);
-cptr.stI32o(allopt_init, 16052, NHC.No);
-cptr.stI32o(allopt_init, 16056, NHC.No);
-cptr.stI32o(allopt_init, 16060, NHC.No);
-cptr.stI32o(allopt_init, 16064, NHC.Term_False);
-cptr.st1o(allopt_init, 16068, NHC.opt_out);
-cptr.stPtro(allopt_init, 16072, cptr.add(iflags, 370));
-cptr.stPtro(allopt_init, 16080, optfn_boolean);
-cptr.stPtro(allopt_init, 16088, (null));
-cptr.stPtro(allopt_init, 16096, null);
-cptr.stPtro(allopt_init, 16104, null);
-cptr.st1o(allopt_init, 16112, NHC.On);
-cptr.st1o(allopt_init, 16113, 0);
-cptr.st1o(allopt_init, 16114, 0);
-cptr.st1o(allopt_init, 16115, 0);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_idx, NHC.opt_selectsaved);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16016 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16016 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 16016 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_selectsaved));
+cptr.stPtro(allopt_init, 16016 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16016 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16016 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 16016 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16016 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 16016 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16016 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16016 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16120, __sl316);
-cptr.stI32o(allopt_init, 16128, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16132, 0);
-cptr.stI32o(allopt_init, 16136, 0);
-cptr.stI32o(allopt_init, 16140, NHC.opt_showdamage);
-cptr.stI32o(allopt_init, 16144, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16148, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16152, NHC.Yes);
-cptr.stI32o(allopt_init, 16156, NHC.No);
-cptr.stI32o(allopt_init, 16160, NHC.No);
-cptr.stI32o(allopt_init, 16164, NHC.No);
-cptr.stI32o(allopt_init, 16168, NHC.Term_False);
-cptr.st1o(allopt_init, 16172, NHC.opt_in);
-cptr.stPtro(allopt_init, 16176, cptr.add(iflags, 13));
-cptr.stPtro(allopt_init, 16184, optfn_boolean);
-cptr.stPtro(allopt_init, 16192, (null));
-cptr.stPtro(allopt_init, 16200, __sl317);
-cptr.stPtro(allopt_init, 16208, null);
-cptr.st1o(allopt_init, 16216, NHC.Off);
-cptr.st1o(allopt_init, 16217, 0);
-cptr.st1o(allopt_init, 16218, 0);
-cptr.st1o(allopt_init, 16219, 0);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_idx, NHC.opt_showdamage);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16120 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16120 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16120 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_showdamage));
+cptr.stPtro(allopt_init, 16120 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16120 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16120 + FLD.allopt_t_descr, __sl317);
+cptr.stPtro(allopt_init, 16120 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16120 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16120 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16120 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16120 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16224, __sl318);
-cptr.stI32o(allopt_init, 16232, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 16236, 0);
-cptr.stI32o(allopt_init, 16240, 0);
-cptr.stI32o(allopt_init, 16244, NHC.opt_showexp);
-cptr.stI32o(allopt_init, 16248, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16252, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16256, NHC.Yes);
-cptr.stI32o(allopt_init, 16260, NHC.No);
-cptr.stI32o(allopt_init, 16264, NHC.No);
-cptr.stI32o(allopt_init, 16268, NHC.No);
-cptr.stI32o(allopt_init, 16272, NHC.Term_False);
-cptr.st1o(allopt_init, 16276, NHC.opt_in);
-cptr.stPtro(allopt_init, 16280, cptr.add(flags, 38));
-cptr.stPtro(allopt_init, 16288, optfn_boolean);
-cptr.stPtro(allopt_init, 16296, (null));
-cptr.stPtro(allopt_init, 16304, __sl319);
-cptr.stPtro(allopt_init, 16312, null);
-cptr.st1o(allopt_init, 16320, NHC.Off);
-cptr.st1o(allopt_init, 16321, 0);
-cptr.st1o(allopt_init, 16322, 0);
-cptr.st1o(allopt_init, 16323, 0);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_idx, NHC.opt_showexp);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16224 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16224 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16224 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_showexp));
+cptr.stPtro(allopt_init, 16224 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16224 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16224 + FLD.allopt_t_descr, __sl319);
+cptr.stPtro(allopt_init, 16224 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16224 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16224 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16224 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16224 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16328, __sl320);
-cptr.stI32o(allopt_init, 16336, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 16340, 0);
-cptr.stI32o(allopt_init, 16344, 0);
-cptr.stI32o(allopt_init, 16348, NHC.opt_showrace);
-cptr.stI32o(allopt_init, 16352, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16356, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16360, NHC.Yes);
-cptr.stI32o(allopt_init, 16364, NHC.No);
-cptr.stI32o(allopt_init, 16368, NHC.No);
-cptr.stI32o(allopt_init, 16372, NHC.No);
-cptr.stI32o(allopt_init, 16376, NHC.Term_False);
-cptr.st1o(allopt_init, 16380, NHC.opt_in);
-cptr.stPtro(allopt_init, 16384, cptr.add(flags, 169));
-cptr.stPtro(allopt_init, 16392, optfn_boolean);
-cptr.stPtro(allopt_init, 16400, (null));
-cptr.stPtro(allopt_init, 16408, __sl321);
-cptr.stPtro(allopt_init, 16416, null);
-cptr.st1o(allopt_init, 16424, NHC.Off);
-cptr.st1o(allopt_init, 16425, 0);
-cptr.st1o(allopt_init, 16426, 0);
-cptr.st1o(allopt_init, 16427, 0);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_idx, NHC.opt_showrace);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16328 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16328 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16328 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_showrace));
+cptr.stPtro(allopt_init, 16328 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16328 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16328 + FLD.allopt_t_descr, __sl321);
+cptr.stPtro(allopt_init, 16328 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16328 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16328 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16328 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16328 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16432, __sl322);
-cptr.stI32o(allopt_init, 16440, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 16444, 0);
-cptr.stI32o(allopt_init, 16448, 0);
-cptr.stI32o(allopt_init, 16452, NHC.opt_showscore);
-cptr.stI32o(allopt_init, 16456, NHC.set_in_config);
-cptr.stI32o(allopt_init, 16460, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16464, NHC.Yes);
-cptr.stI32o(allopt_init, 16468, NHC.No);
-cptr.stI32o(allopt_init, 16472, NHC.No);
-cptr.stI32o(allopt_init, 16476, NHC.No);
-cptr.stI32o(allopt_init, 16480, NHC.Term_False);
-cptr.st1o(allopt_init, 16484, NHC.opt_in);
-cptr.stPtro(allopt_init, 16488, null);
-cptr.stPtro(allopt_init, 16496, optfn_boolean);
-cptr.stPtro(allopt_init, 16504, (null));
-cptr.stPtro(allopt_init, 16512, null);
-cptr.stPtro(allopt_init, 16520, null);
-cptr.st1o(allopt_init, 16528, NHC.Off);
-cptr.st1o(allopt_init, 16529, 0);
-cptr.st1o(allopt_init, 16530, 0);
-cptr.st1o(allopt_init, 16531, 0);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_idx, NHC.opt_showscore);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16432 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16432 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16432 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 16432 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16432 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16432 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 16432 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16432 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16432 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16432 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16432 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16536, __sl323);
-cptr.stI32o(allopt_init, 16544, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16548, 0);
-cptr.stI32o(allopt_init, 16552, 0);
-cptr.stI32o(allopt_init, 16556, NHC.opt_showvers);
-cptr.stI32o(allopt_init, 16560, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16564, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16568, NHC.Yes);
-cptr.stI32o(allopt_init, 16572, NHC.No);
-cptr.stI32o(allopt_init, 16576, NHC.No);
-cptr.stI32o(allopt_init, 16580, NHC.No);
-cptr.stI32o(allopt_init, 16584, NHC.Term_False);
-cptr.st1o(allopt_init, 16588, NHC.opt_in);
-cptr.stPtro(allopt_init, 16592, cptr.add(flags, 40));
-cptr.stPtro(allopt_init, 16600, optfn_boolean);
-cptr.stPtro(allopt_init, 16608, (null));
-cptr.stPtro(allopt_init, 16616, __sl324);
-cptr.stPtro(allopt_init, 16624, null);
-cptr.st1o(allopt_init, 16632, NHC.Off);
-cptr.st1o(allopt_init, 16633, 0);
-cptr.st1o(allopt_init, 16634, 0);
-cptr.st1o(allopt_init, 16635, 0);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_idx, NHC.opt_showvers);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16536 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16536 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16536 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_showvers));
+cptr.stPtro(allopt_init, 16536 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16536 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16536 + FLD.allopt_t_descr, __sl324);
+cptr.stPtro(allopt_init, 16536 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16536 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16536 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16536 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16536 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16640, __sl325);
-cptr.stI32o(allopt_init, 16648, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16652, 0);
-cptr.stI32o(allopt_init, 16656, 0);
-cptr.stI32o(allopt_init, 16660, NHC.opt_silent);
-cptr.stI32o(allopt_init, 16664, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16668, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16672, NHC.Yes);
-cptr.stI32o(allopt_init, 16676, NHC.No);
-cptr.stI32o(allopt_init, 16680, NHC.No);
-cptr.stI32o(allopt_init, 16684, NHC.No);
-cptr.stI32o(allopt_init, 16688, NHC.Term_False);
-cptr.st1o(allopt_init, 16692, NHC.opt_out);
-cptr.stPtro(allopt_init, 16696, cptr.add(flags, 41));
-cptr.stPtro(allopt_init, 16704, optfn_boolean);
-cptr.stPtro(allopt_init, 16712, (null));
-cptr.stPtro(allopt_init, 16720, __sl326);
-cptr.stPtro(allopt_init, 16728, null);
-cptr.st1o(allopt_init, 16736, NHC.On);
-cptr.st1o(allopt_init, 16737, 0);
-cptr.st1o(allopt_init, 16738, 0);
-cptr.st1o(allopt_init, 16739, 0);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_idx, NHC.opt_silent);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16640 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16640 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 16640 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_silent));
+cptr.stPtro(allopt_init, 16640 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16640 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16640 + FLD.allopt_t_descr, __sl326);
+cptr.stPtro(allopt_init, 16640 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16640 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 16640 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16640 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16640 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16744, __sl327);
-cptr.stI32o(allopt_init, 16752, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16756, 0);
-cptr.stI32o(allopt_init, 16760, 0);
-cptr.stI32o(allopt_init, 16764, NHC.opt_softkeyboard);
-cptr.stI32o(allopt_init, 16768, NHC.set_in_config);
-cptr.stI32o(allopt_init, 16772, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 16776, NHC.Yes);
-cptr.stI32o(allopt_init, 16780, NHC.No);
-cptr.stI32o(allopt_init, 16784, NHC.No);
-cptr.stI32o(allopt_init, 16788, NHC.No);
-cptr.stI32o(allopt_init, 16792, NHC.Term_False);
-cptr.st1o(allopt_init, 16796, NHC.opt_in);
-cptr.stPtro(allopt_init, 16800, cptr.add(iflags, 368));
-cptr.stPtro(allopt_init, 16808, optfn_boolean);
-cptr.stPtro(allopt_init, 16816, (null));
-cptr.stPtro(allopt_init, 16824, null);
-cptr.stPtro(allopt_init, 16832, null);
-cptr.st1o(allopt_init, 16840, NHC.Off);
-cptr.st1o(allopt_init, 16841, 0);
-cptr.st1o(allopt_init, 16842, 0);
-cptr.st1o(allopt_init, 16843, 0);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_idx, NHC.opt_softkeyboard);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16744 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 16744 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16744 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_softkeyboard));
+cptr.stPtro(allopt_init, 16744 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 16744 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16744 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 16744 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16744 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16744 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 16744 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16744 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16848, __sl328);
-cptr.stI32o(allopt_init, 16856, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16860, 0);
-cptr.stI32o(allopt_init, 16864, 0);
-cptr.stI32o(allopt_init, 16868, NHC.opt_sortdiscoveries);
-cptr.stI32o(allopt_init, 16872, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16876, NHC.CompOpt);
-cptr.stI32o(allopt_init, 16880, NHC.Yes);
-cptr.stI32o(allopt_init, 16884, NHC.Yes);
-cptr.stI32o(allopt_init, 16888, NHC.No);
-cptr.stI32o(allopt_init, 16892, NHC.No);
-cptr.stI32o(allopt_init, 16896, 0);
-cptr.st1o(allopt_init, 16900, NHC.opt_in);
-cptr.stPtro(allopt_init, 16904, null);
-cptr.stPtro(allopt_init, 16912, optfn_sortdiscoveries);
-cptr.stPtro(allopt_init, 16920, (null));
-cptr.stPtro(allopt_init, 16928, __sl329);
-cptr.stPtro(allopt_init, 16936, null);
-cptr.st1o(allopt_init, 16944, NHC.Off);
-cptr.st1o(allopt_init, 16945, NHC.Yes);
-cptr.st1o(allopt_init, 16946, 0);
-cptr.st1o(allopt_init, 16947, 0);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_idx, NHC.opt_sortdiscoveries);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16848 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 16848 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16848 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 16848 + FLD.allopt_t_optfn, optfn_sortdiscoveries);
+cptr.stPtro(allopt_init, 16848 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16848 + FLD.allopt_t_descr, __sl329);
+cptr.stPtro(allopt_init, 16848 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16848 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16848 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 16848 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16848 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 16952, __sl330);
-cptr.stI32o(allopt_init, 16960, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 16964, 0);
-cptr.stI32o(allopt_init, 16968, 4);
-cptr.stI32o(allopt_init, 16972, NHC.opt_sortloot);
-cptr.stI32o(allopt_init, 16976, NHC.set_in_game);
-cptr.stI32o(allopt_init, 16980, NHC.CompOpt);
-cptr.stI32o(allopt_init, 16984, NHC.No);
-cptr.stI32o(allopt_init, 16988, NHC.Yes);
-cptr.stI32o(allopt_init, 16992, NHC.No);
-cptr.stI32o(allopt_init, 16996, NHC.No);
-cptr.stI32o(allopt_init, 17000, 0);
-cptr.st1o(allopt_init, 17004, NHC.opt_in);
-cptr.stPtro(allopt_init, 17008, null);
-cptr.stPtro(allopt_init, 17016, optfn_sortloot);
-cptr.stPtro(allopt_init, 17024, (null));
-cptr.stPtro(allopt_init, 17032, __sl331);
-cptr.stPtro(allopt_init, 17040, null);
-cptr.st1o(allopt_init, 17048, NHC.Off);
-cptr.st1o(allopt_init, 17049, NHC.Yes);
-cptr.st1o(allopt_init, 17050, 0);
-cptr.st1o(allopt_init, 17051, 0);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_expectedbuf, 4);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_idx, NHC.opt_sortloot);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 16952 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 16952 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 16952 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 16952 + FLD.allopt_t_optfn, optfn_sortloot);
+cptr.stPtro(allopt_init, 16952 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 16952 + FLD.allopt_t_descr, __sl331);
+cptr.stPtro(allopt_init, 16952 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 16952 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 16952 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 16952 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 16952 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17056, __sl332);
-cptr.stI32o(allopt_init, 17064, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17068, 0);
-cptr.stI32o(allopt_init, 17072, 0);
-cptr.stI32o(allopt_init, 17076, NHC.opt_sortpack);
-cptr.stI32o(allopt_init, 17080, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17084, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17088, NHC.Yes);
-cptr.stI32o(allopt_init, 17092, NHC.No);
-cptr.stI32o(allopt_init, 17096, NHC.No);
-cptr.stI32o(allopt_init, 17100, NHC.No);
-cptr.stI32o(allopt_init, 17104, NHC.Term_False);
-cptr.st1o(allopt_init, 17108, NHC.opt_out);
-cptr.stPtro(allopt_init, 17112, cptr.add(flags, 42));
-cptr.stPtro(allopt_init, 17120, optfn_boolean);
-cptr.stPtro(allopt_init, 17128, (null));
-cptr.stPtro(allopt_init, 17136, __sl333);
-cptr.stPtro(allopt_init, 17144, null);
-cptr.st1o(allopt_init, 17152, NHC.On);
-cptr.st1o(allopt_init, 17153, 0);
-cptr.st1o(allopt_init, 17154, 0);
-cptr.st1o(allopt_init, 17155, 0);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_idx, NHC.opt_sortpack);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17056 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17056 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 17056 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_sortpack));
+cptr.stPtro(allopt_init, 17056 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17056 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17056 + FLD.allopt_t_descr, __sl333);
+cptr.stPtro(allopt_init, 17056 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17056 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 17056 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17056 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17056 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17160, __sl334);
-cptr.stI32o(allopt_init, 17168, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17172, 0);
-cptr.stI32o(allopt_init, 17176, 0);
-cptr.stI32o(allopt_init, 17180, NHC.opt_sortvanquished);
-cptr.stI32o(allopt_init, 17184, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17188, NHC.CompOpt);
-cptr.stI32o(allopt_init, 17192, NHC.Yes);
-cptr.stI32o(allopt_init, 17196, NHC.Yes);
-cptr.stI32o(allopt_init, 17200, NHC.No);
-cptr.stI32o(allopt_init, 17204, NHC.No);
-cptr.stI32o(allopt_init, 17208, 0);
-cptr.st1o(allopt_init, 17212, NHC.opt_in);
-cptr.stPtro(allopt_init, 17216, null);
-cptr.stPtro(allopt_init, 17224, optfn_sortvanquished);
-cptr.stPtro(allopt_init, 17232, (null));
-cptr.stPtro(allopt_init, 17240, __sl335);
-cptr.stPtro(allopt_init, 17248, null);
-cptr.st1o(allopt_init, 17256, NHC.Off);
-cptr.st1o(allopt_init, 17257, NHC.Yes);
-cptr.st1o(allopt_init, 17258, 0);
-cptr.st1o(allopt_init, 17259, 0);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_idx, NHC.opt_sortvanquished);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17160 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 17160 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17160 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 17160 + FLD.allopt_t_optfn, optfn_sortvanquished);
+cptr.stPtro(allopt_init, 17160 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17160 + FLD.allopt_t_descr, __sl335);
+cptr.stPtro(allopt_init, 17160 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17160 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 17160 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 17160 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17160 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17264, __sl336);
-cptr.stI32o(allopt_init, 17272, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17276, 0);
-cptr.stI32o(allopt_init, 17280, NHM.WINTYPELEN);
-cptr.stI32o(allopt_init, 17284, NHC.opt_soundlib);
-cptr.stI32o(allopt_init, 17288, NHC.set_gameview);
-cptr.stI32o(allopt_init, 17292, NHC.CompOpt);
-cptr.stI32o(allopt_init, 17296, NHC.No);
-cptr.stI32o(allopt_init, 17300, NHC.Yes);
-cptr.stI32o(allopt_init, 17304, NHC.No);
-cptr.stI32o(allopt_init, 17308, NHC.No);
-cptr.stI32o(allopt_init, 17312, 0);
-cptr.st1o(allopt_init, 17316, NHC.opt_in);
-cptr.stPtro(allopt_init, 17320, null);
-cptr.stPtro(allopt_init, 17328, optfn_soundlib);
-cptr.stPtro(allopt_init, 17336, (null));
-cptr.stPtro(allopt_init, 17344, __sl337);
-cptr.stPtro(allopt_init, 17352, null);
-cptr.st1o(allopt_init, 17360, NHC.Off);
-cptr.st1o(allopt_init, 17361, NHC.No);
-cptr.st1o(allopt_init, 17362, 0);
-cptr.st1o(allopt_init, 17363, 0);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_expectedbuf, NHM.WINTYPELEN);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_idx, NHC.opt_soundlib);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17264 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 17264 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17264 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 17264 + FLD.allopt_t_optfn, optfn_soundlib);
+cptr.stPtro(allopt_init, 17264 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17264 + FLD.allopt_t_descr, __sl337);
+cptr.stPtro(allopt_init, 17264 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17264 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 17264 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 17264 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17264 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17368, __sl338);
-cptr.stI32o(allopt_init, 17376, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17380, 0);
-cptr.stI32o(allopt_init, 17384, 0);
-cptr.stI32o(allopt_init, 17388, NHC.opt_sounds);
-cptr.stI32o(allopt_init, 17392, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17396, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17400, NHC.Yes);
-cptr.stI32o(allopt_init, 17404, NHC.No);
-cptr.stI32o(allopt_init, 17408, NHC.No);
-cptr.stI32o(allopt_init, 17412, NHC.No);
-cptr.stI32o(allopt_init, 17416, NHC.Term_Off);
-cptr.st1o(allopt_init, 17420, NHC.opt_in);
-cptr.stPtro(allopt_init, 17424, cptr.add(iflags, 144));
-cptr.stPtro(allopt_init, 17432, optfn_boolean);
-cptr.stPtro(allopt_init, 17440, (null));
-cptr.stPtro(allopt_init, 17448, __sl339);
-cptr.stPtro(allopt_init, 17456, null);
-cptr.st1o(allopt_init, 17464, NHC.Off);
-cptr.st1o(allopt_init, 17465, 0);
-cptr.st1o(allopt_init, 17466, 0);
-cptr.st1o(allopt_init, 17467, 0);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_idx, NHC.opt_sounds);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17368 + FLD.allopt_t_termpref, NHC.Term_Off);
+cptr.st1o(allopt_init, 17368 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17368 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_sounds));
+cptr.stPtro(allopt_init, 17368 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17368 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17368 + FLD.allopt_t_descr, __sl339);
+cptr.stPtro(allopt_init, 17368 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17368 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 17368 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17368 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17368 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17472, __sl340);
-cptr.stI32o(allopt_init, 17480, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 17484, 0);
-cptr.stI32o(allopt_init, 17488, 0);
-cptr.stI32o(allopt_init, 17492, NHC.opt_sparkle);
-cptr.stI32o(allopt_init, 17496, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17500, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17504, NHC.Yes);
-cptr.stI32o(allopt_init, 17508, NHC.No);
-cptr.stI32o(allopt_init, 17512, NHC.No);
-cptr.stI32o(allopt_init, 17516, NHC.No);
-cptr.stI32o(allopt_init, 17520, NHC.Term_False);
-cptr.st1o(allopt_init, 17524, NHC.opt_out);
-cptr.stPtro(allopt_init, 17528, cptr.add(flags, 43));
-cptr.stPtro(allopt_init, 17536, optfn_boolean);
-cptr.stPtro(allopt_init, 17544, (null));
-cptr.stPtro(allopt_init, 17552, __sl341);
-cptr.stPtro(allopt_init, 17560, null);
-cptr.st1o(allopt_init, 17568, NHC.On);
-cptr.st1o(allopt_init, 17569, 0);
-cptr.st1o(allopt_init, 17570, 0);
-cptr.st1o(allopt_init, 17571, 0);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_idx, NHC.opt_sparkle);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17472 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17472 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 17472 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_sparkle));
+cptr.stPtro(allopt_init, 17472 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17472 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17472 + FLD.allopt_t_descr, __sl341);
+cptr.stPtro(allopt_init, 17472 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17472 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 17472 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17472 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17472 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17576, __sl342);
-cptr.stI32o(allopt_init, 17584, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17588, 0);
-cptr.stI32o(allopt_init, 17592, 0);
-cptr.stI32o(allopt_init, 17596, NHC.opt_spot_monsters);
-cptr.stI32o(allopt_init, 17600, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17604, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17608, NHC.Yes);
-cptr.stI32o(allopt_init, 17612, NHC.No);
-cptr.stI32o(allopt_init, 17616, NHC.No);
-cptr.stI32o(allopt_init, 17620, NHC.No);
-cptr.stI32o(allopt_init, 17624, NHC.Term_False);
-cptr.st1o(allopt_init, 17628, NHC.opt_in);
-cptr.stPtro(allopt_init, 17632, cptr.add(a11y, 6));
-cptr.stPtro(allopt_init, 17640, optfn_boolean);
-cptr.stPtro(allopt_init, 17648, (null));
-cptr.stPtro(allopt_init, 17656, __sl343);
-cptr.stPtro(allopt_init, 17664, null);
-cptr.st1o(allopt_init, 17672, NHC.Off);
-cptr.st1o(allopt_init, 17673, 0);
-cptr.st1o(allopt_init, 17674, 0);
-cptr.st1o(allopt_init, 17675, 0);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_idx, NHC.opt_spot_monsters);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17576 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17576 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17576 + FLD.allopt_t_addr, cptr.add(a11y, FLD.accessibility_data_mon_notices));
+cptr.stPtro(allopt_init, 17576 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17576 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17576 + FLD.allopt_t_descr, __sl343);
+cptr.stPtro(allopt_init, 17576 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17576 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 17576 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17576 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17576 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17680, __sl344);
-cptr.stI32o(allopt_init, 17688, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17692, 0);
-cptr.stI32o(allopt_init, 17696, 0);
-cptr.stI32o(allopt_init, 17700, NHC.opt_splash_screen);
-cptr.stI32o(allopt_init, 17704, NHC.set_in_config);
-cptr.stI32o(allopt_init, 17708, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17712, NHC.Yes);
-cptr.stI32o(allopt_init, 17716, NHC.No);
-cptr.stI32o(allopt_init, 17720, NHC.No);
-cptr.stI32o(allopt_init, 17724, NHC.No);
-cptr.stI32o(allopt_init, 17728, NHC.Term_False);
-cptr.st1o(allopt_init, 17732, NHC.opt_out);
-cptr.stPtro(allopt_init, 17736, cptr.add(iflags, 364));
-cptr.stPtro(allopt_init, 17744, optfn_boolean);
-cptr.stPtro(allopt_init, 17752, (null));
-cptr.stPtro(allopt_init, 17760, null);
-cptr.stPtro(allopt_init, 17768, null);
-cptr.st1o(allopt_init, 17776, NHC.On);
-cptr.st1o(allopt_init, 17777, 0);
-cptr.st1o(allopt_init, 17778, 0);
-cptr.st1o(allopt_init, 17779, 0);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_idx, NHC.opt_splash_screen);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17680 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17680 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 17680 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_splash_screen));
+cptr.stPtro(allopt_init, 17680 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17680 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17680 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 17680 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17680 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 17680 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17680 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17680 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17784, __sl345);
-cptr.stI32o(allopt_init, 17792, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17796, 0);
-cptr.stI32o(allopt_init, 17800, 0);
-cptr.stI32o(allopt_init, 17804, NHC.opt_standout);
-cptr.stI32o(allopt_init, 17808, NHC.set_in_game);
-cptr.stI32o(allopt_init, 17812, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17816, NHC.Yes);
-cptr.stI32o(allopt_init, 17820, NHC.No);
-cptr.stI32o(allopt_init, 17824, NHC.No);
-cptr.stI32o(allopt_init, 17828, NHC.No);
-cptr.stI32o(allopt_init, 17832, NHC.Term_False);
-cptr.st1o(allopt_init, 17836, NHC.opt_in);
-cptr.stPtro(allopt_init, 17840, cptr.add(flags, 44));
-cptr.stPtro(allopt_init, 17848, optfn_boolean);
-cptr.stPtro(allopt_init, 17856, (null));
-cptr.stPtro(allopt_init, 17864, __sl346);
-cptr.stPtro(allopt_init, 17872, null);
-cptr.st1o(allopt_init, 17880, NHC.Off);
-cptr.st1o(allopt_init, 17881, 0);
-cptr.st1o(allopt_init, 17882, 0);
-cptr.st1o(allopt_init, 17883, 0);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_idx, NHC.opt_standout);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17784 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17784 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17784 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_standout));
+cptr.stPtro(allopt_init, 17784 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17784 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17784 + FLD.allopt_t_descr, __sl346);
+cptr.stPtro(allopt_init, 17784 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17784 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 17784 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17784 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17784 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17888, __sl347);
-cptr.stI32o(allopt_init, 17896, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 17900, 0);
-cptr.stI32o(allopt_init, 17904, 0);
-cptr.stI32o(allopt_init, 17908, NHC.opt_status_updates);
-cptr.stI32o(allopt_init, 17912, NHC.set_in_config);
-cptr.stI32o(allopt_init, 17916, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 17920, NHC.Yes);
-cptr.stI32o(allopt_init, 17924, NHC.No);
-cptr.stI32o(allopt_init, 17928, NHC.No);
-cptr.stI32o(allopt_init, 17932, NHC.No);
-cptr.stI32o(allopt_init, 17936, NHC.Term_False);
-cptr.st1o(allopt_init, 17940, NHC.opt_out);
-cptr.stPtro(allopt_init, 17944, cptr.add(iflags, 145));
-cptr.stPtro(allopt_init, 17952, optfn_boolean);
-cptr.stPtro(allopt_init, 17960, (null));
-cptr.stPtro(allopt_init, 17968, __sl348);
-cptr.stPtro(allopt_init, 17976, null);
-cptr.st1o(allopt_init, 17984, NHC.On);
-cptr.st1o(allopt_init, 17985, 0);
-cptr.st1o(allopt_init, 17986, 0);
-cptr.st1o(allopt_init, 17987, 0);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_idx, NHC.opt_status_updates);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17888 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 17888 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 17888 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_status_updates));
+cptr.stPtro(allopt_init, 17888 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 17888 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17888 + FLD.allopt_t_descr, __sl348);
+cptr.stPtro(allopt_init, 17888 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17888 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 17888 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 17888 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17888 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 17992, __sl349);
-cptr.stI32o(allopt_init, 18000, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 18004, 0);
-cptr.stI32o(allopt_init, 18008, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 18012, NHC.opt_o_status_cond);
-cptr.stI32o(allopt_init, 18016, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18020, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 18024, NHC.No);
-cptr.stI32o(allopt_init, 18028, NHC.Yes);
-cptr.stI32o(allopt_init, 18032, NHC.No);
-cptr.stI32o(allopt_init, 18036, NHC.No);
-cptr.stI32o(allopt_init, 18040, 0);
-cptr.st1o(allopt_init, 18044, NHC.opt_in);
-cptr.stPtro(allopt_init, 18048, null);
-cptr.stPtro(allopt_init, 18056, optfn_o_status_cond);
-cptr.stPtro(allopt_init, 18064, (null));
-cptr.stPtro(allopt_init, 18072, __sl350);
-cptr.stPtro(allopt_init, 18080, null);
-cptr.st1o(allopt_init, 18088, NHC.On);
-cptr.st1o(allopt_init, 18089, NHC.On);
-cptr.st1o(allopt_init, 18090, 0);
-cptr.st1o(allopt_init, 18091, 0);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_idx, NHC.opt_o_status_cond);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 17992 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 17992 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 17992 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 17992 + FLD.allopt_t_optfn, optfn_o_status_cond);
+cptr.stPtro(allopt_init, 17992 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 17992 + FLD.allopt_t_descr, __sl350);
+cptr.stPtro(allopt_init, 17992 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 17992 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 17992 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 17992 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 17992 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18096, __sl351);
-cptr.stI32o(allopt_init, 18104, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18108, 0);
-cptr.stI32o(allopt_init, 18112, 20);
-cptr.stI32o(allopt_init, 18116, NHC.opt_statushilites);
-cptr.stI32o(allopt_init, 18120, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18124, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18128, NHC.Yes);
-cptr.stI32o(allopt_init, 18132, NHC.Yes);
-cptr.stI32o(allopt_init, 18136, NHC.Yes);
-cptr.stI32o(allopt_init, 18140, NHC.No);
-cptr.stI32o(allopt_init, 18144, 0);
-cptr.st1o(allopt_init, 18148, NHC.opt_in);
-cptr.stPtro(allopt_init, 18152, null);
-cptr.stPtro(allopt_init, 18160, optfn_statushilites);
-cptr.stPtro(allopt_init, 18168, (null));
-cptr.stPtro(allopt_init, 18176, __sl352);
-cptr.stPtro(allopt_init, 18184, null);
-cptr.st1o(allopt_init, 18192, NHC.Off);
-cptr.st1o(allopt_init, 18193, NHC.No);
-cptr.st1o(allopt_init, 18194, 0);
-cptr.st1o(allopt_init, 18195, 0);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_idx, NHC.opt_statushilites);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18096 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18096 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18096 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18096 + FLD.allopt_t_optfn, optfn_statushilites);
+cptr.stPtro(allopt_init, 18096 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18096 + FLD.allopt_t_descr, __sl352);
+cptr.stPtro(allopt_init, 18096 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18096 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18096 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18096 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18096 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18200, __sl353);
-cptr.stI32o(allopt_init, 18208, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 18212, 0);
-cptr.stI32o(allopt_init, 18216, NHM.BUFSZ);
-cptr.stI32o(allopt_init, 18220, NHC.opt_o_status_hilites);
-cptr.stI32o(allopt_init, 18224, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18228, NHC.OthrOpt);
-cptr.stI32o(allopt_init, 18232, NHC.No);
-cptr.stI32o(allopt_init, 18236, NHC.Yes);
-cptr.stI32o(allopt_init, 18240, NHC.No);
-cptr.stI32o(allopt_init, 18244, NHC.No);
-cptr.stI32o(allopt_init, 18248, 0);
-cptr.st1o(allopt_init, 18252, NHC.opt_in);
-cptr.stPtro(allopt_init, 18256, null);
-cptr.stPtro(allopt_init, 18264, optfn_o_status_hilites);
-cptr.stPtro(allopt_init, 18272, (null));
-cptr.stPtro(allopt_init, 18280, __sl354);
-cptr.stPtro(allopt_init, 18288, null);
-cptr.st1o(allopt_init, 18296, NHC.On);
-cptr.st1o(allopt_init, 18297, NHC.On);
-cptr.st1o(allopt_init, 18298, 0);
-cptr.st1o(allopt_init, 18299, 0);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_expectedbuf, NHM.BUFSZ);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_idx, NHC.opt_o_status_hilites);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_opttyp, NHC.OthrOpt);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18200 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18200 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18200 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18200 + FLD.allopt_t_optfn, optfn_o_status_hilites);
+cptr.stPtro(allopt_init, 18200 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18200 + FLD.allopt_t_descr, __sl354);
+cptr.stPtro(allopt_init, 18200 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18200 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 18200 + FLD.allopt_t_has_handler, NHC.On);
+cptr.st1o(allopt_init, 18200 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18200 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18304, __sl355);
-cptr.stI32o(allopt_init, 18312, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 18316, 0);
-cptr.stI32o(allopt_init, 18320, 20);
-cptr.stI32o(allopt_init, 18324, NHC.opt_statuslines);
-cptr.stI32o(allopt_init, 18328, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18332, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18336, NHC.No);
-cptr.stI32o(allopt_init, 18340, NHC.Yes);
-cptr.stI32o(allopt_init, 18344, NHC.No);
-cptr.stI32o(allopt_init, 18348, NHC.No);
-cptr.stI32o(allopt_init, 18352, 0);
-cptr.st1o(allopt_init, 18356, NHC.opt_in);
-cptr.stPtro(allopt_init, 18360, null);
-cptr.stPtro(allopt_init, 18368, optfn_statuslines);
-cptr.stPtro(allopt_init, 18376, (null));
-cptr.stPtro(allopt_init, 18384, __sl356);
-cptr.stPtro(allopt_init, 18392, null);
-cptr.st1o(allopt_init, 18400, NHC.Off);
-cptr.st1o(allopt_init, 18401, NHC.No);
-cptr.st1o(allopt_init, 18402, 0);
-cptr.st1o(allopt_init, 18403, 0);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_idx, NHC.opt_statuslines);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18304 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18304 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18304 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18304 + FLD.allopt_t_optfn, optfn_statuslines);
+cptr.stPtro(allopt_init, 18304 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18304 + FLD.allopt_t_descr, __sl356);
+cptr.stPtro(allopt_init, 18304 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18304 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18304 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18304 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18304 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18408, __sl357);
-cptr.stI32o(allopt_init, 18416, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18420, 0);
-cptr.stI32o(allopt_init, 18424, 8);
-cptr.stI32o(allopt_init, 18428, NHC.opt_suppress_alert);
-cptr.stI32o(allopt_init, 18432, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18436, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18440, NHC.No);
-cptr.stI32o(allopt_init, 18444, NHC.Yes);
-cptr.stI32o(allopt_init, 18448, NHC.Yes);
-cptr.stI32o(allopt_init, 18452, NHC.No);
-cptr.stI32o(allopt_init, 18456, 0);
-cptr.st1o(allopt_init, 18460, NHC.opt_in);
-cptr.stPtro(allopt_init, 18464, null);
-cptr.stPtro(allopt_init, 18472, optfn_suppress_alert);
-cptr.stPtro(allopt_init, 18480, (null));
-cptr.stPtro(allopt_init, 18488, __sl358);
-cptr.stPtro(allopt_init, 18496, null);
-cptr.st1o(allopt_init, 18504, NHC.Off);
-cptr.st1o(allopt_init, 18505, NHC.No);
-cptr.st1o(allopt_init, 18506, 0);
-cptr.st1o(allopt_init, 18507, 0);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_expectedbuf, 8);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_idx, NHC.opt_suppress_alert);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18408 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18408 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18408 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18408 + FLD.allopt_t_optfn, optfn_suppress_alert);
+cptr.stPtro(allopt_init, 18408 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18408 + FLD.allopt_t_descr, __sl358);
+cptr.stPtro(allopt_init, 18408 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18408 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18408 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18408 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18408 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18512, __sl359);
-cptr.stI32o(allopt_init, 18520, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 18524, 0);
-cptr.stI32o(allopt_init, 18528, 70);
-cptr.stI32o(allopt_init, 18532, NHC.opt_symset);
-cptr.stI32o(allopt_init, 18536, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18540, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18544, NHC.No);
-cptr.stI32o(allopt_init, 18548, NHC.Yes);
-cptr.stI32o(allopt_init, 18552, NHC.No);
-cptr.stI32o(allopt_init, 18556, NHC.No);
-cptr.stI32o(allopt_init, 18560, 0);
-cptr.st1o(allopt_init, 18564, NHC.opt_in);
-cptr.stPtro(allopt_init, 18568, null);
-cptr.stPtro(allopt_init, 18576, optfn_symset);
-cptr.stPtro(allopt_init, 18584, (null));
-cptr.stPtro(allopt_init, 18592, __sl360);
-cptr.stPtro(allopt_init, 18600, null);
-cptr.st1o(allopt_init, 18608, NHC.Off);
-cptr.st1o(allopt_init, 18609, NHC.Yes);
-cptr.st1o(allopt_init, 18610, 0);
-cptr.st1o(allopt_init, 18611, 0);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_expectedbuf, 70);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_idx, NHC.opt_symset);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18512 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18512 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18512 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18512 + FLD.allopt_t_optfn, optfn_symset);
+cptr.stPtro(allopt_init, 18512 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18512 + FLD.allopt_t_descr, __sl360);
+cptr.stPtro(allopt_init, 18512 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18512 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18512 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 18512 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18512 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18616, __sl361);
-cptr.stI32o(allopt_init, 18624, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18628, 0);
-cptr.stI32o(allopt_init, 18632, 6);
-cptr.stI32o(allopt_init, 18636, NHC.opt_term_cols);
-cptr.stI32o(allopt_init, 18640, NHC.set_in_config);
-cptr.stI32o(allopt_init, 18644, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18648, NHC.No);
-cptr.stI32o(allopt_init, 18652, NHC.Yes);
-cptr.stI32o(allopt_init, 18656, NHC.No);
-cptr.stI32o(allopt_init, 18660, NHC.No);
-cptr.stI32o(allopt_init, 18664, 0);
-cptr.st1o(allopt_init, 18668, NHC.opt_in);
-cptr.stPtro(allopt_init, 18672, null);
-cptr.stPtro(allopt_init, 18680, optfn_term_cols);
-cptr.stPtro(allopt_init, 18688, __sl362);
-cptr.stPtro(allopt_init, 18696, __sl363);
-cptr.stPtro(allopt_init, 18704, null);
-cptr.st1o(allopt_init, 18712, NHC.Off);
-cptr.st1o(allopt_init, 18713, NHC.No);
-cptr.st1o(allopt_init, 18714, 0);
-cptr.st1o(allopt_init, 18715, 0);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_expectedbuf, 6);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_idx, NHC.opt_term_cols);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18616 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18616 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18616 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18616 + FLD.allopt_t_optfn, optfn_term_cols);
+cptr.stPtro(allopt_init, 18616 + FLD.allopt_t_alias, __sl362);
+cptr.stPtro(allopt_init, 18616 + FLD.allopt_t_descr, __sl363);
+cptr.stPtro(allopt_init, 18616 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18616 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18616 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18616 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18616 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18720, __sl364);
-cptr.stI32o(allopt_init, 18728, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18732, 0);
-cptr.stI32o(allopt_init, 18736, 6);
-cptr.stI32o(allopt_init, 18740, NHC.opt_term_rows);
-cptr.stI32o(allopt_init, 18744, NHC.set_in_config);
-cptr.stI32o(allopt_init, 18748, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18752, NHC.No);
-cptr.stI32o(allopt_init, 18756, NHC.Yes);
-cptr.stI32o(allopt_init, 18760, NHC.No);
-cptr.stI32o(allopt_init, 18764, NHC.No);
-cptr.stI32o(allopt_init, 18768, 0);
-cptr.st1o(allopt_init, 18772, NHC.opt_in);
-cptr.stPtro(allopt_init, 18776, null);
-cptr.stPtro(allopt_init, 18784, optfn_term_rows);
-cptr.stPtro(allopt_init, 18792, (null));
-cptr.stPtro(allopt_init, 18800, __sl365);
-cptr.stPtro(allopt_init, 18808, null);
-cptr.st1o(allopt_init, 18816, NHC.Off);
-cptr.st1o(allopt_init, 18817, NHC.No);
-cptr.st1o(allopt_init, 18818, 0);
-cptr.st1o(allopt_init, 18819, 0);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_expectedbuf, 6);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_idx, NHC.opt_term_rows);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18720 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18720 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18720 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18720 + FLD.allopt_t_optfn, optfn_term_rows);
+cptr.stPtro(allopt_init, 18720 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18720 + FLD.allopt_t_descr, __sl365);
+cptr.stPtro(allopt_init, 18720 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18720 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18720 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18720 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18720 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18824, __sl366);
-cptr.stI32o(allopt_init, 18832, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18836, 0);
-cptr.stI32o(allopt_init, 18840, 0);
-cptr.stI32o(allopt_init, 18844, NHC.opt_terrainstatus);
-cptr.stI32o(allopt_init, 18848, NHC.set_in_game);
-cptr.stI32o(allopt_init, 18852, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 18856, NHC.Yes);
-cptr.stI32o(allopt_init, 18860, NHC.No);
-cptr.stI32o(allopt_init, 18864, NHC.No);
-cptr.stI32o(allopt_init, 18868, NHC.No);
-cptr.stI32o(allopt_init, 18872, NHC.Term_False);
-cptr.st1o(allopt_init, 18876, NHC.opt_in);
-cptr.stPtro(allopt_init, 18880, cptr.add(flags, 45));
-cptr.stPtro(allopt_init, 18888, optfn_boolean);
-cptr.stPtro(allopt_init, 18896, (null));
-cptr.stPtro(allopt_init, 18904, __sl367);
-cptr.stPtro(allopt_init, 18912, null);
-cptr.st1o(allopt_init, 18920, NHC.Off);
-cptr.st1o(allopt_init, 18921, 0);
-cptr.st1o(allopt_init, 18922, 0);
-cptr.st1o(allopt_init, 18923, 0);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_idx, NHC.opt_terrainstatus);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18824 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 18824 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18824 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_terrainstatus));
+cptr.stPtro(allopt_init, 18824 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 18824 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18824 + FLD.allopt_t_descr, __sl367);
+cptr.stPtro(allopt_init, 18824 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18824 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18824 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 18824 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18824 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 18928, __sl368);
-cptr.stI32o(allopt_init, 18936, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 18940, 0);
-cptr.stI32o(allopt_init, 18944, 70);
-cptr.stI32o(allopt_init, 18948, NHC.opt_tile_file);
-cptr.stI32o(allopt_init, 18952, NHC.set_gameview);
-cptr.stI32o(allopt_init, 18956, NHC.CompOpt);
-cptr.stI32o(allopt_init, 18960, NHC.No);
-cptr.stI32o(allopt_init, 18964, NHC.Yes);
-cptr.stI32o(allopt_init, 18968, NHC.No);
-cptr.stI32o(allopt_init, 18972, NHC.No);
-cptr.stI32o(allopt_init, 18976, 0);
-cptr.st1o(allopt_init, 18980, NHC.opt_in);
-cptr.stPtro(allopt_init, 18984, null);
-cptr.stPtro(allopt_init, 18992, optfn_tile_file);
-cptr.stPtro(allopt_init, 19000, (null));
-cptr.stPtro(allopt_init, 19008, __sl369);
-cptr.stPtro(allopt_init, 19016, null);
-cptr.st1o(allopt_init, 19024, NHC.Off);
-cptr.st1o(allopt_init, 19025, NHC.No);
-cptr.st1o(allopt_init, 19026, 0);
-cptr.st1o(allopt_init, 19027, 0);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_expectedbuf, 70);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_idx, NHC.opt_tile_file);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 18928 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 18928 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 18928 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 18928 + FLD.allopt_t_optfn, optfn_tile_file);
+cptr.stPtro(allopt_init, 18928 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 18928 + FLD.allopt_t_descr, __sl369);
+cptr.stPtro(allopt_init, 18928 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 18928 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 18928 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 18928 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 18928 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19032, __sl370);
-cptr.stI32o(allopt_init, 19040, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19044, 0);
-cptr.stI32o(allopt_init, 19048, 20);
-cptr.stI32o(allopt_init, 19052, NHC.opt_tile_height);
-cptr.stI32o(allopt_init, 19056, NHC.set_gameview);
-cptr.stI32o(allopt_init, 19060, NHC.CompOpt);
-cptr.stI32o(allopt_init, 19064, NHC.Yes);
-cptr.stI32o(allopt_init, 19068, NHC.Yes);
-cptr.stI32o(allopt_init, 19072, NHC.No);
-cptr.stI32o(allopt_init, 19076, NHC.No);
-cptr.stI32o(allopt_init, 19080, 0);
-cptr.st1o(allopt_init, 19084, NHC.opt_in);
-cptr.stPtro(allopt_init, 19088, null);
-cptr.stPtro(allopt_init, 19096, optfn_tile_height);
-cptr.stPtro(allopt_init, 19104, (null));
-cptr.stPtro(allopt_init, 19112, __sl371);
-cptr.stPtro(allopt_init, 19120, null);
-cptr.st1o(allopt_init, 19128, NHC.Off);
-cptr.st1o(allopt_init, 19129, NHC.No);
-cptr.st1o(allopt_init, 19130, 0);
-cptr.st1o(allopt_init, 19131, 0);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_idx, NHC.opt_tile_height);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19032 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 19032 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19032 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 19032 + FLD.allopt_t_optfn, optfn_tile_height);
+cptr.stPtro(allopt_init, 19032 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19032 + FLD.allopt_t_descr, __sl371);
+cptr.stPtro(allopt_init, 19032 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19032 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19032 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 19032 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19032 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19136, __sl372);
-cptr.stI32o(allopt_init, 19144, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19148, 0);
-cptr.stI32o(allopt_init, 19152, 20);
-cptr.stI32o(allopt_init, 19156, NHC.opt_tile_width);
-cptr.stI32o(allopt_init, 19160, NHC.set_gameview);
-cptr.stI32o(allopt_init, 19164, NHC.CompOpt);
-cptr.stI32o(allopt_init, 19168, NHC.Yes);
-cptr.stI32o(allopt_init, 19172, NHC.Yes);
-cptr.stI32o(allopt_init, 19176, NHC.No);
-cptr.stI32o(allopt_init, 19180, NHC.No);
-cptr.stI32o(allopt_init, 19184, 0);
-cptr.st1o(allopt_init, 19188, NHC.opt_in);
-cptr.stPtro(allopt_init, 19192, null);
-cptr.stPtro(allopt_init, 19200, optfn_tile_width);
-cptr.stPtro(allopt_init, 19208, (null));
-cptr.stPtro(allopt_init, 19216, __sl373);
-cptr.stPtro(allopt_init, 19224, null);
-cptr.st1o(allopt_init, 19232, NHC.Off);
-cptr.st1o(allopt_init, 19233, NHC.No);
-cptr.st1o(allopt_init, 19234, 0);
-cptr.st1o(allopt_init, 19235, 0);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_idx, NHC.opt_tile_width);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19136 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 19136 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19136 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 19136 + FLD.allopt_t_optfn, optfn_tile_width);
+cptr.stPtro(allopt_init, 19136 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19136 + FLD.allopt_t_descr, __sl373);
+cptr.stPtro(allopt_init, 19136 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19136 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19136 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 19136 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19136 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19240, __sl374);
-cptr.stI32o(allopt_init, 19248, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19252, 0);
-cptr.stI32o(allopt_init, 19256, 0);
-cptr.stI32o(allopt_init, 19260, NHC.opt_tiled_map);
-cptr.stI32o(allopt_init, 19264, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19268, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19272, NHC.Yes);
-cptr.stI32o(allopt_init, 19276, NHC.No);
-cptr.stI32o(allopt_init, 19280, NHC.No);
-cptr.stI32o(allopt_init, 19284, NHC.No);
-cptr.stI32o(allopt_init, 19288, NHC.Term_False);
-cptr.st1o(allopt_init, 19292, NHC.opt_in);
-cptr.stPtro(allopt_init, 19296, cptr.add(iflags, 187));
-cptr.stPtro(allopt_init, 19304, optfn_boolean);
-cptr.stPtro(allopt_init, 19312, (null));
-cptr.stPtro(allopt_init, 19320, null);
-cptr.stPtro(allopt_init, 19328, null);
-cptr.st1o(allopt_init, 19336, NHC.Off);
-cptr.st1o(allopt_init, 19337, 0);
-cptr.st1o(allopt_init, 19338, 0);
-cptr.st1o(allopt_init, 19339, 0);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_idx, NHC.opt_tiled_map);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19240 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19240 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19240 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_tiled_map));
+cptr.stPtro(allopt_init, 19240 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19240 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19240 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 19240 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19240 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19240 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19240 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19240 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19344, __sl375);
-cptr.stI32o(allopt_init, 19352, NHC.OptS_Status);
-cptr.stI32o(allopt_init, 19356, 0);
-cptr.stI32o(allopt_init, 19360, 0);
-cptr.stI32o(allopt_init, 19364, NHC.opt_time);
-cptr.stI32o(allopt_init, 19368, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19372, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19376, NHC.Yes);
-cptr.stI32o(allopt_init, 19380, NHC.No);
-cptr.stI32o(allopt_init, 19384, NHC.No);
-cptr.stI32o(allopt_init, 19388, NHC.No);
-cptr.stI32o(allopt_init, 19392, NHC.Term_False);
-cptr.st1o(allopt_init, 19396, NHC.opt_in);
-cptr.stPtro(allopt_init, 19400, cptr.add(flags, 46));
-cptr.stPtro(allopt_init, 19408, optfn_boolean);
-cptr.stPtro(allopt_init, 19416, (null));
-cptr.stPtro(allopt_init, 19424, __sl376);
-cptr.stPtro(allopt_init, 19432, null);
-cptr.st1o(allopt_init, 19440, NHC.Off);
-cptr.st1o(allopt_init, 19441, 0);
-cptr.st1o(allopt_init, 19442, 0);
-cptr.st1o(allopt_init, 19443, 0);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_section, NHC.OptS_Status);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_idx, NHC.opt_time);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19344 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19344 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19344 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_time));
+cptr.stPtro(allopt_init, 19344 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19344 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19344 + FLD.allopt_t_descr, __sl376);
+cptr.stPtro(allopt_init, 19344 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19344 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19344 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19344 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19344 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19448, __sl377);
-cptr.stI32o(allopt_init, 19456, NHC.OptS_Map);
-cptr.stI32o(allopt_init, 19460, 0);
-cptr.stI32o(allopt_init, 19464, 0);
-cptr.stI32o(allopt_init, 19468, NHC.opt_timed_delay);
-cptr.stI32o(allopt_init, 19472, NHC.set_in_config);
-cptr.stI32o(allopt_init, 19476, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19480, NHC.No);
-cptr.stI32o(allopt_init, 19484, NHC.No);
-cptr.stI32o(allopt_init, 19488, NHC.No);
-cptr.stI32o(allopt_init, 19492, NHC.No);
-cptr.stI32o(allopt_init, 19496, NHC.Term_False);
-cptr.st1o(allopt_init, 19500, NHC.opt_in);
-cptr.stPtro(allopt_init, 19504, null);
-cptr.stPtro(allopt_init, 19512, optfn_boolean);
-cptr.stPtro(allopt_init, 19520, (null));
-cptr.stPtro(allopt_init, 19528, null);
-cptr.stPtro(allopt_init, 19536, null);
-cptr.st1o(allopt_init, 19544, NHC.Off);
-cptr.st1o(allopt_init, 19545, 0);
-cptr.st1o(allopt_init, 19546, 0);
-cptr.st1o(allopt_init, 19547, 0);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_section, NHC.OptS_Map);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_idx, NHC.opt_timed_delay);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19448 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19448 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19448 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 19448 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19448 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19448 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 19448 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19448 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19448 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19448 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19448 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19552, __sl378);
-cptr.stI32o(allopt_init, 19560, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19564, 0);
-cptr.stI32o(allopt_init, 19568, 0);
-cptr.stI32o(allopt_init, 19572, NHC.opt_tips);
-cptr.stI32o(allopt_init, 19576, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19580, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19584, NHC.Yes);
-cptr.stI32o(allopt_init, 19588, NHC.No);
-cptr.stI32o(allopt_init, 19592, NHC.No);
-cptr.stI32o(allopt_init, 19596, NHC.No);
-cptr.stI32o(allopt_init, 19600, NHC.Term_False);
-cptr.st1o(allopt_init, 19604, NHC.opt_out);
-cptr.stPtro(allopt_init, 19608, cptr.add(flags, 17));
-cptr.stPtro(allopt_init, 19616, optfn_boolean);
-cptr.stPtro(allopt_init, 19624, (null));
-cptr.stPtro(allopt_init, 19632, __sl379);
-cptr.stPtro(allopt_init, 19640, null);
-cptr.st1o(allopt_init, 19648, NHC.On);
-cptr.st1o(allopt_init, 19649, 0);
-cptr.st1o(allopt_init, 19650, 0);
-cptr.st1o(allopt_init, 19651, 0);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_idx, NHC.opt_tips);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19552 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19552 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 19552 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_tips));
+cptr.stPtro(allopt_init, 19552 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19552 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19552 + FLD.allopt_t_descr, __sl379);
+cptr.stPtro(allopt_init, 19552 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19552 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 19552 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19552 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19552 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19656, __sl380);
-cptr.stI32o(allopt_init, 19664, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19668, 0);
-cptr.stI32o(allopt_init, 19672, 0);
-cptr.stI32o(allopt_init, 19676, NHC.opt_tombstone);
-cptr.stI32o(allopt_init, 19680, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19684, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19688, NHC.Yes);
-cptr.stI32o(allopt_init, 19692, NHC.No);
-cptr.stI32o(allopt_init, 19696, NHC.No);
-cptr.stI32o(allopt_init, 19700, NHC.No);
-cptr.stI32o(allopt_init, 19704, NHC.Term_False);
-cptr.st1o(allopt_init, 19708, NHC.opt_out);
-cptr.stPtro(allopt_init, 19712, cptr.add(flags, 47));
-cptr.stPtro(allopt_init, 19720, optfn_boolean);
-cptr.stPtro(allopt_init, 19728, (null));
-cptr.stPtro(allopt_init, 19736, __sl381);
-cptr.stPtro(allopt_init, 19744, null);
-cptr.st1o(allopt_init, 19752, NHC.On);
-cptr.st1o(allopt_init, 19753, 0);
-cptr.st1o(allopt_init, 19754, 0);
-cptr.st1o(allopt_init, 19755, 0);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_idx, NHC.opt_tombstone);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19656 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19656 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 19656 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_tombstone));
+cptr.stPtro(allopt_init, 19656 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19656 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19656 + FLD.allopt_t_descr, __sl381);
+cptr.stPtro(allopt_init, 19656 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19656 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 19656 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19656 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19656 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19760, __sl382);
-cptr.stI32o(allopt_init, 19768, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19772, 0);
-cptr.stI32o(allopt_init, 19776, 0);
-cptr.stI32o(allopt_init, 19780, NHC.opt_toptenwin);
-cptr.stI32o(allopt_init, 19784, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19788, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 19792, NHC.Yes);
-cptr.stI32o(allopt_init, 19796, NHC.No);
-cptr.stI32o(allopt_init, 19800, NHC.No);
-cptr.stI32o(allopt_init, 19804, NHC.No);
-cptr.stI32o(allopt_init, 19808, NHC.Term_False);
-cptr.st1o(allopt_init, 19812, NHC.opt_in);
-cptr.stPtro(allopt_init, 19816, cptr.add(iflags, 146));
-cptr.stPtro(allopt_init, 19824, optfn_boolean);
-cptr.stPtro(allopt_init, 19832, (null));
-cptr.stPtro(allopt_init, 19840, __sl383);
-cptr.stPtro(allopt_init, 19848, null);
-cptr.st1o(allopt_init, 19856, NHC.Off);
-cptr.st1o(allopt_init, 19857, 0);
-cptr.st1o(allopt_init, 19858, 0);
-cptr.st1o(allopt_init, 19859, 0);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_idx, NHC.opt_toptenwin);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19760 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19760 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19760 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_toptenwin));
+cptr.stPtro(allopt_init, 19760 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19760 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19760 + FLD.allopt_t_descr, __sl383);
+cptr.stPtro(allopt_init, 19760 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19760 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19760 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19760 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19760 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19864, __sl384);
-cptr.stI32o(allopt_init, 19872, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19876, 0);
-cptr.stI32o(allopt_init, 19880, ((((NHC.TRAPNUM - 1) | 0) + 1) | 0));
-cptr.stI32o(allopt_init, 19884, NHC.opt_traps);
-cptr.stI32o(allopt_init, 19888, NHC.set_in_config);
-cptr.stI32o(allopt_init, 19892, NHC.CompOpt);
-cptr.stI32o(allopt_init, 19896, NHC.No);
-cptr.stI32o(allopt_init, 19900, NHC.Yes);
-cptr.stI32o(allopt_init, 19904, NHC.No);
-cptr.stI32o(allopt_init, 19908, NHC.No);
-cptr.stI32o(allopt_init, 19912, 0);
-cptr.st1o(allopt_init, 19916, NHC.opt_in);
-cptr.stPtro(allopt_init, 19920, null);
-cptr.stPtro(allopt_init, 19928, optfn_traps);
-cptr.stPtro(allopt_init, 19936, (null));
-cptr.stPtro(allopt_init, 19944, __sl385);
-cptr.stPtro(allopt_init, 19952, null);
-cptr.st1o(allopt_init, 19960, NHC.Off);
-cptr.st1o(allopt_init, 19961, NHC.No);
-cptr.st1o(allopt_init, 19962, 0);
-cptr.st1o(allopt_init, 19963, 0);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_expectedbuf, ((((NHC.TRAPNUM - 1) | 0) + 1) | 0));
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_idx, NHC.opt_traps);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19864 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 19864 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 19864 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 19864 + FLD.allopt_t_optfn, optfn_traps);
+cptr.stPtro(allopt_init, 19864 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19864 + FLD.allopt_t_descr, __sl385);
+cptr.stPtro(allopt_init, 19864 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19864 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 19864 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 19864 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19864 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19968, __sl386);
-cptr.stI32o(allopt_init, 19976, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 19980, 0);
-cptr.stI32o(allopt_init, 19984, 0);
-cptr.stI32o(allopt_init, 19988, NHC.opt_travel);
-cptr.stI32o(allopt_init, 19992, NHC.set_in_game);
-cptr.stI32o(allopt_init, 19996, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20000, NHC.Yes);
-cptr.stI32o(allopt_init, 20004, NHC.No);
-cptr.stI32o(allopt_init, 20008, NHC.No);
-cptr.stI32o(allopt_init, 20012, NHC.No);
-cptr.stI32o(allopt_init, 20016, NHC.Term_False);
-cptr.st1o(allopt_init, 20020, NHC.opt_out);
-cptr.stPtro(allopt_init, 20024, cptr.add(flags, 170));
-cptr.stPtro(allopt_init, 20032, optfn_boolean);
-cptr.stPtro(allopt_init, 20040, (null));
-cptr.stPtro(allopt_init, 20048, __sl387);
-cptr.stPtro(allopt_init, 20056, null);
-cptr.st1o(allopt_init, 20064, NHC.On);
-cptr.st1o(allopt_init, 20065, 0);
-cptr.st1o(allopt_init, 20066, 0);
-cptr.st1o(allopt_init, 20067, 0);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_idx, NHC.opt_travel);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 19968 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 19968 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 19968 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_travelcmd));
+cptr.stPtro(allopt_init, 19968 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 19968 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 19968 + FLD.allopt_t_descr, __sl387);
+cptr.stPtro(allopt_init, 19968 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 19968 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 19968 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 19968 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 19968 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20072, __sl388);
-cptr.stI32o(allopt_init, 20080, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20084, 0);
-cptr.stI32o(allopt_init, 20088, 0);
-cptr.stI32o(allopt_init, 20092, NHC.opt_travel_debug);
-cptr.stI32o(allopt_init, 20096, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 20100, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20104, NHC.Yes);
-cptr.stI32o(allopt_init, 20108, NHC.No);
-cptr.stI32o(allopt_init, 20112, NHC.No);
-cptr.stI32o(allopt_init, 20116, NHC.No);
-cptr.stI32o(allopt_init, 20120, NHC.Term_False);
-cptr.st1o(allopt_init, 20124, NHC.opt_out);
-cptr.stPtro(allopt_init, 20128, cptr.add(iflags, 80));
-cptr.stPtro(allopt_init, 20136, optfn_boolean);
-cptr.stPtro(allopt_init, 20144, (null));
-cptr.stPtro(allopt_init, 20152, null);
-cptr.stPtro(allopt_init, 20160, null);
-cptr.st1o(allopt_init, 20168, NHC.Off);
-cptr.st1o(allopt_init, 20169, 0);
-cptr.st1o(allopt_init, 20170, 0);
-cptr.st1o(allopt_init, 20171, 0);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_idx, NHC.opt_travel_debug);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20072 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20072 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20072 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_trav_debug));
+cptr.stPtro(allopt_init, 20072 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20072 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20072 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 20072 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20072 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 20072 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20072 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20072 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20176, __sl389);
-cptr.stI32o(allopt_init, 20184, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20188, 0);
-cptr.stI32o(allopt_init, 20192, 0);
-cptr.stI32o(allopt_init, 20196, NHC.opt_tutorial);
-cptr.stI32o(allopt_init, 20200, NHC.set_in_config);
-cptr.stI32o(allopt_init, 20204, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20208, NHC.Yes);
-cptr.stI32o(allopt_init, 20212, NHC.No);
-cptr.stI32o(allopt_init, 20216, NHC.No);
-cptr.stI32o(allopt_init, 20220, NHC.No);
-cptr.stI32o(allopt_init, 20224, NHC.Term_False);
-cptr.st1o(allopt_init, 20228, NHC.opt_out);
-cptr.stPtro(allopt_init, 20232, cptr.add(flags, 18));
-cptr.stPtro(allopt_init, 20240, optfn_boolean);
-cptr.stPtro(allopt_init, 20248, (null));
-cptr.stPtro(allopt_init, 20256, __sl390);
-cptr.stPtro(allopt_init, 20264, null);
-cptr.st1o(allopt_init, 20272, NHC.On);
-cptr.st1o(allopt_init, 20273, 0);
-cptr.st1o(allopt_init, 20274, 0);
-cptr.st1o(allopt_init, 20275, 0);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_idx, NHC.opt_tutorial);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20176 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20176 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20176 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_tutorial));
+cptr.stPtro(allopt_init, 20176 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20176 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20176 + FLD.allopt_t_descr, __sl390);
+cptr.stPtro(allopt_init, 20176 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20176 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 20176 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20176 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20176 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20280, __sl391);
-cptr.stI32o(allopt_init, 20288, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20292, 0);
-cptr.stI32o(allopt_init, 20296, 0);
-cptr.stI32o(allopt_init, 20300, NHC.opt_use_darkgray);
-cptr.stI32o(allopt_init, 20304, NHC.set_in_config);
-cptr.stI32o(allopt_init, 20308, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20312, NHC.Yes);
-cptr.stI32o(allopt_init, 20316, NHC.No);
-cptr.stI32o(allopt_init, 20320, NHC.No);
-cptr.stI32o(allopt_init, 20324, NHC.No);
-cptr.stI32o(allopt_init, 20328, NHC.Term_False);
-cptr.st1o(allopt_init, 20332, NHC.opt_out);
-cptr.stPtro(allopt_init, 20336, cptr.add(iflags, 371));
-cptr.stPtro(allopt_init, 20344, optfn_boolean);
-cptr.stPtro(allopt_init, 20352, (null));
-cptr.stPtro(allopt_init, 20360, __sl392);
-cptr.stPtro(allopt_init, 20368, null);
-cptr.st1o(allopt_init, 20376, NHC.On);
-cptr.st1o(allopt_init, 20377, 0);
-cptr.st1o(allopt_init, 20378, 0);
-cptr.st1o(allopt_init, 20379, 0);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_idx, NHC.opt_use_darkgray);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20280 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20280 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20280 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_darkgray));
+cptr.stPtro(allopt_init, 20280 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20280 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20280 + FLD.allopt_t_descr, __sl392);
+cptr.stPtro(allopt_init, 20280 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20280 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 20280 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20280 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20280 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20384, __sl393);
-cptr.stI32o(allopt_init, 20392, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20396, 0);
-cptr.stI32o(allopt_init, 20400, 0);
-cptr.stI32o(allopt_init, 20404, NHC.opt_use_inverse);
-cptr.stI32o(allopt_init, 20408, NHC.set_in_game);
-cptr.stI32o(allopt_init, 20412, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20416, NHC.Yes);
-cptr.stI32o(allopt_init, 20420, NHC.No);
-cptr.stI32o(allopt_init, 20424, NHC.No);
-cptr.stI32o(allopt_init, 20428, NHC.No);
-cptr.stI32o(allopt_init, 20432, NHC.Term_False);
-cptr.st1o(allopt_init, 20436, NHC.opt_out);
-cptr.stPtro(allopt_init, 20440, cptr.add(iflags, 208));
-cptr.stPtro(allopt_init, 20448, optfn_boolean);
-cptr.stPtro(allopt_init, 20456, (null));
-cptr.stPtro(allopt_init, 20464, __sl394);
-cptr.stPtro(allopt_init, 20472, null);
-cptr.st1o(allopt_init, 20480, NHC.On);
-cptr.st1o(allopt_init, 20481, 0);
-cptr.st1o(allopt_init, 20482, 0);
-cptr.st1o(allopt_init, 20483, 0);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_idx, NHC.opt_use_inverse);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20384 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20384 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20384 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc_inverse));
+cptr.stPtro(allopt_init, 20384 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20384 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20384 + FLD.allopt_t_descr, __sl394);
+cptr.stPtro(allopt_init, 20384 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20384 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 20384 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20384 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20384 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20488, __sl395);
-cptr.stI32o(allopt_init, 20496, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20500, 0);
-cptr.stI32o(allopt_init, 20504, 0);
-cptr.stI32o(allopt_init, 20508, NHC.opt_use_truecolor);
-cptr.stI32o(allopt_init, 20512, NHC.set_in_config);
-cptr.stI32o(allopt_init, 20516, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20520, NHC.Yes);
-cptr.stI32o(allopt_init, 20524, NHC.No);
-cptr.stI32o(allopt_init, 20528, NHC.No);
-cptr.stI32o(allopt_init, 20532, NHC.No);
-cptr.stI32o(allopt_init, 20536, NHC.Term_False);
-cptr.st1o(allopt_init, 20540, NHC.opt_in);
-cptr.stPtro(allopt_init, 20544, cptr.add(iflags, 124));
-cptr.stPtro(allopt_init, 20552, optfn_boolean);
-cptr.stPtro(allopt_init, 20560, __sl396);
-cptr.stPtro(allopt_init, 20568, null);
-cptr.stPtro(allopt_init, 20576, null);
-cptr.st1o(allopt_init, 20584, NHC.Off);
-cptr.st1o(allopt_init, 20585, 0);
-cptr.st1o(allopt_init, 20586, 0);
-cptr.st1o(allopt_init, 20587, 0);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_idx, NHC.opt_use_truecolor);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20488 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20488 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 20488 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_use_truecolor));
+cptr.stPtro(allopt_init, 20488 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20488 + FLD.allopt_t_alias, __sl396);
+cptr.stPtro(allopt_init, 20488 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 20488 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20488 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 20488 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20488 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20488 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20592, __sl397);
-cptr.stI32o(allopt_init, 20600, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20604, 0);
-cptr.stI32o(allopt_init, 20608, 20);
-cptr.stI32o(allopt_init, 20612, NHC.opt_vary_msgcount);
-cptr.stI32o(allopt_init, 20616, NHC.set_gameview);
-cptr.stI32o(allopt_init, 20620, NHC.CompOpt);
-cptr.stI32o(allopt_init, 20624, NHC.No);
-cptr.stI32o(allopt_init, 20628, NHC.Yes);
-cptr.stI32o(allopt_init, 20632, NHC.No);
-cptr.stI32o(allopt_init, 20636, NHC.No);
-cptr.stI32o(allopt_init, 20640, 0);
-cptr.st1o(allopt_init, 20644, NHC.opt_in);
-cptr.stPtro(allopt_init, 20648, null);
-cptr.stPtro(allopt_init, 20656, optfn_vary_msgcount);
-cptr.stPtro(allopt_init, 20664, (null));
-cptr.stPtro(allopt_init, 20672, __sl398);
-cptr.stPtro(allopt_init, 20680, null);
-cptr.st1o(allopt_init, 20688, NHC.Off);
-cptr.st1o(allopt_init, 20689, NHC.No);
-cptr.st1o(allopt_init, 20690, 0);
-cptr.st1o(allopt_init, 20691, 0);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_expectedbuf, 20);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_idx, NHC.opt_vary_msgcount);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20592 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 20592 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 20592 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 20592 + FLD.allopt_t_optfn, optfn_vary_msgcount);
+cptr.stPtro(allopt_init, 20592 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20592 + FLD.allopt_t_descr, __sl398);
+cptr.stPtro(allopt_init, 20592 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20592 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 20592 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 20592 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20592 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20696, __sl399);
-cptr.stI32o(allopt_init, 20704, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20708, 0);
-cptr.stI32o(allopt_init, 20712, 0);
-cptr.stI32o(allopt_init, 20716, NHC.opt_verbose);
-cptr.stI32o(allopt_init, 20720, NHC.set_in_game);
-cptr.stI32o(allopt_init, 20724, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20728, NHC.Yes);
-cptr.stI32o(allopt_init, 20732, NHC.No);
-cptr.stI32o(allopt_init, 20736, NHC.No);
-cptr.stI32o(allopt_init, 20740, NHC.No);
-cptr.stI32o(allopt_init, 20744, NHC.Term_False);
-cptr.st1o(allopt_init, 20748, NHC.opt_out);
-cptr.stPtro(allopt_init, 20752, cptr.add(flags, 48));
-cptr.stPtro(allopt_init, 20760, optfn_boolean);
-cptr.stPtro(allopt_init, 20768, (null));
-cptr.stPtro(allopt_init, 20776, null);
-cptr.stPtro(allopt_init, 20784, null);
-cptr.st1o(allopt_init, 20792, NHC.On);
-cptr.st1o(allopt_init, 20793, 0);
-cptr.st1o(allopt_init, 20794, 0);
-cptr.st1o(allopt_init, 20795, 0);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_idx, NHC.opt_verbose);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20696 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 20696 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20696 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_verbose));
+cptr.stPtro(allopt_init, 20696 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20696 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20696 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 20696 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20696 + FLD.allopt_t_initval, NHC.On);
+cptr.st1o(allopt_init, 20696 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20696 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20696 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20800, __sl400);
-cptr.stI32o(allopt_init, 20808, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20812, 0);
-cptr.stI32o(allopt_init, 20816, 80);
-cptr.stI32o(allopt_init, 20820, NHC.opt_versinfo);
-cptr.stI32o(allopt_init, 20824, NHC.set_in_game);
-cptr.stI32o(allopt_init, 20828, NHC.CompOpt);
-cptr.stI32o(allopt_init, 20832, NHC.No);
-cptr.stI32o(allopt_init, 20836, NHC.Yes);
-cptr.stI32o(allopt_init, 20840, NHC.No);
-cptr.stI32o(allopt_init, 20844, NHC.No);
-cptr.stI32o(allopt_init, 20848, 0);
-cptr.st1o(allopt_init, 20852, NHC.opt_out);
-cptr.stPtro(allopt_init, 20856, null);
-cptr.stPtro(allopt_init, 20864, optfn_versinfo);
-cptr.stPtro(allopt_init, 20872, (null));
-cptr.stPtro(allopt_init, 20880, __sl401);
-cptr.stPtro(allopt_init, 20888, null);
-cptr.st1o(allopt_init, 20896, NHC.Off);
-cptr.st1o(allopt_init, 20897, NHC.Yes);
-cptr.st1o(allopt_init, 20898, 0);
-cptr.st1o(allopt_init, 20899, 0);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_expectedbuf, 80);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_idx, NHC.opt_versinfo);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20800 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 20800 + FLD.allopt_t_opt_in_out, NHC.opt_out);
+cptr.stPtro(allopt_init, 20800 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 20800 + FLD.allopt_t_optfn, optfn_versinfo);
+cptr.stPtro(allopt_init, 20800 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20800 + FLD.allopt_t_descr, __sl401);
+cptr.stPtro(allopt_init, 20800 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20800 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 20800 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 20800 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20800 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 20904, __sl402);
-cptr.stI32o(allopt_init, 20912, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 20916, 0);
-cptr.stI32o(allopt_init, 20920, 0);
-cptr.stI32o(allopt_init, 20924, NHC.opt_voices);
-cptr.stI32o(allopt_init, 20928, NHC.set_gameview);
-cptr.stI32o(allopt_init, 20932, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 20936, NHC.Yes);
-cptr.stI32o(allopt_init, 20940, NHC.No);
-cptr.stI32o(allopt_init, 20944, NHC.No);
-cptr.stI32o(allopt_init, 20948, NHC.No);
-cptr.stI32o(allopt_init, 20952, NHC.Term_Excluded);
-cptr.st1o(allopt_init, 20956, NHC.opt_in);
-cptr.stPtro(allopt_init, 20960, cptr.add(iflags, 168));
-cptr.stPtro(allopt_init, 20968, optfn_boolean);
-cptr.stPtro(allopt_init, 20976, (null));
-cptr.stPtro(allopt_init, 20984, null);
-cptr.stPtro(allopt_init, 20992, null);
-cptr.st1o(allopt_init, 21000, NHC.Off);
-cptr.st1o(allopt_init, 21001, 0);
-cptr.st1o(allopt_init, 21002, 0);
-cptr.st1o(allopt_init, 21003, 0);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_idx, NHC.opt_voices);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 20904 + FLD.allopt_t_termpref, NHC.Term_Excluded);
+cptr.st1o(allopt_init, 20904 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 20904 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_voices));
+cptr.stPtro(allopt_init, 20904 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 20904 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 20904 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 20904 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 20904 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 20904 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 20904 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 20904 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21008, __sl403);
-cptr.stI32o(allopt_init, 21016, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21020, 0);
-cptr.stI32o(allopt_init, 21024, 0);
-cptr.stI32o(allopt_init, 21028, NHC.opt_vt_tiledata);
-cptr.stI32o(allopt_init, 21032, NHC.set_in_config);
-cptr.stI32o(allopt_init, 21036, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 21040, NHC.Yes);
-cptr.stI32o(allopt_init, 21044, NHC.No);
-cptr.stI32o(allopt_init, 21048, NHC.No);
-cptr.stI32o(allopt_init, 21052, NHC.No);
-cptr.stI32o(allopt_init, 21056, NHC.Term_False);
-cptr.st1o(allopt_init, 21060, NHC.opt_in);
-cptr.stPtro(allopt_init, 21064, null);
-cptr.stPtro(allopt_init, 21072, optfn_boolean);
-cptr.stPtro(allopt_init, 21080, (null));
-cptr.stPtro(allopt_init, 21088, null);
-cptr.stPtro(allopt_init, 21096, null);
-cptr.st1o(allopt_init, 21104, NHC.Off);
-cptr.st1o(allopt_init, 21105, 0);
-cptr.st1o(allopt_init, 21106, 0);
-cptr.st1o(allopt_init, 21107, 0);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_idx, NHC.opt_vt_tiledata);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21008 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 21008 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21008 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21008 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 21008 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21008 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 21008 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21008 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21008 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 21008 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21008 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21112, __sl404);
-cptr.stI32o(allopt_init, 21120, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21124, 0);
-cptr.stI32o(allopt_init, 21128, 0);
-cptr.stI32o(allopt_init, 21132, NHC.opt_vt_sounddata);
-cptr.stI32o(allopt_init, 21136, NHC.set_in_config);
-cptr.stI32o(allopt_init, 21140, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 21144, NHC.Yes);
-cptr.stI32o(allopt_init, 21148, NHC.No);
-cptr.stI32o(allopt_init, 21152, NHC.No);
-cptr.stI32o(allopt_init, 21156, NHC.No);
-cptr.stI32o(allopt_init, 21160, NHC.Term_False);
-cptr.st1o(allopt_init, 21164, NHC.opt_in);
-cptr.stPtro(allopt_init, 21168, null);
-cptr.stPtro(allopt_init, 21176, optfn_boolean);
-cptr.stPtro(allopt_init, 21184, (null));
-cptr.stPtro(allopt_init, 21192, null);
-cptr.stPtro(allopt_init, 21200, null);
-cptr.st1o(allopt_init, 21208, NHC.Off);
-cptr.st1o(allopt_init, 21209, 0);
-cptr.st1o(allopt_init, 21210, 0);
-cptr.st1o(allopt_init, 21211, 0);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_idx, NHC.opt_vt_sounddata);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21112 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 21112 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21112 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21112 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 21112 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21112 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 21112 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21112 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21112 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 21112 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21112 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21216, __sl405);
-cptr.stI32o(allopt_init, 21224, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21228, 0);
-cptr.stI32o(allopt_init, 21232, 10);
-cptr.stI32o(allopt_init, 21236, NHC.opt_warnings);
-cptr.stI32o(allopt_init, 21240, NHC.set_in_config);
-cptr.stI32o(allopt_init, 21244, NHC.CompOpt);
-cptr.stI32o(allopt_init, 21248, NHC.No);
-cptr.stI32o(allopt_init, 21252, NHC.Yes);
-cptr.stI32o(allopt_init, 21256, NHC.No);
-cptr.stI32o(allopt_init, 21260, NHC.No);
-cptr.stI32o(allopt_init, 21264, 0);
-cptr.st1o(allopt_init, 21268, NHC.opt_in);
-cptr.stPtro(allopt_init, 21272, null);
-cptr.stPtro(allopt_init, 21280, optfn_warnings);
-cptr.stPtro(allopt_init, 21288, (null));
-cptr.stPtro(allopt_init, 21296, __sl406);
-cptr.stPtro(allopt_init, 21304, null);
-cptr.st1o(allopt_init, 21312, NHC.Off);
-cptr.st1o(allopt_init, 21313, NHC.No);
-cptr.st1o(allopt_init, 21314, 0);
-cptr.st1o(allopt_init, 21315, 0);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_expectedbuf, 10);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_idx, NHC.opt_warnings);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_setwhere, NHC.set_in_config);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21216 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 21216 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21216 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21216 + FLD.allopt_t_optfn, optfn_warnings);
+cptr.stPtro(allopt_init, 21216 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21216 + FLD.allopt_t_descr, __sl406);
+cptr.stPtro(allopt_init, 21216 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21216 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21216 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 21216 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21216 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21320, __sl407);
-cptr.stI32o(allopt_init, 21328, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21332, 0);
-cptr.stI32o(allopt_init, 21336, 0);
-cptr.stI32o(allopt_init, 21340, NHC.opt_weaponstatus);
-cptr.stI32o(allopt_init, 21344, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21348, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 21352, NHC.Yes);
-cptr.stI32o(allopt_init, 21356, NHC.No);
-cptr.stI32o(allopt_init, 21360, NHC.No);
-cptr.stI32o(allopt_init, 21364, NHC.No);
-cptr.stI32o(allopt_init, 21368, NHC.Term_False);
-cptr.st1o(allopt_init, 21372, NHC.opt_in);
-cptr.stPtro(allopt_init, 21376, cptr.add(flags, 49));
-cptr.stPtro(allopt_init, 21384, optfn_boolean);
-cptr.stPtro(allopt_init, 21392, (null));
-cptr.stPtro(allopt_init, 21400, __sl408);
-cptr.stPtro(allopt_init, 21408, null);
-cptr.st1o(allopt_init, 21416, NHC.Off);
-cptr.st1o(allopt_init, 21417, 0);
-cptr.st1o(allopt_init, 21418, 0);
-cptr.st1o(allopt_init, 21419, 0);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_idx, NHC.opt_weaponstatus);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21320 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 21320 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21320 + FLD.allopt_t_addr, cptr.add(flags, FLD.flag_weaponstatus));
+cptr.stPtro(allopt_init, 21320 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 21320 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21320 + FLD.allopt_t_descr, __sl408);
+cptr.stPtro(allopt_init, 21320 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21320 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21320 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 21320 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21320 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21424, __sl409);
-cptr.stI32o(allopt_init, 21432, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21436, 0);
-cptr.stI32o(allopt_init, 21440, 1);
-cptr.stI32o(allopt_init, 21444, NHC.opt_whatis_coord);
-cptr.stI32o(allopt_init, 21448, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21452, NHC.CompOpt);
-cptr.stI32o(allopt_init, 21456, NHC.Yes);
-cptr.stI32o(allopt_init, 21460, NHC.Yes);
-cptr.stI32o(allopt_init, 21464, NHC.No);
-cptr.stI32o(allopt_init, 21468, NHC.No);
-cptr.stI32o(allopt_init, 21472, 0);
-cptr.st1o(allopt_init, 21476, NHC.opt_in);
-cptr.stPtro(allopt_init, 21480, null);
-cptr.stPtro(allopt_init, 21488, optfn_whatis_coord);
-cptr.stPtro(allopt_init, 21496, (null));
-cptr.stPtro(allopt_init, 21504, __sl410);
-cptr.stPtro(allopt_init, 21512, null);
-cptr.st1o(allopt_init, 21520, NHC.Off);
-cptr.st1o(allopt_init, 21521, NHC.Yes);
-cptr.st1o(allopt_init, 21522, 0);
-cptr.st1o(allopt_init, 21523, 0);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_expectedbuf, 1);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_idx, NHC.opt_whatis_coord);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21424 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 21424 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21424 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21424 + FLD.allopt_t_optfn, optfn_whatis_coord);
+cptr.stPtro(allopt_init, 21424 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21424 + FLD.allopt_t_descr, __sl410);
+cptr.stPtro(allopt_init, 21424 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21424 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21424 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 21424 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21424 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21528, __sl411);
-cptr.stI32o(allopt_init, 21536, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21540, 0);
-cptr.stI32o(allopt_init, 21544, 1);
-cptr.stI32o(allopt_init, 21548, NHC.opt_whatis_filter);
-cptr.stI32o(allopt_init, 21552, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21556, NHC.CompOpt);
-cptr.stI32o(allopt_init, 21560, NHC.Yes);
-cptr.stI32o(allopt_init, 21564, NHC.Yes);
-cptr.stI32o(allopt_init, 21568, NHC.No);
-cptr.stI32o(allopt_init, 21572, NHC.No);
-cptr.stI32o(allopt_init, 21576, 0);
-cptr.st1o(allopt_init, 21580, NHC.opt_in);
-cptr.stPtro(allopt_init, 21584, null);
-cptr.stPtro(allopt_init, 21592, optfn_whatis_filter);
-cptr.stPtro(allopt_init, 21600, (null));
-cptr.stPtro(allopt_init, 21608, __sl412);
-cptr.stPtro(allopt_init, 21616, null);
-cptr.st1o(allopt_init, 21624, NHC.Off);
-cptr.st1o(allopt_init, 21625, NHC.Yes);
-cptr.st1o(allopt_init, 21626, 0);
-cptr.st1o(allopt_init, 21627, 0);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_expectedbuf, 1);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_idx, NHC.opt_whatis_filter);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21528 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 21528 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21528 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21528 + FLD.allopt_t_optfn, optfn_whatis_filter);
+cptr.stPtro(allopt_init, 21528 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21528 + FLD.allopt_t_descr, __sl412);
+cptr.stPtro(allopt_init, 21528 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21528 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21528 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 21528 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21528 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21632, __sl413);
-cptr.stI32o(allopt_init, 21640, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21644, 0);
-cptr.stI32o(allopt_init, 21648, 0);
-cptr.stI32o(allopt_init, 21652, NHC.opt_whatis_menu);
-cptr.stI32o(allopt_init, 21656, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21660, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 21664, NHC.Yes);
-cptr.stI32o(allopt_init, 21668, NHC.No);
-cptr.stI32o(allopt_init, 21672, NHC.No);
-cptr.stI32o(allopt_init, 21676, NHC.No);
-cptr.stI32o(allopt_init, 21680, NHC.Term_False);
-cptr.st1o(allopt_init, 21684, NHC.opt_in);
-cptr.stPtro(allopt_init, 21688, cptr.add(iflags, 75));
-cptr.stPtro(allopt_init, 21696, optfn_boolean);
-cptr.stPtro(allopt_init, 21704, (null));
-cptr.stPtro(allopt_init, 21712, __sl414);
-cptr.stPtro(allopt_init, 21720, null);
-cptr.st1o(allopt_init, 21728, NHC.Off);
-cptr.st1o(allopt_init, 21729, 0);
-cptr.st1o(allopt_init, 21730, 0);
-cptr.st1o(allopt_init, 21731, 0);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_idx, NHC.opt_whatis_menu);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21632 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 21632 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21632 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_getloc_usemenu));
+cptr.stPtro(allopt_init, 21632 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 21632 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21632 + FLD.allopt_t_descr, __sl414);
+cptr.stPtro(allopt_init, 21632 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21632 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21632 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 21632 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21632 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21736, __sl415);
-cptr.stI32o(allopt_init, 21744, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21748, 0);
-cptr.stI32o(allopt_init, 21752, 0);
-cptr.stI32o(allopt_init, 21756, NHC.opt_whatis_moveskip);
-cptr.stI32o(allopt_init, 21760, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21764, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 21768, NHC.Yes);
-cptr.stI32o(allopt_init, 21772, NHC.No);
-cptr.stI32o(allopt_init, 21776, NHC.No);
-cptr.stI32o(allopt_init, 21780, NHC.No);
-cptr.stI32o(allopt_init, 21784, NHC.Term_False);
-cptr.st1o(allopt_init, 21788, NHC.opt_in);
-cptr.stPtro(allopt_init, 21792, cptr.add(iflags, 73));
-cptr.stPtro(allopt_init, 21800, optfn_boolean);
-cptr.stPtro(allopt_init, 21808, (null));
-cptr.stPtro(allopt_init, 21816, __sl416);
-cptr.stPtro(allopt_init, 21824, null);
-cptr.st1o(allopt_init, 21832, NHC.Off);
-cptr.st1o(allopt_init, 21833, 0);
-cptr.st1o(allopt_init, 21834, 0);
-cptr.st1o(allopt_init, 21835, 0);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_idx, NHC.opt_whatis_moveskip);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21736 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 21736 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21736 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_getloc_moveskip));
+cptr.stPtro(allopt_init, 21736 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 21736 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21736 + FLD.allopt_t_descr, __sl416);
+cptr.stPtro(allopt_init, 21736 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21736 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21736 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 21736 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21736 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21840, __sl417);
-cptr.stI32o(allopt_init, 21848, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21852, 0);
-cptr.stI32o(allopt_init, 21856, 9);
-cptr.stI32o(allopt_init, 21860, NHC.opt_windowborders);
-cptr.stI32o(allopt_init, 21864, NHC.set_in_game);
-cptr.stI32o(allopt_init, 21868, NHC.CompOpt);
-cptr.stI32o(allopt_init, 21872, NHC.Yes);
-cptr.stI32o(allopt_init, 21876, NHC.Yes);
-cptr.stI32o(allopt_init, 21880, NHC.No);
-cptr.stI32o(allopt_init, 21884, NHC.No);
-cptr.stI32o(allopt_init, 21888, 0);
-cptr.st1o(allopt_init, 21892, NHC.opt_in);
-cptr.stPtro(allopt_init, 21896, null);
-cptr.stPtro(allopt_init, 21904, optfn_windowborders);
-cptr.stPtro(allopt_init, 21912, (null));
-cptr.stPtro(allopt_init, 21920, __sl418);
-cptr.stPtro(allopt_init, 21928, null);
-cptr.st1o(allopt_init, 21936, NHC.Off);
-cptr.st1o(allopt_init, 21937, NHC.Yes);
-cptr.st1o(allopt_init, 21938, 0);
-cptr.st1o(allopt_init, 21939, 0);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_expectedbuf, 9);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_idx, NHC.opt_windowborders);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21840 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 21840 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21840 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21840 + FLD.allopt_t_optfn, optfn_windowborders);
+cptr.stPtro(allopt_init, 21840 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21840 + FLD.allopt_t_descr, __sl418);
+cptr.stPtro(allopt_init, 21840 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21840 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21840 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 21840 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21840 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 21944, __sl419);
-cptr.stI32o(allopt_init, 21952, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 21956, 0);
-cptr.stI32o(allopt_init, 21960, 80);
-cptr.stI32o(allopt_init, 21964, NHC.opt_windowcolors);
-cptr.stI32o(allopt_init, 21968, NHC.set_gameview);
-cptr.stI32o(allopt_init, 21972, NHC.CompOpt);
-cptr.stI32o(allopt_init, 21976, NHC.No);
-cptr.stI32o(allopt_init, 21980, NHC.Yes);
-cptr.stI32o(allopt_init, 21984, NHC.Yes);
-cptr.stI32o(allopt_init, 21988, NHC.No);
-cptr.stI32o(allopt_init, 21992, 0);
-cptr.st1o(allopt_init, 21996, NHC.opt_in);
-cptr.stPtro(allopt_init, 22000, null);
-cptr.stPtro(allopt_init, 22008, optfn_windowcolors);
-cptr.stPtro(allopt_init, 22016, (null));
-cptr.stPtro(allopt_init, 22024, __sl420);
-cptr.stPtro(allopt_init, 22032, null);
-cptr.st1o(allopt_init, 22040, NHC.Off);
-cptr.st1o(allopt_init, 22041, NHC.No);
-cptr.st1o(allopt_init, 22042, 0);
-cptr.st1o(allopt_init, 22043, 0);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_expectedbuf, 80);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_idx, NHC.opt_windowcolors);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_setwhere, NHC.set_gameview);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 21944 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 21944 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 21944 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 21944 + FLD.allopt_t_optfn, optfn_windowcolors);
+cptr.stPtro(allopt_init, 21944 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 21944 + FLD.allopt_t_descr, __sl420);
+cptr.stPtro(allopt_init, 21944 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 21944 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 21944 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 21944 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 21944 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22048, __sl421);
-cptr.stI32o(allopt_init, 22056, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22060, 0);
-cptr.stI32o(allopt_init, 22064, 0);
-cptr.stI32o(allopt_init, 22068, NHC.opt_wizmgender);
-cptr.stI32o(allopt_init, 22072, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 22076, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 22080, NHC.Yes);
-cptr.stI32o(allopt_init, 22084, NHC.No);
-cptr.stI32o(allopt_init, 22088, NHC.No);
-cptr.stI32o(allopt_init, 22092, NHC.No);
-cptr.stI32o(allopt_init, 22096, NHC.Term_False);
-cptr.st1o(allopt_init, 22100, NHC.opt_in);
-cptr.stPtro(allopt_init, 22104, cptr.add(iflags, 181));
-cptr.stPtro(allopt_init, 22112, optfn_boolean);
-cptr.stPtro(allopt_init, 22120, (null));
-cptr.stPtro(allopt_init, 22128, null);
-cptr.stPtro(allopt_init, 22136, null);
-cptr.st1o(allopt_init, 22144, NHC.Off);
-cptr.st1o(allopt_init, 22145, 0);
-cptr.st1o(allopt_init, 22146, 0);
-cptr.st1o(allopt_init, 22147, 0);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_idx, NHC.opt_wizmgender);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 22048 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 22048 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 22048 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wizmgender));
+cptr.stPtro(allopt_init, 22048 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 22048 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 22048 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 22048 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 22048 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 22048 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 22048 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22048 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22152, __sl422);
-cptr.stI32o(allopt_init, 22160, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22164, 0);
-cptr.stI32o(allopt_init, 22168, 0);
-cptr.stI32o(allopt_init, 22172, NHC.opt_wizweight);
-cptr.stI32o(allopt_init, 22176, NHC.set_wizonly);
-cptr.stI32o(allopt_init, 22180, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 22184, NHC.Yes);
-cptr.stI32o(allopt_init, 22188, NHC.No);
-cptr.stI32o(allopt_init, 22192, NHC.No);
-cptr.stI32o(allopt_init, 22196, NHC.No);
-cptr.stI32o(allopt_init, 22200, NHC.Term_False);
-cptr.st1o(allopt_init, 22204, NHC.opt_in);
-cptr.stPtro(allopt_init, 22208, cptr.add(iflags, 180));
-cptr.stPtro(allopt_init, 22216, optfn_boolean);
-cptr.stPtro(allopt_init, 22224, (null));
-cptr.stPtro(allopt_init, 22232, null);
-cptr.stPtro(allopt_init, 22240, null);
-cptr.st1o(allopt_init, 22248, NHC.Off);
-cptr.st1o(allopt_init, 22249, 0);
-cptr.st1o(allopt_init, 22250, 0);
-cptr.st1o(allopt_init, 22251, 0);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_idx, NHC.opt_wizweight);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_setwhere, NHC.set_wizonly);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 22152 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 22152 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 22152 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wizweight));
+cptr.stPtro(allopt_init, 22152 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 22152 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 22152 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 22152 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 22152 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 22152 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 22152 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22152 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22256, __sl423);
-cptr.stI32o(allopt_init, 22264, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22268, 0);
-cptr.stI32o(allopt_init, 22272, 0);
-cptr.stI32o(allopt_init, 22276, NHC.opt_wraptext);
-cptr.stI32o(allopt_init, 22280, NHC.set_in_game);
-cptr.stI32o(allopt_init, 22284, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 22288, NHC.Yes);
-cptr.stI32o(allopt_init, 22292, NHC.No);
-cptr.stI32o(allopt_init, 22296, NHC.No);
-cptr.stI32o(allopt_init, 22300, NHC.No);
-cptr.stI32o(allopt_init, 22304, NHC.Term_False);
-cptr.st1o(allopt_init, 22308, NHC.opt_in);
-cptr.stPtro(allopt_init, 22312, cptr.add(iflags, 369));
-cptr.stPtro(allopt_init, 22320, optfn_boolean);
-cptr.stPtro(allopt_init, 22328, (null));
-cptr.stPtro(allopt_init, 22336, null);
-cptr.stPtro(allopt_init, 22344, null);
-cptr.st1o(allopt_init, 22352, NHC.Off);
-cptr.st1o(allopt_init, 22353, 0);
-cptr.st1o(allopt_init, 22354, 0);
-cptr.st1o(allopt_init, 22355, 0);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_idx, NHC.opt_wraptext);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_setwhere, NHC.set_in_game);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 22256 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 22256 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 22256 + FLD.allopt_t_addr, cptr.add(iflags, FLD.instance_flags_wc2_wraptext));
+cptr.stPtro(allopt_init, 22256 + FLD.allopt_t_optfn, optfn_boolean);
+cptr.stPtro(allopt_init, 22256 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 22256 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 22256 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 22256 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 22256 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 22256 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22256 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22360, __sl424);
-cptr.stI32o(allopt_init, 22368, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22372, 0);
-cptr.stI32o(allopt_init, 22376, 0);
-cptr.stI32o(allopt_init, 22380, NHC.pfx_cond_);
-cptr.stI32o(allopt_init, 22384, NHC.set_hidden);
-cptr.stI32o(allopt_init, 22388, NHC.CompOpt);
-cptr.stI32o(allopt_init, 22392, NHC.Yes);
-cptr.stI32o(allopt_init, 22396, NHC.No);
-cptr.stI32o(allopt_init, 22400, NHC.Yes);
-cptr.stI32o(allopt_init, 22404, NHC.Yes);
-cptr.stI32o(allopt_init, 22408, 0);
-cptr.st1o(allopt_init, 22412, NHC.opt_in);
-cptr.stPtro(allopt_init, 22416, null);
-cptr.stPtro(allopt_init, 22424, pfxfn_cond_);
-cptr.stPtro(allopt_init, 22432, (null));
-cptr.stPtro(allopt_init, 22440, __sl425);
-cptr.stPtro(allopt_init, 22448, __sl424);
-cptr.st1o(allopt_init, 22456, NHC.Off);
-cptr.st1o(allopt_init, 22457, NHC.Yes);
-cptr.st1o(allopt_init, 22458, 0);
-cptr.st1o(allopt_init, 22459, 0);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_idx, NHC.pfx_cond_);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_setwhere, NHC.set_hidden);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_pfx, NHC.Yes);
+cptr.stI32o(allopt_init, 22360 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 22360 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 22360 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 22360 + FLD.allopt_t_optfn, pfxfn_cond_);
+cptr.stPtro(allopt_init, 22360 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 22360 + FLD.allopt_t_descr, __sl425);
+cptr.stPtro(allopt_init, 22360 + FLD.allopt_t_prefixgw, __sl424);
+cptr.st1o(allopt_init, 22360 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 22360 + FLD.allopt_t_has_handler, NHC.Yes);
+cptr.st1o(allopt_init, 22360 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22360 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22464, __sl426);
-cptr.stI32o(allopt_init, 22472, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22476, 0);
-cptr.stI32o(allopt_init, 22480, 0);
-cptr.stI32o(allopt_init, 22484, NHC.pfx_font);
-cptr.stI32o(allopt_init, 22488, NHC.set_hidden);
-cptr.stI32o(allopt_init, 22492, NHC.CompOpt);
-cptr.stI32o(allopt_init, 22496, NHC.Yes);
-cptr.stI32o(allopt_init, 22500, NHC.Yes);
-cptr.stI32o(allopt_init, 22504, NHC.Yes);
-cptr.stI32o(allopt_init, 22508, NHC.Yes);
-cptr.stI32o(allopt_init, 22512, 0);
-cptr.st1o(allopt_init, 22516, NHC.opt_in);
-cptr.stPtro(allopt_init, 22520, null);
-cptr.stPtro(allopt_init, 22528, pfxfn_font);
-cptr.stPtro(allopt_init, 22536, (null));
-cptr.stPtro(allopt_init, 22544, __sl427);
-cptr.stPtro(allopt_init, 22552, __sl426);
-cptr.st1o(allopt_init, 22560, NHC.Off);
-cptr.st1o(allopt_init, 22561, NHC.No);
-cptr.st1o(allopt_init, 22562, 0);
-cptr.st1o(allopt_init, 22563, 0);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_idx, NHC.pfx_font);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_setwhere, NHC.set_hidden);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_opttyp, NHC.CompOpt);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_negateok, NHC.Yes);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_valok, NHC.Yes);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_dupeok, NHC.Yes);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_pfx, NHC.Yes);
+cptr.stI32o(allopt_init, 22464 + FLD.allopt_t_termpref, 0);
+cptr.st1o(allopt_init, 22464 + FLD.allopt_t_opt_in_out, NHC.opt_in);
+cptr.stPtro(allopt_init, 22464 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 22464 + FLD.allopt_t_optfn, pfxfn_font);
+cptr.stPtro(allopt_init, 22464 + FLD.allopt_t_alias, (null));
+cptr.stPtro(allopt_init, 22464 + FLD.allopt_t_descr, __sl427);
+cptr.stPtro(allopt_init, 22464 + FLD.allopt_t_prefixgw, __sl426);
+cptr.st1o(allopt_init, 22464 + FLD.allopt_t_initval, NHC.Off);
+cptr.st1o(allopt_init, 22464 + FLD.allopt_t_has_handler, NHC.No);
+cptr.st1o(allopt_init, 22464 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22464 + FLD.allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 22568, null);
-cptr.stI32o(allopt_init, 22576, NHC.OptS_Advanced);
-cptr.stI32o(allopt_init, 22580, 0);
-cptr.stI32o(allopt_init, 22584, 0);
-cptr.stI32o(allopt_init, 22588, 0);
-cptr.stI32o(allopt_init, 22592, NHC.set_in_sysconf);
-cptr.stI32o(allopt_init, 22596, NHC.BoolOpt);
-cptr.stI32o(allopt_init, 22600, NHC.No);
-cptr.stI32o(allopt_init, 22604, NHC.No);
-cptr.stI32o(allopt_init, 22608, NHC.No);
-cptr.stI32o(allopt_init, 22612, NHC.No);
-cptr.stI32o(allopt_init, 22616, NHC.Term_False);
-cptr.st1o(allopt_init, 22620, 0);
-cptr.stPtro(allopt_init, 22624, null);
-cptr.stPtro(allopt_init, 22632, null);
-cptr.stPtro(allopt_init, 22640, null);
-cptr.stPtro(allopt_init, 22648, null);
-cptr.stPtro(allopt_init, 22656, null);
-cptr.st1o(allopt_init, 22664, 0);
-cptr.st1o(allopt_init, 22665, 0);
-cptr.st1o(allopt_init, 22666, 0);
-cptr.st1o(allopt_init, 22667, 1);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_section, NHC.OptS_Advanced);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_minmatch, 0);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_expectedbuf, 0);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_idx, 0);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_setwhere, NHC.set_in_sysconf);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_opttyp, NHC.BoolOpt);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_negateok, NHC.No);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_valok, NHC.No);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_dupeok, NHC.No);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_pfx, NHC.No);
+cptr.stI32o(allopt_init, 22568 + FLD.allopt_t_termpref, NHC.Term_False);
+cptr.st1o(allopt_init, 22568 + FLD.allopt_t_opt_in_out, 0);
+cptr.stPtro(allopt_init, 22568 + FLD.allopt_t_addr, null);
+cptr.stPtro(allopt_init, 22568 + FLD.allopt_t_optfn, null);
+cptr.stPtro(allopt_init, 22568 + FLD.allopt_t_alias, null);
+cptr.stPtro(allopt_init, 22568 + FLD.allopt_t_descr, null);
+cptr.stPtro(allopt_init, 22568 + FLD.allopt_t_prefixgw, null);
+cptr.st1o(allopt_init, 22568 + FLD.allopt_t_initval, 0);
+cptr.st1o(allopt_init, 22568 + FLD.allopt_t_has_handler, 0);
+cptr.st1o(allopt_init, 22568 + FLD.allopt_t_dupdetected, 0);
+cptr.st1o(allopt_init, 22568 + FLD.allopt_t_disregarded, 1);
 
 /** C ref: options.c:75 — enum */
 export const MESSAGE_OPTION = 1;
@@ -5923,95 +5924,95 @@ const defbrief = cptr.bytes("def");
 /** C ref: options.c:136 — struct paranoia_opts[15] */
 const paranoia = cptr.alloc(15 * 48);
 cptr.stI32o(paranoia, 0, NHM.PARANOID_CONFIRM);
-cptr.stPtro(paranoia, 8, __sl433);
-cptr.stI32o(paranoia, 16, 1);
-cptr.stPtro(paranoia, 24, __sl434);
-cptr.stI32o(paranoia, 32, 2);
-cptr.stPtro(paranoia, 40, __sl435);
+cptr.stPtro(paranoia, 0 + FLD.paranoia_opts_argname, __sl433);
+cptr.stI32o(paranoia, 0 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 0 + FLD.paranoia_opts_synonym, __sl434);
+cptr.stI32o(paranoia, 0 + FLD.paranoia_opts_synMinLen, 2);
+cptr.stPtro(paranoia, 0 + FLD.paranoia_opts_explain, __sl435);
 cptr.stI32o(paranoia, 48, NHM.PARANOID_QUIT);
-cptr.stPtro(paranoia, 56, __sl436);
-cptr.stI32o(paranoia, 64, 1);
-cptr.stPtro(paranoia, 72, __sl437);
-cptr.stI32o(paranoia, 80, 2);
-cptr.stPtro(paranoia, 88, __sl438);
+cptr.stPtro(paranoia, 48 + FLD.paranoia_opts_argname, __sl436);
+cptr.stI32o(paranoia, 48 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 48 + FLD.paranoia_opts_synonym, __sl437);
+cptr.stI32o(paranoia, 48 + FLD.paranoia_opts_synMinLen, 2);
+cptr.stPtro(paranoia, 48 + FLD.paranoia_opts_explain, __sl438);
 cptr.stI32o(paranoia, 96, NHM.PARANOID_DIE);
-cptr.stPtro(paranoia, 104, __sl439);
-cptr.stI32o(paranoia, 112, 1);
-cptr.stPtro(paranoia, 120, __sl440);
-cptr.stI32o(paranoia, 128, 2);
-cptr.stPtro(paranoia, 136, __sl441);
+cptr.stPtro(paranoia, 96 + FLD.paranoia_opts_argname, __sl439);
+cptr.stI32o(paranoia, 96 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 96 + FLD.paranoia_opts_synonym, __sl440);
+cptr.stI32o(paranoia, 96 + FLD.paranoia_opts_synMinLen, 2);
+cptr.stPtro(paranoia, 96 + FLD.paranoia_opts_explain, __sl441);
 cptr.stI32o(paranoia, 144, NHM.PARANOID_BONES);
-cptr.stPtro(paranoia, 152, __sl57);
-cptr.stI32o(paranoia, 160, 1);
-cptr.stPtro(paranoia, 168, null);
-cptr.stI32o(paranoia, 176, 0);
-cptr.stPtro(paranoia, 184, __sl442);
+cptr.stPtro(paranoia, 144 + FLD.paranoia_opts_argname, __sl57);
+cptr.stI32o(paranoia, 144 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 144 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 144 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 144 + FLD.paranoia_opts_explain, __sl442);
 cptr.stI32o(paranoia, 192, NHM.PARANOID_HIT);
-cptr.stPtro(paranoia, 200, __sl443);
-cptr.stI32o(paranoia, 208, 1);
-cptr.stPtro(paranoia, 216, __sl444);
-cptr.stI32o(paranoia, 224, 1);
-cptr.stPtro(paranoia, 232, __sl445);
+cptr.stPtro(paranoia, 192 + FLD.paranoia_opts_argname, __sl443);
+cptr.stI32o(paranoia, 192 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 192 + FLD.paranoia_opts_synonym, __sl444);
+cptr.stI32o(paranoia, 192 + FLD.paranoia_opts_synMinLen, 1);
+cptr.stPtro(paranoia, 192 + FLD.paranoia_opts_explain, __sl445);
 cptr.stI32o(paranoia, 240, NHM.PARANOID_BREAKWAND);
-cptr.stPtro(paranoia, 248, __sl446);
-cptr.stI32o(paranoia, 256, 2);
-cptr.stPtro(paranoia, 264, __sl447);
-cptr.stI32o(paranoia, 272, 2);
-cptr.stPtro(paranoia, 280, __sl448);
+cptr.stPtro(paranoia, 240 + FLD.paranoia_opts_argname, __sl446);
+cptr.stI32o(paranoia, 240 + FLD.paranoia_opts_argMinLen, 2);
+cptr.stPtro(paranoia, 240 + FLD.paranoia_opts_synonym, __sl447);
+cptr.stI32o(paranoia, 240 + FLD.paranoia_opts_synMinLen, 2);
+cptr.stPtro(paranoia, 240 + FLD.paranoia_opts_explain, __sl448);
 cptr.stI32o(paranoia, 288, NHM.PARANOID_EATING);
-cptr.stPtro(paranoia, 296, __sl449);
-cptr.stI32o(paranoia, 304, 1);
-cptr.stPtro(paranoia, 312, __sl450);
-cptr.stI32o(paranoia, 320, 4);
-cptr.stPtro(paranoia, 328, __sl451);
+cptr.stPtro(paranoia, 288 + FLD.paranoia_opts_argname, __sl449);
+cptr.stI32o(paranoia, 288 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 288 + FLD.paranoia_opts_synonym, __sl450);
+cptr.stI32o(paranoia, 288 + FLD.paranoia_opts_synMinLen, 4);
+cptr.stPtro(paranoia, 288 + FLD.paranoia_opts_explain, __sl451);
 cptr.stI32o(paranoia, 336, NHM.PARANOID_WERECHANGE);
-cptr.stPtro(paranoia, 344, __sl452);
-cptr.stI32o(paranoia, 352, 2);
-cptr.stPtro(paranoia, 360, null);
-cptr.stI32o(paranoia, 368, 0);
-cptr.stPtro(paranoia, 376, __sl453);
+cptr.stPtro(paranoia, 336 + FLD.paranoia_opts_argname, __sl452);
+cptr.stI32o(paranoia, 336 + FLD.paranoia_opts_argMinLen, 2);
+cptr.stPtro(paranoia, 336 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 336 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 336 + FLD.paranoia_opts_explain, __sl453);
 cptr.stI32o(paranoia, 384, NHM.PARANOID_PRAY);
-cptr.stPtro(paranoia, 392, __sl454);
-cptr.stI32o(paranoia, 400, 1);
-cptr.stPtro(paranoia, 408, null);
-cptr.stI32o(paranoia, 416, 0);
-cptr.stPtro(paranoia, 424, __sl455);
+cptr.stPtro(paranoia, 384 + FLD.paranoia_opts_argname, __sl454);
+cptr.stI32o(paranoia, 384 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 384 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 384 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 384 + FLD.paranoia_opts_explain, __sl455);
 cptr.stI32o(paranoia, 432, NHM.PARANOID_TRAP);
-cptr.stPtro(paranoia, 440, __sl456);
-cptr.stI32o(paranoia, 448, 1);
-cptr.stPtro(paranoia, 456, __sl457);
-cptr.stI32o(paranoia, 464, 1);
-cptr.stPtro(paranoia, 472, __sl458);
+cptr.stPtro(paranoia, 432 + FLD.paranoia_opts_argname, __sl456);
+cptr.stI32o(paranoia, 432 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 432 + FLD.paranoia_opts_synonym, __sl457);
+cptr.stI32o(paranoia, 432 + FLD.paranoia_opts_synMinLen, 1);
+cptr.stPtro(paranoia, 432 + FLD.paranoia_opts_explain, __sl458);
 cptr.stI32o(paranoia, 480, NHM.PARANOID_AUTOALL);
-cptr.stPtro(paranoia, 488, __sl459);
-cptr.stI32o(paranoia, 496, 2);
-cptr.stPtro(paranoia, 504, __sl460);
-cptr.stI32o(paranoia, 512, 2);
-cptr.stPtro(paranoia, 520, __sl461);
+cptr.stPtro(paranoia, 480 + FLD.paranoia_opts_argname, __sl459);
+cptr.stI32o(paranoia, 480 + FLD.paranoia_opts_argMinLen, 2);
+cptr.stPtro(paranoia, 480 + FLD.paranoia_opts_synonym, __sl460);
+cptr.stI32o(paranoia, 480 + FLD.paranoia_opts_synMinLen, 2);
+cptr.stPtro(paranoia, 480 + FLD.paranoia_opts_explain, __sl461);
 cptr.stI32o(paranoia, 528, NHM.PARANOID_SWIM);
-cptr.stPtro(paranoia, 536, __sl462);
-cptr.stI32o(paranoia, 544, 1);
-cptr.stPtro(paranoia, 552, null);
-cptr.stI32o(paranoia, 560, 0);
-cptr.stPtro(paranoia, 568, __sl463);
+cptr.stPtro(paranoia, 528 + FLD.paranoia_opts_argname, __sl462);
+cptr.stI32o(paranoia, 528 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 528 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 528 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 528 + FLD.paranoia_opts_explain, __sl463);
 cptr.stI32o(paranoia, 576, NHM.PARANOID_REMOVE);
-cptr.stPtro(paranoia, 584, __sl464);
-cptr.stI32o(paranoia, 592, 1);
-cptr.stPtro(paranoia, 600, __sl465);
-cptr.stI32o(paranoia, 608, 1);
-cptr.stPtro(paranoia, 616, __sl466);
+cptr.stPtro(paranoia, 576 + FLD.paranoia_opts_argname, __sl464);
+cptr.stI32o(paranoia, 576 + FLD.paranoia_opts_argMinLen, 1);
+cptr.stPtro(paranoia, 576 + FLD.paranoia_opts_synonym, __sl465);
+cptr.stI32o(paranoia, 576 + FLD.paranoia_opts_synMinLen, 1);
+cptr.stPtro(paranoia, 576 + FLD.paranoia_opts_explain, __sl466);
 cptr.stI32o(paranoia, 624, 0);
-cptr.stPtro(paranoia, 632, __sl467);
-cptr.stI32o(paranoia, 640, 4);
-cptr.stPtro(paranoia, 648, null);
-cptr.stI32o(paranoia, 656, 0);
-cptr.stPtro(paranoia, 664, null);
+cptr.stPtro(paranoia, 624 + FLD.paranoia_opts_argname, __sl467);
+cptr.stI32o(paranoia, 624 + FLD.paranoia_opts_argMinLen, 4);
+cptr.stPtro(paranoia, 624 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 624 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 624 + FLD.paranoia_opts_explain, null);
 cptr.stI32o(paranoia, 672, -1);
-cptr.stPtro(paranoia, 680, __sl468);
-cptr.stI32o(paranoia, 688, 3);
-cptr.stPtro(paranoia, 696, null);
-cptr.stI32o(paranoia, 704, 0);
-cptr.stPtro(paranoia, 712, null);
+cptr.stPtro(paranoia, 672 + FLD.paranoia_opts_argname, __sl468);
+cptr.stI32o(paranoia, 672 + FLD.paranoia_opts_argMinLen, 3);
+cptr.stPtro(paranoia, 672 + FLD.paranoia_opts_synonym, null);
+cptr.stI32o(paranoia, 672 + FLD.paranoia_opts_synMinLen, 0);
+cptr.stPtro(paranoia, 672 + FLD.paranoia_opts_explain, null);
 
 /** C ref: options.c:184 — char *[4][3] */
 const menutype = (function () { const flat = new Uint8Array(4 * 3 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
@@ -6111,23 +6112,23 @@ cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __sl515);
 /** C ref: options.c:273 — struct objsymopt[6] */
 const objsymvals = cptr.alloc(6 * 24);
 cptr.stI32o(objsymvals, 0, 0);
-cptr.stPtro(objsymvals, 8, __sl467);
-cptr.stPtro(objsymvals, 16, __sl516);
+cptr.stPtro(objsymvals, 0 + FLD.objsymopt_nam, __sl467);
+cptr.stPtro(objsymvals, 0 + FLD.objsymopt_descr, __sl516);
 cptr.stI32o(objsymvals, 24, 1);
-cptr.stPtro(objsymvals, 32, __sl517);
-cptr.stPtro(objsymvals, 40, __sl518);
+cptr.stPtro(objsymvals, 24 + FLD.objsymopt_nam, __sl517);
+cptr.stPtro(objsymvals, 24 + FLD.objsymopt_descr, __sl518);
 cptr.stI32o(objsymvals, 48, 2);
-cptr.stPtro(objsymvals, 56, __sl519);
-cptr.stPtro(objsymvals, 64, __sl520);
+cptr.stPtro(objsymvals, 48 + FLD.objsymopt_nam, __sl519);
+cptr.stPtro(objsymvals, 48 + FLD.objsymopt_descr, __sl520);
 cptr.stI32o(objsymvals, 72, 3);
-cptr.stPtro(objsymvals, 80, __sl521);
-cptr.stPtro(objsymvals, 88, __sl522);
+cptr.stPtro(objsymvals, 72 + FLD.objsymopt_nam, __sl521);
+cptr.stPtro(objsymvals, 72 + FLD.objsymopt_descr, __sl522);
 cptr.stI32o(objsymvals, 96, 4);
-cptr.stPtro(objsymvals, 104, __sl523);
-cptr.stPtro(objsymvals, 112, __sl524);
+cptr.stPtro(objsymvals, 96 + FLD.objsymopt_nam, __sl523);
+cptr.stPtro(objsymvals, 96 + FLD.objsymopt_descr, __sl524);
 cptr.stI32o(objsymvals, 120, 5);
-cptr.stPtro(objsymvals, 128, __sl525);
-cptr.stPtro(objsymvals, 136, __sl526);
+cptr.stPtro(objsymvals, 120 + FLD.objsymopt_nam, __sl525);
+cptr.stPtro(objsymvals, 120 + FLD.objsymopt_descr, __sl526);
 
 /** C ref: options.c:308 — struct undefined {  } (memory model v0.5) */
 
@@ -6136,54 +6137,54 @@ cptr.stPtro(objsymvals, 136, __sl526);
 /** C ref: options.c:314 — menu_cmd_t[14] */
 const default_menu_cmd_info = cptr.alloc(14 * 24);
 cptr.stPtro(default_menu_cmd_info, 0, __sl201);
-cptr.st1o(default_menu_cmd_info, 8, 62);
-cptr.stPtro(default_menu_cmd_info, 16, __sl527);
+cptr.st1o(default_menu_cmd_info, 0 + FLD.menu_cmd_t_cmd, 62);
+cptr.stPtro(default_menu_cmd_info, 0 + FLD.menu_cmd_t_desc, __sl527);
 cptr.stPtro(default_menu_cmd_info, 24, __sl208);
-cptr.st1o(default_menu_cmd_info, 32, 60);
-cptr.stPtro(default_menu_cmd_info, 40, __sl528);
+cptr.st1o(default_menu_cmd_info, 24 + FLD.menu_cmd_t_cmd, 60);
+cptr.stPtro(default_menu_cmd_info, 24 + FLD.menu_cmd_t_desc, __sl528);
 cptr.stPtro(default_menu_cmd_info, 48, __sl191);
-cptr.st1o(default_menu_cmd_info, 56, 94);
-cptr.stPtro(default_menu_cmd_info, 64, __sl529);
+cptr.st1o(default_menu_cmd_info, 48 + FLD.menu_cmd_t_cmd, 94);
+cptr.stPtro(default_menu_cmd_info, 48 + FLD.menu_cmd_t_desc, __sl529);
 cptr.stPtro(default_menu_cmd_info, 72, __sl199);
-cptr.st1o(default_menu_cmd_info, 80, 124);
-cptr.stPtro(default_menu_cmd_info, 88, __sl530);
+cptr.st1o(default_menu_cmd_info, 72 + FLD.menu_cmd_t_cmd, 124);
+cptr.stPtro(default_menu_cmd_info, 72 + FLD.menu_cmd_t_desc, __sl530);
 cptr.stPtro(default_menu_cmd_info, 96, __sl212);
-cptr.st1o(default_menu_cmd_info, 104, 46);
-cptr.stPtro(default_menu_cmd_info, 112, __sl531);
+cptr.st1o(default_menu_cmd_info, 96 + FLD.menu_cmd_t_cmd, 46);
+cptr.stPtro(default_menu_cmd_info, 96 + FLD.menu_cmd_t_desc, __sl531);
 cptr.stPtro(default_menu_cmd_info, 120, __sl195);
-cptr.st1o(default_menu_cmd_info, 128, 64);
-cptr.stPtro(default_menu_cmd_info, 136, __sl532);
+cptr.st1o(default_menu_cmd_info, 120 + FLD.menu_cmd_t_cmd, 64);
+cptr.stPtro(default_menu_cmd_info, 120 + FLD.menu_cmd_t_desc, __sl532);
 cptr.stPtro(default_menu_cmd_info, 144, __sl187);
-cptr.st1o(default_menu_cmd_info, 152, 45);
-cptr.stPtro(default_menu_cmd_info, 160, __sl533);
+cptr.st1o(default_menu_cmd_info, 144 + FLD.menu_cmd_t_cmd, 45);
+cptr.stPtro(default_menu_cmd_info, 144 + FLD.menu_cmd_t_desc, __sl533);
 cptr.stPtro(default_menu_cmd_info, 168, __sl214);
-cptr.st1o(default_menu_cmd_info, 176, 44);
-cptr.stPtro(default_menu_cmd_info, 184, __sl534);
+cptr.st1o(default_menu_cmd_info, 168 + FLD.menu_cmd_t_cmd, 44);
+cptr.stPtro(default_menu_cmd_info, 168 + FLD.menu_cmd_t_desc, __sl534);
 cptr.stPtro(default_menu_cmd_info, 192, __sl197);
-cptr.st1o(default_menu_cmd_info, 200, 126);
-cptr.stPtro(default_menu_cmd_info, 208, __sl535);
+cptr.st1o(default_menu_cmd_info, 192 + FLD.menu_cmd_t_cmd, 126);
+cptr.stPtro(default_menu_cmd_info, 192 + FLD.menu_cmd_t_desc, __sl535);
 cptr.stPtro(default_menu_cmd_info, 216, __sl189);
-cptr.st1o(default_menu_cmd_info, 224, 92);
-cptr.stPtro(default_menu_cmd_info, 232, __sl536);
+cptr.st1o(default_menu_cmd_info, 216 + FLD.menu_cmd_t_cmd, 92);
+cptr.stPtro(default_menu_cmd_info, 216 + FLD.menu_cmd_t_desc, __sl536);
 cptr.stPtro(default_menu_cmd_info, 240, __sl210);
-cptr.st1o(default_menu_cmd_info, 248, 58);
-cptr.stPtro(default_menu_cmd_info, 256, __sl537);
+cptr.st1o(default_menu_cmd_info, 240 + FLD.menu_cmd_t_cmd, 58);
+cptr.stPtro(default_menu_cmd_info, 240 + FLD.menu_cmd_t_desc, __sl537);
 cptr.stPtro(default_menu_cmd_info, 264, __sl218);
-cptr.st1o(default_menu_cmd_info, 272, 125);
-cptr.stPtro(default_menu_cmd_info, 280, __sl538);
+cptr.st1o(default_menu_cmd_info, 264 + FLD.menu_cmd_t_cmd, 125);
+cptr.stPtro(default_menu_cmd_info, 264 + FLD.menu_cmd_t_desc, __sl538);
 cptr.stPtro(default_menu_cmd_info, 288, __sl216);
-cptr.st1o(default_menu_cmd_info, 296, 123);
-cptr.stPtro(default_menu_cmd_info, 304, __sl539);
+cptr.st1o(default_menu_cmd_info, 288 + FLD.menu_cmd_t_cmd, 123);
+cptr.stPtro(default_menu_cmd_info, 288 + FLD.menu_cmd_t_desc, __sl539);
 cptr.stPtro(default_menu_cmd_info, 312, null);
-cptr.st1o(default_menu_cmd_info, 320, 0);
-cptr.stPtro(default_menu_cmd_info, 328, null);
+cptr.st1o(default_menu_cmd_info, 312 + FLD.menu_cmd_t_cmd, 0);
+cptr.stPtro(default_menu_cmd_info, 312 + FLD.menu_cmd_t_desc, null);
 
 /** C ref: options.c:340 — char[19] */
 const n_currently_set = cptr.bytes("(%d currently set)");
 
 /** C ref: options.c:430 @returns {CInt} */
 export function ask_do_tutorial() {
-    let dotut = cptr.ld1so(flags, 18);
+    let dotut = cptr.ld1so(flags, FLD.flag_tutorial);
     if (!cptr.ld1so(cptr.decay(opt_set_in_config), NHC.opt_tutorial, 1)) {
         let win;
         let sel = cptr.box(0);
@@ -6197,9 +6198,9 @@ export function ask_do_tutorial() {
         norc = schar((!strcmp(get_configfile(), __sl540)));
         nh_snprintf(__sl541, 447, cptr.decay(buf), 256n, __sl542, (rc && cptr.ld1s(rc) && !norc) ? rc : __sl543);
         do {
-            win = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-            (cptr.ldPtro(windowprocs, 168))(win, 0n);
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            win = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             cptr.st1(any, 121);
             add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl544, NHM.MENU_ITEMFLAGS_NONE);
             cptr.st1(any, 110);
@@ -6208,9 +6209,9 @@ export function ask_do_tutorial() {
             add_menu_str(win, cptr.decay(buf));
             if (pass++)
                 add_menu_str(win, __sl546);
-            (cptr.ldPtro(windowprocs, 184))(win, __sl547);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl547);
             n = select_menu(win, NHM.PICK_ONE, sel);
-            (cptr.ldPtro(windowprocs, 128))(win);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win);
         } while (!n);
         if (n > 0) {
             dotut = schar((cptr.ld1so(sel.v, 0, 24) == 121));
@@ -6236,11 +6237,11 @@ export function parseoptions(opts, tinitial, tfrom_file) {
     let retval = 1;
     duplicate = 0;
     using_alias = 0;
-    cptr.st1o(go, 524, tinitial);
-    cptr.st1o(go, 525, tfrom_file);
+    cptr.st1o(go, FLD.instance_globals_o_opt_initial, tinitial);
+    cptr.st1o(go, FLD.instance_globals_o_opt_from_file, tfrom_file);
     if (tinitial && (op = cptr.strchr(opts, 44)) !== null) {
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), 0);
-        if (!parseoptions(op, cptr.ld1so(go, 524), cptr.ld1so(go, 525)))
+        if (!parseoptions(op, cptr.ld1so(go, FLD.instance_globals_o_opt_initial), cptr.ld1so(go, FLD.instance_globals_o_opt_from_file)))
             retval = 0;
     }
     if (cptr.strlen(opts) > 128n) {
@@ -6268,17 +6269,17 @@ export function parseoptions(opts, tinitial, tfrom_file) {
     }
     for (i = 0; i < NHC.OPTCOUNT; ++i) {
         got_match = 0;
-        if (cptr.ldI32o2(allopt, i, 104, 44)) {
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_pfx)) {
             if (str_start_is(opts, cptr.ldPtro(allopt, i, 104), 1)) {
                 matchidx = i;
                 got_match = (pfx_match = 1);
             }
         }
         if (!got_match && cptr.ldPtro(allopt, i, 104))
-            got_match = match_optname(opts, cptr.ldPtro(allopt, i, 104), cptr.ldI32o2(allopt, i, 104, 12), 1);
+            got_match = match_optname(opts, cptr.ldPtro(allopt, i, 104), cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_minmatch), 1);
         if (got_match) {
-            if (!cptr.ldI32o2(allopt, i, 104, 44) && optlen < cptr.ldI32o2(allopt, i, 104, 12)) {
-                config_error_add(__sl551, opts, cptr.ldI32o2(allopt, i, 104, 12));
+            if (!cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_pfx) && optlen < cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_minmatch)) {
+                config_error_add(__sl551, opts, cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_minmatch));
                 break;
             }
             matchidx = i;
@@ -6287,9 +6288,9 @@ export function parseoptions(opts, tinitial, tfrom_file) {
     }
     if (!got_match) {
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
-            if (!cptr.ldPtro2(allopt, i, 104, 72))
+            if (!cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_alias))
                 continue;
-            got_match = match_optname(opts, cptr.ldPtro2(allopt, i, 104, 72), Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro2(allopt, i, 104, 72)))), 1);
+            got_match = match_optname(opts, cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_alias), Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_alias)))), 1);
             if (got_match) {
                 matchidx = i;
                 using_alias = 1;
@@ -6297,24 +6298,24 @@ export function parseoptions(opts, tinitial, tfrom_file) {
             }
         }
     }
-    (cptr.stI32o(program_state, 64, cptr.ldI32o(program_state, 64) + 1)) - (1);
-    if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, 104, 99)) {
+    (cptr.stI32o(program_state, FLD.sinfo_in_parseoptions, cptr.ldI32o(program_state, FLD.sinfo_in_parseoptions) + 1)) - (1);
+    if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, 104, FLD.allopt_t_disregarded)) {
         duplicate = duplicate_opt_detection(matchidx);
-        if (duplicate && !cptr.ldI32o2(allopt, matchidx, 104, 40))
+        if (duplicate && !cptr.ldI32o2(allopt, matchidx, 104, FLD.allopt_t_dupeok))
             complain_about_duplicate(matchidx);
-        if (negated && !cptr.ldI32o2(allopt, matchidx, 104, 32)) {
+        if (negated && !cptr.ldI32o2(allopt, matchidx, 104, FLD.allopt_t_negateok)) {
             bad_negation(cptr.ldPtro(allopt, matchidx, 104), 1);
             return NHC.optn_err;
         }
-        if (cptr.ldPtro2(allopt, matchidx, 104, 64)) {
+        if (cptr.ldPtro2(allopt, matchidx, 104, FLD.allopt_t_optfn)) {
             op = string_for_opt(opts, 1);
-            optresult = (cptr.ldPtro2(allopt, matchidx, 104, 64))(cptr.ldI32o2(allopt, matchidx, 104, 20), NHC.do_set, negated, opts, op);
+            optresult = (cptr.ldPtro2(allopt, matchidx, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, matchidx, 104, FLD.allopt_t_idx), NHC.do_set, negated, opts, op);
             if (optresult == NHC.optn_ok)
                 cptr.st1o(cptr.decay(opt_set_in_config), matchidx, 1, 1);
         }
     }
-    if (cptr.ldI32o(program_state, 64) > 0)
-        (cptr.stI32o(program_state, 64, cptr.ldI32o(program_state, 64) + -1)) - (-1);
+    if (cptr.ldI32o(program_state, FLD.sinfo_in_parseoptions) > 0)
+        (cptr.stI32o(program_state, FLD.sinfo_in_parseoptions, cptr.ldI32o(program_state, FLD.sinfo_in_parseoptions) + -1)) - (-1);
     if (!got_match) {
         if (cptr.eq(cptr.strstr(opts, __sl552), opts) && parsesymbols(opts, NHC.PRIMARYSET)) {
             switch_symbols(1);
@@ -6322,7 +6323,7 @@ export function parseoptions(opts, tinitial, tfrom_file) {
             optresult = NHC.optn_ok;
         }
     }
-    if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, 104, 99)) || (!got_match && config_unmatched_ignored()))
+    if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, 104, FLD.allopt_t_disregarded)) || (!got_match && config_unmatched_ignored()))
         return 0;
     if (pfx_match && optresult == NHC.optn_err) {
         let pfxbuf = new Uint8Array(256);
@@ -6395,7 +6396,7 @@ function getoptstr(optidx, ophase) {
 
 /** C ref: options.c:758 — @param {CInt} optidx @param {CPtr} optstr */
 function saveoptstr(optidx, optstr) {
-    let phase = cptr.ldI32o(go, 520);
+    let phase = cptr.ldI32o(go, FLD.instance_globals_o_opt_phase);
     let roleoptindx = opt2roleopt(optidx);
     let p = cptr.strchr(optstr, 58);
     let q = cptr.strchr(optstr, 61);
@@ -6427,7 +6428,7 @@ export function freeroleoptvals() {
 /** C ref: options.c:848 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
 function petname_optfn(optidx, req, negated, opts, op) {
     let failsafe = new Uint8Array(64);
-    let petname = (optidx == NHC.opt_catname) ? cptr.add(gc, 344) : ((optidx == NHC.opt_dogname) ? cptr.add(gd, 60) : ((optidx == NHC.opt_horsename) ? cptr.add(gh, 16) : cptr.decay(failsafe)));
+    let petname = (optidx == NHC.opt_catname) ? cptr.add(gc, FLD.instance_globals_c_catname) : ((optidx == NHC.opt_dogname) ? cptr.add(gd, FLD.instance_globals_d_dogname) : ((optidx == NHC.opt_horsename) ? cptr.add(gh, FLD.instance_globals_h_horsename) : cptr.decay(failsafe)));
     if (req == NHC.do_init) {
         ;
     } else if (req == NHC.do_set) {
@@ -6454,16 +6455,16 @@ function optfn_alignment(optidx, req, negated, opts, op) {
         if (!parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
-            if ((cptr.stI32o(flags, 156, str2align(op.v))) == -1) {
+            if ((cptr.stI32o(flags, FLD.flag_initalign, str2align(op.v))) == -1) {
                 config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v);
                 return NHC.optn_err;
             }
-            saveoptstr(optidx, ((cptr.ldI32o(flags, 156) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, 156), 32, 8) : ((cptr.ldI32o(flags, 156) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+            saveoptstr(optidx, ((cptr.ldI32o(flags, FLD.flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, FLD.flag_initalign), 32, FLD.Align_adj) : ((cptr.ldI32o(flags, FLD.flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, 156) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, 156), 32, 8) : ((cptr.ldI32o(flags, 156) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, FLD.flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, FLD.flag_initalign), 32, FLD.Align_adj) : ((cptr.ldI32o(flags, FLD.flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -6483,13 +6484,13 @@ function optfn_align_message(optidx, req, negated, opts, op) {
         op = string_for_opt(opts, negated);
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
             if (!strncmpi(op, __sl559, 4))
-                cptr.stI32o(iflags, 216, NHM.ALIGN_LEFT);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, NHM.ALIGN_LEFT);
             else if (!strncmpi(op, __sl560, 3))
-                cptr.stI32o(iflags, 216, NHM.ALIGN_TOP);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, NHM.ALIGN_TOP);
             else if (!strncmpi(op, __sl561, 5))
-                cptr.stI32o(iflags, 216, NHM.ALIGN_RIGHT);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, NHM.ALIGN_RIGHT);
             else if (!strncmpi(op, __sl562, 6))
-                cptr.stI32o(iflags, 216, NHM.ALIGN_BOTTOM);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, NHM.ALIGN_BOTTOM);
             else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
@@ -6502,7 +6503,7 @@ function optfn_align_message(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
-        which = cptr.ldI32o(iflags, 216);
+        which = cptr.ldI32o(iflags, FLD.instance_flags_wc_align_message);
         void cptr.sprintf(opts, __sl554, (which == NHM.ALIGN_TOP) ? __sl560 : ((which == NHM.ALIGN_LEFT) ? __sl559 : ((which == NHM.ALIGN_BOTTOM) ? __sl562 : ((which == NHM.ALIGN_RIGHT) ? __sl561 : cptr.decay(defopt)))));
         return NHC.optn_ok;
     }
@@ -6521,13 +6522,13 @@ function optfn_align_status(optidx, req, negated, opts, op) {
         op = string_for_opt(opts, negated);
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
             if (!strncmpi(op, __sl559, 4))
-                cptr.stI32o(iflags, 212, NHM.ALIGN_LEFT);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, NHM.ALIGN_LEFT);
             else if (!strncmpi(op, __sl560, 3))
-                cptr.stI32o(iflags, 212, NHM.ALIGN_TOP);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, NHM.ALIGN_TOP);
             else if (!strncmpi(op, __sl561, 5))
-                cptr.stI32o(iflags, 212, NHM.ALIGN_RIGHT);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, NHM.ALIGN_RIGHT);
             else if (!strncmpi(op, __sl562, 6))
-                cptr.stI32o(iflags, 212, NHM.ALIGN_BOTTOM);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
             else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
@@ -6540,7 +6541,7 @@ function optfn_align_status(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
-        which = cptr.ldI32o(iflags, 212);
+        which = cptr.ldI32o(iflags, FLD.instance_flags_wc_align_status);
         void cptr.sprintf(opts, __sl554, (which == NHM.ALIGN_TOP) ? __sl560 : ((which == NHM.ALIGN_LEFT) ? __sl559 : ((which == NHM.ALIGN_BOTTOM) ? __sl562 : ((which == NHM.ALIGN_RIGHT) ? __sl561 : cptr.decay(defopt)))));
         return NHC.optn_ok;
     }
@@ -6572,7 +6573,7 @@ const __static_optfn_autounlock_plus = cptr.bytes(" + "); /** C ref: options.c:1
 /** C ref: options.c:1066 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
 function optfn_autounlock(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
-        cptr.stI32o(flags, 60, NHM.AUTOUNLOCK_APPLY_KEY);
+        cptr.stI32o(flags, FLD.flag_autounlock, NHM.AUTOUNLOCK_APPLY_KEY);
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
@@ -6581,7 +6582,7 @@ function optfn_autounlock(optidx, req, negated, opts, op) {
         let newflags;
         let i;
         if (cptr.eq((op = string_for_opt(opts, 1)), cptr.decay(empty_optstr))) {
-            cptr.stI32o(flags, 60, (negated ? 0 : NHM.AUTOUNLOCK_APPLY_KEY) >>> 0);
+            cptr.stI32o(flags, FLD.flag_autounlock, (negated ? 0 : NHM.AUTOUNLOCK_APPLY_KEY) >>> 0);
             return NHC.optn_ok;
         }
         newflags = 0;
@@ -6627,22 +6628,22 @@ function optfn_autounlock(optidx, req, negated, opts, op) {
             config_error_add(__sl566, cptr.ldPtro(allopt, optidx, 104));
             return NHC.optn_silenterr;
         }
-        cptr.stI32o(flags, 60, newflags);
+        cptr.stI32o(flags, FLD.flag_autounlock, newflags);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (!cptr.ldI32o(flags, 60)) {
+        if (!cptr.ldI32o(flags, FLD.flag_autounlock)) {
             void cptr.strcpy(opts, __sl467);
         } else {
             let p = __sl491;
             cptr.st1(opts, 0);
-            if ((cptr.ldI32o(flags, 60) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
+            if ((cptr.ldI32o(flags, FLD.flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
                 void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, 60) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
+            if ((cptr.ldI32o(flags, FLD.flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
                 void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, 60) & NHM.AUTOUNLOCK_KICK) >>> 0)
+            if ((cptr.ldI32o(flags, FLD.flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0)
                 void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
-            if ((cptr.ldI32o(flags, 60) & NHM.AUTOUNLOCK_FORCE) >>> 0)
+            if ((cptr.ldI32o(flags, FLD.flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0)
                 void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));
         }
         return NHC.optn_ok;
@@ -6673,20 +6674,20 @@ function optfn_boulder(optidx, req, negated, opts, op) {
         } else if (clash) {
             config_error_add(__sl569, visctrl(cptr.ld1so(opts, 0)), (clash == 1) ? __sl570 : __sl571);
         } else {
-            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 88, uchar(cptr.ld1so(opts, 0)));
-            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 284, uchar(cptr.ld1so(opts, 0)));
-            if (!cptr.ld1so(go, 524)) {
-                let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_o_ov_primary_syms, uchar(cptr.ld1so(opts, 0)));
+            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_o_ov_rogue_syms, uchar(cptr.ld1so(opts, 0)));
+            if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+                let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
                 if (sym)
-                    cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 680, sym);
-                cptr.st1o(go, 526, 1);
+                    cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_s_showsyms, sym);
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
             }
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
-        void cptr.sprintf(opts, __sl572, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 88) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 88) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, 120, 70) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, 680));
+        void cptr.sprintf(opts, __sl572, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, 120, FLD.objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, FLD.instance_globals_s_showsyms));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6705,16 +6706,16 @@ function optfn_crash_email(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (cptr.eq((op = string_for_opt(opts, 0)), cptr.decay(empty_optstr)))
             return NHC.optn_err;
-        if (cptr.ldPtro(gc, 408))
-            cptr.free(cptr.ldPtro(gc, 408));
-        cptr.stPtro(gc, 408, dupstr(op));
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_email))
+            cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_crash_email));
+        cptr.stPtro(gc, FLD.instance_globals_c_crash_email, dupstr(op));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (!opts)
             return NHC.optn_err;
-        if (cptr.ldPtro(gc, 408))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, 408));
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_email))
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, FLD.instance_globals_c_crash_email));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6728,16 +6729,16 @@ function optfn_crash_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (cptr.eq((op = string_for_opt(opts, 0)), cptr.decay(empty_optstr)))
             return NHC.optn_err;
-        if (cptr.ldPtro(gc, 416))
-            cptr.free(cptr.ldPtro(gc, 416));
-        cptr.stPtro(gc, 416, dupstr(op));
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_name))
+            cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_crash_name));
+        cptr.stPtro(gc, FLD.instance_globals_c_crash_name, dupstr(op));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (!opts)
             return NHC.optn_err;
-        if (cptr.ldPtro(gc, 416))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, 416));
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_name))
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, FLD.instance_globals_c_crash_name));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6755,7 +6756,7 @@ function optfn_crash_urlmax(optidx, req, negated, opts, op) {
                 config_error_add(__sl573, temp);
                 return NHC.optn_err;
             }
-            cptr.stI32o(gc, 424, temp);
+            cptr.stI32o(gc, FLD.instance_globals_c_crash_urlmax, temp);
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
@@ -6763,7 +6764,7 @@ function optfn_crash_urlmax(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (!opts)
             return NHC.optn_err;
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(gc, 424));
+        void cptr.sprintf(opts, __sl574, cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6777,10 +6778,10 @@ function optfn_DECgraphics(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!negated) {
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208)) {
+            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)) {
                 badflag = 1;
             } else {
-                cptr.stPtro2(gs, NHC.PRIMARYSET, 48, 208, dupstr(cptr.ldPtro(allopt, optidx, 104)));
+                cptr.stPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(cptr.ldPtro(allopt, optidx, 104)));
                 if (!read_sym_file(NHC.PRIMARYSET)) {
                     badflag = 1;
                     clear_symsetentry(NHC.PRIMARYSET, 1);
@@ -6822,7 +6823,7 @@ function optfn_disclose(optidx, req, negated, opts, op) {
             if (!cptr.eq(op, cptr.decay(empty_optstr)) && !strncmpi((op), (__sl467), -1))
                 negated = 1;
             for (num = 0; num < NHM.NUM_DISCLOSURE_OPTIONS; num++)
-                cptr.st1o2(flags, num, 1, 135, schar((negated ? 45 : 121)));
+                cptr.st1o2(flags, num, 1, FLD.flag_end_disclose, schar((negated ? 45 : 121)));
             return NHC.optn_ok;
         }
         num = 0;
@@ -6849,10 +6850,10 @@ function optfn_disclose(optidx, req, negated, opts, op) {
                         if (prefix_val == 35)
                             prefix_val = 43;
                     }
-                    cptr.st1o2(flags, idx, 1, 135, schar(prefix_val));
+                    cptr.st1o2(flags, idx, 1, FLD.flag_end_disclose, schar(prefix_val));
                     prefix_val = -1;
                 } else
-                    cptr.st1o2(flags, idx, 1, 135, 43);
+                    cptr.st1o2(flags, idx, 1, FLD.flag_end_disclose, 43);
             } else if (cptr.strchr(cptr.decay(__static_optfn_disclose_valid_settings), c)) {
                 prefix_val = c;
             } else if (c == 32) {
@@ -6870,7 +6871,7 @@ function optfn_disclose(optidx, req, negated, opts, op) {
         for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
             if (i)
                 void strkitten(opts, 32);
-            void strkitten(opts, cptr.ld1so2(flags, i, 1, 135));
+            void strkitten(opts, cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose));
             void strkitten(opts, cptr.ld1so(cptr.decay(disclosure_options), i, 1));
         }
         return NHC.optn_ok;
@@ -6982,7 +6983,7 @@ function optfn_fruit(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         __lbl_goodfruit: {
-            op = string_for_opt(opts, schar((negated || !cptr.ld1so(go, 524) ? 1 : 0)));
+            op = string_for_opt(opts, schar((negated || !cptr.ld1so(go, FLD.instance_globals_o_opt_initial) ? 1 : 0)));
             if (negated) {
                 if (!cptr.eq(op, cptr.decay(empty_optstr))) {
                     bad_negation(__sl139, 1);
@@ -6994,13 +6995,13 @@ function optfn_fruit(optidx, req, negated, opts, op) {
             if (cptr.eq(op, cptr.decay(empty_optstr)))
                 return NHC.optn_err;
             mungspaces(op);
-            if (!cptr.ld1so(go, 524)) {
+            if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
                 let f;
                 let fnum = cptr.box(0);
                 f = fruit_from_name(op, 0, fnum);
                 if (!f) {
-                    if (!cptr.ld1so(flags, 143))
-                        forig = fruit_from_name(cptr.add(svp, 64), 0, null);
+                    if (!cptr.ld1so(flags, FLD.flag_made_fruit))
+                        forig = fruit_from_name(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), 0, null);
                     if (!forig && fnum.v >= 100) {
                         config_error_add(__sl578);
                         return NHC.optn_ok;
@@ -7008,19 +7009,19 @@ function optfn_fruit(optidx, req, negated, opts, op) {
                 }
             }
         }
-        nmcpy(cptr.add(svp, 64), op, NHM.PL_FSIZ);
-        sanitize_name(cptr.add(svp, 64));
-        if (!cptr.ld1so(svp, 64))
-            nmcpy(cptr.add(svp, 64), __sl579, NHM.PL_FSIZ);
-        if (!cptr.ld1so(go, 524)) {
-            void fruitadd(cptr.add(svp, 64), forig);
+        nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), op, NHM.PL_FSIZ);
+        sanitize_name(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit));
+        if (!cptr.ld1so(svp, FLD.instance_globals_saved_p_pl_fruit))
+            nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl579, NHM.PL_FSIZ);
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+            void fruitadd(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), forig);
             if (give_opt_msg)
-                pline(__sl580, cptr.add(svp, 64));
+                pline(__sl580, cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.add(svp, 64));
+        void cptr.sprintf(opts, __sl554, cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7036,17 +7037,17 @@ function optfn_gender(optidx, req, negated, opts, op) {
         if (!parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
-            if ((cptr.stI32o(flags, 152, str2gend(op.v))) == -1) {
+            if ((cptr.stI32o(flags, FLD.flag_initgend, str2gend(op.v))) == -1) {
                 config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v);
                 return NHC.optn_err;
             }
-            cptr.st1o(flags, 13, schar(cptr.ldI32o(flags, 152)));
-            saveoptstr(optidx, ((cptr.ldI32o(flags, 152) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48) : ((cptr.ldI32o(flags, 152) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+            cptr.st1o(flags, FLD.flag_female, schar(cptr.ldI32o(flags, FLD.flag_initgend)));
+            saveoptstr(optidx, ((cptr.ldI32o(flags, FLD.flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, FLD.flag_initgend), 48) : ((cptr.ldI32o(flags, FLD.flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, 152) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, 152), 48) : ((cptr.ldI32o(flags, 152) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, FLD.flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, FLD.flag_initgend), 48) : ((cptr.ldI32o(flags, FLD.flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7102,7 +7103,7 @@ function optfn_hilite_status(optidx, req, negated, opts, op) {
             config_error_add(__sl581);
             return NHC.optn_err;
         }
-        if (!parse_status_hl1(op, cptr.ld1so(go, 525)))
+        if (!parse_status_hl1(op, cptr.ld1so(go, FLD.instance_globals_o_opt_from_file)))
             return NHC.optn_err;
         return NHC.optn_ok;
     }
@@ -7131,12 +7132,12 @@ function optfn_IBMgraphics(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!negated) {
             for (i = 0; i < NHC.NUM_GRAPHICS; ++i) {
-                if (cptr.ldPtro2(gs, i, 48, 208)) {
+                if (cptr.ldPtro2(gs, i, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)) {
                     badflag = 1;
                 } else {
                     if (i == NHC.ROGUESET)
                         sym_name = __sl584;
-                    cptr.stPtro2(gs, i, 48, 208, dupstr(sym_name));
+                    cptr.stPtro2(gs, i, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(sym_name));
                     if (!read_sym_file(i)) {
                         badflag = 1;
                         clear_symsetentry(i, 1);
@@ -7149,7 +7150,7 @@ function optfn_IBMgraphics(optidx, req, negated, opts, op) {
                 return NHC.optn_err;
             } else {
                 switch_symbols(1);
-                if (!cptr.ld1so(go, 524) && (((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)))))
+                if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))))
                     assign_graphics(NHC.ROGUESET);
             }
         }
@@ -7171,40 +7172,40 @@ function optfn_map_mode(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
-            let save_map_mode = cptr.ldI32o(iflags, 356);
+            let save_map_mode = cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode);
             if (!strncmpi((op), (__sl585), -1))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_TILES);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_TILES);
             else if (!strncmpi(op, __sl586, 8))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII4x6);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII4x6);
             else if (!strncmpi(op, __sl587, 8))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII6x8);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII6x8);
             else if (!strncmpi(op, __sl588, 8))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII8x8);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII8x8);
             else if (!strncmpi(op, __sl589, 9))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII16x8);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII16x8);
             else if (!strncmpi(op, __sl590, 9))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII7x12);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII7x12);
             else if (!strncmpi(op, __sl591, 9))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII8x12);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII8x12);
             else if (!strncmpi(op, __sl592, 10))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII16x12);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII16x12);
             else if (!strncmpi(op, __sl593, 10))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII12x16);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII12x16);
             else if (!strncmpi(op, __sl594, 10))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII10x18);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII10x18);
             else if (!strncmpi(op, __sl595, 13))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
             else if (!strncmpi(op, __sl596, 19))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
             else if (!strncmpi(op, __sl597, 19))
-                cptr.stI32o(iflags, 356, NHM.MAP_MODE_TILES_FIT_TO_SCREEN);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_map_mode, NHM.MAP_MODE_TILES_FIT_TO_SCREEN);
             else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
             }
             if (wc_supported(__sl179)) {
-                if (!cptr.ldI32o(iflags, 356) || save_map_mode != cptr.ldI32o(iflags, 356))
-                    (cptr.ldPtro(windowprocs, 336))(__sl179);
+                if (!cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode) || save_map_mode != cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode))
+                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl179);
             }
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
@@ -7213,7 +7214,7 @@ function optfn_map_mode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        i = cptr.ldI32o(iflags, 356);
+        i = cptr.ldI32o(iflags, FLD.instance_flags_wc_map_mode);
         void cptr.sprintf(opts, __sl554, (i == NHM.MAP_MODE_TILES) ? __sl585 : ((i == NHM.MAP_MODE_ASCII4x6) ? __sl586 : ((i == NHM.MAP_MODE_ASCII6x8) ? __sl587 : ((i == NHM.MAP_MODE_ASCII8x8) ? __sl588 : ((i == NHM.MAP_MODE_ASCII16x8) ? __sl589 : ((i == NHM.MAP_MODE_ASCII7x12) ? __sl590 : ((i == NHM.MAP_MODE_ASCII8x12) ? __sl591 : ((i == NHM.MAP_MODE_ASCII16x12) ? __sl592 : ((i == NHM.MAP_MODE_ASCII12x16) ? __sl593 : ((i == NHM.MAP_MODE_ASCII10x18) ? __sl594 : ((i == NHM.MAP_MODE_ASCII_FIT_TO_SCREEN) ? __sl595 : cptr.decay(defopt))))))))))));
         return NHC.optn_ok;
     }
@@ -7315,8 +7316,8 @@ function optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         let ca = cptr.alloc(8);
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            cptr.stI32o(iflags, 116, negated ? NHM.ATR_NONE : NHM.ATR_INVERSE);
-            cptr.stI32o(iflags, 112, NHM.NO_COLOR);
+            cptr.stI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr, negated ? NHM.ATR_NONE : NHM.ATR_INVERSE);
+            cptr.stI32o(iflags, FLD.instance_flags_menu_headings, NHM.NO_COLOR);
             return NHC.optn_ok;
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
@@ -7324,12 +7325,12 @@ function optfn_menu_headings(optidx, req, negated, opts, op) {
         }
         if (!color_attr_parse_str(ca, op))
             return NHC.optn_err;
-        cptr.memcpy(cptr.add(iflags, 112), ca, 8);
+        cptr.memcpy(cptr.add(iflags, FLD.instance_flags_menu_headings), ca, 8);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ca_buf = new Uint8Array(256);
-        void cptr.strcpy(cptr.decay(ca_buf), color_attr_to_str(cptr.add(iflags, 112)));
+        void cptr.strcpy(cptr.decay(ca_buf), color_attr_to_str(cptr.add(iflags, FLD.instance_flags_menu_headings)));
         void strNsubst(cptr.decay(ca_buf), __sl598, __sl599, 0);
         void cptr.strcpy(opts, cptr.decay(ca_buf));
         return NHC.optn_ok;
@@ -7369,10 +7370,10 @@ function optfn_menu_objsyms(optidx, req, negated, opts, op) {
             osyms = 0;
             k = Number(BigInt.asUintN(32, cptr.strlen(op)));
             for (i = 0; i < 6; ++i) {
-                l = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(objsymvals, i, 24, 8))));
+                l = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_nam))));
                 if (k >= 4)
                     l = k;
-                if (!strncmpi(cptr.ldPtro2(objsymvals, i, 24, 8), op, l | 0) || (i == 5 && !strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0))) {
+                if (!strncmpi(cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_nam), op, l | 0) || (i == 5 && !strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0))) {
                     osyms = i;
                     break;
                 }
@@ -7382,7 +7383,7 @@ function optfn_menu_objsyms(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, 44), 24, 8));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, FLD.instance_flags_menuobjsyms), 24, FLD.objsymopt_nam));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7403,12 +7404,12 @@ function optfn_menuinvertmode(optidx, req, negated, opts, op) {
                 config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
             }
-            cptr.stI32o(iflags, 104, mode);
+            cptr.stI32o(iflags, FLD.instance_flags_menuinvertmode, mode);
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 104));
+        void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_menuinvertmode));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7433,16 +7434,16 @@ function optfn_menustyle(optidx, req, negated, opts, op) {
         switch (tmp) {
             case 110:
             case 116:
-            cptr.st1o(flags, 142, NHM.MENU_TRADITIONAL);
+            cptr.st1o(flags, FLD.flag_menu_style, NHM.MENU_TRADITIONAL);
             break;
             case 99:
-            cptr.st1o(flags, 142, NHM.MENU_COMBINATION);
+            cptr.st1o(flags, FLD.flag_menu_style, NHM.MENU_COMBINATION);
             break;
             case 102:
-            cptr.st1o(flags, 142, NHM.MENU_FULL);
+            cptr.st1o(flags, FLD.flag_menu_style, NHM.MENU_FULL);
             break;
             case 112:
-            cptr.st1o(flags, 142, NHM.MENU_PARTIAL);
+            cptr.st1o(flags, FLD.flag_menu_style, NHM.MENU_PARTIAL);
             break;
             default:
             config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
@@ -7451,7 +7452,7 @@ function optfn_menustyle(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, 142)]), 0, 8));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, FLD.flag_menu_style)]), 0, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7491,10 +7492,10 @@ function optfn_mouse_support(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         compat = schar((cptr.strlen(opts) <= 13n));
-        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, 524) ? 1 : 0)));
+        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, FLD.instance_globals_o_opt_initial) ? 1 : 0)));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (compat || negated || cptr.ld1so(go, 524)) {
-                cptr.stI32o(iflags, 376, !negated);
+            if (compat || negated || cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+                cptr.stI32o(iflags, FLD.instance_flags_wc_mouse_support, !negated);
             }
         } else {
             let mode = atoi(op);
@@ -7502,19 +7503,19 @@ function optfn_mouse_support(optidx, req, negated, opts, op) {
                 config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
             } else {
-                cptr.stI32o(iflags, 376, mode);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_mouse_support, mode);
             }
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        let ms = cptr.ldI32o(iflags, 376);
+        let ms = cptr.ldI32o(iflags, FLD.instance_flags_wc_mouse_support);
         if (ms >= 0 && ms <= 2)
             void cptr.sprintf(opts, __sl567, cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8), cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, 376));
+        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, FLD.instance_flags_wc_mouse_support));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7542,7 +7543,7 @@ function optfn_msg_window(optidx, req, negated, opts, op) {
             case 99:
             case 102:
             case 114:
-            cptr.st1o(iflags, 176, schar(tmp));
+            cptr.st1o(iflags, FLD.instance_flags_prevmsg_window, schar(tmp));
             break;
             default:
             config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
@@ -7552,10 +7553,10 @@ function optfn_msg_window(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
-        tmp = cptr.ld1so(iflags, 176);
-        if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_curses)) {
+        tmp = cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window);
+        if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_curses)) {
             if (tmp == 115 || tmp == 99)
-                tmp = cptr.st1o(iflags, 176, 114);
+                tmp = cptr.st1o(iflags, FLD.instance_flags_prevmsg_window, 114);
         }
         void cptr.sprintf(opts, __sl554, (tmp == 115) ? __sl480 : ((tmp == 99) ? __sl472 : ((tmp == 102) ? __sl474 : __sl487)));
         return NHC.optn_ok;
@@ -7574,7 +7575,7 @@ function optfn_msghistory(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 96, (negated ? 0 : atoi(op)) >>> 0);
+            cptr.stI32o(iflags, FLD.instance_flags_msg_history, (negated ? 0 : atoi(op)) >>> 0);
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -7582,7 +7583,7 @@ function optfn_msghistory(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl607, cptr.ldI32o(iflags, 96));
+        void cptr.sprintf(opts, __sl607, cptr.ldI32o(iflags, FLD.instance_flags_msg_history));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7623,11 +7624,11 @@ function optfn_number_pad(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         compat = schar((cptr.strlen(opts) <= 10n));
-        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, 524) ? 1 : 0)));
+        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, FLD.instance_globals_o_opt_initial) ? 1 : 0)));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (compat || negated || cptr.ld1so(go, 524)) {
-                cptr.st1o(iflags, 138, schar((!negated)));
-                cptr.st1o(iflags, 173, 0);
+            if (compat || negated || cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+                cptr.st1o(iflags, FLD.instance_flags_num_pad, schar((!negated)));
+                cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 0);
             }
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
@@ -7638,23 +7639,23 @@ function optfn_number_pad(optidx, req, negated, opts, op) {
                 config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
             } else if (mode <= 0) {
-                cptr.st1o(iflags, 138, 0);
-                cptr.st1o(iflags, 173, uchar((mode < 0)));
+                cptr.st1o(iflags, FLD.instance_flags_num_pad, 0);
+                cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, uchar((mode < 0)));
             } else {
-                cptr.st1o(iflags, 138, 1);
-                cptr.st1o(iflags, 173, 0);
+                cptr.st1o(iflags, FLD.instance_flags_num_pad, 1);
+                cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 0);
                 if (mode == 2 || mode == 4)
-                    cptr.st1o(iflags, 173, cptr.ld1uo(iflags, 173) | 1);
+                    cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, cptr.ld1uo(iflags, FLD.instance_flags_num_pad_mode) | 1);
                 if (mode == 3 || mode == 4)
-                    cptr.st1o(iflags, 173, cptr.ld1uo(iflags, 173) | 2);
+                    cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, cptr.ld1uo(iflags, FLD.instance_flags_num_pad_mode) | 2);
             }
         }
         reset_commands(0);
-        (cptr.ldPtro(windowprocs, 312))(cptr.ld1so(iflags, 138) ? 1 : 0);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_number_pad))(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        let indx = cptr.ld1so(gc, 220) ? (cptr.ld1so(gc, 222) ? (cptr.ld1so(gc, 221) ? 4 : 3) : (cptr.ld1so(gc, 221) ? 2 : 1)) : (cptr.ld1so(gc, 223) ? 5 : 0);
+        let indx = cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_num_pad) ? (cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_phone_layout) ? (cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_pcHack_compat) ? 4 : 3) : (cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_pcHack_compat) ? 2 : 1)) : (cptr.ld1so(gc, FLD.instance_globals_c_Cmd + FLD.cmd_swap_yz) ? 5 : 0);
         if (req == NHC.get_val)
             void cptr.strcpy(opts, cptr.ldPtro(__static_optfn_number_pad_numpadmodes, indx, 8));
         else {
@@ -7701,7 +7702,7 @@ function optfn_packorder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ocl = new Uint8Array(19);
-        oc_to_str(cptr.add(flags, 99), cptr.decay(ocl));
+        oc_to_str(cptr.add(flags, FLD.flag_inv_order), cptr.decay(ocl));
         void cptr.sprintf(opts, __sl554, cptr.decay(ocl));
         return NHC.optn_ok;
     }
@@ -7730,7 +7731,7 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
             opt_negated = 0;
         } else if (opt_negated) {
             if (!cptr.ld1s(op)) {
-                cptr.stI32o(flags, 80, 0);
+                cptr.stI32o(flags, FLD.flag_paranoia_bits, 0);
                 return NHC.optn_ok;
             } else {
                 config_error_add(__sl616, cptr.ldPtro(allopt, optidx, 104));
@@ -7742,7 +7743,7 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         }
         void mungspaces(op);
         if (cptr.ld1s(op) != 43 && cptr.ld1s(op) != 45) {
-            cptr.stI32o(flags, 80, 0);
+            cptr.stI32o(flags, FLD.flag_paranoia_bits, 0);
         } else {
             plus_or_minus = 1;
             opt_negated = schar((cptr.ld1s(op) == 45));
@@ -7764,14 +7765,14 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
             if (pp)
                 cptr.st1(pp, 0);
             for (i = 0; i < 15; ++i) {
-                if (match_optname(op, cptr.ldPtro2(paranoia, i, 48, 8), cptr.ldI32o2(paranoia, i, 48, 16), 0) || (cptr.ldPtro2(paranoia, i, 48, 24) && match_optname(op, cptr.ldPtro2(paranoia, i, 48, 24), cptr.ldI32o2(paranoia, i, 48, 32), 0))) {
+                if (match_optname(op, cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_argname), cptr.ldI32o2(paranoia, i, 48, FLD.paranoia_opts_argMinLen), 0) || (cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_synonym) && match_optname(op, cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_synonym), cptr.ldI32o2(paranoia, i, 48, FLD.paranoia_opts_synMinLen), 0))) {
                     if (!cptr.ldI32o(paranoia, i, 48)) {
                         if (!plus_or_minus)
-                            cptr.stI32o(flags, 80, 0);
+                            cptr.stI32o(flags, FLD.flag_paranoia_bits, 0);
                     } else if (opt_negated || fld_negated) {
-                        cptr.stI32o(flags, 80, cptr.ldI32o(flags, 80) & ((~cptr.ldI32o(paranoia, i, 48)) >>> 0));
+                        cptr.stI32o(flags, FLD.flag_paranoia_bits, cptr.ldI32o(flags, FLD.flag_paranoia_bits) & ((~cptr.ldI32o(paranoia, i, 48)) >>> 0));
                     } else {
-                        cptr.stI32o(flags, 80, cptr.ldI32o(flags, 80) | (cptr.ldI32o(paranoia, i, 48) >>> 0));
+                        cptr.stI32o(flags, FLD.flag_paranoia_bits, cptr.ldI32o(flags, FLD.flag_paranoia_bits) | (cptr.ldI32o(paranoia, i, 48) >>> 0));
                     }
                     break;
                 }
@@ -7791,8 +7792,8 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         let tmpbuf = new Uint8Array(256);
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-            if (((cptr.ldI32o(flags, 80) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || cptr.ld1so(flags, 10) || req == NHC.get_cnf_val))
-                nh_snprintf(__sl618, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __sl619, cptr.ldPtro2(paranoia, i, 48, 8));
+            if (((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || cptr.ld1so(flags, FLD.flag_debug) || req == NHC.get_cnf_val))
+                nh_snprintf(__sl618, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __sl619, cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_argname));
         }
         cptr.st1o(opts, 0, 0);
         void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __sl467, 255n, __builtin_object_size(opts, 1));
@@ -7806,8 +7807,8 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
 
 /** C ref: options.c:3046 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
 function optfn_perminv_mode(optidx, req, negated, opts, op) {
-    let old_perm_invent = cptr.ld1so(iflags, 139);
-    let old_perminv_mode = cptr.ld1uo(iflags, 174);
+    let old_perm_invent = cptr.ld1so(iflags, FLD.instance_flags_perm_invent);
+    let old_perminv_mode = cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode);
     let retval = NHC.optn_ok;
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7826,42 +7827,42 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
                     continue;
                 pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
                 if (!strncmpi(op, pi0, ln | 0) || !strncmpi(op, pi1, ln | 0) || cptr.ld1so(op, 0) == ((i + 48) | 0)) {
-                    if (strstri(pi0, __sl620) && !(cptr.ldI32o(windowprocs, 8) == NHC.wp_tty)) {
+                    if (strstri(pi0, __sl620) && !(cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty)) {
                         i &= -5;
                         config_error_add(__sl621, cptr.ldPtro(allopt, optidx, 104), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8));
                     }
-                    cptr.st1o(iflags, 174, uchar(i));
-                    cptr.st1o(iflags, 139, 1);
+                    cptr.st1o(iflags, FLD.instance_flags_perminv_mode, uchar(i));
+                    cptr.st1o(iflags, FLD.instance_flags_perm_invent, 1);
                     break;
                 }
             }
             if (i == perminv_modes.length) {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
-                cptr.st1o(iflags, 174, NHC.InvOptNone);
-                cptr.st1o(iflags, 139, 0);
+                cptr.st1o(iflags, FLD.instance_flags_perminv_mode, NHC.InvOptNone);
+                cptr.st1o(iflags, FLD.instance_flags_perm_invent, 0);
                 retval = NHC.optn_silenterr;
             }
         } else if (negated) {
-            cptr.st1o(iflags, 174, NHC.InvOptNone);
-            cptr.st1o(iflags, 139, 0);
+            cptr.st1o(iflags, FLD.instance_flags_perminv_mode, NHC.InvOptNone);
+            cptr.st1o(iflags, FLD.instance_flags_perm_invent, 0);
         }
-        if (!cptr.ld1so(go, 524)) {
-            if (cptr.ld1uo(iflags, 174) != old_perminv_mode || cptr.ld1so(iflags, 139) != old_perm_invent)
-                cptr.st1o(go, 526, 1);
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+            if (cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) != old_perminv_mode || cptr.ld1so(iflags, FLD.instance_flags_perm_invent) != old_perm_invent)
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
         }
     } else if (req == NHC.do_handler) {
         retval = handler_perminv_mode();
     } else if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, 174)]), 2, 8));
-        if (cptr.ld1uo(iflags, 174) != NHC.InvOptNone && !cptr.ld1so(iflags, 139) && op) {
-            if (cptr.ld1uo(iflags, 174) == NHC.InvOptInUse)
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode)]), 2, 8));
+        if (cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) != NHC.InvOptNone && !cptr.ld1so(iflags, FLD.instance_flags_perm_invent) && op) {
+            if (cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) == NHC.InvOptInUse)
                 void strsubst(opts, __sl622, __sl491);
             else
                 void strsubst(opts, __sl623, __sl624);
-            void cptr.strcat(opts, (((cptr.ld1uo(iflags, 174) & NHC.InvSparse) != 0) ? __sl625 : __sl626));
+            void cptr.strcat(opts, (((cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) & NHC.InvSparse) != 0) ? __sl625 : __sl626));
         }
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, 174)]), 0, 8));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode)]), 0, 8));
     }
     return retval;
 }
@@ -7883,22 +7884,22 @@ function optfn_petattr(optidx, req, negated, opts, op) {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), opts);
                 retval = NHC.optn_err;
             } else
-                cptr.stI32o(iflags, 396, itmp);
+                cptr.stI32o(iflags, FLD.instance_flags_wc2_petattr, itmp);
         } else if (negated) {
-            cptr.stI32o(iflags, 396, NHM.ATR_NONE);
+            cptr.stI32o(iflags, FLD.instance_flags_wc2_petattr, NHM.ATR_NONE);
         }
         if (retval != NHC.optn_err) {
-            cptr.st1o(iflags, 185, schar((cptr.ldI32o(iflags, 396) != NHM.ATR_NONE)));
-            if (!cptr.ld1so(go, 524))
-                cptr.st1o(go, 526, 1);
+            cptr.st1o(iflags, FLD.instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr) != NHM.ATR_NONE)));
+            if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial))
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
         }
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, 8) == NHC.wp_curses)) {
-            void cptr.strcpy(opts, attr2attrname(cptr.ldI32o(iflags, 396)));
-        } else if (cptr.ldI32o(iflags, 396) != 0)
-            void cptr.sprintf(opts, __sl627, cptr.ldI32o(iflags, 396));
+        if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_curses)) {
+            void cptr.strcpy(opts, attr2attrname(cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr)));
+        } else if (cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr) != 0)
+            void cptr.sprintf(opts, __sl627, cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -7919,22 +7920,22 @@ function optfn_pettype(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, negated)), cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 100:
-                cptr.st1o(gp, 28, 100);
+                cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 100);
                 break;
                 case 99:
                 case 102:
-                cptr.st1o(gp, 28, 99);
+                cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 99);
                 break;
                 case 104:
                 case 113:
-                cptr.st1o(gp, 28, 104);
+                cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 104);
                 break;
                 case 110:
-                cptr.st1o(gp, 28, 110);
+                cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 110);
                 break;
                 case 114:
                 case 42:
-                cptr.st1o(gp, 28, 0);
+                cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 0);
                 break;
                 default:
                 config_error_add(__sl628, op);
@@ -7942,16 +7943,16 @@ function optfn_pettype(optidx, req, negated, opts, op) {
                 break;
             }
         } else if (negated)
-            cptr.st1o(gp, 28, 110);
+            cptr.st1o(gp, FLD.instance_globals_p_preferred_pet, 110);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ld1so(gp, 28) == 99) ? __sl629 : ((cptr.ld1so(gp, 28) == 100) ? __sl630 : ((cptr.ld1so(gp, 28) == 104) ? __sl631 : ((cptr.ld1so(gp, 28) == 110) ? __sl467 : __sl632))));
+        void cptr.sprintf(opts, __sl554, (cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet) == 99) ? __sl629 : ((cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet) == 100) ? __sl630 : ((cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet) == 104) ? __sl631 : ((cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet) == 110) ? __sl467 : __sl632))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        if (cptr.ld1so(gp, 28))
-            void cptr.sprintf(opts, __sl572, cptr.ld1so(gp, 28));
+        if (cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet))
+            void cptr.sprintf(opts, __sl572, cptr.ld1so(gp, FLD.instance_globals_p_preferred_pet));
         else
             cptr.st1o(opts, 0, 0);
         return NHC.optn_ok;
@@ -7968,23 +7969,23 @@ function optfn_pickup_burden(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0)), cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 117:
-                cptr.stI32o(flags, 88, NHC.UNENCUMBERED);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.UNENCUMBERED);
                 break;
                 case 98:
-                cptr.stI32o(flags, 88, NHC.SLT_ENCUMBER);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.SLT_ENCUMBER);
                 break;
                 case 115:
-                cptr.stI32o(flags, 88, NHC.MOD_ENCUMBER);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.MOD_ENCUMBER);
                 break;
                 case 110:
-                cptr.stI32o(flags, 88, NHC.HVY_ENCUMBER);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.HVY_ENCUMBER);
                 break;
                 case 111:
                 case 116:
-                cptr.stI32o(flags, 88, NHC.EXT_ENCUMBER);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.EXT_ENCUMBER);
                 break;
                 case 108:
-                cptr.stI32o(flags, 88, NHC.OVERLOADED);
+                cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.OVERLOADED);
                 break;
                 default:
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
@@ -7995,7 +7996,7 @@ function optfn_pickup_burden(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(burdentype, cptr.ldI32o(flags, 88), 8));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(burdentype, cptr.ldI32o(flags, FLD.flag_pickup_burden), 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8019,17 +8020,17 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        oc_to_str(cptr.add(flags, 117), cptr.decay(tbuf));
-        cptr.st1o2(flags, 0, 1, 117, 0);
-        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, 524) ? 1 : 0)));
+        oc_to_str(cptr.add(flags, FLD.flag_pickup_types), cptr.decay(tbuf));
+        cptr.st1o2(flags, 0, 1, FLD.flag_pickup_types, 0);
+        op = string_for_opt(opts, schar((compat || !cptr.ld1so(go, FLD.instance_globals_o_opt_initial) ? 1 : 0)));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (compat || negated || cptr.ld1so(go, 524)) {
-                cptr.st1o(flags, 30, schar((!negated)));
+            if (compat || negated || cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+                cptr.st1o(flags, FLD.flag_pickup, schar((!negated)));
                 return NHC.optn_ok;
             }
-            oc_to_str(cptr.add(flags, 99), cptr.decay(ocl));
+            oc_to_str(cptr.add(flags, FLD.flag_inv_order), cptr.decay(ocl));
             use_menu = 1;
-            if (cptr.ld1so(flags, 142) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, 142) == NHM.MENU_COMBINATION) {
+            if (cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_COMBINATION) {
                 let wasspace;
                 use_menu = 0;
                 void cptr.sprintf(cptr.decay(qbuf), __sl633, cptr.ldPtro(allopt, optidx, 104), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __sl468);
@@ -8045,7 +8046,7 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
                     use_menu = 1;
             }
             if (use_menu) {
-                if (cptr.ld1so(flags, 10) && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
+                if (cptr.ld1so(flags, FLD.flag_debug) && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
                     strkitten(cptr.decay(ocl), NHC.VENOM_SYM);
                 void choose_classes_menu(__sl634, 1, 1, cptr.decay(ocl), cptr.decay(tbuf));
                 op = cptr.decay(tbuf);
@@ -8061,9 +8062,9 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
             num = 0;
             while (cptr.ld1s(op)) {
                 oc_sym = def_char_to_objclass(cptr.ld1s(op));
-                if (oc_sym != NHC.MAXOCLASSES && !cptr.strchr(cptr.add(flags, 117), oc_sym)) {
-                    cptr.st1o2(flags, num, 1, 117, schar(oc_sym));
-                    cptr.st1o2(flags, ++num, 1, 117, 0);
+                if (oc_sym != NHC.MAXOCLASSES && !cptr.strchr(cptr.add(flags, FLD.flag_pickup_types), oc_sym)) {
+                    cptr.st1o2(flags, num, 1, FLD.flag_pickup_types, schar(oc_sym));
+                    cptr.st1o2(flags, ++num, 1, FLD.flag_pickup_types, 0);
                 } else
                     badopt = 1;
                 op = cptr.add(op, 1);
@@ -8076,7 +8077,7 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        oc_to_str(cptr.add(flags, 117), cptr.decay(ocl));
+        oc_to_str(cptr.add(flags, FLD.flag_pickup_types), cptr.decay(ocl));
         void cptr.sprintf(opts, __sl554, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468);
         return NHC.optn_ok;
     }
@@ -8094,18 +8095,18 @@ function optfn_pile_limit(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr))))
-            cptr.stI32o(flags, 92, negated ? 0 : atoi(op));
+            cptr.stI32o(flags, FLD.flag_pile_limit, negated ? 0 : atoi(op));
         else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
         } else
-            cptr.stI32o(flags, 92, 5);
-        if (cptr.ldI32o(flags, 92) < 0)
-            cptr.stI32o(flags, 92, 5);
+            cptr.stI32o(flags, FLD.flag_pile_limit, 5);
+        if (cptr.ldI32o(flags, FLD.flag_pile_limit) < 0)
+            cptr.stI32o(flags, FLD.flag_pile_limit, 5);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(flags, 92));
+        void cptr.sprintf(opts, __sl574, cptr.ldI32o(flags, FLD.flag_pile_limit));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8120,9 +8121,9 @@ function optfn_player_selection(optidx, req, negated, opts, op) {
         op = string_for_opt(opts, negated);
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
             if (!strncmpi(op, __sl635, 6)) {
-                cptr.stI32o(iflags, 360, NHM.VIA_DIALOG);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_player_selection, NHM.VIA_DIALOG);
             } else if (!strncmpi(op, __sl636, 6)) {
-                cptr.stI32o(iflags, 360, NHM.VIA_PROMPTS);
+                cptr.stI32o(iflags, FLD.instance_flags_wc_player_selection, NHM.VIA_PROMPTS);
             } else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
@@ -8131,7 +8132,7 @@ function optfn_player_selection(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldI32o(iflags, 360) ? __sl637 : __sl635);
+        void cptr.sprintf(opts, __sl554, cptr.ldI32o(iflags, FLD.instance_flags_wc_player_selection) ? __sl637 : __sl635);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8148,11 +8149,11 @@ function optfn_playmode(optidx, req, negated, opts, op) {
         if (cptr.eq(op, cptr.decay(empty_optstr)))
             return NHC.optn_err;
         if (!strncmpi(op, __sl638, 6) || !strncmpi((op), (__sl639), -1)) {
-            cptr.st1o(flags, 10, cptr.st1o(flags, 12, 0));
+            cptr.st1o(flags, FLD.flag_debug, cptr.st1o(flags, FLD.flag_explore, 0));
         } else if (!strncmpi(op, __sl437, 6) || !strncmpi(op, __sl640, 6)) {
-            cptr.st1o(flags, 10, 0), cptr.st1o(flags, 12, 1);
+            cptr.st1o(flags, FLD.flag_debug, 0), cptr.st1o(flags, FLD.flag_explore, 1);
         } else if (!strncmpi(op, __sl641, 5) || !strncmpi(op, __sl642, 6)) {
-            cptr.st1o(flags, 10, 1), cptr.st1o(flags, 12, 0);
+            cptr.st1o(flags, FLD.flag_debug, 1), cptr.st1o(flags, FLD.flag_explore, 0);
         } else {
             config_error_add(__sl643, cptr.ldPtro(allopt, optidx, 104), op);
             return NHC.optn_err;
@@ -8160,7 +8161,7 @@ function optfn_playmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.strcpy(opts, cptr.ld1so(flags, 10) ? __sl641 : (cptr.ld1so(flags, 12) ? __sl437 : __sl638));
+        void cptr.strcpy(opts, cptr.ld1so(flags, FLD.flag_debug) ? __sl641 : (cptr.ld1so(flags, FLD.flag_explore) ? __sl437 : __sl638));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8176,17 +8177,17 @@ function optfn_race(optidx, req, negated, opts, op) {
         if (!parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
-            if ((cptr.stI32o(flags, 148, str2race(op.v))) == -1) {
+            if ((cptr.stI32o(flags, FLD.flag_initrace, str2race(op.v))) == -1) {
                 config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v);
                 return NHC.optn_err;
             }
-            cptr.st1o(gp, 12, cptr.ld1s(op.v));
-            saveoptstr(optidx, ((cptr.ldI32o(flags, 148) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, 148), 112) : ((cptr.ldI32o(flags, 148) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+            cptr.st1o(gp, FLD.instance_globals_p_pl_race, cptr.ld1s(op.v));
+            saveoptstr(optidx, ((cptr.ldI32o(flags, FLD.flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, FLD.flag_initrace), 112) : ((cptr.ldI32o(flags, FLD.flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, 148) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, 148), 112) : ((cptr.ldI32o(flags, 148) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, FLD.flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, FLD.flag_initrace), 112) : ((cptr.ldI32o(flags, FLD.flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8204,26 +8205,26 @@ function optfn_roguesymset(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.ROGUESET, 48, 208))
-                cptr.free(cptr.ldPtro2(gs, NHC.ROGUESET, 48, 208)), cptr.stPtro2(gs, NHC.ROGUESET, 48, 208, null);
-            cptr.stPtro2(gs, NHC.ROGUESET, 48, 208, dupstr(op));
+            if (cptr.ldPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
+                cptr.free(cptr.ldPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)), cptr.stPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, null);
+            cptr.stPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(op));
             if (!read_sym_file(NHC.ROGUESET)) {
                 clear_symsetentry(NHC.ROGUESET, 1);
                 config_error_add(__sl644, op, __sl645);
                 return NHC.optn_err;
             } else {
-                if (!cptr.ld1so(go, 524) && (((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)))))
+                if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))))
                     assign_graphics(NHC.ROGUESET);
-                cptr.st1o(go, 526, cptr.st1o(go, 527, 1));
-                cptr.st1o(go, 532, 1);
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 1));
+                cptr.st1o(go, FLD.instance_globals_o_opt_symset_changed, 1);
             }
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.ROGUESET, 48, 208) ? cptr.ldPtro2(gs, NHC.ROGUESET, 48, 208) : __sl646);
-        if (cptr.ldI32o(gc, 428) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, 48, 208))
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) : __sl646);
+        if (cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
             void cptr.strcat(opts, __sl647);
         return NHC.optn_ok;
     }
@@ -8243,17 +8244,17 @@ function optfn_role(optidx, req, negated, opts, op) {
         if (!parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
-            if ((cptr.stI32o(flags, 144, str2role(op.v))) == -1) {
+            if ((cptr.stI32o(flags, FLD.flag_initrole, str2role(op.v))) == -1) {
                 config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v);
                 return NHC.optn_err;
             }
-            nmcpy(cptr.add(svp, 32), op.v, NHM.PL_NSIZ);
-            saveoptstr(optidx, ((cptr.ldI32o(flags, 144) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, 144), 312) : ((cptr.ldI32o(flags, 144) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+            nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ);
+            saveoptstr(optidx, ((cptr.ldI32o(flags, FLD.flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, FLD.flag_initrole), 312) : ((cptr.ldI32o(flags, FLD.flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, 144) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, 144), 312) : ((cptr.ldI32o(flags, 144) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, FLD.flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, FLD.flag_initrole), 312) : ((cptr.ldI32o(flags, FLD.flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8271,16 +8272,16 @@ function optfn_runmode(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            cptr.stI32o(flags, 172, NHC.RUN_TPORT);
+            cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_TPORT);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (str_start_is(__sl502, op, 1))
-                cptr.stI32o(flags, 172, NHC.RUN_TPORT);
+                cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_TPORT);
             else if (str_start_is(__sl503, op, 1))
-                cptr.stI32o(flags, 172, NHC.RUN_LEAP);
+                cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_LEAP);
             else if (str_start_is(__sl504, op, 1))
-                cptr.stI32o(flags, 172, NHC.RUN_STEP);
+                cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_STEP);
             else if (str_start_is(__sl505, op, 1))
-                cptr.stI32o(flags, 172, NHC.RUN_CRAWL);
+                cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_CRAWL);
             else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
@@ -8292,7 +8293,7 @@ function optfn_runmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(runmodes, cptr.ldI32o(flags, 172), 8));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(runmodes, cptr.ldI32o(flags, FLD.flag_runmode), 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8309,7 +8310,7 @@ function optfn_scores(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (cptr.eq((op = string_for_opt(opts, 0)), cptr.decay(empty_optstr)))
             return NHC.optn_err;
-        cptr.stI32o(flags, 52, cptr.stI32o(flags, 56, 0)), cptr.st1o(flags, 11, 0);
+        cptr.stI32o(flags, FLD.flag_end_top, cptr.stI32o(flags, FLD.flag_end_around, 0)), cptr.st1o(flags, FLD.flag_end_own, 0);
         if (negated)
             op = eos(op);
         while (cptr.ld1s(op)) {
@@ -8326,16 +8327,16 @@ function optfn_scores(optidx, req, negated, opts, op) {
                 op = cptr.add(op, 1);
             switch (lowc(cptr.ld1s(op))) {
                 case 116:
-                cptr.stI32o(flags, 52, negated ? 0 : inum);
+                cptr.stI32o(flags, FLD.flag_end_top, negated ? 0 : inum);
                 break;
                 case 97:
-                cptr.stI32o(flags, 56, negated ? 0 : inum);
+                cptr.stI32o(flags, FLD.flag_end_around, negated ? 0 : inum);
                 break;
                 case 111:
-                cptr.st1o(flags, 11, schar(((negated || !inum) ? 0 : 1)));
+                cptr.st1o(flags, FLD.flag_end_own, schar(((negated || !inum) ? 0 : 1)));
                 break;
                 case 110:
-                cptr.stI32o(flags, 52, cptr.stI32o(flags, 56, 0)), cptr.st1o(flags, 11, 0);
+                cptr.stI32o(flags, FLD.flag_end_top, cptr.stI32o(flags, FLD.flag_end_around, 0)), cptr.st1o(flags, FLD.flag_end_own, 0);
                 break;
                 case 45:
                 if (digit(cptr.ld1s((cptr.add(op, 1))))) {
@@ -8359,12 +8360,12 @@ function optfn_scores(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1(opts, 0);
-        if (cptr.ldI32o(flags, 52) > 0)
-            void cptr.sprintf(opts, __sl650, cptr.ldI32o(flags, 52));
-        if (cptr.ldI32o(flags, 56) > 0)
-            void cptr.sprintf(eos(opts), __sl651, (cptr.ldI32o(flags, 52) > 0) ? __sl652 : __sl491, cptr.ldI32o(flags, 56));
-        if (cptr.ld1so(flags, 11))
-            void cptr.sprintf(eos(opts), __sl653, (cptr.ldI32o(flags, 52) > 0 || cptr.ldI32o(flags, 56) > 0) ? __sl652 : __sl491);
+        if (cptr.ldI32o(flags, FLD.flag_end_top) > 0)
+            void cptr.sprintf(opts, __sl650, cptr.ldI32o(flags, FLD.flag_end_top));
+        if (cptr.ldI32o(flags, FLD.flag_end_around) > 0)
+            void cptr.sprintf(eos(opts), __sl651, (cptr.ldI32o(flags, FLD.flag_end_top) > 0) ? __sl652 : __sl491, cptr.ldI32o(flags, FLD.flag_end_around));
+        if (cptr.ld1so(flags, FLD.flag_end_own))
+            void cptr.sprintf(eos(opts), __sl653, (cptr.ldI32o(flags, FLD.flag_end_top) > 0 || cptr.ldI32o(flags, FLD.flag_end_around) > 0) ? __sl652 : __sl491);
         if (!cptr.ld1s(opts))
             void cptr.strcpy(opts, __sl467);
         return NHC.optn_ok;
@@ -8380,7 +8381,7 @@ function optfn_scroll_amount(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 348, negated ? 1 : atoi(op));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_scroll_amount, negated ? 1 : atoi(op));
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -8388,8 +8389,8 @@ function optfn_scroll_amount(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 348))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 348));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc_scroll_amount))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_scroll_amount));
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -8405,7 +8406,7 @@ function optfn_scroll_margin(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 352, negated ? 5 : atoi(op));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_scroll_margin, negated ? 5 : atoi(op));
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -8413,8 +8414,8 @@ function optfn_scroll_margin(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 352))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 352));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc_scroll_margin))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_scroll_margin));
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -8433,8 +8434,8 @@ function optfn_soundlib(optidx, req, negated, opts, op) {
             let option_id;
             get_soundlib_name(cptr.decay(soundlibbuf), NHM.WINTYPELEN);
             option_id = soundlib_id_from_opt(op);
-            cptr.stI32o(gc, 564, option_id);
-            assign_soundlib(cptr.ldI32o(gc, 564));
+            cptr.stI32o(gc, FLD.instance_globals_c_chosen_soundlib, option_id);
+            assign_soundlib(cptr.ldI32o(gc, FLD.instance_globals_c_chosen_soundlib));
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
@@ -8450,30 +8451,30 @@ function optfn_soundlib(optidx, req, negated, opts, op) {
 /** C ref: options.c:3863 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
 function optfn_sortdiscoveries(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
-        cptr.st1o(flags, 96, 111);
+        cptr.st1o(flags, FLD.flag_discosort, 111);
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0);
         if (negated) {
-            cptr.st1o(flags, 96, 111);
+            cptr.st1o(flags, FLD.flag_discosort, 111);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 48:
                 case 111:
-                cptr.st1o(flags, 96, 111);
+                cptr.st1o(flags, FLD.flag_discosort, 111);
                 break;
                 case 49:
                 case 115:
-                cptr.st1o(flags, 96, 115);
+                cptr.st1o(flags, FLD.flag_discosort, 115);
                 break;
                 case 50:
                 case 99:
-                cptr.st1o(flags, 96, 99);
+                cptr.st1o(flags, FLD.flag_discosort, 99);
                 break;
                 case 51:
                 case 97:
-                cptr.st1o(flags, 96, 97);
+                cptr.st1o(flags, FLD.flag_discosort, 97);
                 break;
                 default:
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
@@ -8507,7 +8508,7 @@ function optfn_sortloot(optidx, req, negated, opts, op) {
                 case 110:
                 case 108:
                 case 102:
-                cptr.st1o(flags, 97, c);
+                cptr.st1o(flags, FLD.flag_sortloot, c);
                 break;
                 default:
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
@@ -8519,7 +8520,7 @@ function optfn_sortloot(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         for (i = 0; i < 3; i++)
-            if (cptr.ld1so(flags, 97) == cptr.ld1so(cptr.ldPtro(sortltype, i, 8), 0)) {
+            if (cptr.ld1so(flags, FLD.flag_sortloot) == cptr.ld1so(cptr.ldPtro(sortltype, i, 8), 0)) {
                 void cptr.strcpy(opts, cptr.ldPtro(sortltype, i, 8));
                 break;
             }
@@ -8537,13 +8538,13 @@ const __static_optfn_sortvanquished_vanqmodes = cptr.bytes("tdaACcnz"); /** C re
 function optfn_sortvanquished(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, 104);
     if (req == NHC.do_init) {
-        cptr.st1o(flags, 98, NHC.VANQ_MLVL_MNDX);
+        cptr.st1o(flags, FLD.flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0);
         if (negated) {
-            cptr.st1o(flags, 98, NHC.VANQ_MLVL_MNDX);
+            cptr.st1o(flags, FLD.flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let p;
             let vndx = 0;
@@ -8555,21 +8556,21 @@ function optfn_sortvanquished(optidx, req, negated, opts, op) {
                 config_error_add(__sl563, optname, op);
                 return NHC.optn_silenterr;
             }
-            cptr.st1o(flags, 98, uchar(vndx));
+            cptr.st1o(flags, FLD.flag_vanq_sortmode, uchar(vndx));
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.strcpy(opts, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, 98)]), 0, 8));
+        void cptr.strcpy(opts, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, FLD.flag_vanq_sortmode)]), 0, 8));
         if (req == NHC.get_val)
-            void cptr.sprintf(eos(opts), __sl655, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, 98)]), 1, 8));
+            void cptr.sprintf(eos(opts), __sl655, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, FLD.flag_vanq_sortmode)]), 1, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
-        let prev_sortmode = cptr.ld1uo(flags, 98);
+        let prev_sortmode = cptr.ld1uo(flags, FLD.flag_vanq_sortmode);
         void set_vanq_order(1);
-        pline(__sl656, optname, (cptr.ld1uo(flags, 98) == prev_sortmode) ? __sl657 : __sl658, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, 98)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, 98)]), 1, 8));
+        pline(__sl656, optname, (cptr.ld1uo(flags, FLD.flag_vanq_sortmode) == prev_sortmode) ? __sl657 : __sl658, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, FLD.flag_vanq_sortmode)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, FLD.flag_vanq_sortmode)]), 1, 8));
     }
     return NHC.optn_ok;
 }
@@ -8581,26 +8582,26 @@ function optfn_statushilites(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            cptr.stI64o(iflags, 152, 0n);
+            cptr.stI64o(iflags, FLD.instance_flags_hilite_delta, 0n);
         } else {
             op = string_for_opt(opts, 1);
-            cptr.stI64o(iflags, 152, (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op)) ? 3n : atol(op));
-            if (cptr.ldI64o(iflags, 152) < 0n)
-                cptr.stI64o(iflags, 152, 1n);
+            cptr.stI64o(iflags, FLD.instance_flags_hilite_delta, (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op)) ? 3n : atol(op));
+            if (cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta) < 0n)
+                cptr.stI64o(iflags, FLD.instance_flags_hilite_delta, 1n);
         }
-        if (!cptr.ld1so(go, 525))
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_from_file))
             reset_status_hilites();
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        if (!cptr.ldI64o(iflags, 152))
+        if (!cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta))
             void cptr.strcpy(opts, __sl659);
         else
-            void cptr.sprintf(opts, __sl660, cptr.ldI64o(iflags, 152), cptr.ldI64o(iflags, 152));
+            void cptr.sprintf(opts, __sl660, cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta), cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl661, cptr.ldI64o(iflags, 152));
+        void cptr.sprintf(opts, __sl661, cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta));
     }
     return NHC.optn_ok;
 }
@@ -8625,15 +8626,15 @@ function optfn_statuslines(optidx, req, negated, opts, op) {
             config_error_add(__sl662, cptr.ldPtro(allopt, optidx, 104), op);
             retval = NHC.optn_silenterr;
         } else {
-            cptr.stI32o(iflags, 388, itmp);
-            if (!cptr.ld1so(go, 524))
-                cptr.st1o(go, 526, 1);
+            cptr.stI32o(iflags, FLD.instance_flags_wc2_statuslines, itmp);
+            if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial))
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
         }
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (wc2_supported(cptr.ldPtro(allopt, optidx, 104)))
-            void cptr.strcpy(opts, (cptr.ldI32o(iflags, 388) < 3) ? __sl663 : __sl664);
+            void cptr.strcpy(opts, (cptr.ldI32o(iflags, FLD.instance_flags_wc2_statuslines) < 3) ? __sl663 : __sl664);
         else
             void cptr.strcpy(opts, __sl665);
         return NHC.optn_ok;
@@ -8655,12 +8656,12 @@ function optfn_suppress_alert(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (req == NHC.get_cnf_val && cptr.ldU64o(flags, 72) == 0n)
+        if (req == NHC.get_cnf_val && cptr.ldU64o(flags, FLD.flag_suppress_alert) == 0n)
             cptr.st1o(opts, 0, 0);
-        else if (cptr.ldU64o(flags, 72) == 0n)
+        else if (cptr.ldU64o(flags, FLD.flag_suppress_alert) == 0n)
             void cptr.strcpy(opts, cptr.decay(none));
         else
-            void cptr.sprintf(opts, __sl666, (cptr.ldU64o(flags, 72) >> 24n), (((16711680n & cptr.ldU64o(flags, 72))) >> 16n), (((65280n & cptr.ldU64o(flags, 72))) >> 8n));
+            void cptr.sprintf(opts, __sl666, (cptr.ldU64o(flags, FLD.flag_suppress_alert) >> 24n), (((16711680n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 16n), (((65280n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 8n));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8673,35 +8674,35 @@ function optfn_symset(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208))
-                cptr.free(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208)), cptr.stPtro2(gs, NHC.PRIMARYSET, 48, 208, null);
-            cptr.stPtro2(gs, NHC.PRIMARYSET, 48, 208, dupstr(op));
+            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
+                cptr.free(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name)), cptr.stPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, null);
+            cptr.stPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name, dupstr(op));
             if (!read_sym_file(NHC.PRIMARYSET)) {
                 clear_symsetentry(NHC.PRIMARYSET, 1);
                 config_error_add(__sl644, op, __sl645);
                 return NHC.optn_err;
             } else {
-                if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, 228)) {
+                if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling)) {
                 }
-                switch_symbols(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208) !== null);
-                cptr.st1o(go, 526, cptr.st1o(go, 527, 1));
-                cptr.st1o(go, 532, 1);
+                switch_symbols(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) !== null);
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 1));
+                cptr.st1o(go, FLD.instance_globals_o_opt_symset_changed, 1);
             }
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208) : __sl646);
-        if (cptr.ldI32o(gc, 428) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208))
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) : __sl646);
+        if (cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name))
             void cptr.strcat(opts, __sl647);
-        if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, 228)) {
-            void cptr.sprintf(eos(opts), __sl667, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, 228), 8));
+        if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling)) {
+            void cptr.sprintf(eos(opts), __sl667, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_handling), 8));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, 208) : __sl646);
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_name) : __sl646);
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8730,14 +8731,14 @@ function optfn_term_cols(optidx, req, negated, opts, op) {
                 config_error_add(__sl668, cptr.ldPtro(allopt, optidx, 104), ltmp);
                 retval = NHC.optn_err;
             } else {
-                cptr.stI32o(iflags, 380, Number(BigInt.asIntN(32, ltmp)));
+                cptr.stI32o(iflags, FLD.instance_flags_wc2_term_cols, Number(BigInt.asIntN(32, ltmp)));
             }
         }
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 380))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 380));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc2_term_cols))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc2_term_cols));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8761,14 +8762,14 @@ function optfn_term_rows(optidx, req, negated, opts, op) {
                 config_error_add(__sl668, cptr.ldPtro(allopt, optidx, 104), ltmp);
                 retval = NHC.optn_err;
             } else {
-                cptr.stI32o(iflags, 384, Number(BigInt.asIntN(32, ltmp)));
+                cptr.stI32o(iflags, FLD.instance_flags_wc2_term_rows, Number(BigInt.asIntN(32, ltmp)));
             }
         }
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 384))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 384));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc2_term_rows))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc2_term_rows));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8785,20 +8786,20 @@ function optfn_tile_file(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro(iflags, 200))
-                cptr.free(cptr.ldPtro(iflags, 200));
-            cptr.stPtro(iflags, 200, dupstr(op));
+            if (cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file))
+                cptr.free(cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file));
+            cptr.stPtro(iflags, FLD.instance_flags_wc_tile_file, dupstr(op));
         } else
             return NHC.optn_err;
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 200) ? cptr.ldPtro(iflags, 200) : cptr.decay(defopt));
+        void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file) : cptr.decay(defopt));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        if (cptr.ldPtro(iflags, 200))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 200));
+        if (cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file))
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_tile_file));
         else
             cptr.st1o(opts, 0, 0);
         return NHC.optn_ok;
@@ -8814,7 +8815,7 @@ function optfn_tile_height(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 196, negated ? 0 : atoi(op));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_tile_height, negated ? 0 : atoi(op));
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -8822,8 +8823,8 @@ function optfn_tile_height(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 196))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 196));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc_tile_height))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_tile_height));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8841,7 +8842,7 @@ function optfn_tile_width(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 192, negated ? 0 : atoi(op));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_tile_width, negated ? 0 : atoi(op));
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -8849,8 +8850,8 @@ function optfn_tile_width(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 192))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 192));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc_tile_width))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_tile_width));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8887,7 +8888,7 @@ function optfn_vary_msgcount(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = string_for_opt(opts, negated);
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
-            cptr.stI32o(iflags, 220, negated ? 0 : atoi(op));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_vary_msgcount, negated ? 0 : atoi(op));
         } else if (negated) {
             bad_negation(cptr.ldPtro(allopt, optidx, 104), 1);
             return NHC.optn_err;
@@ -8895,8 +8896,8 @@ function optfn_vary_msgcount(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (cptr.ldI32o(iflags, 220))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 220));
+        if (cptr.ldI32o(iflags, FLD.instance_flags_wc_vary_msgcount))
+            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_vary_msgcount));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8909,12 +8910,12 @@ function optfn_vary_msgcount(optidx, req, negated, opts, op) {
 /** C ref: options.c:4472 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
 function optfn_versinfo(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, 104);
-    let vi = cptr.ldI32o(flags, 84);
+    let vi = cptr.ldI32o(flags, FLD.flag_versinfo);
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        let have_branch = schar((cptr.ldPtro(nomakedefs, 24) && cptr.ld1s(cptr.ldPtro(nomakedefs, 24)) ? 1 : 0));
+        let have_branch = schar((cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch)) ? 1 : 0));
         let val;
         let dflt = have_branch ? NHM.VI_BRANCH : NHM.VI_NUMBER;
         if (negated) {
@@ -8931,21 +8932,21 @@ function optfn_versinfo(optidx, req, negated, opts, op) {
             config_error_add(__sl670, optname);
             return NHC.optn_silenterr;
         }
-        cptr.stI32o(flags, 84, val >>> 0);
+        cptr.stI32o(flags, FLD.flag_versinfo, val >>> 0);
     } else if (req == NHC.do_handler) {
         void handler_versinfo();
-        pline(__sl671, optname, (cptr.ldI32o(flags, 84) == vi) ? __sl657 : __sl658, cptr.ldI32o(flags, 84));
+        pline(__sl671, optname, (cptr.ldI32o(flags, FLD.flag_versinfo) == vi) ? __sl657 : __sl658, cptr.ldI32o(flags, FLD.flag_versinfo));
     } else if (req == NHC.get_val) {
         let vbuf = new Uint8Array(128);
         let g = schar((((vi & NHM.VI_NAME) >>> 0) != 0));
         let b = schar((((vi & NHM.VI_BRANCH) >>> 0) != 0));
         let n = schar((((vi & NHM.VI_NUMBER) >>> 0) != 0));
-        void cptr.sprintf(opts, __sl672, cptr.ldI32o(flags, 84), g ? __sl4 : __sl491, (b && g) ? __sl673 : __sl491, b ? __sl674 : __sl491, (n && (b || g)) ? __sl673 : __sl491, n ? __sl675 : __sl491, status_version(cptr.decay(vbuf), 128n, 0));
+        void cptr.sprintf(opts, __sl672, cptr.ldI32o(flags, FLD.flag_versinfo), g ? __sl4 : __sl491, (b && g) ? __sl673 : __sl491, b ? __sl674 : __sl491, (n && (b || g)) ? __sl673 : __sl491, n ? __sl675 : __sl491, status_version(cptr.decay(vbuf), 128n, 0));
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl607, cptr.ldI32o(flags, 84));
+        void cptr.sprintf(opts, __sl607, cptr.ldI32o(flags, FLD.flag_versinfo));
     }
-    if (cptr.ldI32o(flags, 84) != vi && !cptr.ld1so(go, 524))
-        cptr.st1o(go, 526, 1);
+    if (cptr.ldI32o(flags, FLD.flag_versinfo) != vi && !cptr.ld1so(go, FLD.instance_globals_o_opt_initial))
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
     return NHC.optn_ok;
 }
 
@@ -8975,12 +8976,12 @@ function optfn_whatis_coord(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            cptr.stI32o(iflags, 100, 110);
+            cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, 110);
             return NHC.optn_ok;
         } else if (!cptr.eq((op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0)), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
             if (c && cptr.strchr(cptr.decay(__static_optfn_whatis_coord_gpcoords), c))
-                cptr.stI32o(iflags, 100, c);
+                cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, c);
             else {
                 config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op);
                 return NHC.optn_err;
@@ -8990,7 +8991,7 @@ function optfn_whatis_coord(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, 100) == 109) ? __sl676 : ((cptr.ldI32o(iflags, 100) == 99) ? __sl677 : ((cptr.ldI32o(iflags, 100) == 102) ? __sl678 : ((cptr.ldI32o(iflags, 100) == 115) ? __sl679 : __sl467))));
+        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 109) ? __sl676 : ((cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 99) ? __sl677 : ((cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 102) ? __sl678 : ((cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == 115) ? __sl679 : __sl467))));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9006,19 +9007,19 @@ function optfn_whatis_filter(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            cptr.stI32o(iflags, 32, NHC.GFILTER_NONE);
+            cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, NHC.GFILTER_NONE);
             return NHC.optn_ok;
         } else if (!cptr.eq((op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0)), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
             switch (c) {
                 case 110:
-                cptr.stI32o(iflags, 32, NHC.GFILTER_NONE);
+                cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, NHC.GFILTER_NONE);
                 break;
                 case 118:
-                cptr.stI32o(iflags, 32, NHC.GFILTER_VIEW);
+                cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, NHC.GFILTER_VIEW);
                 break;
                 case 97:
-                cptr.stI32o(iflags, 32, NHC.GFILTER_AREA);
+                cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, NHC.GFILTER_AREA);
                 break;
                 default:
                 {
@@ -9031,7 +9032,7 @@ function optfn_whatis_filter(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, 32) == NHC.GFILTER_VIEW) ? __sl680 : ((cptr.ldI32o(iflags, 32) == NHC.GFILTER_AREA) ? __sl681 : __sl467));
+        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __sl680 : ((cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter) == NHC.GFILTER_AREA) ? __sl681 : __sl467));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9063,17 +9064,17 @@ function optfn_windowborders(optidx, req, negated, opts, op) {
                 config_error_add(__sl682, cptr.ldPtro(allopt, optidx, 104), opts);
                 retval = NHC.optn_silenterr;
             } else {
-                cptr.stI32o(iflags, 392, itmp);
+                cptr.stI32o(iflags, FLD.instance_flags_wc2_windowborders, itmp);
             }
         }
         return retval;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, 392) == 0) ? __sl602 : ((cptr.ldI32o(iflags, 392) == 1) ? __sl603 : ((cptr.ldI32o(iflags, 392) == 2) ? __sl683 : ((cptr.ldI32o(iflags, 392) == 3) ? __sl684 : ((cptr.ldI32o(iflags, 392) == 4) ? __sl685 : cptr.decay(defopt))))));
+        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders) == 0) ? __sl602 : ((cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders) == 1) ? __sl603 : ((cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders) == 2) ? __sl683 : ((cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders) == 3) ? __sl684 : ((cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders) == 4) ? __sl685 : cptr.decay(defopt))))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, 392));
+        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, FLD.instance_flags_wc2_windowborders));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9122,8 +9123,8 @@ function optfn_windowcolors(optidx, req, negated, opts, op) {
         let bg;
         cptr.st1o(opts, 0, 0);
         for (wccount = 0; wccount < NHC.WC_COUNT; ++wccount) {
-            fg = cptr.ldPtro2(iflags, wccount, 16, 224);
-            bg = cptr.ldPtro2(iflags, wccount, 16, 232);
+            fg = cptr.ldPtro2(iflags, wccount, 16, FLD.instance_flags_wcolors);
+            bg = cptr.ldPtro2(iflags, wccount, 16, FLD.instance_flags_wcolors + FLD.windowcolors_struct_bg);
             if (fg && (!cptr.ld1s(fg) || !strcmp(fg, cptr.decay(defbrief))))
                 fg = null;
             if (bg && (!cptr.ld1s(bg) || !strcmp(bg, cptr.decay(defbrief))))
@@ -9141,13 +9142,13 @@ function optfn_windowtype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.ld1so(iflags, 81)) {
-            if (cptr.ld1so(iflags, 414))
+        if (!cptr.ld1so(iflags, FLD.instance_flags_window_inited)) {
+            if (cptr.ld1so(iflags, FLD.instance_flags_windowtype_locked))
                 return NHC.optn_ok;
             if (!cptr.eq((op = string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0)), cptr.decay(empty_optstr))) {
-                nmcpy(cptr.add(gc, 300), op, NHM.WINTYPELEN);
-                if (!cptr.ld1so(iflags, 415)) {
-                    choose_windows(cptr.add(gc, 300));
+                nmcpy(cptr.add(gc, FLD.instance_globals_c_chosen_windowtype), op, NHM.WINTYPELEN);
+                if (!cptr.ld1so(iflags, FLD.instance_flags_windowtype_deferred)) {
+                    choose_windows(cptr.add(gc, FLD.instance_globals_c_chosen_windowtype));
                 }
             } else {
                 return NHC.optn_err;
@@ -9185,7 +9186,7 @@ function pfxfn_cond_(optidx, req, negated, opts, op) {
         }
         if (reslt != 0)
             return NHC.optn_err;
-        cptr.st1o(go, 526, 1);
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -9236,19 +9237,19 @@ function pfxfn_font(optidx, req, negated, opts, op) {
             if (opttype > 0 && !negated && !cptr.eq((op = string_for_opt(opts, 0)), cptr.decay(empty_optstr))) {
                 switch (opttype) {
                     case NHC.MAP_OPTION:
-                    cptr.stI32o(iflags, 328, atoi(op));
+                    cptr.stI32o(iflags, FLD.instance_flags_wc_fontsiz_map, atoi(op));
                     break;
                     case NHC.MESSAGE_OPTION:
-                    cptr.stI32o(iflags, 332, atoi(op));
+                    cptr.stI32o(iflags, FLD.instance_flags_wc_fontsiz_message, atoi(op));
                     break;
                     case NHC.TEXT_OPTION:
-                    cptr.stI32o(iflags, 344, atoi(op));
+                    cptr.stI32o(iflags, FLD.instance_flags_wc_fontsiz_text, atoi(op));
                     break;
                     case NHC.MENU_OPTION:
-                    cptr.stI32o(iflags, 340, atoi(op));
+                    cptr.stI32o(iflags, FLD.instance_flags_wc_fontsiz_menu, atoi(op));
                     break;
                     case NHC.STATUS_OPTION:
-                    cptr.stI32o(iflags, 336, atoi(op));
+                    cptr.stI32o(iflags, FLD.instance_flags_wc_fontsiz_status, atoi(op));
                     break;
                 }
             }
@@ -9268,38 +9269,38 @@ function pfxfn_font(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (optidx == NHC.opt_font_map) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 288) ? cptr.ldPtro(iflags, 288) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_font_map) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_font_map) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_message) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 296) ? cptr.ldPtro(iflags, 296) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_font_message) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_font_message) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_status) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 304) ? cptr.ldPtro(iflags, 304) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_font_status) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_font_status) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_menu) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 312) ? cptr.ldPtro(iflags, 312) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_font_menu) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_font_menu) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_text) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, 320) ? cptr.ldPtro(iflags, 320) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, FLD.instance_flags_wc_font_text) ? cptr.ldPtro(iflags, FLD.instance_flags_wc_font_text) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_map) {
-            if (cptr.ldI32o(iflags, 328))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 328));
+            if (cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_map))
+                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_map));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_message) {
-            if (cptr.ldI32o(iflags, 332))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 332));
+            if (cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_message))
+                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_message));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_status) {
-            if (cptr.ldI32o(iflags, 336))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 336));
+            if (cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_status))
+                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_status));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_menu) {
-            if (cptr.ldI32o(iflags, 340))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 340));
+            if (cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_menu))
+                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_menu));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_text) {
-            if (cptr.ldI32o(iflags, 344))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, 344));
+            if (cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_text))
+                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, FLD.instance_flags_wc_fontsiz_text));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         }
@@ -9316,11 +9317,11 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         let nosexchange = 0;
         let ln = 0;
-        if (!cptr.ldPtro2(allopt, optidx, 104, 56))
+        if (!cptr.ldPtro2(allopt, optidx, 104, FLD.allopt_t_addr))
             return NHC.optn_ok;
-        if (!cptr.ld1so(go, 524) && (cptr.ldI32o2(allopt, optidx, 104, 24) == NHC.set_in_config))
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && (cptr.ldI32o2(allopt, optidx, 104, FLD.allopt_t_setwhere) == NHC.set_in_config))
             return NHC.optn_err;
-        if (cptr.ld1so(go, 524) && cptr.ldI32o2(allopt, optidx, 104, 24) == NHC.set_wiznofuz)
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && cptr.ldI32o2(allopt, optidx, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz)
             return NHC.optn_err;
         op = string_for_opt(opts, 1);
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
@@ -9333,36 +9334,36 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
                 negated = 0;
             } else if (!strncmpi(op, __sl701, ln) || !strncmpi(op, __sl550, ln) || !strncmpi((op), (__sl507), -1) || (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
                 negated = 1;
-            } else if (!cptr.ldI32o2(allopt, optidx, 104, 36)) {
+            } else if (!cptr.ldI32o2(allopt, optidx, 104, FLD.allopt_t_valok)) {
                 config_error_add(__sl702, opts);
                 return NHC.optn_silenterr;
             }
         }
-        if (cptr.ld1so(iflags, 15) && !cptr.ld1so(go, 524)) {
+        if (cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer) && !cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
             if ((optidx == NHC.opt_silent) || (optidx == NHC.opt_perm_invent))
                 return NHC.optn_ok;
         }
         switch (optidx) {
             case NHC.opt_female:
             if (!strncmpi(opts, __sl110, ((ln) > 3 ? (ln) : 3))) {
-                if (!cptr.ld1so(go, 524) && cptr.ld1so(flags, 13) == negated) {
+                if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && cptr.ld1so(flags, FLD.flag_female) == negated) {
                     nosexchange = 1;
                 } else {
-                    cptr.stI32o(flags, 152, cptr.st1o(flags, 13, schar((!negated))));
+                    cptr.stI32o(flags, FLD.flag_initgend, cptr.st1o(flags, FLD.flag_female, schar((!negated))));
                     return NHC.optn_ok;
                 }
             }
             if (!strncmpi(opts, __sl111, ((ln) > 3 ? (ln) : 3))) {
-                if (!cptr.ld1so(go, 524) && cptr.ld1so(flags, 13) != negated) {
+                if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && cptr.ld1so(flags, FLD.flag_female) != negated) {
                     nosexchange = 1;
                 } else {
-                    cptr.stI32o(flags, 152, cptr.st1o(flags, 13, negated));
+                    cptr.stI32o(flags, FLD.flag_initgend, cptr.st1o(flags, FLD.flag_female, negated));
                     return NHC.optn_ok;
                 }
             }
             break;
             case NHC.opt_perm_invent:
-            if (!negated && !cptr.ld1so(go, 524) && !can_set_perm_invent())
+            if (!negated && !cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && !can_set_perm_invent())
                 return NHC.optn_silenterr;
             break;
             default:
@@ -9372,33 +9373,33 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
             config_error_add(__sl703, opts);
             return NHC.optn_silenterr;
         }
-        cptr.st1((cptr.ldPtro2(allopt, optidx, 104, 56)), schar((!negated)));
+        cptr.st1((cptr.ldPtro2(allopt, optidx, 104, FLD.allopt_t_addr)), schar((!negated)));
         switch (optidx) {
             case NHC.opt_pauper:
-            cptr.st1o(u, 2113, cptr.ld1so(u, 2115));
+            cptr.st1o(u, FLD.you_uroleplay + FLD.u_roleplay_nudist, cptr.ld1so(u, FLD.you_uroleplay + FLD.u_roleplay_pauper));
             break;
             case NHC.opt_ascii_map:
-            cptr.st1o(iflags, 187, negated);
+            cptr.st1o(iflags, FLD.instance_flags_wc_tiled_map, negated);
             break;
             case NHC.opt_tiled_map:
-            cptr.st1o(iflags, 186, negated);
+            cptr.st1o(iflags, FLD.instance_flags_wc_ascii_map, negated);
             break;
             case NHC.opt_hilite_pet:
-            if ((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, 8) == NHC.wp_curses)) {
-                if (cptr.ld1so(iflags, 185) && !cptr.ldI32o(iflags, 396))
-                    cptr.stI32o(iflags, 396, NHM.ATR_INVERSE);
+            if ((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_curses)) {
+                if (cptr.ld1so(iflags, FLD.instance_flags_wc_hilite_pet) && !cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr))
+                    cptr.stI32o(iflags, FLD.instance_flags_wc2_petattr, NHM.ATR_INVERSE);
             }
-            cptr.st1o(go, 526, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
             break;
             case NHC.opt_idlecheckpoint:
             pline(__sl704);
-            cptr.st1o(iflags, 3, 0);
+            cptr.st1o(iflags, FLD.instance_flags_idlecheckpoint, 0);
             give_opt_msg = 0;
             break;
             default:
             break;
         }
-        if (cptr.ld1so(go, 524))
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_initial))
             return NHC.optn_ok;
         switch (optidx) {
             case NHC.opt_terrainstatus:
@@ -9417,7 +9418,7 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_showvers:
             case NHC.opt_showexp:
             case NHC.opt_time:
-            if (((cptr.ldU64o(windowprocs, 24) & 136n) != 0n))
+            if (((cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & 136n) != 0n))
                 status_initialize(1);
             cptr.st1(disp, 1);
             break;
@@ -9426,16 +9427,16 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_sortpack:
             case NHC.opt_implicit_uncursed:
             case NHC.opt_wizweight:
-            if (!cptr.ld1so(flags, 22))
+            if (!cptr.ld1so(flags, FLD.flag_invlet_constant))
                 reassign();
             update_inventory();
             break;
             case NHC.opt_lit_corridor:
             case NHC.opt_dark_room:
             vision_recalc(2);
-            cptr.st1o(gv, 144, 1);
-            if (cptr.ld1so(iflags, 184))
-                cptr.st1o(go, 526, 1);
+            cptr.st1o(gv, FLD.instance_globals_v_vision_full_recalc, 1);
+            if (cptr.ld1so(iflags, FLD.instance_flags_wc_color))
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
             break;
             case NHC.opt_wizmgender:
             case NHC.opt_showrace:
@@ -9444,38 +9445,38 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_perm_invent:
             case NHC.opt_ascii_map:
             case NHC.opt_tiled_map:
-            cptr.st1o(go, 526, 1);
-            cptr.st1o(go, 527, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 1);
             break;
             case NHC.opt_hitpointbar:
-            if (((cptr.ldU64o(windowprocs, 24) & 136n) != 0n)) {
+            if (((cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & 136n) != 0n)) {
                 status_initialize(1);
-                cptr.st1o(go, 526, 1);
+                cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
             }
             break;
             case NHC.opt_color:
-            cptr.st1o(go, 526, 1);
-            cptr.st1o(go, 527, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 1);
             break;
             case NHC.opt_customcolors:
-            cptr.st1o(go, 529, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_reset_customcolors, 1);
             break;
             case NHC.opt_customsymbols:
-            cptr.st1o(go, 530, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_reset_customsymbols, 1);
             break;
             case NHC.opt_menucolors:
             case NHC.opt_guicolor:
             update_inventory();
-            cptr.st1o(go, 528, 1);
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_promptstyle, 1);
             break;
             case NHC.opt_mention_decor:
-            cptr.st1o(iflags, 172, NHC.STONE);
+            cptr.st1o(iflags, FLD.instance_flags_prev_decor, NHC.STONE);
             break;
             case NHC.opt_rest_on_space:
             update_rest_on_space();
             break;
             case NHC.opt_accessiblemsg:
-            cptr.stI16o(a11y, 2, cptr.stI16o(a11y, 4, 0));
+            cptr.stI16o(a11y, FLD.accessibility_data_msg_loc, cptr.stI16o(a11y, FLD.accessibility_data_msg_loc + FLD.nhcoord_y, 0));
             break;
             default:
             break;
@@ -9504,7 +9505,7 @@ function spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
             let c = schar(txt2key(op));
             if (illegal_menu_cmd_key(uchar(c)))
                 return NHC.optn_err;
-            add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, 24, 8));
+            add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, 24, FLD.menu_cmd_t_cmd));
         }
         return NHC.optn_ok;
     }
@@ -9517,12 +9518,12 @@ function spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
 
 /** C ref: options.c:5488 @returns {CInt} */
 function can_set_perm_invent() {
-    let old_perminv_mode = cptr.ld1uo(iflags, 174);
-    if (!(cptr.ldU64o(windowprocs, 16) & 134217728n)) {
+    let old_perminv_mode = cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode);
+    if (!(cptr.ldU64o(windowprocs, FLD.window_procs_wincap) & 134217728n)) {
         return 0;
     }
-    if (cptr.ld1uo(iflags, 174) == NHC.InvOptNone)
-        cptr.st1o(iflags, 174, NHC.InvOptOn);
+    if (cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) == NHC.InvOptNone)
+        cptr.st1o(iflags, FLD.instance_flags_perminv_mode, NHC.InvOptOn);
     (void (old_perminv_mode));
     return 1;
 }
@@ -9534,34 +9535,34 @@ function handler_menustyle() {
     let chngd;
     let i;
     let n;
-    let old_menu_style = cptr.ld1so(flags, 142);
+    let old_menu_style = cptr.ld1so(flags, FLD.flag_menu_style);
     let buf = new Uint8Array(256);
-    let sep = schar((cptr.ld1so(iflags, 136) ? 9 : 32));
+    let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
     let style_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < menutype.length; i++) {
         void cptr.sprintf(cptr.decay(buf), __sl707, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (i == cptr.ld1so(flags, 142)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (i == cptr.ld1so(flags, FLD.flag_menu_style)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
         void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
         add_menu_str(tmpwin, cptr.decay(buf));
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl709);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl709);
     n = select_menu(tmpwin, NHM.PICK_ONE, style_pick);
     if (n > 0) {
         i = (cptr.ldI32o(style_pick.v, 0, 24) - 1) | 0;
         if (n > 1 && i == old_menu_style)
             i = (cptr.ldI32o(style_pick.v, 1, 24) - 1) | 0;
-        cptr.st1o(flags, 142, schar(i));
+        cptr.st1o(flags, FLD.flag_menu_style, schar(i));
         cptr.free(style_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
-    chngd = schar((cptr.ld1so(flags, 142) != old_menu_style));
-    if (chngd || cptr.ld1so(flags, 48))
-        pline(__sl710, chngd ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, 142)]), 0, 8));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+    chngd = schar((cptr.ld1so(flags, FLD.flag_menu_style) != old_menu_style));
+    if (chngd || cptr.ld1so(flags, FLD.flag_verbose))
+        pline(__sl710, chngd ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, FLD.flag_menu_style)]), 0, 8));
     return NHC.optn_ok;
 }
 
@@ -9572,9 +9573,9 @@ function handler_align_misc(optidx) {
     let window_pick = cptr.box(null);
     let abuf = new Uint8Array(256);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32(any, NHM.ALIGN_TOP);
     add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, __sl560, NHM.MENU_ITEMFLAGS_NONE);
     cptr.stI32(any, NHM.ALIGN_BOTTOM);
@@ -9584,15 +9585,15 @@ function handler_align_misc(optidx) {
     cptr.stI32(any, NHM.ALIGN_RIGHT);
     add_menu(tmpwin, nul_glyphinfo.v, any, 114, 0, NHM.ATR_NONE, clr, __sl561, NHM.MENU_ITEMFLAGS_NONE);
     void cptr.sprintf(cptr.decay(abuf), __sl712, (optidx == NHC.opt_align_message) ? __sl687 : __sl688);
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(abuf));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(abuf));
     if (select_menu(tmpwin, NHM.PICK_ONE, window_pick) > 0) {
         if (optidx == NHC.opt_align_message)
-            cptr.stI32o(iflags, 216, cptr.ldI32(window_pick.v));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, cptr.ldI32(window_pick.v));
         else
-            cptr.stI32o(iflags, 212, cptr.ldI32(window_pick.v));
+            cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, cptr.ldI32(window_pick.v));
         cptr.free(window_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -9601,40 +9602,40 @@ function handler_autounlock(optidx) {
     let tmpwin;
     let any = cptr.alloc(8);
     let chngd;
-    let oldflags = cptr.ldI32o(flags, 60);
+    let oldflags = cptr.ldI32o(flags, FLD.flag_autounlock);
     let optname = cptr.ldPtro(allopt, optidx, 104);
     let buf = new Uint8Array(256);
-    let sep = schar((cptr.ld1so(iflags, 136) ? 9 : 32));
+    let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
     let window_pick = cptr.box(null);
     let i;
     let n;
     let presel;
     let res = NHC.optn_ok;
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < unlocktypes.length; ++i) {
         void cptr.sprintf(cptr.decay(buf), __sl713, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8));
-        presel = ((cptr.ldI32o(flags, 60) & (1 << i) >>> 0) >>> 0) | 0;
+        presel = ((cptr.ldI32o(flags, FLD.flag_autounlock) & (1 << i) >>> 0) >>> 0) | 0;
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (presel ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     void cptr.sprintf(cptr.decay(buf), __sl714, optname);
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(buf));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf));
     n = select_menu(tmpwin, NHM.PICK_ANY, window_pick);
     if (n > 0) {
         let newflags = 0;
         for (i = 0; i < n; ++i)
             newflags |= (1 << ((cptr.ldI32o(window_pick.v, i, 24) - 1) | 0)) >>> 0;
-        cptr.stI32o(flags, 60, newflags);
+        cptr.stI32o(flags, FLD.flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
-        cptr.stI32o(flags, 60, 0);
+        cptr.stI32o(flags, FLD.flag_autounlock, 0);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
-    chngd = schar((cptr.ldI32o(flags, 60) != oldflags));
-    if ((chngd || cptr.ld1so(flags, 48)) && give_opt_msg) {
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+    chngd = schar((cptr.ldI32o(flags, FLD.flag_autounlock) != oldflags));
+    if ((chngd || cptr.ld1so(flags, FLD.flag_verbose)) && give_opt_msg) {
         optfn_autounlock(optidx, NHC.get_val, 0, cptr.decay(buf), (null));
         pline(__sl715, optname, chngd ? __sl658 : __sl711, cptr.decay(buf));
     }
@@ -9663,16 +9664,16 @@ function handler_disclose() {
     let c;
     let disclosure_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
-        void cptr.sprintf(cptr.decay(buf), __sl716, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, 135), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
+        void cptr.sprintf(cptr.decay(buf), __sl716, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(disclosure_options), i, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         cptr.stI32o(disc_cat, i, 0, 4);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl717);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl717);
     pick_cnt = select_menu(tmpwin, NHM.PICK_ANY, disclosure_pick);
     if (pick_cnt > 0) {
         for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
@@ -9682,14 +9683,14 @@ function handler_disclose() {
         cptr.free(disclosure_pick.v);
         disclosure_pick.v = null;
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         if (cptr.ldI32o(disc_cat, i, 4)) {
-            c = cptr.ld1so2(flags, i, 1, 135);
+            c = cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose);
             void cptr.sprintf(cptr.decay(buf), __sl718, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8));
-            tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-            (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             cptr.st1(any, 45);
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl719, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
             cptr.st1(any, 43);
@@ -9706,15 +9707,15 @@ function handler_disclose() {
                 cptr.st1(any, 63);
                 add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl724, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
             }
-            (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(buf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(buf));
             n = select_menu(tmpwin, NHM.PICK_ONE, disclosure_pick);
             if (n > 0) {
-                cptr.st1o2(flags, i, 1, 135, cptr.ld1so(disclosure_pick.v, 0, 24));
-                if (n > 1 && cptr.ld1so2(flags, i, 1, 135) == c)
-                    cptr.st1o2(flags, i, 1, 135, cptr.ld1so(disclosure_pick.v, 1, 24));
+                cptr.st1o2(flags, i, 1, FLD.flag_end_disclose, cptr.ld1so(disclosure_pick.v, 0, 24));
+                if (n > 1 && cptr.ld1so2(flags, i, 1, FLD.flag_end_disclose) == c)
+                    cptr.st1o2(flags, i, 1, FLD.flag_end_disclose, cptr.ld1so(disclosure_pick.v, 1, 24));
                 cptr.free(disclosure_pick.v);
             }
-            (cptr.ldPtro(windowprocs, 128))(tmpwin);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
         }
     }
     return NHC.optn_ok;
@@ -9722,12 +9723,12 @@ function handler_disclose() {
 
 /** C ref: options.c:5780 @returns {CInt} */
 function handler_menu_headings() {
-    let gotca = query_color_attr(cptr.add(iflags, 112), __sl731);
+    let gotca = query_color_attr(cptr.add(iflags, FLD.instance_flags_menu_headings), __sl731);
     if (gotca) {
-        if (cptr.ld1so(iflags, 139))
+        if (cptr.ld1so(iflags, FLD.instance_flags_perm_invent))
             update_inventory();
     }
-    adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, 112));
+    adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, FLD.instance_flags_menu_headings));
     return NHC.optn_ok;
 }
 
@@ -9737,30 +9738,30 @@ function handler_menu_objsyms() {
     let any = cptr.alloc(8);
     let buf = new Uint8Array(256);
     let picklist = cptr.box(null);
-    let sep = schar((cptr.ld1so(iflags, 136) ? 9 : 32));
+    let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
     let i;
     let j;
     let n;
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; ++i) {
-        nh_snprintf(__sl732, 5809, cptr.decay(buf), 256n, __sl707, cptr.ldPtro2(objsymvals, i, 24, 8), sep, cptr.ldPtro2(objsymvals, i, 24, 16));
+        nh_snprintf(__sl732, 5809, cptr.decay(buf), 256n, __sl707, cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, 24, FLD.objsymopt_descr));
         cptr.stI32(any, (i + 1) | 0);
         j = cptr.ldI32o(objsymvals, i, 24);
-        add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, 44)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, FLD.instance_flags_menuobjsyms)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl733);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl733);
     n = select_menu(tmpwin, NHM.PICK_ONE, picklist);
     if (n > 0) {
         i = (cptr.ldI32o(picklist.v, 0, 24) - 1) | 0;
-        if (n > 1 && i == cptr.ldI32o(iflags, 44))
+        if (n > 1 && i == cptr.ldI32o(iflags, FLD.instance_flags_menuobjsyms))
             i = (cptr.ldI32o(picklist.v, 1, 24) - 1) | 0;
         set_menuobjsyms_flags(i);
         cptr.free(picklist.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -9768,8 +9769,8 @@ function handler_menu_objsyms() {
 function handler_msg_window() {
     let tmpwin;
     let any = cptr.alloc(8);
-    let is_tty = schar((cptr.ldI32o(windowprocs, 8) == NHC.wp_tty));
-    let is_curses = schar((cptr.ldI32o(windowprocs, 8) == NHC.wp_curses));
+    let is_tty = schar((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty));
+    let is_curses = schar((cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_curses));
     let clr = NHM.NO_COLOR;
     if (is_tty || is_curses) {
         let chngd;
@@ -9777,33 +9778,33 @@ function handler_msg_window() {
         let n;
         let buf = new Uint8Array(256);
         let c;
-        let sep = schar((cptr.ld1so(iflags, 136) ? 9 : 32));
-        let old_prevmsg_window = cptr.ld1so(iflags, 176);
+        let sep = schar((cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32));
+        let old_prevmsg_window = cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window);
         let window_pick = cptr.box(null);
-        tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         for (i = 0; i < menutype.length; i++) {
             if (i < 2 && is_curses)
                 continue;
             void cptr.sprintf(cptr.decay(buf), __sl707, cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8));
             cptr.st1(any, c = cptr.ld1s(cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8)));
-            add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (c == cptr.ld1so(iflags, 176)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+            add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (c == cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
             void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
             add_menu_str(tmpwin, cptr.decay(buf));
         }
-        (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl734);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl734);
         n = select_menu(tmpwin, NHM.PICK_ONE, window_pick);
         if (n > 0) {
             c = cptr.ld1so(window_pick.v, 0, 24);
             if (n > 1 && c == old_prevmsg_window)
                 c = cptr.ld1so(window_pick.v, 1, 24);
-            cptr.st1o(iflags, 176, c);
+            cptr.st1o(iflags, FLD.instance_flags_prevmsg_window, c);
             cptr.free(window_pick.v);
         }
-        (cptr.ldPtro(windowprocs, 128))(tmpwin);
-        chngd = schar((cptr.ld1so(iflags, 176) != old_prevmsg_window));
-        if (chngd || cptr.ld1so(flags, 48)) {
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
+        chngd = schar((cptr.ld1so(iflags, FLD.instance_flags_prevmsg_window) != old_prevmsg_window));
+        if (chngd || cptr.ld1so(flags, FLD.flag_verbose)) {
             void optfn_msg_window(NHC.opt_msg_window, NHC.get_val, 0, cptr.decay(buf), cptr.decay(empty_optstr));
             pline(__sl735, chngd ? __sl658 : __sl711, cptr.decay(buf));
         }
@@ -9827,46 +9828,46 @@ function handler_number_pad() {
     let i;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++) {
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, cptr.ldPtro(__static_handler_number_pad_npchoices, i, 8), NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl737);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl737);
     if (select_menu(tmpwin, NHM.PICK_ONE, mode_pick) > 0) {
         switch ((cptr.ldI32(mode_pick.v) - 1) | 0) {
             case 0:
-            cptr.st1o(iflags, 138, 0);
-            cptr.st1o(iflags, 173, 0);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 0);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 0);
             break;
             case 1:
-            cptr.st1o(iflags, 138, 1);
-            cptr.st1o(iflags, 173, 0);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 0);
             break;
             case 2:
-            cptr.st1o(iflags, 138, 1);
-            cptr.st1o(iflags, 173, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 1);
             break;
             case 3:
-            cptr.st1o(iflags, 138, 1);
-            cptr.st1o(iflags, 173, 2);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 2);
             break;
             case 4:
-            cptr.st1o(iflags, 138, 1);
-            cptr.st1o(iflags, 173, 3);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 3);
             break;
             case 5:
-            cptr.st1o(iflags, 138, 0);
-            cptr.st1o(iflags, 173, 1);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad, 0);
+            cptr.st1o(iflags, FLD.instance_flags_num_pad_mode, 1);
             break;
         }
         reset_commands(0);
-        (cptr.ldPtro(windowprocs, 312))(cptr.ld1so(iflags, 138) ? 1 : 0);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_number_pad))(cptr.ld1so(iflags, FLD.instance_flags_num_pad) ? 1 : 0);
         cptr.free(mode_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -9883,13 +9884,13 @@ function handler_paranoid_confirmation() {
     let cmdnm;
     let paranoia_picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-        if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !cptr.ld1so(flags, 10))
+        if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !cptr.ld1so(flags, FLD.flag_debug))
             continue;
-        explain = cptr.ldPtro2(paranoia, i, 48, 40);
+        explain = cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_explain);
         if (strstri(explain, __sl744) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
             if (mkey) {
                 void cptr.sprintf(cptr.decay(mbuf), __sl745, visctrl(mkey));
@@ -9902,19 +9903,19 @@ function handler_paranoid_confirmation() {
             explain = strsubst(cptr.strcpy(cptr.decay(ebuf), explain), __sl744, cptr.decay(mbuf));
         }
         cptr.stI32(any, cptr.ldI32o(paranoia, i, 48));
-        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, 48, 8)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, 80) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, 48, FLD.paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, FLD.flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl749);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl749);
     i = select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks);
     if (i >= 0) {
-        cptr.stI32o(flags, 80, 0);
+        cptr.stI32o(flags, FLD.flag_paranoia_bits, 0);
         if (i > 0) {
             while (--i >= 0)
-                cptr.stI32o(flags, 80, cptr.ldI32o(flags, 80) | (cptr.ldI32o(paranoia_picks.v, i, 24) >>> 0));
+                cptr.stI32o(flags, FLD.flag_paranoia_bits, cptr.ldI32o(flags, FLD.flag_paranoia_bits) | (cptr.ldI32o(paranoia_picks.v, i, 24) >>> 0));
             cptr.free(paranoia_picks.v);
         }
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -9928,20 +9929,20 @@ function handler_perminv_mode() {
     let pi0;
     let pi1;
     let pi_pick = cptr.box(null);
-    let old_perm_invent = cptr.ld1so(iflags, 139);
+    let old_perm_invent = cptr.ld1so(iflags, FLD.instance_flags_perm_invent);
     let i;
     let n;
-    let old_pi = cptr.ld1uo(iflags, 174);
+    let old_pi = cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode);
     let new_pi = old_pi;
-    let widest = !(cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) ? 8 : 11;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    let widest = !(cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) ? 8 : 11;
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < perminv_modes.length; ++i) {
         if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
             continue;
         pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
-        if (!cptr.ld1so(iflags, 136)) {
+        if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep)) {
             let numspaces = (widest - Number(BigInt.asIntN(32, cptr.strlen(pi0)))) | 0;
             void cptr.sprintf(cptr.decay(sepbuf), __sl750, ((numspaces) > 1 ? (numspaces) : 1), __sl598);
         } else {
@@ -9952,26 +9953,26 @@ function handler_perminv_mode() {
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, let$, schar(((48 + i) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), (i == old_pi) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl753);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl753);
     n = select_menu(tmpwin, NHM.PICK_ONE, pi_pick);
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     if (n > 0) {
         new_pi = (cptr.ldI32o(pi_pick.v, 0, 24) - 1) | 0;
         if (n > 1 && new_pi == old_pi)
             new_pi = (cptr.ldI32o(pi_pick.v, 1, 24) - 1) | 0;
         cptr.free(pi_pick.v);
-        cptr.st1o(iflags, 174, uchar(new_pi));
+        cptr.st1o(iflags, FLD.instance_flags_perminv_mode, uchar(new_pi));
     }
     if (n >= 0) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         void optfn_perminv_mode(NHC.opt_perm_invent, NHC.get_val, 0, cptr.decay(buf), null);
         pline(__sl754, (new_pi != old_pi) ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8), cptr.decay(buf));
         if (new_pi != NHC.InvOptNone && !old_perm_invent)
-            cptr.st1o(iflags, 139, can_set_perm_invent());
+            cptr.st1o(iflags, FLD.instance_flags_perm_invent, can_set_perm_invent());
         else if (new_pi == NHC.InvOptNone && old_perm_invent)
-            cptr.st1o(iflags, 139, 0);
-        if (new_pi != old_pi || cptr.ld1so(iflags, 139) != old_perm_invent) {
-            cptr.st1o(go, 526, 1);
+            cptr.st1o(iflags, FLD.instance_flags_perm_invent, 0);
+        if (new_pi != old_pi || cptr.ld1so(iflags, FLD.instance_flags_perm_invent) != old_perm_invent) {
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
         }
     }
     return NHC.optn_ok;
@@ -9986,20 +9987,20 @@ function handler_pickup_burden() {
     let burden_letters = __sl755;
     let burden_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++) {
         burden_name = cptr.ldPtro(burdentype, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(burden_letters, i), 0, NHM.ATR_NONE, clr, burden_name, NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl756);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl756);
     if (select_menu(tmpwin, NHM.PICK_ONE, burden_pick) > 0) {
-        cptr.stI32o(flags, 88, (cptr.ldI32(burden_pick.v) - 1) | 0);
+        cptr.stI32o(flags, FLD.flag_pickup_burden, (cptr.ldI32(burden_pick.v) - 1) | 0);
         cptr.free(burden_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10018,31 +10019,31 @@ function handler_runmode() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 4; i++) {
         mode_name = cptr.ldPtro(runmodes, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(mode_name), 0, NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl757);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl757);
     if (select_menu(tmpwin, NHM.PICK_ONE, mode_pick) > 0) {
-        cptr.stI32o(flags, 172, (cptr.ldI32(mode_pick.v) - 1) | 0);
+        cptr.stI32o(flags, FLD.flag_runmode, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
 /** C ref: options.c:6152 @returns {CInt} */
 function handler_petattr() {
-    let tmp = query_attr(__sl758, cptr.ldI32o(iflags, 396));
+    let tmp = query_attr(__sl758, cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr));
     if (tmp != -1) {
-        cptr.stI32o(iflags, 396, tmp);
-        cptr.st1o(iflags, 185, schar((cptr.ldI32o(iflags, 396) != NHM.ATR_NONE)));
-        if (!cptr.ld1so(go, 524))
-            cptr.st1o(go, 526, 1);
+        cptr.stI32o(iflags, FLD.instance_flags_wc2_petattr, tmp);
+        cptr.st1o(iflags, FLD.instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, FLD.instance_flags_wc2_petattr) != NHM.ATR_NONE)));
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial))
+            cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
     }
     return NHC.optn_ok;
 }
@@ -10056,26 +10057,26 @@ function handler_sortloot() {
     let sortl_name;
     let sortl_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 3; i++) {
         sortl_name = cptr.ldPtro(sortltype, i, 8);
         cptr.st1(any, cptr.ld1s(sortl_name));
-        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(sortl_name), 0, NHM.ATR_NONE, clr, sortl_name, (cptr.ld1so(flags, 97) == cptr.ld1s(sortl_name)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(sortl_name), 0, NHM.ATR_NONE, clr, sortl_name, (cptr.ld1so(flags, FLD.flag_sortloot) == cptr.ld1s(sortl_name)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl759);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl759);
     n = select_menu(tmpwin, NHM.PICK_ONE, sortl_pick);
     if (n > 0) {
         let c = cptr.ld1so(sortl_pick.v, 0, 24);
-        if (n > 1 && c == cptr.ld1so(flags, 97))
+        if (n > 1 && c == cptr.ld1so(flags, FLD.flag_sortloot))
             c = cptr.ld1so(sortl_pick.v, 1, 24);
-        cptr.st1o(flags, 97, c);
-        if (cptr.ld1so(iflags, 139))
+        cptr.st1o(flags, FLD.flag_sortloot, c);
+        if (cptr.ld1so(iflags, FLD.instance_flags_perm_invent))
             update_inventory();
         cptr.free(sortl_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10086,11 +10087,11 @@ function handler_whatis_coord() {
     let buf = new Uint8Array(256);
     let window_pick = cptr.box(null);
     let pick_cnt;
-    let gpc = schar(cptr.ldI32o(iflags, 100));
+    let gpc = schar(cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords));
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.st1(any, 99);
     add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, __sl760, (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     cptr.st1(any, 102);
@@ -10102,21 +10103,21 @@ function handler_whatis_coord() {
     cptr.st1(any, 110);
     add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl764, (gpc == 110) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     add_menu_str(tmpwin, __sl491);
-    void cptr.sprintf(cptr.decay(buf), __sl765, 1, 0, 79, 20, cptr.ld1so(flags, 48) ? __sl766 : __sl491);
+    void cptr.sprintf(cptr.decay(buf), __sl765, 1, 0, 79, 20, cptr.ld1so(flags, FLD.flag_verbose) ? __sl766 : __sl491);
     add_menu_str(tmpwin, cptr.decay(buf));
     if (strcmp(cptr.ldPtr(windowprocs), __sl767))
         add_menu_str(tmpwin, __sl768);
-    void cptr.sprintf(cptr.decay(buf), __sl769, 2, 1, 22, 79, cptr.ld1so(flags, 48) ? __sl770 : __sl491);
+    void cptr.sprintf(cptr.decay(buf), __sl769, 2, 1, 22, 79, cptr.ld1so(flags, FLD.flag_verbose) ? __sl770 : __sl491);
     add_menu_str(tmpwin, cptr.decay(buf));
     add_menu_str(tmpwin, __sl491);
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl771);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl771);
     if ((pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, window_pick)) > 0) {
-        cptr.stI32o(iflags, 100, cptr.ld1so(window_pick.v, 0, 24));
-        if (pick_cnt > 1 && cptr.ldI32o(iflags, 100) == gpc)
-            cptr.stI32o(iflags, 100, cptr.ld1so(window_pick.v, 1, 24));
+        cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, 24));
+        if (pick_cnt > 1 && cptr.ldI32o(iflags, FLD.instance_flags_getpos_coords) == gpc)
+            cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, 24));
         cptr.free(window_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10126,25 +10127,25 @@ function handler_whatis_filter() {
     let any = cptr.alloc(8);
     let window_pick = cptr.box(null);
     let pick_cnt;
-    let gfilt = schar(cptr.ldI32o(iflags, 32));
+    let gfilt = schar(cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter));
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.st1(any, (schar(((NHC.GFILTER_NONE + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl772, (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     cptr.st1(any, (schar(((NHC.GFILTER_VIEW + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, NHM.ATR_NONE, clr, __sl773, (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     cptr.st1(any, (schar(((NHC.GFILTER_AREA + 1) | 0))));
     add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __sl774, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl775);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl775);
     if ((pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, window_pick)) > 0) {
-        cptr.stI32o(iflags, 32, ((cptr.ld1so(window_pick.v, 0, 24) - 1) | 0));
-        if (pick_cnt > 1 && cptr.ldI32o(iflags, 32) == gfilt)
-            cptr.stI32o(iflags, 32, ((cptr.ld1so(window_pick.v, 1, 24) - 1) | 0));
+        cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, 24) - 1) | 0));
+        if (pick_cnt > 1 && cptr.ldI32o(iflags, FLD.instance_flags_getloc_filter) == gfilt)
+            cptr.stI32o(iflags, FLD.instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, 24) - 1) | 0));
         cptr.free(window_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10152,7 +10153,7 @@ function handler_whatis_filter() {
 function handler_symset(optidx) {
     let reslt;
     reslt = do_symset(schar((optidx == NHC.opt_roguesymset)));
-    cptr.st1o(go, 526, 1);
+    cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 1);
     return reslt;
 }
 
@@ -10188,28 +10189,28 @@ function handler_autopickup_exception() {
             let pick_idx;
             let pick_cnt;
             let pick_list = cptr.box(null);
-            tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-            (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
+            tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
             if (numapes) {
-                ape = cptr.ldPtro(ga, 16);
-                cptr.memcpy(any, cptr.add(cg, 536), 8);
+                ape = cptr.ldPtro(ga, FLD.instance_globals_a_apelist);
+                cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
                 add_menu_heading(tmpwin, __sl779);
                 for (i = 0; i < numapes && ape; i++) {
                     cptr.stPtr(any, (opt_idx == 1) ? null : ape);
-                    void cptr.sprintf(cptr.decay(apebuf), __sl780, cptr.ld1so(ape, 16) ? 60 : 62, cptr.ldPtro(ape, 8));
+                    void cptr.sprintf(cptr.decay(apebuf), __sl780, cptr.ld1so(ape, FLD.autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(ape, FLD.autopickup_exception_pattern));
                     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(apebuf), NHM.MENU_ITEMFLAGS_NONE);
-                    ape = cptr.ldPtro(ape, 24);
+                    ape = cptr.ldPtro(ape, FLD.autopickup_exception_next);
                 }
             }
             void cptr.sprintf(cptr.decay(apebuf), __sl781, (opt_idx == 1) ? __sl782 : __sl783);
-            (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(apebuf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(apebuf));
             pick_cnt = select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list);
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     remove_autopickup_exception(cptr.ldPtro(pick_list.v, pick_idx, 24));
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (cptr.ldPtro(windowprocs, 128))(tmpwin);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
             if (pick_cnt >= 0)
                 continue __lbl_ape_again;
         }
@@ -10233,8 +10234,8 @@ function handler_menu_colors() {
         nmc = count_menucolors();
         opt_idx = handle_add_list_remove(__sl784, nmc);
         if (opt_idx == 3) {
-            if (cptr.ld1so(iflags, 149)) {
-                if (cptr.ld1so(iflags, 139))
+            if (cptr.ld1so(iflags, FLD.instance_flags_use_menu_color)) {
+                if (cptr.ld1so(iflags, FLD.instance_flags_perm_invent))
                     update_inventory();
             }
             return NHC.optn_ok;
@@ -10243,15 +10244,15 @@ function handler_menu_colors() {
             getlin(__sl785, cptr.decay(mcbuf));
             if (cptr.ld1s(cptr.decay(mcbuf)) == 27)
                 {
-                    if (cptr.ld1so(iflags, 149)) {
-                        if (cptr.ld1so(iflags, 139))
+                    if (cptr.ld1so(iflags, FLD.instance_flags_use_menu_color)) {
+                        if (cptr.ld1so(iflags, FLD.instance_flags_perm_invent))
                             update_inventory();
                     }
                     return NHC.optn_ok;
                 }
             if (cptr.ld1s(cptr.decay(mcbuf)) && test_regex_pattern(cptr.decay(mcbuf), __sl786) && (mcclr = query_color(null, NHM.NO_COLOR)) != -1 && (mcattr = query_attr(null, NHM.ATR_NONE)) != -1 && !add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr)) {
                 pline(__sl787);
-                (cptr.ldPtro(windowprocs, 216))();
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
             }
             continue __lbl_menucolors_again;
         } else {
@@ -10262,37 +10263,37 @@ function handler_menu_colors() {
             let sattr;
             let sclr;
             let pick_list = cptr.box(null);
-            let tmp = cptr.ldPtro(gm, 168);
+            let tmp = cptr.ldPtro(gm, FLD.instance_globals_m_menu_colorings);
             let clrbuf = new Uint8Array(128);
-            tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-            (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             mc_idx = 0;
             while (tmp) {
-                sattr = attr2attrname(cptr.ldI32o(tmp, 20));
-                sclr = cptr.strcpy(cptr.decay(clrbuf), clr2colorname(cptr.ldI32o(tmp, 16)));
+                sattr = attr2attrname(cptr.ldI32o(tmp, FLD.menucoloring_attr));
+                sclr = cptr.strcpy(cptr.decay(clrbuf), clr2colorname(cptr.ldI32o(tmp, FLD.menucoloring_color)));
                 void strNsubst(cptr.decay(clrbuf), __sl598, __sl599, 0);
                 cptr.stI32(any, ++mc_idx);
-                void cptr.sprintf(cptr.decay(buf), __sl788, sclr, (cptr.ldI32o(tmp, 20) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, 20) != NHM.ATR_NONE) ? sattr : __sl491);
+                void cptr.sprintf(cptr.decay(buf), __sl788, sclr, (cptr.ldI32o(tmp, FLD.menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, FLD.menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
                 ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt(Strlen_(cptr.decay(buf), __sl790, 6470) >>> 0)) - 1n)));
                 void cptr.strcpy(cptr.decay(mcbuf), __sl778);
-                if (cptr.strlen(cptr.ldPtro(tmp, 8)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, 8), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __sl791);
+                if (cptr.strlen(cptr.ldPtro(tmp, FLD.menucoloring_origstr)) > BigInt(ln >>> 0))
+                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, FLD.menucoloring_origstr), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __sl791);
                 else
-                    void cptr.strcat(cptr.decay(mcbuf), cptr.ldPtro(tmp, 8));
+                    void cptr.strcat(cptr.decay(mcbuf), cptr.ldPtro(tmp, FLD.menucoloring_origstr));
                 void cptr.strcat(cptr.decay(mcbuf), cptr.add(cptr.decay(buf), 1, 1));
                 add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mcbuf), NHM.MENU_ITEMFLAGS_NONE);
-                tmp = cptr.ldPtro(tmp, 24);
+                tmp = cptr.ldPtro(tmp, FLD.menucoloring_next);
             }
             void cptr.sprintf(cptr.decay(mcbuf), __sl792, (opt_idx == 1) ? __sl782 : __sl783);
-            (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(mcbuf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(mcbuf));
             pick_cnt = select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list);
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     free_one_menu_coloring((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (cptr.ldPtro(windowprocs, 128))(tmpwin);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
             if (pick_cnt >= 0)
                 continue __lbl_menucolors_again;
         }
@@ -10321,7 +10322,7 @@ function handler_msgtype() {
                 return 1;
             if (cptr.ld1s(cptr.decay(mtbuf)) && test_regex_pattern(cptr.decay(mtbuf), __sl795) && (mttyp = query_msgtype()) != -1 && !msgtype_add(mttyp, cptr.decay(mtbuf))) {
                 pline(__sl796);
-                (cptr.ldPtro(windowprocs, 216))();
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))();
             }
             continue __lbl_msgtypes_again;
         } else {
@@ -10331,33 +10332,33 @@ function handler_msgtype() {
             let ln;
             let mtype;
             let pick_list = cptr.box(null);
-            let tmp = cptr.ldPtro(gp, 16);
+            let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
             let clr = NHM.NO_COLOR;
-            tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-            (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             mt_idx = 0;
             while (tmp) {
                 mtype = msgtype2name(cptr.ldI16(tmp));
                 cptr.stI32(any, ++mt_idx);
                 void cptr.sprintf(cptr.decay(mtbuf), __sl797, mtype);
                 ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt(Strlen_(cptr.decay(mtbuf), __sl798, 6544) >>> 0)) - 2n)));
-                if (cptr.strlen(cptr.ldPtro(tmp, 16)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mtbuf), cptr.ldPtro(tmp, 16), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mtbuf), 1)), __sl799);
+                if (cptr.strlen(cptr.ldPtro(tmp, FLD.plinemsg_type_pattern)) > BigInt(ln >>> 0))
+                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mtbuf), cptr.ldPtro(tmp, FLD.plinemsg_type_pattern), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mtbuf), 1)), __sl799);
                 else
-                    void cptr.strcat(cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, 16)), __sl778);
+                    void cptr.strcat(cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, FLD.plinemsg_type_pattern)), __sl778);
                 add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mtbuf), NHM.MENU_ITEMFLAGS_NONE);
-                tmp = cptr.ldPtro(tmp, 24);
+                tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
             }
             void cptr.sprintf(cptr.decay(mtbuf), __sl800, (opt_idx == 1) ? __sl782 : __sl783);
-            (cptr.ldPtro(windowprocs, 184))(tmpwin, cptr.decay(mtbuf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, cptr.decay(mtbuf));
             pick_cnt = select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list);
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
                     free_one_msgtype((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
-            (cptr.ldPtro(windowprocs, 128))(tmpwin);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
             if (pick_cnt >= 0)
                 continue __lbl_msgtypes_again;
         }
@@ -10371,19 +10372,19 @@ function handler_versinfo() {
     let tmpwin;
     let any = cptr.alloc(8);
     let vi_pick = cptr.box(null);
-    let have_branch = schar((cptr.ldPtro(nomakedefs, 24) && cptr.ld1s(cptr.ldPtro(nomakedefs, 24)) ? 1 : 0));
+    let have_branch = schar((cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch)) ? 1 : 0));
     let n;
-    let vi = cptr.ldI32o(flags, 84) | 0;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    let vi = cptr.ldI32o(flags, FLD.flag_versinfo) | 0;
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.stI32(any, n = NHM.VI_NUMBER);
     add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl801, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     cptr.stI32(any, n = NHM.VI_NAME);
     add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl802, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     cptr.stI32(any, n = NHM.VI_BRANCH);
     add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __sl803 : __sl26), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl804);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl804);
     n = select_menu(tmpwin, NHM.PICK_ANY, vi_pick);
     if (n > 0) {
         let i;
@@ -10392,10 +10393,10 @@ function handler_versinfo() {
             newval |= cptr.ldI32o(vi_pick.v, i, 24);
         newval &= 7;
         if (newval)
-            cptr.stI32o(flags, 84, newval >>> 0);
+            cptr.stI32o(flags, FLD.flag_versinfo, newval >>> 0);
         cptr.free(vi_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10414,20 +10415,20 @@ function handler_windowborders() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 5; i++) {
         mode_name = cptr.ldPtro(__static_handler_windowborders_windowborders_text, i, 8);
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl805);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl805);
     if (select_menu(tmpwin, NHM.PICK_ONE, mode_pick) > 0) {
-        cptr.stI32o(iflags, 392, (cptr.ldI32(mode_pick.v) - 1) | 0);
+        cptr.stI32o(iflags, FLD.instance_flags_wc2_windowborders, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
     }
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return NHC.optn_ok;
 }
 
@@ -10449,7 +10450,7 @@ function string_for_opt(opts, val_optional) {
 
 /** C ref: options.c:6683 — @param {CPtr} optname @param {CPtr} opts @param {CInt} val_optional @returns {CPtr} */
 function string_for_env_opt(optname, opts, val_optional) {
-    if (!cptr.ld1so(go, 524)) {
+    if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
         rejectoption(optname);
         return cptr.decay(empty_optstr);
     }
@@ -10493,7 +10494,7 @@ function determine_ambiguities() {
     }
     for (i = 0; i < ((218 - 1) | 0); ++i) {
         len = Strlen_(cptr.ldPtro(allopt, i, 104), __sl814, 6732) | 0;
-        cptr.stI32o2(allopt, i, 104, 12, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
+        cptr.stI32o2(allopt, i, 104, FLD.allopt_t_minmatch, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
     }
 }
 
@@ -10523,13 +10524,13 @@ export function match_optname(user_string, optn_name, min_length, val_allowed) {
 export function reset_duplicate_opt_detection() {
     let k;
     for (k = 0; k < NHC.OPTCOUNT; ++k)
-        cptr.st1o2(allopt, k, 104, 98, 0);
+        cptr.st1o2(allopt, k, 104, FLD.allopt_t_dupdetected, 0);
 }
 
 /** C ref: options.c:6782 — @param {CInt} optidx @returns {CInt} */
 function duplicate_opt_detection(optidx) {
-    if (cptr.ld1so(go, 524) && cptr.ld1so(go, 525))
-        return cptr.postinc1(cptr.add(cptr.add(allopt, optidx, 104), 98));
+    if (cptr.ld1so(go, FLD.instance_globals_o_opt_initial) && cptr.ld1so(go, FLD.instance_globals_o_opt_from_file))
+        return cptr.postinc1(cptr.add(cptr.add(allopt, optidx, 104), FLD.allopt_t_dupdetected));
     return 0;
 }
 
@@ -10538,8 +10539,8 @@ function complain_about_duplicate(optidx) {
     let buf = new Uint8Array(256);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (using_alias)
-        void cptr.sprintf(cptr.decay(buf), __sl815, cptr.ldPtro2(allopt, optidx, 104, 72));
-    config_error_add(__sl816, (cptr.ldI32o2(allopt, optidx, 104, 28) == NHC.CompOpt) ? __sl817 : __sl818, cptr.ldPtro(allopt, optidx, 104), cptr.decay(buf));
+        void cptr.sprintf(cptr.decay(buf), __sl815, cptr.ldPtro2(allopt, optidx, 104, FLD.allopt_t_alias));
+    config_error_add(__sl816, (cptr.ldI32o2(allopt, optidx, 104, FLD.allopt_t_opttyp) == NHC.CompOpt) ? __sl817 : __sl818, cptr.ldPtro(allopt, optidx, 104), cptr.decay(buf));
     return;
 }
 
@@ -10692,17 +10693,17 @@ export function txt2key(txt) {
 
 /** C ref: options.c:7079 */
 export function initoptions() {
-    if (cptr.ldI32o(go, 520) != NHC.builtin_opt)
+    if (cptr.ldI32o(go, FLD.instance_globals_o_opt_phase) != NHC.builtin_opt)
         initoptions_init();
     assure_syscf_file();
     config_error_init(1, __sl823, 0);
-    cptr.stI32o(go, 520, NHC.syscf_opt);
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.syscf_opt);
     if (!read_config_file(__sl823, NHC.set_in_sysconf)) {
-        if (config_error_done() && !cptr.ld1so(iflags, 93))
+        if (config_error_done() && !cptr.ld1so(iflags, FLD.instance_flags_initoptions_noterminate))
             nh_terminate(1);
     }
     config_error_done();
-    if (cptr.ld1so(gd, 146))
+    if (cptr.ld1so(gd, FLD.instance_globals_d_deferred_showpaths))
         do_deferred_showpaths(0);
     initoptions_finish();
 }
@@ -10711,82 +10712,82 @@ export function initoptions() {
 export function initoptions_init() {
     let opts;
     let i;
-    let have_branch = schar((cptr.ldPtro(nomakedefs, 24) && cptr.ld1s(cptr.ldPtro(nomakedefs, 24)) ? 1 : 0));
-    cptr.stI32o(go, 520, NHC.builtin_opt);
+    let have_branch = schar((cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_git_branch)) ? 1 : 0));
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.builtin_opt);
     sf_init();
     allopt_array_init();
-    if (cptr.ldPtro(gc, 472)) {
-        nmcpy(cptr.add(gc, 300), cptr.ldPtro(gc, 472), NHM.WINTYPELEN);
+    if (cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_windowsys)) {
+        nmcpy(cptr.add(gc, FLD.instance_globals_c_chosen_windowtype), cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_windowsys), NHM.WINTYPELEN);
         config_error_init(0, __sl824, 0);
-        choose_windows(cptr.ldPtro(gc, 472));
+        choose_windows(cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_windowsys));
         config_error_done();
-        if (cptr.ldPtr(windowprocs) && !strncmpi((cptr.ldPtr(windowprocs)), (cptr.ldPtro(gc, 472)), -1))
-            cptr.st1o(iflags, 414, 1);
-        cptr.free(cptr.ldPtro(gc, 472)), cptr.stPtro(gc, 472, null);
+        if (cptr.ldPtr(windowprocs) && !strncmpi((cptr.ldPtr(windowprocs)), (cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_windowsys)), -1))
+            cptr.st1o(iflags, FLD.instance_flags_windowtype_locked, 1);
+        cptr.free(cptr.ldPtro(gc, FLD.instance_globals_c_cmdline_windowsys)), cptr.stPtro(gc, FLD.instance_globals_c_cmdline_windowsys, null);
     }
     if (!glyphid_cache_status())
         fill_glyphid_cache();
     reset_commands(1);
     init_random(rn2);
     init_random(rn2_on_display_rng);
-    cptr.stI32o(go, 520, NHC.builtin_opt);
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.builtin_opt);
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldPtro2(allopt, i, 104, 56))
-            cptr.st1((cptr.ldPtro2(allopt, i, 104, 56)), cptr.ld1so2(allopt, i, 104, 96));
+        if (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr))
+            cptr.st1((cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)), cptr.ld1so2(allopt, i, 104, FLD.allopt_t_initval));
     }
-    cptr.st1o(flags, 11, 0);
-    cptr.stI32o(flags, 52, 3);
-    cptr.stI32o(flags, 56, 2);
-    cptr.stI32o(flags, 80, 3104);
-    cptr.stI32o(flags, 84, (have_branch ? 4 : 1) >>> 0);
-    cptr.stI32o(flags, 92, 5);
-    cptr.stI32o(flags, 172, NHC.RUN_LEAP);
-    cptr.stI32o(iflags, 96, 20);
-    cptr.st1o(iflags, 176, 115);
-    cptr.stI32o(iflags, 116, NHM.ATR_INVERSE);
-    cptr.stI32o(iflags, 112, NHM.NO_COLOR);
-    cptr.stI32o(iflags, 100, 110);
-    cptr.stI32o(flags, 144, cptr.stI32o(flags, 148, cptr.stI32o(flags, 152, cptr.stI32o(flags, 156, -1))));
+    cptr.st1o(flags, FLD.flag_end_own, 0);
+    cptr.stI32o(flags, FLD.flag_end_top, 3);
+    cptr.stI32o(flags, FLD.flag_end_around, 2);
+    cptr.stI32o(flags, FLD.flag_paranoia_bits, 3104);
+    cptr.stI32o(flags, FLD.flag_versinfo, (have_branch ? 4 : 1) >>> 0);
+    cptr.stI32o(flags, FLD.flag_pile_limit, 5);
+    cptr.stI32o(flags, FLD.flag_runmode, NHC.RUN_LEAP);
+    cptr.stI32o(iflags, FLD.instance_flags_msg_history, 20);
+    cptr.st1o(iflags, FLD.instance_flags_prevmsg_window, 115);
+    cptr.stI32o(iflags, FLD.instance_flags_menu_headings + FLD.color_and_attr_attr, NHM.ATR_INVERSE);
+    cptr.stI32o(iflags, FLD.instance_flags_menu_headings, NHM.NO_COLOR);
+    cptr.stI32o(iflags, FLD.instance_flags_getpos_coords, 110);
+    cptr.stI32o(flags, FLD.flag_initrole, cptr.stI32o(flags, FLD.flag_initrace, cptr.stI32o(flags, FLD.flag_initgend, cptr.stI32o(flags, FLD.flag_initalign, -1))));
     init_ov_primary_symbols();
     init_ov_rogue_symbols();
     init_symbols();
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gw, i, 1, 17, cptr.ld1uo(def_warnsyms, i, 24));
-    void cptr.memcpy(cptr.add(flags, 99), cptr.decay(def_inv_order), 18n);
-    cptr.st1o2(flags, 0, 1, 117, 0);
-    cptr.stI32o(flags, 88, NHC.MOD_ENCUMBER);
-    cptr.st1o(flags, 97, 108);
+        cptr.st1o2(gw, i, 1, FLD.instance_globals_w_warnsyms, cptr.ld1uo(def_warnsyms, i, 24));
+    void cptr.memcpy(cptr.add(flags, FLD.flag_inv_order), cptr.decay(def_inv_order), 18n);
+    cptr.st1o2(flags, 0, 1, FLD.flag_pickup_types, 0);
+    cptr.stI32o(flags, FLD.flag_pickup_burden, NHC.MOD_ENCUMBER);
+    cptr.st1o(flags, FLD.flag_sortloot, 108);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++)
-        cptr.st1o2(flags, i, 1, 135, 110);
+        cptr.st1o2(flags, i, 1, FLD.flag_end_disclose, 110);
     switch_symbols(0);
     init_rogue_symbols();
     if ((opts = nh_getenv(__sl825)) && !cptr.strncmp(opts, __sl826, 2n)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, 244) & 1))
+        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_explicitly) & 1))
             load_symset(__sl827, NHC.PRIMARYSET);
-        if (!(cptr.ldI32o2(gs, NHC.ROGUESET, 48, 244) & 1))
+        if (!(cptr.ldI32o2(gs, NHC.ROGUESET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_explicitly) & 1))
             load_symset(__sl584, NHC.ROGUESET);
         switch_symbols(1);
-        cptr.st1o(iflags, 184, 1);
+        cptr.st1o(iflags, FLD.instance_flags_wc_color, 1);
     }
-    if ((opts = nh_getenv(__sl825)) && !strncmpi(opts, __sl828, 2) && cptr.ldPtro(gt, 336) && cptr.ldPtro(gt, 344) && cptr.strchr(cptr.ldPtro(gt, 336), 14) && cptr.strchr(cptr.ldPtro(gt, 344), 15)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, 244) & 1))
+    if ((opts = nh_getenv(__sl825)) && !strncmpi(opts, __sl828, 2) && cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_AE), 15)) {
+        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, FLD.instance_globals_s_symset + FLD.symsetentry_explicitly) & 1))
             load_symset(__sl829, NHC.PRIMARYSET);
         switch_symbols(1);
     }
-    cptr.st1o(flags, 142, NHM.MENU_FULL);
-    cptr.stI32o(iflags, 216, NHM.ALIGN_TOP);
-    cptr.stI32o(iflags, 212, NHM.ALIGN_BOTTOM);
-    cptr.stI32o(iflags, 388, 2);
-    cptr.stI32o(iflags, 396, NHM.ATR_INVERSE);
-    cptr.stI32o(iflags, 392, 2);
-    cptr.stI32o(iflags, 104, 1);
+    cptr.st1o(flags, FLD.flag_menu_style, NHM.MENU_FULL);
+    cptr.stI32o(iflags, FLD.instance_flags_wc_align_message, NHM.ALIGN_TOP);
+    cptr.stI32o(iflags, FLD.instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
+    cptr.stI32o(iflags, FLD.instance_flags_wc2_statuslines, 2);
+    cptr.stI32o(iflags, FLD.instance_flags_wc2_petattr, NHM.ATR_INVERSE);
+    cptr.stI32o(iflags, FLD.instance_flags_wc2_windowborders, 2);
+    cptr.stI32o(iflags, FLD.instance_flags_menuinvertmode, 1);
     cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, 120);
-    nmcpy(cptr.add(svp, 64), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, 120))), 16)), NHM.PL_FSIZ);
+    nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, 120))), 16)), NHM.PL_FSIZ);
     assure_syscf_file();
     config_error_init(1, __sl823, 0);
-    cptr.stI32o(go, 520, NHC.syscf_opt);
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.syscf_opt);
     if (!read_config_file(__sl823, NHC.set_in_sysconf)) {
-        if (config_error_done() && !cptr.ld1so(iflags, 93))
+        if (config_error_done() && !cptr.ld1so(iflags, FLD.instance_flags_initoptions_noterminate))
             nh_terminate(1);
     }
     config_error_done();
@@ -10796,26 +10797,26 @@ export function initoptions_init() {
 export function initoptions_finish() {
     let sym = 0;
     rcfile();
-    void fruitadd(cptr.add(svp, 64), null);
+    void fruitadd(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), null);
     cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __sl139, 16);
-    sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+    sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
-        cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, 680, sym);
+        cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, FLD.instance_globals_s_showsyms, sym);
     reglyph_darkroom();
     reset_glyphmap(NHC.gm_optionchange);
-    if (cptr.ldI64o(iflags, 152) && !wc2_supported(__sl351)) {
+    if (cptr.ldI64o(iflags, FLD.instance_flags_hilite_delta) && !wc2_supported(__sl351)) {
         raw_printf(__sl830, cptr.ldPtr(windowprocs));
-        cptr.stI64o(iflags, 152, 0n);
+        cptr.stI64o(iflags, FLD.instance_flags_hilite_delta, 0n);
     }
     update_rest_on_space();
-    if (cptr.ld1so(iflags, 187) && !wc_supported(__sl374))
-        cptr.st1o(iflags, 187, 0), cptr.st1o(iflags, 186, 1);
-    else if (cptr.ld1so(iflags, 186) && !wc_supported(__sl31) && wc_supported(__sl374))
-        cptr.st1o(iflags, 186, 0), cptr.st1o(iflags, 187, 1);
+    if (cptr.ld1so(iflags, FLD.instance_flags_wc_tiled_map) && !wc_supported(__sl374))
+        cptr.st1o(iflags, FLD.instance_flags_wc_tiled_map, 0), cptr.st1o(iflags, FLD.instance_flags_wc_ascii_map, 1);
+    else if (cptr.ld1so(iflags, FLD.instance_flags_wc_ascii_map) && !wc_supported(__sl31) && wc_supported(__sl374))
+        cptr.st1o(iflags, FLD.instance_flags_wc_ascii_map, 0), cptr.st1o(iflags, FLD.instance_flags_wc_tiled_map, 1);
     if (glyphid_cache_status())
         free_glyphid_cache();
-    apply_customizations(cptr.ldI32o(gc, 428), (NHC.do_custom_symbols | NHC.do_custom_colors));
-    cptr.st1o(go, 524, 0);
+    apply_customizations(cptr.ldI32o(gc, FLD.instance_globals_c_currentgraphics), (NHC.do_custom_symbols | NHC.do_custom_colors));
+    cptr.st1o(go, FLD.instance_globals_o_opt_initial, 0);
     return;
 }
 
@@ -10828,13 +10829,13 @@ export function allopt_array_init() {
         cptr.memcpy(allopt, allopt_init, 22672n);
         determine_ambiguities();
         for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-            if (cptr.ldPtro2(allopt, i, 104, 56))
-                cptr.st1((cptr.ldPtro2(allopt, i, 104, 56)), cptr.ld1so2(allopt, i, 104, 96));
+            if (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr))
+                cptr.st1((cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)), cptr.ld1so2(allopt, i, 104, FLD.allopt_t_initval));
         }
         heed_all_options();
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
-            if (cptr.ldPtro2(allopt, i, 104, 64))
-                (cptr.ldPtro2(allopt, i, 104, 64))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
+            if (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn))
+                (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
         }
         __static_allopt_array_init_options_array_inited_already = 1;
     }
@@ -10842,9 +10843,9 @@ export function allopt_array_init() {
 
 /** C ref: options.c:7446 — @param {CInt} newobjsyms */
 function set_menuobjsyms_flags(newobjsyms) {
-    cptr.stI32o(iflags, 44, newobjsyms);
-    cptr.st1o(iflags, 133, schar((((newobjsyms & 1) != 0) ? 1 : 0)));
-    cptr.st1o(iflags, 150, schar((((newobjsyms & 6) != 0) ? 1 : 0)));
+    cptr.stI32o(iflags, FLD.instance_flags_menuobjsyms, newobjsyms);
+    cptr.st1o(iflags, FLD.instance_flags_menu_head_objsym, schar((((newobjsyms & 1) != 0) ? 1 : 0)));
+    cptr.st1o(iflags, FLD.instance_flags_use_menu_glyphs, schar((((newobjsyms & 6) != 0) ? 1 : 0)));
 }
 
 /** C ref: options.c:7466 — @param {CPtr} op @returns {CInt} */
@@ -10864,7 +10865,7 @@ function change_inv_order(op) {
             config_error_add(__sl831, cptr.ld1s(sp));
             retval = 0;
             fail = 1;
-        } else if (!cptr.strchr(cptr.add(flags, 99), oc_sym)) {
+        } else if (!cptr.strchr(cptr.add(flags, FLD.flag_inv_order), oc_sym)) {
             config_error_add(__sl832, cptr.ld1s(sp));
             retval = 0;
             fail = 1;
@@ -10877,11 +10878,11 @@ function change_inv_order(op) {
             cptr.st1o(cptr.decay(buf), num++, schar(oc_sym), 1);
     }
     cptr.st1o(cptr.decay(buf), num, 0, 1);
-    for (sp = cptr.add(flags, 99); cptr.ld1s(sp); sp = cptr.add(sp, 1))
+    for (sp = cptr.add(flags, FLD.flag_inv_order); cptr.ld1s(sp); sp = cptr.add(sp, 1))
         if (!cptr.strchr(cptr.decay(buf), cptr.ld1s(sp)))
             void strkitten(cptr.add(cptr.decay(buf), num++, 1), cptr.ld1s(sp));
     cptr.st1o(cptr.decay(buf), ((NHC.MAXOCLASSES - 1) | 0), 0, 1);
-    void cptr.strcpy(cptr.add(flags, 99), cptr.decay(buf));
+    void cptr.strcpy(cptr.add(flags, FLD.flag_inv_order), cptr.decay(buf));
     return retval;
 }
 
@@ -10905,7 +10906,7 @@ export function assign_warnings(graph_chars) {
     let i;
     for (i = 0; i < NHM.WARNCOUNT; i++)
         if (cptr.ld1uo(graph_chars, i))
-            cptr.st1o2(gw, i, 1, 17, cptr.ld1uo(graph_chars, i));
+            cptr.st1o2(gw, i, 1, FLD.instance_globals_w_warnsyms, cptr.ld1uo(graph_chars, i));
 }
 
 /** C ref: options.c:7558 — @param {CPtr} op @param {CPtr} optn @returns {CInt} */
@@ -10915,16 +10916,16 @@ function feature_alert_opts(op, optn) {
     if (fnv == 0n)
         return 0;
     if (fnv > get_current_feature_ver()) {
-        if (!cptr.ld1so(go, 524)) {
+        if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
             You_cant(__sl834);
         } else {
             config_error_add(__sl835, optn, op);
         }
         return 0;
     }
-    cptr.stU64o(flags, 72, fnv);
-    if (!cptr.ld1so(go, 524)) {
-        void cptr.sprintf(cptr.decay(buf), __sl666, (cptr.ldU64o(flags, 72) >> 24n), (((16711680n & cptr.ldU64o(flags, 72))) >> 16n), (((65280n & cptr.ldU64o(flags, 72))) >> 8n));
+    cptr.stU64o(flags, FLD.flag_suppress_alert, fnv);
+    if (!cptr.ld1so(go, FLD.instance_globals_o_opt_initial)) {
+        void cptr.sprintf(cptr.decay(buf), __sl666, (cptr.ldU64o(flags, FLD.flag_suppress_alert) >> 24n), (((16711680n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 16n), (((65280n & cptr.ldU64o(flags, FLD.flag_suppress_alert))) >> 8n));
         pline(__sl836, cptr.decay(buf));
     }
     return 1;
@@ -10976,7 +10977,7 @@ export function parsebindings(bindings) {
                 config_error_add(__sl839, visctrl(schar(key)), bind);
                 return 0;
             } else {
-                add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, 24, 8));
+                add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, 24, FLD.menu_cmd_t_cmd));
             }
             return ret;
         }
@@ -11028,17 +11029,17 @@ function query_msgtype() {
     let pick_cnt;
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 6; i++)
         if (cptr.ldPtro2(msgtype_names, i, 24, 16)) {
             cptr.stI32(any, (cptr.ld1so2(msgtype_names, i, 24, 8) + 1) | 0);
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro2(msgtype_names, i, 24, 16), NHM.MENU_ITEMFLAGS_NONE);
         }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl853);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl853);
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     if (pick_cnt > 0) {
         i = (cptr.ldI32(picks.v) - 1) | 0;
         cptr.free(picks.v);
@@ -11053,18 +11054,18 @@ let __static_msgtype_add_re_error = __sl855; /** C ref: options.c:7733 — char 
 function msgtype_add(typ, pattern) {
     let tmp = alloc(32);
     cptr.stI16(tmp, i16(typ));
-    cptr.stPtro(tmp, 8, regex_init());
-    if (!regex_compile(pattern, cptr.ldPtro(tmp, 8))) {
+    cptr.stPtro(tmp, FLD.plinemsg_type_regex, regex_init());
+    if (!regex_compile(pattern, cptr.ldPtro(tmp, FLD.plinemsg_type_regex))) {
         let errbuf = new Uint8Array(256);
-        let re_error_desc = regex_error_desc(cptr.ldPtro(tmp, 8), cptr.decay(errbuf));
-        regex_free(cptr.ldPtro(tmp, 8));
+        let re_error_desc = regex_error_desc(cptr.ldPtro(tmp, FLD.plinemsg_type_regex), cptr.decay(errbuf));
+        regex_free(cptr.ldPtro(tmp, FLD.plinemsg_type_regex));
         cptr.free(tmp);
         config_error_add(__sl854, __static_msgtype_add_re_error, re_error_desc);
         return 0;
     }
-    cptr.stPtro(tmp, 16, dupstr(pattern));
-    cptr.stPtro(tmp, 24, cptr.ldPtro(gp, 16));
-    cptr.stPtro(gp, 16, tmp);
+    cptr.stPtro(tmp, FLD.plinemsg_type_pattern, dupstr(pattern));
+    cptr.stPtro(tmp, FLD.plinemsg_type_next, cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types));
+    cptr.stPtro(gp, FLD.instance_globals_p_plinemsg_types, tmp);
     return 1;
 }
 
@@ -11072,45 +11073,45 @@ function msgtype_add(typ, pattern) {
 export function msgtype_free() {
     let tmp;
     let tmp2 = null;
-    for (tmp = cptr.ldPtro(gp, 16); tmp; tmp = tmp2) {
-        tmp2 = cptr.ldPtro(tmp, 24);
-        cptr.free(cptr.ldPtro(tmp, 16));
-        regex_free(cptr.ldPtro(tmp, 8));
-        cptr.stPtro(tmp, 8, null);
+    for (tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types); tmp; tmp = tmp2) {
+        tmp2 = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
+        cptr.free(cptr.ldPtro(tmp, FLD.plinemsg_type_pattern));
+        regex_free(cptr.ldPtro(tmp, FLD.plinemsg_type_regex));
+        cptr.stPtro(tmp, FLD.plinemsg_type_regex, null);
         cptr.free(tmp);
     }
-    cptr.stPtro(gp, 16, null);
+    cptr.stPtro(gp, FLD.instance_globals_p_plinemsg_types, null);
 }
 
 /** C ref: options.c:7772 — @param {CInt} idx */
 function free_one_msgtype(idx) {
-    let tmp = cptr.ldPtro(gp, 16);
+    let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
     let prev = null;
     while (tmp) {
         if (idx == 0) {
-            let next = cptr.ldPtro(tmp, 24);
-            regex_free(cptr.ldPtro(tmp, 8));
-            cptr.free(cptr.ldPtro(tmp, 16));
+            let next = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
+            regex_free(cptr.ldPtro(tmp, FLD.plinemsg_type_regex));
+            cptr.free(cptr.ldPtro(tmp, FLD.plinemsg_type_pattern));
             cptr.free(tmp);
             if (prev)
-                cptr.stPtro(prev, 24, next);
+                cptr.stPtro(prev, FLD.plinemsg_type_next, next);
             else
-                cptr.stPtro(gp, 16, next);
+                cptr.stPtro(gp, FLD.instance_globals_p_plinemsg_types, next);
             return;
         }
         idx--;
         prev = tmp;
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
     }
 }
 
 /** C ref: options.c:7797 — @param {CPtr} msg @param {CInt} norepeat @returns {CInt} */
 export function msgtype_type(msg, norepeat) {
-    let tmp = cptr.ldPtro(gp, 16);
+    let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
     while (tmp) {
-        if (regex_match(msg, cptr.ldPtro(tmp, 8)))
+        if (regex_match(msg, cptr.ldPtro(tmp, FLD.plinemsg_type_regex)))
             return cptr.ldI16(tmp);
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
     }
     return norepeat ? NHM.MSGTYP_NOREP : NHM.MSGTYP_NORMAL;
 }
@@ -11119,7 +11120,7 @@ export function msgtype_type(msg, norepeat) {
 export function hide_unhide_msgtypes(hide, hide_mask) {
     let tmp;
     let mt;
-    for (tmp = cptr.ldPtro(gp, 16); tmp; tmp = cptr.ldPtro(tmp, 24)) {
+    for (tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types); tmp; tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next)) {
         mt = cptr.ldI16(tmp);
         if (!hide)
             mt = -mt;
@@ -11131,10 +11132,10 @@ export function hide_unhide_msgtypes(hide, hide_mask) {
 /** C ref: options.c:7831 @returns {CInt} */
 function msgtype_count() {
     let c = 0;
-    let tmp = cptr.ldPtro(gp, 16);
+    let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
     while (tmp) {
         c++;
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
     }
     return c;
 }
@@ -11226,7 +11227,7 @@ function parse_role_opt(optidx, negated, fullname, opts, opp) {
             sp = cptr.strchr(op, 32);
             if (sp)
                 cptr.st1(sp, 0);
-            preval = getoptstr(optidx, cptr.ldI32o(go, 520));
+            preval = getoptstr(optidx, cptr.ldI32o(go, FLD.instance_globals_o_opt_phase));
             if (val_negated || negated) {
                 let negbuf = new Uint8Array(256);
                 if (!preval || cptr.ld1s(preval) != 33)
@@ -11301,57 +11302,57 @@ export function oc_to_str(src, dest) {
 
 /** C ref: options.c:8080 — @param {CInt} from_ch @param {CInt} to_ch */
 export function add_menu_cmd_alias(from_ch, to_ch) {
-    if (cptr.ldI16o(gn, 84) >= NHM.MAX_MENU_MAPPED_CMDS) {
+    if (cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped) >= NHM.MAX_MENU_MAPPED_CMDS) {
         pline(__sl866);
     } else {
-        cptr.st1o2(gm, cptr.ldI16o(gn, 84), 1, 304, from_ch);
-        cptr.st1o2(gm, cptr.ldI16o(gn, 84), 1, 337, to_ch);
-        (cptr.stI16o(gn, 84, cptr.ldI16o(gn, 84) + 1)) - (1);
-        cptr.st1o2(gm, cptr.ldI16o(gn, 84), 1, 304, 0);
-        cptr.st1o2(gm, cptr.ldI16o(gn, 84), 1, 337, 0);
+        cptr.st1o2(gm, cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped), 1, FLD.instance_globals_m_mapped_menu_cmds, from_ch);
+        cptr.st1o2(gm, cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped), 1, FLD.instance_globals_m_mapped_menu_op, to_ch);
+        (cptr.stI16o(gn, FLD.instance_globals_n_n_menu_mapped, cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped) + 1)) - (1);
+        cptr.st1o2(gm, cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped), 1, FLD.instance_globals_m_mapped_menu_cmds, 0);
+        cptr.st1o2(gm, cptr.ldI16o(gn, FLD.instance_globals_n_n_menu_mapped), 1, FLD.instance_globals_m_mapped_menu_op, 0);
     }
 }
 
 /** C ref: options.c:8094 — @param {CInt} ch @returns {CInt} */
 export function get_menu_cmd_key(ch) {
-    let found = cptr.strchr(cptr.add(gm, 337), ch);
+    let found = cptr.strchr(cptr.add(gm, FLD.instance_globals_m_mapped_menu_op), ch);
     if (found) {
-        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, 337)))));
-        ch = cptr.ld1so2(gm, idx, 1, 304);
+        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, FLD.instance_globals_m_mapped_menu_op)))));
+        ch = cptr.ld1so2(gm, idx, 1, FLD.instance_globals_m_mapped_menu_cmds);
     }
     return ch;
 }
 
 /** C ref: options.c:8111 — @param {CInt} ch @returns {CInt} */
 export function map_menu_cmd(ch) {
-    let found = cptr.strchr(cptr.add(gm, 304), ch);
+    let found = cptr.strchr(cptr.add(gm, FLD.instance_globals_m_mapped_menu_cmds), ch);
     if (found) {
-        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, 304)))));
-        ch = cptr.ld1so2(gm, idx, 1, 337);
+        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, FLD.instance_globals_m_mapped_menu_cmds)))));
+        ch = cptr.ld1so2(gm, idx, 1, FLD.instance_globals_m_mapped_menu_op);
     }
     return ch;
 }
 
 const __static_collect_menu_keys_scroll_keys = cptr.alloc(6 * 2);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 0, 94);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 1, 1);
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 0 + FLD.menuscrollinfo_maskindx, 1);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 2, 60);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 3, 1);
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 2 + FLD.menuscrollinfo_maskindx, 1);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 4, 62);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 5, 2);
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 4 + FLD.menuscrollinfo_maskindx, 2);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 6, 124);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 7, 2);
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 6 + FLD.menuscrollinfo_maskindx, 2);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 8, 123);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 9, 4);
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 8 + FLD.menuscrollinfo_maskindx, 4);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 10, 125);
-cptr.st1o(__static_collect_menu_keys_scroll_keys, 11, 8); /** C ref: options.c:8139 — struct menuscrollinfo[6] (function-static) */
+cptr.st1o(__static_collect_menu_keys_scroll_keys, 10 + FLD.menuscrollinfo_maskindx, 8); /** C ref: options.c:8139 — struct menuscrollinfo[6] (function-static) */
 
 /** C ref: options.c:8126 — @param {CPtr} outbuf @param {CUInt} scrollmask @param {CInt} printable @returns {CPtr} */
 export function collect_menu_keys(outbuf, scrollmask, printable) {
     let i;
     cptr.st1o(outbuf, 0, 0);
     for (i = 0; i < 6; ++i) {
-        if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, 2, 1)) >>> 0) {
+        if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, 2, FLD.menuscrollinfo_maskindx)) >>> 0) {
             let c = get_menu_cmd_key(cptr.ld1so(__static_collect_menu_keys_scroll_keys, i, 2));
             if (printable)
                 void cptr.strcat(outbuf, visctrl(c));
@@ -11370,42 +11371,42 @@ export function fruitadd(str, replace_fruit) {
     let globpfx;
     let buf = new Uint8Array(32);
     let altname = new Uint8Array(32);
-    let user_specified = schar((cptr.eq(str, cptr.add(svp, 64))));
+    let user_specified = schar((cptr.eq(str, cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit))));
     __lbl_nonew: {
         if (user_specified) {
             let found = 0;
             let numeric = 0;
-            nmcpy(cptr.add(svp, 64), makesingular(str), NHM.PL_FSIZ);
-            globpfx = (!cptr.strncmp(cptr.add(svp, 64), __sl867, 6n) || !cptr.strncmp(cptr.add(svp, 64), __sl868, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, 64), __sl869, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, 64), __sl870, 11n)) ? 11 : 0));
-            for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, 16); cptr.ld1so2(objects, i, 120, 70) == NHC.FOOD_CLASS; i++) {
-                if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(svp, 64)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(cptr.add(svp, 64), globpfx, 1)))) {
+            nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), makesingular(str), NHM.PL_FSIZ);
+            globpfx = (!cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl867, 6n) || !cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl868, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl869, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl870, 11n)) ? 11 : 0));
+            for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, FLD.instance_globals_saved_b_bases); cptr.ld1so2(objects, i, 120, FLD.objclass_oc_class) == NHC.FOOD_CLASS; i++) {
+                if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
                     found = 1;
                     break;
                 }
             }
             if (!found) {
                 let c;
-                for (c = cptr.add(svp, 64); cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57; c = cptr.add(c, 1))
+                for (c = cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit); cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57; c = cptr.add(c, 1))
                     continue;
                 if (!cptr.ld1s(c) || isspace(uchar(cptr.ld1s(c))))
                     numeric = 1;
             }
-            if (found || numeric || !cptr.strncmp(cptr.add(svp, 64), __sl871, 7n) || !cptr.strncmp(cptr.add(svp, 64), __sl872, 9n) || !cptr.strncmp(cptr.add(svp, 64), __sl873, 8n) || !cptr.strncmp(cptr.add(svp, 64), __sl874, 13n) || (!cptr.strncmp(cptr.add(svp, 64), __sl875, 7n) && (!strcmp(cptr.add(svp, 71), __sl876) || ((name_to_mon(cptr.add(svp, 71), null)) >= NHC.LOW_PM && (name_to_mon(cptr.add(svp, 71), null)) < NHC.NUMMONS))) || !strcmp(cptr.add(svp, 64), __sl877) || (!strcmp(cptr.add(svp, 64), __sl878) || (globpfx > 0 && !strcmp(__sl878, cptr.add(cptr.add(svp, 64), globpfx, 1)))) || ((str_end_is(cptr.add(svp, 64), __sl879) || str_end_is(cptr.add(svp, 64), __sl880)) && ((name_to_mon(cptr.add(svp, 64), null)) >= NHC.LOW_PM && (name_to_mon(cptr.add(svp, 64), null)) < NHC.NUMMONS))) {
-                void cptr.strcpy(cptr.decay(buf), cptr.add(svp, 64));
-                void cptr.strcpy(cptr.add(svp, 64), __sl881);
-                nmcpy(cptr.add(svp, 72), cptr.decay(buf), 24);
+            if (found || numeric || !cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl871, 7n) || !cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl872, 9n) || !cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl873, 8n) || !cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl874, 13n) || (!cptr.strncmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl875, 7n) && (!strcmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit + 7), __sl876) || ((name_to_mon(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit + 7), null)) >= NHC.LOW_PM && (name_to_mon(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit + 7), null)) < NHC.NUMMONS))) || !strcmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl877) || (!strcmp(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl878) || (globpfx > 0 && !strcmp(__sl878, cptr.add(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), globpfx, 1)))) || ((str_end_is(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl879) || str_end_is(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl880)) && ((name_to_mon(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), null)) >= NHC.LOW_PM && (name_to_mon(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), null)) < NHC.NUMMONS))) {
+                void cptr.strcpy(cptr.decay(buf), cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit));
+                void cptr.strcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), __sl881);
+                nmcpy(cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit + 8), cptr.decay(buf), 24);
             }
             cptr.st1(cptr.decay(altname), 0);
-            cptr.st1o(flags, 143, 0);
+            cptr.st1o(flags, FLD.flag_made_fruit, 0);
             if (replace_fruit) {
                 f = replace_fruit;
-                copynchars(f, cptr.add(svp, 64), 31);
+                copynchars(f, cptr.add(svp, FLD.instance_globals_saved_p_pl_fruit), 31);
                 break __lbl_nonew;
             }
         } else {
             copynchars(cptr.decay(altname), str, 31);
             sanitize_name(cptr.decay(altname));
-            cptr.st1o(flags, 143, 1);
+            cptr.st1o(flags, FLD.flag_made_fruit, 1);
         }
         f = fruit_from_name(cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 0, highest_fruit_id);
         if (f)
@@ -11415,13 +11416,13 @@ export function fruitadd(str, replace_fruit) {
         f = alloc(48);
         void __builtin___memset_chk(f, 0, 48n, __builtin_object_size(f, 0));
         copynchars(f, cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 31);
-        cptr.stI32o(f, 32, ++highest_fruit_id.v);
-        cptr.stPtro(f, 40, cptr.ldPtro(gf, 88));
-        cptr.stPtro(gf, 88, f);
+        cptr.stI32o(f, FLD.fruit_fid, ++highest_fruit_id.v);
+        cptr.stPtro(f, FLD.fruit_nextf, cptr.ldPtro(gf, FLD.instance_globals_f_ffruit));
+        cptr.stPtro(gf, FLD.instance_globals_f_ffruit, f);
     }
     if (user_specified)
-        cptr.stI32o(svc, 16, cptr.ldI32o(f, 32));
-    return cptr.ldI32o(f, 32);
+        cptr.stI32o(svc, FLD.context_info_current_fruit, cptr.ldI32o(f, FLD.fruit_fid));
+    return cptr.ldI32o(f, FLD.fruit_fid);
 }
 
 /** C ref: options.c:8302 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
@@ -11562,7 +11563,7 @@ function optfn_o_status_hilites(optidx, req, negated, opts, op) {
             return NHC.optn_err;
         } else {
             if (wc2_supported(__sl157))
-                (cptr.ldPtro(windowprocs, 336))(__sl157);
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(__sl157);
         }
         return NHC.optn_ok;
     }
@@ -11577,12 +11578,12 @@ export function get_option_value(optname, cnfvalid) {
     let i;
     for (i = 0; cptr.ldPtro(allopt, i, 104) !== null; i++)
         if (!strcmp(optname, cptr.ldPtro(allopt, i, 104))) {
-            if (cptr.ldI32o2(allopt, i, 104, 28) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, 56)) !== null) {
+            if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) !== null) {
                 void cptr.sprintf(cptr.decay(__static_get_option_value_retbuf), __sl554, cptr.ld1s(bool_p) ? __sl699 : __sl701);
                 return cptr.decay(__static_get_option_value_retbuf);
-            } else if (cptr.ldI32o2(allopt, i, 104, 28) == NHC.CompOpt && cptr.ldPtro2(allopt, i, 104, 64)) {
+            } else if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn)) {
                 let reslt = NHC.optn_err;
-                reslt = (cptr.ldPtro2(allopt, i, 104, 64))(cptr.ldI32o2(allopt, i, 104, 20), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr));
+                reslt = (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr));
                 if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(__static_get_option_value_retbuf), 0, 1))
                     return cptr.decay(__static_get_option_value_retbuf);
                 return null;
@@ -11600,9 +11601,9 @@ function longest_option_name(startpass, endpass) {
     let name;
     for (pass = 0; pass < 2; pass++)
         for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-            if (pass == 0 && (cptr.ldI32o2(allopt, i, 104, 28) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, 56)))
+            if (pass == 0 && (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)))
                 continue;
-            optflags = cptr.ldI32o2(allopt, i, 104, 24);
+            optflags = cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere);
             if (optflags < startpass || optflags > endpass)
                 continue;
             if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
@@ -11634,89 +11635,89 @@ function doset_simple_menu() {
     let pick_cnt;
     let reslt;
     let toggled_help = 0;
-    if (!cptr.ld1so(iflags, 136))
+    if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep))
         void cptr.sprintf(cptr.decay(fmtstr_doset_simple), __sl885, longest_option_name(NHC.set_gameview, NHC.set_in_game));
     else
         void cptr.strcpy(cptr.decay(fmtstr_doset_simple), cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple));
     fmtstr = cptr.decay(fmtstr_doset_simple);
     __lbl_redo_opt_help: while (true) {
-        tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-        if (cptr.ld1so(gs, 976)) {
+        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+        if (cptr.ld1so(gs, FLD.instance_globals_s_simple_options_help)) {
             void cptr.strcpy(cptr.decay(buf), __sl886);
             add_menu_str(tmpwin, cptr.decay(buf));
         }
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         cptr.stI32(any, -1);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, 976) ? __sl887 : __sl888, NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, FLD.instance_globals_s_simple_options_help) ? __sl887 : __sl888, NHM.MENU_ITEMFLAGS_NONE);
         for (section = NHC.OptS_General; section < NHC.OptS_Advanced; section++) {
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             add_menu_str(tmpwin, __sl491);
             void cptr.sprintf(cptr.decay(buf), __sl889, cptr.ldPtro(OptS_type, section, 8));
             add_menu_heading(tmpwin, cptr.decay(buf));
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, 8) != section)
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_section) != section)
                     continue;
                 if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                     continue;
                 cptr.stI32(any, (i + 1) | 0);
-                switch (cptr.ldI32o2(allopt, i, 104, 28)) {
+                switch (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp)) {
                     case NHC.BoolOpt:
-                    bool_p = cptr.ldPtro2(allopt, i, 104, 56);
+                    bool_p = cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr);
                     if (!bool_p)
                         continue;
-                    if (cptr.ld1so(iflags, 187) && cptr.ldI32o2(allopt, i, 104, 20) == NHC.opt_color)
+                    if (cptr.ld1so(iflags, FLD.instance_flags_wc_tiled_map) && cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx) == NHC.opt_color)
                         continue;
                     void cptr.sprintf(cptr.decay(buf), fmtstr, name, cptr.ld1s(bool_p) ? __sl890 : __sl598);
                     break;
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
                     k = i;
-                    if (cptr.ldPtro2(allopt, i, 104, 64) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800))))) {
+                    if (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_rogue_level))))) {
                         k = NHC.opt_roguesymset;
                         name = cptr.ldPtro(allopt, k, 104);
                         cptr.stI32(any, (k + 1) | 0);
                     }
                     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
                     reslt = NHC.optn_err;
-                    if (cptr.ldPtro2(allopt, k, 104, 64))
-                        reslt = (cptr.ldPtro2(allopt, k, 104, 64))(cptr.ldI32o2(allopt, k, 104, 20), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr));
+                    if (cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn))
+                        reslt = (cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, FLD.allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr));
                     void cptr.sprintf(cptr.decay(buf), fmtstr, name, ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1)) ? cptr.decay(buf2) : __sl665));
                     break;
                     default:
                     void cptr.sprintf(cptr.decay(buf), __sl891);
                     break;
                 }
-                if (cptr.ldI32o2(allopt, i, 104, 20) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, 104, 20) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, 104, 20) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, 104, 20) == NHC.opt_dropped_nopick)
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx) == NHC.opt_dropped_nopick)
                     void cptr.strcat(cptr.decay(buf), __sl892);
                 add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
-                if (cptr.ld1so(gs, 976) && cptr.ldPtro2(allopt, i, 104, 80)) {
-                    void cptr.sprintf(cptr.decay(buf), __sl893, cptr.ldPtro2(allopt, i, 104, 80));
+                if (cptr.ld1so(gs, FLD.instance_globals_s_simple_options_help) && cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_descr)) {
+                    void cptr.sprintf(cptr.decay(buf), __sl893, cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_descr));
                     add_menu_str(tmpwin, cptr.decay(buf));
                     add_menu_str(tmpwin, __sl491);
                 }
             }
         }
-        (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl894);
-        cptr.st1o(go, 526, 0);
-        cptr.st1o(go, 527, 0);
-        cptr.st1o(go, 529, 0);
-        cptr.st1o(go, 530, 0);
-        cptr.st1o(go, 531, 0);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl894);
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 0);
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 0);
+        cptr.st1o(go, FLD.instance_globals_o_opt_reset_customcolors, 0);
+        cptr.st1o(go, FLD.instance_globals_o_opt_reset_customsymbols, 0);
+        cptr.st1o(go, FLD.instance_globals_o_opt_update_basic_palette, 0);
         pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, pick_list);
         if (pick_cnt > 0) {
             k = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
             cptr.st1o(cptr.decay(abuf), 0, 0, 1);
             if (k == -2) {
-                cptr.st1o(gs, 976, schar((!cptr.ld1so(gs, 976))));
+                cptr.st1o(gs, FLD.instance_globals_s_simple_options_help, schar((!cptr.ld1so(gs, FLD.instance_globals_s_simple_options_help))));
                 toggled_help = 1;
-            } else if (cptr.ldI32o2(allopt, k, 104, 28) == NHC.BoolOpt) {
-                void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, k, 104, 56)) ? __sl613 : __sl491, cptr.ldPtro(allopt, k, 104));
+            } else if (cptr.ldI32o2(allopt, k, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt) {
+                void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, k, 104));
                 void parseoptions(cptr.decay(buf), 0, 0);
             } else {
-                if (cptr.ld1so2(allopt, k, 104, 97) && cptr.ldPtro2(allopt, k, 104, 64)) {
-                    reslt = (cptr.ldPtro2(allopt, k, 104, 64))(cptr.ldI32o2(allopt, k, 104, 20), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
-                    if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, 104, 20) != NHC.pfx_cond_)
+                if (cptr.ld1so2(allopt, k, 104, FLD.allopt_t_has_handler) && cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn)) {
+                    reslt = (cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, FLD.allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
+                    if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, 104, FLD.allopt_t_idx) != NHC.pfx_cond_)
                         cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                 } else {
                     void cptr.sprintf(cptr.decay(buf), __sl895, cptr.ldPtro(allopt, k, 104));
@@ -11729,10 +11730,10 @@ function doset_simple_menu() {
                 }
             }
             if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, 104)) || wc2_supported(cptr.ldPtro(allopt, k, 104))))
-                (cptr.ldPtro(windowprocs, 336))(cptr.ldPtro(allopt, k, 104));
+                (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(cptr.ldPtro(allopt, k, 104));
             cptr.free(pick_list.v), pick_list.v = null;
         }
-        (cptr.ldPtro(windowprocs, 128))(tmpwin);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
         if (toggled_help) {
             toggled_help = 0;
             continue __lbl_redo_opt_help;
@@ -11746,15 +11747,15 @@ function doset_simple_menu() {
 export function doset_simple() {
     let pickedone = 0;
     let flush = 0;
-    if (cptr.ld1so(iflags, 135)) {
-        cptr.st1o(iflags, 135, 0);
+    if (cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) {
+        cptr.st1o(iflags, FLD.instance_flags_menu_requested, 0);
         return doset();
     }
-    cptr.stI32o(go, 520, NHC.play_opt);
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.play_opt);
     give_opt_msg = 0;
     do {
         pickedone = doset_simple_menu();
-        flush = cptr.ld1so(go, 526);
+        flush = cptr.ld1so(go, FLD.instance_globals_o_opt_need_redraw);
         reset_needed_visuals();
         if (flush) {
             flush_screen(1);
@@ -11781,7 +11782,7 @@ function term_for_boolean(idx, b) {
     let f_t = (cptr.ld1s(b)) ? 1 : 0;
     let boolean_term;
     boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), 0, 8);
-    i = cptr.ldI32o2(allopt, idx, 104, 48);
+    i = cptr.ldI32o2(allopt, idx, 104, FLD.allopt_t_termpref);
     if (i > NHC.Term_False && i < NHC.num_terms && i < Number(BigInt.asIntN(32, (32n / 8n))))
         boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), i, 8);
     return boolean_term;
@@ -11814,18 +11815,18 @@ export function doset() {
     let startpass;
     let endpass;
     let gavehelp = 0;
-    let skiphelp = schar((!cptr.ld1so(iflags, 178)));
+    let skiphelp = schar((!cptr.ld1so(iflags, FLD.instance_flags_cmdassist)));
     let clr = NHM.NO_COLOR;
-    if (cptr.ld1so(iflags, 135)) {
-        cptr.st1o(iflags, 135, 0);
+    if (cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) {
+        cptr.st1o(iflags, FLD.instance_flags_menu_requested, 0);
         return doset_simple();
     }
-    cptr.stI32o(go, 520, NHC.play_opt);
+    cptr.stI32o(go, FLD.instance_globals_o_opt_phase, NHC.play_opt);
     __lbl_rerun: while (true) {
-        tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-        (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
+        tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
         if (!skiphelp) {
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             for (i = 0; i < 5; ++i) {
                 if (cptr.ldPtro(__static_doset_helptext, i, 8)) {
                     void cptr.sprintf(cptr.decay(buf), __sl901, __sl491, cptr.ldPtro(__static_doset_helptext, i, 8));
@@ -11837,28 +11838,28 @@ export function doset() {
             }
         }
         startpass = NHC.set_gameview;
-        endpass = (cptr.ld1so(flags, 10)) ? NHC.set_wiznofuz : NHC.set_in_game;
-        if (!cptr.ld1so(iflags, 136))
+        endpass = (cptr.ld1so(flags, FLD.flag_debug)) ? NHC.set_wiznofuz : NHC.set_in_game;
+        if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep))
             void cptr.sprintf(cptr.decay(fmtstr_doset), __sl903, longest_option_name(startpass, endpass));
         else
             void cptr.strcpy(cptr.decay(fmtstr_doset), cptr.decay(__static_doset_fmtstr_tab_doset));
         indexoffset = 1;
-        cptr.memcpy(any, cptr.add(cg, 536), 8);
+        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
         add_menu_heading(tmpwin, __sl904);
         cptr.stI32(any, 0);
         for (pass = 0; pass <= 1; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++)
-                if (cptr.ldI32o2(allopt, i, 104, 28) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, 56)) !== null && ((cptr.ldI32o2(allopt, i, 104, 24) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, 104, 24) >= NHC.set_in_game && pass == 1))) {
-                    if (cptr.eq(bool_p, cptr.add(flags, 13)))
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
+                    if (cptr.eq(bool_p, cptr.add(flags, FLD.flag_female)))
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wizonly && !cptr.ld1so(flags, 10))
+                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug))
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wiznofuz && (!cptr.ld1so(flags, 10) || cptr.ld1so(iflags, 15)))
+                    if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
                         continue;
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     cptr.stI32(any, (pass == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
-                    indent = (pass == 0 && !cptr.ld1so(iflags, 136)) ? __sl905 : __sl491;
+                    indent = (pass == 0 && !cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep)) ? __sl905 : __sl491;
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr_doset), indent, name, term_for_boolean(i, bool_p));
                     if (pass == 0)
                         enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, 104));
@@ -11868,9 +11869,9 @@ export function doset() {
         add_menu_heading(tmpwin, __sl906);
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, 28) != NHC.CompOpt)
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.CompOpt)
                     continue;
-                if (cptr.ldI32o2(allopt, i, 104, 24) == pass) {
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset);
@@ -11880,22 +11881,22 @@ export function doset() {
         add_menu_heading(tmpwin, __sl907);
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, 28) != NHC.OthrOpt)
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.OthrOpt)
                     continue;
-                if (cptr.ldI32o2(allopt, i, 104, 24) == pass) {
+                if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset);
                 }
             }
-        (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl908);
-        cptr.st1o(go, 526, 0);
-        cptr.st1o(go, 527, 0);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl908);
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 0);
+        cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 0);
         if ((pick_cnt = select_menu(tmpwin, NHM.PICK_ANY, pick_list)) > 0) {
             for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
                 opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0;
                 if (opt_indx == (218)) {
-                    (cptr.ldPtro(windowprocs, 160))(__sl909, 0);
+                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_file))(__sl909, 0);
                     gavehelp = 1;
                     continue;
                 }
@@ -11903,14 +11904,14 @@ export function doset() {
                     opt_indx++;
                 opt_indx = (opt_indx - indexoffset) | 0;
                 (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__sl910, __sl911, 8924, __sl912) : void 0);
-                if (cptr.ldI32o2(allopt, opt_indx, 104, 28) == NHC.BoolOpt) {
-                    void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, 56)) ? __sl613 : __sl491, cptr.ldPtro(allopt, opt_indx, 104));
+                if (cptr.ldI32o2(allopt, opt_indx, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt) {
+                    void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, FLD.allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, opt_indx, 104));
                     void parseoptions(cptr.decay(buf), 0, 0);
                 } else {
                     let k = opt_indx;
                     let reslt;
-                    if (cptr.ld1so2(allopt, k, 104, 97) && cptr.ldPtro2(allopt, k, 104, 64)) {
-                        reslt = (cptr.ldPtro2(allopt, k, 104, 64))(cptr.ldI32o2(allopt, k, 104, 20), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
+                    if (cptr.ld1so2(allopt, k, 104, FLD.allopt_t_has_handler) && cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn)) {
+                        reslt = (cptr.ldPtro2(allopt, k, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, FLD.allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr));
                         if (reslt == NHC.optn_ok)
                             cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                     } else {
@@ -11926,11 +11927,11 @@ export function doset() {
                     }
                 }
                 if (wc_supported(cptr.ldPtro(allopt, opt_indx, 104)) || wc2_supported(cptr.ldPtro(allopt, opt_indx, 104)))
-                    (cptr.ldPtro(windowprocs, 336))(cptr.ldPtro(allopt, opt_indx, 104));
+                    (cptr.ldPtro(windowprocs, FLD.window_procs_win_preference_update))(cptr.ldPtro(allopt, opt_indx, 104));
             }
             cptr.free(pick_list.v), pick_list.v = null;
         }
-        (cptr.ldPtro(windowprocs, 128))(tmpwin);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
         if (pick_cnt == 1 && gavehelp) {
             skiphelp = 1;
             gavehelp = 0;
@@ -11944,34 +11945,34 @@ export function doset() {
 
 /** C ref: options.c:8980 */
 function reset_needed_visuals() {
-    if (cptr.ld1so(go, 527)) {
+    if (cptr.ld1so(go, FLD.instance_globals_o_opt_need_glyph_reset)) {
         reset_glyphmap(NHC.gm_optionchange);
     }
-    if (cptr.ld1so(go, 529) || cptr.ld1so(go, 531) || cptr.ld1so(go, 530) || cptr.ld1so(go, 526)) {
-        if (cptr.ld1so(go, 531)) {
-            cptr.st1o(go, 531, 0);
+    if (cptr.ld1so(go, FLD.instance_globals_o_opt_reset_customcolors) || cptr.ld1so(go, FLD.instance_globals_o_opt_update_basic_palette) || cptr.ld1so(go, FLD.instance_globals_o_opt_reset_customsymbols) || cptr.ld1so(go, FLD.instance_globals_o_opt_need_redraw)) {
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_update_basic_palette)) {
+            cptr.st1o(go, FLD.instance_globals_o_opt_update_basic_palette, 0);
         }
-        if (cptr.ld1so(go, 529))
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_reset_customcolors))
             reset_customcolors();
-        if (cptr.ld1so(go, 530))
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_reset_customsymbols))
             reset_customsymbols();
-        if (cptr.ld1so(go, 526)) {
+        if (cptr.ld1so(go, FLD.instance_globals_o_opt_need_redraw)) {
             check_gold_symbol();
             reglyph_darkroom();
         }
         docrt();
     }
-    if (cptr.ld1so(go, 528)) {
-        adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, 112));
+    if (cptr.ld1so(go, FLD.instance_globals_o_opt_need_promptstyle)) {
+        adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, FLD.instance_flags_menu_headings));
     }
-    if (cptr.ld1s(disp) || cptr.ld1so(disp, 1)) {
+    if (cptr.ld1s(disp) || cptr.ld1so(disp, FLD.display_hints_botlx)) {
         bot();
     }
-    cptr.st1o(go, 526, 0);
-    cptr.st1o(go, 527, 0);
-    cptr.st1o(go, 529, 0);
-    cptr.st1o(go, 530, 0);
-    cptr.st1o(go, 531, 0);
+    cptr.st1o(go, FLD.instance_globals_o_opt_need_redraw, 0);
+    cptr.st1o(go, FLD.instance_globals_o_opt_need_glyph_reset, 0);
+    cptr.st1o(go, FLD.instance_globals_o_opt_reset_customcolors, 0);
+    cptr.st1o(go, FLD.instance_globals_o_opt_reset_customsymbols, 0);
+    cptr.st1o(go, FLD.instance_globals_o_opt_update_basic_palette, 0);
 }
 
 /** C ref: options.c:9018 — @param {CInt} win @param {CPtr} option @param {CPtr} fmtstr @param {CInt} idx @param {CInt} indexoffset */
@@ -11985,11 +11986,11 @@ function doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     let reslt = NHC.optn_err;
     let clr = NHM.NO_COLOR;
     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
-    if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, 104) && cptr.ldPtro2(allopt, i, 104, 64)) {
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
+    if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, 104) && cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn)) {
         cptr.stI32(any, (indexoffset == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
-        if (cptr.ldPtro2(allopt, i, 104, 64))
-            reslt = (cptr.ldPtro2(allopt, i, 104, 64))(cptr.ldI32o2(allopt, i, 104, 20), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr));
+        if (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn))
+            reslt = (cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_optfn))(cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr));
         if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
             value = cptr.decay(buf2);
     } else {
@@ -12005,17 +12006,17 @@ function doset_add_menu(win, option, fmtstr, idx, indexoffset) {
 
 const __static_show_menu_controls_hardcoded = cptr.alloc(6 * 16);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __sl939);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 8, __sl940);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + FLD.xtra_cntrls_desc, __sl940);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __sl941);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 24, __sl942);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + FLD.xtra_cntrls_desc, __sl942);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __sl943);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 40, __sl944);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + FLD.xtra_cntrls_desc, __sl944);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __sl945);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 56, __sl946);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + FLD.xtra_cntrls_desc, __sl946);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __sl947);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 72, __sl948);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + FLD.xtra_cntrls_desc, __sl948);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80, null);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 88, null); /** C ref: options.c:9075 — struct xtra_cntrls[6] (function-static) */
+cptr.stPtro(__static_show_menu_controls_hardcoded, 80 + FLD.xtra_cntrls_desc, null); /** C ref: options.c:9075 — struct xtra_cntrls[6] (function-static) */
 const __static_show_menu_controls_mc_fmt = cptr.bytes("%8s     %-6s %s"); /** C ref: options.c:9083 — char[16] (function-static) */
 const __static_show_menu_controls_mc_altfmt = cptr.bytes("%9s  %-6s %s"); /** C ref: options.c:9084 — char[13] (function-static) */
 
@@ -12026,57 +12027,57 @@ export function show_menu_controls(win, dolist) {
     let arg;
     let xcp;
     let has_menu_shift = wc2_supported(__sl916);
-    (cptr.ldPtro(windowprocs, 144))(win, 0, __sl917);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl917);
     if (dolist) {
         let i;
         let ch;
         fmt = __sl918;
-        for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, 24, 16); i++) {
-            ch = cptr.ld1so2(default_menu_cmd_info, i, 24, 8);
+        for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, 24, FLD.menu_cmd_t_desc); i++) {
+            ch = cptr.ld1so2(default_menu_cmd_info, i, 24, FLD.menu_cmd_t_cmd);
             if ((ch == 125 || ch == 123) && !has_menu_shift)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, 16));
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, FLD.menu_cmd_t_desc));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         }
         fmt = __sl919;
         arg = __sl491;
     } else {
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl491);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl920, __sl921);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl922, __sl923);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl924, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl925, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl926, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl491);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl927, visctrl(get_menu_cmd_key(62)), __sl928);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(60)), __sl929);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(94)), __sl930);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(124)), __sl931);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         if (has_menu_shift) {
             void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl932, visctrl(get_menu_cmd_key(125)), __sl933);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
             void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(123)), __sl934);
-            (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         }
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl491);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491);
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl935, visctrl(get_menu_cmd_key(58)), __sl936);
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, __sl491);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl491);
         fmt = __sl937;
         arg = __sl938;
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
-        void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, 8));
-        (cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf));
+        void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, FLD.xtra_cntrls_desc));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf));
         arg = __sl491;
     }
 }
@@ -12086,7 +12087,7 @@ function count_cond() {
     let i;
     let cnt = 0;
     for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
-        if (cptr.ld1so2(condtests, i, 24, 20))
+        if (cptr.ld1so2(condtests, i, 24, FLD.condtests_t_enabled))
             cnt++;
     }
     return cnt;
@@ -12095,23 +12096,23 @@ function count_cond() {
 /** C ref: options.c:9191 @returns {CInt} */
 function count_apes() {
     let numapes = 0;
-    let ape = cptr.ldPtro(ga, 16);
+    let ape = cptr.ldPtro(ga, FLD.instance_globals_a_apelist);
     while (ape) {
         numapes++;
-        ape = cptr.ldPtro(ape, 24);
+        ape = cptr.ldPtro(ape, FLD.autopickup_exception_next);
     }
     return numapes;
 }
 
 const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * 16);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 0, 97);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 8, __sl950);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + FLD.action_desc, __sl950);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 16, 108);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 24, __sl951);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + FLD.action_desc, __sl951);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 32, 114);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 40, __sl952);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + FLD.action_desc, __sl952);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 48, 120);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 56, __sl953); /** C ref: options.c:9217 — struct action[4] (function-static) */
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + FLD.action_desc, __sl953); /** C ref: options.c:9217 — struct action[4] (function-static) */
 
 /** C ref: options.c:9208 — @param {CPtr} optname @param {CInt} numtotal @returns {CInt} */
 function handle_add_list_remove(optname, numtotal) {
@@ -12122,18 +12123,18 @@ function handle_add_list_remove(optname, numtotal) {
     let opt_idx;
     let pick_list = cptr.box(null);
     let clr = NHM.NO_COLOR;
-    tmpwin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU);
-    (cptr.ldPtro(windowprocs, 168))(tmpwin, 0n);
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    tmpwin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(tmpwin, 0n);
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     for (i = 0; i < 4; i++) {
         let tmpbuf = new Uint8Array(256);
         (cptr.stI32(any, cptr.ldI32(any) + 1)) - (1);
         if (!numtotal && (i == 1 || i == 2))
             continue;
-        void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, 8), (i == 1) ? makeplural(optname) : optname);
+        void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, FLD.action_desc), (i == 1) ? makeplural(optname) : optname);
         add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, 16), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, __sl949);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(tmpwin, __sl949);
     if ((pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, pick_list)) > 0) {
         opt_idx = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
         if (pick_cnt > 1 && opt_idx == 3)
@@ -12141,7 +12142,7 @@ function handle_add_list_remove(optname, numtotal) {
         cptr.free(pick_list.v);
     } else
         opt_idx = 3;
-    (cptr.ldPtro(windowprocs, 128))(tmpwin);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin);
     return opt_idx;
 }
 
@@ -12149,10 +12150,10 @@ function handle_add_list_remove(optname, numtotal) {
 export function dotogglepickup() {
     let buf = new Uint8Array(256);
     let ocl = new Uint8Array(19);
-    cptr.st1o(flags, 30, schar((!cptr.ld1so(flags, 30))));
-    if (cptr.ld1so(flags, 30)) {
-        oc_to_str(cptr.add(flags, 117), cptr.decay(ocl));
-        void cptr.sprintf(cptr.decay(buf), __sl954, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468, (cptr.ldPtro(ga, 16)) ? ((count_apes() == 1) ? __sl955 : __sl956) : __sl491);
+    cptr.st1o(flags, FLD.flag_pickup, schar((!cptr.ld1so(flags, FLD.flag_pickup))));
+    if (cptr.ld1so(flags, FLD.flag_pickup)) {
+        oc_to_str(cptr.add(flags, FLD.flag_pickup_types), cptr.decay(ocl));
+        void cptr.sprintf(cptr.decay(buf), __sl954, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468, (cptr.ldPtro(ga, FLD.instance_globals_a_apelist)) ? ((count_apes() == 1) ? __sl955 : __sl956) : __sl491);
     } else {
         void cptr.strcpy(cptr.decay(buf), __sl957);
     }
@@ -12165,9 +12166,9 @@ export function toggle_bool_option(p) {
     let i;
     let ret = NHM.ECMD_FAIL;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        if (!strncmpi(cptr.ldPtro(allopt, i, 104), p, Number(BigInt.asIntN(32, cptr.strlen(p)))) && cptr.ldI32o2(allopt, i, 104, 28) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_in_game && cptr.ldPtro2(allopt, i, 104, 56) !== null) {
+        if (!strncmpi(cptr.ldPtro(allopt, i, 104), p, Number(BigInt.asIntN(32, cptr.strlen(p)))) && cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr) !== null) {
             let buf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, i, 104, 56)) ? __sl613 : __sl491, cptr.ldPtro(allopt, i, 104));
+            void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, i, 104));
             if (parseoptions(cptr.decay(buf), 0, 0))
                 ret = NHM.ECMD_OK;
             reset_needed_visuals();
@@ -12204,10 +12205,10 @@ export function add_autopickup_exception(mapping) {
         config_error_add(__sl854, cptr.decay(__static_add_autopickup_exception_APE_regex_error), re_error_desc);
         return 0;
     }
-    cptr.stPtro(ape, 8, dupstr(cptr.decay(text)));
-    cptr.st1o(ape, 16, grab);
-    cptr.stPtro(ape, 24, cptr.ldPtro(ga, 16));
-    cptr.stPtro(ga, 16, ape);
+    cptr.stPtro(ape, FLD.autopickup_exception_pattern, dupstr(cptr.decay(text)));
+    cptr.st1o(ape, FLD.autopickup_exception_grab, grab);
+    cptr.stPtro(ape, FLD.autopickup_exception_next, cptr.ldPtro(ga, FLD.instance_globals_a_apelist));
+    cptr.stPtro(ga, FLD.instance_globals_a_apelist, ape);
     return 1;
 }
 
@@ -12216,20 +12217,20 @@ function remove_autopickup_exception(whichape) {
     let ape;
     let freeape;
     let prev = null;
-    for (ape = cptr.ldPtro(ga, 16); ape; ) {
+    for (ape = cptr.ldPtro(ga, FLD.instance_globals_a_apelist); ape; ) {
         if (cptr.eq(ape, whichape)) {
             freeape = ape;
-            ape = cptr.ldPtro(ape, 24);
+            ape = cptr.ldPtro(ape, FLD.autopickup_exception_next);
             if (prev)
-                cptr.stPtro(prev, 24, ape);
+                cptr.stPtro(prev, FLD.autopickup_exception_next, ape);
             else
-                cptr.stPtro(ga, 16, ape);
+                cptr.stPtro(ga, FLD.instance_globals_a_apelist, ape);
             regex_free(cptr.ldPtr(freeape));
-            cptr.free(cptr.ldPtro(freeape, 8));
+            cptr.free(cptr.ldPtro(freeape, FLD.autopickup_exception_pattern));
             cptr.free(freeape);
         } else {
             prev = ape;
-            ape = cptr.ldPtro(ape, 24);
+            ape = cptr.ldPtro(ape, FLD.autopickup_exception_next);
         }
     }
 }
@@ -12237,10 +12238,10 @@ function remove_autopickup_exception(whichape) {
 /** C ref: options.c:9372 */
 export function free_autopickup_exceptions() {
     let ape;
-    while ((ape = cptr.ldPtro(ga, 16)) !== null) {
-        cptr.free(cptr.ldPtro(ape, 8));
+    while ((ape = cptr.ldPtro(ga, FLD.instance_globals_a_apelist)) !== null) {
+        cptr.free(cptr.ldPtro(ape, FLD.autopickup_exception_pattern));
         regex_free(cptr.ldPtr(ape));
-        cptr.stPtro(ga, 16, cptr.ldPtro(ape, 24));
+        cptr.stPtro(ga, FLD.instance_globals_a_apelist, cptr.ldPtro(ape, FLD.autopickup_exception_next));
         cptr.free(ape);
     }
 }
@@ -12308,15 +12309,15 @@ export function option_help() {
     let optname;
     let i;
     let datawin;
-    datawin = (cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT);
+    datawin = (cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT);
     nh_snprintf(__sl976, 9471, cptr.decay(buf), 256n, __sl977, get_configfile());
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.ldPtro(opt_intro, i, 8));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.ldPtro(opt_intro, i, 8));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if ((cptr.ldI32o2(allopt, i, 104, 28) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, 56)) || (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wizonly && !cptr.ld1so(flags, 10)))
+        if ((cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr)) || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug)))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wiznofuz && (!cptr.ld1so(flags, 10) || cptr.ld1so(iflags, 15)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
@@ -12324,32 +12325,32 @@ export function option_help() {
         next_opt(datawin, optname);
     }
     next_opt(datawin, __sl491);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl978);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl978);
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldI32o2(allopt, i, 104, 28) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wizonly && !cptr.ld1so(flags, 10)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wizonly && !cptr.ld1so(flags, FLD.flag_debug)))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_wiznofuz && (!cptr.ld1so(flags, 10) || cptr.ld1so(iflags, 15)))
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_wiznofuz && (!cptr.ld1so(flags, FLD.flag_debug) || cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         void cptr.sprintf(cptr.decay(buf2), __sl979, optname);
-        nh_snprintf(__sl976, 9507, cptr.decay(buf), 256n, __sl980, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, 80), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+        nh_snprintf(__sl976, 9507, cptr.decay(buf), 256n, __sl980, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf));
     }
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl491);
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl907);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl491);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl907);
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldI32o2(allopt, i, 104, 28) != NHC.OthrOpt)
+        if (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp) != NHC.OthrOpt)
             continue;
         void cptr.sprintf(cptr.decay(buf), __sl619, cptr.ldPtro(allopt, i, 104));
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.decay(buf));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.decay(buf));
     }
-    (cptr.ldPtro(windowprocs, 144))(datawin, 0, __sl491);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __sl491);
     for (i = 0; cptr.ldPtro(opt_epilog, i, 8); i++)
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, cptr.ldPtro(opt_epilog, i, 8));
-    (cptr.ldPtro(windowprocs, 120))(datawin, 0);
-    (cptr.ldPtro(windowprocs, 128))(datawin);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, cptr.ldPtro(opt_epilog, i, 8));
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(datawin, 0);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(datawin);
     return;
 }
 
@@ -12386,7 +12387,7 @@ function all_options_conds(sbuf) {
 function all_options_menucolors(sbuf) {
     let i = 0;
     let ncolors = count_menucolors();
-    let tmp = cptr.ldPtro(gm, 168);
+    let tmp = cptr.ldPtro(gm, FLD.instance_globals_m_menu_colorings);
     let buf = new Uint8Array(512);
     let arr;
     if (!ncolors)
@@ -12394,13 +12395,13 @@ function all_options_menucolors(sbuf) {
     arr = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(ncolors)) * 8n))));
     while (tmp) {
         cptr.stPtro(arr, i++, tmp, 8);
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.menucoloring_next);
     }
     for (i = ncolors; i > 0; i--) {
         tmp = cptr.ldPtro(arr, (i - 1) | 0, 8);
-        let sattr = attr2attrname(cptr.ldI32o(tmp, 20));
-        let sclr = clr2colorname(cptr.ldI32o(tmp, 16));
-        void cptr.sprintf(cptr.decay(buf), __sl987, cptr.ldPtro(tmp, 8), sclr, (cptr.ldI32o(tmp, 20) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, 20) != NHM.ATR_NONE) ? sattr : __sl491);
+        let sattr = attr2attrname(cptr.ldI32o(tmp, FLD.menucoloring_attr));
+        let sclr = clr2colorname(cptr.ldI32o(tmp, FLD.menucoloring_color));
+        void cptr.sprintf(cptr.decay(buf), __sl987, cptr.ldPtro(tmp, FLD.menucoloring_origstr), sclr, (cptr.ldI32o(tmp, FLD.menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, FLD.menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
         strbuf_append(sbuf, cptr.decay(buf));
     }
     cptr.free(arr);
@@ -12408,24 +12409,24 @@ function all_options_menucolors(sbuf) {
 
 /** C ref: options.c:9628 — @param {CPtr} sbuf */
 function all_options_msgtypes(sbuf) {
-    let tmp = cptr.ldPtro(gp, 16);
+    let tmp = cptr.ldPtro(gp, FLD.instance_globals_p_plinemsg_types);
     let buf = new Uint8Array(256);
     while (tmp) {
         let mtype = msgtype2name(cptr.ldI16(tmp));
-        void cptr.sprintf(cptr.decay(buf), __sl988, mtype, cptr.ldPtro(tmp, 16));
+        void cptr.sprintf(cptr.decay(buf), __sl988, mtype, cptr.ldPtro(tmp, FLD.plinemsg_type_pattern));
         strbuf_append(sbuf, cptr.decay(buf));
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.plinemsg_type_next);
     }
 }
 
 /** C ref: options.c:9643 — @param {CPtr} sbuf */
 function all_options_apes(sbuf) {
-    let tmp = cptr.ldPtro(ga, 16);
+    let tmp = cptr.ldPtro(ga, FLD.instance_globals_a_apelist);
     let buf = new Uint8Array(256);
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __sl989, cptr.ld1so(tmp, 16) ? 60 : 62, cptr.ldPtro(tmp, 8));
+        void cptr.sprintf(cptr.decay(buf), __sl989, cptr.ld1so(tmp, FLD.autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, FLD.autopickup_exception_pattern));
         strbuf_append(sbuf, cptr.decay(buf));
-        tmp = cptr.ldPtro(tmp, 24);
+        tmp = cptr.ldPtro(tmp, FLD.autopickup_exception_next);
     }
 }
 
@@ -12442,18 +12443,18 @@ export function all_options_strbuf(sbuf) {
     for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
         if (!cptr.ld1so(cptr.decay(opt_set_in_config), i, 1))
             continue;
-        switch (cptr.ldI32o2(allopt, i, 104, 28)) {
+        switch (cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_opttyp)) {
             case NHC.BoolOpt:
-            bool_p = cptr.ldPtro2(allopt, i, 104, 56);
-            if (!bool_p || cptr.eq(bool_p, cptr.add(flags, 13)))
+            bool_p = cptr.ldPtro2(allopt, i, 104, FLD.allopt_t_addr);
+            if (!bool_p || cptr.eq(bool_p, cptr.add(flags, FLD.flag_female)))
                 break;
-            if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, 104, 96)) {
+            if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, 104, FLD.allopt_t_initval)) {
                 void cptr.sprintf(cptr.decay(tmp), __sl991, cptr.ld1s(bool_p) ? __sl491 : __sl613, name);
                 strbuf_append(sbuf, cptr.decay(tmp));
             }
             break;
             case NHC.CompOpt:
-            if (!(cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_in_config || cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_gameview || cptr.ldI32o2(allopt, i, 104, 24) == NHC.set_in_game))
+            if (!(cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_in_config || cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_gameview || cptr.ldI32o2(allopt, i, 104, FLD.allopt_t_setwhere) == NHC.set_in_game))
                 break;
             buf2 = get_option_value(name, 1);
             if (buf2) {
@@ -12475,8 +12476,8 @@ export function all_options_strbuf(sbuf) {
     all_options_apes(sbuf);
     all_options_autocomplete(sbuf);
     all_options_statushilites(sbuf);
-    if (cptr.ld1so2(gw, 0, 1, 23)) {
-        void cptr.sprintf(cptr.decay(tmp), __sl994, cptr.add(gw, 23));
+    if (cptr.ld1so2(gw, 0, 1, FLD.instance_globals_w_wizkit)) {
+        void cptr.sprintf(cptr.decay(tmp), __sl994, cptr.add(gw, FLD.instance_globals_w_wizkit));
         strbuf_append(sbuf, cptr.decay(tmp));
     }
 }
@@ -12498,14 +12499,14 @@ export function next_opt(datawin, str) {
         i = ((((Strlen_(__static_next_opt_buf, __sl995, 9770) + Strlen_(str, __sl995, 9770)) >>> 0) + 2) >>> 0) | 0;
     }
     if (i > 78) {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, __static_next_opt_buf);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, __static_next_opt_buf);
         cptr.st1o(__static_next_opt_buf, 0, 0);
     }
     if (cptr.ld1s(str)) {
         void cptr.strcat(__static_next_opt_buf, str);
         void cptr.strcat(__static_next_opt_buf, __sl996);
     } else {
-        (cptr.ldPtro(windowprocs, 144))(datawin, 0, str);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(datawin, 0, str);
         cptr.free(__static_next_opt_buf), __static_next_opt_buf = null;
     }
     return;
@@ -12514,114 +12515,114 @@ export function next_opt(datawin, str) {
 /** C ref: options.c:9787 — struct wc_Opt[34] */
 const wc_options = cptr.alloc(34 * 16);
 cptr.stPtro(wc_options, 0, __sl31);
-cptr.stU64o(wc_options, 8, 4n);
+cptr.stU64o(wc_options, 0 + FLD.wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc_options, 16, __sl67);
-cptr.stU64o(wc_options, 24, 1n);
+cptr.stU64o(wc_options, 16 + FLD.wc_Opt_wc_bit, 1n);
 cptr.stPtro(wc_options, 32, __sl106);
-cptr.stU64o(wc_options, 40, 67108864n);
+cptr.stU64o(wc_options, 32 + FLD.wc_Opt_wc_bit, 67108864n);
 cptr.stPtro(wc_options, 48, __sl153);
-cptr.stU64o(wc_options, 56, 2n);
+cptr.stU64o(wc_options, 48 + FLD.wc_Opt_wc_bit, 2n);
 cptr.stPtro(wc_options, 64, __sl263);
-cptr.stU64o(wc_options, 72, 134217728n);
+cptr.stU64o(wc_options, 64 + FLD.wc_Opt_wc_bit, 134217728n);
 cptr.stPtro(wc_options, 80, __sl265);
-cptr.stU64o(wc_options, 88, 134217728n);
+cptr.stU64o(wc_options, 80 + FLD.wc_Opt_wc_bit, 134217728n);
 cptr.stPtro(wc_options, 96, __sl284);
-cptr.stU64o(wc_options, 104, 16777216n);
+cptr.stU64o(wc_options, 96 + FLD.wc_Opt_wc_bit, 16777216n);
 cptr.stPtro(wc_options, 112, __sl282);
-cptr.stU64o(wc_options, 120, 1073741824n);
+cptr.stU64o(wc_options, 112 + FLD.wc_Opt_wc_bit, 1073741824n);
 cptr.stPtro(wc_options, 128, __sl285);
-cptr.stU64o(wc_options, 136, 16n);
+cptr.stU64o(wc_options, 128 + FLD.wc_Opt_wc_bit, 16n);
 cptr.stPtro(wc_options, 144, __sl374);
-cptr.stU64o(wc_options, 152, 8n);
+cptr.stU64o(wc_options, 144 + FLD.wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc_options, 160, __sl368);
-cptr.stU64o(wc_options, 168, 128n);
+cptr.stU64o(wc_options, 160 + FLD.wc_Opt_wc_bit, 128n);
 cptr.stPtro(wc_options, 176, __sl372);
-cptr.stU64o(wc_options, 184, 32n);
+cptr.stU64o(wc_options, 176 + FLD.wc_Opt_wc_bit, 32n);
 cptr.stPtro(wc_options, 192, __sl370);
-cptr.stU64o(wc_options, 200, 64n);
+cptr.stU64o(wc_options, 192 + FLD.wc_Opt_wc_bit, 64n);
 cptr.stPtro(wc_options, 208, __sl20);
-cptr.stU64o(wc_options, 216, 512n);
+cptr.stU64o(wc_options, 208 + FLD.wc_Opt_wc_bit, 512n);
 cptr.stPtro(wc_options, 224, __sl22);
-cptr.stU64o(wc_options, 232, 1024n);
+cptr.stU64o(wc_options, 224 + FLD.wc_Opt_wc_bit, 1024n);
 cptr.stPtro(wc_options, 240, __sl117);
-cptr.stU64o(wc_options, 248, 4096n);
+cptr.stU64o(wc_options, 240 + FLD.wc_Opt_wc_bit, 4096n);
 cptr.stPtro(wc_options, 256, __sl119);
-cptr.stU64o(wc_options, 264, 32768n);
+cptr.stU64o(wc_options, 256 + FLD.wc_Opt_wc_bit, 32768n);
 cptr.stPtro(wc_options, 272, __sl121);
-cptr.stU64o(wc_options, 280, 8192n);
+cptr.stU64o(wc_options, 272 + FLD.wc_Opt_wc_bit, 8192n);
 cptr.stPtro(wc_options, 288, __sl123);
-cptr.stU64o(wc_options, 296, 131072n);
+cptr.stU64o(wc_options, 288 + FLD.wc_Opt_wc_bit, 131072n);
 cptr.stPtro(wc_options, 304, __sl125);
-cptr.stU64o(wc_options, 312, 1048576n);
+cptr.stU64o(wc_options, 304 + FLD.wc_Opt_wc_bit, 1048576n);
 cptr.stPtro(wc_options, 320, __sl127);
-cptr.stU64o(wc_options, 328, 262144n);
+cptr.stU64o(wc_options, 320 + FLD.wc_Opt_wc_bit, 262144n);
 cptr.stPtro(wc_options, 336, __sl129);
-cptr.stU64o(wc_options, 344, 524288n);
+cptr.stU64o(wc_options, 336 + FLD.wc_Opt_wc_bit, 524288n);
 cptr.stPtro(wc_options, 352, __sl131);
-cptr.stU64o(wc_options, 360, 2097152n);
+cptr.stU64o(wc_options, 352 + FLD.wc_Opt_wc_bit, 2097152n);
 cptr.stPtro(wc_options, 368, __sl133);
-cptr.stU64o(wc_options, 376, 16384n);
+cptr.stU64o(wc_options, 368 + FLD.wc_Opt_wc_bit, 16384n);
 cptr.stPtro(wc_options, 384, __sl135);
-cptr.stU64o(wc_options, 392, 65536n);
+cptr.stU64o(wc_options, 384 + FLD.wc_Opt_wc_bit, 65536n);
 cptr.stPtro(wc_options, 400, __sl179);
-cptr.stU64o(wc_options, 408, 268435456n);
+cptr.stU64o(wc_options, 400 + FLD.wc_Opt_wc_bit, 268435456n);
 cptr.stPtro(wc_options, 416, __sl311);
-cptr.stU64o(wc_options, 424, 33554432n);
+cptr.stU64o(wc_options, 416 + FLD.wc_Opt_wc_bit, 33554432n);
 cptr.stPtro(wc_options, 432, __sl313);
-cptr.stU64o(wc_options, 440, 4194304n);
+cptr.stU64o(wc_options, 432 + FLD.wc_Opt_wc_bit, 4194304n);
 cptr.stPtro(wc_options, 448, __sl344);
-cptr.stU64o(wc_options, 456, 8388608n);
+cptr.stU64o(wc_options, 448 + FLD.wc_Opt_wc_bit, 8388608n);
 cptr.stPtro(wc_options, 464, __sl393);
-cptr.stU64o(wc_options, 472, 256n);
+cptr.stU64o(wc_options, 464 + FLD.wc_Opt_wc_bit, 256n);
 cptr.stPtro(wc_options, 480, __sl397);
-cptr.stU64o(wc_options, 488, 2048n);
+cptr.stU64o(wc_options, 480 + FLD.wc_Opt_wc_bit, 2048n);
 cptr.stPtro(wc_options, 496, __sl419);
-cptr.stU64o(wc_options, 504, 536870912n);
+cptr.stU64o(wc_options, 496 + FLD.wc_Opt_wc_bit, 536870912n);
 cptr.stPtro(wc_options, 512, __sl240);
-cptr.stU64o(wc_options, 520, 2147483648n);
+cptr.stU64o(wc_options, 512 + FLD.wc_Opt_wc_bit, 2147483648n);
 cptr.stPtro(wc_options, 528, null);
-cptr.stU64o(wc_options, 536, 0n);
+cptr.stU64o(wc_options, 528 + FLD.wc_Opt_wc_bit, 0n);
 
 /** C ref: options.c:9823 — struct wc_Opt[19] */
 const wc2_options = cptr.alloc(19 * 16);
 cptr.stPtro(wc2_options, 0, __sl29);
-cptr.stU64o(wc2_options, 8, 524288n);
+cptr.stU64o(wc2_options, 0 + FLD.wc_Opt_wc_bit, 524288n);
 cptr.stPtro(wc2_options, 16, __sl141);
-cptr.stU64o(wc2_options, 24, 1n);
+cptr.stU64o(wc2_options, 16 + FLD.wc_Opt_wc_bit, 1n);
 cptr.stPtro(wc2_options, 32, __sl147);
-cptr.stU64o(wc2_options, 40, 8192n);
+cptr.stU64o(wc2_options, 32 + FLD.wc_Opt_wc_bit, 8192n);
 cptr.stPtro(wc2_options, 48, __sl157);
-cptr.stU64o(wc2_options, 56, 8n);
+cptr.stU64o(wc2_options, 48 + FLD.wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc2_options, 64, __sl159);
-cptr.stU64o(wc2_options, 72, 64n);
+cptr.stU64o(wc2_options, 64 + FLD.wc_Opt_wc_bit, 64n);
 cptr.stPtro(wc2_options, 80, __sl916);
-cptr.stU64o(wc2_options, 88, 65536n);
+cptr.stU64o(wc2_options, 80 + FLD.wc_Opt_wc_bit, 65536n);
 cptr.stPtro(wc2_options, 96, __sl267);
-cptr.stU64o(wc2_options, 104, 4096n);
+cptr.stU64o(wc2_options, 96 + FLD.wc_Opt_wc_bit, 4096n);
 cptr.stPtro(wc2_options, 112, __sl327);
-cptr.stU64o(wc2_options, 120, 2n);
+cptr.stU64o(wc2_options, 112 + FLD.wc_Opt_wc_bit, 2n);
 cptr.stPtro(wc2_options, 128, __sl997);
-cptr.stU64o(wc2_options, 136, 8n);
+cptr.stU64o(wc2_options, 128 + FLD.wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc2_options, 144, __sl351);
-cptr.stU64o(wc2_options, 152, 8n);
+cptr.stU64o(wc2_options, 144 + FLD.wc_Opt_wc_bit, 8n);
 cptr.stPtro(wc2_options, 160, __sl355);
-cptr.stU64o(wc2_options, 168, 1024n);
+cptr.stU64o(wc2_options, 160 + FLD.wc_Opt_wc_bit, 1024n);
 cptr.stPtro(wc2_options, 176, __sl361);
-cptr.stU64o(wc2_options, 184, 512n);
+cptr.stU64o(wc2_options, 176 + FLD.wc_Opt_wc_bit, 512n);
 cptr.stPtro(wc2_options, 192, __sl364);
-cptr.stU64o(wc2_options, 200, 512n);
+cptr.stU64o(wc2_options, 192 + FLD.wc_Opt_wc_bit, 512n);
 cptr.stPtro(wc2_options, 208, __sl366);
-cptr.stU64o(wc2_options, 216, 524288n);
+cptr.stU64o(wc2_options, 208 + FLD.wc_Opt_wc_bit, 524288n);
 cptr.stPtro(wc2_options, 224, __sl391);
-cptr.stU64o(wc2_options, 232, 32n);
+cptr.stU64o(wc2_options, 224 + FLD.wc_Opt_wc_bit, 32n);
 cptr.stPtro(wc2_options, 240, __sl407);
-cptr.stU64o(wc2_options, 248, 524288n);
+cptr.stU64o(wc2_options, 240 + FLD.wc_Opt_wc_bit, 524288n);
 cptr.stPtro(wc2_options, 256, __sl417);
-cptr.stU64o(wc2_options, 264, 2048n);
+cptr.stU64o(wc2_options, 256 + FLD.wc_Opt_wc_bit, 2048n);
 cptr.stPtro(wc2_options, 272, __sl423);
-cptr.stU64o(wc2_options, 280, 4n);
+cptr.stU64o(wc2_options, 272 + FLD.wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc2_options, 288, null);
-cptr.stU64o(wc2_options, 296, 0n);
+cptr.stU64o(wc2_options, 288 + FLD.wc_Opt_wc_bit, 0n);
 
 /** C ref: options.c:9855 — @param {CPtr} optnam @param {CInt} status */
 export function set_option_mod_status(optnam, status) {
@@ -12632,7 +12633,7 @@ export function set_option_mod_status(optnam, status) {
     }
     for (k = 0; cptr.ldPtro(allopt, k, 104); k++) {
         if (str_start_is(cptr.ldPtro(allopt, k, 104), optnam, 1)) {
-            cptr.stI32o2(allopt, k, 104, 24, status);
+            cptr.stI32o2(allopt, k, 104, FLD.allopt_t_setwhere, status);
             return;
         }
     }
@@ -12646,7 +12647,7 @@ export function set_wc_option_mod_status(optmask, status) {
         return;
     }
     while (cptr.ldPtro(wc_options, k, 16)) {
-        if (optmask & cptr.ldU64o2(wc_options, k, 16, 8)) {
+        if (optmask & cptr.ldU64o2(wc_options, k, 16, FLD.wc_Opt_wc_bit)) {
             set_option_mod_status(cptr.ldPtro(wc_options, k, 16), status);
         }
         k++;
@@ -12669,7 +12670,7 @@ function wc_supported(optnam) {
     let k;
     for (k = 0; cptr.ldPtro(wc_options, k, 16); ++k) {
         if (!strcmp(cptr.ldPtro(wc_options, k, 16), optnam))
-            return schar(((cptr.ldU64o(windowprocs, 16) & cptr.ldU64o2(wc_options, k, 16, 8)) ? 1 : 0));
+            return schar(((cptr.ldU64o(windowprocs, FLD.window_procs_wincap) & cptr.ldU64o2(wc_options, k, 16, FLD.wc_Opt_wc_bit)) ? 1 : 0));
     }
     return 0;
 }
@@ -12682,7 +12683,7 @@ export function set_wc2_option_mod_status(optmask, status) {
         return;
     }
     while (cptr.ldPtro(wc2_options, k, 16)) {
-        if (optmask & cptr.ldU64o2(wc2_options, k, 16, 8)) {
+        if (optmask & cptr.ldU64o2(wc2_options, k, 16, FLD.wc_Opt_wc_bit)) {
             set_option_mod_status(cptr.ldPtro(wc2_options, k, 16), status);
         }
         k++;
@@ -12705,7 +12706,7 @@ function wc2_supported(optnam) {
     let k;
     for (k = 0; cptr.ldPtro(wc2_options, k, 16); ++k) {
         if (!strcmp(cptr.ldPtro(wc2_options, k, 16), optnam))
-            return schar(((cptr.ldU64o(windowprocs, 24) & cptr.ldU64o2(wc2_options, k, 16, 8)) ? 1 : 0));
+            return schar(((cptr.ldU64o(windowprocs, FLD.window_procs_wincap2) & cptr.ldU64o2(wc2_options, k, 16, FLD.wc_Opt_wc_bit)) ? 1 : 0));
     }
     return 0;
 }
@@ -12717,19 +12718,19 @@ function wc_set_font_name(opttype, fontname) {
         return;
     switch (opttype) {
         case NHC.MAP_OPTION:
-        fn = cptr.add(iflags, 288);
+        fn = cptr.add(iflags, FLD.instance_flags_wc_font_map);
         break;
         case NHC.MESSAGE_OPTION:
-        fn = cptr.add(iflags, 296);
+        fn = cptr.add(iflags, FLD.instance_flags_wc_font_message);
         break;
         case NHC.TEXT_OPTION:
-        fn = cptr.add(iflags, 320);
+        fn = cptr.add(iflags, FLD.instance_flags_wc_font_text);
         break;
         case NHC.MENU_OPTION:
-        fn = cptr.add(iflags, 312);
+        fn = cptr.add(iflags, FLD.instance_flags_wc_font_menu);
         break;
         case NHC.STATUS_OPTION:
-        fn = cptr.add(iflags, 304);
+        fn = cptr.add(iflags, FLD.instance_flags_wc_font_status);
         break;
         default:
         return;
@@ -12744,17 +12745,17 @@ function wc_set_font_name(opttype, fontname) {
 
 /** C ref: options.c:10012 — char **[4] */
 const fgp = cptr.alloc(4 * 8);
-cptr.stPtro(fgp, 0, cptr.add(cptr.add(iflags, 224), NHC.wcolor_menu, 16));
-cptr.stPtro(fgp, 8, cptr.add(cptr.add(iflags, 224), NHC.wcolor_message, 16));
-cptr.stPtro(fgp, 16, cptr.add(cptr.add(iflags, 224), NHC.wcolor_status, 16));
-cptr.stPtro(fgp, 24, cptr.add(cptr.add(iflags, 224), NHC.wcolor_text, 16));
+cptr.stPtro(fgp, 0, cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_menu, 16));
+cptr.stPtro(fgp, 8, cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_message, 16));
+cptr.stPtro(fgp, 16, cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_status, 16));
+cptr.stPtro(fgp, 24, cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_text, 16));
 
 /** C ref: options.c:10016 — char **[4] */
 const bgp = cptr.alloc(4 * 8);
-cptr.stPtro(bgp, 0, cptr.add(cptr.add(cptr.add(iflags, 224), NHC.wcolor_menu, 16), 8));
-cptr.stPtro(bgp, 8, cptr.add(cptr.add(cptr.add(iflags, 224), NHC.wcolor_message, 16), 8));
-cptr.stPtro(bgp, 16, cptr.add(cptr.add(cptr.add(iflags, 224), NHC.wcolor_status, 16), 8));
-cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, 224), NHC.wcolor_text, 16), 8));
+cptr.stPtro(bgp, 0, cptr.add(cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_menu, 16), FLD.windowcolors_struct_bg));
+cptr.stPtro(bgp, 8, cptr.add(cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_message, 16), FLD.windowcolors_struct_bg));
+cptr.stPtro(bgp, 16, cptr.add(cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_status, 16), FLD.windowcolors_struct_bg));
+cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, FLD.instance_flags_wcolors), NHC.wcolor_text, 16), FLD.windowcolors_struct_bg));
 
 /** C ref: options.c:10020 — int */
 export let options_set_window_colors_flag = 0;
@@ -12844,16 +12845,16 @@ export function options_free_window_colors() {
 
 /** C ref: options.c:10134 */
 export function set_playmode() {
-    if (cptr.ld1so(flags, 10)) {
+    if (cptr.ld1so(flags, FLD.flag_debug)) {
         if (authorize_wizard_mode())
-            cptr.stI32o(gp, 8, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __sl642)))));
+            cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __sl642)))));
         else
-            cptr.st1o(flags, 10, 0);
-        cptr.st1o(flags, 12, schar((!cptr.ld1so(flags, 10))));
-        cptr.st1o(iflags, 128, 0);
+            cptr.st1o(flags, FLD.flag_debug, 0);
+        cptr.st1o(flags, FLD.flag_explore, schar((!cptr.ld1so(flags, FLD.flag_debug))));
+        cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0);
     }
-    if (cptr.ld1so(flags, 12) && !authorize_explore_mode()) {
-        cptr.st1o(flags, 12, cptr.st1o(iflags, 128, 0));
+    if (cptr.ld1so(flags, FLD.flag_explore) && !authorize_explore_mode()) {
+        cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
     }
 }
 
@@ -12875,26 +12876,26 @@ function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
 export function heed_all_options() {
     let i;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        cptr.st1o2(allopt, i, 104, 99, 0);
+        cptr.st1o2(allopt, i, 104, FLD.allopt_t_disregarded, 0);
 }
 
 /** C ref: options.c:10192 */
 export function disregard_all_options() {
     let i;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        cptr.st1o2(allopt, i, 104, 99, 1);
+        cptr.st1o2(allopt, i, 104, FLD.allopt_t_disregarded, 1);
 }
 
 /** C ref: options.c:10201 — @param {*} optidx */
 export function heed_this_option(optidx) {
     if (optidx >= 0 && optidx < NHC.OPTCOUNT)
-        cptr.st1o2(allopt, optidx, 104, 99, 0);
+        cptr.st1o2(allopt, optidx, 104, FLD.allopt_t_disregarded, 0);
 }
 
 /** C ref: options.c:10207 — @param {*} optidx */
 export function disregard_this_option(optidx) {
     if (optidx >= 0 && optidx < NHC.OPTCOUNT)
-        cptr.st1o2(allopt, optidx, 104, 99, 1);
+        cptr.st1o2(allopt, optidx, 104, FLD.allopt_t_disregarded, 1);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

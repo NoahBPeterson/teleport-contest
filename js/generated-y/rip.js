@@ -9,6 +9,7 @@ import * as Y from '../yield-rt.js';
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { gd, gr, svp } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
 import { formatkiller } from './topten.js';
@@ -55,7 +56,7 @@ function* center(line, text) {
     let ip;
     let op;
     ip = text;
-    op = cptr.add(cptr.ldPtro(cptr.ldPtro(gr, 352), line, 8), BigInt.asUintN(64, 28n - ((BigInt.asUintN(64, cptr.strlen(text) + 1n)) >> 1n)));
+    op = cptr.add(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_rip), line, 8), BigInt.asUintN(64, 28n - ((BigInt.asUintN(64, cptr.strlen(text) + 1n)) >> 1n)));
     while (cptr.ld1s(ip))
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => ip, (v) => { ip = v; })));
 }
@@ -69,13 +70,13 @@ export function* genl_outrip(tmpwin, how, when) {
     let line;
     let year;
     let cash;
-    cptr.stPtro(gr, 352, dp = (yield* alloc(128)));
+    cptr.stPtro(gr, FLD.instance_globals_r_rip, dp = (yield* alloc(128)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); ++x)
         cptr.stPtro(dp, x, (yield* dupstr(cptr.ldPtro(rip_txt, x, 8))), 8);
     cptr.stPtro(dp, x, null, 8);
     void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
     (yield* center(6, cptr.decay(buf)));
-    cash = ((cptr.ldI64o(gd, 8)) > 0n ? (cptr.ldI64o(gd, 8)) : 0n);
+    cash = ((cptr.ldI64o(gd, FLD.instance_globals_d_done_money)) > 0n ? (cptr.ldI64o(gd, FLD.instance_globals_d_done_money)) : 0n);
     if (cash > 999999999n)
         cash = 999999999n;
     void cptr.sprintf(cptr.decay(buf), __sl11, cash);
@@ -104,16 +105,16 @@ export function* genl_outrip(tmpwin, how, when) {
     year = Number(BigInt.asIntN(32, (((yield* yyyymmdd(when)) / 10000n) % 10000n)));
     void cptr.sprintf(cptr.decay(buf), __sl12, year);
     (yield* center(12, cptr.decay(buf)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
     for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.ldPtr(dp))));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.ldPtr(dp))));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); x++) {
-        cptr.free(cptr.ldPtro(cptr.ldPtro(gr, 352), x, 8));
+        cptr.free(cptr.ldPtro(cptr.ldPtro(gr, FLD.instance_globals_r_rip), x, 8));
     }
-    cptr.free(cptr.ldPtro(gr, 352));
-    cptr.stPtro(gr, 352, null);
+    cptr.free(cptr.ldPtro(gr, FLD.instance_globals_r_rip));
+    cptr.stPtro(gr, FLD.instance_globals_r_rip, null);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

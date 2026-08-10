@@ -12,6 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -131,11 +132,11 @@ function init_rumors(fp) {
     let line = new Uint8Array(256);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64o(gt, 400) > 0n && cptr.ldI64o(gf, 104) > 0n) {
-        cptr.stI64o(gt, 416, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, 408)) + cptr.ldI64o(gt, 400)));
-        cptr.stI64o(gf, 120, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, 112)) + cptr.ldI64o(gf, 104)));
+    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, FLD.instance_globals_t_true_rumor_size), cptr.add(gt, FLD.instance_globals_t_true_rumor_start), false_count, cptr.add(gf, FLD.instance_globals_f_false_rumor_size), cptr.add(gf, FLD.instance_globals_f_false_rumor_start), eof_offset) == 7 && cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) > 0n && cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size) > 0n) {
+        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)) + cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size)));
+        cptr.stI64o(gf, FLD.instance_globals_f_false_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)) + cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size)));
     } else {
-        cptr.stI64o(gt, 400, -1n);
+        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
         void fclose(fp);
     }
 }
@@ -150,7 +151,7 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
     let line = new Uint8Array(256);
     let marklen = Number(BigInt.asIntN(32, cptr.strlen(__static_getrumor_cookie_marker)));
     cptr.st1o(rumor_buf, 0, 0);
-    if (cptr.ldI64o(gt, 400) < 0n)
+    if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n)
         return rumor_buf;
     rumors = fopen(__sl0, __sl1);
     if (rumors) {
@@ -158,9 +159,9 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
         let adjtruth;
         do {
             cptr.st1o(rumor_buf, 0, 0);
-            if (cptr.ldI64o(gt, 400) == 0n) {
+            if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) == 0n) {
                 init_rumors(rumors);
-                if (cptr.ldI64o(gt, 400) < 0n) {
+                if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
                     void cptr.sprintf(rumor_buf, __sl2, __sl0);
                     return rumor_buf;
                 }
@@ -168,13 +169,13 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
             switch (adjtruth = (truth + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 151, __sl4), rn2(2)) : rn2(2))) | 0) {
                 case 2:
                 case 1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gt, 408));
-                ending = cptr.ldI64o(gt, 416);
+                beginning = BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start));
+                ending = cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end);
                 break;
                 case 0:
                 case -1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gf, 112));
-                ending = cptr.ldI64o(gf, 120);
+                beginning = BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start));
+                ending = cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end);
                 break;
                 default:
                 (yield* impossible(__sl5));
@@ -185,11 +186,11 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
         void fclose(rumors);
         if (count >= 50)
             (yield* impossible(__sl7));
-        else if (!cptr.ld1so(gi, 4))
+        else if (!cptr.ld1so(gi, FLD.instance_globals_i_in_mklev))
             (yield* exercise(NHC.A_WIS, schar((adjtruth > 0))));
     } else {
         (yield* couldnt_open_file(__sl0));
-        cptr.stI64o(gt, 400, -1n);
+        cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
     }
     if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
         let src = cptr.add(rumor_buf, marklen);
@@ -213,68 +214,68 @@ export function* rumor_check() {
         let line = new Uint8Array(256);
         let xbuf = new Uint8Array(256);
         let rumor_buf = new Uint8Array(256);
-        rumors = (cptr.ldI64o(gt, 400) >= 0n) ? fopen(__sl0, __sl1) : null;
+        rumors = (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) >= 0n) ? fopen(__sl0, __sl1) : null;
         if (rumors) {
             let ftell_rumor_start = 0n;
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            if (cptr.ldI64o(gt, 400) == 0n) {
+            if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) == 0n) {
                 init_rumors(rumors);
-                if (cptr.ldI64o(gt, 400) < 0n) {
+                if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
                     rumors = null;
                     { __go_no_rumors = true; break __skip_no_rumors; }
                 }
             }
-            tmpwin.v = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT)));
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, 408)), cptr.ldU64o(gt, 408), cptr.ldI64o(gt, 416), BigInt.asUintN(64, cptr.ldI64o(gt, 416)), cptr.ldI64o(gt, 400), BigInt.asUintN(64, cptr.ldI64o(gt, 400)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, 112)), cptr.ldU64o(gf, 112), cptr.ldI64o(gf, 120), BigInt.asUintN(64, cptr.ldI64o(gf, 120)), cptr.ldI64o(gf, 104), BigInt.asUintN(64, cptr.ldI64o(gf, 104)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            tmpwin.v = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_size)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, 408)), 0);
+            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, FLD.instance_globals_t_true_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, 416))
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, 112)), 0);
+            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, FLD.instance_globals_f_false_rumor_start)), 0);
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, 120))
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, FLD.instance_globals_f_false_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin.v, 0, cptr.decay(rumor_buf))));
             void fclose(rumors);
-        } else if (cptr.ldI64o(gt, 400) < 0n) {
+        } else if (cptr.ldI64o(gt, FLD.instance_globals_t_true_rumor_size) < 0n) {
             __go_no_rumors = true; break __skip_no_rumors;
         } else {
             (yield* couldnt_open_file(__sl0));
-            cptr.stI64o(gt, 400, -1n);
+            cptr.stI64o(gt, FLD.instance_globals_t_true_rumor_size, -1n);
         }
     }
     if (__go_no_rumors) {
         (yield* pline(__sl15));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1)));
     }
     (yield* others_check(__sl16, __sl17, tmpwin));
     (yield* others_check(__sl18, __sl19, tmpwin));
     (yield* others_check(__sl20, __sl21, tmpwin));
     if (tmpwin.v != -1) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(tmpwin.v, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin.v)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin.v, 1)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin.v)));
     }
 }
 
@@ -292,48 +293,48 @@ function* others_check(ftype, fname, winptr) {
     if (fh) {
         __lbl_closeit: {
             if (tmpwin == -1) {
-                cptr.stI32(winptr, tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT))));
+                cptr.stI32(winptr, tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT))));
                 if (tmpwin == -1) {
                     (yield* impossible(cptr.decay(__static_others_check_errfmt), fname, __sl22));
                     break __lbl_closeit;
                 }
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, ftype)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, ftype)));
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh)) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl23);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
             if (cptr.ld1s(cptr.decay(line)) != 35) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl24);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl25)));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(line))));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl26)));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl25)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(line))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl26)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
                 break __lbl_closeit;
             }
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __sl27 : __sl28);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(xbuf))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
             ++entrycount;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
             if (!fgets(cptr.decay(line), 256, fh)) {
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl29)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl29)));
             } else {
                 ++entrycount;
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
                 while (fgets(cptr.decay(line), 256, fh)) {
                     ++entrycount;
                     if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
@@ -341,11 +342,11 @@ function* others_check(ftype, fname, winptr) {
                     void (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)));
                 }
                 if (entrycount == 2) {
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl30)));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl30)));
                 } else {
                     if (entrycount > 3)
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl31)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(xbuf))));
+                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl31)));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(xbuf))));
                 }
             }
         }
@@ -422,7 +423,7 @@ export function* outrumor(truth, mechanism) {
     if (reading) {
         if (is_fainted() && mechanism == NHM.BY_COOKIE) {
             return;
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
+        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
             if (mechanism == NHM.BY_COOKIE)
                 (yield* pline(cptr.decay(__static_outrumor_fortune_msg)));
             (yield* pline(__sl33));
@@ -458,10 +459,10 @@ function* init_oracles(fp) {
     void fgets(cptr.decay(line), 256, fp);
     if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0) {
         cptr.stI32(svo, cnt.v >>> 0);
-        cptr.stPtro(svo, 8, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n))))));
+        cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n))))));
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
-            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtro(svo, 8), i, 8));
+            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8));
         }
     }
     return;
@@ -470,22 +471,22 @@ function* init_oracles(fp) {
 /** C ref: rumors.c:598 — @param {CPtr} nhfp */
 export function* save_oracles(nhfp) {
     let i;
-    if ((cptr.ldI32o((nhfp), 4) & 3)) {
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & 3)) {
         (yield* sfo_unsigned(nhfp, svo, __sl44));
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-                (yield* sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, 8), i, 8), __sl45));
+                (yield* sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8), __sl45));
                 ;
             }
         }
     }
-    if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING)) {
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & NHM.FREEING)) {
         if (cptr.ldI32(svo)) {
-            cptr.stI32(svo, 0), cptr.stI32o(go, 552, 0);
+            cptr.stI32(svo, 0), cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 0);
         }
-        if (cptr.ldPtro(svo, 8)) {
-            cptr.free(cptr.ldPtro(svo, 8));
-            cptr.stPtro(svo, 8, null);
+        if (cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc)) {
+            cptr.free(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc));
+            cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, null);
         }
     }
 }
@@ -496,12 +497,12 @@ export function* restore_oracles(nhfp) {
     (yield* sfi_unsigned(nhfp, svo, __sl44));
     ;
     if (cptr.ldI32(svo)) {
-        cptr.stPtro(svo, 8, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n))))));
+        cptr.stPtro(svo, FLD.instance_globals_saved_o_oracle_loc, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n))))));
         for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-            (yield* sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, 8), i, 8), __sl45));
+            (yield* sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), i, 8), __sl45));
             ;
         }
-        cptr.stI32o(go, 552, 1);
+        cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 1);
     }
 }
 
@@ -513,41 +514,41 @@ export function* outoracle(special, delphi) {
     let endp;
     let line = new Uint8Array(80);
     let xbuf = new Uint8Array(256);
-    if (cptr.ldI32o(go, 552) < 0 || (cptr.ldI32o(go, 552) > 0 && cptr.ldI32(svo) == 0))
+    if (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) < 0 || (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
         return;
     oracles = fopen(__sl46, __sl1);
     if (oracles) {
         __lbl_close_oracles: {
-            if (cptr.ldI32o(go, 552) == 0) {
+            if (cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) == 0) {
                 (yield* init_oracles(oracles));
-                cptr.stI32o(go, 552, 1);
+                cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, 1);
                 if (cptr.ldI32(svo) == 0)
                     break __lbl_close_oracles;
             }
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;
             oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl3, 665, __sl47), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
-            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, 8), oracle_idx, 8)), 0);
+            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
-                cptr.stU64o(cptr.ldPtro(svo, 8), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, 8), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
-            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT)));
+                cptr.stU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, FLD.instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
+            tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
             if (delphi)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, special ? __sl48 : __sl49)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, special ? __sl48 : __sl49)));
             else
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl50)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl50)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl13)));
             while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51)) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(tmpwin, 1)));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
         }
         void fclose(oracles);
     } else {
         (yield* couldnt_open_file(__sl46));
-        cptr.stI32o(go, 552, -1);
+        cptr.stI32o(go, FLD.instance_globals_o_oracle_flg, -1);
     }
 }
 
@@ -556,15 +557,15 @@ export function* doconsult(oracl) {
     let umoney;
     let u_pay;
     let minor_cost = 50;
-    let major_cost = (500 + Math.imul(50, cptr.ldI32o(u, 48))) | 0;
+    let major_cost = (500 + Math.imul(50, cptr.ldI32o(u, FLD.you_ulevel))) | 0;
     let add_xpts;
     let qbuf = new Uint8Array(128);
-    cptr.stI64o(gm, 8, 0n);
-    umoney = money_cnt(cptr.ldPtro(gi, 8));
+    cptr.stI64o(gm, FLD.instance_globals_m_multi, 0n);
+    umoney = money_cnt(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
     if (!oracl) {
         (yield* There(__sl52));
         return NHM.ECMD_OK;
-    } else if (!(cptr.ldI32o(oracl, 168) & 1)) {
+    } else if (!(cptr.ldI32o(oracl, FLD.monst_mpeaceful) & 1)) {
         (yield* pline(__sl53, (yield* Monnam(oracl))));
         return NHM.ECMD_OK;
     } else if (!umoney) {
@@ -584,7 +585,7 @@ export function* doconsult(oracl) {
         u_pay = minor_cost;
         break;
         case 110:
-        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, 552) < 0))
+        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, FLD.instance_globals_o_oracle_flg) < 0))
             return NHM.ECMD_OK;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, (yield* currency(BigInt(major_cost))));
         if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121)
@@ -594,20 +595,20 @@ export function* doconsult(oracl) {
     }
     (yield* money2mon(oracl, BigInt(u_pay)));
     cptr.st1(disp, 1);
-    if (!(cptr.ldI32o(u, 1888) & 1) && !(cptr.ldI32o(u, 1884) & 1))
+    if (!(cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1) && !(cptr.ldI32o(u, FLD.you_uevent) & 1))
         (yield* record_achievement(NHC.ACH_ORCL));
     add_xpts = 0;
     if (u_pay == minor_cost) {
         (yield* outrumor(1, NHM.BY_ORACLE));
-        if (!(cptr.ldI32o(u, 1884) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, 1888) & 1) | 0 ? 25 : 10)) | 0;
-        cptr.stI32o(u, 1884, 1);
+        if (!(cptr.ldI32o(u, FLD.you_uevent) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
+        cptr.stI32o(u, FLD.you_uevent, 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
         (yield* outoracle(cheapskate, 1));
-        if (!cheapskate && !(cptr.ldI32o(u, 1888) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, 1884) & 1) | 0 ? 25 : 10)) | 0;
-        cptr.stI32o(u, 1888, 1);
+        if (!cheapskate && !(cptr.ldI32o(u, FLD.you_uevent + FLD.u_event_major_oracle) & 1))
+            add_xpts = (u_pay / ((cptr.ldI32o(u, FLD.you_uevent) & 1) | 0 ? 25 : 10)) | 0;
+        cptr.stI32o(u, FLD.you_uevent + FLD.u_event_major_oracle, 1);
         (yield* exercise(NHC.A_WIS, schar((!cheapskate))));
     }
     if (add_xpts) {
@@ -619,11 +620,11 @@ export function* doconsult(oracl) {
 
 /** C ref: rumors.c:770 — @param {CPtr} filename */
 function* couldnt_open_file(filename) {
-    let save_something = cptr.ldI32o(program_state, 16);
-    if (!cptr.ld1so(iflags, 15))
-        cptr.stI32o(program_state, 16, 0);
+    let save_something = cptr.ldI32o(program_state, FLD.sinfo_something_worth_saving);
+    if (!cptr.ld1so(iflags, FLD.instance_flags_debug_fuzzer))
+        cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 0);
     (yield* impossible(__sl58, filename));
-    cptr.stI32o(program_state, 16, save_something);
+    cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, save_something);
 }
 
 /** C ref: rumors.c:791 — @param {CPtr} word @returns {CInt} */
@@ -663,7 +664,7 @@ function* init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
-            if ((cptr.ldU16o(mptr, 34) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
+            if ((cptr.ldU16o(mptr, FLD.permonst_geno) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
                 continue;
             for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
                 nam = cptr.ldPtro(mptr, mgend, 8);
@@ -707,17 +708,17 @@ function* init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (cptr.ld1so(flags, 10) && (yield* debugcore(__sl62, 0))) {
+    if (cptr.ld1so(flags, FLD.flag_debug) && (yield* debugcore(__sl62, 0))) {
         let buf = new Uint8Array(256);
         let i;
-        let tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl63)));
+        let tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_TEXT)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl63)));
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
             void cptr.sprintf(cptr.decay(buf), __sl64, cptr.ldPtro(CapMons, i, 8));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(buf))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(tmpwin, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
     }
     return;
 }

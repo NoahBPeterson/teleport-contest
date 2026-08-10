@@ -7,6 +7,7 @@ import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
 import { WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday } from './decl.js';
@@ -817,261 +818,261 @@ cptr.stPtro(shkhealthfoods, 248, null);
 /** C ref: shknam.c:209 — struct shclass[13] */
 export const shtypes = cptr.alloc(13 * 112);
 cptr.stPtro(shtypes, 0, __sl345);
-cptr.stPtro(shtypes, 8, null);
-cptr.st1o(shtypes, 16, NHC.RANDOM_CLASS);
-cptr.stI32o(shtypes, 20, 42);
-cptr.st1o(shtypes, 24, NHM.D_SHOP);
-cptr.stI32o(shtypes, 28, 100);
-cptr.stI32o(shtypes, 32, NHC.RANDOM_CLASS);
-cptr.stI32o(shtypes, 36, 0);
-cptr.stI32o(shtypes, 40, 0);
-cptr.stI32o(shtypes, 44, 0);
-cptr.stI32o(shtypes, 48, 0);
-cptr.stI32o(shtypes, 52, 0);
-cptr.stI32o(shtypes, 56, 0);
-cptr.stI32o(shtypes, 60, 0);
-cptr.stI32o(shtypes, 64, 0);
-cptr.stI32o(shtypes, 68, 0);
-cptr.stI32o(shtypes, 72, 0);
-cptr.stPtro(shtypes, 104, shkgeneral);
+cptr.stPtro(shtypes, 0 + FLD.shclass_annotation, null);
+cptr.st1o(shtypes, 0 + FLD.shclass_symb, NHC.RANDOM_CLASS);
+cptr.stI32o(shtypes, 0 + FLD.shclass_prob, 42);
+cptr.st1o(shtypes, 0 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 0, 100);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.RANDOM_CLASS);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 8, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 8 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 0 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 0 + FLD.shclass_shknms, shkgeneral);
 cptr.stPtro(shtypes, 112, __sl346);
-cptr.stPtro(shtypes, 120, __sl347);
-cptr.st1o(shtypes, 128, NHC.ARMOR_CLASS);
-cptr.stI32o(shtypes, 132, 14);
-cptr.st1o(shtypes, 136, NHM.D_SHOP);
-cptr.stI32o(shtypes, 140, 90);
-cptr.stI32o(shtypes, 144, NHC.ARMOR_CLASS);
-cptr.stI32o(shtypes, 148, 10);
-cptr.stI32o(shtypes, 152, NHC.WEAPON_CLASS);
-cptr.stI32o(shtypes, 156, 0);
-cptr.stI32o(shtypes, 160, 0);
-cptr.stI32o(shtypes, 164, 0);
-cptr.stI32o(shtypes, 168, 0);
-cptr.stI32o(shtypes, 172, 0);
-cptr.stI32o(shtypes, 176, 0);
-cptr.stI32o(shtypes, 180, 0);
-cptr.stI32o(shtypes, 184, 0);
-cptr.stPtro(shtypes, 216, shkarmors);
+cptr.stPtro(shtypes, 112 + FLD.shclass_annotation, __sl347);
+cptr.st1o(shtypes, 112 + FLD.shclass_symb, NHC.ARMOR_CLASS);
+cptr.stI32o(shtypes, 112 + FLD.shclass_prob, 14);
+cptr.st1o(shtypes, 112 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 0, 90);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.ARMOR_CLASS);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 8, 10);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 8 + FLD.itp_itype, NHC.WEAPON_CLASS);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 112 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 112 + FLD.shclass_shknms, shkarmors);
 cptr.stPtro(shtypes, 224, __sl348);
-cptr.stPtro(shtypes, 232, __sl349);
-cptr.st1o(shtypes, 240, NHC.SCROLL_CLASS);
-cptr.stI32o(shtypes, 244, 10);
-cptr.st1o(shtypes, 248, NHM.D_SHOP);
-cptr.stI32o(shtypes, 252, 90);
-cptr.stI32o(shtypes, 256, NHC.SCROLL_CLASS);
-cptr.stI32o(shtypes, 260, 10);
-cptr.stI32o(shtypes, 264, NHC.SPBOOK_CLASS);
-cptr.stI32o(shtypes, 268, 0);
-cptr.stI32o(shtypes, 272, 0);
-cptr.stI32o(shtypes, 276, 0);
-cptr.stI32o(shtypes, 280, 0);
-cptr.stI32o(shtypes, 284, 0);
-cptr.stI32o(shtypes, 288, 0);
-cptr.stI32o(shtypes, 292, 0);
-cptr.stI32o(shtypes, 296, 0);
-cptr.stPtro(shtypes, 328, shkbooks);
+cptr.stPtro(shtypes, 224 + FLD.shclass_annotation, __sl349);
+cptr.st1o(shtypes, 224 + FLD.shclass_symb, NHC.SCROLL_CLASS);
+cptr.stI32o(shtypes, 224 + FLD.shclass_prob, 10);
+cptr.st1o(shtypes, 224 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 0, 90);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.SCROLL_CLASS);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 8, 10);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 8 + FLD.itp_itype, NHC.SPBOOK_CLASS);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 224 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 224 + FLD.shclass_shknms, shkbooks);
 cptr.stPtro(shtypes, 336, __sl350);
-cptr.stPtro(shtypes, 344, __sl351);
-cptr.st1o(shtypes, 352, NHC.POTION_CLASS);
-cptr.stI32o(shtypes, 356, 10);
-cptr.st1o(shtypes, 360, NHM.D_SHOP);
-cptr.stI32o(shtypes, 364, 100);
-cptr.stI32o(shtypes, 368, NHC.POTION_CLASS);
-cptr.stI32o(shtypes, 372, 0);
-cptr.stI32o(shtypes, 376, 0);
-cptr.stI32o(shtypes, 380, 0);
-cptr.stI32o(shtypes, 384, 0);
-cptr.stI32o(shtypes, 388, 0);
-cptr.stI32o(shtypes, 392, 0);
-cptr.stI32o(shtypes, 396, 0);
-cptr.stI32o(shtypes, 400, 0);
-cptr.stI32o(shtypes, 404, 0);
-cptr.stI32o(shtypes, 408, 0);
-cptr.stPtro(shtypes, 440, shkliquors);
+cptr.stPtro(shtypes, 336 + FLD.shclass_annotation, __sl351);
+cptr.st1o(shtypes, 336 + FLD.shclass_symb, NHC.POTION_CLASS);
+cptr.stI32o(shtypes, 336 + FLD.shclass_prob, 10);
+cptr.st1o(shtypes, 336 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 0, 100);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.POTION_CLASS);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 8, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 8 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 336 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 336 + FLD.shclass_shknms, shkliquors);
 cptr.stPtro(shtypes, 448, __sl352);
-cptr.stPtro(shtypes, 456, __sl353);
-cptr.st1o(shtypes, 464, NHC.WEAPON_CLASS);
-cptr.stI32o(shtypes, 468, 5);
-cptr.st1o(shtypes, 472, NHM.D_SHOP);
-cptr.stI32o(shtypes, 476, 90);
-cptr.stI32o(shtypes, 480, NHC.WEAPON_CLASS);
-cptr.stI32o(shtypes, 484, 10);
-cptr.stI32o(shtypes, 488, NHC.ARMOR_CLASS);
-cptr.stI32o(shtypes, 492, 0);
-cptr.stI32o(shtypes, 496, 0);
-cptr.stI32o(shtypes, 500, 0);
-cptr.stI32o(shtypes, 504, 0);
-cptr.stI32o(shtypes, 508, 0);
-cptr.stI32o(shtypes, 512, 0);
-cptr.stI32o(shtypes, 516, 0);
-cptr.stI32o(shtypes, 520, 0);
-cptr.stPtro(shtypes, 552, shkweapons);
+cptr.stPtro(shtypes, 448 + FLD.shclass_annotation, __sl353);
+cptr.st1o(shtypes, 448 + FLD.shclass_symb, NHC.WEAPON_CLASS);
+cptr.stI32o(shtypes, 448 + FLD.shclass_prob, 5);
+cptr.st1o(shtypes, 448 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 0, 90);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.WEAPON_CLASS);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 8, 10);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 8 + FLD.itp_itype, NHC.ARMOR_CLASS);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 448 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 448 + FLD.shclass_shknms, shkweapons);
 cptr.stPtro(shtypes, 560, __sl354);
-cptr.stPtro(shtypes, 568, __sl355);
-cptr.st1o(shtypes, 576, NHC.FOOD_CLASS);
-cptr.stI32o(shtypes, 580, 5);
-cptr.st1o(shtypes, 584, NHM.D_SHOP);
-cptr.stI32o(shtypes, 588, 83);
-cptr.stI32o(shtypes, 592, NHC.FOOD_CLASS);
-cptr.stI32o(shtypes, 596, 5);
-cptr.stI32o(shtypes, 600, -319);
-cptr.stI32o(shtypes, 604, 4);
-cptr.stI32o(shtypes, 608, -317);
-cptr.stI32o(shtypes, 612, 5);
-cptr.stI32o(shtypes, 616, -322);
-cptr.stI32o(shtypes, 620, 3);
-cptr.stI32o(shtypes, 624, -216);
-cptr.stI32o(shtypes, 628, 0);
-cptr.stI32o(shtypes, 632, 0);
-cptr.stPtro(shtypes, 664, shkfoods);
+cptr.stPtro(shtypes, 560 + FLD.shclass_annotation, __sl355);
+cptr.st1o(shtypes, 560 + FLD.shclass_symb, NHC.FOOD_CLASS);
+cptr.stI32o(shtypes, 560 + FLD.shclass_prob, 5);
+cptr.st1o(shtypes, 560 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 0, 83);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.FOOD_CLASS);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 8, 5);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 8 + FLD.itp_itype, -319);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 16, 4);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 16 + FLD.itp_itype, -317);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 24, 5);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 24 + FLD.itp_itype, -322);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 32, 3);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 32 + FLD.itp_itype, -216);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 560 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 560 + FLD.shclass_shknms, shkfoods);
 cptr.stPtro(shtypes, 672, __sl356);
-cptr.stPtro(shtypes, 680, __sl357);
-cptr.st1o(shtypes, 688, NHC.RING_CLASS);
-cptr.stI32o(shtypes, 692, 3);
-cptr.st1o(shtypes, 696, NHM.D_SHOP);
-cptr.stI32o(shtypes, 700, 85);
-cptr.stI32o(shtypes, 704, NHC.RING_CLASS);
-cptr.stI32o(shtypes, 708, 10);
-cptr.stI32o(shtypes, 712, NHC.GEM_CLASS);
-cptr.stI32o(shtypes, 716, 5);
-cptr.stI32o(shtypes, 720, NHC.AMULET_CLASS);
-cptr.stI32o(shtypes, 724, 0);
-cptr.stI32o(shtypes, 728, 0);
-cptr.stI32o(shtypes, 732, 0);
-cptr.stI32o(shtypes, 736, 0);
-cptr.stI32o(shtypes, 740, 0);
-cptr.stI32o(shtypes, 744, 0);
-cptr.stPtro(shtypes, 776, shkrings);
+cptr.stPtro(shtypes, 672 + FLD.shclass_annotation, __sl357);
+cptr.st1o(shtypes, 672 + FLD.shclass_symb, NHC.RING_CLASS);
+cptr.stI32o(shtypes, 672 + FLD.shclass_prob, 3);
+cptr.st1o(shtypes, 672 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 0, 85);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.RING_CLASS);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 8, 10);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 8 + FLD.itp_itype, NHC.GEM_CLASS);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 16, 5);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 16 + FLD.itp_itype, NHC.AMULET_CLASS);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 672 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 672 + FLD.shclass_shknms, shkrings);
 cptr.stPtro(shtypes, 784, __sl358);
-cptr.stPtro(shtypes, 792, __sl359);
-cptr.st1o(shtypes, 800, NHC.WAND_CLASS);
-cptr.stI32o(shtypes, 804, 3);
-cptr.st1o(shtypes, 808, NHM.D_SHOP);
-cptr.stI32o(shtypes, 812, 90);
-cptr.stI32o(shtypes, 816, NHC.WAND_CLASS);
-cptr.stI32o(shtypes, 820, 5);
-cptr.stI32o(shtypes, 824, -159);
-cptr.stI32o(shtypes, 828, 5);
-cptr.stI32o(shtypes, 832, -139);
-cptr.stI32o(shtypes, 836, 0);
-cptr.stI32o(shtypes, 840, 0);
-cptr.stPtro(shtypes, 888, shkwands);
+cptr.stPtro(shtypes, 784 + FLD.shclass_annotation, __sl359);
+cptr.st1o(shtypes, 784 + FLD.shclass_symb, NHC.WAND_CLASS);
+cptr.stI32o(shtypes, 784 + FLD.shclass_prob, 3);
+cptr.st1o(shtypes, 784 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 0, 90);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.WAND_CLASS);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 8, 5);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 8 + FLD.itp_itype, -159);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 16, 5);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 16 + FLD.itp_itype, -139);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 784 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 784 + FLD.shclass_shknms, shkwands);
 cptr.stPtro(shtypes, 896, __sl360);
-cptr.stPtro(shtypes, 904, __sl361);
-cptr.st1o(shtypes, 912, NHC.TOOL_CLASS);
-cptr.stI32o(shtypes, 916, 3);
-cptr.st1o(shtypes, 920, NHM.D_SHOP);
-cptr.stI32o(shtypes, 924, 100);
-cptr.stI32o(shtypes, 928, NHC.TOOL_CLASS);
-cptr.stI32o(shtypes, 932, 0);
-cptr.stI32o(shtypes, 936, 0);
-cptr.stI32o(shtypes, 940, 0);
-cptr.stI32o(shtypes, 944, 0);
-cptr.stI32o(shtypes, 948, 0);
-cptr.stI32o(shtypes, 952, 0);
-cptr.stI32o(shtypes, 956, 0);
-cptr.stI32o(shtypes, 960, 0);
-cptr.stI32o(shtypes, 964, 0);
-cptr.stI32o(shtypes, 968, 0);
-cptr.stPtro(shtypes, 1000, shktools);
+cptr.stPtro(shtypes, 896 + FLD.shclass_annotation, __sl361);
+cptr.st1o(shtypes, 896 + FLD.shclass_symb, NHC.TOOL_CLASS);
+cptr.stI32o(shtypes, 896 + FLD.shclass_prob, 3);
+cptr.st1o(shtypes, 896 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 0, 100);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.TOOL_CLASS);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 8, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 8 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 896 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 896 + FLD.shclass_shknms, shktools);
 cptr.stPtro(shtypes, 1008, __sl362);
-cptr.stPtro(shtypes, 1016, __sl363);
-cptr.st1o(shtypes, 1024, NHC.SPBOOK_CLASS);
-cptr.stI32o(shtypes, 1028, 3);
-cptr.st1o(shtypes, 1032, NHM.D_SHOP);
-cptr.stI32o(shtypes, 1036, 90);
-cptr.stI32o(shtypes, 1040, NHC.SPBOOK_CLASS);
-cptr.stI32o(shtypes, 1044, 10);
-cptr.stI32o(shtypes, 1048, NHC.SCROLL_CLASS);
-cptr.stI32o(shtypes, 1052, 0);
-cptr.stI32o(shtypes, 1056, 0);
-cptr.stI32o(shtypes, 1060, 0);
-cptr.stI32o(shtypes, 1064, 0);
-cptr.stI32o(shtypes, 1068, 0);
-cptr.stI32o(shtypes, 1072, 0);
-cptr.stI32o(shtypes, 1076, 0);
-cptr.stI32o(shtypes, 1080, 0);
-cptr.stPtro(shtypes, 1112, shkbooks);
+cptr.stPtro(shtypes, 1008 + FLD.shclass_annotation, __sl363);
+cptr.st1o(shtypes, 1008 + FLD.shclass_symb, NHC.SPBOOK_CLASS);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_prob, 3);
+cptr.st1o(shtypes, 1008 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 0, 90);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 0 + FLD.itp_itype, NHC.SPBOOK_CLASS);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 8, 10);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 8 + FLD.itp_itype, NHC.SCROLL_CLASS);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 1008 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 1008 + FLD.shclass_shknms, shkbooks);
 cptr.stPtro(shtypes, 1120, __sl364);
-cptr.stPtro(shtypes, 1128, __sl365);
-cptr.st1o(shtypes, 1136, NHC.FOOD_CLASS);
-cptr.stI32o(shtypes, 1140, 2);
-cptr.st1o(shtypes, 1144, NHM.D_SHOP);
-cptr.stI32o(shtypes, 1148, 70);
-cptr.stI32o(shtypes, 1152, ((NHC.MAXOCLASSES + 1) | 0));
-cptr.stI32o(shtypes, 1156, 20);
-cptr.stI32o(shtypes, 1160, -319);
-cptr.stI32o(shtypes, 1164, 4);
-cptr.stI32o(shtypes, 1168, -307);
-cptr.stI32o(shtypes, 1172, 3);
-cptr.stI32o(shtypes, 1176, -315);
-cptr.stI32o(shtypes, 1180, 2);
-cptr.stI32o(shtypes, 1184, -335);
-cptr.stI32o(shtypes, 1188, 1);
-cptr.stI32o(shtypes, 1192, -286);
-cptr.stPtro(shtypes, 1224, shkhealthfoods);
+cptr.stPtro(shtypes, 1120 + FLD.shclass_annotation, __sl365);
+cptr.st1o(shtypes, 1120 + FLD.shclass_symb, NHC.FOOD_CLASS);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_prob, 2);
+cptr.st1o(shtypes, 1120 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 0, 70);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 0 + FLD.itp_itype, ((NHC.MAXOCLASSES + 1) | 0));
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 8, 20);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 8 + FLD.itp_itype, -319);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 16, 4);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 16 + FLD.itp_itype, -307);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 24, 3);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 24 + FLD.itp_itype, -315);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 32, 2);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 32 + FLD.itp_itype, -335);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 40, 1);
+cptr.stI32o(shtypes, 1120 + FLD.shclass_iprobs + 40 + FLD.itp_itype, -286);
+cptr.stPtro(shtypes, 1120 + FLD.shclass_shknms, shkhealthfoods);
 cptr.stPtro(shtypes, 1232, __sl366);
-cptr.stPtro(shtypes, 1240, __sl367);
-cptr.st1o(shtypes, 1248, NHC.TOOL_CLASS);
-cptr.stI32o(shtypes, 1252, 0);
-cptr.st1o(shtypes, 1256, NHM.D_SHOP);
-cptr.stI32o(shtypes, 1260, 30);
-cptr.stI32o(shtypes, 1264, -225);
-cptr.stI32o(shtypes, 1268, 44);
-cptr.stI32o(shtypes, 1272, -224);
-cptr.stI32o(shtypes, 1276, 5);
-cptr.stI32o(shtypes, 1280, -226);
-cptr.stI32o(shtypes, 1284, 9);
-cptr.stI32o(shtypes, 1288, -227);
-cptr.stI32o(shtypes, 1292, 3);
-cptr.stI32o(shtypes, 1296, -228);
-cptr.stI32o(shtypes, 1300, 5);
-cptr.stI32o(shtypes, 1304, -321);
-cptr.stI32o(shtypes, 1308, 2);
-cptr.stI32o(shtypes, 1312, -410);
-cptr.stI32o(shtypes, 1316, 1);
-cptr.stI32o(shtypes, 1320, -332);
-cptr.stI32o(shtypes, 1324, 1);
-cptr.stI32o(shtypes, 1328, -372);
-cptr.stPtro(shtypes, 1336, shklight);
+cptr.stPtro(shtypes, 1232 + FLD.shclass_annotation, __sl367);
+cptr.st1o(shtypes, 1232 + FLD.shclass_symb, NHC.TOOL_CLASS);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_prob, 0);
+cptr.st1o(shtypes, 1232 + FLD.shclass_shdist, NHM.D_SHOP);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 0, 30);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 0 + FLD.itp_itype, -225);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 8, 44);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 8 + FLD.itp_itype, -224);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 16, 5);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 16 + FLD.itp_itype, -226);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 24, 9);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 24 + FLD.itp_itype, -227);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 32, 3);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 32 + FLD.itp_itype, -228);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 40, 5);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 40 + FLD.itp_itype, -321);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 48, 2);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 48 + FLD.itp_itype, -410);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 56, 1);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 56 + FLD.itp_itype, -332);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 64, 1);
+cptr.stI32o(shtypes, 1232 + FLD.shclass_iprobs + 64 + FLD.itp_itype, -372);
+cptr.stPtro(shtypes, 1232 + FLD.shclass_shknms, shklight);
 cptr.stPtro(shtypes, 1344, null);
-cptr.stPtro(shtypes, 1352, null);
-cptr.st1o(shtypes, 1360, 0);
-cptr.stI32o(shtypes, 1364, 0);
-cptr.st1o(shtypes, 1368, 0);
-cptr.stI32o(shtypes, 1372, 0);
-cptr.stI32o(shtypes, 1376, 0);
-cptr.stI32o(shtypes, 1380, 0);
-cptr.stI32o(shtypes, 1384, 0);
-cptr.stI32o(shtypes, 1388, 0);
-cptr.stI32o(shtypes, 1392, 0);
-cptr.stI32o(shtypes, 1396, 0);
-cptr.stI32o(shtypes, 1400, 0);
-cptr.stI32o(shtypes, 1404, 0);
-cptr.stI32o(shtypes, 1408, 0);
-cptr.stI32o(shtypes, 1412, 0);
-cptr.stI32o(shtypes, 1416, 0);
-cptr.stPtro(shtypes, 1448, null);
+cptr.stPtro(shtypes, 1344 + FLD.shclass_annotation, null);
+cptr.st1o(shtypes, 1344 + FLD.shclass_symb, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_prob, 0);
+cptr.st1o(shtypes, 1344 + FLD.shclass_shdist, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 0, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 0 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 8, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 8 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 16, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 16 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 24, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 24 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 32, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 32 + FLD.itp_itype, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 40, 0);
+cptr.stI32o(shtypes, 1344 + FLD.shclass_iprobs + 40 + FLD.itp_itype, 0);
+cptr.stPtro(shtypes, 1344 + FLD.shclass_shknms, null);
 
 /** C ref: shknam.c:380 — @param {CPtr} obj @param {CInt} otyp @returns {CInt} */
 function veggy_item(obj, otyp) {
     let corpsenm;
     let oclass;
     if (obj) {
-        otyp = cptr.ldI16o(obj, 32);
-        oclass = cptr.ld1so(obj, 49);
-        corpsenm = cptr.ldI32o(obj, 168);
+        otyp = cptr.ldI16o(obj, FLD.obj_otyp);
+        oclass = cptr.ld1so(obj, FLD.obj_oclass);
+        corpsenm = cptr.ldI32o(obj, FLD.obj_corpsenm);
     } else {
-        oclass = cptr.ld1so2(objects, otyp, 120, 70);
+        oclass = cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_class);
         corpsenm = NHC.PM_LICHEN;
     }
     if (oclass == NHC.FOOD_CLASS) {
-        if (((cptr.ldI32o2(objects, otyp, 120, 64) & 31) | 0) == NHC.VEGGY || otyp == NHC.EGG)
+        if (((cptr.ldI32o2(objects, otyp, 120, FLD.objclass_oc_material) & 31) | 0) == NHC.VEGGY || otyp == NHC.EGG)
             return 1;
         if (otyp == NHC.TIN && corpsenm == NHC.NON_PM)
-            return schar((cptr.ld1so(obj, 48) == 1));
+            return schar((cptr.ld1so(obj, FLD.obj_spe) == 1));
         if (otyp == NHC.TIN || otyp == NHC.CORPSE)
-            return schar((((corpsenm) >= NHC.LOW_PM && (corpsenm) < NHC.NUMMONS) && ((cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), 28) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 1 : 0));
+            return schar((((corpsenm) >= NHC.LOW_PM && (corpsenm) < NHC.NUMMONS) && ((cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, corpsenm, 96)), FLD.permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 1 : 0));
     }
     return 0;
 }
@@ -1086,12 +1087,12 @@ function shkveg() {
     let ok = cptr.alloc(481 * 4);
     void __builtin___memset_chk(ok, 0, 1924n, __builtin_object_size(ok, 0));
     j = (maxprob = 0);
-    for (i = cptr.ldI32o2(svb, oclass, 4, 16); i < NHC.NUM_OBJECTS; ++i) {
-        if (cptr.ld1so2(objects, i, 120, 70) != oclass)
+    for (i = cptr.ldI32o2(svb, oclass, 4, FLD.instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS; ++i) {
+        if (cptr.ld1so2(objects, i, 120, FLD.objclass_oc_class) != oclass)
             break;
         if (veggy_item(null, i)) {
             cptr.stI32o(ok, j++, i, 4);
-            maxprob = (maxprob + cptr.ldI16o2(objects, i, 120, 74)) | 0;
+            maxprob = (maxprob + cptr.ldI16o2(objects, i, 120, FLD.objclass_oc_prob)) | 0;
         }
     }
     if (maxprob < 1)
@@ -1099,11 +1100,11 @@ function shkveg() {
     prob = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 427, __sl370), rnd(maxprob)) : rnd(maxprob));
     j = 0;
     i = cptr.ldI32o(ok, 0, 4);
-    while ((prob = (prob - cptr.ldI16o2(objects, i, 120, 74)) | 0) > 0) {
+    while ((prob = (prob - cptr.ldI16o2(objects, i, 120, FLD.objclass_oc_prob)) | 0) > 0) {
         j++;
         i = cptr.ldI32o(ok, j, 4);
     }
-    if (cptr.ld1so2(objects, i, 120, 70) != oclass || !(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))
+    if (cptr.ld1so2(objects, i, 120, FLD.objclass_oc_class) != oclass || !(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))
         panic(__sl371, oclass, i);
     return i;
 }
@@ -1111,7 +1112,7 @@ function shkveg() {
 /** C ref: shknam.c:443 — @param {CInt} sx @param {CInt} sy */
 function mkveggy_at(sx, sy) {
     let obj = mksobj_at(shkveg(), i16(sx), i16(sy), 1, 1);
-    if (obj && cptr.ldI16o(obj, 32) == NHC.TIN)
+    if (obj && cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TIN)
         set_tin_variety(obj, -3);
     return;
 }
@@ -1124,10 +1125,10 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
     if (mkspecl && (!strcmp(cptr.ldPtr(shp), __sl362) || !strcmp(cptr.ldPtr(shp), __sl348))) {
         let novel = mksobj_at(NHC.SPE_NOVEL, i16(sx), i16(sy), 0, 0);
         if (novel)
-            cptr.stI32o(svc, 620, 1);
+            cptr.stI32o(svc, FLD.context_info_tribute + FLD.tribute_info_bookstock, 1);
         return;
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl369, 470, __sl372), rn2(100)) : rn2(100)) < depth(cptr.add(u, 24)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, 75600) !== null) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__sl369, 470, __sl372), rn2(100)) : rn2(100)) < depth(cptr.add(u, FLD.you_uz)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
         if (atype == ((NHC.MAXOCLASSES + 1) | 0))
@@ -1146,17 +1147,17 @@ function nameshk(shk, nlp) {
     let names_avail;
     let shname = null;
     let mtmp;
-    let name_wanted = cptr.ldI32o(shk, 16) | 0;
+    let name_wanted = cptr.ldI32o(shk, FLD.monst_m_id) | 0;
     let sptr;
-    if (cptr.eq(nlp, shklight) && In_mines(cptr.add(u, 24)) && (sptr = Is_special(cptr.add(u, 24))) !== null && (cptr.ldI32o(sptr, 32) & 1) | 0) {
+    if (cptr.eq(nlp, shklight) && In_mines(cptr.add(u, FLD.you_uz)) && (sptr = Is_special(cptr.add(u, FLD.you_uz))) !== null && (cptr.ldI32o(sptr, FLD.s_level_flags) & 1) | 0) {
         shname = __sl373;
-        cptr.stI32o(shk, 84, 0);
+        cptr.stI32o(shk, FLD.monst_female, 0);
     } else {
         let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
-        name_wanted = (name_wanted + ((((ledger_no(cptr.add(u, 24)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) | 0;
+        name_wanted = (name_wanted + ((((ledger_no(cptr.add(u, FLD.you_uz)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) | 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
-        cptr.stI32o(shk, 84, (name_wanted & 1) >>> 0);
+        cptr.stI32o(shk, FLD.monst_female, (name_wanted & 1) >>> 0);
         for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
             continue;
         (__builtin_expect(BigInt((!(names_avail > 0))), 0n) ? __assert_rtn(__sl374, __sl375, 514, __sl376) : void 0);
@@ -1164,7 +1165,7 @@ function nameshk(shk, nlp) {
         for (trycnt = 0; trycnt < 50; trycnt++) {
             if (cptr.eq(nlp, shktools)) {
                 shname = cptr.ldPtro(shktools, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 519, __sl374), rn2(names_avail)) : rn2(names_avail)), 8);
-                cptr.stI32o(shk, 84, 0);
+                cptr.stI32o(shk, FLD.monst_female, 0);
             } else if (name_wanted < names_avail) {
                 shname = cptr.ldPtro(nlp, name_wanted, 8);
             } else if ((i = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 523, __sl374), rn2(names_avail)) : rn2(names_avail))) != 0) {
@@ -1175,17 +1176,17 @@ function nameshk(shk, nlp) {
                     continue;
                 continue;
             } else {
-                shname = (cptr.ldI32o(shk, 84) & 1) | 0 ? __sl377 : __sl378;
+                shname = (cptr.ldI32o(shk, FLD.monst_female) & 1) | 0 ? __sl377 : __sl378;
             }
             if (cptr.ld1s(shname) == 95 || cptr.ld1s(shname) == 45)
-                cptr.stI32o(shk, 84, 1);
+                cptr.stI32o(shk, FLD.monst_female, 1);
             else if (cptr.ld1s(shname) == 124 || cptr.ld1s(shname) == 43)
-                cptr.stI32o(shk, 84, 0);
-            for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                if ((cptr.ldI32o((mtmp), 52) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, 180) & 1))
+                cptr.stI32o(shk, FLD.monst_female, 0);
+            for (mtmp = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+                if ((cptr.ldI32o((mtmp), FLD.monst_mhp) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, FLD.monst_isshk) & 1))
                     continue;
-                (__builtin_expect(BigInt((!((cptr.ldPtro((mtmp), 312) && (cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)))))), 0n) ? __assert_rtn(__sl374, __sl375, 542, __sl379) : void 0);
-                if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 4928), shname))
+                (__builtin_expect(BigInt((!((cptr.ldPtro((mtmp), FLD.monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)))))), 0n) ? __assert_rtn(__sl374, __sl375, 542, __sl379) : void 0);
+                if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam), shname))
                     continue;
                 name_wanted = names_avail;
                 break;
@@ -1194,56 +1195,56 @@ function nameshk(shk, nlp) {
                 break;
         }
     }
-    void __builtin___strncpy_chk(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), 312), 24)), 4928), shname, 32n, __builtin_object_size(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), 312), 24)), 4928), 1));
-    cptr.st1o2((cptr.ldPtro(cptr.ldPtro((shk), 312), 24)), 31, 1, 4928, 0);
+    void __builtin___strncpy_chk(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam), shname, 32n, __builtin_object_size(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam), 1));
+    cptr.st1o2((cptr.ldPtro(cptr.ldPtro((shk), FLD.monst_mextra), FLD.mextra_eshk)), 31, 1, FLD.eshk_shknam, 0);
 }
 
 /** C ref: shknam.c:557 — @param {CPtr} mtmp */
 export function neweshk(mtmp) {
-    if (!cptr.ldPtro(mtmp, 312))
-        cptr.stPtro(mtmp, 312, newmextra());
-    if (!(cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)))
-        cptr.stPtro(cptr.ldPtro((mtmp), 312), 24, alloc(4960));
-    void __builtin___memset_chk((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 0, 4960n, __builtin_object_size((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 0));
-    cptr.stI32((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), cptr.ldI32o(mtmp, 16));
-    cptr.stPtro((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 4872, null);
+    if (!cptr.ldPtro(mtmp, FLD.monst_mextra))
+        cptr.stPtro(mtmp, FLD.monst_mextra, newmextra());
+    if (!(cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)))
+        cptr.stPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk, alloc(4960));
+    void __builtin___memset_chk((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), 0, 4960n, __builtin_object_size((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), 0));
+    cptr.stI32((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), cptr.ldI32o(mtmp, FLD.monst_m_id));
+    cptr.stPtro((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_bill_p, null);
 }
 
 /** C ref: shknam.c:569 — @param {CPtr} mtmp */
 export function free_eshk(mtmp) {
-    if (cptr.ldPtro(mtmp, 312) && (cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24))) {
-        cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)));
-        cptr.stPtro(cptr.ldPtro((mtmp), 312), 24, null);
+    if (cptr.ldPtro(mtmp, FLD.monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk))) {
+        cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)));
+        cptr.stPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk, null);
     }
-    cptr.stI32o(mtmp, 180, 0);
+    cptr.stI32o(mtmp, FLD.monst_isshk, 0);
 }
 
 /** C ref: shknam.c:582 — @param {CPtr} sroom @param {CPtr} sx @param {CPtr} sy @returns {CInt} */
 function good_shopdoor(sroom, sx, sy) {
     let i;
-    for (i = 0; i < cptr.ld1so(sroom, 13); i++) {
-        let di = (cptr.ldI32o(sroom, 16) + i) | 0;
-        cptr.stI16(sx, cptr.ldI16o(cptr.ldPtro(svd, 1928), di, 4));
-        cptr.stI16(sy, cptr.ldI16o2(cptr.ldPtro(svd, 1928), di, 4, 2));
-        if (cptr.ld1so(sroom, 21)) {
+    for (i = 0; i < cptr.ld1so(sroom, FLD.mkroom_doorct); i++) {
+        let di = (cptr.ldI32o(sroom, FLD.mkroom_fdoor) + i) | 0;
+        cptr.stI16(sx, cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), di, 4));
+        cptr.stI16(sy, cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), di, 4, FLD.nhcoord_y));
+        if (cptr.ld1so(sroom, FLD.mkroom_irregular)) {
             let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))));
-            if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, 756, cptr.ldI16(sy), 36, 1708) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, 756, cptr.ldI16(sy), 36, 1704) & 63) | 0) == rmno)
+            if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, 756, cptr.ldI16(sy), 36, FLD.instance_globals_saved_l_level + FLD.rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, 756, cptr.ldI16(sy), 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
-            else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, 756, cptr.ldI16(sy), 36, 1708) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, 756, cptr.ldI16(sy), 36, 1704) & 63) | 0) == rmno)
+            else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, 756, cptr.ldI16(sy), 36, FLD.instance_globals_saved_l_level + FLD.rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, 756, cptr.ldI16(sy), 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + 1)) - (1);
-            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) - 1) | 0, 36, 1708) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) - 1) | 0, 36, 1704) & 63) | 0) == rmno)
+            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) - 1) | 0, 36, FLD.instance_globals_saved_l_level + FLD.rm_edge) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) - 1) | 0, 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + -1)) - (-1);
-            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) + 1) | 0, 36, 1708) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) + 1) | 0, 36, 1704) & 63) | 0) == rmno)
+            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) + 1) | 0, 36, FLD.instance_globals_saved_l_level + FLD.rm_edge) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), 756, (cptr.ldI16(sy) + 1) | 0, 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + 1)) - (1);
             else
                 continue;
         } else if (cptr.ldI16(sx) == ((cptr.ldI16(sroom) - 1) | 0)) {
             (cptr.stI16(sx, cptr.ldI16(sx) + 1)) - (1);
-        } else if (cptr.ldI16(sx) == ((cptr.ldI16o(sroom, 2) + 1) | 0)) {
+        } else if (cptr.ldI16(sx) == ((cptr.ldI16o(sroom, FLD.mkroom_hx) + 1) | 0)) {
             (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
-        } else if (cptr.ldI16(sy) == ((cptr.ldI16o(sroom, 4) - 1) | 0)) {
+        } else if (cptr.ldI16(sy) == ((cptr.ldI16o(sroom, FLD.mkroom_ly) - 1) | 0)) {
             (cptr.stI16(sy, cptr.ldI16(sy) + 1)) - (1);
-        } else if (cptr.ldI16(sy) == ((cptr.ldI16o(sroom, 6) + 1) | 0)) {
+        } else if (cptr.ldI16(sy) == ((cptr.ldI16o(sroom, FLD.mkroom_hy) + 1) | 0)) {
             (cptr.stI16(sy, cptr.ldI16(sy) + -1)) - (-1);
         } else {
             continue;
@@ -1262,57 +1263,57 @@ function shkinit(shp, sroom) {
     let eshkp;
     sh = good_shopdoor(sroom, sx, sy);
     if (sh < 0) {
-        if (cptr.ld1so(flags, 10)) {
-            let j = cptr.ld1so(sroom, 13);
+        if (cptr.ld1so(flags, FLD.flag_debug)) {
+            let j = cptr.ld1so(sroom, FLD.mkroom_doorct);
             impossible(__sl380);
-            pline(__sl381, cptr.ldI16(sroom), cptr.ldI16o(sroom, 4), cptr.ldI16o(sroom, 2), cptr.ldI16o(sroom, 6));
-            pline(__sl382, cptr.ldI32(gd), cptr.ld1so(sroom, 13), sh);
+            pline(__sl381, cptr.ldI16(sroom), cptr.ldI16o(sroom, FLD.mkroom_ly), cptr.ldI16o(sroom, FLD.mkroom_hx), cptr.ldI16o(sroom, FLD.mkroom_hy));
+            pline(__sl382, cptr.ldI32(gd), cptr.ld1so(sroom, FLD.mkroom_doorct), sh);
             while (j--) {
-                pline(__sl383, cptr.ldI16o(cptr.ldPtro(svd, 1928), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, 1928), sh, 4, 2));
+                pline(__sl383, cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4, FLD.nhcoord_y));
                 sh++;
             }
-            (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 0);
+            (cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0);
         }
         return -1;
     }
-    if ((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, 75600) !== null))
-        void rloc((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, 75600)), NHM.RLOC_NOMSG);
+    if ((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters) !== null))
+        void rloc((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_monsters)), NHM.RLOC_NOMSG);
     if (!(shk = makemon(cptr.add(mons, NHC.PM_SHOPKEEPER, 96), sx.v, sy.v, NHM.MM_ESHK)))
         return -1;
-    eshkp = (cptr.ldPtro(cptr.ldPtro((shk), 312), 24));
-    cptr.stI32o(shk, 180, cptr.stI32o(shk, 168, 1));
+    eshkp = (cptr.ldPtro(cptr.ldPtro((shk), FLD.monst_mextra), FLD.mextra_eshk));
+    cptr.stI32o(shk, FLD.monst_isshk, cptr.stI32o(shk, FLD.monst_mpeaceful, 1));
     set_malign(shk);
-    cptr.stI32o(shk, 144, 0);
+    cptr.stI32o(shk, FLD.monst_msleeping, 0);
     mon_learns_traps(shk, NHC.ALL_TRAPS);
-    cptr.st1o(eshkp, 44, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
-    cptr.stPtro(sroom, 216, shk);
-    cptr.stI32o(eshkp, 40, cptr.ld1so(sroom, 8));
-    assign_level(cptr.add(eshkp, 58), cptr.add(u, 24));
-    cptr.memcpy(cptr.add(eshkp, 54), cptr.add(cptr.ldPtro(svd, 1928), sh, 4), 4);
-    cptr.stI16o(eshkp, 50, sx.v);
-    cptr.stI16o(eshkp, 52, sy.v);
-    cptr.stI64o(eshkp, 8, cptr.stI64o(eshkp, 16, cptr.stI64o(eshkp, 24, cptr.stI64o(eshkp, 32, 0n))));
-    cptr.st1o(eshkp, 46, cptr.st1o(eshkp, 47, cptr.st1o(eshkp, 48, 0)));
-    cptr.stI32o(eshkp, 64, cptr.stI32o(eshkp, 4892, 0));
-    cptr.stPtro(eshkp, 4872, null);
-    cptr.st1o2(eshkp, 0, 1, 4896, 0);
+    cptr.st1o(eshkp, FLD.eshk_shoproom, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
+    cptr.stPtro(sroom, FLD.mkroom_resident, shk);
+    cptr.stI32o(eshkp, FLD.eshk_shoptype, cptr.ld1so(sroom, FLD.mkroom_rtype));
+    assign_level(cptr.add(eshkp, FLD.eshk_shoplevel), cptr.add(u, FLD.you_uz));
+    cptr.memcpy(cptr.add(eshkp, FLD.eshk_shd), cptr.add(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4), 4);
+    cptr.stI16o(eshkp, FLD.eshk_shk, sx.v);
+    cptr.stI16o(eshkp, FLD.eshk_shk + FLD.nhcoord_y, sy.v);
+    cptr.stI64o(eshkp, FLD.eshk_robbed, cptr.stI64o(eshkp, FLD.eshk_credit, cptr.stI64o(eshkp, FLD.eshk_debit, cptr.stI64o(eshkp, FLD.eshk_loan, 0n))));
+    cptr.st1o(eshkp, FLD.eshk_following, cptr.st1o(eshkp, FLD.eshk_surcharge, cptr.st1o(eshkp, FLD.eshk_dismiss_kops, 0)));
+    cptr.stI32o(eshkp, FLD.eshk_billct, cptr.stI32o(eshkp, FLD.eshk_visitct, 0));
+    cptr.stPtro(eshkp, FLD.eshk_bill_p, null);
+    cptr.st1o2(eshkp, 0, 1, FLD.eshk_customer, 0);
     mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl369, 682, __sl384), rnd(100)) : rnd(100))))));
-    if (cptr.eq(cptr.ldPtro(shp, 104), shkrings))
+    if (cptr.eq(cptr.ldPtro(shp, FLD.shclass_shknms), shkrings))
         void mongets(shk, NHC.TOUCHSTONE);
-    if (cptr.eq(cptr.ldPtro(shp, 104), shktools) || cptr.eq(cptr.ldPtro(shp, 104), shkwands) || (cptr.eq(cptr.ldPtro(shp, 104), shkrings) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 686, __sl384), rn2(2)) : rn2(2))) || (cptr.eq(cptr.ldPtro(shp, 104), shkgeneral) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 687, __sl384), rn2(5)) : rn2(5))))
+    if (cptr.eq(cptr.ldPtro(shp, FLD.shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, FLD.shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, FLD.shclass_shknms), shkrings) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 686, __sl384), rn2(2)) : rn2(2))) || (cptr.eq(cptr.ldPtro(shp, FLD.shclass_shknms), shkgeneral) && (rng_log_enabled() ? (rng_log_set_caller(__sl369, 687, __sl384), rn2(5)) : rn2(5))))
         void mongets(shk, NHC.SCR_CHARGING);
-    nameshk(shk, cptr.ldPtro(shp, 104));
+    nameshk(shk, cptr.ldPtro(shp, FLD.shclass_shknms));
     return sh;
 }
 
 /** C ref: shknam.c:695 — @param {CPtr} sroom @param {CInt} rmno @param {CInt} sh @param {CInt} sx @param {CInt} sy @returns {CInt} */
 function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
-    if (cptr.ld1so(sroom, 21)) {
-        if ((cptr.ldI32o3(svl, sx, 756, sy, 36, 1708) & 1) | 0 || ((cptr.ldI32o3(svl, sx, 756, sy, 36, 1704) & 63) | 0) != rmno || distmin(i16(sx), i16(sy), cptr.ldI16o(cptr.ldPtro(svd, 1928), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, 1928), sh, 4, 2)) <= 1)
+    if (cptr.ld1so(sroom, FLD.mkroom_irregular)) {
+        if ((cptr.ldI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_edge) & 1) | 0 || ((cptr.ldI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_roomno) & 63) | 0) != rmno || distmin(i16(sx), i16(sy), cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4, FLD.nhcoord_y)) <= 1)
             return 0;
-    } else if ((sx == cptr.ldI16(sroom) && cptr.ldI16o(cptr.ldPtro(svd, 1928), sh, 4) == ((sx - 1) | 0)) || (sx == cptr.ldI16o(sroom, 2) && cptr.ldI16o(cptr.ldPtro(svd, 1928), sh, 4) == ((sx + 1) | 0)) || (sy == cptr.ldI16o(sroom, 4) && cptr.ldI16o2(cptr.ldPtro(svd, 1928), sh, 4, 2) == ((sy - 1) | 0)) || (sy == cptr.ldI16o(sroom, 6) && cptr.ldI16o2(cptr.ldPtro(svd, 1928), sh, 4, 2) == ((sy + 1) | 0)))
+    } else if ((sx == cptr.ldI16(sroom) && cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4) == ((sx - 1) | 0)) || (sx == cptr.ldI16o(sroom, FLD.mkroom_hx) && cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4) == ((sx + 1) | 0)) || (sy == cptr.ldI16o(sroom, FLD.mkroom_ly) && cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4, FLD.nhcoord_y) == ((sy - 1) | 0)) || (sy == cptr.ldI16o(sroom, FLD.mkroom_hy) && cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), sh, 4, FLD.nhcoord_y) == ((sy + 1) | 0)))
         return 0;
-    if (!((cptr.ld1so3(svl, sx, 756, sy, 36, 1684)) >= NHC.ROOM)) {
+    if (!((cptr.ld1so3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) >= NHC.ROOM)) {
         return 0;
     }
     return 1;
@@ -1330,19 +1331,19 @@ export function stock_room(shp_indx, sroom) {
     let shp = cptr.add(shtypes, shp_indx, 112);
     if ((sh = shkinit(shp, sroom)) < 0)
         return;
-    sx = cptr.ldI16o(cptr.ldPtro(svd, 1928), cptr.ldI32o(sroom, 16), 4);
-    sy = cptr.ldI16o2(cptr.ldPtro(svd, 1928), cptr.ldI32o(sroom, 16), 4, 2);
-    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31) | 0) == NHM.D_NODOOR) {
-        cptr.stI32o3(svl, sx, 756, sy, 36, 1688, NHM.D_ISOPEN);
+    sx = cptr.ldI16o(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), cptr.ldI32o(sroom, FLD.mkroom_fdoor), 4);
+    sy = cptr.ldI16o2(cptr.ldPtro(svd, FLD.instance_globals_saved_d_doors), cptr.ldI32o(sroom, FLD.mkroom_fdoor), 4, FLD.nhcoord_y);
+    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) & 31) | 0) == NHM.D_NODOOR) {
+        cptr.stI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_ISOPEN);
         newsym(i16(sx), i16(sy));
     }
-    if (cptr.ld1so3(svl, sx, 756, sy, 36, 1684) == NHC.SDOOR) {
-        cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, 1680), sx, 756), sy, 36));
+    if (cptr.ld1so3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ) == NHC.SDOOR) {
+        cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), sx, 756), sy, 36));
         newsym(i16(sx), i16(sy));
     }
-    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31) | 0) & NHM.D_TRAPPED)
-        cptr.stI32o3(svl, sx, 756, sy, 36, 1688, NHM.D_LOCKED);
-    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, 1688) & 31) | 0) == NHM.D_LOCKED) {
+    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) & 31) | 0) & NHM.D_TRAPPED)
+        cptr.stI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags, NHM.D_LOCKED);
+    if (((cptr.ldI32o3(svl, sx, 756, sy, 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) & 31) | 0) == NHM.D_LOCKED) {
         let m = sx;
         let n = sy;
         if (inside_shop(i16(((sx + 1) | 0)), i16(sy)))
@@ -1355,42 +1356,42 @@ export function stock_room(shp_indx, sroom) {
             n++;
         void cptr.sprintf(cptr.decay(buf), __sl385);
         make_engr_at(i16(m), i16(n), cptr.decay(buf), null, 0n, NHM.DUST);
-        if (cptr.ld1so3(svl, m, 756, n, 36, 1684) != NHC.CORR && cptr.ld1so3(svl, m, 756, n, 36, 1684) != NHC.ROOM)
-            cptr.st1o3(svl, m, 756, n, 36, 1684, schar(((Is_special(cptr.add(u, 24)) || cptr.ld1s(in_rooms(i16(m), i16(n), 0))) ? NHC.ROOM : NHC.CORR)));
+        if (cptr.ld1so3(svl, m, 756, n, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ) != NHC.CORR && cptr.ld1so3(svl, m, 756, n, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ) != NHC.ROOM)
+            cptr.st1o3(svl, m, 756, n, 36, FLD.instance_globals_saved_l_level + FLD.rm_typ, schar(((Is_special(cptr.add(u, FLD.you_uz)) || cptr.ld1s(in_rooms(i16(m), i16(n), 0))) ? NHC.ROOM : NHC.CORR)));
     }
-    if (cptr.ld1so(svc, 616) && !(cptr.ldI32o(svc, 620) & 1)) {
-        for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, 2); sx++)
-            for (sy = cptr.ldI16o(sroom, 4); sy <= cptr.ldI16o(sroom, 6); sy++)
+    if (cptr.ld1so(svc, FLD.context_info_tribute + FLD.tribute_info_enabled) && !(cptr.ldI32o(svc, FLD.context_info_tribute + FLD.tribute_info_bookstock) & 1)) {
+        for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, FLD.mkroom_hx); sx++)
+            for (sy = cptr.ldI16o(sroom, FLD.mkroom_ly); sy <= cptr.ldI16o(sroom, FLD.mkroom_hy); sy++)
                 if (stock_room_goodpos(sroom, rmno, sh, sx, sy))
                     stockcount++;
         specialspot = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 777, __sl386), rnd(stockcount)) : rnd(stockcount));
         stockcount = 0;
     }
-    for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, 2); sx++)
-        for (sy = cptr.ldI16o(sroom, 4); sy <= cptr.ldI16o(sroom, 6); sy++)
+    for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, FLD.mkroom_hx); sx++)
+        for (sy = cptr.ldI16o(sroom, FLD.mkroom_ly); sy <= cptr.ldI16o(sroom, FLD.mkroom_hy); sy++)
             if (stock_room_goodpos(sroom, rmno, sh, sx, sy)) {
                 stockcount++;
                 mkshobj_at(shp, sx, sy, schar(((stockcount) && (stockcount == specialspot) ? 1 : 0)));
             }
-    if (on_level(cptr.add(u, 24), cptr.add(svd, 1832))) {
+    if (on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_orcus_level))) {
         let mtmp = shop_keeper(schar(rmno));
         mongone(mtmp);
     }
-    cptr.stI32o(svl, 89084, 1);
+    cptr.stI32o(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_flags + FLD.levelflags_has_shop, 1);
 }
 
 /** C ref: shknam.c:805 — @param {CPtr} shkp @param {CPtr} obj @returns {CInt} */
 export function saleable(shkp, obj) {
     let i;
-    let shp_indx = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), 312), 24)), 40) - NHC.SHOPBASE) | 0;
+    let shp_indx = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shoptype) - NHC.SHOPBASE) | 0;
     let shp = cptr.add(shtypes, shp_indx, 112);
-    if (cptr.ld1so(shp, 16) == NHC.RANDOM_CLASS)
+    if (cptr.ld1so(shp, FLD.shclass_symb) == NHC.RANDOM_CLASS)
         return 1;
-    for (i = 0; i < Number(BigInt.asIntN(32, (72n / 8n))) && cptr.ldI32o2(shp, i, 8, 28); i++) {
-        if (cptr.ldI32o2(shp, i, 8, 32) == ((NHC.MAXOCLASSES + 1) | 0)) {
+    for (i = 0; i < Number(BigInt.asIntN(32, (72n / 8n))) && cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs); i++) {
+        if (cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs + FLD.itp_itype) == ((NHC.MAXOCLASSES + 1) | 0)) {
             if (veggy_item(obj, 0))
                 return 1;
-        } else if ((cptr.ldI32o2(shp, i, 8, 32) < 0) ? cptr.ldI32o2(shp, i, 8, 32) == -cptr.ldI16o(obj, 32) : cptr.ldI32o2(shp, i, 8, 32) == cptr.ld1so(obj, 49))
+        } else if ((cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs + FLD.itp_itype) < 0) ? cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs + FLD.itp_itype) == -cptr.ldI16o(obj, FLD.obj_otyp) : cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs + FLD.itp_itype) == cptr.ld1so(obj, FLD.obj_oclass))
             return 1;
     }
     return 0;
@@ -1401,9 +1402,9 @@ export function get_shop_item(type) {
     let shp = cptr.add(shtypes, type, 112);
     let i;
     let j;
-    for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 835, __sl387), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shp, i, 8, 28)) | 0) > 0; i++)
+    for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl369, 835, __sl387), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs)) | 0) > 0; i++)
         continue;
-    return cptr.ldI32o2(shp, i, 8, 32);
+    return cptr.ldI32o2(shp, i, 8, FLD.shclass_iprobs + FLD.itp_itype);
 }
 
 /** C ref: shknam.c:843 — @param {CPtr} mtmp @returns {CPtr} */
@@ -1416,24 +1417,24 @@ export function Shknam(mtmp) {
 /** C ref: shknam.c:856 — @param {CPtr} mtmp @returns {CPtr} */
 export function shkname(mtmp) {
     let nam;
-    let save_isshk = (cptr.ldI32o(mtmp, 180) & 1);
-    cptr.stI32o(mtmp, 180, 0);
+    let save_isshk = (cptr.ldI32o(mtmp, FLD.monst_isshk) & 1);
+    cptr.stI32o(mtmp, FLD.monst_isshk, 0);
     nam = noit_mon_nam(mtmp);
-    cptr.stI32o(mtmp, 180, save_isshk);
-    if (!(cptr.ldI32o(mtmp, 180) & 1)) {
+    cptr.stI32o(mtmp, FLD.monst_isshk, save_isshk);
+    if (!(cptr.ldI32o(mtmp, FLD.monst_isshk) & 1)) {
         impossible(__sl388, nam);
-    } else if (!(cptr.ldPtro((mtmp), 312) && (cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)))) {
+    } else if (!(cptr.ldPtro((mtmp), FLD.monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)))) {
         panic(__sl389, nam);
     } else {
-        let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 4928);
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) && !cptr.ldI32(program_state)) {
+        let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam);
+        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !cptr.ldI32(program_state)) {
             let nlp;
             let num;
             for (num = 0; num < 13; num++)
-                if (cptr.ldI32o2(shtypes, num, 112, 20) == 0)
+                if (cptr.ldI32o2(shtypes, num, 112, FLD.shclass_prob) == 0)
                     break;
             if (num > 0) {
-                nlp = cptr.ldPtro2(shtypes, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 884, __sl390), rn2(num)) : rn2(num)), 112, 104);
+                nlp = cptr.ldPtro2(shtypes, (rng_log_enabled() ? (rng_log_set_caller(__sl369, 884, __sl390), rn2(num)) : rn2(num)), 112, FLD.shclass_shknms);
                 for (num = 0; cptr.ldPtro(nlp, num, 8); num++)
                     continue;
                 if (num > 0)
@@ -1449,20 +1450,20 @@ export function shkname(mtmp) {
 
 /** C ref: shknam.c:900 — @param {CPtr} mtmp @returns {CInt} */
 export function shkname_is_pname(mtmp) {
-    let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), 312), 24)), 4928);
+    let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam);
     return schar((cptr.ld1s(shknm) == 45 || cptr.ld1s(shknm) == 43 || cptr.ld1s(shknm) == 61 ? 1 : 0));
 }
 
 /** C ref: shknam.c:908 — @param {CPtr} shkp @param {CInt} override_hallucination @returns {CInt} */
 export function is_izchak(shkp, override_hallucination) {
     let shknm;
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) && !override_hallucination)
+    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) && !override_hallucination)
         return 0;
-    if (!(cptr.ldI32o(shkp, 180) & 1))
+    if (!(cptr.ldI32o(shkp, FLD.monst_isshk) & 1))
         return 0;
-    if (!in_town(cptr.ldI16o(shkp, 28), cptr.ldI16o(shkp, 30)))
+    if (!in_town(cptr.ldI16o(shkp, FLD.monst_mx), cptr.ldI16o(shkp, FLD.monst_my)))
         return 0;
-    shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((shkp), 312), 24)), 4928);
+    shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((shkp), FLD.monst_mextra), FLD.mextra_eshk)), FLD.eshk_shknam);
     if (!letter(cptr.ld1s(shknm)))
         shknm = cptr.add(shknm, 1);
     return schar((!strcmp(shknm, __sl391)));

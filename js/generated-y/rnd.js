@@ -11,6 +11,7 @@ import { isaac64_init, isaac64_next_uint64 } from '../isaac64.js';
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as FLD from './nhfield.js';
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/rnd-prelude.js) ----
 // rng-log runtime + minimal libc shims + extern stubs for the parity harness.
@@ -194,11 +195,11 @@ export const DISP = 1;
 /** C ref: rnd.c:114 — struct rnglist_t[2] */
 const rnglist = cptr.alloc(2 * 4144);
 cptr.stPtro(rnglist, 0, rn2);
-cptr.st1o(rnglist, 8, 0);
-cptr.stI32o(rnglist, 16, 0);
+cptr.st1o(rnglist, 0 + FLD.rnglist_t_init, 0);
+cptr.stI32o(rnglist, 0 + FLD.rnglist_t_rng_state, 0);
 cptr.stPtro(rnglist, 4144, rn2_on_display_rng);
-cptr.st1o(rnglist, 4152, 0);
-cptr.stI32o(rnglist, 4160, 0);
+cptr.st1o(rnglist, 4144 + FLD.rnglist_t_init, 0);
+cptr.stI32o(rnglist, 4144 + FLD.rnglist_t_rng_state, 0);
 
 /** C ref: rnd.c:120 — @param {CPtr} fn @returns {CInt} */
 function whichrng(fn) {
@@ -220,17 +221,17 @@ export function init_isaac64(seed, fn) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
         seed >>= 8n;
     }
-    cptr.stPtro2(rnglist, rngindx, 4144, 16, isaac64_init(new_rng_state));
+    cptr.stPtro2(rnglist, rngindx, 4144, FLD.rnglist_t_rng_state, isaac64_init(new_rng_state));
 }
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.CORE, 4144, 16)) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.CORE, 4144, FLD.rnglist_t_rng_state)) % BigInt.asUintN(64, BigInt(x)))));
 }
 
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, 4144, 16)) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, 4144, FLD.rnglist_t_rng_state)) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);
@@ -262,7 +263,7 @@ export function rn2(x) {
 export function rnl(x) {
     let i;
     let adjustment;
-    adjustment = ((cptr.ld1so(u, 2186) + cptr.ld1so(u, 2187)) | 0);
+    adjustment = ((cptr.ld1so(u, FLD.you_uluck) + cptr.ld1so(u, FLD.you_moreluck)) | 0);
     if (x <= 15) {
         adjustment = Math.imul((((Math.abs(adjustment) + 1) | 0) / 3) | 0, sgn(adjustment));
     }
@@ -317,7 +318,7 @@ export function d(n, x) {
 export function rne(x) {
     let tmp;
     let utmp;
-    utmp = (cptr.ldI32o(u, 48) < 15) ? 5 : (cptr.ldI32o(u, 48) / 3) | 0;
+    utmp = (cptr.ldI32o(u, FLD.you_ulevel) < 15) ? 5 : (cptr.ldI32o(u, FLD.you_ulevel) / 3) | 0;
     tmp = 1;
     while (tmp < utmp && !rn2(x))
         tmp++;

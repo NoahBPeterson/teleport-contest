@@ -8,6 +8,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { case_insensitive_comp, nh_snprintf } from './hacklib.js';
 import { dupstr } from './alloc.js';
 import { bannerc_string, md_ignored_features, mdlib_version_string, version_id_string } from './mdlib.js';
@@ -42,17 +43,17 @@ let nomakedefs_populated = 0;
 /** C ref: date.c:25 — struct nomakedefs_s */
 export let nomakedefs = cptr.alloc(96);
 cptr.stPtr(nomakedefs, __sl0);
-cptr.stPtro(nomakedefs, 8, __sl1);
-cptr.stPtro(nomakedefs, 16, null);
-cptr.stPtro(nomakedefs, 24, null);
-cptr.stPtro(nomakedefs, 32, null);
-cptr.stPtro(nomakedefs, 40, __sl2);
-cptr.stPtro(nomakedefs, 48, __sl3);
-cptr.stU64o(nomakedefs, 56, 16842752n);
-cptr.stU64o(nomakedefs, 64, 0n);
-cptr.stU64o(nomakedefs, 72, 0n);
-cptr.stU64o(nomakedefs, 80, 0n);
-cptr.stU64o(nomakedefs, 88, 554476737n);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c, __sl1);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_git_sha, null);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_git_branch, null);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_git_prefix, null);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_string, __sl2);
+cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_id, __sl3);
+cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_number, 16842752n);
+cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_features, 0n);
+cptr.stU64o(nomakedefs, FLD.nomakedefs_s_ignored_features, 0n);
+cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1, 0n);
+cptr.stU64o(nomakedefs, FLD.nomakedefs_s_build_time, 554476737n);
 
 /** C ref: date.c:52 — @param {CPtr} version */
 export function* populate_nomakedefs(version) {
@@ -70,7 +71,7 @@ export function* populate_nomakedefs(version) {
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32o(t, 20, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
+        cptr.stI32o(t, FLD.tm_tm_year, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
         do {
             for (i = 0; i < 3; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1), 1);
@@ -78,7 +79,7 @@ export function* populate_nomakedefs(version) {
         } while (0);
         for (i = 0; i < 12; ++i)
             if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtro(mth, i, 8))) {
-                cptr.stI32o(t, 16, i);
+                cptr.stI32o(t, FLD.tm_tm_mon, i);
                 break;
             }
         do {
@@ -89,19 +90,19 @@ export function* populate_nomakedefs(version) {
         strp = cptr.decay(tmpbuf2);
         if (cptr.ld1s(strp) == 32)
             strp = cptr.add(strp, 1);
-        cptr.stI32o(t, 12, atoi(strp));
+        cptr.stI32o(t, FLD.tm_tm_mday, atoi(strp));
         do {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32o(t, 8, atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, FLD.tm_tm_hour, atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         } while (0);
-        cptr.stI32o(t, 4, atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, FLD.tm_tm_min, atoi(cptr.decay(tmpbuf2)));
         do {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1), 1);
@@ -109,16 +110,16 @@ export function* populate_nomakedefs(version) {
         } while (0);
         cptr.stI32(t, atoi(cptr.decay(tmpbuf2)));
         timeresult = mktime(t);
-        cptr.stU64o(nomakedefs, 88, BigInt.asUintN(64, timeresult));
+        cptr.stU64o(nomakedefs, FLD.nomakedefs_s_build_time, BigInt.asUintN(64, timeresult));
         cptr.stPtr(nomakedefs, (yield* dupstr(cptr.decay(tmpbuf1))));
     }
-    cptr.stU64o(nomakedefs, 56, cptr.ldU64(version));
-    cptr.stU64o(nomakedefs, 64, cptr.ldU64o(version, 8));
-    cptr.stU64o(nomakedefs, 72, md_ignored_features());
-    cptr.stU64o(nomakedefs, 80, cptr.ldU64o(version, 16));
-    cptr.stPtro(nomakedefs, 40, (yield* dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __sl21))));
-    cptr.stPtro(nomakedefs, 48, (yield* dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
-    cptr.stPtro(nomakedefs, 8, (yield* dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
+    cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_number, cptr.ldU64(version));
+    cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_features, cptr.ldU64o(version, FLD.version_info_feature_set));
+    cptr.stU64o(nomakedefs, FLD.nomakedefs_s_ignored_features, md_ignored_features());
+    cptr.stU64o(nomakedefs, FLD.nomakedefs_s_version_sanity1, cptr.ldU64o(version, FLD.version_info_entity_count));
+    cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_string, (yield* dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __sl21))));
+    cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_id, (yield* dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
+    cptr.stPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c, (yield* dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
     nomakedefs_populated = 1;
     return;
 }
@@ -129,12 +130,12 @@ export function free_nomakedefs() {
         return;
     if (cptr.ldPtr(nomakedefs))
         cptr.free(cptr.ldPtr(nomakedefs)), cptr.stPtr(nomakedefs, null);
-    if (cptr.ldPtro(nomakedefs, 40))
-        cptr.free(cptr.ldPtro(nomakedefs, 40)), cptr.stPtro(nomakedefs, 40, null);
-    if (cptr.ldPtro(nomakedefs, 48))
-        cptr.free(cptr.ldPtro(nomakedefs, 48)), cptr.stPtro(nomakedefs, 48, null);
-    if (cptr.ldPtro(nomakedefs, 8))
-        cptr.free(cptr.ldPtro(nomakedefs, 8)), cptr.stPtro(nomakedefs, 8, null);
+    if (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string))
+        cptr.free(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_string)), cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_string, null);
+    if (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_id))
+        cptr.free(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_version_id)), cptr.stPtro(nomakedefs, FLD.nomakedefs_s_version_id, null);
+    if (cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c))
+        cptr.free(cptr.ldPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c)), cptr.stPtro(nomakedefs, FLD.nomakedefs_s_copyright_banner_c, null);
     nomakedefs_populated = 0;
     return;
 }

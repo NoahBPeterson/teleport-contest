@@ -360,18 +360,63 @@ const FUSED_O3 = new Set(['ld1s', 'ld1u', 'ldI16', 'ldI32', 'ldPtr', 'st1', 'stI
 
 const INT_LITERAL = /^-?\d+$/;
 
+// ---------------------------------------------- named struct offsets ------
+//
+// A field displacement is emitted as `FLD.monst_data` rather than `8` (see
+// fieldOffCode), and the address algebra below has to keep folding through it:
+// without that, `cptr.add(cptr.add(p, A), B)` would stop merging and a
+// one-component address would be mistaken for a subscript term, changing which
+// fused accessor is chosen.  So every emitted displacement — literal, named, or
+// a sum of the two — is registered here with its value, and the algebra asks
+// `intOf()` instead of matching a digit string.
+//
+// The map is process-global rather than per-emitter because the strings are:
+// `FLD.monst_data` means the same offset in every module that imports the
+// module, and build.mjs computes the table once for the whole corpus (see
+// collectFieldOffsets) precisely so that it can.
+const NAMED_INTS = new Map();
+
+/** numeric value of an emitted constant displacement, or null if not one */
+function intOf(code) {
+  const s = String(code).trim();
+  if (INT_LITERAL.test(s)) return Number(s);
+  const v = NAMED_INTS.get(s);
+  return v === undefined ? null : v;
+}
+
+/** register `code` as denoting the constant `value`, and return it */
+function namedInt(code, value) {
+  NAMED_INTS.set(code, value);
+  return code;
+}
+
+/**
+ * Code for a sum of constant displacements, in the order they were written.
+ * One part keeps its own spelling; several become `FLD.a + FLD.b`, which is
+ * legal everywhere a literal was (both are single arguments) and reads as the
+ * field path it is.  All-numeric parts collapse to the arithmetic, as before.
+ */
+function sumCode(parts, value) {
+  if (!parts.length) return '0';
+  if (parts.length === 1) return parts[0];
+  if (parts.every((p) => INT_LITERAL.test(p))) return String(value);
+  return namedInt(parts.join(' + '), value);
+}
+
 /**
  * Decompose a `cptr.add` chain into a base, its scaled terms in source order,
  * and the sum of its constant displacements. `sz === null` marks the
  * two-argument `cptr.add(p, n)` form, whose scale is 1.
  *
- * Constant folding here is exact: every displacement is an integer literal and
- * their sum is nowhere near 2^53. Term *order* is preserved, which is what
- * keeps evaluation order identical — the rewritten call evaluates the base,
- * then each subscript, left to right, exactly as the nested calls did.
+ * Constant folding here is exact: every displacement is an integer literal or
+ * a name standing for one, and their sum is nowhere near 2^53. Term *order* is
+ * preserved, which is what keeps evaluation order identical — the rewritten
+ * call evaluates the base, then each subscript, left to right, exactly as the
+ * nested calls did.
  */
 function decomposeAddress(code) {
   const terms = [];
+  const kParts = [];
   let k = 0, expr = String(code).trim();
   while (expr.startsWith('cptr.add(') && expr.endsWith(')')) {
     // splitTopLevelArgs returns null unless the trailing ')' is the one that
@@ -379,12 +424,14 @@ function decomposeAddress(code) {
     const a = splitTopLevelArgs(expr.slice('cptr.add('.length, -1));
     if (!a || a.length < 2 || a.length > 3) break;
     const idx = a[1].trim();
-    if (a.length === 2 && INT_LITERAL.test(idx)) k += Number(idx);
+    const kv = a.length === 2 ? intOf(idx) : null;
+    if (kv !== null) { k += kv; kParts.push(idx); }
     else terms.push([idx, a.length === 3 ? a[2].trim() : null]);
     expr = a[0].trim();
   }
   terms.reverse();
-  return { base: expr, terms, k };
+  kParts.reverse(); // outermost-first walk; written order is the field path
+  return { base: expr, terms, k, kCode: sumCode(kParts, k) };
 }
 
 /** cptr.ldI32(cptr.add(p, K)) -> cptr.ldI32o(p, K); null when not applicable.
@@ -396,7 +443,7 @@ export function fuseOffsetAccess(name, args) {
   const loc = String(args[0]).trim();
   if (!loc.startsWith('cptr.add(') || !loc.endsWith(')')) return null;
   const dec = decomposeAddress(loc);
-  const { terms, k } = dec;
+  const { terms, k, kCode } = dec;
   let base = dec.base;
   if (base === loc) return null;                       // not a well-formed chain
   const val = isStore ? [String(args[1])] : [];
@@ -411,24 +458,25 @@ export function fuseOffsetAccess(name, args) {
   // scale of a two-argument add: `n * 1` is `n` for every number, and the
   // slow path coerces identically, so the explicit 1 is not a semantic change.
   const scale = (t) => (t[1] === null ? '1' : t[1]);
-  if (terms.length === 0) return `cptr.${name}o(${[base, String(k), ...val].join(', ')})`;
+  if (terms.length === 0) return `cptr.${name}o(${[base, kCode, ...val].join(', ')})`;
   if (terms.length === 1) {
     const [i, sz] = terms[0];
     if (k === 0) return `cptr.${name}o(${[base, i, ...val, ...(sz === null ? [] : [sz])].join(', ')})`;
-    return `cptr.${name}o2(${[base, i, scale(terms[0]), String(k), ...val].join(', ')})`;
+    return `cptr.${name}o2(${[base, i, scale(terms[0]), kCode, ...val].join(', ')})`;
   }
-  return `cptr.${name}o3(${[base, terms[0][0], scale(terms[0]), terms[1][0], scale(terms[1]), String(k), ...val].join(', ')})`;
+  return `cptr.${name}o3(${[base, terms[0][0], scale(terms[0]), terms[1][0], scale(terms[1]), kCode, ...val].join(', ')})`;
 }
 
 /** cptr.add(cptr.add(p, A), B) -> cptr.add(p, A+B); null when not applicable */
 function mergeConstAdd(baseCode, offCode) {
-  if (!/^-?\d+$/.test(String(offCode).trim())) return null;
+  const off = intOf(offCode);
+  if (off === null) return null;
   if (!baseCode.startsWith('cptr.add(') || !baseCode.endsWith(')')) return null;
   const args = splitTopLevelArgs(baseCode.slice('cptr.add('.length, -1));
   if (!args || args.length !== 2) return null; // scaled 3-arg form: not constant
-  if (!/^-?\d+$/.test(args[1].trim())) return null;
-  const sum = Number(args[1].trim()) + Number(String(offCode).trim());
-  return `cptr.add(${args[0]}, ${sum})`;
+  const inner = intOf(args[1]);
+  if (inner === null) return null;
+  return `cptr.add(${args[0]}, ${sumCode([args[1].trim(), String(offCode).trim()], inner + off)})`;
 }
 
 // JS strict-mode reserved words get a $ suffix when used as identifiers
@@ -459,6 +507,30 @@ export const CONST_MODULE = './nhconst.js';
 // provenance tier from enum constants and will churn differently in 5.1.
 export const MACRO_NS = 'NHM';
 export const MACRO_MODULE = './nhmacro.js';
+
+// ------------------------------------------------ named field offsets ----
+//
+// `cptr.ldPtro(mtmp, 8)` says nothing; `cptr.ldPtro(mtmp, FLD.monst_data)`
+// says what the port is reading, and says it in the vocabulary of the C
+// struct — which is the vocabulary a 5.1 merge will move.  Offsets come from
+// the emitter's own layoutOf(), so naming them costs no new source of truth;
+// what it needs is a table that is the same in every module, which build.mjs
+// computes once for the corpus (collectFieldOffsets) and hands to every
+// emitter.  A name is used at a site only when the table's offset equals the
+// one this emitter just computed — the same equality audit the 1.9 macro tier
+// applies, and the reason a file-local struct that shadows a header one can
+// never borrow the wrong name.
+//
+// Accessor FUNCTIONS (`M.data(mtmp)`) were the other candidate and were
+// rejected: a field read is the hottest shape in the port, and a call per read
+// is a cost the A/B slope guard would have had to absorb, where a namespace
+// load of an immutable binding is one V8 folds.  See docs/NOTES-readability.md.
+//
+// C2JS_FIELDNAMES=0 restores bare integer offsets (the A/B baseline).
+export const FIELD_NS = 'FLD';
+export const FIELD_MODULE = './nhfield.js';
+const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
+const FIELD_STATS = { named: 0, unnamed: 0 };
 // spelling files we will trust: NetHack's own headers, as the compile
 // database spells them.  System headers and clang's `<scratch space>` are
 // not ours to name.
@@ -478,7 +550,7 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 export const EMIT_VERSION = 9;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -490,6 +562,10 @@ export class Emitter {
     // that nhmacro.js exports; empty in single-file mode
     this.macroDefs = macroDefs instanceof Map ? macroDefs : new Map(macroDefs || []);
     this.usesMacros = false;
+    // corpus-wide "record_field" -> byte offset that nhfield.js exports;
+    // empty in single-file mode, where offsets stay bare integers
+    this.fieldOffsets = fieldOffsets instanceof Map ? fieldOffsets : new Map(fieldOffsets || []);
+    this.usesFields = false;
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
@@ -1419,6 +1495,21 @@ export class Emitter {
     return l.offsets[fieldName];
   }
 
+  /**
+   * The displacement of `recName.fieldName`, spelled as `FLD.record_field`
+   * when the corpus-wide table agrees with the offset computed here, and as
+   * the bare integer otherwise (anonymous records, file-local shadowing, a
+   * name two different fields could produce — all refused by the table).
+   */
+  fieldOffCode(recName, fieldName, off) {
+    if (!FIELD_NAMES) return String(off);
+    const name = `${recName}_${fieldName}`;
+    if (this.fieldOffsets.get(name) !== off) { FIELD_STATS.unnamed++; return String(off); }
+    FIELD_STATS.named++;
+    this.usesFields = true;
+    return namedInt(`${FIELD_NS}.${name}`, off);
+  }
+
   expr_MemberExpr(n) {
     const base = this.emitExpr(n.inner[0]);
     if (base.rep === 'obj') {
@@ -1436,7 +1527,7 @@ export class Emitter {
       const off = this.fieldOffset(recName, n.name);
       const fi = this.fieldInfoOf(n.inner[0], n.name, recName);
       const fieldQ = fi?.q;
-      const loc = off === 0 ? base.code : this.cptrCall('add', base.code, String(off));
+      const loc = off === 0 ? base.code : this.cptrCall('add', base.code, this.fieldOffCode(recName, n.name, off));
       // record/array fields: the location itself is the value (decays later);
       // enum-typed fields are int-sized VALUES — load them, never take the address
       if (arrayParts(fieldQ) || (parseType(fieldQ).cls === 'record' && !this.isEnumType(fieldQ))) {
@@ -1853,7 +1944,7 @@ export class Emitter {
         const bq = desugar(n.inner[0].type);
         const recName = base.elemRec || this.recordNameForType(pointeeOf(bq) || bq);
         const off = this.fieldOffset(recName, n.name);
-        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, String(off)), elemQ: this.fieldInfoOf(n.inner[0], n.name, recName)?.q };
+        return { kind: 'cptr', code: off === 0 ? base.code : this.cptrCall('add', base.code, this.fieldOffCode(recName, n.name, off)), elemQ: this.fieldInfoOf(n.inner[0], n.name, recName)?.q };
       }
     }
     throw new Error(`emitLValue: unsupported ${n.kind} (${this.cref(n)})`);
@@ -3729,7 +3820,7 @@ export class Emitter {
       if (!init || init.kind === 'ImplicitValueInitExpr') continue;
       const f = rec.fields[i];
       const off = this.layoutOf(recName).offsets[f.name];
-      const loc = off === 0 ? name : this.cptrCall('add', name, String(off));
+      const loc = off === 0 ? name : this.cptrCall('add', name, this.fieldOffCode(recName, f.name, off));
       if (!arrayParts(f.q) && (parseType(f.q).cls === 'record' || this.recordNameForType(f.q)) && !this.isEnumType(f.q)) {
         // nested record field: recursive stores (InitListExpr) or whole copy
         const fRecName = this.recordNameForType(f.q);

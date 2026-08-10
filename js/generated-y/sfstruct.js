@@ -11,6 +11,7 @@ import * as Y from '../yield-rt.js';
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
+import * as FLD from './nhfield.js';
 import { norm_ptrs_any, norm_ptrs_arti_info, norm_ptrs_branch, norm_ptrs_bubble, norm_ptrs_cemetery, norm_ptrs_context_info, norm_ptrs_d_level, norm_ptrs_damage, norm_ptrs_dest_area, norm_ptrs_dgn_topology, norm_ptrs_dungeon, norm_ptrs_ebones, norm_ptrs_edog, norm_ptrs_egd, norm_ptrs_emin, norm_ptrs_engr, norm_ptrs_epri, norm_ptrs_eshk, norm_ptrs_fe, norm_ptrs_flag, norm_ptrs_fruit, norm_ptrs_gamelog_line, norm_ptrs_kinfo, norm_ptrs_levelflags, norm_ptrs_linfo, norm_ptrs_ls_t, norm_ptrs_mapseen_feat, norm_ptrs_mapseen_flags, norm_ptrs_mapseen_rooms, norm_ptrs_mkroom, norm_ptrs_monst, norm_ptrs_mvitals, norm_ptrs_nhcoord, norm_ptrs_nhrect, norm_ptrs_obj, norm_ptrs_objclass, norm_ptrs_q_score, norm_ptrs_rm, norm_ptrs_s_level, norm_ptrs_spell, norm_ptrs_stairway, norm_ptrs_trap, norm_ptrs_version_info, norm_ptrs_you } from './sfbase.js';
 import { nh_terminate, panic } from './end.js';
 import { WIN_MESSAGE, program_state } from './decl.js';
@@ -40,13 +41,13 @@ export function* historical_sfo_arti_info(nhfp, d_arti_info, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
 export function* historical_sfi_arti_info(nhfp, d_arti_info, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_arti_info, 36));
     norm_ptrs_arti_info(d_arti_info);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
@@ -57,13 +58,13 @@ export function* historical_sfo_nhrect(nhfp, d_nhrect, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
 export function* historical_sfi_nhrect(nhfp, d_nhrect, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_nhrect, 8));
     norm_ptrs_nhrect(d_nhrect);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
@@ -74,13 +75,13 @@ export function* historical_sfo_branch(nhfp, d_branch, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
 export function* historical_sfi_branch(nhfp, d_branch, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_branch, 32));
     norm_ptrs_branch(d_branch);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
@@ -91,13 +92,13 @@ export function* historical_sfo_bubble(nhfp, d_bubble, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
 export function* historical_sfi_bubble(nhfp, d_bubble, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_bubble, 40));
     norm_ptrs_bubble(d_bubble);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
@@ -108,13 +109,13 @@ export function* historical_sfo_cemetery(nhfp, d_cemetery, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
 export function* historical_sfi_cemetery(nhfp, d_cemetery, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_cemetery, 184));
     norm_ptrs_cemetery(d_cemetery);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
@@ -125,13 +126,13 @@ export function* historical_sfo_context_info(nhfp, d_context_info, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
 export function* historical_sfi_context_info(nhfp, d_context_info, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_context_info, 720));
     norm_ptrs_context_info(d_context_info);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
@@ -142,13 +143,13 @@ export function* historical_sfo_nhcoord(nhfp, d_nhcoord, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
 export function* historical_sfi_nhcoord(nhfp, d_nhcoord, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_nhcoord, 4));
     norm_ptrs_nhcoord(d_nhcoord);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
@@ -159,13 +160,13 @@ export function* historical_sfo_damage(nhfp, d_damage, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
 export function* historical_sfi_damage(nhfp, d_damage, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_damage, 32));
     norm_ptrs_damage(d_damage);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
@@ -176,13 +177,13 @@ export function* historical_sfo_dest_area(nhfp, d_dest_area, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
 export function* historical_sfi_dest_area(nhfp, d_dest_area, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_dest_area, 16));
     norm_ptrs_dest_area(d_dest_area);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
@@ -193,13 +194,13 @@ export function* historical_sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
 export function* historical_sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_dgn_topology, 114));
     norm_ptrs_dgn_topology(d_dgn_topology);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
@@ -210,13 +211,13 @@ export function* historical_sfo_dungeon(nhfp, d_dungeon, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
 export function* historical_sfi_dungeon(nhfp, d_dungeon, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_dungeon, 112));
     norm_ptrs_dungeon(d_dungeon);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
@@ -227,13 +228,13 @@ export function* historical_sfo_d_level(nhfp, d_d_level, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
 export function* historical_sfi_d_level(nhfp, d_d_level, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_d_level, 4));
     norm_ptrs_d_level(d_d_level);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
@@ -244,13 +245,13 @@ export function* historical_sfo_ebones(nhfp, d_ebones, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
 export function* historical_sfi_ebones(nhfp, d_ebones, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_ebones, 36));
     norm_ptrs_ebones(d_ebones);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
@@ -261,13 +262,13 @@ export function* historical_sfo_edog(nhfp, d_edog, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
 export function* historical_sfi_edog(nhfp, d_edog, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_edog, 64));
     norm_ptrs_edog(d_edog);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
@@ -278,13 +279,13 @@ export function* historical_sfo_egd(nhfp, d_egd, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
 export function* historical_sfi_egd(nhfp, d_egd, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_egd, 652));
     norm_ptrs_egd(d_egd);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
@@ -295,13 +296,13 @@ export function* historical_sfo_emin(nhfp, d_emin, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
 export function* historical_sfi_emin(nhfp, d_emin, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_emin, 8));
     norm_ptrs_emin(d_emin);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
@@ -312,13 +313,13 @@ export function* historical_sfo_engr(nhfp, d_engr, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
 export function* historical_sfi_engr(nhfp, d_engr, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_engr, 80));
     norm_ptrs_engr(d_engr);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
@@ -329,13 +330,13 @@ export function* historical_sfo_epri(nhfp, d_epri, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
 export function* historical_sfi_epri(nhfp, d_epri, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_epri, 56));
     norm_ptrs_epri(d_epri);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
@@ -346,13 +347,13 @@ export function* historical_sfo_eshk(nhfp, d_eshk, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
 export function* historical_sfi_eshk(nhfp, d_eshk, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_eshk, 4960));
     norm_ptrs_eshk(d_eshk);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
@@ -363,13 +364,13 @@ export function* historical_sfo_fe(nhfp, d_fe, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
 export function* historical_sfi_fe(nhfp, d_fe, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_fe, 48));
     norm_ptrs_fe(d_fe);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
@@ -380,13 +381,13 @@ export function* historical_sfo_flag(nhfp, d_flag, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
 export function* historical_sfi_flag(nhfp, d_flag, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_flag, 208));
     norm_ptrs_flag(d_flag);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
@@ -397,13 +398,13 @@ export function* historical_sfo_fruit(nhfp, d_fruit, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
 export function* historical_sfi_fruit(nhfp, d_fruit, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_fruit, 48));
     norm_ptrs_fruit(d_fruit);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
@@ -414,13 +415,13 @@ export function* historical_sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
 export function* historical_sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_gamelog_line, 32));
     norm_ptrs_gamelog_line(d_gamelog_line);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
@@ -431,13 +432,13 @@ export function* historical_sfo_kinfo(nhfp, d_kinfo, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
 export function* historical_sfi_kinfo(nhfp, d_kinfo, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_kinfo, 272));
     norm_ptrs_kinfo(d_kinfo);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
@@ -448,13 +449,13 @@ export function* historical_sfo_levelflags(nhfp, d_levelflags, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
 export function* historical_sfi_levelflags(nhfp, d_levelflags, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_levelflags, 128));
     norm_ptrs_levelflags(d_levelflags);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
@@ -465,13 +466,13 @@ export function* historical_sfo_ls_t(nhfp, d_ls_t, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
 export function* historical_sfi_ls_t(nhfp, d_ls_t, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_ls_t, 32));
     norm_ptrs_ls_t(d_ls_t);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
@@ -482,13 +483,13 @@ export function* historical_sfo_linfo(nhfp, d_linfo, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
 export function* historical_sfi_linfo(nhfp, d_linfo, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_linfo, 1));
     norm_ptrs_linfo(d_linfo);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
@@ -499,13 +500,13 @@ export function* historical_sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
 export function* historical_sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_mapseen_feat, 52));
     norm_ptrs_mapseen_feat(d_mapseen_feat);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
@@ -516,13 +517,13 @@ export function* historical_sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
 export function* historical_sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_mapseen_flags, 64));
     norm_ptrs_mapseen_flags(d_mapseen_flags);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
@@ -533,13 +534,13 @@ export function* historical_sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
 export function* historical_sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_mapseen_rooms, 8));
     norm_ptrs_mapseen_rooms(d_mapseen_rooms);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
@@ -550,13 +551,13 @@ export function* historical_sfo_mkroom(nhfp, d_mkroom, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
 export function* historical_sfi_mkroom(nhfp, d_mkroom, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_mkroom, 224));
     norm_ptrs_mkroom(d_mkroom);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
@@ -567,13 +568,13 @@ export function* historical_sfo_monst(nhfp, d_monst, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
 export function* historical_sfi_monst(nhfp, d_monst, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_monst, 320));
     norm_ptrs_monst(d_monst);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
@@ -584,13 +585,13 @@ export function* historical_sfo_mvitals(nhfp, d_mvitals, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
 export function* historical_sfi_mvitals(nhfp, d_mvitals, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_mvitals, 12));
     norm_ptrs_mvitals(d_mvitals);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
@@ -601,13 +602,13 @@ export function* historical_sfo_obj(nhfp, d_obj, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
 export function* historical_sfi_obj(nhfp, d_obj, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_obj, 216));
     norm_ptrs_obj(d_obj);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
@@ -618,13 +619,13 @@ export function* historical_sfo_objclass(nhfp, d_objclass, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
 export function* historical_sfi_objclass(nhfp, d_objclass, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_objclass, 120));
     norm_ptrs_objclass(d_objclass);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
@@ -635,13 +636,13 @@ export function* historical_sfo_q_score(nhfp, d_q_score, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
 export function* historical_sfi_q_score(nhfp, d_q_score, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_q_score, 88));
     norm_ptrs_q_score(d_q_score);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
@@ -652,13 +653,13 @@ export function* historical_sfo_rm(nhfp, d_rm, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
 export function* historical_sfi_rm(nhfp, d_rm, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_rm, 36));
     norm_ptrs_rm(d_rm);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
@@ -669,13 +670,13 @@ export function* historical_sfo_spell(nhfp, d_spell, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
 export function* historical_sfi_spell(nhfp, d_spell, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_spell, 8));
     norm_ptrs_spell(d_spell);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
@@ -686,13 +687,13 @@ export function* historical_sfo_stairway(nhfp, d_stairway, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
 export function* historical_sfi_stairway(nhfp, d_stairway, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_stairway, 24));
     norm_ptrs_stairway(d_stairway);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
@@ -703,13 +704,13 @@ export function* historical_sfo_s_level(nhfp, d_s_level, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
 export function* historical_sfi_s_level(nhfp, d_s_level, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_s_level, 56));
     norm_ptrs_s_level(d_s_level);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
@@ -720,13 +721,13 @@ export function* historical_sfo_trap(nhfp, d_trap, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
 export function* historical_sfi_trap(nhfp, d_trap, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_trap, 40));
     norm_ptrs_trap(d_trap);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
@@ -737,13 +738,13 @@ export function* historical_sfo_you(nhfp, d_you, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
 export function* historical_sfi_you(nhfp, d_you, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_you, 2864));
     norm_ptrs_you(d_you);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
@@ -754,13 +755,13 @@ export function* historical_sfo_any(nhfp, d_any, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
 export function* historical_sfi_any(nhfp, d_any, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_any, 8));
     norm_ptrs_any(d_any);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
@@ -770,12 +771,12 @@ export function* historical_sfo_aligntyp(nhfp, d_aligntyp, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
 export function* historical_sfi_aligntyp(nhfp, d_aligntyp, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_aligntyp, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
@@ -785,12 +786,12 @@ export function* historical_sfo_boolean(nhfp, d_boolean, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
 export function* historical_sfi_boolean(nhfp, d_boolean, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_boolean, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
@@ -800,12 +801,12 @@ export function* historical_sfo_coordxy(nhfp, d_coordxy, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
 export function* historical_sfi_coordxy(nhfp, d_coordxy, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_coordxy, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
@@ -815,12 +816,12 @@ export function* historical_sfo_int(nhfp, d_int, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
 export function* historical_sfi_int(nhfp, d_int, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_int, 4));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
@@ -830,12 +831,12 @@ export function* historical_sfo_int16(nhfp, d_int16, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
 export function* historical_sfi_int16(nhfp, d_int16, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_int16, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
@@ -845,12 +846,12 @@ export function* historical_sfo_int32(nhfp, d_int32, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
 export function* historical_sfi_int32(nhfp, d_int32, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_int32, 4));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
@@ -860,12 +861,12 @@ export function* historical_sfo_int64(nhfp, d_int64, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
 export function* historical_sfi_int64(nhfp, d_int64, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_int64, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
@@ -875,12 +876,12 @@ export function* historical_sfo_long(nhfp, d_long, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
 export function* historical_sfi_long(nhfp, d_long, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_long, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
@@ -890,12 +891,12 @@ export function* historical_sfo_schar(nhfp, d_schar, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
 export function* historical_sfi_schar(nhfp, d_schar, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_schar, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
@@ -905,12 +906,12 @@ export function* historical_sfo_short(nhfp, d_short, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
 export function* historical_sfi_short(nhfp, d_short, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_short, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
@@ -920,12 +921,12 @@ export function* historical_sfo_size_t(nhfp, d_size_t, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
 export function* historical_sfi_size_t(nhfp, d_size_t, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_size_t, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
@@ -935,12 +936,12 @@ export function* historical_sfo_time_t(nhfp, d_time_t, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
 export function* historical_sfi_time_t(nhfp, d_time_t, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_time_t, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
@@ -950,12 +951,12 @@ export function* historical_sfo_uchar(nhfp, d_uchar, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
 export function* historical_sfi_uchar(nhfp, d_uchar, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_uchar, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
@@ -965,12 +966,12 @@ export function* historical_sfo_uint16(nhfp, d_uint16, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
 export function* historical_sfi_uint16(nhfp, d_uint16, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_uint16, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
@@ -980,12 +981,12 @@ export function* historical_sfo_uint32(nhfp, d_uint32, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
 export function* historical_sfi_uint32(nhfp, d_uint32, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_uint32, 4));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
@@ -995,12 +996,12 @@ export function* historical_sfo_uint64(nhfp, d_uint64, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
 export function* historical_sfi_uint64(nhfp, d_uint64, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_uint64, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
@@ -1010,12 +1011,12 @@ export function* historical_sfo_ulong(nhfp, d_ulong, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
 export function* historical_sfi_ulong(nhfp, d_ulong, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_ulong, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
@@ -1025,12 +1026,12 @@ export function* historical_sfo_unsigned(nhfp, d_unsigned, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
 export function* historical_sfi_unsigned(nhfp, d_unsigned, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_unsigned, 4));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
@@ -1040,12 +1041,12 @@ export function* historical_sfo_ushort(nhfp, d_ushort, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
 export function* historical_sfi_ushort(nhfp, d_ushort, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_ushort, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
@@ -1055,12 +1056,12 @@ export function* historical_sfo_xint16(nhfp, d_xint16, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
 export function* historical_sfi_xint16(nhfp, d_xint16, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_xint16, 2));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
@@ -1070,12 +1071,12 @@ export function* historical_sfo_xint8(nhfp, d_xint8, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
 export function* historical_sfi_xint8(nhfp, d_xint8, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_xint8, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
@@ -1086,13 +1087,13 @@ export function* historical_sfo_version_info(nhfp, d_version_info, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
 export function* historical_sfi_version_info(nhfp, d_version_info, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_version_info, 24));
     norm_ptrs_version_info(d_version_info);
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c:106 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
@@ -1103,8 +1104,8 @@ export function* historical_sfo_char(nhfp, d_char, myname, cnt) {
 /** C ref: sfstruct.c:113 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function* historical_sfi_char(nhfp, d_char, myname, cnt) {
     (yield* mread(cptr.ldI32(nhfp), d_char, Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cnt)) * 1n)))));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c:130 — @param {CPtr} nhfp @param {CPtr} d_genericptr_t @param {CPtr} myname */
@@ -1114,12 +1115,12 @@ export function* historical_sfo_genericptr_t(nhfp, d_genericptr_t, myname) {
 
 /** C ref: sfstruct.c:136 — @param {CPtr} nhfp @param {CPtr} d_genericptr_t @param {CPtr} myname */
 export function* historical_sfi_genericptr_t(nhfp, d_genericptr_t, myname) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_genericptr_t, 8));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bflen */
@@ -1129,162 +1130,162 @@ export function* historical_sfo_bitfield(nhfp, d_bitfield, myname, bflen) {
 
 /** C ref: sfstruct.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bflen */
 export function* historical_sfi_bitfield(nhfp, d_bitfield, myname, bflen) {
-    if (cptr.ld1so(nhfp, 35)) {
+    if (cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
         sfstruct_read_error();
     }
     (yield* mread(cptr.ldI32(nhfp), d_bitfield, 1));
-    if (cptr.ldI32o(restoreinfo, 8) == -1)
-        cptr.st1o(nhfp, 35, 1);
+    if (cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == -1)
+        cptr.st1o(nhfp, FLD.NHFILE_eof, 1);
 }
 
 /** C ref: sfstruct.c:149 — struct sf_structlevel_procs */
 export let historical_sfo_procs = cptr.alloc(552);
 cptr.stPtr(historical_sfo_procs, __sl0);
-cptr.stPtro(historical_sfo_procs, 8, historical_sfo_arti_info);
-cptr.stPtro(historical_sfo_procs, 16, historical_sfo_nhrect);
-cptr.stPtro(historical_sfo_procs, 24, historical_sfo_branch);
-cptr.stPtro(historical_sfo_procs, 32, historical_sfo_bubble);
-cptr.stPtro(historical_sfo_procs, 40, historical_sfo_cemetery);
-cptr.stPtro(historical_sfo_procs, 48, historical_sfo_context_info);
-cptr.stPtro(historical_sfo_procs, 56, historical_sfo_nhcoord);
-cptr.stPtro(historical_sfo_procs, 64, historical_sfo_damage);
-cptr.stPtro(historical_sfo_procs, 72, historical_sfo_dest_area);
-cptr.stPtro(historical_sfo_procs, 80, historical_sfo_dgn_topology);
-cptr.stPtro(historical_sfo_procs, 88, historical_sfo_dungeon);
-cptr.stPtro(historical_sfo_procs, 96, historical_sfo_d_level);
-cptr.stPtro(historical_sfo_procs, 104, historical_sfo_ebones);
-cptr.stPtro(historical_sfo_procs, 112, historical_sfo_edog);
-cptr.stPtro(historical_sfo_procs, 120, historical_sfo_egd);
-cptr.stPtro(historical_sfo_procs, 128, historical_sfo_emin);
-cptr.stPtro(historical_sfo_procs, 136, historical_sfo_engr);
-cptr.stPtro(historical_sfo_procs, 144, historical_sfo_epri);
-cptr.stPtro(historical_sfo_procs, 152, historical_sfo_eshk);
-cptr.stPtro(historical_sfo_procs, 160, historical_sfo_fe);
-cptr.stPtro(historical_sfo_procs, 168, historical_sfo_flag);
-cptr.stPtro(historical_sfo_procs, 176, historical_sfo_fruit);
-cptr.stPtro(historical_sfo_procs, 184, historical_sfo_gamelog_line);
-cptr.stPtro(historical_sfo_procs, 192, historical_sfo_kinfo);
-cptr.stPtro(historical_sfo_procs, 200, historical_sfo_levelflags);
-cptr.stPtro(historical_sfo_procs, 208, historical_sfo_ls_t);
-cptr.stPtro(historical_sfo_procs, 216, historical_sfo_linfo);
-cptr.stPtro(historical_sfo_procs, 224, historical_sfo_mapseen_feat);
-cptr.stPtro(historical_sfo_procs, 232, historical_sfo_mapseen_flags);
-cptr.stPtro(historical_sfo_procs, 240, historical_sfo_mapseen_rooms);
-cptr.stPtro(historical_sfo_procs, 248, historical_sfo_mkroom);
-cptr.stPtro(historical_sfo_procs, 256, historical_sfo_monst);
-cptr.stPtro(historical_sfo_procs, 264, historical_sfo_mvitals);
-cptr.stPtro(historical_sfo_procs, 272, historical_sfo_obj);
-cptr.stPtro(historical_sfo_procs, 280, historical_sfo_objclass);
-cptr.stPtro(historical_sfo_procs, 288, historical_sfo_q_score);
-cptr.stPtro(historical_sfo_procs, 296, historical_sfo_rm);
-cptr.stPtro(historical_sfo_procs, 304, historical_sfo_spell);
-cptr.stPtro(historical_sfo_procs, 312, historical_sfo_stairway);
-cptr.stPtro(historical_sfo_procs, 320, historical_sfo_s_level);
-cptr.stPtro(historical_sfo_procs, 328, historical_sfo_trap);
-cptr.stPtro(historical_sfo_procs, 336, historical_sfo_version_info);
-cptr.stPtro(historical_sfo_procs, 344, historical_sfo_you);
-cptr.stPtro(historical_sfo_procs, 352, historical_sfo_any);
-cptr.stPtro(historical_sfo_procs, 360, historical_sfo_aligntyp);
-cptr.stPtro(historical_sfo_procs, 368, historical_sfo_boolean);
-cptr.stPtro(historical_sfo_procs, 376, historical_sfo_coordxy);
-cptr.stPtro(historical_sfo_procs, 384, historical_sfo_genericptr_t);
-cptr.stPtro(historical_sfo_procs, 392, historical_sfo_int);
-cptr.stPtro(historical_sfo_procs, 400, historical_sfo_int16);
-cptr.stPtro(historical_sfo_procs, 408, historical_sfo_int32);
-cptr.stPtro(historical_sfo_procs, 416, historical_sfo_int64);
-cptr.stPtro(historical_sfo_procs, 424, historical_sfo_long);
-cptr.stPtro(historical_sfo_procs, 432, historical_sfo_schar);
-cptr.stPtro(historical_sfo_procs, 440, historical_sfo_short);
-cptr.stPtro(historical_sfo_procs, 448, historical_sfo_size_t);
-cptr.stPtro(historical_sfo_procs, 456, historical_sfo_time_t);
-cptr.stPtro(historical_sfo_procs, 464, historical_sfo_uchar);
-cptr.stPtro(historical_sfo_procs, 472, historical_sfo_uint16);
-cptr.stPtro(historical_sfo_procs, 480, historical_sfo_uint32);
-cptr.stPtro(historical_sfo_procs, 488, historical_sfo_uint64);
-cptr.stPtro(historical_sfo_procs, 496, historical_sfo_ulong);
-cptr.stPtro(historical_sfo_procs, 504, historical_sfo_unsigned);
-cptr.stPtro(historical_sfo_procs, 512, historical_sfo_ushort);
-cptr.stPtro(historical_sfo_procs, 520, historical_sfo_xint16);
-cptr.stPtro(historical_sfo_procs, 528, historical_sfo_xint8);
-cptr.stPtro(historical_sfo_procs, 536, historical_sfo_char);
-cptr.stPtro(historical_sfo_procs, 544, historical_sfo_bitfield);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn, historical_sfo_arti_info);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhrect, historical_sfo_nhrect);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_branch, historical_sfo_branch);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bubble, historical_sfo_bubble);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_cemetery, historical_sfo_cemetery);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_context_info, historical_sfo_context_info);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhcoord, historical_sfo_nhcoord);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_damage, historical_sfo_damage);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dest_area, historical_sfo_dest_area);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dgn_topology, historical_sfo_dgn_topology);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dungeon, historical_sfo_dungeon);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_d_level, historical_sfo_d_level);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ebones, historical_sfo_ebones);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_edog, historical_sfo_edog);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_egd, historical_sfo_egd);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_emin, historical_sfo_emin);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_engr, historical_sfo_engr);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_epri, historical_sfo_epri);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_eshk, historical_sfo_eshk);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fe, historical_sfo_fe);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_flag, historical_sfo_flag);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fruit, historical_sfo_fruit);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_gamelog_line, historical_sfo_gamelog_line);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_kinfo, historical_sfo_kinfo);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_levelflags, historical_sfo_levelflags);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ls_t, historical_sfo_ls_t);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_linfo, historical_sfo_linfo);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_feat, historical_sfo_mapseen_feat);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_flags, historical_sfo_mapseen_flags);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_rooms, historical_sfo_mapseen_rooms);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mkroom, historical_sfo_mkroom);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_monst, historical_sfo_monst);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mvitals, historical_sfo_mvitals);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_obj, historical_sfo_obj);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_objclass, historical_sfo_objclass);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_q_score, historical_sfo_q_score);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_rm, historical_sfo_rm);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_spell, historical_sfo_spell);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_stairway, historical_sfo_stairway);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_s_level, historical_sfo_s_level);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_trap, historical_sfo_trap);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_version_info, historical_sfo_version_info);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_you, historical_sfo_you);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_any, historical_sfo_any);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_aligntyp, historical_sfo_aligntyp);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_boolean, historical_sfo_boolean);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_coordxy, historical_sfo_coordxy);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_genericptr, historical_sfo_genericptr_t);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int, historical_sfo_int);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int16, historical_sfo_int16);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int32, historical_sfo_int32);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int64, historical_sfo_int64);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_long, historical_sfo_long);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_schar, historical_sfo_schar);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_short, historical_sfo_short);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_size_t, historical_sfo_size_t);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_time_t, historical_sfo_time_t);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uchar, historical_sfo_uchar);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint16, historical_sfo_uint16);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint32, historical_sfo_uint32);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint64, historical_sfo_uint64);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ulong, historical_sfo_ulong);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_unsigned, historical_sfo_unsigned);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ushort, historical_sfo_ushort);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint16, historical_sfo_xint16);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint8, historical_sfo_xint8);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_char, historical_sfo_char);
+cptr.stPtro(historical_sfo_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bitfield, historical_sfo_bitfield);
 
 /** C ref: sfstruct.c:225 — struct sf_structlevel_procs */
 export let historical_sfi_procs = cptr.alloc(552);
 cptr.stPtr(historical_sfi_procs, __sl0);
-cptr.stPtro(historical_sfi_procs, 8, historical_sfi_arti_info);
-cptr.stPtro(historical_sfi_procs, 16, historical_sfi_nhrect);
-cptr.stPtro(historical_sfi_procs, 24, historical_sfi_branch);
-cptr.stPtro(historical_sfi_procs, 32, historical_sfi_bubble);
-cptr.stPtro(historical_sfi_procs, 40, historical_sfi_cemetery);
-cptr.stPtro(historical_sfi_procs, 48, historical_sfi_context_info);
-cptr.stPtro(historical_sfi_procs, 56, historical_sfi_nhcoord);
-cptr.stPtro(historical_sfi_procs, 64, historical_sfi_damage);
-cptr.stPtro(historical_sfi_procs, 72, historical_sfi_dest_area);
-cptr.stPtro(historical_sfi_procs, 80, historical_sfi_dgn_topology);
-cptr.stPtro(historical_sfi_procs, 88, historical_sfi_dungeon);
-cptr.stPtro(historical_sfi_procs, 96, historical_sfi_d_level);
-cptr.stPtro(historical_sfi_procs, 104, historical_sfi_ebones);
-cptr.stPtro(historical_sfi_procs, 112, historical_sfi_edog);
-cptr.stPtro(historical_sfi_procs, 120, historical_sfi_egd);
-cptr.stPtro(historical_sfi_procs, 128, historical_sfi_emin);
-cptr.stPtro(historical_sfi_procs, 136, historical_sfi_engr);
-cptr.stPtro(historical_sfi_procs, 144, historical_sfi_epri);
-cptr.stPtro(historical_sfi_procs, 152, historical_sfi_eshk);
-cptr.stPtro(historical_sfi_procs, 160, historical_sfi_fe);
-cptr.stPtro(historical_sfi_procs, 168, historical_sfi_flag);
-cptr.stPtro(historical_sfi_procs, 176, historical_sfi_fruit);
-cptr.stPtro(historical_sfi_procs, 184, historical_sfi_gamelog_line);
-cptr.stPtro(historical_sfi_procs, 192, historical_sfi_kinfo);
-cptr.stPtro(historical_sfi_procs, 200, historical_sfi_levelflags);
-cptr.stPtro(historical_sfi_procs, 208, historical_sfi_ls_t);
-cptr.stPtro(historical_sfi_procs, 216, historical_sfi_linfo);
-cptr.stPtro(historical_sfi_procs, 224, historical_sfi_mapseen_feat);
-cptr.stPtro(historical_sfi_procs, 232, historical_sfi_mapseen_flags);
-cptr.stPtro(historical_sfi_procs, 240, historical_sfi_mapseen_rooms);
-cptr.stPtro(historical_sfi_procs, 248, historical_sfi_mkroom);
-cptr.stPtro(historical_sfi_procs, 256, historical_sfi_monst);
-cptr.stPtro(historical_sfi_procs, 264, historical_sfi_mvitals);
-cptr.stPtro(historical_sfi_procs, 272, historical_sfi_obj);
-cptr.stPtro(historical_sfi_procs, 280, historical_sfi_objclass);
-cptr.stPtro(historical_sfi_procs, 288, historical_sfi_q_score);
-cptr.stPtro(historical_sfi_procs, 296, historical_sfi_rm);
-cptr.stPtro(historical_sfi_procs, 304, historical_sfi_spell);
-cptr.stPtro(historical_sfi_procs, 312, historical_sfi_stairway);
-cptr.stPtro(historical_sfi_procs, 320, historical_sfi_s_level);
-cptr.stPtro(historical_sfi_procs, 328, historical_sfi_trap);
-cptr.stPtro(historical_sfi_procs, 336, historical_sfi_version_info);
-cptr.stPtro(historical_sfi_procs, 344, historical_sfi_you);
-cptr.stPtro(historical_sfi_procs, 352, historical_sfi_any);
-cptr.stPtro(historical_sfi_procs, 360, historical_sfi_aligntyp);
-cptr.stPtro(historical_sfi_procs, 368, historical_sfi_boolean);
-cptr.stPtro(historical_sfi_procs, 376, historical_sfi_coordxy);
-cptr.stPtro(historical_sfi_procs, 384, historical_sfi_genericptr_t);
-cptr.stPtro(historical_sfi_procs, 392, historical_sfi_int);
-cptr.stPtro(historical_sfi_procs, 400, historical_sfi_int16);
-cptr.stPtro(historical_sfi_procs, 408, historical_sfi_int32);
-cptr.stPtro(historical_sfi_procs, 416, historical_sfi_int64);
-cptr.stPtro(historical_sfi_procs, 424, historical_sfi_long);
-cptr.stPtro(historical_sfi_procs, 432, historical_sfi_schar);
-cptr.stPtro(historical_sfi_procs, 440, historical_sfi_short);
-cptr.stPtro(historical_sfi_procs, 448, historical_sfi_size_t);
-cptr.stPtro(historical_sfi_procs, 456, historical_sfi_time_t);
-cptr.stPtro(historical_sfi_procs, 464, historical_sfi_uchar);
-cptr.stPtro(historical_sfi_procs, 472, historical_sfi_uint16);
-cptr.stPtro(historical_sfi_procs, 480, historical_sfi_uint32);
-cptr.stPtro(historical_sfi_procs, 488, historical_sfi_uint64);
-cptr.stPtro(historical_sfi_procs, 496, historical_sfi_ulong);
-cptr.stPtro(historical_sfi_procs, 504, historical_sfi_unsigned);
-cptr.stPtro(historical_sfi_procs, 512, historical_sfi_ushort);
-cptr.stPtro(historical_sfi_procs, 520, historical_sfi_xint16);
-cptr.stPtro(historical_sfi_procs, 528, historical_sfi_xint8);
-cptr.stPtro(historical_sfi_procs, 536, historical_sfi_char);
-cptr.stPtro(historical_sfi_procs, 544, historical_sfi_bitfield);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn, historical_sfi_arti_info);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhrect, historical_sfi_nhrect);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_branch, historical_sfi_branch);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bubble, historical_sfi_bubble);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_cemetery, historical_sfi_cemetery);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_context_info, historical_sfi_context_info);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhcoord, historical_sfi_nhcoord);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_damage, historical_sfi_damage);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dest_area, historical_sfi_dest_area);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dgn_topology, historical_sfi_dgn_topology);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dungeon, historical_sfi_dungeon);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_d_level, historical_sfi_d_level);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ebones, historical_sfi_ebones);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_edog, historical_sfi_edog);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_egd, historical_sfi_egd);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_emin, historical_sfi_emin);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_engr, historical_sfi_engr);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_epri, historical_sfi_epri);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_eshk, historical_sfi_eshk);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fe, historical_sfi_fe);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_flag, historical_sfi_flag);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fruit, historical_sfi_fruit);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_gamelog_line, historical_sfi_gamelog_line);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_kinfo, historical_sfi_kinfo);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_levelflags, historical_sfi_levelflags);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ls_t, historical_sfi_ls_t);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_linfo, historical_sfi_linfo);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_feat, historical_sfi_mapseen_feat);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_flags, historical_sfi_mapseen_flags);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_rooms, historical_sfi_mapseen_rooms);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mkroom, historical_sfi_mkroom);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_monst, historical_sfi_monst);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mvitals, historical_sfi_mvitals);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_obj, historical_sfi_obj);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_objclass, historical_sfi_objclass);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_q_score, historical_sfi_q_score);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_rm, historical_sfi_rm);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_spell, historical_sfi_spell);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_stairway, historical_sfi_stairway);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_s_level, historical_sfi_s_level);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_trap, historical_sfi_trap);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_version_info, historical_sfi_version_info);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_you, historical_sfi_you);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_any, historical_sfi_any);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_aligntyp, historical_sfi_aligntyp);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_boolean, historical_sfi_boolean);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_coordxy, historical_sfi_coordxy);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_genericptr, historical_sfi_genericptr_t);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int, historical_sfi_int);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int16, historical_sfi_int16);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int32, historical_sfi_int32);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int64, historical_sfi_int64);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_long, historical_sfi_long);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_schar, historical_sfi_schar);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_short, historical_sfi_short);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_size_t, historical_sfi_size_t);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_time_t, historical_sfi_time_t);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uchar, historical_sfi_uchar);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint16, historical_sfi_uint16);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint32, historical_sfi_uint32);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint64, historical_sfi_uint64);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ulong, historical_sfi_ulong);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_unsigned, historical_sfi_unsigned);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ushort, historical_sfi_ushort);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint16, historical_sfi_xint16);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint8, historical_sfi_xint8);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_char, historical_sfi_char);
+cptr.stPtro(historical_sfi_procs, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bitfield, historical_sfi_bitfield);
 
 /** C ref: sfstruct.c:320 — struct restore_info */
 export let restoreinfo = cptr.alloc(16);
 cptr.stPtr(restoreinfo, __sl1);
-cptr.stI32o(restoreinfo, 8, 0);
+cptr.stI32o(restoreinfo, FLD.restore_info_mread_flags, 0);
 
 /** C ref: sfstruct.c:325 — enum */
 export const NOFLG = 0;
@@ -1406,7 +1407,7 @@ export function* bwrite(fd, loc, num) {
             failed = schar((cptr.write(fd, loc, BigInt(num >>> 0)) != BigInt(num >>> 0)));
         }
         if (failed) {
-            if (cptr.ldI32o(program_state, 8))
+            if (cptr.ldI32o(program_state, FLD.sinfo_done_hup))
                 (yield* nh_terminate(1));
             else
                 (yield* panic(__sl6, num, fd));
@@ -1420,13 +1421,13 @@ export function* mread(fd, buf, len) {
     let rlen;
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
-        if ((cptr.ldI32o(restoreinfo, 8) == 1) || (cptr.ldI32o(program_state, 92) == 1)) {
-            cptr.stI32o(restoreinfo, 8, -1);
+        if ((cptr.ldI32o(restoreinfo, FLD.restore_info_mread_flags) == 1) || (cptr.ldI32o(program_state, FLD.sinfo_reading_bonesfile) == 1)) {
+            cptr.stI32o(restoreinfo, FLD.restore_info_mread_flags, -1);
             return;
         } else {
             (yield* pline(__sl8, rlen | 0, len));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1)));
-            if (cptr.ldI32o(program_state, 32)) {
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 1)));
+            if (cptr.ldI32o(program_state, FLD.sinfo_restoring)) {
                 void (yield* nhclose(fd));
                 void (yield* delete_savefile());
                 (yield* error(__sl9));

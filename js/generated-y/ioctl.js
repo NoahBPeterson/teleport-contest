@@ -9,6 +9,7 @@ import * as Y from '../yield-rt.js';
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { gt } from './decl.js';
 import { sysopt } from './sys.js';
 import { check_user_string } from './unixmain.js';
@@ -27,9 +28,9 @@ export function getwindowsz() {
     let ttsz = cptr.alloc(8);
     if (ioctl(fileno(__stdinp), 1074295912n, ttsz) != -1) {
         if (cptr.ldU16(ttsz))
-            cptr.stI32o(gt, 352, cptr.ldU16(ttsz));
-        if (cptr.ldU16o(ttsz, 2))
-            cptr.stI32o(gt, 356, cptr.ldU16o(ttsz, 2));
+            cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_LI, cptr.ldU16(ttsz));
+        if (cptr.ldU16o(ttsz, FLD.winsize_ws_col))
+            cptr.stI32o(gt, FLD.instance_globals_t_tc_gbl_data + FLD.tc_gbl_data_tc_CO, cptr.ldU16o(ttsz, FLD.winsize_ws_col));
     }
 }
 
@@ -46,15 +47,15 @@ export function setioctls() {
 
 /** C ref: ioctl.c:161 @returns {CInt} */
 export function* dosuspend() {
-    if (!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) || !check_user_string(cptr.ldPtro(sysopt, 40))) {
+    if (!cptr.ldPtro(sysopt, FLD.sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_shellers))) {
         (yield* Norep(__sl0));
         return 0;
     }
     if (signal(18, 1) === null) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 88))(null)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_suspend_nhwindows))(null)));
         void signal(18, null);
         void kill(0, 18);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 96))()));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_resume_nhwindows))()));
     } else {
         (yield* pline(__sl1));
     }

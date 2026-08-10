@@ -12,6 +12,7 @@ import { i16, schar, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { WIN_INVEN, WIN_MESSAGE, c_common_strings, cg, disp, flags, gc, gd, gi, gl, go, gp, gs, gt, gu, gy, hands_obj, iflags, program_state, quitchars, svc, svd, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep, ynNaqchars, yn_number, ynaqchars, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
 import { discover_object, observe_object } from './o_init.js';
@@ -414,19 +415,19 @@ cptr.stPtro(inuse_headers, 32, __sl4);
 
 /** C ref: invent.c:70 — @param {CPtr} sort_item @param {CPtr} obj */
 function inuse_classify(sort_item, obj) {
-    let w_mask = (cptr.ldI64o(obj, 192) & 984959n);
+    let w_mask = (cptr.ldI64o(obj, FLD.obj_owornmask) & 984959n);
     let rating = 0;
     let altclass = 0;
     __lbl_assign_rating: {
         ++altclass;
         do {
             ++rating;
-            if ((!w_mask && cptr.ldI16o(obj, 32) == NHC.LEASH && cptr.ldI32o(obj, 168) ? 1 : 0) != 0)
+            if ((!w_mask && cptr.ldI16o(obj, FLD.obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, FLD.obj_corpsenm) ? 1 : 0) != 0)
                 break __lbl_assign_rating;
         } while (0);
         do {
             ++rating;
-            if ((!w_mask && cptr.ld1so(obj, 49) == NHC.TOOL_CLASS && (cptr.ldI32o(obj, 76) & 1) | 0 ? 1 : 0) != 0)
+            if ((!w_mask && cptr.ld1so(obj, FLD.obj_oclass) == NHC.TOOL_CLASS && (cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0 ? 1 : 0) != 0)
                 break __lbl_assign_rating;
         } while (0);
         ++altclass;
@@ -489,12 +490,12 @@ function inuse_classify(sort_item, obj) {
         } while (0);
         do {
             ++rating;
-            if ((w_mask & ((((cptr.ldI32o(u, 1876) & 1) | 0) == NHM.LEFT_HANDED) ? 262144n : 131072n)) != 0n)
+            if ((w_mask & ((((cptr.ldI32o(u, FLD.you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
         } while (0);
         do {
             ++rating;
-            if ((w_mask & ((((cptr.ldI32o(u, 1876) & 1) | 0) == NHM.RIGHT_HANDED) ? 262144n : 131072n)) != 0n)
+            if ((w_mask & ((((cptr.ldI32o(u, FLD.you_uhandedness) & 1) | 0) == NHM.RIGHT_HANDED) ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
         } while (0);
         do {
@@ -505,10 +506,10 @@ function inuse_classify(sort_item, obj) {
         rating = 0;
         altclass = -1;
     }
-    cptr.st1o(sort_item, 23, schar(rating));
-    cptr.st1o(sort_item, 20, schar(altclass));
-    cptr.st1o(sort_item, 21, 0);
-    cptr.st1o(sort_item, 22, 0);
+    cptr.st1o(sort_item, FLD.Loot_inuse, schar(rating));
+    cptr.st1o(sort_item, FLD.Loot_orderclass, schar(altclass));
+    cptr.st1o(sort_item, FLD.Loot_subclass, 0);
+    cptr.st1o(sort_item, FLD.Loot_disco, 0);
 }
 
 const __static_loot_classify_def_srt_order = [NHC.COIN_CLASS, NHC.AMULET_CLASS, NHC.RING_CLASS, NHC.WAND_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.GEM_CLASS, NHC.FOOD_CLASS, NHC.TOOL_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.ROCK_CLASS, NHC.BALL_CLASS, NHC.CHAIN_CLASS, 0]; /** C ref: invent.c:155 — char[18] (function-static) */
@@ -519,19 +520,19 @@ export function* loot_classify(sort_item, obj) {
     let classorder;
     let p;
     let k;
-    let otyp = cptr.ldI16o(obj, 32);
-    let oclass = cptr.ld1so(obj, 49);
+    let otyp = cptr.ldI16o(obj, FLD.obj_otyp);
+    let oclass = cptr.ld1so(obj, FLD.obj_oclass);
     let seen;
-    let discovered = schar(((cptr.ldI32o2(objects, otyp, 120, 16) & 1) | 0 ? 1 : 0));
-    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
+    let discovered = schar(((cptr.ldI32o2(objects, otyp, 120, FLD.objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+    if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
         (yield* observe_object(obj));
-    seen = schar(((cptr.ldI32o(obj, 84) & 1) | 0 ? 1 : 0)), classorder = cptr.ld1so(flags, 42) ? cptr.add(flags, 99) : cptr.decay(__static_loot_classify_def_srt_order);
+    seen = schar(((cptr.ldI32o(obj, FLD.obj_dknown) & 1) | 0 ? 1 : 0)), classorder = cptr.ld1so(flags, FLD.flag_sortpack) ? cptr.add(flags, FLD.flag_inv_order) : cptr.decay(__static_loot_classify_def_srt_order);
     p = cptr.strchr(classorder, oclass);
     if (p)
         k = (1 + Number(BigInt.asIntN(32, (cptr.diff(p, classorder))))) | 0;
     else
         k = (((1 + Number(BigInt.asIntN(32, cptr.strlen(classorder)))) | 0) + (oclass != NHC.VENOM_CLASS)) | 0;
-    cptr.st1o(sort_item, 20, schar(k));
+    cptr.st1o(sort_item, FLD.Loot_orderclass, schar(k));
     switch (oclass) {
         case NHC.ARMOR_CLASS:
         if (!cptr.ld1so(cptr.decay(__static_loot_classify_armcat), 7, 1)) {
@@ -544,19 +545,19 @@ export function* loot_classify(sort_item, obj) {
             cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SUIT, 7, 1);
             cptr.st1o(cptr.decay(__static_loot_classify_armcat), 7, 8, 1);
         }
-        k = cptr.ld1so2(objects, otyp, 120, 68);
+        k = cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_subtyp);
         if (k < 0 || k >= 7)
             k = 7;
         k = cptr.ld1so(cptr.decay(__static_loot_classify_armcat), k, 1);
         break;
         case NHC.WEAPON_CLASS:
-        k = cptr.ld1so2(objects, otyp, 120, 68);
-        k = (k < 0) ? ((k >= -22 && k <= -20) ? 1 : 3) : ((k >= NHC.P_BOW && k <= NHC.P_CROSSBOW) ? 2 : ((k == NHC.P_SPEAR || k == NHC.P_DAGGER || k == NHC.P_KNIFE) ? 4 : (!((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj, 49) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) == NHC.P_LANCE || is_art(obj, NHC.ART_SNICKERSNEE))) ? 5 : 6)));
+        k = cptr.ld1so2(objects, otyp, 120, FLD.objclass_oc_subtyp);
+        k = (k < 0) ? ((k >= -22 && k <= -20) ? 1 : 3) : ((k >= NHC.P_BOW && k <= NHC.P_CROSSBOW) ? 2 : ((k == NHC.P_SPEAR || k == NHC.P_DAGGER || k == NHC.P_KNIFE) ? 4 : (!((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.P_LANCE || is_art(obj, NHC.ART_SNICKERSNEE))) ? 5 : 6)));
         break;
         case NHC.TOOL_CLASS:
         if (seen && discovered && (otyp == NHC.BAG_OF_TRICKS || otyp == NHC.HORN_OF_PLENTY))
             k = 2;
-        else if ((cptr.ldI16o((obj), 32) >= NHC.LARGE_BOX && cptr.ldI16o((obj), 32) <= NHC.BAG_OF_TRICKS))
+        else if ((cptr.ldI16o((obj), FLD.obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), FLD.obj_otyp) <= NHC.BAG_OF_TRICKS))
             k = 1;
         else
             switch (otyp) {
@@ -584,7 +585,7 @@ export function* loot_classify(sort_item, obj) {
             k = 1;
             break;
             default:
-            k = (cptr.ldI32o(obj, 136) & 1) | 0 ? 6 : 2;
+            k = (cptr.ldI32o(obj, FLD.obj_globby) & 1) | 0 ? 6 : 2;
             break;
             case NHC.TIN:
             k = 3;
@@ -598,7 +599,7 @@ export function* loot_classify(sort_item, obj) {
         }
         break;
         case NHC.GEM_CLASS:
-        switch ((cptr.ldI32o2(objects, cptr.ldI16o(obj, 32), 120, 64) & 31) | 0) {
+        switch ((cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_material) & 31) | 0) {
             case NHC.GEMSTONE:
             k = !seen ? 1 : (!discovered ? 2 : 3);
             break;
@@ -606,7 +607,7 @@ export function* loot_classify(sort_item, obj) {
             k = !seen ? 1 : (!discovered ? 2 : 4);
             break;
             default:
-            k = !seen ? 5 : ((cptr.ldI16o(obj, 32) != NHC.ROCK) ? (!discovered ? 6 : 7) : 8);
+            k = !seen ? 5 : ((cptr.ldI16o(obj, FLD.obj_otyp) != NHC.ROCK) ? (!discovered ? 6 : 7) : 8);
             break;
         }
         break;
@@ -614,10 +615,10 @@ export function* loot_classify(sort_item, obj) {
         k = 1;
         break;
     }
-    cptr.st1o(sort_item, 21, schar(k));
-    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), 2), 16, 8))) ? 4 : ((cptr.ldPtro2(objects, otyp, 120, 8)) ? 3 : 2));
-    cptr.st1o(sort_item, 22, schar(k));
-    cptr.st1o(sort_item, 23, 0);
+    cptr.st1o(sort_item, FLD.Loot_subclass, schar(k));
+    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr))) ? 4 : ((cptr.ldPtro2(objects, otyp, 120, FLD.objclass_oc_uname)) ? 3 : 2));
+    cptr.st1o(sort_item, FLD.Loot_disco, schar(k));
+    cptr.st1o(sort_item, FLD.Loot_inuse, 0);
 }
 
 /** C ref: invent.c:309 — @param {CPtr} obj @returns {CPtr} */
@@ -626,47 +627,47 @@ function* loot_xname(obj) {
     let save_debug;
     let res;
     let save_oname;
-    cptr.stI32o(saveo, 112, (cptr.ldI32o(obj, 112) & 3));
-    cptr.stI32o(saveo, 60, (cptr.ldI32o(obj, 60) & 1)), cptr.stI32o(saveo, 56, (cptr.ldI32o(obj, 56) & 1));
-    cptr.st1o(saveo, 48, cptr.ld1so(obj, 48));
-    cptr.stI32o(saveo, 36, cptr.ldI32o(obj, 36));
-    save_oname = (cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208)))) ? (cptr.ldPtr(cptr.ldPtro((obj), 208))) : null;
-    save_debug = cptr.ld1so(flags, 10);
-    if (cptr.ld1so(obj, 49) == NHC.POTION_CLASS) {
-        cptr.stI32o(obj, 112, 0);
-        if (cptr.ldI16o(obj, 32) == NHC.POT_WATER)
-            cptr.stI32o(obj, 60, 0), cptr.stI32o(obj, 56, 0);
+    cptr.stI32o(saveo, FLD.obj_oeroded, (cptr.ldI32o(obj, FLD.obj_oeroded) & 3));
+    cptr.stI32o(saveo, FLD.obj_blessed, (cptr.ldI32o(obj, FLD.obj_blessed) & 1)), cptr.stI32o(saveo, FLD.obj_cursed, (cptr.ldI32o(obj, FLD.obj_cursed) & 1));
+    cptr.st1o(saveo, FLD.obj_spe, cptr.ld1so(obj, FLD.obj_spe));
+    cptr.stI32o(saveo, FLD.obj_owt, cptr.ldI32o(obj, FLD.obj_owt));
+    save_oname = (cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra))) : null;
+    save_debug = cptr.ld1so(flags, FLD.flag_debug);
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.POTION_CLASS) {
+        cptr.stI32o(obj, FLD.obj_oeroded, 0);
+        if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_WATER)
+            cptr.stI32o(obj, FLD.obj_blessed, 0), cptr.stI32o(obj, FLD.obj_cursed, 0);
     }
-    if (cptr.ldI16o(obj, 32) == NHC.TOWEL)
-        cptr.st1o(obj, 48, 0);
-    if ((cptr.ldI32o(obj, 136) & 1))
-        cptr.stI32o(obj, 36, 20);
-    if (save_oname && !cptr.ld1so(obj, 51))
-        cptr.stPtr(cptr.ldPtro((obj), 208), null);
-    if (cptr.ld1so(flags, 10)) {
-        cptr.stI32o(program_state, 16, 0);
-        cptr.st1o(flags, 10, 0);
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TOWEL)
+        cptr.st1o(obj, FLD.obj_spe, 0);
+    if ((cptr.ldI32o(obj, FLD.obj_globby) & 1))
+        cptr.stI32o(obj, FLD.obj_owt, 20);
+    if (save_oname && !cptr.ld1so(obj, FLD.obj_oartifact))
+        cptr.stPtr(cptr.ldPtro((obj), FLD.obj_oextra), null);
+    if (cptr.ld1so(flags, FLD.flag_debug)) {
+        cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 0);
+        cptr.st1o(flags, FLD.flag_debug, 0);
     }
     res = (yield* cxname_singular(obj));
     if (save_debug) {
-        cptr.st1o(flags, 10, 1);
-        cptr.stI32o(program_state, 16, 1);
+        cptr.st1o(flags, FLD.flag_debug, 1);
+        cptr.stI32o(program_state, FLD.sinfo_something_worth_saving, 1);
     }
-    if (cptr.ld1so(obj, 49) == NHC.POTION_CLASS) {
-        cptr.stI32o(obj, 112, (cptr.ldI32o(saveo, 112) & 3));
-        if (cptr.ldI16o(obj, 32) == NHC.POT_WATER)
-            cptr.stI32o(obj, 60, (cptr.ldI32o(saveo, 60) & 1)), cptr.stI32o(obj, 56, (cptr.ldI32o(saveo, 56) & 1));
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.POTION_CLASS) {
+        cptr.stI32o(obj, FLD.obj_oeroded, (cptr.ldI32o(saveo, FLD.obj_oeroded) & 3));
+        if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_WATER)
+            cptr.stI32o(obj, FLD.obj_blessed, (cptr.ldI32o(saveo, FLD.obj_blessed) & 1)), cptr.stI32o(obj, FLD.obj_cursed, (cptr.ldI32o(saveo, FLD.obj_cursed) & 1));
     }
-    if (cptr.ldI16o(obj, 32) == NHC.TOWEL) {
-        cptr.st1o(obj, 48, cptr.ld1so(saveo, 48));
-        void cptr.strcat(res, (cptr.ldI16o((obj), 32) == NHC.TOWEL && cptr.ld1so((obj), 48) > 0) ? ((cptr.ld1so(obj, 48) >= 3) ? __sl5 : __sl6) : __sl7);
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TOWEL) {
+        cptr.st1o(obj, FLD.obj_spe, cptr.ld1so(saveo, FLD.obj_spe));
+        void cptr.strcat(res, (cptr.ldI16o((obj), FLD.obj_otyp) == NHC.TOWEL && cptr.ld1so((obj), FLD.obj_spe) > 0) ? ((cptr.ld1so(obj, FLD.obj_spe) >= 3) ? __sl5 : __sl6) : __sl7);
     }
-    if ((cptr.ldI32o(obj, 136) & 1)) {
-        cptr.stI32o(obj, 36, cptr.ldI32o(saveo, 36));
-        void cptr.strcat(res, (cptr.ldI32o(obj, 36) <= 100) ? __sl8 : ((cptr.ldI32o(obj, 36) <= 300) ? __sl9 : ((cptr.ldI32o(obj, 36) <= 500) ? __sl10 : __sl11)));
+    if ((cptr.ldI32o(obj, FLD.obj_globby) & 1)) {
+        cptr.stI32o(obj, FLD.obj_owt, cptr.ldI32o(saveo, FLD.obj_owt));
+        void cptr.strcat(res, (cptr.ldI32o(obj, FLD.obj_owt) <= 100) ? __sl8 : ((cptr.ldI32o(obj, FLD.obj_owt) <= 300) ? __sl9 : ((cptr.ldI32o(obj, FLD.obj_owt) <= 500) ? __sl10 : __sl11)));
     }
-    if (save_oname && !cptr.ld1so(obj, 51))
-        cptr.stPtr(cptr.ldPtro((obj), 208), save_oname);
+    if (save_oname && !cptr.ld1so(obj, FLD.obj_oartifact))
+        cptr.stPtr(cptr.ldPtro((obj), FLD.obj_oextra), save_oname);
     return res;
 }
 
@@ -688,83 +689,83 @@ function* sortloot_cmp(vptr1, vptr2) {
     let val2;
     let namcmp;
     __lbl_tiebreak: {
-        if (((cptr.ldI32o(gs, 940) & NHM.SORTLOOT_INUSE) >>> 0) != 0) {
-            if (!cptr.ld1so(sli1, 20))
+        if (((cptr.ldI32o(gs, FLD.instance_globals_s_sortlootmode) & NHM.SORTLOOT_INUSE) >>> 0) != 0) {
+            if (!cptr.ld1so(sli1, FLD.sortloot_item_orderclass))
                 inuse_classify(sli1, obj1);
-            if (!cptr.ld1so(sli2, 20))
+            if (!cptr.ld1so(sli2, FLD.sortloot_item_orderclass))
                 inuse_classify(sli2, obj2);
-            val1 = cptr.ld1so(sli1, 23);
-            val2 = cptr.ld1so(sli2, 23);
+            val1 = cptr.ld1so(sli1, FLD.sortloot_item_inuse);
+            val2 = cptr.ld1so(sli2, FLD.sortloot_item_inuse);
             if (val1 != val2)
                 return (val2 - val1) | 0;
             break __lbl_tiebreak;
         }
-        if (((cptr.ldI32o(gs, 940) & 3) >>> 0) != NHM.SORTLOOT_INVLET) {
-            if (!cptr.ld1so(sli1, 20))
+        if (((cptr.ldI32o(gs, FLD.instance_globals_s_sortlootmode) & 3) >>> 0) != NHM.SORTLOOT_INVLET) {
+            if (!cptr.ld1so(sli1, FLD.sortloot_item_orderclass))
                 (yield* loot_classify(sli1, obj1));
-            if (!cptr.ld1so(sli2, 20))
+            if (!cptr.ld1so(sli2, FLD.sortloot_item_orderclass))
                 (yield* loot_classify(sli2, obj2));
-            val1 = cptr.ld1so(sli1, 20);
-            val2 = cptr.ld1so(sli2, 20);
+            val1 = cptr.ld1so(sli1, FLD.sortloot_item_orderclass);
+            val2 = cptr.ld1so(sli2, FLD.sortloot_item_orderclass);
             if (val1 != val2)
                 return (val1 - val2) | 0;
-            if (((cptr.ldI32o(gs, 940) & NHM.SORTLOOT_INVLET) >>> 0) == 0) {
-                val1 = cptr.ld1so(sli1, 21);
-                val2 = cptr.ld1so(sli2, 21);
+            if (((cptr.ldI32o(gs, FLD.instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) == 0) {
+                val1 = cptr.ld1so(sli1, FLD.sortloot_item_subclass);
+                val2 = cptr.ld1so(sli2, FLD.sortloot_item_subclass);
                 if (val1 != val2)
                     return (val1 - val2) | 0;
-                val1 = cptr.ld1so(sli1, 22);
-                val2 = cptr.ld1so(sli2, 22);
+                val1 = cptr.ld1so(sli1, FLD.sortloot_item_disco);
+                val2 = cptr.ld1so(sli2, FLD.sortloot_item_disco);
                 if (val1 != val2)
                     return (val1 - val2) | 0;
             }
         }
-        if (((cptr.ldI32o(gs, 940) & NHM.SORTLOOT_INVLET) >>> 0) != 0) {
-            val1 = invletter_value(cptr.ld1so(obj1, 50));
-            val2 = invletter_value(cptr.ld1so(obj2, 50));
+        if (((cptr.ldI32o(gs, FLD.instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) != 0) {
+            val1 = invletter_value(cptr.ld1so(obj1, FLD.obj_invlet));
+            val2 = invletter_value(cptr.ld1so(obj2, FLD.obj_invlet));
             if (val1 != val2)
                 return (val1 - val2) | 0;
         }
-        if (((cptr.ldI32o(gs, 940) & NHM.SORTLOOT_LOOT) >>> 0) == 0)
+        if (((cptr.ldI32o(gs, FLD.instance_globals_s_sortlootmode) & NHM.SORTLOOT_LOOT) >>> 0) == 0)
             break __lbl_tiebreak;
-        nam1 = cptr.ldPtro(sli1, 8);
+        nam1 = cptr.ldPtro(sli1, FLD.sortloot_item_str);
         if (!nam1) {
             tmpstr = (yield* loot_xname(obj1));
-            nam1 = cptr.stPtro(sli1, 8, (yield* dupstr(tmpstr)));
+            nam1 = cptr.stPtro(sli1, FLD.sortloot_item_str, (yield* dupstr(tmpstr)));
             maybereleaseobuf(tmpstr);
         }
-        nam2 = cptr.ldPtro(sli2, 8);
+        nam2 = cptr.ldPtro(sli2, FLD.sortloot_item_str);
         if (!nam2) {
             tmpstr = (yield* loot_xname(obj2));
-            nam2 = cptr.stPtro(sli2, 8, (yield* dupstr(tmpstr)));
+            nam2 = cptr.stPtro(sli2, FLD.sortloot_item_str, (yield* dupstr(tmpstr)));
             maybereleaseobuf(tmpstr);
         }
         if ((namcmp = (yield* strncmpi((nam1), (nam2), -1))) != 0)
             return namcmp;
-        val1 = (cptr.ldI32o(obj1, 88) & 1) | 0 ? ((cptr.ldI32o(obj1, 60) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj1, 56) & 1) ? 2 : 1)) : 0;
-        val2 = (cptr.ldI32o(obj2, 88) & 1) | 0 ? ((cptr.ldI32o(obj2, 60) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj2, 56) & 1) ? 2 : 1)) : 0;
+        val1 = (cptr.ldI32o(obj1, FLD.obj_bknown) & 1) | 0 ? ((cptr.ldI32o(obj1, FLD.obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj1, FLD.obj_cursed) & 1) ? 2 : 1)) : 0;
+        val2 = (cptr.ldI32o(obj2, FLD.obj_bknown) & 1) | 0 ? ((cptr.ldI32o(obj2, FLD.obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj2, FLD.obj_cursed) & 1) ? 2 : 1)) : 0;
         if (val1 != val2)
             return (val2 - val1) | 0;
-        val1 = (cptr.ldI32o(obj1, 140) & 1) | 0;
-        val2 = (cptr.ldI32o(obj2, 140) & 1) | 0;
+        val1 = (cptr.ldI32o(obj1, FLD.obj_greased) & 1) | 0;
+        val2 = (cptr.ldI32o(obj2, FLD.obj_greased) & 1) | 0;
         if (val1 != val2)
             return (val2 - val1) | 0;
-        val1 = (((cptr.ldI32o((obj1), 112) & 3) | 0) > ((cptr.ldI32o((obj1), 116) & 3) | 0) ? (cptr.ldI32o((obj1), 112) & 3) | 0 : (cptr.ldI32o((obj1), 116) & 3) | 0);
-        val2 = (((cptr.ldI32o((obj2), 112) & 3) | 0) > ((cptr.ldI32o((obj2), 116) & 3) | 0) ? (cptr.ldI32o((obj2), 112) & 3) | 0 : (cptr.ldI32o((obj2), 116) & 3) | 0);
+        val1 = (((cptr.ldI32o((obj1), FLD.obj_oeroded) & 3) | 0) > ((cptr.ldI32o((obj1), FLD.obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((obj1), FLD.obj_oeroded) & 3) | 0 : (cptr.ldI32o((obj1), FLD.obj_oeroded2) & 3) | 0);
+        val2 = (((cptr.ldI32o((obj2), FLD.obj_oeroded) & 3) | 0) > ((cptr.ldI32o((obj2), FLD.obj_oeroded2) & 3) | 0) ? (cptr.ldI32o((obj2), FLD.obj_oeroded) & 3) | 0 : (cptr.ldI32o((obj2), FLD.obj_oeroded2) & 3) | 0);
         if (val1 != val2)
             return (val1 - val2) | 0;
-        val1 = (cptr.ldI32o(obj1, 92) & 1) | 0 && (cptr.ldI32o(obj1, 120) & 1) | 0 ? 1 : 0;
-        val2 = (cptr.ldI32o(obj2, 92) & 1) | 0 && (cptr.ldI32o(obj2, 120) & 1) | 0 ? 1 : 0;
+        val1 = (cptr.ldI32o(obj1, FLD.obj_rknown) & 1) | 0 && (cptr.ldI32o(obj1, FLD.obj_oerodeproof) & 1) | 0 ? 1 : 0;
+        val2 = (cptr.ldI32o(obj2, FLD.obj_rknown) & 1) | 0 && (cptr.ldI32o(obj2, FLD.obj_oerodeproof) & 1) | 0 ? 1 : 0;
         if (val1 != val2)
             return (val2 - val1) | 0;
-        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj1, 32), 120, 24) & 1) | 0 && cptr.ld1so(obj1, 49) != NHC.FOOD_CLASS) {
-            val1 = (cptr.ldI32o(obj1, 80) & 1) | 0 ? cptr.ld1so(obj1, 48) : -1000;
-            val2 = (cptr.ldI32o(obj2, 80) & 1) | 0 ? cptr.ld1so(obj2, 48) : -1000;
+        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj1, FLD.obj_otyp), 120, FLD.objclass_oc_uses_known) & 1) | 0 && cptr.ld1so(obj1, FLD.obj_oclass) != NHC.FOOD_CLASS) {
+            val1 = (cptr.ldI32o(obj1, FLD.obj_known) & 1) | 0 ? cptr.ld1so(obj1, FLD.obj_spe) : -1000;
+            val2 = (cptr.ldI32o(obj2, FLD.obj_known) & 1) | 0 ? cptr.ld1so(obj2, FLD.obj_spe) : -1000;
             if (val1 != val2)
                 return (val2 - val1) | 0;
         }
     }
-    return ((cptr.ldI32o(sli1, 16) - cptr.ldI32o(sli2, 16)) | 0);
+    return ((cptr.ldI32o(sli1, FLD.sortloot_item_indx) - cptr.ldI32o(sli2, FLD.sortloot_item_indx)) | 0);
 }
 
 let __static_sortloot_zerosli = cptr.alloc(24); /** C ref: invent.c:599 — struct sortloot_item (function-static) */
@@ -776,28 +777,28 @@ export function* sortloot(olist, mode, by_nexthere, filterfunc) {
     let n;
     let i;
     let augment_filter;
-    for (n = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, 8) : cptr.ldPtr(o))
+    for (n = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, FLD.obj_v) : cptr.ldPtr(o))
         ++n;
     sliarray = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(((n + 1) >>> 0) >>> 0) * 24n)))));
     augment_filter = schar((((mode & NHM.SORTLOOT_PETRIFY) >>> 0) ? 1 : 0));
     mode &= 4294967263;
-    for (i = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, 8) : cptr.ldPtr(o)) {
-        if (filterfunc && !(yield* Y.icall((filterfunc)(o))) && (!augment_filter || cptr.ldI16o(o, 32) != NHC.CORPSE || !(cptr.eq((cptr.add(mons, cptr.ldI32o(o, 168), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(o, 168), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))))
+    for (i = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, FLD.obj_v) : cptr.ldPtr(o)) {
+        if (filterfunc && !(yield* Y.icall((filterfunc)(o))) && (!augment_filter || cptr.ldI16o(o, FLD.obj_otyp) != NHC.CORPSE || !(cptr.eq((cptr.add(mons, cptr.ldI32o(o, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(o, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))))
             continue;
         cptr.memcpy(cptr.add(sliarray, i, 24), __static_sortloot_zerosli, 24);
-        cptr.stPtro(sliarray, i, o, 24), cptr.stI32o2(sliarray, i, 24, 16, i | 0);
+        cptr.stPtro(sliarray, i, o, 24), cptr.stI32o2(sliarray, i, 24, FLD.sortloot_item_indx, i | 0);
         ++i;
     }
     n = i;
     cptr.memcpy(cptr.add(sliarray, n, 24), __static_sortloot_zerosli, 24);
-    cptr.stI32o2(sliarray, n, 24, 16, -1);
+    cptr.stI32o2(sliarray, n, 24, FLD.sortloot_item_indx, -1);
     if (mode && n > 1) {
-        cptr.stI32o(gs, 940, mode);
+        cptr.stI32o(gs, FLD.instance_globals_s_sortlootmode, mode);
         (yield* nh_deterministic_qsort((sliarray), BigInt((n) >>> 0), 24n, (sortloot_cmp)));
-        cptr.stI32o(gs, 940, 0);
+        cptr.stI32o(gs, FLD.instance_globals_s_sortlootmode, 0);
         for (i = 0; i < n; ++i)
-            if (cptr.ldPtro2(sliarray, i, 24, 8))
-                cptr.free(cptr.ldPtro2(sliarray, i, 24, 8)), cptr.stPtro2(sliarray, i, 24, 8, null);
+            if (cptr.ldPtro2(sliarray, i, 24, FLD.sortloot_item_str))
+                cptr.free(cptr.ldPtro2(sliarray, i, 24, FLD.sortloot_item_str)), cptr.stPtro2(sliarray, i, 24, FLD.sortloot_item_str, null);
     }
     return sliarray;
 }
@@ -813,25 +814,25 @@ export function assigninvlet(otmp) {
     let inuse = new Uint8Array(52);
     let i;
     let obj;
-    if (cptr.ld1so(otmp, 49) == NHC.COIN_CLASS) {
-        cptr.st1o(otmp, 50, NHC.GOLD_SYM);
+    if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS) {
+        cptr.st1o(otmp, FLD.obj_invlet, NHC.GOLD_SYM);
         return;
     }
     for (i = 0; i < NHC.invlet_basic; i++)
         cptr.st1o(cptr.decay(inuse), i, 0, 1);
-    for (obj = cptr.ldPtro(gi, 8); obj; obj = cptr.ldPtr(obj))
+    for (obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
         if (!cptr.eq(obj, otmp)) {
-            i = cptr.ld1so(obj, 50);
+            i = cptr.ld1so(obj, FLD.obj_invlet);
             if (97 <= i && i <= 122)
                 cptr.st1o(cptr.decay(inuse), (i - 97) | 0, 1, 1);
             else if (65 <= i && i <= 90)
                 cptr.st1o(cptr.decay(inuse), (((i - 65) | 0) + 26) | 0, 1, 1);
-            if (i == cptr.ld1so(otmp, 50))
-                cptr.st1o(otmp, 50, 0);
+            if (i == cptr.ld1so(otmp, FLD.obj_invlet))
+                cptr.st1o(otmp, FLD.obj_invlet, 0);
         }
-    if ((i = cptr.ld1so(otmp, 50)) && ((97 <= i && i <= 122) || (65 <= i && i <= 90)))
+    if ((i = cptr.ld1so(otmp, FLD.obj_invlet)) && ((97 <= i && i <= 122) || (65 <= i && i <= 90)))
         return;
-    for (i = (cptr.ldI32o(gl, 64) + 1) | 0; i != cptr.ldI32o(gl, 64); i++) {
+    for (i = (cptr.ldI32o(gl, FLD.instance_globals_l_lastinvnr) + 1) | 0; i != cptr.ldI32o(gl, FLD.instance_globals_l_lastinvnr); i++) {
         if (i == NHC.invlet_basic) {
             i = -1;
             continue;
@@ -839,8 +840,8 @@ export function assigninvlet(otmp) {
         if (!cptr.ld1so(cptr.decay(inuse), i, 1))
             break;
     }
-    cptr.st1o(otmp, 50, schar((cptr.ld1so(cptr.decay(inuse), i, 1) ? 35 : ((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0)))));
-    cptr.stI32o(gl, 64, i);
+    cptr.st1o(otmp, FLD.obj_invlet, schar((cptr.ld1so(cptr.decay(inuse), i, 1) ? 35 : ((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0)))));
+    cptr.stI32o(gl, FLD.instance_globals_l_lastinvnr, i);
 }
 
 /** C ref: invent.c:739 */
@@ -851,14 +852,14 @@ function reorder_invent() {
     let need_more_sorting;
     do {
         need_more_sorting = 0;
-        for (otmp = cptr.ldPtro(gi, 8), prev = null; otmp; ) {
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent), prev = null; otmp; ) {
             next = cptr.ldPtr(otmp);
-            if (next && (cptr.ld1so((next), 50) ^ 32) < (cptr.ld1so((otmp), 50) ^ 32)) {
+            if (next && (cptr.ld1so((next), FLD.obj_invlet) ^ 32) < (cptr.ld1so((otmp), FLD.obj_invlet) ^ 32)) {
                 need_more_sorting = 1;
                 if (prev)
                     cptr.stPtr(prev, next);
                 else
-                    cptr.stPtro(gi, 8, next);
+                    cptr.stPtro(gi, FLD.instance_globals_i_invent, next);
                 cptr.stPtr(otmp, cptr.ldPtr(next));
                 cptr.stPtr(next, otmp);
                 prev = next;
@@ -876,12 +877,12 @@ export function* merge_choice(objlist, obj) {
     let save_nocharge;
     if (!objlist)
         return null;
-    if (cptr.ldI16o(obj, 32) == NHC.SCR_SCARE_MONSTER)
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SCR_SCARE_MONSTER)
         return null;
-    save_nocharge = (cptr.ldI32o(obj, 68) & 1);
-    if (cptr.eq(objlist, cptr.ldPtro(gi, 8)) && cptr.ld1so(obj, 52) == NHM.OBJ_FLOOR && (shkp = (yield* shop_keeper(inside_shop(cptr.ldI16o(obj, 28), cptr.ldI16o(obj, 30))))) !== null) {
-        if ((cptr.ldI32o(obj, 68) & 1))
-            cptr.stI32o(obj, 68, 0);
+    save_nocharge = (cptr.ldI32o(obj, FLD.obj_no_charge) & 1);
+    if (cptr.eq(objlist, cptr.ldPtro(gi, FLD.instance_globals_i_invent)) && cptr.ld1so(obj, FLD.obj_where) == NHM.OBJ_FLOOR && (shkp = (yield* shop_keeper(inside_shop(cptr.ldI16o(obj, FLD.obj_ox), cptr.ldI16o(obj, FLD.obj_oy))))) !== null) {
+        if ((cptr.ldI32o(obj, FLD.obj_no_charge) & 1))
+            cptr.stI32o(obj, FLD.obj_no_charge, 0);
         else if ((yield* inhishop(shkp)))
             return null;
     }
@@ -890,7 +891,7 @@ export function* merge_choice(objlist, obj) {
             break;
         objlist = cptr.ldPtr(objlist);
     } while (objlist);
-    cptr.stI32o(obj, 68, save_nocharge);
+    cptr.stI32o(obj, FLD.obj_no_charge, save_nocharge);
     return objlist;
 }
 
@@ -900,39 +901,39 @@ export function* merged(potmp, pobj) {
     let obj = cptr.ldPtr(pobj);
     let discovered = 0;
     if ((yield* mergable(otmp, obj))) {
-        if (!(cptr.ldI32o(obj, 76) & 1) && !(cptr.ldI32o(obj, 136) & 1))
-            cptr.stI64o(otmp, 184, (BigInt.asIntN(64, (BigInt.asIntN(64, cptr.ldI64o(otmp, 184) * cptr.ldI64o(otmp, 40))) + (BigInt.asIntN(64, cptr.ldI64o(obj, 184) * cptr.ldI64o(obj, 40))))) / (BigInt.asIntN(64, cptr.ldI64o(otmp, 40) + cptr.ldI64o(obj, 40))));
-        if (!(cptr.ldI32o(otmp, 136) & 1))
-            cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + cptr.ldI64o(obj, 40));
-        if (cptr.ld1so(otmp, 49) == NHC.COIN_CLASS)
-            cptr.stI32o(otmp, 36, (yield* weight(otmp)) >>> 0), cptr.stI32o(otmp, 88, 0);
-        else if (!(cptr.ldI16o(otmp, 32) == NHC.GLOB_OF_GRAY_OOZE || cptr.ldI16o(otmp, 32) == NHC.GLOB_OF_BROWN_PUDDING || cptr.ldI16o(otmp, 32) == NHC.GLOB_OF_GREEN_SLIME || cptr.ldI16o(otmp, 32) == NHC.GLOB_OF_BLACK_PUDDING))
-            cptr.stI32o(otmp, 36, (yield* weight(otmp)) >>> 0);
-        if (!(cptr.ldPtro((otmp), 208) && (cptr.ldPtr(cptr.ldPtro((otmp), 208)))) && (cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208)))))
-            otmp = cptr.stPtr(potmp, (yield* oname(otmp, (cptr.ldPtr(cptr.ldPtro((obj), 208))), NHM.ONAME_SKIP_INVUPD)));
+        if (!(cptr.ldI32o(obj, FLD.obj_lamplit) & 1) && !(cptr.ldI32o(obj, FLD.obj_globby) & 1))
+            cptr.stI64o(otmp, FLD.obj_age, (BigInt.asIntN(64, (BigInt.asIntN(64, cptr.ldI64o(otmp, FLD.obj_age) * cptr.ldI64o(otmp, FLD.obj_quan))) + (BigInt.asIntN(64, cptr.ldI64o(obj, FLD.obj_age) * cptr.ldI64o(obj, FLD.obj_quan))))) / (BigInt.asIntN(64, cptr.ldI64o(otmp, FLD.obj_quan) + cptr.ldI64o(obj, FLD.obj_quan))));
+        if (!(cptr.ldI32o(otmp, FLD.obj_globby) & 1))
+            cptr.stI64o(otmp, FLD.obj_quan, cptr.ldI64o(otmp, FLD.obj_quan) + cptr.ldI64o(obj, FLD.obj_quan));
+        if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS)
+            cptr.stI32o(otmp, FLD.obj_owt, (yield* weight(otmp)) >>> 0), cptr.stI32o(otmp, FLD.obj_bknown, 0);
+        else if (!(cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.GLOB_OF_GRAY_OOZE || cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.GLOB_OF_BROWN_PUDDING || cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.GLOB_OF_GREEN_SLIME || cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.GLOB_OF_BLACK_PUDDING))
+            cptr.stI32o(otmp, FLD.obj_owt, (yield* weight(otmp)) >>> 0);
+        if (!(cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), FLD.obj_oextra)))) && (cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra)))))
+            otmp = cptr.stPtr(potmp, (yield* oname(otmp, (cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra))), NHM.ONAME_SKIP_INVUPD)));
         (yield* obj_extract_self(obj));
-        if ((cptr.ldI32o(obj, 152) & 1) | 0 && cptr.ld1so(otmp, 52) == NHM.OBJ_INVENT)
-            cptr.stI32o(otmp, 152, 1);
-        if ((cptr.ldI32o(obj, 76) & 1))
+        if ((cptr.ldI32o(obj, FLD.obj_pickup_prev) & 1) | 0 && cptr.ld1so(otmp, FLD.obj_where) == NHM.OBJ_INVENT)
+            cptr.stI32o(otmp, FLD.obj_pickup_prev, 1);
+        if ((cptr.ldI32o(obj, FLD.obj_lamplit) & 1))
             (yield* obj_merge_light_sources(obj, otmp));
-        if (cptr.ldI16o(obj, 54))
+        if (cptr.ldI16o(obj, FLD.obj_timed))
             (yield* obj_stop_timers(obj));
-        if (((cptr.ldI32o(obj, 80) & 1) | 0) != ((cptr.ldI32o(otmp, 80) & 1) | 0)) {
-            cptr.stI32o(otmp, 80, 1);
+        if (((cptr.ldI32o(obj, FLD.obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_known) & 1) | 0)) {
+            cptr.stI32o(otmp, FLD.obj_known, 1);
             discovered = 1;
         }
-        if (((cptr.ldI32o(obj, 92) & 1) | 0) != ((cptr.ldI32o(otmp, 92) & 1) | 0)) {
-            cptr.stI32o(otmp, 92, 1);
-            if ((cptr.ldI32o(otmp, 120) & 1))
+        if (((cptr.ldI32o(obj, FLD.obj_rknown) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_rknown) & 1) | 0)) {
+            cptr.stI32o(otmp, FLD.obj_rknown, 1);
+            if ((cptr.ldI32o(otmp, FLD.obj_oerodeproof) & 1))
                 discovered = 1;
         }
-        if (((cptr.ldI32o(obj, 88) & 1) | 0) != ((cptr.ldI32o(otmp, 88) & 1) | 0)) {
-            cptr.stI32o(otmp, 88, 1);
-            if (!(cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
+        if (((cptr.ldI32o(obj, FLD.obj_bknown) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_bknown) & 1) | 0)) {
+            cptr.stI32o(otmp, FLD.obj_bknown, 1);
+            if (!(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_CLERIC))
                 discovered = 1;
         }
-        if (cptr.ldI64o(obj, 192) && (cptr.ld1so((otmp), 52) == NHM.OBJ_INVENT)) {
-            let wmask = cptr.ldI64o(otmp, 192) | cptr.ldI64o(obj, 192);
+        if (cptr.ldI64o(obj, FLD.obj_owornmask) && (cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_INVENT)) {
+            let wmask = cptr.ldI64o(otmp, FLD.obj_owornmask) | cptr.ldI64o(obj, FLD.obj_owornmask);
             if ((wmask & 256n) != 0n) {
                 wmask = 256n;
             } else if ((wmask & 1024n) != 0n) {
@@ -941,21 +942,21 @@ export function* merged(potmp, pobj) {
                 wmask = 512n;
             } else {
                 (yield* impossible(__sl12, wmask));
-                wmask = cptr.ldI64o(otmp, 192);
+                wmask = cptr.ldI64o(otmp, FLD.obj_owornmask);
             }
-            if ((cptr.ldI64o(otmp, 192) & BigInt.asIntN(64, ~wmask)) != 0n)
+            if ((cptr.ldI64o(otmp, FLD.obj_owornmask) & BigInt.asIntN(64, ~wmask)) != 0n)
                 (yield* setnotworn(otmp));
             (yield* setworn(otmp, wmask));
             (yield* setnotworn(obj));
         }
-        if ((cptr.ldI32o(obj, 148) & 1))
-            cptr.stI32o(otmp, 148, 1);
-        if ((cptr.ldI32o(obj, 136) & 1)) {
+        if ((cptr.ldI32o(obj, FLD.obj_bypass) & 1))
+            cptr.stI32o(otmp, FLD.obj_bypass, 1);
+        if ((cptr.ldI32o(obj, FLD.obj_globby) & 1)) {
             (yield* pudding_merge_message(otmp, obj));
             (yield* obj_absorb(potmp, pobj));
             return 1;
         }
-        if (discovered && cptr.ld1so(otmp, 52) == NHM.OBJ_INVENT && ((cptr.ldI32o(obj, 160) & 7) | 0) != NHM.LOST_THROWN && ((cptr.ldI32o(otmp, 160) & 7) | 0) != NHM.LOST_THROWN) {
+        if (discovered && cptr.ld1so(otmp, FLD.obj_where) == NHM.OBJ_INVENT && ((cptr.ldI32o(obj, FLD.obj_how_lost) & 7) | 0) != NHM.LOST_THROWN && ((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0) != NHM.LOST_THROWN) {
             (yield* pline(__sl13));
         }
         (yield* obfree(obj, otmp));
@@ -966,45 +967,45 @@ export function* merged(potmp, pobj) {
 
 /** C ref: invent.c:960 — @param {CPtr} obj */
 export function* addinv_core1(obj) {
-    if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS) {
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
-    } else if (cptr.ldI16o(obj, 32) == NHC.AMULET_OF_YENDOR) {
-        if ((cptr.ldI32o(u, 1944) & 1))
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.AMULET_OF_YENDOR) {
+        if ((cptr.ldI32o(u, FLD.you_uhave) & 1))
             (yield* impossible(__sl14));
-        cptr.stI32o(u, 1944, 1);
+        cptr.stI32o(u, FLD.you_uhave, 1);
         (yield* record_achievement(NHC.ACH_AMUL));
-    } else if (cptr.ldI16o(obj, 32) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if ((cptr.ldI32o(u, 1956) & 1))
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
+        if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_menorah) & 1))
             (yield* impossible(__sl15));
-        cptr.stI32o(u, 1956, 1);
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_menorah, 1);
         (yield* record_achievement(NHC.ACH_CNDL));
-    } else if (cptr.ldI16o(obj, 32) == NHC.BELL_OF_OPENING) {
-        if ((cptr.ldI32o(u, 1948) & 1))
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.BELL_OF_OPENING) {
+        if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_bell) & 1))
             (yield* impossible(__sl16));
-        cptr.stI32o(u, 1948, 1);
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_bell, 1);
         (yield* record_achievement(NHC.ACH_BELL));
-    } else if (cptr.ldI16o(obj, 32) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if ((cptr.ldI32o(u, 1952) & 1))
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
+        if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_book) & 1))
             (yield* impossible(__sl17));
-        cptr.stI32o(u, 1952, 1);
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_book, 1);
         (yield* record_achievement(NHC.ACH_BOOK));
-    } else if (cptr.ld1so(obj, 51)) {
+    } else if (cptr.ld1so(obj, FLD.obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if ((cptr.ldI32o(u, 1960) & 1))
+            if ((cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1))
                 (yield* impossible(__sl18));
-            cptr.stI32o(u, 1960, 1);
+            cptr.stI32o(u, FLD.you_uhave + FLD.u_have_questart, 1);
             (yield* artitouch(obj));
         }
         (yield* set_artifact_intrinsic(obj, 1, 4096n));
     }
-    if ((cptr.ldI32o((obj), 24) == cptr.ldI32o(svc, 672))) {
+    if ((cptr.ldI32o((obj), FLD.obj_o_id) == cptr.ldI32o(svc, FLD.context_info_achieveo))) {
         (yield* record_achievement(NHC.ACH_MINE_PRIZE));
-        cptr.stI32o(svc, 672, 0);
-        cptr.stI32o(obj, 108, 0);
-    } else if ((cptr.ldI32o((obj), 24) == cptr.ldI32o(svc, 676))) {
+        cptr.stI32o(svc, FLD.context_info_achieveo, 0);
+        cptr.stI32o(obj, FLD.obj_nomerge, 0);
+    } else if ((cptr.ldI32o((obj), FLD.obj_o_id) == cptr.ldI32o(svc, FLD.context_info_achieveo + FLD.achievement_tracking_soko_prize_oid))) {
         (yield* record_achievement(NHC.ACH_SOKO_PRIZE));
-        cptr.stI32o(svc, 676, 0);
-        cptr.stI32o(obj, 108, 0);
+        cptr.stI32o(svc, FLD.context_info_achieveo + FLD.achievement_tracking_soko_prize_oid, 0);
+        cptr.stI32o(obj, FLD.obj_nomerge, 0);
     }
 }
 
@@ -1013,11 +1014,11 @@ export function* addinv_core2(obj) {
     if (confers_luck(obj)) {
         set_moreluck();
     }
-    if ((cptr.ldI16o(gu, 216) == NHC.PM_ARCHEOLOGIST) && cptr.ld1so(obj, 49) == NHC.SCROLL_CLASS && cptr.ldI16o(obj, 32) != NHC.SCR_BLANK_PAPER && !((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, 32), 120, 16) & 1)) {
+    if ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST) && cptr.ld1so(obj, FLD.obj_oclass) == NHC.SCROLL_CLASS && cptr.ldI16o(obj, FLD.obj_otyp) != NHC.SCR_BLANK_PAPER && !((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1)) {
         (yield* observe_object(obj));
         (yield* pline(__sl19, (yield* yname(obj))));
-        (yield* discover_object((cptr.ldI16o(obj, 32)), 1, 1, 1));
-        if (!((cptr.stI64o(u, 2016, cptr.ldI64o(u, 2016) + 1n)) - (1n)))
+        (yield* discover_object((cptr.ldI16o(obj, FLD.obj_otyp)), 1, 1, 1));
+        if (!((cptr.stI64o(u, FLD.you_uconduct + FLD.u_conduct_literate, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_literate) + 1n)) - (1n)))
             (yield* livelog_printf(32n, __sl20));
     }
 }
@@ -1027,29 +1028,29 @@ function* addinv_core0(obj, other_obj, update_perm_invent) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
     let prev;
-    let saved_otyp = cptr.ldI16o(obj.v, 32);
+    let saved_otyp = cptr.ldI16o(obj.v, FLD.obj_otyp);
     let obj_was_thrown;
     __lbl_added: {
-        if (cptr.ld1so(obj.v, 52) != NHM.OBJ_FREE)
+        if (cptr.ld1so(obj.v, FLD.obj_where) != NHM.OBJ_FREE)
             (yield* panic(__sl21));
-        if (((cptr.ldI32o(obj.v, 160) & 7) | 0) == NHM.LOST_EXPLODING)
+        if (((cptr.ldI32o(obj.v, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
             return (null);
-        cptr.stI32o(obj.v, 68, 0);
-        if ((cptr.ldPtro((obj.v), 16) !== null))
+        cptr.stI32o(obj.v, FLD.obj_no_charge, 0);
+        if ((cptr.ldPtro((obj.v), FLD.obj_cobj) !== null))
             picked_container(obj.v);
-        obj_was_thrown = schar((((cptr.ldI32o(obj.v, 160) & 7) | 0) == NHM.LOST_THROWN));
-        cptr.stI32o(obj.v, 160, NHM.LOST_NONE);
-        if (cptr.ld1so(gl, 488)) {
-            cptr.st1o(gl, 488, 0);
-            reset_justpicked(cptr.ldPtro(gi, 8));
+        obj_was_thrown = schar((((cptr.ldI32o(obj.v, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_THROWN));
+        cptr.stI32o(obj.v, FLD.obj_how_lost, NHM.LOST_NONE);
+        if (cptr.ld1so(gl, FLD.instance_globals_l_loot_reset_justpicked)) {
+            cptr.st1o(gl, FLD.instance_globals_l_loot_reset_justpicked, 0);
+            reset_justpicked(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
         }
         (yield* addinv_core1(obj.v));
         if (other_obj) {
-            for (otmp.v = cptr.ldPtro(gi, 8); otmp.v; otmp.v = cptr.ldPtr(otmp.v)) {
+            for (otmp.v = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v)) {
                 if (cptr.eq(cptr.ldPtr(otmp.v), other_obj)) {
                     cptr.stPtr(obj.v, other_obj);
                     cptr.stPtr(otmp.v, obj.v);
-                    cptr.st1o(obj.v, 52, NHM.OBJ_INVENT);
+                    cptr.st1o(obj.v, FLD.obj_where, NHM.OBJ_INVENT);
                     break __lbl_added;
                 }
             }
@@ -1060,7 +1061,7 @@ function* addinv_core0(obj, other_obj, update_perm_invent) {
                 (yield* panic(__sl22, saved_otyp));
             break __lbl_added;
         }
-        for (prev = null, otmp.v = cptr.ldPtro(gi, 8); otmp.v; prev = otmp.v, otmp.v = cptr.ldPtr(otmp.v))
+        for (prev = null, otmp.v = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp.v; prev = otmp.v, otmp.v = cptr.ldPtr(otmp.v))
             if ((yield* merged(otmp, obj))) {
                 obj.v = otmp.v;
                 if (!obj.v)
@@ -1068,20 +1069,20 @@ function* addinv_core0(obj, other_obj, update_perm_invent) {
                 break __lbl_added;
             }
         assigninvlet(obj.v);
-        if (cptr.ld1so(flags, 22) || !prev) {
-            cptr.stPtr(obj.v, cptr.ldPtro(gi, 8));
-            cptr.stPtro(gi, 8, obj.v);
-            if (cptr.ld1so(flags, 22))
+        if (cptr.ld1so(flags, FLD.flag_invlet_constant) || !prev) {
+            cptr.stPtr(obj.v, cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+            cptr.stPtro(gi, FLD.instance_globals_i_invent, obj.v);
+            if (cptr.ld1so(flags, FLD.flag_invlet_constant))
                 reorder_invent();
         } else {
             cptr.stPtr(prev, obj.v);
             cptr.stPtr(obj.v, null);
         }
-        cptr.st1o(obj.v, 52, NHM.OBJ_INVENT);
-        if (obj_was_thrown && cptr.ld1so(flags, 32) && !uquiver.v && cptr.ld1so(obj.v, 51) != NHC.ART_MJOLLNIR && cptr.ldI16o(obj.v, 32) != NHC.AKLYS && (throwing_weapon(obj.v) || ((cptr.ld1so(obj.v, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj.v, 49) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj.v, 32), 120, 68) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj.v, 32), 120, 68) <= -20)))
+        cptr.st1o(obj.v, FLD.obj_where, NHM.OBJ_INVENT);
+        if (obj_was_thrown && cptr.ld1so(flags, FLD.flag_pickup_thrown) && !uquiver.v && cptr.ld1so(obj.v, FLD.obj_oartifact) != NHC.ART_MJOLLNIR && cptr.ldI16o(obj.v, FLD.obj_otyp) != NHC.AKLYS && (throwing_weapon(obj.v) || ((cptr.ld1so(obj.v, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj.v, FLD.obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj.v, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj.v, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) <= -20)))
             (yield* setuqwep(obj.v));
     }
-    cptr.stI32o(obj.v, 152, 1);
+    cptr.stI32o(obj.v, FLD.obj_pickup_prev, 1);
     (yield* addinv_core2(obj.v));
     (yield* carry_obj_effects(obj.v));
     if (update_perm_invent)
@@ -1102,17 +1103,17 @@ export function* addinv_before(obj, other_obj) {
 /** C ref: invent.c:1169 — @param {CPtr} obj @returns {CPtr} */
 export function* addinv_nomerge(obj) {
     let result;
-    let save_nomerge = (cptr.ldI32o(obj, 108) & 1);
-    cptr.stI32o(obj, 108, 1);
+    let save_nomerge = (cptr.ldI32o(obj, FLD.obj_nomerge) & 1);
+    cptr.stI32o(obj, FLD.obj_nomerge, 1);
     result = (yield* addinv(obj));
-    cptr.stI32o(obj, 108, save_nomerge);
+    cptr.stI32o(obj, FLD.obj_nomerge, save_nomerge);
     return result;
 }
 
 /** C ref: invent.c:1187 — @param {CPtr} obj */
 export function* carry_obj_effects(obj) {
-    if (cptr.ldI16o(obj, 32) == NHC.FIGURINE) {
-        if ((cptr.ldI32o(obj, 56) & 1) | 0 && cptr.ldI32o(obj, 168) != NHC.NON_PM && !dead_species(cptr.ldI32o(obj, 168), 1)) {
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.FIGURINE) {
+        if ((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 && cptr.ldI32o(obj, FLD.obj_corpsenm) != NHC.NON_PM && !dead_species(cptr.ldI32o(obj, FLD.obj_corpsenm), 1)) {
             (yield* attach_fig_transform_timeout(obj));
         }
     }
@@ -1122,18 +1123,18 @@ export function* carry_obj_effects(obj) {
 export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     let buf = new Uint8Array(256);
     __lbl_drop_it: {
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
             (yield* observe_object(obj));
-        if (cptr.ld1so(obj, 51)) {
-            let crysknife = schar((cptr.ldI16o(obj, 32) == NHC.CRYSKNIFE));
-            let oerode = (cptr.ldI32o(obj, 120) & 1) | 0;
-            let wasUpolyd = schar((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804)));
-            (yield* place_object(obj, cptr.ldI16(u), cptr.ldI16o(u, 2)));
-            if (!(yield* touch_artifact(obj, cptr.add(gy, 8)))) {
+        if (cptr.ld1so(obj, FLD.obj_oartifact)) {
+            let crysknife = schar((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CRYSKNIFE));
+            let oerode = (cptr.ldI32o(obj, FLD.obj_oerodeproof) & 1) | 0;
+            let wasUpolyd = schar((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster)));
+            (yield* place_object(obj, cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
+            if (!(yield* touch_artifact(obj, cptr.add(gy, FLD.instance_globals_y_youmonst)))) {
                 (yield* obj_extract_self(obj));
                 (yield* dropy(obj));
                 return obj;
-            } else if (wasUpolyd && !(cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804))) {
+            } else if (wasUpolyd && !(cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
                 if (drop_fmt)
                     (yield* pline(drop_fmt, drop_arg));
                 (yield* obj_extract_self(obj));
@@ -1142,32 +1143,32 @@ export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
             }
             (yield* obj_extract_self(obj));
             if (crysknife) {
-                cptr.stI16o(obj, 32, NHC.CRYSKNIFE);
-                cptr.stI32o(obj, 120, oerode >>> 0);
+                cptr.stI16o(obj, FLD.obj_otyp, NHC.CRYSKNIFE);
+                cptr.stI32o(obj, FLD.obj_oerodeproof, oerode >>> 0);
             }
         }
-        if ((cptr.ldI64o2(u, NHC.FUMBLING, 24, 128) || cptr.ldI64o2(u, NHC.FUMBLING, 24, 112))) {
-            cptr.stI32o(obj, 108, 1);
+        if ((cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, 24, FLD.you_uprops))) {
+            cptr.stI32o(obj, FLD.obj_nomerge, 1);
             obj = (yield* addinv_core0(obj, null, 0));
             break __lbl_drop_it;
-        } else if (cptr.ldI16o(obj, 32) == NHC.CORPSE && !u_safe_from_fatal_corpse(obj, NHC.st_all) && cptr.ldI32o(obj, 172)) {
-            cptr.stI32o(obj, 172, 0);
+        } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORPSE && !u_safe_from_fatal_corpse(obj, NHC.st_all) && cptr.ldI32o(obj, FLD.obj_usecount)) {
+            cptr.stI32o(obj, FLD.obj_usecount, 0);
             obj = (yield* addinv_core0(obj, null, 0));
             break __lbl_drop_it;
         } else {
-            let oquan = cptr.ldI64o(obj, 40);
+            let oquan = cptr.ldI64o(obj, FLD.obj_quan);
             let prev_encumbr = near_capacity();
-            if (prev_encumbr < cptr.ldI32o(flags, 88))
-                prev_encumbr = cptr.ldI32o(flags, 88);
+            if (prev_encumbr < cptr.ldI32o(flags, FLD.flag_pickup_burden))
+                prev_encumbr = cptr.ldI32o(flags, FLD.flag_pickup_burden);
             if (drop_arg)
                 drop_arg = cptr.strcpy(cptr.decay(buf), drop_arg);
             obj = (yield* addinv_core0(obj, null, 0));
-            if (inv_cnt(0) > NHC.invlet_basic || ((cptr.ldI16o(obj, 32) != NHC.LOADSTONE || !(cptr.ldI32o(obj, 56) & 1)) && near_capacity() > prev_encumbr)) {
-                if (cptr.ldI64o(obj, 40) > oquan)
+            if (inv_cnt(0) > NHC.invlet_basic || ((cptr.ldI16o(obj, FLD.obj_otyp) != NHC.LOADSTONE || !(cptr.ldI32o(obj, FLD.obj_cursed) & 1)) && near_capacity() > prev_encumbr)) {
+                if (cptr.ldI64o(obj, FLD.obj_quan) > oquan)
                     obj = (yield* splitobj(obj, oquan));
                 break __lbl_drop_it;
             } else {
-                if (cptr.ld1so(flags, 3) && !uquiver.v && !cptr.ldI64o(obj, 192) && (((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj, 49) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -23) || (((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj, 49) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -20) && ((uwep.v) && cptr.ld1so2(objects, cptr.ldI16o((obj), 32), 120, 68) == -cptr.ld1so2(objects, cptr.ldI16o((uwep.v), 32), 120, 68))) || (((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS || cptr.ld1so(obj, 49) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -20) && ((uswapwep.v) && cptr.ld1so2(objects, cptr.ldI16o((obj), 32), 120, 68) == -cptr.ld1so2(objects, cptr.ldI16o((uswapwep.v), 32), 120, 68)))))
+                if (cptr.ld1so(flags, FLD.flag_autoquiver) && !uquiver.v && !cptr.ldI64o(obj, FLD.obj_owornmask) && (((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) <= -23) || (((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) <= -20) && ((uwep.v) && cptr.ld1so2(objects, cptr.ldI16o((obj), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == -cptr.ld1so2(objects, cptr.ldI16o((uwep.v), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp))) || (((cptr.ld1so(obj, FLD.obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, FLD.obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) <= -20) && ((uswapwep.v) && cptr.ld1so2(objects, cptr.ldI16o((obj), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == -cptr.ld1so2(objects, cptr.ldI16o((uswapwep.v), FLD.obj_otyp), 120, FLD.objclass_oc_subtyp)))))
                     (yield* setuqwep(obj));
                 if (hold_msg || drop_fmt)
                     (yield* prinv(hold_msg, obj, oquan));
@@ -1179,8 +1180,8 @@ export function* hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     }
     if (drop_fmt)
         (yield* pline(drop_fmt, drop_arg));
-    cptr.stI32o(obj, 108, 0);
-    if (can_reach_floor(1) || (cptr.ldI32o(u, 1848) & 1) | 0) {
+    cptr.stI32o(obj, FLD.obj_nomerge, 0);
+    if (can_reach_floor(1) || (cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0) {
         (yield* dropx(obj));
     } else {
         (yield* freeinv(obj));
@@ -1198,10 +1199,10 @@ export function* useupall(obj) {
 
 /** C ref: invent.c:1321 — @param {CPtr} obj */
 export function* useup(obj) {
-    if (cptr.ldI64o(obj, 40) > 1n) {
-        cptr.stI32o(obj, 144, 0);
-        (cptr.stI64o(obj, 40, cptr.ldI64o(obj, 40) + -1n)) - (-1n);
-        cptr.stI32o(obj, 36, (yield* weight(obj)) >>> 0);
+    if (cptr.ldI64o(obj, FLD.obj_quan) > 1n) {
+        cptr.stI32o(obj, FLD.obj_in_use, 0);
+        (cptr.stI64o(obj, FLD.obj_quan, cptr.ldI64o(obj, FLD.obj_quan) + -1n)) - (-1n);
+        cptr.stI32o(obj, FLD.obj_owt, (yield* weight(obj)) >>> 0);
         (yield* update_inventory());
     } else {
         (yield* useupall(obj));
@@ -1212,58 +1213,58 @@ export function* useup(obj) {
 export function* consume_obj_charge(obj, maybe_unpaid) {
     if (maybe_unpaid)
         (yield* check_unpaid(obj));
-    cptr.st1o(obj, 48, cptr.ld1so(obj, 48) - 1);
-    if ((cptr.ldI32o(obj, 80) & 1))
+    cptr.st1o(obj, FLD.obj_spe, cptr.ld1so(obj, FLD.obj_spe) - 1);
+    if ((cptr.ldI32o(obj, FLD.obj_known) & 1))
         (yield* update_inventory());
 }
 
 /** C ref: invent.c:1356 — @param {CPtr} obj */
 export function* freeinv_core(obj) {
-    if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS) {
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
         return;
-    } else if (cptr.ldI16o(obj, 32) == NHC.AMULET_OF_YENDOR) {
-        if (!(cptr.ldI32o(u, 1944) & 1))
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.AMULET_OF_YENDOR) {
+        if (!(cptr.ldI32o(u, FLD.you_uhave) & 1))
             (yield* impossible(__sl24));
-        cptr.stI32o(u, 1944, 0);
-    } else if (cptr.ldI16o(obj, 32) == NHC.CANDELABRUM_OF_INVOCATION) {
-        if (!(cptr.ldI32o(u, 1956) & 1))
+        cptr.stI32o(u, FLD.you_uhave, 0);
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
+        if (!(cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_menorah) & 1))
             (yield* impossible(__sl25));
-        cptr.stI32o(u, 1956, 0);
-    } else if (cptr.ldI16o(obj, 32) == NHC.BELL_OF_OPENING) {
-        if (!(cptr.ldI32o(u, 1948) & 1))
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_menorah, 0);
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.BELL_OF_OPENING) {
+        if (!(cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_bell) & 1))
             (yield* impossible(__sl26));
-        cptr.stI32o(u, 1948, 0);
-    } else if (cptr.ldI16o(obj, 32) == NHC.SPE_BOOK_OF_THE_DEAD) {
-        if (!(cptr.ldI32o(u, 1952) & 1))
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_bell, 0);
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
+        if (!(cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_book) & 1))
             (yield* impossible(__sl27));
-        cptr.stI32o(u, 1952, 0);
-    } else if (cptr.ld1so(obj, 51)) {
+        cptr.stI32o(u, FLD.you_uhave + FLD.u_have_book, 0);
+    } else if (cptr.ld1so(obj, FLD.obj_oartifact)) {
         if (is_quest_artifact(obj)) {
-            if (!(cptr.ldI32o(u, 1960) & 1))
+            if (!(cptr.ldI32o(u, FLD.you_uhave + FLD.u_have_questart) & 1))
                 (yield* impossible(__sl28));
-            cptr.stI32o(u, 1960, 0);
+            cptr.stI32o(u, FLD.you_uhave + FLD.u_have_questart, 0);
         }
         (yield* set_artifact_intrinsic(obj, 0, 4096n));
     }
-    if (cptr.ldI16o(obj, 32) == NHC.LOADSTONE) {
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.LOADSTONE) {
         (yield* curse(obj));
     } else if (confers_luck(obj)) {
         set_moreluck();
         cptr.st1(disp, 1);
-    } else if (cptr.ldI16o(obj, 32) == NHC.FIGURINE && cptr.ldI16o(obj, 54)) {
+    } else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.FIGURINE && cptr.ldI16o(obj, FLD.obj_timed)) {
         void (yield* stop_timer(NHC.FIG_TRANSFORM, obj_to_any(obj)));
     }
-    if (cptr.eq(obj, cptr.ldPtro(svc, 456))) {
-        cptr.stPtro(svc, 456, null);
-        cptr.stI32o(svc, 464, 0);
+    if (cptr.eq(obj, cptr.ldPtro(svc, FLD.context_info_tin))) {
+        cptr.stPtro(svc, FLD.context_info_tin, null);
+        cptr.stI32o(svc, FLD.context_info_tin + FLD.tin_info_o_id, 0);
     }
 }
 
 /** C ref: invent.c:1403 — @param {CPtr} obj */
 export function* freeinv(obj) {
-    (yield* extract_nobj(obj, cptr.add(gi, 8)));
-    cptr.stI32o(obj, 152, 0);
+    (yield* extract_nobj(obj, cptr.add(gi, FLD.instance_globals_i_invent)));
+    cptr.stI32o(obj, FLD.obj_pickup_prev, 0);
     (yield* freeinv_core(obj));
     (yield* update_inventory());
 }
@@ -1272,10 +1273,10 @@ export function* freeinv(obj) {
 export function* delallobj(x, y) {
     let otmp;
     let otmp2;
-    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, 62160); otmp; otmp = otmp2) {
+    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects); otmp; otmp = otmp2) {
         if (cptr.eq(otmp, uball.v))
             (yield* unpunish());
-        otmp2 = cptr.ldPtro(otmp, 8);
+        otmp2 = cptr.ldPtro(otmp, FLD.obj_v);
         if (cptr.eq(otmp, uchain.v))
             continue;
         (yield* delobj(otmp));
@@ -1291,14 +1292,14 @@ export function* delobj(obj) {
 export function* delobj_core(obj, force) {
     let update_map;
     if (!force && obj_resists(obj, 0, 0)) {
-        cptr.stI32o(obj, 144, 0);
+        cptr.stI32o(obj, FLD.obj_in_use, 0);
         return;
     }
-    update_map = schar((cptr.ld1so(obj, 52) == NHM.OBJ_FLOOR));
+    update_map = schar((cptr.ld1so(obj, FLD.obj_where) == NHM.OBJ_FLOOR));
     (yield* obj_extract_self(obj));
     if (update_map) {
-        (yield* maybe_unhide_at(cptr.ldI16o(obj, 28), cptr.ldI16o(obj, 30)));
-        (yield* newsym(cptr.ldI16o(obj, 28), cptr.ldI16o(obj, 30)));
+        (yield* maybe_unhide_at(cptr.ldI16o(obj, FLD.obj_ox), cptr.ldI16o(obj, FLD.obj_oy)));
+        (yield* newsym(cptr.ldI16o(obj, FLD.obj_ox), cptr.ldI16o(obj, FLD.obj_oy)));
     }
     (yield* obfree(obj, null));
 }
@@ -1306,8 +1307,8 @@ export function* delobj_core(obj, force) {
 /** C ref: invent.c:1466 — @param {CInt} otyp @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function sobj_at(otyp, x, y) {
     let otmp;
-    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, 62160); otmp; otmp = cptr.ldPtro(otmp, 8))
-        if (cptr.ldI16o(otmp, 32) == otyp)
+    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, FLD.obj_v))
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == otyp)
             break;
     return otmp;
 }
@@ -1317,18 +1318,18 @@ export function nxtobj(obj, type, by_nexthere) {
     let otmp;
     otmp = obj;
     do {
-        otmp = !by_nexthere ? cptr.ldPtr(otmp) : cptr.ldPtro(otmp, 8);
+        otmp = !by_nexthere ? cptr.ldPtr(otmp) : cptr.ldPtro(otmp, FLD.obj_v);
         if (!otmp)
             break;
-    } while (cptr.ldI16o(otmp, 32) != type);
+    } while (cptr.ldI16o(otmp, FLD.obj_otyp) != type);
     return otmp;
 }
 
 /** C ref: invent.c:1495 — @param {CInt} type @returns {CPtr} */
 export function carrying(type) {
     let otmp;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-        if (cptr.ldI16o(otmp, 32) == type)
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == type)
             break;
     return otmp;
 }
@@ -1336,8 +1337,8 @@ export function carrying(type) {
 /** C ref: invent.c:1508 @returns {CPtr} */
 export function carrying_stoning_corpse() {
     let otmp;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-        if (cptr.ldI16o(otmp, 32) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))))
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))))
             break;
     return otmp;
 }
@@ -1369,7 +1370,7 @@ cptr.stPtro(currencies, 160, __sl49);
 /** C ref: invent.c:1546 — @param {CLongLong} amount @returns {CPtr} */
 export function* currency(amount) {
     let res;
-    res = (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) ? cptr.ldPtro(currencies, (rng_log_enabled() ? (rng_log_set_caller(__sl50, 1550, __sl51), rn2(21)) : rn2(21)), 8) : __sl49;
+    res = (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? cptr.ldPtro(currencies, (rng_log_enabled() ? (rng_log_set_caller(__sl50, 1550, __sl51), rn2(21)) : rn2(21)), 8) : __sl49;
     if (amount != 1n)
         res = (yield* makeplural(res));
     return res;
@@ -1382,8 +1383,8 @@ export function u_carried_gloves() {
     if (uarmg.v) {
         gloves = uarmg.v;
     } else {
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-            if ((cptr.ld1so(otmp, 49) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.ARM_GLOVES)) {
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if ((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.ARM_GLOVES)) {
                 gloves = otmp;
                 break;
             }
@@ -1394,8 +1395,8 @@ export function u_carried_gloves() {
 /** C ref: invent.c:1576 @returns {CPtr} */
 export function u_have_novel() {
     let otmp;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-        if (cptr.ldI16o(otmp, 32) == NHC.SPE_NOVEL)
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.SPE_NOVEL)
             return otmp;
     return null;
 }
@@ -1404,9 +1405,9 @@ export function u_have_novel() {
 export function o_on(id, objchn) {
     let temp;
     while (objchn) {
-        if (cptr.ldI32o(objchn, 24) == id)
+        if (cptr.ldI32o(objchn, FLD.obj_o_id) == id)
             return objchn;
-        if ((cptr.ldPtro((objchn), 16) !== null) && (temp = o_on(id, cptr.ldPtro(objchn, 16))))
+        if ((cptr.ldPtro((objchn), FLD.obj_cobj) !== null) && (temp = o_on(id, cptr.ldPtro(objchn, FLD.obj_cobj))))
             return temp;
         objchn = cptr.ldPtr(objchn);
     }
@@ -1416,7 +1417,7 @@ export function o_on(id, objchn) {
 /** C ref: invent.c:1602 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function obj_here(obj, x, y) {
     let otmp;
-    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, 62160); otmp; otmp = cptr.ldPtro(otmp, 8))
+    for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, FLD.obj_v))
         if (cptr.eq(obj, otmp))
             return 1;
     return 0;
@@ -1424,11 +1425,11 @@ export function obj_here(obj, x, y) {
 
 /** C ref: invent.c:1613 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 export function g_at(x, y) {
-    let obj = cptr.ldPtro3(svl, x, 168, y, 8, 62160);
+    let obj = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects);
     while (obj) {
-        if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS)
+        if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS)
             return obj;
-        obj = cptr.ldPtro(obj, 8);
+        obj = cptr.ldPtro(obj, FLD.obj_v);
     }
     return null;
 }
@@ -1469,7 +1470,7 @@ function compactify(buf) {
 
 /** C ref: invent.c:1664 — @param {CPtr} obj @returns {CInt} */
 export function* splittable(obj) {
-    return schar((!((cptr.ldI16o(obj, 32) == NHC.LOADSTONE && (cptr.ldI32o(obj, 56) & 1) | 0) || (cptr.eq(obj, uwep.v) && (yield* welded(uwep.v))))));
+    return schar((!((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0) || (cptr.eq(obj, uwep.v) && (yield* welded(uwep.v))))));
 }
 
 /** C ref: invent.c:1672 — @param {CPtr} action @returns {CInt} */
@@ -1570,13 +1571,13 @@ export function* getobj(word, obj_ok, ctrlflags) {
         __pc = 11; continue;
         }
         case 10: {
-        if (cptr.ld1so(cq, 4) == 45) {
+        if (cptr.ld1so(cq, FLD._cmd_queue_key) == 45) {
             v = (yield* Y.icall((obj_ok)(null)));
             if (v == NHC.GETOBJ_SUGGEST || v == NHC.GETOBJ_DOWNPLAY)
                 otmp = hands_obj;
         } else {
-            for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-                if (cptr.ld1so(otmp, 50) == cptr.ld1so(cq, 4)) {
+            for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if (cptr.ld1so(otmp, FLD.obj_invlet) == cptr.ld1so(cq, FLD._cmd_queue_key)) {
                     v = (yield* Y.icall((obj_ok)(otmp)));
                     if (v == NHC.GETOBJ_SUGGEST || v == NHC.GETOBJ_DOWNPLAY)
                         break;
@@ -1594,7 +1595,7 @@ export function* getobj(word, obj_ok, ctrlflags) {
         __pc = 16; continue;
         }
         case 15: {
-        cnt = BigInt(cptr.ldI32o(cq, 8));
+        cnt = BigInt(cptr.ldI32o(cq, FLD._cmd_queue_intval));
         cntgiven = 1;
         { __pc = 1; continue; }
         __pc = 14;
@@ -1628,7 +1629,7 @@ export function* getobj(word, obj_ok, ctrlflags) {
         __pc = 20; continue;
         }
         case 21: {
-        if (cnt < 1n || cptr.ldI64o(otmp, 40) <= cnt)
+        if (cnt < 1n || cptr.ldI64o(otmp, FLD.obj_quan) <= cnt)
             cntgiven = 0;
         { __pc = 3; continue; }
         __pc = 20;
@@ -1674,15 +1675,15 @@ export function* getobj(word, obj_ok, ctrlflags) {
             default:
             break;
         }
-        if (!cptr.ld1so(flags, 22))
+        if (!cptr.ld1so(flags, FLD.flag_invlet_constant))
             reassign();
-        sortedinvent.v = (yield* sortloot(cptr.add(gi, 8), NHM.SORTLOOT_INVLET, 0, null));
+        sortedinvent.v = (yield* sortloot(cptr.add(gi, FLD.instance_globals_i_invent), NHM.SORTLOOT_INVLET, 0, null));
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
             if (cptr.eq(cptr.add(bp, suggested), cptr.add(cptr.decay(buf), 255n, 1)) || cptr.eq(ap, cptr.add(cptr.decay(altlets), 255n, 1))) {
                 (yield* impossible(__sl74));
                 break;
             }
-            cptr.st1o(bp, suggested++, cptr.ld1so(otmp, 50));
+            cptr.st1o(bp, suggested++, cptr.ld1so(otmp, FLD.obj_invlet));
             switch ((yield* Y.icall((obj_ok)(otmp)))) {
                 case NHC.GETOBJ_EXCLUDE_INACCESS:
                 suggested--;
@@ -1695,7 +1696,7 @@ export function* getobj(word, obj_ok, ctrlflags) {
                 case NHC.GETOBJ_DOWNPLAY:
                 suggested--;
                 forceprompt = 1;
-                cptr.st1(cptr.postinc(() => ap, (v) => { ap = v; }), cptr.ld1so(otmp, 50));
+                cptr.st1(cptr.postinc(() => ap, (v) => { ap = v; }), cptr.ld1so(otmp, FLD.obj_invlet));
                 break;
                 case NHC.GETOBJ_SUGGEST:
                 break;
@@ -1727,11 +1728,11 @@ export function* getobj(word, obj_ok, ctrlflags) {
         void cptr.sprintf(cptr.decay(qbuf), __sl78, word);
         if (cptr.ldI32(gi)) {
             ilet = (yield* readchar());
-        } else if (cptr.ld1so(iflags, 131)) {
+        } else if (cptr.ld1so(iflags, FLD.instance_flags_force_invmenu)) {
             if (!oneloop)
                 ilet = schar(((cptr.ld1s(cptr.decay(lets)) || cptr.ld1s(cptr.decay(altlets))) ? 63 : 42));
             if (!msggiven)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 352))(cptr.decay(qbuf), 0)));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putmsghistory))(cptr.decay(qbuf), 0)));
             msggiven = 1;
             oneloop = 1;
         } else {
@@ -1766,8 +1767,8 @@ export function* getobj(word, obj_ok, ctrlflags) {
         }
         case 26: {
         if (cptr.strchr(cptr.decay(quitchars), ilet)) {
-            if (cptr.ld1so(flags, 48))
-                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+            if (cptr.ld1so(flags, FLD.flag_verbose))
+                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
             return null;
         }
         if (ilet == 45) {
@@ -1790,7 +1791,7 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (ilet == 63 && !cptr.ld1s(cptr.decay(lets)) && cptr.ld1s(cptr.decay(altlets)))
             allowed_choices = cptr.decay(altlets);
         cptr.st1o(cptr.decay(menuquery), 0, cptr.st1o(cptr.decay(qbuf), 0, 0, 1), 1);
-        if (cptr.ld1so(iflags, 131))
+        if (cptr.ld1so(iflags, FLD.instance_flags_force_invmenu))
             nh_snprintf(__sl83, 1975, cptr.decay(menuquery), 128n, __sl78, word);
         if (!allowed_choices || cptr.ld1s(allowed_choices) == 45 || cptr.ld1s(cptr.decay(buf)) == 45)
             handsbuf = (yield* getobj_hands_txt(word, cptr.decay(qbuf)));
@@ -1809,8 +1810,8 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (ilet == 45)
             return hands_obj;
         if (ilet == 27) {
-            if (cptr.ld1so(flags, 48))
-                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+            if (cptr.ld1so(flags, FLD.flag_verbose))
+                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
             return null;
         }
         if (ilet == 42 || ilet == 63) { __pc = 35; continue; }
@@ -1830,10 +1831,10 @@ export function* getobj(word, obj_ok, ctrlflags) {
         continue;
         }
         case 30: {
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-            if (cptr.ld1so(otmp, 50) == ilet)
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if (cptr.ld1so(otmp, FLD.obj_invlet) == ilet)
                 break;
-        if (ilet == NHC.GOLD_SYM || (otmp && cptr.ld1so(otmp, 49) == NHC.COIN_CLASS)) {
+        if (ilet == NHC.GOLD_SYM || (otmp && cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS)) {
             if (otmp && (yield* Y.icall(obj_ok(otmp))) <= NHC.GETOBJ_EXCLUDE) {
                 (yield* You(__sl84, word));
                 return null;
@@ -1850,13 +1851,13 @@ export function* getobj(word, obj_ok, ctrlflags) {
         case 37: {
         if (cnt == 0n || !otmp)
             return null;
-        coins = schar((cptr.ld1so(otmp, 49) == NHC.COIN_CLASS));
-        if (cnt > 1n && (!coins || cnt > cptr.ldI64o(otmp, 40))) { __pc = 39; continue; }
+        coins = schar((cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS));
+        if (cnt > 1n && (!coins || cnt > cptr.ldI64o(otmp, FLD.obj_quan))) { __pc = 39; continue; }
         __pc = 38; continue;
         }
         case 39: {
-        if (cnt > cptr.ldI64o(otmp, 40))
-            (yield* You(__sl87, cptr.ldI64o(otmp, 40), (!coins && cptr.ldI64o(otmp, 40) > 1n) ? __sl88 : __sl0, (!coins && cptr.ldI64o(otmp, 40) > 1n) ? cptr.decay(__static_getobj_only_one) : __sl0));
+        if (cnt > cptr.ldI64o(otmp, FLD.obj_quan))
+            (yield* You(__sl87, cptr.ldI64o(otmp, FLD.obj_quan), (!coins && cptr.ldI64o(otmp, FLD.obj_quan) > 1n) ? __sl88 : __sl0, (!coins && cptr.ldI64o(otmp, FLD.obj_quan) > 1n) ? cptr.decay(__static_getobj_only_one) : __sl0));
         else
             (yield* You(__sl89, cptr.decay(__static_getobj_only_one)));
         { __pc = 25; continue; }
@@ -1886,11 +1887,11 @@ export function* getobj(word, obj_ok, ctrlflags) {
         continue;
         }
         case 42: {
-        if (cnt < 0n || cptr.ldI64o(otmp, 40) < cnt) { __pc = 44; continue; }
+        if (cnt < 0n || cptr.ldI64o(otmp, FLD.obj_quan) < cnt) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
-        (yield* You(__sl91, cptr.ldI64o(otmp, 40)));
+        (yield* You(__sl91, cptr.ldI64o(otmp, FLD.obj_quan)));
         if (cptr.ldI32(gi))
             return null;
         { __pc = 25; continue; }
@@ -1922,11 +1923,11 @@ export function* getobj(word, obj_ok, ctrlflags) {
         if (cntgiven) {
             if (cnt == 0n)
                 return null;
-            if (cnt != cptr.ldI64o(otmp, 40)) {
+            if (cnt != cptr.ldI64o(otmp, FLD.obj_quan)) {
                 if ((yield* splittable(otmp)))
                     otmp = (yield* splitobj(otmp, cnt));
-                else if (cptr.ldI16o(otmp, 32) == NHC.LOADSTONE && (cptr.ldI32o(otmp, 56) & 1) | 0)
-                    cptr.stI32o(otmp, 168, Number(BigInt.asIntN(32, cnt)));
+                else if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0)
+                    cptr.stI32o(otmp, FLD.obj_corpsenm, Number(BigInt.asIntN(32, cnt)));
             }
         }
         return otmp;
@@ -1940,10 +1941,10 @@ export function* getobj(word, obj_ok, ctrlflags) {
 
 /** C ref: invent.c:2094 — @param {CPtr} word @param {CPtr} otmp */
 export function* silly_thing(word, otmp) {
-    if (!strcmp(word, __sl92) && (cptr.ldI16o(otmp, 32) == NHC.AMULET_OF_YENDOR || (cptr.ldI16o(otmp, 32) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, 80) & 1))))
+    if (!strcmp(word, __sl92) && (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.AMULET_OF_YENDOR || (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, FLD.obj_known) & 1))))
         (yield* pline_The(__sl93));
     else
-        (yield* pline(cptr.ldPtro(c_common_strings, 24), word));
+        (yield* pline(cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_silly_thing_to), word));
 }
 
 /** C ref: invent.c:2136 — @param {CPtr} otmp @returns {CInt} */
@@ -1953,7 +1954,7 @@ function* ckvalidcat(otmp) {
 
 /** C ref: invent.c:2143 — @param {CPtr} otmp @returns {CInt} */
 function ckunpaid(otmp) {
-    return ((cptr.ldI32o(otmp, 64) & 1) | 0 || ((cptr.ldPtro((otmp), 16) !== null) && count_unpaid(cptr.ldPtro(otmp, 16))) ? 1 : 0);
+    return ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1) | 0 || ((cptr.ldPtro((otmp), FLD.obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, FLD.obj_cobj))) ? 1 : 0);
 }
 
 /** C ref: invent.c:2149 @returns {CInt} */
@@ -1963,12 +1964,12 @@ export function wearing_armor() {
 
 /** C ref: invent.c:2156 — @param {CPtr} otmp @returns {CInt} */
 export function is_worn(otmp) {
-    return schar(((cptr.ldI64o(otmp, 192) & 2033535n) ? 1 : 0));
+    return schar(((cptr.ldI64o(otmp, FLD.obj_owornmask) & 2033535n) ? 1 : 0));
 }
 
 /** C ref: invent.c:2167 — @param {CPtr} obj @returns {CInt} */
 export function is_inuse(obj) {
-    return schar(((cptr.ld1so((obj), 52) == NHM.OBJ_INVENT) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
+    return schar(((cptr.ld1so((obj), FLD.obj_where) == NHM.OBJ_INVENT) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
 }
 
 /** C ref: invent.c:2173 — struct xprnctx { let, dot } (memory model v0.5) */
@@ -1978,12 +1979,12 @@ let safeq_xprn_ctx = cptr.alloc(2);
 
 /** C ref: invent.c:2180 — @param {CPtr} obj @returns {CPtr} */
 function* safeq_xprname(obj) {
-    return (yield* xprname(obj, null, cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, 1), 0n, 0n));
+    return (yield* xprname(obj, null, cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, FLD.xprnctx_dot), 0n, 0n));
 }
 
 /** C ref: invent.c:2188 — @param {CPtr} obj @returns {CPtr} */
 function* safeq_shortxprname(obj) {
-    return (yield* xprname(obj, (yield* ansimpleoname(obj)), cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, 1), 0n, 0n));
+    return (yield* xprname(obj, (yield* ansimpleoname(obj)), cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, FLD.xprnctx_dot), 0n, 0n));
 }
 
 /** C ref: invent.c:2194 — char[6] */
@@ -2009,7 +2010,7 @@ export function* ggetobj(word, fn, mx, combo, resultflags) {
     let extra_removeables = new Uint8Array(4);
     let buf = [0];
     let qbuf = new Uint8Array(128);
-    if (!cptr.ldPtro(gi, 8)) {
+    if (!cptr.ldPtro(gi, FLD.instance_globals_i_invent)) {
         (yield* You(__sl94, word));
         if (resultflags)
             cptr.stI32(resultflags, NHM.ALL_FINISHED);
@@ -2026,23 +2027,23 @@ export function* ggetobj(word, fn, mx, combo, resultflags) {
         ident = 1;
         ofilter = not_fully_identified;
     }
-    iletct = (yield* collect_obj_classes(cptr.decay(ilets), cptr.ldPtro(gi, 8), 0, ofilter, itemcount));
-    unpaid = count_unpaid(cptr.ldPtro(gi, 8));
+    iletct = (yield* collect_obj_classes(cptr.decay(ilets), cptr.ldPtro(gi, FLD.instance_globals_i_invent), 0, ofilter, itemcount));
+    unpaid = count_unpaid(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
     if (ident && !iletct) {
         return -1;
-    } else if (cptr.ldPtro(gi, 8)) {
+    } else if (cptr.ldPtro(gi, FLD.instance_globals_i_invent)) {
         cptr.st1o(cptr.decay(ilets), iletct++, 32, 1);
         if (unpaid)
             cptr.st1o(cptr.decay(ilets), iletct++, 117, 1);
-        if ((yield* count_buc(cptr.ldPtro(gi, 8), NHM.BUC_BLESSED, ofilter)))
+        if ((yield* count_buc(cptr.ldPtro(gi, FLD.instance_globals_i_invent), NHM.BUC_BLESSED, ofilter)))
             cptr.st1o(cptr.decay(ilets), iletct++, 66, 1);
-        if ((yield* count_buc(cptr.ldPtro(gi, 8), NHM.BUC_UNCURSED, ofilter)))
+        if ((yield* count_buc(cptr.ldPtro(gi, FLD.instance_globals_i_invent), NHM.BUC_UNCURSED, ofilter)))
             cptr.st1o(cptr.decay(ilets), iletct++, 85, 1);
-        if ((yield* count_buc(cptr.ldPtro(gi, 8), NHM.BUC_CURSED, ofilter)))
+        if ((yield* count_buc(cptr.ldPtro(gi, FLD.instance_globals_i_invent), NHM.BUC_CURSED, ofilter)))
             cptr.st1o(cptr.decay(ilets), iletct++, 67, 1);
-        if ((yield* count_buc(cptr.ldPtro(gi, 8), NHM.BUC_UNKNOWN, ofilter)))
+        if ((yield* count_buc(cptr.ldPtro(gi, FLD.instance_globals_i_invent), NHM.BUC_UNKNOWN, ofilter)))
             cptr.st1o(cptr.decay(ilets), iletct++, 88, 1);
-        if (count_justpicked(cptr.ldPtro(gi, 8)))
+        if (count_justpicked(cptr.ldPtro(gi, FLD.instance_globals_i_invent)))
             cptr.st1o(cptr.decay(ilets), iletct++, 80, 1);
         cptr.st1o(cptr.decay(ilets), iletct++, 97, 1);
     }
@@ -2061,10 +2062,10 @@ export function* ggetobj(word, fn, mx, combo, resultflags) {
             let nextobj;
             cptr.st1o(cptr.decay(ailets), 0, 0, 1);
             if (ofilter)
-                for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = nextobj) {
+                for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = nextobj) {
                     nextobj = cptr.ldPtr(otmp);
-                    if ((yield* Y.icall((ofilter)(otmp))) && !cptr.strchr(cptr.decay(ailets), cptr.ld1so(otmp, 50)))
-                        void (yield* strkitten(cptr.decay(ailets), cptr.ld1so(otmp, 50)));
+                    if ((yield* Y.icall((ofilter)(otmp))) && !cptr.strchr(cptr.decay(ailets), cptr.ld1so(otmp, FLD.obj_invlet)))
+                        void (yield* strkitten(cptr.decay(ailets), cptr.ld1so(otmp, FLD.obj_invlet)));
                 }
             if ((yield* display_inventory(cptr.decay(ailets), 1)) == 27)
                 return 0;
@@ -2074,11 +2075,11 @@ export function* ggetobj(word, fn, mx, combo, resultflags) {
     cptr.st1o(cptr.decay(extra_removeables), 0, 0, 1);
     if (takeoff) {
         if (uwep.v)
-            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uwep.v, 49)));
+            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uwep.v, FLD.obj_oclass)));
         if (uswapwep.v)
-            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uswapwep.v, 49)));
+            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uswapwep.v, FLD.obj_oclass)));
         if (uquiver.v)
-            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uquiver.v, 49)));
+            void (yield* strkitten(cptr.decay(extra_removeables), cptr.ld1so(uquiver.v, FLD.obj_oclass)));
     }
     ip = cptr.decay(buf);
     cptr.st1o(cptr.decay(olets), oletct = 0, 0, 1);
@@ -2133,10 +2134,10 @@ export function* ggetobj(word, fn, mx, combo, resultflags) {
     }
     if (m_seen) {
         return (allflag || (!oletct && ckfn !== ckunpaid && ckfn !== ckvalidcat)) ? -2 : -3;
-    } else if (cptr.ld1so(flags, 142) != NHM.MENU_TRADITIONAL && combo && !allflag) {
+    } else if (cptr.ld1so(flags, FLD.flag_menu_style) != NHM.MENU_TRADITIONAL && combo && !allflag) {
         return 0;
     } else {
-        let cnt = (yield* askchain(cptr.add(gi, 8), cptr.decay(olets), allflag, fn, ckfn, mx, word));
+        let cnt = (yield* askchain(cptr.add(gi, FLD.instance_globals_i_invent), cptr.decay(olets), allflag, fn, ckfn, mx, word));
         if (combo && allflag && resultflags)
             cptr.stI32(resultflags, cptr.ldI32(resultflags) | NHM.ALL_FINISHED);
         return cnt;
@@ -2168,13 +2169,13 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     take_out = schar((!strcmp(word, __sl104)));
     put_in = schar((!strcmp(word, __sl105)));
     nodot = schar((!strcmp(word, __sl106) || !strcmp(word, __sl107) || ident || takeoff || take_out || put_in ? 1 : 0));
-    ininv = schar((cptr.eq(cptr.ldPtr(objchn), cptr.ldPtro(gi, 8))));
+    ininv = schar((cptr.eq(cptr.ldPtr(objchn), cptr.ldPtro(gi, FLD.instance_globals_i_invent))));
     bycat = schar((menu_class_present(117) || menu_class_present(66) || menu_class_present(85) || menu_class_present(67) || menu_class_present(88) || menu_class_present(80) ? 1 : 0));
     sortedchn.v = (yield* sortloot(objchn, NHM.SORTLOOT_INVLET, 0, null));
     first = 1;
     __lbl_nextclass: while (true) {
         ilet = 96;
-        if (cptr.ldPtr(objchn) && cptr.ld1so((cptr.ldPtr(objchn)), 49) == NHC.COIN_CLASS)
+        if (cptr.ldPtr(objchn) && cptr.ld1so((cptr.ldPtr(objchn)), FLD.obj_oclass) == NHC.COIN_CLASS)
             ilet--;
         bypass_objlist(cptr.ldPtr(objchn), 0);
         while ((otmp = nxt_unbypassed_loot(sortedchn.v, cptr.ldPtr(objchn))) !== null) {
@@ -2184,7 +2185,7 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                 ilet = 35;
             else
                 ilet++;
-            if (olets && cptr.ld1s(olets) && cptr.ld1so(otmp, 49) != cptr.ld1s(olets))
+            if (olets && cptr.ld1s(olets) && cptr.ld1so(otmp, FLD.obj_oclass) != cptr.ld1s(olets))
                 continue;
             if (takeoff && !is_worn(otmp))
                 continue;
@@ -2196,7 +2197,7 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                 continue;
             if (!allflag) {
                 cptr.st1(safeq_xprn_ctx, ilet);
-                cptr.st1o(safeq_xprn_ctx, 1, schar((!nodot)));
+                cptr.st1o(safeq_xprn_ctx, FLD.xprnctx_dot, schar((!nodot)));
                 cptr.st1(cptr.decay(qpfx), 0);
                 if (first) {
                     if (take_out || put_in)
@@ -2204,7 +2205,7 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                     first = 0;
                 }
                 void (yield* safe_qbuf(cptr.decay(qbuf), cptr.decay(qpfx), __sl109, otmp, ininv ? safeq_xprname : doname, ininv ? safeq_shortxprname : ansimpleoname, __sl110));
-                sym = (yield* yn_function(cptr.decay(qbuf), (takeoff || ident || cptr.ldI64o(otmp, 40) < 2n) ? cptr.decay(ynaqchars) : cptr.decay(ynNaqchars), 110, 0));
+                sym = (yield* yn_function(cptr.decay(qbuf), (takeoff || ident || cptr.ldI64o(otmp, FLD.obj_quan) < 2n) ? cptr.decay(ynaqchars) : cptr.decay(ynNaqchars), 110, 0));
             } else
                 sym = 121;
             otmpo = otmp;
@@ -2213,7 +2214,7 @@ export function* askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                     sym = 110;
                 } else {
                     sym = 121;
-                    if (yn_number.v < cptr.ldI64o(otmp, 40) && (yield* splittable(otmp)))
+                    if (yn_number.v < cptr.ldI64o(otmp, FLD.obj_quan) && (yield* splittable(otmp)))
                         otmp = (yield* splitobj(otmp, yn_number.v));
                 }
             }
@@ -2286,37 +2287,37 @@ export function* reroll_menu() {
     let tmpglyphinfo = cptr.alloc(48);
     let option;
     let buf = new Uint8Array(256);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(win, 0n)));
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     cptr.st1(any, 110);
-    (yield* add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, 168) ? 0 : 112)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl113, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, FLD.flag_lootabc) ? 0 : 112)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl113, NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 121);
-    (yield* add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, 168) ? 0 : 114)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl114, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, FLD.flag_lootabc) ? 0 : 114)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl114, NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 0);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl0, NHM.MENU_ITEMFLAGS_NONE));
-    cptr.stI32o(gd, 140, cptr.ldI32o(gd, 140) + 1);
-    cptr.stI32o(iflags, 48, cptr.ldI32o(iflags, 48) + 1);
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp)) {
-        tmpglyph = ((cptr.ldI16o((otmp), 32) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), 168) + (((cptr.ld1so((otmp), 48) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((cptr.stI32o(go, 68, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, 68) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), 32) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), 168) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), 84) & 1) && (cptr.ld1so((otmp), 49) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), 32) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), 32) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), 49) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), 32) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
+    cptr.stI32o(gd, FLD.instance_globals_d_distantname, cptr.ldI32o(gd, FLD.instance_globals_d_distantname) + 1);
+    cptr.stI32o(iflags, FLD.instance_flags_override_ID, cptr.ldI32o(iflags, FLD.instance_flags_override_ID) + 1);
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+        tmpglyph = ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), FLD.obj_corpsenm) + (((cptr.ld1so((otmp), FLD.obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((cptr.stI32o(go, FLD.instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, FLD.instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), FLD.obj_corpsenm) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), FLD.obj_dknown) & 1) && (cptr.ld1so((otmp), FLD.obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), FLD.obj_oclass) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), FLD.obj_otyp) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
         map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
         (yield* add_menu(win, tmpglyphinfo, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, (yield* doname(otmp)), NHM.MENU_ITEMFLAGS_NONE));
     }
-    cptr.stI32o(iflags, 48, cptr.ldI32o(iflags, 48) + -1);
-    cptr.stI32o(gd, 140, cptr.ldI32o(gd, 140) + -1);
+    cptr.stI32o(iflags, FLD.instance_flags_override_ID, cptr.ldI32o(iflags, FLD.instance_flags_override_ID) + -1);
+    cptr.stI32o(gd, FLD.instance_globals_d_distantname, cptr.ldI32o(gd, FLD.instance_globals_d_distantname) + -1);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl0, NHM.MENU_ITEMFLAGS_NONE));
     void cptr.sprintf(cptr.decay(buf), __sl115, get_strength_str(), (acurr(NHC.A_DEX)), (acurr(NHC.A_CON)), (acurr(NHC.A_INT)), (acurr(NHC.A_WIS)), (acurr(NHC.A_CHA)));
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(win, __sl116)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl116)));
     if ((yield* select_menu(win, NHM.PICK_ONE, pick_list)) > 0) {
         option = cptr.ld1so(pick_list.v, 0, 24);
         cptr.free(pick_list.v);
     } else {
         option = (yield* yn_function(__sl116, cptr.decay(ynchars), 110, 1));
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(win)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
     if (option == 121) {
-        cptr.stI64o(u, 2128, cptr.ldI64o(u, 2128) + 1n);
+        cptr.stI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numrerolls, cptr.ldI64o(u, FLD.you_uroleplay + FLD.u_roleplay_numrerolls) + 1n);
         return 1;
     }
     return 0;
@@ -2324,23 +2325,23 @@ export function* reroll_menu() {
 
 /** C ref: invent.c:2624 — @param {CPtr} obj */
 export function set_cknown_lknown(obj) {
-    if ((cptr.ldI16o((obj), 32) >= NHC.LARGE_BOX && cptr.ldI16o((obj), 32) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, 32) == NHC.STATUE)
-        cptr.stI32o(obj, 96, cptr.stI32o(obj, 100, 1));
-    else if (cptr.ldI16o(obj, 32) == NHC.TIN)
-        cptr.stI32o(obj, 96, 1);
+    if ((cptr.ldI16o((obj), FLD.obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), FLD.obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.STATUE)
+        cptr.stI32o(obj, FLD.obj_cknown, cptr.stI32o(obj, FLD.obj_lknown, 1));
+    else if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TIN)
+        cptr.stI32o(obj, FLD.obj_cknown, 1);
     return;
 }
 
 /** C ref: invent.c:2637 — @param {CPtr} otmp */
 export function* fully_identify_obj(otmp) {
-    (yield* discover_object((cptr.ldI16o(otmp, 32)), 1, 1, 1));
-    if (cptr.ld1so(otmp, 51))
-        (yield* discover_artifact(i16(cptr.ld1so(otmp, 51))));
+    (yield* discover_object((cptr.ldI16o(otmp, FLD.obj_otyp)), 1, 1, 1));
+    if (cptr.ld1so(otmp, FLD.obj_oartifact))
+        (yield* discover_artifact(i16(cptr.ld1so(otmp, FLD.obj_oartifact))));
     (yield* observe_object(otmp));
-    cptr.stI32o(otmp, 80, cptr.stI32o(otmp, 88, cptr.stI32o(otmp, 92, 1)));
+    cptr.stI32o(otmp, FLD.obj_known, cptr.stI32o(otmp, FLD.obj_bknown, cptr.stI32o(otmp, FLD.obj_rknown, 1)));
     set_cknown_lknown(otmp);
-    if (cptr.ldI16o(otmp, 32) == NHC.EGG && cptr.ldI32o(otmp, 168) != NHC.NON_PM)
-        (yield* learn_egg_type(cptr.ldI32o(otmp, 168)));
+    if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.EGG && cptr.ldI32o(otmp, FLD.obj_corpsenm) != NHC.NON_PM)
+        (yield* learn_egg_type(cptr.ldI32o(otmp, FLD.obj_corpsenm)));
 }
 
 /** C ref: invent.c:2651 — @param {CPtr} otmp @returns {CInt} */
@@ -2360,7 +2361,7 @@ function* menu_identify(id_limit) {
     let buf = new Uint8Array(256);
     while (id_limit) {
         void cptr.sprintf(cptr.decay(buf), __sl117, first ? __sl118 : __sl119);
-        n = (yield* query_objlist(cptr.decay(buf), cptr.add(gi, 8), 120, pick_list, NHM.PICK_ANY, not_fully_identified));
+        n = (yield* query_objlist(cptr.decay(buf), cptr.add(gi, FLD.instance_globals_i_invent), 120, pick_list, NHM.PICK_ANY, not_fully_identified));
         if (n > 0) {
             if (n > id_limit)
                 n = id_limit;
@@ -2368,7 +2369,7 @@ function* menu_identify(id_limit) {
                 void (yield* identify(cptr.ldPtro(pick_list.v, i, 24)));
             cptr.free(pick_list.v);
             if (id_limit)
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 216))()));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
             first = 0;
         } else if (n == -2) {
             break;
@@ -2376,7 +2377,7 @@ function* menu_identify(id_limit) {
             (yield* pline(__sl111));
             break;
         } else if (!--tryct) {
-            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 16)));
+            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_thats_enough_tries)));
             break;
         } else {
             (yield* pline(__sl120));
@@ -2398,11 +2399,11 @@ export function count_unidentified(objchn) {
 export function* identify_pack(id_limit, learning_id) {
     let obj;
     let n;
-    let unid_cnt = count_unidentified(cptr.ldPtro(gi, 8));
+    let unid_cnt = count_unidentified(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
     if (!unid_cnt) {
         (yield* You(__sl121, !learning_id ? __sl122 : __sl123));
     } else if (!id_limit || id_limit >= unid_cnt) {
-        for (obj = cptr.ldPtro(gi, 8); obj; obj = cptr.ldPtr(obj)) {
+        for (obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
             if (not_fully_identified(obj)) {
                 void (yield* identify(obj));
                 if (--unid_cnt < 1)
@@ -2411,7 +2412,7 @@ export function* identify_pack(id_limit, learning_id) {
         }
     } else {
         n = 0;
-        if (cptr.ld1so(flags, 142) == NHM.MENU_TRADITIONAL)
+        if (cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_TRADITIONAL)
             do {
                 n = (yield* ggetobj(__sl95, identify, id_limit, 0, null));
                 if (n < 0)
@@ -2427,10 +2428,10 @@ export function* identify_pack(id_limit, learning_id) {
 export function* learn_unseen_invent() {
     let otmp;
     let invupdated = 0;
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
         return;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp)) {
-        if ((cptr.ldI32o(otmp, 84) & 1) | 0 && ((cptr.ldI32o(otmp, 88) & 1) | 0 || !(cptr.ldI16o(gu, 216) == NHC.PM_CLERIC)) && (cptr.ld1so(otmp, 49) != NHC.SCROLL_CLASS || !(cptr.ldI16o(gu, 216) == NHC.PM_ARCHEOLOGIST)))
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+        if ((cptr.ldI32o(otmp, FLD.obj_dknown) & 1) | 0 && ((cptr.ldI32o(otmp, FLD.obj_bknown) & 1) | 0 || !(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_CLERIC)) && (cptr.ld1so(otmp, FLD.obj_oclass) != NHC.SCROLL_CLASS || !(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_ARCHEOLOGIST)))
             continue;
         invupdated = 1;
         maybereleaseobuf((yield* xname(otmp)));
@@ -2443,49 +2444,49 @@ export function* learn_unseen_invent() {
 /** C ref: invent.c:2782 */
 export function* update_inventory() {
     let save_suppress_price;
-    if (!cptr.ldI32o(program_state, 44))
+    if (!cptr.ldI32o(program_state, FLD.sinfo_in_moveloop))
         return;
     if (suppress_map_output())
         return;
-    save_suppress_price = cptr.ldI32o(iflags, 64);
-    cptr.stI32o(iflags, 64, 0);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 400))(0)));
-    cptr.stI32o(iflags, 64, save_suppress_price);
+    save_suppress_price = cptr.ldI32o(iflags, FLD.instance_flags_suppress_price);
+    cptr.stI32o(iflags, FLD.instance_flags_suppress_price, 0);
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_update_inventory))(0)));
+    cptr.stI32o(iflags, FLD.instance_flags_suppress_price, save_suppress_price);
 }
 
 /** C ref: invent.c:2814 @returns {CInt} */
 export function* doperminv() {
-    if ((cptr.ldU64o(windowprocs, 16) & 134217728n) == 0n) {
+    if ((cptr.ldU64o(windowprocs, FLD.window_procs_wincap) & 134217728n) == 0n) {
         (yield* pline(__sl124, cptr.ldPtr(windowprocs)));
-    } else if (!cptr.ld1so(iflags, 139)) {
+    } else if (!cptr.ld1so(iflags, FLD.instance_flags_perm_invent)) {
         (yield* pline(__sl125));
-    } else if (!cptr.ldPtro(gi, 8)) {
+    } else if (!cptr.ldPtro(gi, FLD.instance_globals_i_invent)) {
         (yield* pline(__sl126));
     } else {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 400))(1)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_update_inventory))(1)));
     }
     return NHM.ECMD_OK;
 }
 
 /** C ref: invent.c:2861 — @param {CPtr} obj @returns {CInt} */
 function obj_to_let(obj) {
-    if (!cptr.ld1so(flags, 22)) {
-        cptr.st1o(obj, 50, 35);
+    if (!cptr.ld1so(flags, FLD.flag_invlet_constant)) {
+        cptr.st1o(obj, FLD.obj_invlet, 35);
         reassign();
     }
-    return cptr.ld1so(obj, 50);
+    return cptr.ld1so(obj, FLD.obj_invlet);
 }
 
 /** C ref: invent.c:2875 — @param {CPtr} prefix @param {CPtr} obj @param {CLongLong} quan */
 export function* prinv(prefix, obj, quan) {
-    let total_of = schar((quan && (quan < cptr.ldI64o(obj, 40)) ? 1 : 0));
+    let total_of = schar((quan && (quan < cptr.ldI64o(obj, FLD.obj_quan)) ? 1 : 0));
     let totalbuf = new Uint8Array(128);
     if (!prefix)
         prefix = __sl0;
     cptr.st1o(cptr.decay(totalbuf), 0, 0, 1);
     if (total_of)
-        nh_snprintf(__sl127, 2886, cptr.decay(totalbuf), 128n, __sl128, cptr.ldI64o(obj, 40));
-    (yield* pline(__sl129, prefix, cptr.ld1s(prefix) ? __sl62 : __sl0, (yield* xprname(obj, null, obj_to_let(obj), schar((!total_of)), 0n, quan)), cptr.ld1so(flags, 48) ? cptr.decay(totalbuf) : __sl0));
+        nh_snprintf(__sl127, 2886, cptr.decay(totalbuf), 128n, __sl128, cptr.ldI64o(obj, FLD.obj_quan));
+    (yield* pline(__sl129, prefix, cptr.ld1s(prefix) ? __sl62 : __sl0, (yield* xprname(obj, null, obj_to_let(obj), schar((!total_of)), 0n, quan)), cptr.ld1so(flags, FLD.flag_verbose) ? cptr.decay(totalbuf) : __sl0));
 }
 
 const __static_xprname_li = new Uint8Array(256); /** C ref: invent.c:2903 — char[256] (function-static) */
@@ -2496,11 +2497,11 @@ export function* xprname(obj, txt, let$, dot, cost, quan) {
     let sfxlen;
     let txtlen;
     let fmt;
-    let use_invlet = schar((cptr.ld1so(flags, 22) && !cptr.eq(obj, (null)) && let$ != 62 && let$ != 45 ? 1 : 0));
+    let use_invlet = schar((cptr.ld1so(flags, FLD.flag_invlet_constant) && !cptr.eq(obj, (null)) && let$ != 62 && let$ != 45 ? 1 : 0));
     let savequan = 0n;
     if (quan && obj) {
-        savequan = cptr.ldI64o(obj, 40);
-        cptr.stI64o(obj, 40, quan);
+        savequan = cptr.ldI64o(obj, FLD.obj_quan);
+        cptr.stI64o(obj, FLD.obj_quan, quan);
     }
     fmt = __sl130;
     if (!txt) {
@@ -2510,16 +2511,16 @@ export function* xprname(obj, txt, let$, dot, cost, quan) {
     txtlen = Number(BigInt.asIntN(32, cptr.strlen(txt)));
     if (cost != 0n || let$ == 42) {
         if (dot && use_invlet)
-            let$ = cptr.ld1so(obj, 50);
-        void cptr.sprintf(cptr.decay(suffix), __sl134, cptr.ld1so(iflags, 136) ? 9 : 32, cost, (yield* currency(cost)));
-        if (!cptr.ld1so(iflags, 136)) {
+            let$ = cptr.ld1so(obj, FLD.obj_invlet);
+        void cptr.sprintf(cptr.decay(suffix), __sl134, cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep) ? 9 : 32, cost, (yield* currency(cost)));
+        if (!cptr.ld1so(iflags, FLD.instance_flags_menu_tab_sep)) {
             fmt = __sl135;
             if (txtlen < 45)
                 txtlen = 45;
         }
     } else {
         if (use_invlet)
-            let$ = cptr.ld1so(obj, 50);
+            let$ = cptr.ld1so(obj, FLD.obj_invlet);
         void cptr.strcpy(cptr.decay(suffix), dot ? __sl136 : __sl0);
     }
     sfxlen = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(suffix))));
@@ -2527,7 +2528,7 @@ export function* xprname(obj, txt, let$, dot, cost, quan) {
         txtlen = (255 - ((4 + sfxlen) | 0)) | 0;
     void cptr.sprintf(cptr.decay(__static_xprname_li), fmt, let$, txtlen, txt, cptr.decay(suffix));
     if (savequan)
-        cptr.stI64o(obj, 40, savequan);
+        cptr.stI64o(obj, FLD.obj_quan, savequan);
     return cptr.decay(__static_xprname_li);
 }
 
@@ -2539,26 +2540,26 @@ function* dispinv_with_action(lets, use_inuse_ordering, alt_label) {
     let c;
     let save_sortloot = 0;
     let len = lets ? Number(BigInt.asUintN(32, cptr.strlen(lets))) : 0;
-    let menumode = schar(((len != 1 || cptr.ld1so(iflags, 135)) ? 1 : 0));
-    let save_force_invmenu = cptr.ld1so(iflags, 131);
+    let menumode = schar(((len != 1 || cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) ? 1 : 0));
+    let save_force_invmenu = cptr.ld1so(iflags, FLD.instance_flags_force_invmenu);
     if (use_inuse_ordering) {
         save_accessories = cptr.ldPtro(inuse_headers, 4, 8);
-        save_sortloot = cptr.ld1so(flags, 97);
-        cptr.st1o(flags, 97, 105);
+        save_sortloot = cptr.ld1so(flags, FLD.flag_sortloot);
+        cptr.st1o(flags, FLD.flag_sortloot, 105);
         if (alt_label)
             cptr.stPtro(inuse_headers, 4, alt_label, 8);
     }
-    cptr.st1o(iflags, 131, 0);
+    cptr.st1o(iflags, FLD.instance_flags_force_invmenu, 0);
     c = (yield* display_inventory(lets, menumode));
     if (use_inuse_ordering) {
-        cptr.st1o(flags, 97, save_sortloot);
+        cptr.st1o(flags, FLD.flag_sortloot, save_sortloot);
         cptr.stPtro(inuse_headers, 4, save_accessories, 8);
     }
-    cptr.st1o(iflags, 131, save_force_invmenu);
+    cptr.st1o(iflags, FLD.instance_flags_force_invmenu, save_force_invmenu);
     if (c && c != 27) {
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = nextobj) {
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
-            if (cptr.ld1so(otmp, 50) == c)
+            if (cptr.ld1so(otmp, FLD.obj_invlet) == c)
                 return (yield* itemactions(otmp));
         }
     }
@@ -2574,15 +2575,15 @@ export function* ddoinv() {
 function find_unpaid(list, last_found) {
     let obj;
     while (list) {
-        if ((cptr.ldI32o(list, 64) & 1)) {
+        if ((cptr.ldI32o(list, FLD.obj_unpaid) & 1)) {
             if (cptr.ldPtr(last_found)) {
                 if (cptr.eq(list, cptr.ldPtr(last_found)))
                     cptr.stPtr(last_found, null);
             } else
                 return ((cptr.stPtr(last_found, list)));
         }
-        if ((cptr.ldPtro((list), 16) !== null)) {
-            if ((obj = find_unpaid(cptr.ldPtro(list, 16), last_found)) !== null)
+        if ((cptr.ldPtro((list), FLD.obj_cobj) !== null)) {
+            if ((obj = find_unpaid(cptr.ldPtro(list, FLD.obj_cobj), last_found)) !== null)
                 return obj;
         }
         list = cptr.ldPtr(list);
@@ -2592,9 +2593,9 @@ function find_unpaid(list, last_found) {
 
 /** C ref: invent.c:3044 */
 export function* free_pickinv_cache() {
-    if (cptr.ldI32o(gc, 460) != -1) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(cptr.ldI32o(gc, 460))));
-        cptr.stI32o(gc, 460, -1);
+    if (cptr.ldI32o(gc, FLD.instance_globals_c_cached_pickinv_win) != -1) {
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(cptr.ldI32o(gc, FLD.instance_globals_c_cached_pickinv_win))));
+        cptr.stI32o(gc, FLD.instance_globals_c_cached_pickinv_win, -1);
     }
 }
 
@@ -2610,7 +2611,7 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
     let ilet;
     let ret;
     let formattedobj;
-    let invlet = cptr.add(flags, 99);
+    let invlet = cptr.add(flags, FLD.flag_inv_order);
     let n;
     let classcount;
     let inusecount = 0;
@@ -2622,7 +2623,7 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
     let srtinv;
     let prevorderclass;
     let filter = null;
-    let wizid = schar((cptr.ld1so(flags, 10) && cptr.ldI32o(iflags, 48) ? 1 : 0));
+    let wizid = schar((cptr.ld1so(flags, FLD.flag_debug) && cptr.ldI32o(iflags, FLD.instance_flags_override_ID) ? 1 : 0));
     let gotsomething = 0;
     let clr = NHM.NO_COLOR;
     let menu_behavior = NHM.MENU_BEHAVE_STANDARD;
@@ -2635,73 +2636,73 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
     if (lets && !cptr.ld1s(lets))
         lets = null;
     if (lets || usextra || wizid || want_reply || WIN_INVEN.v == -1) {
-        if (cptr.ldI32o(gc, 460) == -1)
-            cptr.stI32o(gc, 460, (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU))));
-        win = cptr.ldI32o(gc, 460);
-        if (cptr.ld1so(flags, 97) == 105)
+        if (cptr.ldI32o(gc, FLD.instance_globals_c_cached_pickinv_win) == -1)
+            cptr.stI32o(gc, FLD.instance_globals_c_cached_pickinv_win, (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU))));
+        win = cptr.ldI32o(gc, FLD.instance_globals_c_cached_pickinv_win);
+        if (cptr.ld1so(flags, FLD.flag_sortloot) == 105)
             inuse_only = 1;
     } else {
         win = WIN_INVEN.v;
         menu_behavior = NHM.MENU_BEHAVE_PERMINV;
         (yield* prepare_perminvent(win));
-        show_gold = schar((((cptr.ldI32o(wri_info, 36) & NHC.InvShowGold) >>> 0) != 0));
-        inuse_only = schar((((cptr.ldI32o(wri_info, 36) & NHC.InvInUse) >>> 0) != 0));
+        show_gold = schar((((cptr.ldI32o(wri_info, FLD.win_request_info_t_fromcore + FLD.from_core_invmode) & NHC.InvShowGold) >>> 0) != 0));
+        inuse_only = schar((((cptr.ldI32o(wri_info, FLD.win_request_info_t_fromcore + FLD.from_core_invmode) & NHC.InvInUse) >>> 0) != 0));
         doing_perm_invent = 1;
     }
-    n = (doing_perm_invent && !lets && !want_reply) ? 2 : (lets ? Number(BigInt.asIntN(32, cptr.strlen(lets))) : (!cptr.ldPtro(gi, 8) ? 0 : (!cptr.ldPtr(cptr.ldPtro(gi, 8)) ? 1 : 2)));
+    n = (doing_perm_invent && !lets && !want_reply) ? 2 : (lets ? Number(BigInt.asIntN(32, cptr.strlen(lets))) : (!cptr.ldPtro(gi, FLD.instance_globals_i_invent) ? 0 : (!cptr.ldPtr(cptr.ldPtro(gi, FLD.instance_globals_i_invent)) ? 1 : 2)));
     if (usextra || (n == 1 && (!lets || wizid)))
         ++n;
     if (n == 0) {
         (yield* pline(__sl89, cptr.decay(__static_display_pickinv_not_carrying_anything)));
         return 0;
     }
-    if (!cptr.ld1so(flags, 22))
+    if (!cptr.ld1so(flags, FLD.flag_invlet_constant))
         reassign();
-    if (n == 1 && !cptr.ld1so(iflags, 131) && !cptr.ld1so(iflags, 135)) {
+    if (n == 1 && !cptr.ld1so(iflags, FLD.instance_flags_force_invmenu) && !cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) {
         ret = 0;
         if (usextra) {
-            ret = (yield* Y.icall((cptr.ldPtro(windowprocs, 200))(45, NHM.PICK_ONE, (yield* xprname(null, xtra_choice, 45, 1, 0n, 0n)))));
+            ret = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_message_menu))(45, NHM.PICK_ONE, (yield* xprname(null, xtra_choice, 45, 1, 0n, 0n)))));
         } else {
-            for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-                if (!lets || cptr.ld1so(otmp, 50) == cptr.ld1so(lets, 0))
+            for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if (!lets || cptr.ld1so(otmp, FLD.obj_invlet) == cptr.ld1so(lets, 0))
                     break;
             if (otmp)
-                ret = (yield* Y.icall((cptr.ldPtro(windowprocs, 200))(cptr.ld1so(otmp, 50), want_reply ? NHM.PICK_ONE : NHM.PICK_NONE, (yield* xprname(otmp, null, cptr.ld1so(lets, 0), 1, 0n, 0n)))));
+                ret = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_message_menu))(cptr.ld1so(otmp, FLD.obj_invlet), want_reply ? NHM.PICK_ONE : NHM.PICK_NONE, (yield* xprname(otmp, null, cptr.ld1so(lets, 0), 1, 0n, 0n)))));
         }
         if (out_cnt)
             cptr.stI64(out_cnt, -1n);
         return ret;
     }
-    sortflags = ((cptr.ld1so(flags, 97) == 102) ? NHM.SORTLOOT_LOOT : NHM.SORTLOOT_INVLET) >>> 0;
-    if (cptr.ld1so(flags, 42))
+    sortflags = ((cptr.ld1so(flags, FLD.flag_sortloot) == 102) ? NHM.SORTLOOT_LOOT : NHM.SORTLOOT_INVLET) >>> 0;
+    if (cptr.ld1so(flags, FLD.flag_sortpack))
         sortflags |= NHM.SORTLOOT_PACK;
-    save_flags_sortpack = cptr.ld1so(flags, 42);
+    save_flags_sortpack = cptr.ld1so(flags, FLD.flag_sortpack);
     if (inuse_only) {
-        cptr.st1o(flags, 42, 0);
+        cptr.st1o(flags, FLD.flag_sortpack, 0);
         sortflags = NHM.SORTLOOT_INUSE;
         filter = is_inuse;
         if (!uwep.v) {
             cptr.memcpy(inuse_fakeobj, cg, 216);
-            cptr.st1o(inuse_fakeobj, 50, 45);
-            cptr.stI64o(inuse_fakeobj, 192, 256n);
-            cptr.st1o(inuse_fakeobj, 52, NHM.OBJ_INVENT);
-            cptr.stPtr(inuse_fakeobj, cptr.ldPtro(gi, 8));
-            cptr.stPtro(gi, 8, inuse_fakeobj);
+            cptr.st1o(inuse_fakeobj, FLD.obj_invlet, 45);
+            cptr.stI64o(inuse_fakeobj, FLD.obj_owornmask, 256n);
+            cptr.st1o(inuse_fakeobj, FLD.obj_where, NHM.OBJ_INVENT);
+            cptr.stPtr(inuse_fakeobj, cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+            cptr.stPtro(gi, FLD.instance_globals_i_invent, inuse_fakeobj);
         }
     }
-    sortedinvent.v = (yield* sortloot(cptr.add(gi, 8), sortflags, 0, filter));
-    if (cptr.eq(cptr.ldPtro(gi, 8), inuse_fakeobj)) {
-        cptr.stPtro(gi, 8, cptr.ldPtr(inuse_fakeobj));
+    sortedinvent.v = (yield* sortloot(cptr.add(gi, FLD.instance_globals_i_invent), sortflags, 0, filter));
+    if (cptr.eq(cptr.ldPtro(gi, FLD.instance_globals_i_invent), inuse_fakeobj)) {
+        cptr.stPtro(gi, FLD.instance_globals_i_invent, cptr.ldPtr(inuse_fakeobj));
         cptr.stPtr(inuse_fakeobj, null);
         if (cptr.eq(cptr.ldPtro(sortedinvent.v, 0, 24), inuse_fakeobj) && !cptr.ldPtro(sortedinvent.v, 1, 24))
             cptr.stPtro(sortedinvent.v, 0, null, 24);
     }
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(win, BigInt.asUintN(64, BigInt(menu_behavior)))));
-    cptr.memcpy(any, cptr.add(cg, 536), 8);
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, BigInt.asUintN(64, BigInt(menu_behavior)))));
+    cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
     if (wizid) {
         let unid_cnt;
         let prompt = new Uint8Array(128);
-        unid_cnt = count_unidentified(cptr.ldPtro(gi, 8));
+        unid_cnt = count_unidentified(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
         void cptr.sprintf(cptr.decay(prompt), __sl137);
         if (unid_cnt)
             void cptr.sprintf(eos(cptr.decay(prompt)), __sl138, (((unid_cnt) == 1) ? __sl0 : __sl139));
@@ -2713,12 +2714,12 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
             cptr.stPtr(any, wizid_fakeobj);
             void cptr.sprintf(cptr.decay(prompt), __sl141, (unid_cnt == 1) ? __sl142 : __sl143);
             if (unid_cnt > 1)
-                void cptr.sprintf(eos(cptr.decay(prompt)), __sl144, visctrl(schar(cptr.ldI32o(iflags, 48))));
-            (yield* add_menu(win, nul_glyphinfo.v, any, 95, schar(cptr.ldI32o(iflags, 48)), NHM.ATR_NONE, clr, cptr.decay(prompt), NHM.MENU_ITEMFLAGS_SKIPINVERT));
+                void cptr.sprintf(eos(cptr.decay(prompt)), __sl144, visctrl(schar(cptr.ldI32o(iflags, FLD.instance_flags_override_ID))));
+            (yield* add_menu(win, nul_glyphinfo.v, any, 95, schar(cptr.ldI32o(iflags, FLD.instance_flags_override_ID)), NHM.ATR_NONE, clr, cptr.decay(prompt), NHM.MENU_ITEMFLAGS_SKIPINVERT));
             gotsomething = 1;
         }
     } else if (usextra) {
-        if (cptr.ld1so(flags, 42))
+        if (cptr.ld1so(flags, FLD.flag_sortpack))
             (yield* add_menu_heading(win, __sl1));
         cptr.st1(any, 45);
         (yield* add_menu(win, nul_glyphinfo.v, any, 45, 0, NHM.ATR_NONE, clr, xtra_choice, NHM.MENU_ITEMFLAGS_NONE));
@@ -2730,29 +2731,29 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
             let tmpglyph;
             let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, 48);
-            if (lets && !cptr.strchr(lets, cptr.ld1so(otmp, 50)))
+            if (lets && !cptr.strchr(lets, cptr.ld1so(otmp, FLD.obj_invlet)))
                 continue;
-            if (!cptr.ld1so(flags, 42) || cptr.ld1so(otmp, 49) == cptr.ld1s(invlet)) {
+            if (!cptr.ld1so(flags, FLD.flag_sortpack) || cptr.ld1so(otmp, FLD.obj_oclass) == cptr.ld1s(invlet)) {
                 if (wizid && !not_fully_identified(otmp))
                     continue;
                 if (inuse_only) {
                     if (!inusecount++)
                         (yield* add_menu_heading(win, doing_perm_invent ? __sl145 : __sl146));
                 } else if (doing_perm_invent && !show_gold) {
-                    if (cptr.ld1so(otmp, 50) == NHC.GOLD_SYM && !cptr.ldI64o(otmp, 192)) {
+                    if (cptr.ld1so(otmp, FLD.obj_invlet) == NHC.GOLD_SYM && !cptr.ldI64o(otmp, FLD.obj_owornmask)) {
                         skipped_gold = 1;
                         continue;
                     }
                 }
-                if (inuse_only ? (cptr.ld1so(srtinv, 20) != prevorderclass) : (cptr.ld1so(flags, 42) && !classcount ? 1 : 0)) {
-                    let withsym = schar((want_reply && cptr.ld1so(iflags, 133) ? 1 : 0));
-                    let class_header = inuse_only ? cptr.ldPtro(inuse_headers, cptr.ld1so(srtinv, 20), 8) : (yield* let_to_name(cptr.ld1s(invlet), 0, withsym));
+                if (inuse_only ? (cptr.ld1so(srtinv, FLD.Loot_orderclass) != prevorderclass) : (cptr.ld1so(flags, FLD.flag_sortpack) && !classcount ? 1 : 0)) {
+                    let withsym = schar((want_reply && cptr.ld1so(iflags, FLD.instance_flags_menu_head_objsym) ? 1 : 0));
+                    let class_header = inuse_only ? cptr.ldPtro(inuse_headers, cptr.ld1so(srtinv, FLD.Loot_orderclass), 8) : (yield* let_to_name(cptr.ld1s(invlet), 0, withsym));
                     (yield* add_menu_heading(win, class_header));
                     classcount++;
-                    prevorderclass = cptr.ld1so(srtinv, 20);
+                    prevorderclass = cptr.ld1so(srtinv, FLD.Loot_orderclass);
                 }
-                ilet = cptr.ld1so(otmp, 50);
-                cptr.memcpy(any, cptr.add(cg, 536), 8);
+                ilet = cptr.ld1so(otmp, FLD.obj_invlet);
+                cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
                 if (wizid)
                     cptr.stPtr(any, otmp);
                 else
@@ -2763,16 +2764,16 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
                     void cptr.sprintf(cptr.decay(barehands), __sl147, uarmg.v ? __sl68 : __sl69, formattedobj);
                     (yield* add_menu(win, nul_glyphinfo.v, any, ilet, 0, NHM.ATR_NONE, clr, cptr.decay(barehands), NHM.MENU_ITEMFLAGS_NONE));
                 } else {
-                    tmpglyph = ((cptr.ldI16o((otmp), 32) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), 168) + (((cptr.ld1so((otmp), 48) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((cptr.stI32o(go, 68, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, 68) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), 32) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), 168) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), 84) & 1) && (cptr.ld1so((otmp), 49) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), 32) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), 32) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), 49) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), 32) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
+                    tmpglyph = ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), FLD.obj_corpsenm) + (((cptr.ld1so((otmp), FLD.obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((cptr.stI32o(go, FLD.instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, FLD.instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), FLD.obj_corpsenm) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), FLD.obj_dknown) & 1) && (cptr.ld1so((otmp), FLD.obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), FLD.obj_oclass) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), FLD.obj_otyp) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
                     map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
                     formattedobj = (yield* doname(otmp));
-                    (yield* add_menu(win, tmpglyphinfo, any, ilet, schar((wizid ? cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, 49), 24) : 0)), NHM.ATR_NONE, clr, formattedobj, NHM.MENU_ITEMFLAGS_NONE));
+                    (yield* add_menu(win, tmpglyphinfo, any, ilet, schar((wizid ? cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, FLD.obj_oclass), 24) : 0)), NHM.ATR_NONE, clr, formattedobj, NHM.MENU_ITEMFLAGS_NONE));
                 }
                 maybereleaseobuf(formattedobj);
                 gotsomething = 1;
             }
         }
-        if (cptr.ld1so(flags, 42)) {
+        if (cptr.ld1so(flags, FLD.flag_sortpack)) {
             if (cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; })))
                 continue __lbl_nextclass;
             if (!cptr.eq(cptr.predec(() => invlet, (v) => { invlet = v; }), cptr.decay(venom_inv))) {
@@ -2780,11 +2781,11 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
                 continue __lbl_nextclass;
             }
         }
-        if (save_flags_sortpack != cptr.ld1so(flags, 42))
-            cptr.st1o(flags, 42, save_flags_sortpack);
-        if (cptr.ld1so(iflags, 131) && want_reply) {
+        if (save_flags_sortpack != cptr.ld1so(flags, FLD.flag_sortpack))
+            cptr.st1o(flags, FLD.flag_sortpack, save_flags_sortpack);
+        if (cptr.ld1so(iflags, FLD.instance_flags_force_invmenu) && want_reply) {
             let menutext = null;
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             if ((allowxtra && !usextra) || (lets && Number(BigInt.asIntN(32, cptr.strlen(lets))) < inv_cnt(1))) {
                 cptr.st1(any, 42);
                 menutext = __sl148;
@@ -2803,13 +2804,13 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
             (yield* add_menu_str(win, inuse_only ? cptr.decay(__static_display_pickinv_not_using_anything) : ((!show_gold && skipped_gold) ? cptr.decay(__static_display_pickinv_only_carrying_gold) : cptr.decay(__static_display_pickinv_not_carrying_anything))));
             want_reply = 0;
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(win, (query && cptr.ld1s(query)) ? query : null)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, (query && cptr.ld1s(query)) ? query : null)));
         n = (yield* select_menu(win, wizid ? NHM.PICK_ANY : (want_reply ? NHM.PICK_ONE : NHM.PICK_NONE), selected));
         if (n > 0) {
             if (wizid) {
                 let all_id = 0;
                 let i;
-                cptr.stI32o(iflags, 48, 0);
+                cptr.stI32o(iflags, FLD.instance_flags_override_ID, 0);
                 ret = 0;
                 for (i = 0; i < n; ++i) {
                     otmp = cptr.ldPtro(selected.v, i, 24);
@@ -2827,7 +2828,7 @@ function* display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_c
             } else {
                 ret = cptr.ld1so(selected.v, 0, 24);
                 if (out_cnt)
-                    cptr.stI64(out_cnt, cptr.ldI64o2(selected.v, 0, 24, 8));
+                    cptr.stI64(out_cnt, cptr.ldI64o2(selected.v, 0, 24, FLD.mi_count));
             }
             cptr.free(selected.v);
         } else
@@ -2843,10 +2844,10 @@ export function* display_inventory(lets, want_reply) {
     if (cmdq) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             let otmp;
-            for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-                if (cptr.ld1so(otmp, 50) == cptr.ld1so(cmdq, 4) && (!lets || !cptr.ld1s(lets) || cptr.strchr(lets, cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, 49), 24)))) {
+            for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if (cptr.ld1so(otmp, FLD.obj_invlet) == cptr.ld1so(cmdq, FLD._cmd_queue_key) && (!lets || !cptr.ld1s(lets) || cptr.strchr(lets, cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, FLD.obj_oclass), 24)))) {
                     cptr.free(cmdq);
-                    return cptr.ld1so(otmp, 50);
+                    return cptr.ld1so(otmp, FLD.obj_invlet);
                 }
         }
         cptr.free(cmdq);
@@ -2866,7 +2867,7 @@ function* display_used_invlets(avoidlet) {
     let otmp;
     let ilet;
     let ret = 0;
-    let invlet = cptr.add(flags, 99);
+    let invlet = cptr.add(flags, FLD.flag_inv_order);
     let n;
     let classcount;
     let invdone = 0;
@@ -2876,40 +2877,40 @@ function* display_used_invlets(avoidlet) {
     let any = cptr.alloc(8);
     let selected = cptr.box(0);
     let clr = NHM.NO_COLOR;
-    if (cptr.ldPtro(gi, 8)) {
-        win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(win, 0n)));
+    if (cptr.ldPtro(gi, FLD.instance_globals_i_invent)) {
+        win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
         while (!invdone) {
-            cptr.memcpy(any, cptr.add(cg, 536), 8);
+            cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
             classcount = 0;
-            for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp)) {
-                ilet = cptr.ld1so(otmp, 50);
+            for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+                ilet = cptr.ld1so(otmp, FLD.obj_invlet);
                 if (ilet == avoidlet)
                     continue;
-                if (!cptr.ld1so(flags, 42) || cptr.ld1so(otmp, 49) == cptr.ld1s(invlet)) {
-                    if (cptr.ld1so(flags, 42) && !classcount) {
-                        cptr.memcpy(any, cptr.add(cg, 536), 8);
+                if (!cptr.ld1so(flags, FLD.flag_sortpack) || cptr.ld1so(otmp, FLD.obj_oclass) == cptr.ld1s(invlet)) {
+                    if (cptr.ld1so(flags, FLD.flag_sortpack) && !classcount) {
+                        cptr.memcpy(any, cptr.add(cg, FLD.const_globals_zeroany), 8);
                         (yield* add_menu_heading(win, (yield* let_to_name(cptr.ld1s(invlet), 0, 0))));
                         classcount++;
                     }
                     cptr.st1(any, ilet);
-                    tmpglyph = ((cptr.ldI16o((otmp), 32) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), 168) + (((cptr.ld1so((otmp), 48) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) ? (((cptr.stI32o(go, 68, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, 68) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), 32) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), 168) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), 84) & 1) && (cptr.ld1so((otmp), 49) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), 32) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), 32) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), 32) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), 49) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), 32) + ((cptr.ld1so((otmp), 52) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, 72, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), 28), 168, cptr.ldI16o((otmp), 30), 8, 62160), 8))) !== null) && (cptr.ldI16o((otmp), 32) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, 72), 32) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
+                    tmpglyph = ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.STATUE) ? (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), FLD.obj_corpsenm) + (((cptr.ld1so((otmp), FLD.obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : (((cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))) ? (((cptr.stI32o(go, FLD.instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, FLD.instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), FLD.obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), FLD.obj_corpsenm) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((otmp), FLD.obj_dknown) & 1) && (cptr.ld1so((otmp), FLD.obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((otmp), FLD.obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((otmp), FLD.obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((otmp), FLD.obj_oclass) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), FLD.obj_otyp) + ((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, FLD.instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), FLD.obj_ox), 168, cptr.ldI16o((otmp), FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), FLD.obj_v))) !== null) && (cptr.ldI16o((otmp), FLD.obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, FLD.instance_globals_o_otg_otmp), FLD.obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
                     map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
                     (yield* add_menu(win, tmpglyphinfo, any, ilet, 0, NHM.ATR_NONE, clr, (yield* doname(otmp)), NHM.MENU_ITEMFLAGS_NONE));
                 }
             }
-            if (cptr.ld1so(flags, 42) && cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; })))
+            if (cptr.ld1so(flags, FLD.flag_sortpack) && cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; })))
                 continue;
             invdone = 1;
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(win, __sl151)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, __sl151)));
         n = (yield* select_menu(win, NHM.PICK_ONE, selected));
         if (n > 0) {
             ret = cptr.ld1so(selected.v, 0, 24);
             cptr.free(selected.v);
         } else
             ret = schar((!n ? 0 : 27));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(win)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
     }
     return ret;
 }
@@ -2918,10 +2919,10 @@ function* display_used_invlets(avoidlet) {
 export function count_unpaid(list) {
     let count = 0;
     while (list) {
-        if ((cptr.ldI32o(list, 64) & 1))
+        if ((cptr.ldI32o(list, FLD.obj_unpaid) & 1))
             count++;
-        if ((cptr.ldPtro((list), 16) !== null))
-            count = (count + count_unpaid(cptr.ldPtro(list, 16))) | 0;
+        if ((cptr.ldPtro((list), FLD.obj_cobj) !== null))
+            count = (count + count_unpaid(cptr.ldPtro(list, FLD.obj_cobj))) | 0;
         list = cptr.ldPtr(list);
     }
     return count;
@@ -2931,16 +2932,16 @@ export function count_unpaid(list) {
 export function* count_buc(list, type, filterfunc) {
     let count = 0;
     for (; list; list = cptr.ldPtr(list)) {
-        if ((cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
-            cptr.stI32o(list, 88, (cptr.ld1so(list, 49) != NHC.COIN_CLASS) >>> 0);
+        if ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_CLERIC))
+            cptr.stI32o(list, FLD.obj_bknown, (cptr.ld1so(list, FLD.obj_oclass) != NHC.COIN_CLASS) >>> 0);
         if (filterfunc && !(yield* Y.icall((filterfunc)(list))))
             continue;
-        if (cptr.ld1so(list, 49) == NHC.COIN_CLASS) {
-            if (type == (cptr.ld1so(flags, 15) ? NHM.BUC_UNKNOWN : NHM.BUC_UNCURSED))
+        if (cptr.ld1so(list, FLD.obj_oclass) == NHC.COIN_CLASS) {
+            if (type == (cptr.ld1so(flags, FLD.flag_goldX) ? NHM.BUC_UNKNOWN : NHM.BUC_UNCURSED))
                 ++count;
             continue;
         }
-        if (!(cptr.ldI32o(list, 88) & 1) ? (type == NHM.BUC_UNKNOWN) : ((cptr.ldI32o(list, 60) & 1) | 0 ? (type == NHM.BUC_BLESSED) : ((cptr.ldI32o(list, 56) & 1) | 0 ? (type == NHM.BUC_CURSED) : (type == NHM.BUC_UNCURSED))))
+        if (!(cptr.ldI32o(list, FLD.obj_bknown) & 1) ? (type == NHM.BUC_UNKNOWN) : ((cptr.ldI32o(list, FLD.obj_blessed) & 1) | 0 ? (type == NHM.BUC_BLESSED) : ((cptr.ldI32o(list, FLD.obj_cursed) & 1) | 0 ? (type == NHM.BUC_CURSED) : (type == NHM.BUC_UNCURSED))))
             ++count;
     }
     return count;
@@ -2949,23 +2950,23 @@ export function* count_buc(list, type, filterfunc) {
 /** C ref: invent.c:3580 — @param {CPtr} list @param {CInt} by_nexthere @param {CPtr} bcp @param {CPtr} ucp @param {CPtr} ccp @param {CPtr} xcp @param {CPtr} ocp @param {CPtr} jcp */
 export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
     cptr.stI32(bcp, cptr.stI32(ucp, cptr.stI32(ccp, cptr.stI32(xcp, cptr.stI32(ocp, cptr.stI32(jcp, 0))))));
-    for (; list; list = (by_nexthere ? cptr.ldPtro(list, 8) : cptr.ldPtr(list))) {
-        if ((cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
-            cptr.stI32o(list, 88, (cptr.ld1so(list, 49) != NHC.COIN_CLASS) >>> 0);
-        if ((cptr.ldI32o(list, 152) & 1))
+    for (; list; list = (by_nexthere ? cptr.ldPtro(list, FLD.obj_v) : cptr.ldPtr(list))) {
+        if ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_CLERIC))
+            cptr.stI32o(list, FLD.obj_bknown, (cptr.ld1so(list, FLD.obj_oclass) != NHC.COIN_CLASS) >>> 0);
+        if ((cptr.ldI32o(list, FLD.obj_pickup_prev) & 1))
             cptr.stI32(jcp, cptr.ldI32(jcp) + 1);
-        if (cptr.ld1so(list, 49) == NHC.COIN_CLASS) {
-            if (cptr.ld1so(flags, 15))
+        if (cptr.ld1so(list, FLD.obj_oclass) == NHC.COIN_CLASS) {
+            if (cptr.ld1so(flags, FLD.flag_goldX))
                 cptr.stI32(xcp, cptr.ldI32(xcp) + 1);
             else
                 cptr.stI32(ucp, cptr.ldI32(ucp) + 1);
             continue;
         }
-        if (!(cptr.ldI32o(list, 88) & 1))
+        if (!(cptr.ldI32o(list, FLD.obj_bknown) & 1))
             cptr.stI32(xcp, cptr.ldI32(xcp) + 1);
-        else if ((cptr.ldI32o(list, 60) & 1))
+        else if ((cptr.ldI32o(list, FLD.obj_blessed) & 1))
             cptr.stI32(bcp, cptr.ldI32(bcp) + 1);
-        else if ((cptr.ldI32o(list, 56) & 1))
+        else if ((cptr.ldI32o(list, FLD.obj_cursed) & 1))
             cptr.stI32(ccp, cptr.ldI32(ccp) + 1);
         else
             cptr.stI32(ucp, cptr.ldI32(ucp) + 1);
@@ -2981,16 +2982,16 @@ export function* count_contents(container, nested, quantity, everything, newdrop
     if (!everything && !newdrop) {
         let x = cptr.box(0);
         let y = cptr.box(0);
-        for (topc = container; cptr.ld1so(topc, 52) == NHM.OBJ_CONTAINED; topc = cptr.ldPtro(topc, 8))
+        for (topc = container; cptr.ld1so(topc, FLD.obj_where) == NHM.OBJ_CONTAINED; topc = cptr.ldPtro(topc, FLD.obj_v))
             continue;
-        if (cptr.ld1so(topc, 52) == NHM.OBJ_FLOOR && get_obj_location(topc, x, y, 0))
+        if (cptr.ld1so(topc, FLD.obj_where) == NHM.OBJ_FLOOR && get_obj_location(topc, x, y, 0))
             shoppy = (yield* costly_spot(x.v, y.v));
     }
-    for (otmp = cptr.ldPtro(container, 16); otmp; otmp = cptr.ldPtr(otmp)) {
-        if (nested && (cptr.ldPtro((otmp), 16) !== null))
+    for (otmp = cptr.ldPtro(container, FLD.obj_cobj); otmp; otmp = cptr.ldPtr(otmp)) {
+        if (nested && (cptr.ldPtro((otmp), FLD.obj_cobj) !== null))
             count += (yield* count_contents(otmp, nested, quantity, everything, newdrop));
-        if (everything || (cptr.ldI32o(otmp, 64) & 1) | 0 || (shoppy && !(cptr.ldI32o(otmp, 68) & 1)))
-            count += quantity ? cptr.ldI64o(otmp, 40) : 1n;
+        if (everything || (cptr.ldI32o(otmp, FLD.obj_unpaid) & 1) | 0 || (shoppy && !(cptr.ldI32o(otmp, FLD.obj_no_charge) & 1)))
+            count += quantity ? cptr.ldI64o(otmp, FLD.obj_quan) : 1n;
     }
     return count;
 }
@@ -3002,7 +3003,7 @@ function* dounpaid(count, floorcount, buriedcount) {
     let marker = cptr.box(0);
     let contnr;
     let ilet;
-    let invlet = cptr.add(flags, 99);
+    let invlet = cptr.add(flags, FLD.flag_inv_order);
     let classcount;
     let num_so_far;
     let xtracount;
@@ -3011,67 +3012,67 @@ function* dounpaid(count, floorcount, buriedcount) {
     otmp = (marker.v = (contnr = null));
     xtracount = (floorcount + buriedcount) | 0;
     if (count == 1 && !xtracount) {
-        otmp = find_unpaid(cptr.ldPtro(gi, 8), marker);
+        otmp = find_unpaid(cptr.ldPtro(gi, FLD.instance_globals_i_invent), marker);
         contnr = unknwn_contnr_contents(otmp);
     }
     if (otmp && !contnr) {
         cost = (yield* unpaid_cost(otmp, NHC.COST_NOCONTENTS));
-        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + 1)) - (1);
-        (yield* pline(__sl82, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), schar(((cptr.ld1so((otmp), 52) == NHM.OBJ_INVENT) ? cptr.ld1so(otmp, 50) : 62)), 1, cost, 0n))));
-        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + -1)) - (-1);
+        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + 1)) - (1);
+        (yield* pline(__sl82, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), schar(((cptr.ld1so((otmp), FLD.obj_where) == NHM.OBJ_INVENT) ? cptr.ld1so(otmp, FLD.obj_invlet) : 62)), 1, cost, 0n))));
+        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + -1)) - (-1);
         return;
     }
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
+    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
     totcost = 0n;
     num_so_far = 0;
-    if (!cptr.ld1so(flags, 22))
+    if (!cptr.ld1so(flags, FLD.flag_invlet_constant))
         reassign();
     do {
         classcount = 0;
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp)) {
-            ilet = cptr.ld1so(otmp, 50);
-            if ((cptr.ldI32o(otmp, 64) & 1)) {
-                if (!cptr.ld1so(flags, 42) || cptr.ld1so(otmp, 49) == cptr.ld1s(invlet)) {
-                    if (cptr.ld1so(flags, 42) && !classcount) {
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* let_to_name(cptr.ld1s(invlet), 1, 0)))));
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+            ilet = cptr.ld1so(otmp, FLD.obj_invlet);
+            if ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1)) {
+                if (!cptr.ld1so(flags, FLD.flag_sortpack) || cptr.ld1so(otmp, FLD.obj_oclass) == cptr.ld1s(invlet)) {
+                    if (cptr.ld1so(flags, FLD.flag_sortpack) && !classcount) {
+                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* let_to_name(cptr.ld1s(invlet), 1, 0)))));
                         classcount++;
                     }
                     totcost += (cost = (yield* unpaid_cost(otmp, NHC.COST_NOCONTENTS)));
-                    (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + 1)) - (1);
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), ilet, 1, cost, 0n)))));
-                    (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + -1)) - (-1);
+                    (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + 1)) - (1);
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), ilet, 1, cost, 0n)))));
+                    (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + -1)) - (-1);
                     num_so_far++;
                 }
             }
         }
-    } while (cptr.ld1so(flags, 42) && (cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; }))));
+    } while (cptr.ld1so(flags, FLD.flag_sortpack) && (cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; }))));
     if (count > num_so_far) {
-        if (cptr.ld1so(flags, 42))
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* let_to_name(62, 1, 0)))));
-        for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp)) {
-            if ((cptr.ldPtro((otmp), 16) !== null)) {
+        if (cptr.ld1so(flags, FLD.flag_sortpack))
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* let_to_name(62, 1, 0)))));
+        for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+            if ((cptr.ldPtro((otmp), FLD.obj_cobj) !== null)) {
                 let contcost = 0n;
                 marker.v = null;
-                while (find_unpaid(cptr.ldPtro(otmp, 16), marker)) {
+                while (find_unpaid(cptr.ldPtro(otmp, FLD.obj_cobj), marker)) {
                     totcost += (cost = (yield* unpaid_cost(marker.v, NHC.COST_NOCONTENTS)));
                     contcost += cost;
-                    if ((cptr.ldI32o(otmp, 96) & 1)) {
-                        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + 1)) - (1);
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* xprname(marker.v, (yield* distant_name(marker.v, doname)), 62, 1, cost, 0n)))));
-                        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + -1)) - (-1);
+                    if ((cptr.ldI32o(otmp, FLD.obj_cknown) & 1)) {
+                        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + 1)) - (1);
+                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* xprname(marker.v, (yield* distant_name(marker.v, doname)), 62, 1, cost, 0n)))));
+                        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + -1)) - (-1);
                     }
                 }
-                if (!(cptr.ldI32o(otmp, 96) & 1)) {
+                if (!(cptr.ldI32o(otmp, FLD.obj_cknown) & 1)) {
                     let contbuf = new Uint8Array(256);
                     void cptr.sprintf(cptr.decay(contbuf), __sl152, (yield* s_suffix((yield* xname(otmp)))));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* xprname(null, cptr.decay(contbuf), 62, 1, contcost, 0n)))));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* xprname(null, cptr.decay(contbuf), 62, 1, contcost, 0n)))));
                 }
             }
         }
     }
     if (count > 0) {
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, __sl0)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, (yield* xprname(null, __sl153, 42, 0, totcost, 0n)))));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, (yield* xprname(null, __sl153, 42, 0, totcost, 0n)))));
     }
     if (xtracount > 0) {
         let buf = new Uint8Array(256);
@@ -3080,38 +3081,38 @@ function* dounpaid(count, floorcount, buriedcount) {
         if (!count) {
             (yield* You(__sl159, floorverb, xtracount, where));
         } else {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, __sl0)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, __sl0)));
             void cptr.sprintf(cptr.decay(buf), __sl160, floorverb, xtracount, (((xtracount) == 1) ? __sl0 : __sl139), where);
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(win, 0, cptr.decay(buf))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(win, 0, cptr.decay(buf))));
         }
     }
     if (count > 0)
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(win, 0)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(win)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(win, 0)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
     return;
 }
 
 /** C ref: invent.c:3793 — @param {CPtr} obj @returns {CInt} */
 function this_type_only(obj) {
-    let res = schar((cptr.ld1so(obj, 49) == cptr.ldI32o(gt, 376)));
-    if (cptr.ldI32o(gt, 376) == 80) {
-        res = schar((cptr.ldI32o(obj, 152) & 1));
-    } else if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS) {
-        if (cptr.ldI32o(gt, 376) && cptr.strchr(__sl161, cptr.ldI32o(gt, 376)))
-            res = schar((cptr.ldI32o(gt, 376) == (cptr.ld1so(flags, 15) ? 88 : 85)));
+    let res = schar((cptr.ld1so(obj, FLD.obj_oclass) == cptr.ldI32o(gt, FLD.instance_globals_t_this_type)));
+    if (cptr.ldI32o(gt, FLD.instance_globals_t_this_type) == 80) {
+        res = schar((cptr.ldI32o(obj, FLD.obj_pickup_prev) & 1));
+    } else if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS) {
+        if (cptr.ldI32o(gt, FLD.instance_globals_t_this_type) && cptr.strchr(__sl161, cptr.ldI32o(gt, FLD.instance_globals_t_this_type)))
+            res = schar((cptr.ldI32o(gt, FLD.instance_globals_t_this_type) == (cptr.ld1so(flags, FLD.flag_goldX) ? 88 : 85)));
     } else {
-        switch (cptr.ldI32o(gt, 376)) {
+        switch (cptr.ldI32o(gt, FLD.instance_globals_t_this_type)) {
             case 66:
-            res = schar(((cptr.ldI32o(obj, 88) & 1) | 0 && (cptr.ldI32o(obj, 60) & 1) | 0 ? 1 : 0));
+            res = schar(((cptr.ldI32o(obj, FLD.obj_bknown) & 1) | 0 && (cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 ? 1 : 0));
             break;
             case 85:
-            res = schar(((cptr.ldI32o(obj, 88) & 1) | 0 && !((cptr.ldI32o(obj, 60) & 1) | 0 || (cptr.ldI32o(obj, 56) & 1) | 0) ? 1 : 0));
+            res = schar(((cptr.ldI32o(obj, FLD.obj_bknown) & 1) | 0 && !((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0) ? 1 : 0));
             break;
             case 67:
-            res = schar(((cptr.ldI32o(obj, 88) & 1) | 0 && (cptr.ldI32o(obj, 56) & 1) | 0 ? 1 : 0));
+            res = schar(((cptr.ldI32o(obj, FLD.obj_bknown) & 1) | 0 && (cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0 ? 1 : 0));
             break;
             case 88:
-            res = schar((!(cptr.ldI32o(obj, 88) & 1)));
+            res = schar((!(cptr.ldI32o(obj, FLD.obj_bknown) & 1)));
             break;
             default:
             break;
@@ -3145,24 +3146,24 @@ export function* dotypeinv() {
     let xcnt = cptr.box(0);
     let ocnt = cptr.box(0);
     let jcnt = cptr.box(0);
-    let billx = schar((cptr.ld1so(u, 83) && (yield* doinvbill(0)) ? 1 : 0));
+    let billx = schar((cptr.ld1so(u, FLD.you_ushops) && (yield* doinvbill(0)) ? 1 : 0));
     let pick_list = cptr.box(0);
     let traditional = 1;
     __lbl_doI_done: {
-        cptr.stI32o(gt, 376, 0);
-        cptr.stPtro(gt, 384, null);
-        if (!cptr.ldPtro(gi, 8) && !billx) {
+        cptr.stI32o(gt, FLD.instance_globals_t_this_type, 0);
+        cptr.stPtro(gt, FLD.instance_globals_t_this_title, null);
+        if (!cptr.ldPtro(gi, FLD.instance_globals_i_invent) && !billx) {
             (yield* You(__sl162));
             break __lbl_doI_done;
         }
         cptr.st1o(cptr.decay(title), 0, 0, 1);
-        u_carried = count_unpaid(cptr.ldPtro(gi, 8));
-        u_floor = count_unpaid(cptr.ldPtro(svl, 89040));
-        u_buried = count_unpaid(cptr.ldPtro(svl, 89048));
+        u_carried = count_unpaid(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+        u_floor = count_unpaid(cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objlist));
+        u_buried = count_unpaid(cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_buriedobjlist));
         any_unpaid = (((u_carried + u_floor) | 0) + u_buried) | 0;
-        tally_BUCX(cptr.ldPtro(gi, 8), 0, bcnt, ucnt, ccnt, xcnt, ocnt, jcnt);
-        if (cptr.ld1so(flags, 142) != NHM.MENU_TRADITIONAL) {
-            if (cptr.ld1so(flags, 142) == NHM.MENU_FULL || cptr.ld1so(flags, 142) == NHM.MENU_PARTIAL) {
+        tally_BUCX(cptr.ldPtro(gi, FLD.instance_globals_i_invent), 0, bcnt, ucnt, ccnt, xcnt, ocnt, jcnt);
+        if (cptr.ld1so(flags, FLD.flag_menu_style) != NHM.MENU_TRADITIONAL) {
+            if (cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_FULL || cptr.ld1so(flags, FLD.flag_menu_style) == NHM.MENU_PARTIAL) {
                 traditional = 0;
                 i = NHM.UNPAID_TYPES;
                 if (billx)
@@ -3178,16 +3179,16 @@ export function* dotypeinv() {
                 if (jcnt.v)
                     i |= NHM.JUSTPICKED;
                 i |= NHM.INCLUDE_VENOM;
-                n = (yield* query_category(cptr.decay(__static_dotypeinv_prompt), cptr.ldPtro(gi, 8), i, pick_list, NHM.PICK_ONE));
+                n = (yield* query_category(cptr.decay(__static_dotypeinv_prompt), cptr.ldPtro(gi, FLD.instance_globals_i_invent), i, pick_list, NHM.PICK_ONE));
                 if (!n)
                     break __lbl_doI_done;
-                cptr.stI32o(gt, 376, c = schar(cptr.ldI32o(pick_list.v, 0, 24)));
+                cptr.stI32o(gt, FLD.instance_globals_t_this_type, c = schar(cptr.ldI32o(pick_list.v, 0, 24)));
                 cptr.free(pick_list.v);
             }
         }
         if (traditional) {
             cptr.st1o(cptr.decay(types), 0, 0, 1);
-            class_count = (yield* collect_obj_classes(cptr.decay(types), cptr.ldPtro(gi, 8), 0, null, itemcount));
+            class_count = (yield* collect_obj_classes(cptr.decay(types), cptr.ldPtro(gi, FLD.instance_globals_i_invent), 0, null, itemcount));
             if (any_unpaid || billx || ((((((bcnt.v + ccnt.v) | 0) + ucnt.v) | 0) + xcnt.v) | 0) != 0 || jcnt.v)
                 cptr.st1o(cptr.decay(types), class_count++, 32, 1);
             if (any_unpaid)
@@ -3230,7 +3231,7 @@ export function* dotypeinv() {
             if (class_count > 1) {
                 c = (yield* yn_function(cptr.decay(__static_dotypeinv_prompt), cptr.decay(types), 0, 1));
                 if (c == 0) {
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v)));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_clear_nhwindow))(WIN_MESSAGE.v)));
                     break __lbl_doI_done;
                 }
             } else {
@@ -3285,22 +3286,22 @@ export function* dotypeinv() {
                 (yield* You(__sl172, before, after));
                 break __lbl_doI_done;
             }
-            cptr.stI32o(gt, 376, oclass);
+            cptr.stI32o(gt, FLD.instance_globals_t_this_type, oclass);
         }
         if (cptr.strchr(__sl102, c)) {
             void cptr.sprintf(cptr.decay(title), __sl173, (before && cptr.ld1s(before)) ? before : after);
             void (yield* mungspaces(cptr.decay(title)));
             void cptr.strcat(cptr.decay(title), __sl174);
-            cptr.stPtro(gt, 384, cptr.decay(title));
+            cptr.stPtro(gt, FLD.instance_globals_t_this_title, cptr.decay(title));
         }
-        if ((yield* query_objlist(null, cptr.add(gi, 8), ((cptr.ld1so(flags, 22) ? NHM.USE_INVLET : 0) | NHM.INVORDER_SORT | NHM.INCLUDE_VENOM), pick_list, NHM.PICK_ONE, this_type_only)) > 0) {
+        if ((yield* query_objlist(null, cptr.add(gi, FLD.instance_globals_i_invent), ((cptr.ld1so(flags, FLD.flag_invlet_constant) ? NHM.USE_INVLET : 0) | NHM.INVORDER_SORT | NHM.INCLUDE_VENOM), pick_list, NHM.PICK_ONE, this_type_only)) > 0) {
             let otmp = cptr.ldPtro(pick_list.v, 0, 24);
             cptr.free(pick_list.v);
             void (yield* itemactions(otmp));
         }
     }
-    cptr.stI32o(gt, 376, 0);
-    cptr.stPtro(gt, 384, null);
+    cptr.stI32o(gt, FLD.instance_globals_t_this_type, 0);
+    cptr.stPtro(gt, FLD.instance_globals_t_this_title, null);
     return NHM.ECMD_OK;
 }
 
@@ -3308,13 +3309,13 @@ const __static_dfeature_at_altbuf = new Uint8Array(256); /** C ref: invent.c:404
 
 /** C ref: invent.c:4037 — @param {CInt} x @param {CInt} y @param {CPtr} buf @returns {CPtr} */
 export function* dfeature_at(x, y, buf) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36);
-    let ltyp = cptr.ld1so(lev, 4);
+    let lev = cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level), x, 756), y, 36);
+    let ltyp = cptr.ld1so(lev, FLD.rm_typ);
     let cmap = -1;
     let dfeature = null;
     let stway = stairway_at(x, y);
     if (((ltyp) == NHC.DOOR)) {
-        switch ((cptr.ldI32o(lev, 8) & 31) | 0) {
+        switch ((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
             cmap = NHC.S_ndoor;
             break;
@@ -3343,7 +3344,7 @@ export function* dfeature_at(x, y, buf) {
     else if (((ltyp) == NHC.SINK))
         cmap = NHC.S_sink;
     else if (((ltyp) == NHC.ALTAR)) {
-        void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __sl178, (((cptr.ldI32o(lev, 8) & 31) | 0) & NHM.AM_SANCTUM) ? __sl179 : __sl0, (yield* a_gname()), align_str((schar(((((((cptr.ldI32o(lev, 8) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, 8) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, 8) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
+        void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __sl178, (((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __sl179 : __sl0, (yield* a_gname()), align_str((schar(((((((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, FLD.rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
         dfeature = cptr.decay(__static_dfeature_at_altbuf);
     } else if (stway) {
         dfeature = stairs_description(stway, cptr.decay(__static_dfeature_at_altbuf), 1);
@@ -3358,7 +3359,7 @@ export function* dfeature_at(x, y, buf) {
     else if (ltyp == NHC.IRONBARS)
         dfeature = __sl180;
     if (cmap >= 0)
-        dfeature = cptr.ldPtro2(defsyms, cmap, 24, 8);
+        dfeature = cptr.ldPtro2(defsyms, cmap, 24, FLD.symdef_explanation);
     if (dfeature)
         void cptr.strcpy(buf, dfeature);
     return dfeature;
@@ -3368,7 +3369,7 @@ export function* dfeature_at(x, y, buf) {
 export function* look_here(obj_cnt, lookhere_flags) {
     let otmp;
     let trap;
-    let verb = ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? __sl181 : __sl182;
+    let verb = ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl181 : __sl182;
     let dfeature = null;
     let fbuf = new Uint8Array(256);
     let fbuf2 = new Uint8Array(256);
@@ -3377,61 +3378,61 @@ export function* look_here(obj_cnt, lookhere_flags) {
     let felt_cockatrice = 0;
     let picked_some = schar((((lookhere_flags & NHM.LOOKHERE_PICKED_SOME) >>> 0) != 0));
     let skip_dfeature = schar((((lookhere_flags & NHM.LOOKHERE_SKIP_DFEATURE) >>> 0) != 0));
-    skip_objects = schar((cptr.ldI32o(flags, 92) > 0 && obj_cnt >= cptr.ldI32o(flags, 92) ? 1 : 0));
-    if ((cptr.ldI32o(u, 1848) & 1)) {
-        let mtmp = cptr.ldPtro(u, 2416);
+    skip_objects = schar((cptr.ldI32o(flags, FLD.flag_pile_limit) > 0 && obj_cnt >= cptr.ldI32o(flags, FLD.flag_pile_limit) ? 1 : 0));
+    if ((cptr.ldI32o(u, FLD.you_uswallow) & 1)) {
+        let mtmp = cptr.ldPtro(u, FLD.you_ustuck);
         void cptr.sprintf(cptr.decay(fbuf), __sl183, (yield* s_suffix((yield* mon_nam(mtmp)))), (yield* mbodypart(mtmp, NHC.STOMACH)));
-        (yield* You(__sl184, ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? __sl185 : __sl186, verb, cptr.add(cptr.decay(fbuf), 12, 1)));
-        otmp = cptr.ldPtro(mtmp, 280);
+        (yield* You(__sl184, ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl185 : __sl186, verb, cptr.add(cptr.decay(fbuf), 12, 1)));
+        otmp = cptr.ldPtro(mtmp, FLD.monst_minvent);
         if (otmp) {
             for (; otmp; otmp = cptr.ldPtr(otmp)) {
-                if (cptr.ldI16o(otmp, 32) == NHC.CORPSE)
+                if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE)
                     (yield* feel_cockatrice(otmp, 0));
             }
-            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
+            if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)))
                 void cptr.strcpy(cptr.decay(fbuf), __sl187);
             void cptr.strcat(cptr.decay(fbuf), __sl174);
             void (yield* display_minventory(mtmp, 8, cptr.decay(fbuf)));
         } else {
             (yield* You(__sl188, verb));
         }
-        return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
+        return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
     if (!skip_objects) {
         let reg;
         let regbuf = new Uint8Array(128);
         cptr.st1o(cptr.decay(regbuf), 0, 0, 1);
-        if ((reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, 2))) !== null)
+        if ((reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) !== null)
             void cptr.sprintf(cptr.decay(regbuf), __sl189, reg_damg(reg) ? __sl190 : __sl191);
-        if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, 2))) !== null && !(cptr.ldI32o(trap, 24) & 1))
+        if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy))) !== null && !(cptr.ldI32o(trap, FLD.trap_tseen) & 1))
             trap = (null);
         if (reg || trap)
-            (yield* There(__sl192, reg ? cptr.decay(regbuf) : __sl0, (reg && trap) ? __sl88 : __sl0, trap ? (yield* an((yield* trapname((cptr.ldI32o(trap, 20) & 31) | 0, 0)))) : __sl0));
+            (yield* There(__sl192, reg ? cptr.decay(regbuf) : __sl0, (reg && trap) ? __sl88 : __sl0, trap ? (yield* an((yield* trapname((cptr.ldI32o(trap, FLD.trap_ttyp) & 31) | 0, 0)))) : __sl0));
     }
-    otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, 2), 8, 62160);
-    dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, 2), cptr.decay(fbuf2)));
-    if (dfeature && !strcmp(dfeature, __sl177) && ((cptr.ldI32o(u, 1852) & 1)) | 0)
+    otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, FLD.you_uy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects);
+    dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy), cptr.decay(fbuf2)));
+    if (dfeature && !strcmp(dfeature, __sl177) && ((cptr.ldI32o(u, FLD.you_uinwater) & 1)) | 0)
         dfeature = null;
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
-        let drift = schar(((((cptr.ldI16o((cptr.add(svd, 1864)), 2) || cptr.ldI16((cptr.add(svd, 1864)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)))) || (((cptr.ldI16o((cptr.add(svd, 1856)), 2) || cptr.ldI16((cptr.add(svd, 1856)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)))) ? 1 : 0));
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+        let drift = schar(((((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)), FLD.d_level_dlevel) || cptr.ldI16((cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) && on_level(cptr.add(u, FLD.you_uz), cptr.add(svd, FLD.instance_globals_saved_d_dungeon_topology + FLD.dgn_topology_d_water_level)))) ? 1 : 0));
         if (dfeature && !cptr.strncmp(dfeature, __sl193, 6n)) {
             (yield* You(__sl194));
-        } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1688) & 31) | 0) : cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1684)) == NHC.ICE) {
-            if (!cptr.ld1so(flags, 25) || cptr.ld1so(iflags, 172) == NHC.ICE)
+        } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_flags) & 31) | 0) : cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, FLD.you_uy), 36, FLD.instance_globals_saved_l_level + FLD.rm_typ)) == NHC.ICE) {
+            if (!cptr.ld1so(flags, FLD.flag_mention_decor) || cptr.ld1so(iflags, FLD.instance_flags_prev_decor) == NHC.ICE)
                 (yield* force_decor(0));
             (yield* You(__sl195));
             skip_dfeature = 1;
         } else {
             let cant_reach = schar((!can_reach_floor(1)));
-            let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, 2));
+            let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
             let where = cant_reach ? __sl196 : __sl197;
             let onwhat = cant_reach ? __sl0 : surf;
             (yield* You(__sl198, drift ? __sl199 : where, drift ? __sl0 : onwhat));
             if (dfeature && !drift && !strcmp(dfeature, surf))
                 skip_dfeature = 1;
         }
-        trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, 2));
-        if (!can_reach_floor(schar((trap && ((((cptr.ldI32o(trap, 20) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(trap, 20) & 31)) | 0) == NHC.SPIKED_PIT) ? 1 : 0)))) {
+        trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy));
+        if (!can_reach_floor(schar((trap && ((((cptr.ldI32o(trap, FLD.trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(trap, FLD.trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) ? 1 : 0)))) {
             (yield* pline(__sl200));
             return NHM.ECMD_OK;
         }
@@ -3445,62 +3446,62 @@ export function* look_here(obj_cnt, lookhere_flags) {
             dfeature = (yield* an(dfeature));
         void cptr.sprintf(cptr.decay(fbuf), __sl206, (yield* vtense(dfeature, __sl154)), dfeature);
     }
-    if (!otmp || is_lava(cptr.ldI16(u), cptr.ldI16o(u, 2)) || (is_pool(cptr.ldI16(u), cptr.ldI16o(u, 2)) && !((cptr.ldI32o(u, 1852) & 1)))) {
+    if (!otmp || is_lava(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) || (is_pool(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)))) {
         if (dfeature && !skip_dfeature)
             (yield* pline(__sl82, cptr.decay(fbuf)));
-        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, 2)));
-        if (!skip_objects && (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) || !dfeature))
+        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
+        if (!skip_objects && (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || !dfeature))
             (yield* You(__sl188, verb));
-        return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
+        return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
     if (skip_objects) {
         if (dfeature && !skip_dfeature)
             (yield* pline(__sl82, cptr.decay(fbuf)));
-        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, 2)));
-        if (obj_cnt == 1 && cptr.ldI64o(otmp, 40) == 1n)
+        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
+        if (obj_cnt == 1 && cptr.ldI64o(otmp, FLD.obj_quan) == 1n)
             (yield* There(__sl207, picked_some ? __sl208 : __sl209));
         else
             (yield* There(__sl210, (obj_cnt == 2) ? __sl211 : ((obj_cnt < 5) ? __sl212 : ((obj_cnt < 10) ? __sl213 : __sl214)), picked_some ? __sl215 : __sl0));
-        for (; otmp; otmp = cptr.ldPtro(otmp, 8))
-            if (cptr.ldI16o(otmp, 32) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
-                (yield* pline(__sl216, (obj_cnt > 1) ? __sl217 : ((cptr.ldI64o(otmp, 40) > 1n) ? __sl218 : __sl219), (yield* corpse_xname(otmp, null, NHM.CXN_ARTICLE)), poly_when_stoned(cptr.ldPtro(gy, 16)) ? __sl0 : __sl220));
+        for (; otmp; otmp = cptr.ldPtro(otmp, FLD.obj_v))
+            if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
+                (yield* pline(__sl216, (obj_cnt > 1) ? __sl217 : ((cptr.ldI64o(otmp, FLD.obj_quan) > 1n) ? __sl218 : __sl219), (yield* corpse_xname(otmp, null, NHM.CXN_ARTICLE)), poly_when_stoned(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)) ? __sl0 : __sl220));
                 (yield* feel_cockatrice(otmp, 0));
                 break;
             }
-    } else if (!cptr.ldPtro(otmp, 8)) {
+    } else if (!cptr.ldPtro(otmp, FLD.obj_v)) {
         if (dfeature && !skip_dfeature)
             (yield* pline(__sl82, cptr.decay(fbuf)));
-        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, 2)));
+        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
         (yield* You(__sl221, verb, (yield* doname_with_price(otmp))));
-        cptr.stI32o(iflags, 40, NHC.PLNMSG_ONE_ITEM_HERE);
-        if (cptr.ldI16o(otmp, 32) == NHC.CORPSE)
+        cptr.stI32o(iflags, FLD.instance_flags_last_msg, NHC.PLNMSG_ONE_ITEM_HERE);
+        if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE)
             (yield* feel_cockatrice(otmp, 0));
     } else {
         let buf = new Uint8Array(256);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 0)));
-        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(WIN_MESSAGE.v, 0)));
+        tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
         if (dfeature && !skip_dfeature) {
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(fbuf))));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl0)));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(fbuf))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, __sl0)));
         }
-        void cptr.sprintf(cptr.decay(buf), __sl222, picked_some ? __sl223 : __sl224, ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? __sl225 : __sl154);
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(buf))));
-        for (; otmp; otmp = cptr.ldPtro(otmp, 8)) {
-            if (cptr.ldI16o(otmp, 32) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
+        void cptr.sprintf(cptr.decay(buf), __sl222, picked_some ? __sl223 : __sl224, ((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? __sl225 : __sl154);
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
+        for (; otmp; otmp = cptr.ldPtro(otmp, FLD.obj_v)) {
+            if (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE && will_feel_cockatrice(otmp, 0)) {
                 felt_cockatrice = 1;
                 void cptr.sprintf(cptr.decay(buf), __sl226, (yield* doname(otmp)));
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(buf))));
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, cptr.decay(buf))));
                 break;
             }
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* doname_with_price(otmp)))));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_putstr))(tmpwin, 0, (yield* doname_with_price(otmp)))));
         }
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 120))(tmpwin, 1)));
-        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(tmpwin)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_nhwindow))(tmpwin, 1)));
+        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(tmpwin)));
         if (felt_cockatrice)
             (yield* feel_cockatrice(otmp, 0));
-        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, 2)));
+        (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, FLD.you_uy)));
     }
-    return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
+    return (!!((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
 }
 
 /** C ref: invent.c:4319 @returns {CInt} */
@@ -3514,7 +3515,7 @@ export function* dolook() {
 
 /** C ref: invent.c:4334 — @param {CPtr} otmp @param {CInt} force_touch @returns {CInt} */
 export function will_feel_cockatrice(otmp, force_touch) {
-    if ((((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) || force_touch) && !uarmg.v && !(cptr.ldI64o2(u, NHC.STONE_RES, 24, 128) || cptr.ldI64o2(u, NHC.STONE_RES, 24, 112)) && (cptr.ldI16o(otmp, 32) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))))
+    if ((((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || force_touch) && !uarmg.v && !(cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.STONE_RES, 24, FLD.you_uprops)) && (cptr.ldI16o(otmp, FLD.obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96)))))
         return 1;
     return 0;
 }
@@ -3524,7 +3525,7 @@ export function* feel_cockatrice(otmp, force_touch) {
     let kbuf = new Uint8Array(256);
     if (will_feel_cockatrice(otmp, force_touch)) {
         void cptr.strcpy(cptr.decay(kbuf), (yield* corpse_xname(otmp, null, NHM.CXN_PFX_THE)));
-        if (poly_when_stoned(cptr.ldPtro(gy, 16)))
+        if (poly_when_stoned(cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)))
             (yield* You(__sl227, cptr.decay(kbuf), (yield* makeplural((yield* body_part(NHC.HAND))))));
         else
             (yield* pline(__sl228, cptr.decay(kbuf)));
@@ -3537,7 +3538,7 @@ export function* feel_cockatrice(otmp, force_touch) {
 export function* stackobj(obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
-    for (otmp.v = cptr.ldPtro3(svl, cptr.ldI16o(obj.v, 28), 168, cptr.ldI16o(obj.v, 30), 8, 62160); otmp.v; otmp.v = cptr.ldPtro(otmp.v, 8))
+    for (otmp.v = cptr.ldPtro3(svl, cptr.ldI16o(obj.v, FLD.obj_ox), 168, cptr.ldI16o(obj.v, FLD.obj_oy), 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects); otmp.v; otmp.v = cptr.ldPtro(otmp.v, FLD.obj_v))
         if (!cptr.eq(otmp.v, obj.v) && (yield* merged(obj, otmp)))
             break;
     return;
@@ -3547,60 +3548,60 @@ export function* stackobj(obj) {
 export function* mergable(otmp, obj) {
     let objnamelth = 0n;
     let otmpnamelth = 0n;
-    if (cptr.eq(obj, otmp) || cptr.ldI16o(obj, 32) != cptr.ldI16o(otmp, 32) || (cptr.ldI32o(obj, 108) & 1) | 0 || (cptr.ldI32o(otmp, 108) & 1) | 0 || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, 32), 120, 20) & 1))
+    if (cptr.eq(obj, otmp) || cptr.ldI16o(obj, FLD.obj_otyp) != cptr.ldI16o(otmp, FLD.obj_otyp) || (cptr.ldI32o(obj, FLD.obj_nomerge) & 1) | 0 || (cptr.ldI32o(otmp, FLD.obj_nomerge) & 1) | 0 || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_merge) & 1))
         return 0;
-    if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS)
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS)
         return 1;
-    if (((cptr.ldI32o(obj, 56) & 1) | 0) != ((cptr.ldI32o(otmp, 56) & 1) | 0) || ((cptr.ldI32o(obj, 60) & 1) | 0) != ((cptr.ldI32o(otmp, 60) & 1) | 0))
+    if (((cptr.ldI32o(obj, FLD.obj_cursed) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_cursed) & 1) | 0) || ((cptr.ldI32o(obj, FLD.obj_blessed) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_blessed) & 1) | 0))
         return 0;
-    if (((cptr.ldI32o(obj, 160) & 7) | 0) == NHM.LOST_EXPLODING || ((cptr.ldI32o(otmp, 160) & 7) | 0) == NHM.LOST_EXPLODING)
+    if (((cptr.ldI32o(obj, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING || ((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
         return 0;
-    if (((cptr.ldI32o(otmp, 160) & 7) | 0) != NHM.LOST_NONE && (((cptr.ldI32o(obj, 160) & 7) | 0) != ((cptr.ldI32o(otmp, 160) & 7) | 0)))
+    if (((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0) != NHM.LOST_NONE && (((cptr.ldI32o(obj, FLD.obj_how_lost) & 7) | 0) != ((cptr.ldI32o(otmp, FLD.obj_how_lost) & 7) | 0)))
         return 0;
-    if ((cptr.ldI32o(obj, 136) & 1))
+    if ((cptr.ldI32o(obj, FLD.obj_globby) & 1))
         return 1;
-    if (((cptr.ldI32o(obj, 64) & 1) | 0) != ((cptr.ldI32o(otmp, 64) & 1) | 0) || cptr.ld1so(obj, 48) != cptr.ld1so(otmp, 48) || ((cptr.ldI32o(obj, 68) & 1) | 0) != ((cptr.ldI32o(otmp, 68) & 1) | 0) || ((cptr.ldI32o(obj, 128) & 1) | 0) != ((cptr.ldI32o(otmp, 128) & 1) | 0) || ((cptr.ldI32o(obj, 132) & 1) | 0) != ((cptr.ldI32o(otmp, 132) & 1) | 0) || ((cptr.ldI32o(obj, 76) & 1) | 0) != ((cptr.ldI32o(otmp, 76) & 1) | 0))
+    if (((cptr.ldI32o(obj, FLD.obj_unpaid) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_unpaid) & 1) | 0) || cptr.ld1so(obj, FLD.obj_spe) != cptr.ld1so(otmp, FLD.obj_spe) || ((cptr.ldI32o(obj, FLD.obj_no_charge) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_no_charge) & 1) | 0) || ((cptr.ldI32o(obj, FLD.obj_obroken) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_obroken) & 1) | 0) || ((cptr.ldI32o(obj, FLD.obj_otrapped) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_otrapped) & 1) | 0) || ((cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_lamplit) & 1) | 0))
         return 0;
-    if (cptr.ld1so(obj, 49) == NHC.FOOD_CLASS && (cptr.ldI32o(obj, 176) != cptr.ldI32o(otmp, 176) || ((cptr.ldI32o(obj, 112) & 3) | 0) != ((cptr.ldI32o(otmp, 112) & 3) | 0)))
+    if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.FOOD_CLASS && (cptr.ldI32o(obj, FLD.obj_oeaten) != cptr.ldI32o(otmp, FLD.obj_oeaten) || ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0) != ((cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0)))
         return 0;
-    if (((cptr.ldI32o(obj, 84) & 1) | 0) != ((cptr.ldI32o(otmp, 84) & 1) | 0) || (((cptr.ldI32o(obj, 88) & 1) | 0) != ((cptr.ldI32o(otmp, 88) & 1) | 0) && !(cptr.ldI16o(gu, 216) == NHC.PM_CLERIC) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))))) || ((cptr.ldI32o(obj, 112) & 3) | 0) != ((cptr.ldI32o(otmp, 112) & 3) | 0) || ((cptr.ldI32o(obj, 116) & 3) | 0) != ((cptr.ldI32o(otmp, 116) & 3) | 0) || ((cptr.ldI32o(obj, 140) & 1) | 0) != ((cptr.ldI32o(otmp, 140) & 1) | 0))
+    if (((cptr.ldI32o(obj, FLD.obj_dknown) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_dknown) & 1) | 0) || (((cptr.ldI32o(obj, FLD.obj_bknown) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_bknown) & 1) | 0) && !(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_CLERIC) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))))) || ((cptr.ldI32o(obj, FLD.obj_oeroded) & 3) | 0) != ((cptr.ldI32o(otmp, FLD.obj_oeroded) & 3) | 0) || ((cptr.ldI32o(obj, FLD.obj_oeroded2) & 3) | 0) != ((cptr.ldI32o(otmp, FLD.obj_oeroded2) & 3) | 0) || ((cptr.ldI32o(obj, FLD.obj_greased) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_greased) & 1) | 0))
         return 0;
-    if ((erosion_matters(obj)) && (((cptr.ldI32o(obj, 120) & 1) | 0) != ((cptr.ldI32o(otmp, 120) & 1) | 0) || (((cptr.ldI32o(obj, 92) & 1) | 0) != ((cptr.ldI32o(otmp, 92) & 1) | 0) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))))))
+    if ((erosion_matters(obj)) && (((cptr.ldI32o(obj, FLD.obj_oerodeproof) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_oerodeproof) & 1) | 0) || (((cptr.ldI32o(obj, FLD.obj_rknown) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_rknown) & 1) | 0) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))))))
         return 0;
-    if (cptr.ldI16o(obj, 32) == NHC.CORPSE || cptr.ldI16o(obj, 32) == NHC.EGG || cptr.ldI16o(obj, 32) == NHC.TIN) {
-        if (cptr.ldI32o(obj, 168) != cptr.ldI32o(otmp, 168))
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.EGG || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TIN) {
+        if (cptr.ldI32o(obj, FLD.obj_corpsenm) != cptr.ldI32o(otmp, FLD.obj_corpsenm))
             return 0;
     }
-    if ((cptr.ldI16o(obj, 32) == NHC.EGG && (cptr.ldI16o(obj, 54) || cptr.ldI16o(otmp, 54))) || (cptr.ldI16o(obj, 32) == NHC.CORPSE && cptr.ldI32o(otmp, 168) >= NHC.LOW_PM && ((cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || cptr.ld1so((cptr.add(mons, cptr.ldI32o(otmp, 168), 96)), 28) == NHC.S_TROLL)))
+    if ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, FLD.obj_timed) || cptr.ldI16o(otmp, FLD.obj_timed))) || (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, FLD.obj_corpsenm) >= NHC.LOW_PM && ((cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || cptr.ld1so((cptr.add(mons, cptr.ldI32o(otmp, FLD.obj_corpsenm), 96)), FLD.permonst_mlet) == NHC.S_TROLL)))
         return 0;
-    if ((cptr.ldI16o(obj, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, 32) == NHC.WAX_CANDLE) && cptr.ldI64o(obj, 184) / 25n != cptr.ldI64o(otmp, 184) / 25n)
+    if ((cptr.ldI16o(obj, FLD.obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.WAX_CANDLE) && cptr.ldI64o(obj, FLD.obj_age) / 25n != cptr.ldI64o(otmp, FLD.obj_age) / 25n)
         return 0;
-    if (cptr.ldI16o(obj, 32) == NHC.POT_OIL && (cptr.ldI32o(obj, 76) & 1) | 0)
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0)
         return 0;
-    if ((cptr.ldI32o(obj, 64) & 1) | 0 && !(yield* same_price(obj, otmp)))
+    if ((cptr.ldI32o(obj, FLD.obj_unpaid) & 1) | 0 && !(yield* same_price(obj, otmp)))
         return 0;
-    if ((cptr.ldPtro((obj), 208) && (cptr.ldPtro(cptr.ldPtro((obj), 208), 8))) || (cptr.ldPtro((obj), 208) && (cptr.ldI32o(cptr.ldPtro((obj), 208), 24))) || (cptr.ldPtro((otmp), 208) && (cptr.ldPtro(cptr.ldPtro((otmp), 208), 8))) || (cptr.ldPtro((otmp), 208) && (cptr.ldI32o(cptr.ldPtro((otmp), 208), 24))))
+    if ((cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldPtro(cptr.ldPtro((obj), FLD.obj_oextra), FLD.oextra_omonst))) || (cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldI32o(cptr.ldPtro((obj), FLD.obj_oextra), FLD.oextra_omid))) || (cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), FLD.obj_oextra), FLD.oextra_omonst))) || (cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldI32o(cptr.ldPtro((otmp), FLD.obj_oextra), FLD.oextra_omid))))
         return 0;
     objnamelth = cptr.strlen(safe_oname(obj));
     otmpnamelth = cptr.strlen(safe_oname(otmp));
-    if ((objnamelth != otmpnamelth && ((objnamelth && otmpnamelth) || cptr.ldI16o(obj, 32) == NHC.CORPSE)) || (objnamelth && otmpnamelth && (cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208)))) && (cptr.ldPtro((otmp), 208) && (cptr.ldPtr(cptr.ldPtro((otmp), 208)))) && cptr.strncmp((cptr.ldPtr(cptr.ldPtro((obj), 208))), (cptr.ldPtr(cptr.ldPtro((otmp), 208))), objnamelth)))
+    if ((objnamelth != otmpnamelth && ((objnamelth && otmpnamelth) || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.CORPSE)) || (objnamelth && otmpnamelth && (cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra)))) && (cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp), FLD.obj_oextra)))) && cptr.strncmp((cptr.ldPtr(cptr.ldPtro((obj), FLD.obj_oextra))), (cptr.ldPtr(cptr.ldPtro((otmp), FLD.obj_oextra))), objnamelth)))
         return 0;
-    if (!(cptr.ldPtro((obj), 208) && (cptr.ldPtro(cptr.ldPtro((obj), 208), 16))) ? (cptr.ldPtro((otmp), 208) && (cptr.ldPtro(cptr.ldPtro((otmp), 208), 16)) ? 1 : 0) : (!(cptr.ldPtro((otmp), 208) && (cptr.ldPtro(cptr.ldPtro((otmp), 208), 16))) || strcmp((cptr.ldPtro(cptr.ldPtro((obj), 208), 16)), (cptr.ldPtro(cptr.ldPtro((otmp), 208), 16))) != 0 ? 1 : 0))
+    if (!(cptr.ldPtro((obj), FLD.obj_oextra) && (cptr.ldPtro(cptr.ldPtro((obj), FLD.obj_oextra), FLD.oextra_omailcmd))) ? (cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), FLD.obj_oextra), FLD.oextra_omailcmd)) ? 1 : 0) : (!(cptr.ldPtro((otmp), FLD.obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), FLD.obj_oextra), FLD.oextra_omailcmd))) || strcmp((cptr.ldPtro(cptr.ldPtro((obj), FLD.obj_oextra), FLD.oextra_omailcmd)), (cptr.ldPtro(cptr.ldPtro((otmp), FLD.obj_oextra), FLD.oextra_omailcmd))) != 0 ? 1 : 0))
         return 0;
-    if (cptr.ldI16o(obj, 32) == NHC.SCR_MAIL && cptr.ld1so(obj, 48) > 0 && (u32mod(cptr.ldI32o(obj, 24), 2)) != (u32mod(cptr.ldI32o(otmp, 24), 2)))
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SCR_MAIL && cptr.ld1so(obj, FLD.obj_spe) > 0 && (u32mod(cptr.ldI32o(obj, FLD.obj_o_id), 2)) != (u32mod(cptr.ldI32o(otmp, FLD.obj_o_id), 2)))
         return 0;
-    if (cptr.ld1so(obj, 51) != cptr.ld1so(otmp, 51))
+    if (cptr.ld1so(obj, FLD.obj_oartifact) != cptr.ld1so(otmp, FLD.obj_oartifact))
         return 0;
-    if (((cptr.ldI32o(obj, 80) & 1) | 0) != ((cptr.ldI32o(otmp, 80) & 1) | 0) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))))
+    if (((cptr.ldI32o(obj, FLD.obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, FLD.obj_known) & 1) | 0) && (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops)))))
         return 0;
     return 1;
 }
 
 /** C ref: invent.c:4503 @returns {CInt} */
 export function* doprgold() {
-    let umoney = money_cnt(cptr.ldPtro(gi, 8));
+    let umoney = money_cnt(cptr.ldPtro(gi, FLD.instance_globals_i_invent));
     let hmoney = hidden_gold(0);
-    if (cptr.ld1so(flags, 48)) {
+    if (cptr.ld1so(flags, FLD.flag_verbose)) {
         let buf = new Uint8Array(256);
         if (!umoney) {
             void cptr.strcpy(cptr.decay(buf), __sl230);
@@ -3619,7 +3620,7 @@ export function* doprgold() {
             (yield* You(__sl237));
     }
     (yield* shopper_financial_report());
-    if (umoney && cptr.ld1so(iflags, 135)) {
+    if (umoney && cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) {
         let dollarsign = cptr.bytes("$");
         void (yield* dispinv_with_action(cptr.decay(dollarsign), 0, null));
     }
@@ -3630,18 +3631,18 @@ export function* doprgold() {
 export function* doprwep() {
     if (!uwep.v) {
         (yield* You(__sl238, empty_handed()));
-    } else if (!cptr.ld1so(iflags, 135)) {
+    } else if (!cptr.ld1so(iflags, FLD.instance_flags_menu_requested)) {
         (yield* prinv(null, uwep.v, 0n));
-        if (cptr.ld1so(u, 2816))
+        if (cptr.ld1so(u, FLD.you_twoweap))
             (yield* prinv(null, uswapwep.v, 0n));
     } else {
         let lets = new Uint8Array(4);
         let ct = 0;
         cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uwep.v), 1);
         if (uswapwep.v)
-            cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uswapwep.v, 50), 1);
+            cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uswapwep.v, FLD.obj_invlet), 1);
         if (uquiver.v)
-            cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uquiver.v, 50), 1);
+            cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uquiver.v, FLD.obj_invlet), 1);
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
         void (yield* dispinv_with_action(cptr.decay(lets), 1, null));
     }
@@ -3703,16 +3704,16 @@ export function* doprring() {
         let ct = 0;
         if (uright.v) {
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uright.v), 1);
-            if (cptr.ld1so(uright.v, 49) != NHC.RING_CLASS)
+            if (cptr.ld1so(uright.v, FLD.obj_oclass) != NHC.RING_CLASS)
                 use_inuse_mode = 1;
         }
         if (uleft.v) {
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uleft.v), 1);
-            if (cptr.ld1so(uleft.v, 49) != NHC.RING_CLASS)
+            if (cptr.ld1so(uleft.v, FLD.obj_oclass) != NHC.RING_CLASS)
                 use_inuse_mode = 1;
         }
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
-        if (ct > 1 || cptr.ld1so(iflags, 135))
+        if (ct > 1 || cptr.ld1so(iflags, FLD.instance_flags_menu_requested))
             use_inuse_mode = 1;
         void (yield* dispinv_with_action(cptr.decay(lets), use_inuse_mode, (ct == 1) ? __sl244 : __sl245));
     }
@@ -3733,11 +3734,11 @@ export function* dopramulet() {
 
 /** C ref: invent.c:4698 — @param {CPtr} obj @returns {CInt} */
 function tool_being_used(obj) {
-    if ((cptr.ldI64o(obj, 192) & 1572864n) != 0n)
+    if ((cptr.ldI64o(obj, FLD.obj_owornmask) & 1572864n) != 0n)
         return 1;
-    if (cptr.ld1so(obj, 49) != NHC.TOOL_CLASS)
+    if (cptr.ld1so(obj, FLD.obj_oclass) != NHC.TOOL_CLASS)
         return 0;
-    return schar((cptr.eq(obj, uwep.v) || (cptr.ldI32o(obj, 76) & 1) | 0 || (cptr.ldI16o(obj, 32) == NHC.LEASH && cptr.ldI32o(obj, 168)) ? 1 : 0));
+    return schar((cptr.eq(obj, uwep.v) || (cptr.ldI32o(obj, FLD.obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, FLD.obj_corpsenm)) ? 1 : 0));
 }
 
 /** C ref: invent.c:4715 @returns {CInt} */
@@ -3745,7 +3746,7 @@ export function* doprtool() {
     let otmp;
     let ct = 0;
     let lets = new Uint8Array(53);
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (tool_being_used(otmp)) {
             if (ct >= 52)
                 break;
@@ -3763,7 +3764,7 @@ export function* doprtool() {
 export function* doprinuse() {
     let otmp;
     let ct = 0;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (is_inuse(otmp)) {
             ++ct;
             break;
@@ -3778,20 +3779,20 @@ export function* doprinuse() {
 /** C ref: invent.c:4763 — @param {CPtr} obj @param {CLongLong} numused */
 export function* useupf(obj, numused) {
     let otmp;
-    let at_u = schar(((cptr.ldI16o(obj, 28)) == cptr.ldI16(u) && (cptr.ldI16o(obj, 30)) == cptr.ldI16o(u, 2) ? 1 : 0));
-    if (cptr.ldI64o(obj, 40) > numused)
+    let at_u = schar(((cptr.ldI16o(obj, FLD.obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, FLD.obj_oy)) == cptr.ldI16o(u, FLD.you_uy) ? 1 : 0));
+    if (cptr.ldI64o(obj, FLD.obj_quan) > numused)
         otmp = (yield* splitobj(obj, numused));
     else
         otmp = obj;
-    if (!cptr.ld1so(svc, 77) && (yield* costly_spot(cptr.ldI16o(otmp, 28), cptr.ldI16o(otmp, 30)))) {
-        if (cptr.strchr(cptr.add(u, 68), cptr.ld1s((yield* in_rooms(cptr.ldI16o(otmp, 28), cptr.ldI16o(otmp, 30), 0)))))
+    if (!cptr.ld1so(svc, FLD.context_info_mon_moving) && (yield* costly_spot(cptr.ldI16o(otmp, FLD.obj_ox), cptr.ldI16o(otmp, FLD.obj_oy)))) {
+        if (cptr.strchr(cptr.add(u, FLD.you_urooms), cptr.ld1s((yield* in_rooms(cptr.ldI16o(otmp, FLD.obj_ox), cptr.ldI16o(otmp, FLD.obj_oy), 0)))))
             (yield* addtobill(otmp, 0, 0, 0));
         else
-            void (yield* stolen_value(otmp, cptr.ldI16o(otmp, 28), cptr.ldI16o(otmp, 30), 0, 0));
+            void (yield* stolen_value(otmp, cptr.ldI16o(otmp, FLD.obj_ox), cptr.ldI16o(otmp, FLD.obj_oy), 0, 0));
     }
     (yield* delobj(otmp));
-    if (at_u && (cptr.ldI32o(u, 1856) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 128n) != 0n))
-        void (yield* hideunder(cptr.add(gy, 8)));
+    if (at_u && (cptr.ldI32o(u, FLD.you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 128n) != 0n))
+        void (yield* hideunder(cptr.add(gy, FLD.instance_globals_y_youmonst)));
 }
 
 /** C ref: invent.c:4789 — char *[18] */
@@ -3837,34 +3838,34 @@ export function* let_to_name(let$, unpaid, showsym) {
     else
         class_name = cptr.ldPtro(names, NHC.ILLOBJ_CLASS, 8);
     len = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt((yield* Strlen_(class_name, __sl267, 4816)) >>> 0) + (unpaid ? 8n : 1n)) + BigInt((oclass ? (((yield* Strlen_(ocsymfmt, __sl267, 4817)) + (invbuf_sympadding >>> 0)) >>> 0) : 0) >>> 0))));
-    if (len > cptr.ldI32o(gi, 32)) {
-        if (cptr.ldPtro(gi, 24))
-            cptr.free(cptr.ldPtro(gi, 24));
-        cptr.stI32o(gi, 32, (len + 10) >>> 0);
-        cptr.stPtro(gi, 24, (yield* alloc(cptr.ldI32o(gi, 32))));
+    if (len > cptr.ldI32o(gi, FLD.instance_globals_i_invbufsiz)) {
+        if (cptr.ldPtro(gi, FLD.instance_globals_i_invbuf))
+            cptr.free(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf));
+        cptr.stI32o(gi, FLD.instance_globals_i_invbufsiz, (len + 10) >>> 0);
+        cptr.stPtro(gi, FLD.instance_globals_i_invbuf, (yield* alloc(cptr.ldI32o(gi, FLD.instance_globals_i_invbufsiz))));
     }
     if (unpaid)
-        void cptr.strcat(cptr.strcpy(cptr.ldPtro(gi, 24), __sl268), class_name);
+        void cptr.strcat(cptr.strcpy(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf), __sl268), class_name);
     else
-        void cptr.strcpy(cptr.ldPtro(gi, 24), class_name);
+        void cptr.strcpy(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf), class_name);
     if ((oclass != 0) && showsym) {
-        let bp = eos(cptr.ldPtro(gi, 24));
+        let bp = eos(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf));
         let mlen = (((invbuf_sympadding >>> 0) - (yield* Strlen_(class_name, __sl267, 4830))) >>> 0) | 0;
         while (--mlen > 0) {
             cptr.st1(bp, 32);
             bp = cptr.add(bp, 1);
         }
         cptr.st1(bp, 0);
-        void cptr.sprintf(eos(cptr.ldPtro(gi, 24)), ocsymfmt, cptr.ld1so(def_oc_syms, oclass, 24));
+        void cptr.sprintf(eos(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf)), ocsymfmt, cptr.ld1so(def_oc_syms, oclass, 24));
     }
-    return cptr.ldPtro(gi, 24);
+    return cptr.ldPtro(gi, FLD.instance_globals_i_invbuf);
 }
 
 /** C ref: invent.c:4845 */
 export function free_invbuf() {
-    if (cptr.ldPtro(gi, 24))
-        cptr.free(cptr.ldPtro(gi, 24)), cptr.stPtro(gi, 24, null);
-    cptr.stI32o(gi, 32, 0);
+    if (cptr.ldPtro(gi, FLD.instance_globals_i_invbuf))
+        cptr.free(cptr.ldPtro(gi, FLD.instance_globals_i_invbuf)), cptr.stPtro(gi, FLD.instance_globals_i_invbuf, null);
+    cptr.stI32o(gi, FLD.instance_globals_i_invbufsiz, 0);
 }
 
 /** C ref: invent.c:4855 */
@@ -3874,25 +3875,25 @@ export function reassign() {
     let prevobj;
     let goldobj;
     prevobj = (goldobj = null);
-    for (obj = cptr.ldPtro(gi, 8); obj; prevobj = obj, obj = cptr.ldPtr(obj))
-        if (cptr.ld1so(obj, 49) == NHC.COIN_CLASS) {
+    for (obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent); obj; prevobj = obj, obj = cptr.ldPtr(obj))
+        if (cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS) {
             goldobj = obj;
             if (prevobj)
                 cptr.stPtr(prevobj, cptr.ldPtr(goldobj));
             else
-                cptr.stPtro(gi, 8, cptr.ldPtr(goldobj));
+                cptr.stPtro(gi, FLD.instance_globals_i_invent, cptr.ldPtr(goldobj));
             break;
         }
-    for (obj = cptr.ldPtro(gi, 8), i = 0; obj; obj = cptr.ldPtr(obj), i++)
-        cptr.st1o(obj, 50, schar(((i < 26) ? ((97 + i) | 0) : ((i < 52) ? ((((65 + i) | 0) - 26) | 0) : 35))));
+    for (obj = cptr.ldPtro(gi, FLD.instance_globals_i_invent), i = 0; obj; obj = cptr.ldPtr(obj), i++)
+        cptr.st1o(obj, FLD.obj_invlet, schar(((i < 26) ? ((97 + i) | 0) : ((i < 52) ? ((((65 + i) | 0) - 26) | 0) : 35))));
     if (goldobj) {
-        cptr.st1o(goldobj, 50, NHC.GOLD_SYM);
-        cptr.stPtr(goldobj, cptr.ldPtro(gi, 8));
-        cptr.stPtro(gi, 8, goldobj);
+        cptr.st1o(goldobj, FLD.obj_invlet, NHC.GOLD_SYM);
+        cptr.stPtr(goldobj, cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+        cptr.stPtro(gi, FLD.instance_globals_i_invent, goldobj);
     }
     if (i >= 52)
         i = 51;
-    cptr.stI32o(gl, 64, i);
+    cptr.stI32o(gl, FLD.instance_globals_l_lastinvnr, i);
 }
 
 /** C ref: invent.c:4889 — @param {CPtr} why @returns {CInt} */
@@ -3900,10 +3901,10 @@ export function* check_invent_gold(why) {
     let otmp;
     let goldstacks = 0;
     let wrongslot = 0;
-    for (otmp = cptr.ldPtro(gi, 8); otmp; otmp = cptr.ldPtr(otmp))
-        if (cptr.ld1so(otmp, 49) == NHC.COIN_CLASS) {
+    for (otmp = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+        if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.COIN_CLASS) {
             ++goldstacks;
-            if (cptr.ld1so(otmp, 50) != NHC.GOLD_SYM)
+            if (cptr.ld1so(otmp, FLD.obj_invlet) != NHC.GOLD_SYM)
                 ++wrongslot;
         }
     if (goldstacks > 1 || wrongslot > 0) {
@@ -3915,7 +3916,7 @@ export function* check_invent_gold(why) {
 
 /** C ref: invent.c:4917 — @param {CPtr} obj @returns {CInt} */
 function adjust_ok(obj) {
-    if (!obj || cptr.ld1so(obj, 49) == NHC.COIN_CLASS)
+    if (!obj || cptr.ld1so(obj, FLD.obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
     return NHC.GETOBJ_SUGGEST;
 }
@@ -3931,11 +3932,11 @@ function adjust_gold_ok(obj) {
 export function* doorganize() {
     let adjust_filter;
     let obj;
-    if (!cptr.ldPtro(gi, 8) || (cptr.ld1so(cptr.ldPtro(gi, 8), 49) == NHC.COIN_CLASS && cptr.ld1so(cptr.ldPtro(gi, 8), 50) == NHC.GOLD_SYM && !cptr.ldPtr(cptr.ldPtro(gi, 8)))) {
-        (yield* You(__sl273, !cptr.ldPtro(gi, 8) ? __sl274 : __sl275));
+    if (!cptr.ldPtro(gi, FLD.instance_globals_i_invent) || (cptr.ld1so(cptr.ldPtro(gi, FLD.instance_globals_i_invent), FLD.obj_oclass) == NHC.COIN_CLASS && cptr.ld1so(cptr.ldPtro(gi, FLD.instance_globals_i_invent), FLD.obj_invlet) == NHC.GOLD_SYM && !cptr.ldPtr(cptr.ldPtro(gi, FLD.instance_globals_i_invent)))) {
+        (yield* You(__sl273, !cptr.ldPtro(gi, FLD.instance_globals_i_invent) ? __sl274 : __sl275));
         return NHM.ECMD_OK;
     }
-    if (!cptr.ld1so(flags, 22))
+    if (!cptr.ld1so(flags, FLD.flag_invlet_constant))
         reassign();
     adjust_filter = (yield* check_invent_gold(__sl276)) ? adjust_gold_ok : adjust_ok;
     obj = (yield* getobj(__sl276, adjust_filter, 3));
@@ -3951,27 +3952,27 @@ export function* adjust_split() {
     let let$;
     let dig = 0;
     obj = (yield* getobj(__sl277, adjust_ok, NHM.GETOBJ_NOFLAGS));
-    if (!obj || cptr.ldI64o(obj, 40) < 2n || cptr.ldI16o(obj, 32) == NHC.GOLD_PIECE)
+    if (!obj || cptr.ldI64o(obj, FLD.obj_quan) < 2n || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.GOLD_PIECE)
         return NHM.ECMD_FAIL;
-    if (cptr.ldI64o(obj, 40) == 2n) {
+    if (cptr.ldI64o(obj, FLD.obj_quan) == 2n) {
         splitamount.v = 1n;
     } else {
         dig = (yield* yn_function(__sl278, null, 0, 1));
         if (!digit(dig)) {
-            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
             return NHM.ECMD_CANCEL;
         }
         let$ = (yield* get_count(null, dig, 0n, splitamount, 6));
         if (!let$ || let$ == 27 || !cptr.strchr(cptr.decay(quitchars), let$)) {
-            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+            (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
             return NHM.ECMD_CANCEL;
         }
     }
-    if (splitamount.v < 1n || splitamount.v >= cptr.ldI64o(obj, 40)) {
+    if (splitamount.v < 1n || splitamount.v >= cptr.ldI64o(obj, FLD.obj_quan)) {
         if (splitamount.v < 1n)
             (yield* pline(__sl279, cptr.decay(__static_adjust_split_Amount)));
         else
-            (yield* pline(__sl280, cptr.decay(__static_adjust_split_Amount), cptr.ldI64o(obj, 40)));
+            (yield* pline(__sl280, cptr.decay(__static_adjust_split_Amount), cptr.ldI64o(obj, FLD.obj_quan)));
         return NHM.ECMD_CANCEL;
     }
     obj = (yield* splitobj(obj, splitamount.v));
@@ -3998,26 +3999,26 @@ function* doorganize_core(obj) {
     let isgold;
     if (!obj.v)
         return NHM.ECMD_CANCEL;
-    isgold = schar((cptr.ld1so(obj.v, 49) == NHC.COIN_CLASS));
+    isgold = schar((cptr.ld1so(obj.v, FLD.obj_oclass) == NHC.COIN_CLASS));
     splitting.v = (bumped = null);
-    for (otmp.v = cptr.ldPtro(gi, 8); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
+    for (otmp.v = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (cptr.eq(cptr.ldPtr(otmp.v), obj.v)) {
-            if (cptr.ld1so(otmp.v, 50) == cptr.ld1so(obj.v, 50))
+            if (cptr.ld1so(otmp.v, FLD.obj_invlet) == cptr.ld1so(obj.v, FLD.obj_invlet))
                 splitting.v = otmp.v;
             break;
         }
-    cptr.st1o(cptr.decay(lets), 0, schar(((cptr.ld1so(obj.v, 49) == NHC.COIN_CLASS) ? NHC.GOLD_SYM : 32)), 1);
+    cptr.st1o(cptr.decay(lets), 0, schar(((cptr.ld1so(obj.v, FLD.obj_oclass) == NHC.COIN_CLASS) ? NHC.GOLD_SYM : 32)), 1);
     for (ix = 1, let$ = 97; let$ <= 122; )
         cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
     for (let$ = 65; let$ <= 90; )
         cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
     cptr.st1o(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 32, 1);
     cptr.st1o(cptr.decay(lets), 54n, 0, 1);
-    if (!cptr.ld1so(flags, 22) && (ix = inv_cnt(0)) < NHC.invlet_basic)
+    if (!cptr.ld1so(flags, FLD.flag_invlet_constant) && (ix = inv_cnt(0)) < NHC.invlet_basic)
         cptr.st1o(cptr.decay(lets), (ix + (splitting.v ? 1 : 2)) | 0, 0, 1);
-    for (otmp.v = cptr.ldPtro(gi, 8); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
+    for (otmp.v = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (!cptr.eq(otmp.v, obj.v) && !(yield* mergable(otmp.v, obj.v))) {
-            let$ = cptr.ld1so(otmp.v, 50);
+            let$ = cptr.ld1so(otmp.v, FLD.obj_invlet);
             if (let$ >= 97 && let$ <= 122)
                 cptr.st1o(cptr.decay(lets), (((1 + let$) | 0) - 97) | 0, 32, 1);
             else if (let$ >= 65 && let$ <= 90)
@@ -4034,12 +4035,12 @@ function* doorganize_core(obj) {
     if (!splitting.v)
         void cptr.strcpy(cptr.decay(qbuf), __sl281);
     else
-        void cptr.sprintf(cptr.decay(qbuf), __sl282, cptr.ldI64o(obj.v, 40));
-    void cptr.sprintf(eos(cptr.decay(qbuf)), __sl283, cptr.decay(lets), cptr.ldPtro(gi, 8) ? __sl284 : __sl0);
+        void cptr.sprintf(cptr.decay(qbuf), __sl282, cptr.ldI64o(obj.v, FLD.obj_quan));
+    void cptr.sprintf(eos(cptr.decay(qbuf)), __sl283, cptr.decay(lets), cptr.ldPtro(gi, FLD.instance_globals_i_invent) ? __sl284 : __sl0);
     for (trycnt = 1; ; ++trycnt) {
         let$ = schar((!isgold ? (yield* yn_function(cptr.decay(qbuf), null, 0, 1)) : NHC.GOLD_SYM));
         if (let$ == 63 || let$ == 42) {
-            let$ = (yield* display_used_invlets(schar((splitting.v ? cptr.ld1so(obj.v, 50) : 0))));
+            let$ = (yield* display_used_invlets(schar((splitting.v ? cptr.ld1so(obj.v, FLD.obj_invlet) : 0))));
             if (!let$)
                 continue;
             if (let$ == 27)
@@ -4047,24 +4048,24 @@ function* doorganize_core(obj) {
                     if (splitting.v)
                         void (yield* merged(splitting, obj));
                     if (!ever_mind)
-                        (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+                        (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
                     return NHM.ECMD_OK;
                 }
         }
-        if (cptr.strchr(cptr.decay(quitchars), let$) || (splitting.v && let$ == cptr.ld1so(obj.v, 50))) {
+        if (cptr.strchr(cptr.decay(quitchars), let$) || (splitting.v && let$ == cptr.ld1so(obj.v, FLD.obj_invlet))) {
             if (splitting.v)
                 void (yield* merged(splitting, obj));
             if (!ever_mind)
-                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+                (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
             return NHM.ECMD_OK;
-        } else if (let$ == NHC.GOLD_SYM && cptr.ld1so(obj.v, 49) != NHC.COIN_CLASS) {
+        } else if (let$ == NHC.GOLD_SYM && cptr.ld1so(obj.v, FLD.obj_oclass) != NHC.COIN_CLASS) {
             (yield* pline(__sl285, NHC.GOLD_SYM));
             ever_mind = 1;
             {
                 if (splitting.v)
                     void (yield* merged(splitting, obj));
                 if (!ever_mind)
-                    (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+                    (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
                 return NHM.ECMD_OK;
             }
         }
@@ -4075,41 +4076,41 @@ function* doorganize_core(obj) {
                 if (splitting.v)
                     void (yield* merged(splitting, obj));
                 if (!ever_mind)
-                    (yield* pline(__sl82, cptr.ldPtro(c_common_strings, 64)));
+                    (yield* pline(__sl82, cptr.ldPtro(c_common_strings, FLD.c_common_strings_c_Never_mind)));
                 return NHM.ECMD_OK;
             }
         (yield* pline(__sl286));
     }
-    collect = schar((let$ == cptr.ld1so(obj.v, 50)));
+    collect = schar((let$ == cptr.ld1so(obj.v, FLD.obj_invlet)));
     adj_type = collect ? __sl287 : (!splitting.v ? __sl288 : __sl289);
-    (yield* extract_nobj(obj.v, cptr.add(gi, 8)));
-    for (otmp.v = cptr.ldPtro(gi, 8); otmp.v; ) {
-        otmpname = (cptr.ldPtro((otmp.v), 208) && (cptr.ldPtr(cptr.ldPtro((otmp.v), 208)))) ? (cptr.ldPtr(cptr.ldPtro((otmp.v), 208))) : null;
-        objname = (cptr.ldPtro((obj.v), 208) && (cptr.ldPtr(cptr.ldPtro((obj.v), 208)))) ? (cptr.ldPtr(cptr.ldPtro((obj.v), 208))) : null;
+    (yield* extract_nobj(obj.v, cptr.add(gi, FLD.instance_globals_i_invent)));
+    for (otmp.v = cptr.ldPtro(gi, FLD.instance_globals_i_invent); otmp.v; ) {
+        otmpname = (cptr.ldPtro((otmp.v), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((otmp.v), FLD.obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((otmp.v), FLD.obj_oextra))) : null;
+        objname = (cptr.ldPtro((obj.v), FLD.obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj.v), FLD.obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((obj.v), FLD.obj_oextra))) : null;
         if (collect) {
             if ((!otmpname || (objname && !strcmp(objname, otmpname))) && (yield* merged(otmp, obj))) {
                 obj.v = otmp.v;
                 otmp.v = cptr.ldPtr(otmp.v);
-                (yield* extract_nobj(obj.v, cptr.add(gi, 8)));
+                (yield* extract_nobj(obj.v, cptr.add(gi, FLD.instance_globals_i_invent)));
                 continue;
             }
-        } else if (cptr.ld1so(otmp.v, 50) == let$) {
+        } else if (cptr.ld1so(otmp.v, FLD.obj_invlet) == let$) {
             if ((!otmpname || (objname && !strcmp(objname, otmpname))) && (yield* merged(otmp, obj))) {
                 adj_type = __sl290;
                 obj.v = otmp.v;
                 otmp.v = cptr.ldPtr(otmp.v);
-                (yield* extract_nobj(obj.v, cptr.add(gi, 8)));
+                (yield* extract_nobj(obj.v, cptr.add(gi, FLD.instance_globals_i_invent)));
                 break;
             }
             if (!splitting.v) {
                 adj_type = __sl291;
-                cptr.st1o(otmp.v, 50, cptr.ld1so(obj.v, 50));
+                cptr.st1o(otmp.v, FLD.obj_invlet, cptr.ld1so(obj.v, FLD.obj_invlet));
             } else {
-                if (objname && !cptr.ld1so(obj.v, 51))
-                    cptr.stPtr(cptr.ldPtro((obj.v), 208), null);
+                if (objname && !cptr.ld1so(obj.v, FLD.obj_oartifact))
+                    cptr.stPtr(cptr.ldPtro((obj.v), FLD.obj_oextra), null);
                 if (!(yield* mergable(otmp.v, obj.v))) {
                     if (objname)
-                        cptr.stPtr(cptr.ldPtro((obj.v), 208), objname);
+                        cptr.stPtr(cptr.ldPtro((obj.v), FLD.obj_oextra), objname);
                 } else {
                     if (objname)
                         cptr.free(objname), objname = null;
@@ -4117,30 +4118,30 @@ function* doorganize_core(obj) {
                 if ((yield* merged(otmp, obj))) {
                     adj_type = __sl292;
                     obj.v = otmp.v;
-                    (yield* extract_nobj(obj.v, cptr.add(gi, 8)));
+                    (yield* extract_nobj(obj.v, cptr.add(gi, FLD.instance_globals_i_invent)));
                 } else if (inv_cnt(0) >= NHC.invlet_basic) {
                     void (yield* merged(splitting, obj));
                     (yield* Your(__sl293));
                     return NHM.ECMD_OK;
                 } else {
                     bumped = otmp.v;
-                    (yield* extract_nobj(bumped, cptr.add(gi, 8)));
+                    (yield* extract_nobj(bumped, cptr.add(gi, FLD.instance_globals_i_invent)));
                 }
             }
             break;
         }
         otmp.v = cptr.ldPtr(otmp.v);
     }
-    cptr.st1o(obj.v, 50, let$);
-    cptr.stPtr(obj.v, cptr.ldPtro(gi, 8));
-    cptr.st1o(obj.v, 52, NHM.OBJ_INVENT);
-    cptr.stPtro(gi, 8, obj.v);
+    cptr.st1o(obj.v, FLD.obj_invlet, let$);
+    cptr.stPtr(obj.v, cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+    cptr.st1o(obj.v, FLD.obj_where, NHM.OBJ_INVENT);
+    cptr.stPtro(gi, FLD.instance_globals_i_invent, obj.v);
     reorder_invent();
     if (bumped) {
         assigninvlet(bumped);
-        cptr.stPtr(bumped, cptr.ldPtro(gi, 8));
-        cptr.st1o(bumped, 52, NHM.OBJ_INVENT);
-        cptr.stPtro(gi, 8, bumped);
+        cptr.stPtr(bumped, cptr.ldPtro(gi, FLD.instance_globals_i_invent));
+        cptr.st1o(bumped, FLD.obj_where, NHM.OBJ_INVENT);
+        cptr.stPtro(gi, FLD.instance_globals_i_invent, bumped);
         reorder_invent();
     }
     (yield* prinv(adj_type, obj.v, 0n));
@@ -4156,21 +4157,21 @@ function* doorganize_core(obj) {
 function* invdisp_nothing(hdr, txt) {
     let win;
     let selected = cptr.box(0);
-    win = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 168))(win, 0n)));
+    win = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_start_menu))(win, 0n)));
     (yield* add_menu_heading(win, hdr));
     (yield* add_menu_str(win, __sl0));
     (yield* add_menu_str(win, txt));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 184))(win, null)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_end_menu))(win, null)));
     if ((yield* select_menu(win, NHM.PICK_NONE, selected)) > 0)
         cptr.free(selected.v);
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(win)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(win)));
     return;
 }
 
 /** C ref: invent.c:5309 — @param {CPtr} obj @returns {CInt} */
 function worn_wield_only(obj) {
-    return schar((cptr.ldI64o(obj, 192) != 0n));
+    return schar((cptr.ldI64o(obj, FLD.obj_owornmask) != 0n));
 }
 
 /** C ref: invent.c:5341 — @param {CPtr} mon @param {CInt} dflags @param {CPtr} title @returns {CPtr} */
@@ -4180,17 +4181,17 @@ export function* display_minventory(mon, dflags, title) {
     let n;
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
-    let incl_hero = (do_all && ((cptr.ldI32o(u, 1848) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, 2416), (mon)))) ? 1 : 0);
-    let have_inv = (cptr.ldPtro(mon, 280) !== null);
+    let incl_hero = (do_all && ((cptr.ldI32o(u, FLD.you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, FLD.you_ustuck), (mon)))) ? 1 : 0);
+    let have_inv = (cptr.ldPtro(mon, FLD.monst_minvent) !== null);
     let have_any = (have_inv || incl_hero ? 1 : 0);
     let pickings = (dflags & NHM.MINV_PICKMASK);
     void cptr.sprintf(cptr.decay(tmp), __sl294, (yield* s_suffix((yield* noit_Monnam(mon)))), do_all ? __sl295 : __sl296);
-    if (do_all ? have_any : (cptr.ldI64o(mon, 296) || (cptr.ldPtro((mon), 288)) ? 1 : 0)) {
-        cptr.stPtro(gy, 16, cptr.ldPtro(mon, 8));
-        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + 1)) - (1);
-        n = (yield* query_objlist(title ? title : cptr.decay(tmp), cptr.add(mon, 280), (NHM.INVORDER_SORT | (incl_hero ? NHM.INCLUDE_HERO : 0)), selected, pickings, do_all ? allow_all : worn_wield_only));
-        (cptr.stI32o(iflags, 64, cptr.ldI32o(iflags, 64) + -1)) - (-1);
-        cptr.stPtro(gy, 16, cptr.add(mons, cptr.ldI32o(u, 1808), 96));
+    if (do_all ? have_any : (cptr.ldI64o(mon, FLD.monst_misc_worn_check) || (cptr.ldPtro((mon), FLD.monst_mw)) ? 1 : 0)) {
+        cptr.stPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data, cptr.ldPtro(mon, FLD.monst_data));
+        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + 1)) - (1);
+        n = (yield* query_objlist(title ? title : cptr.decay(tmp), cptr.add(mon, FLD.monst_minvent), (NHM.INVORDER_SORT | (incl_hero ? NHM.INCLUDE_HERO : 0)), selected, pickings, do_all ? allow_all : worn_wield_only));
+        (cptr.stI32o(iflags, FLD.instance_flags_suppress_price, cptr.ldI32o(iflags, FLD.instance_flags_suppress_price) + -1)) - (-1);
+        cptr.stPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data, cptr.add(mons, cptr.ldI32o(u, FLD.you_umonnum), 96));
     } else {
         (yield* invdisp_nothing(title ? title : cptr.decay(tmp), __sl297));
         n = 0;
@@ -4206,7 +4207,7 @@ export function* display_minventory(mon, dflags, title) {
 /** C ref: invent.c:5391 — @param {CPtr} obj @returns {CPtr} */
 function* cinv_doname(obj) {
     let result = (yield* doname(obj));
-    if ((cptr.ldI32o(obj, 132) & 1) | 0 && BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
+    if ((cptr.ldI32o(obj, FLD.obj_otrapped) & 1) | 0 && BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
         let p = (yield* strstri(result, __sl298));
         let q = (yield* strstri(result, __sl299));
         if (p && (!q || cptr.cmp(p, q) < 0))
@@ -4221,7 +4222,7 @@ function* cinv_doname(obj) {
 /** C ref: invent.c:5423 — @param {CPtr} obj @returns {CPtr} */
 function* cinv_ansimpleoname(obj) {
     let result = (yield* ansimpleoname(obj));
-    if ((cptr.ldI32o(obj, 132) & 1)) {
+    if ((cptr.ldI32o(obj, FLD.obj_otrapped) & 1)) {
         if (cptr.strncmp(result, __sl306, 2n))
             void strsubst(result, __sl306, __sl305);
         else if (cptr.strncmp(result, __sl307, 3n))
@@ -4241,8 +4242,8 @@ export function* display_cinventory(obj) {
     let n;
     let selected = cptr.box(null);
     void (yield* safe_qbuf(cptr.decay(qbuf), __sl311, __sl174, obj, cinv_doname, cinv_ansimpleoname, __sl312));
-    if (cptr.ldPtro(obj, 16)) {
-        n = (yield* query_objlist(cptr.decay(qbuf), cptr.add(obj, 16), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, allow_all));
+    if (cptr.ldPtro(obj, FLD.obj_cobj)) {
+        n = (yield* query_objlist(cptr.decay(qbuf), cptr.add(obj, FLD.obj_cobj), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, allow_all));
     } else {
         (yield* invdisp_nothing(cptr.decay(qbuf), __sl313));
         n = 0;
@@ -4252,13 +4253,13 @@ export function* display_cinventory(obj) {
         cptr.free(selected.v);
     } else
         ret = null;
-    cptr.stI32o(obj, 96, 1);
+    cptr.stI32o(obj, FLD.obj_cknown, 1);
     return ret;
 }
 
 /** C ref: invent.c:5477 — @param {CPtr} obj @returns {CInt} */
 function only_here(obj) {
-    return schar((cptr.ldI16o(obj, 28) == cptr.ldI16o(go, 480) && cptr.ldI16o(obj, 30) == cptr.ldI16o(go, 482) ? 1 : 0));
+    return schar((cptr.ldI16o(obj, FLD.obj_ox) == cptr.ldI16o(go, FLD.instance_globals_o_only) && cptr.ldI16o(obj, FLD.obj_oy) == cptr.ldI16o(go, FLD.instance_globals_o_only + FLD.nhcoord_y) ? 1 : 0));
 }
 
 /** C ref: invent.c:5489 — @param {CInt} x @param {CInt} y @param {CInt} as_if_seen @returns {CInt} */
@@ -4269,38 +4270,38 @@ export function* display_binventory(x, y, as_if_seen) {
     let selected = cptr.box(null);
     let n;
     let n2 = 0;
-    if (is_pool_or_lava(x, y) && !((cptr.ldI32o(u, 1852) & 1)) && (obj = cptr.ldPtro3(svl, x, 168, y, 8, 62160)) !== null) {
+    if (is_pool_or_lava(x, y) && !((cptr.ldI32o(u, FLD.you_uinwater) & 1)) && (obj = cptr.ldPtro3(svl, x, 168, y, 8, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects)) !== null) {
         let real_liquid = is_pool(x, y) ? __sl315 : __sl316;
         let seen_liquid = hliquid(real_liquid);
-        if (!cptr.ldPtro(obj, 8)) {
-            let more_than_1 = schar((cptr.ldI64o((obj), 40) != 1n || (cptr.ld1so((obj), 51) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD)) ? 1 : 0));
+        if (!cptr.ldPtro(obj, FLD.obj_v)) {
+            let more_than_1 = schar((cptr.ldI64o((obj), FLD.obj_quan) != 1n || (cptr.ld1so((obj), FLD.obj_oartifact) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD)) ? 1 : 0));
             (yield* There(__sl317, more_than_1 ? __sl154 : __sl155, (yield* doname(obj)), seen_liquid));
             n2 = 1;
-            if ((cptr.ldI16o((obj), 32) == NHC.LENSES || (cptr.ld1so(obj, 49) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) == NHC.ARM_GLOVES) || (cptr.ld1so(obj, 49) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) == NHC.ARM_BOOTS)))
+            if ((cptr.ldI16o((obj), FLD.obj_otyp) == NHC.LENSES || (cptr.ld1so(obj, FLD.obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.ARM_GLOVES) || (cptr.ld1so(obj, FLD.obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, FLD.obj_otyp), 120, FLD.objclass_oc_subtyp) == NHC.ARM_BOOTS)))
                 more_than_1 = 1;
             underwhat = more_than_1 ? __sl318 : __sl319;
         } else {
             void cptr.sprintf(cptr.decay(qbuf), __sl320, seen_liquid);
-            if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(cptr.add(cptr.add(svl, 62160), x, 168), y, 8), NHM.BY_NEXTHERE, selected, NHM.PICK_NONE, allow_all)) > 0)
+            if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(cptr.add(cptr.add(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_objects), x, 168), y, 8), NHM.BY_NEXTHERE, selected, NHM.PICK_NONE, allow_all)) > 0)
                 cptr.free(selected.v), selected.v = null;
-            for (n2 = 0; obj; obj = cptr.ldPtro(obj, 8))
+            for (n2 = 0; obj; obj = cptr.ldPtro(obj, FLD.obj_v))
                 ++n2;
             underwhat = __sl321;
         }
     }
-    for (n = 0, obj = cptr.ldPtro(svl, 89048); obj; obj = cptr.ldPtr(obj))
-        if (cptr.ldI16o(obj, 28) == x && cptr.ldI16o(obj, 30) == y) {
+    for (n = 0, obj = cptr.ldPtro(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_buriedobjlist); obj; obj = cptr.ldPtr(obj))
+        if (cptr.ldI16o(obj, FLD.obj_ox) == x && cptr.ldI16o(obj, FLD.obj_oy) == y) {
             if (as_if_seen)
                 (yield* observe_object(obj));
             n++;
         }
     if (n) {
-        cptr.stI16o(go, 480, x);
-        cptr.stI16o(go, 482, y);
+        cptr.stI16o(go, FLD.instance_globals_o_only, x);
+        cptr.stI16o(go, FLD.instance_globals_o_only + FLD.nhcoord_y, y);
         void cptr.sprintf(cptr.decay(qbuf), __sl322, underwhat);
-        if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(svl, 89048), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, only_here)) > 0)
+        if ((yield* query_objlist(cptr.decay(qbuf), cptr.add(svl, FLD.instance_globals_saved_l_level + FLD.dlevel_t_buriedobjlist), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, only_here)) > 0)
             cptr.free(selected.v);
-        cptr.stI16o(go, 480, cptr.stI16o(go, 482, 0));
+        cptr.stI16o(go, FLD.instance_globals_o_only, cptr.stI16o(go, FLD.instance_globals_o_only + FLD.nhcoord_y, 0));
     }
     return (n + n2) | 0;
 }
@@ -4308,11 +4309,11 @@ export function* display_binventory(x, y, as_if_seen) {
 /** C ref: invent.c:5549 — @param {CInt} window */
 export function* prepare_perminvent(window) {
     let wri;
-    let invmode = cptr.ld1uo(iflags, 174);
+    let invmode = cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode);
     if (perminv_flags != invmode) {
         cptr.memcpy(wri_info, zerowri, 48);
-        cptr.stI32o(wri_info, 36, invmode);
-        wri = (yield* Y.icall((cptr.ldPtro(windowprocs, 408))(window, NHC.set_mode, wri_info)));
+        cptr.stI32o(wri_info, FLD.win_request_info_t_fromcore + FLD.from_core_invmode, invmode);
+        wri = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_ctrl_nhwindow))(window, NHC.set_mode, wri_info)));
         perminv_flags = invmode;
         (void (wri));
     }
@@ -4324,20 +4325,20 @@ let __static_sync_perminvent_wri = null; /** C ref: invent.c:5567 — win_reques
 export function* sync_perminvent() {
     let wport_id;
     if (WIN_INVEN.v == -1) {
-        if ((cptr.ldI32o(gc, 464) || (cptr.ldI64(wri_info) & 4n)) && !(in_perm_invent_toggled && cptr.ldI32o(gp, 228) == NHC.toggling_on))
+        if ((cptr.ldI32o(gc, FLD.instance_globals_c_core_invent_state) || (cptr.ldI64(wri_info) & 4n)) && !(in_perm_invent_toggled && cptr.ldI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on))
             return;
     }
     (yield* prepare_perminvent(WIN_INVEN.v));
-    if ((!cptr.ld1so(iflags, 139) && cptr.ldI32o(gc, 464))) {
+    if ((!cptr.ld1so(iflags, FLD.instance_flags_perm_invent) && cptr.ldI32o(gc, FLD.instance_globals_c_core_invent_state))) {
         (yield* docrt());
         return;
     }
-    if ((cptr.ld1so(iflags, 139) && !cptr.ldI32o(gc, 464)) || (!cptr.ld1so(iflags, 139) && (in_perm_invent_toggled && cptr.ldI32o(gp, 228) == NHC.toggling_on))) {
-        if ((cptr.ld1so(iflags, 139) && !cptr.ldI32o(gc, 464)) || in_perm_invent_toggled) {
-            __static_sync_perminvent_wri = (yield* Y.icall((cptr.ldPtro(windowprocs, 408))(WIN_INVEN.v, NHC.request_settings, wri_info)));
+    if ((cptr.ld1so(iflags, FLD.instance_flags_perm_invent) && !cptr.ldI32o(gc, FLD.instance_globals_c_core_invent_state)) || (!cptr.ld1so(iflags, FLD.instance_flags_perm_invent) && (in_perm_invent_toggled && cptr.ldI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on))) {
+        if ((cptr.ld1so(iflags, FLD.instance_flags_perm_invent) && !cptr.ldI32o(gc, FLD.instance_globals_c_core_invent_state)) || in_perm_invent_toggled) {
+            __static_sync_perminvent_wri = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_ctrl_nhwindow))(WIN_INVEN.v, NHC.request_settings, wri_info)));
             if (__static_sync_perminvent_wri !== null) {
                 if ((cptr.ldI64(__static_sync_perminvent_wri) & 16n) != 0n) {
-                    cptr.st1o(iflags, 140, 1);
+                    cptr.st1o(iflags, FLD.instance_flags_perm_invent_pending, 1);
                     return;
                 }
                 if ((cptr.ldI64(__static_sync_perminvent_wri) & 6n) != 0n) {
@@ -4345,28 +4346,28 @@ export function* sync_perminvent() {
                         (yield* set_option_mod_status(__sl323, NHC.set_gameview));
                         (yield* set_option_mod_status(__sl324, NHC.set_gameview));
                     }
-                    cptr.st1o(iflags, 139, 0);
+                    cptr.st1o(iflags, FLD.instance_flags_perm_invent, 0);
                     if (WIN_INVEN.v != -1)
-                        (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(WIN_INVEN.v))), WIN_INVEN.v = -1;
-                    wport_id = (cptr.ldI32o(windowprocs, 8) == NHC.wp_tty) ? __sl325 : __sl323;
+                        (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(WIN_INVEN.v))), WIN_INVEN.v = -1;
+                    wport_id = (cptr.ldI32o(windowprocs, FLD.window_procs_wp_id) == NHC.wp_tty) ? __sl325 : __sl323;
                     (yield* pline(__sl326, wport_id));
-                    (yield* pline(__sl327, wport_id, cptr.ldI32o(__static_sync_perminvent_wri, 16), cptr.ldI32o(__static_sync_perminvent_wri, 20), cptr.ldI32o(__static_sync_perminvent_wri, 24), cptr.ldI32o(__static_sync_perminvent_wri, 28)));
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 216))()));
+                    (yield* pline(__sl327, wport_id, cptr.ldI32o(__static_sync_perminvent_wri, FLD.to_core_needrows), cptr.ldI32o(__static_sync_perminvent_wri, FLD.to_core_needcols), cptr.ldI32o(__static_sync_perminvent_wri, FLD.to_core_haverows), cptr.ldI32o(__static_sync_perminvent_wri, FLD.to_core_havecols)));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_wait_synch))()));
                     return;
                 }
             }
-            (cptr.stI32o(gc, 464, cptr.ldI32o(gc, 464) + 1)) - (1);
+            (cptr.stI32o(gc, FLD.instance_globals_c_core_invent_state, cptr.ldI32o(gc, FLD.instance_globals_c_core_invent_state) + 1)) - (1);
         }
     }
-    if (!__static_sync_perminvent_wri || cptr.ldI32o(__static_sync_perminvent_wri, 12) == 0)
+    if (!__static_sync_perminvent_wri || cptr.ldI32o(__static_sync_perminvent_wri, FLD.to_core_maxslot) == 0)
         return;
-    if (in_perm_invent_toggled && cptr.ldI32o(gp, 228) == NHC.toggling_on) {
-        WIN_INVEN.v = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));
+    if (in_perm_invent_toggled && cptr.ldI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on) {
+        WIN_INVEN.v = (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_create_nhwindow))(NHM.NHW_MENU)));
     }
-    if (WIN_INVEN.v != -1 && cptr.ldI32o(program_state, 84)) {
-        cptr.stI32o(gi, 40, 1);
+    if (WIN_INVEN.v != -1 && cptr.ldI32o(program_state, FLD.sinfo_beyond_savefile_load)) {
+        cptr.stI32o(gi, FLD.instance_globals_i_in_sync_perminvent, 1);
         void (yield* display_inventory(null, 0));
-        cptr.stI32o(gi, 40, 0);
+        cptr.stI32o(gi, FLD.instance_globals_i_in_sync_perminvent, 0);
     }
 }
 
@@ -4374,17 +4375,17 @@ export function* sync_perminvent() {
 export function* perm_invent_toggled(negated) {
     in_perm_invent_toggled = 1;
     if (negated) {
-        cptr.stI32o(gp, 228, NHC.toggling_off);
+        cptr.stI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction, NHC.toggling_off);
         if (WIN_INVEN.v != -1)
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 128))(WIN_INVEN.v))), WIN_INVEN.v = -1;
-        cptr.stI32o(gc, 464, 0);
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_destroy_nhwindow))(WIN_INVEN.v))), WIN_INVEN.v = -1;
+        cptr.stI32o(gc, FLD.instance_globals_c_core_invent_state, 0);
     } else {
-        cptr.stI32o(gp, 228, NHC.toggling_on);
-        if (cptr.ld1uo(iflags, 174) == NHC.InvOptNone)
-            cptr.st1o(iflags, 174, NHC.InvOptOn);
+        cptr.stI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction, NHC.toggling_on);
+        if (cptr.ld1uo(iflags, FLD.instance_flags_perminv_mode) == NHC.InvOptNone)
+            cptr.st1o(iflags, FLD.instance_flags_perminv_mode, NHC.InvOptOn);
         (yield* sync_perminvent());
     }
-    cptr.stI32o(gp, 228, NHC.toggling_not);
+    cptr.stI32o(gp, FLD.instance_globals_p_perm_invent_toggling_direction, NHC.toggling_not);
     in_perm_invent_toggled = 0;
 }
 

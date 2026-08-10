@@ -11,6 +11,7 @@ import { i16, schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
@@ -56,7 +57,7 @@ export function newuexp(lev) {
 
 /** C ref: exper.c:26 — @param {CInt} en @returns {CInt} */
 function enermod(en) {
-    switch ((cptr.ldI16o(gu, 216))) {
+    switch ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum))) {
         case NHC.PM_CLERIC:
         case NHC.PM_WIZARD:
         return (Math.imul(2, en));
@@ -76,29 +77,29 @@ export function newpw() {
     let en = 0;
     let enrnd;
     let enfix;
-    if (cptr.ldI32o(u, 48) == 0) {
-        en = (cptr.ldI16o(gu, 272) + cptr.ldI16o(gu, 418)) | 0;
-        if (cptr.ldI16o(gu, 274) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16o(gu, 274))) : rnd(cptr.ldI16o(gu, 274)))) | 0;
-        if (cptr.ldI16o(gu, 420) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16o(gu, 420))) : rnd(cptr.ldI16o(gu, 420)))) | 0;
+    if (cptr.ldI32o(u, FLD.you_ulevel) == 0) {
+        en = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv)) | 0;
+        if (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_inrnd)))) | 0;
+        if (cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd) > 0)
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_inrnd)))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
-        if (cptr.ldI32o(u, 48) < cptr.ldI16o(gu, 284)) {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, 278) + cptr.ldI16o(gu, 424)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, 276) + cptr.ldI16o(gu, 422)) | 0;
+        if (cptr.ldI32o(u, FLD.you_ulevel) < cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_xlev)) {
+            enrnd = (enrnd + ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_lornd) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_lornd)) | 0)) | 0;
+            enfix = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_lofix) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_lofix)) | 0;
         } else {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, 282) + cptr.ldI16o(gu, 428)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, 280) + cptr.ldI16o(gu, 426)) | 0;
+            enrnd = (enrnd + ((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_hirnd) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_hirnd)) | 0)) | 0;
+            enfix = (cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_enadv + FLD.RoleAdvance_hifix) + cptr.ldI16o(gu, FLD.instance_globals_u_urace + FLD.Race_enadv + FLD.RoleAdvance_hifix)) | 0;
         }
         en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 64, __sl1), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
-    if (cptr.ldI32o(u, 48) < NHM.MAXULEV) {
-        cptr.stI16o2(u, cptr.ldI32o(u, 48), 2, 2280, i16(en));
+    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV) {
+        cptr.stI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_ueninc, i16(en));
     } else {
-        let lim = schar(((4 - ((cptr.ldI32o(u, 2212) / 200) | 0)) | 0));
+        let lim = schar(((4 - ((cptr.ldI32o(u, FLD.you_uenmax) / 200) | 0)) | 0));
         lim = schar(((lim) > 1 ? (lim) : 1));
         if (en > lim)
             en = lim;
@@ -108,17 +109,17 @@ export function newpw() {
 
 /** C ref: exper.c:85 — @param {CPtr} mtmp @param {CInt} nk @returns {CInt} */
 export function experience(mtmp, nk) {
-    let ptr = cptr.ldPtro(mtmp, 8);
+    let ptr = cptr.ldPtro(mtmp, FLD.monst_data);
     let i;
     let tmp;
     let tmp2;
-    tmp = (1 + Math.imul(cptr.ld1uo(mtmp, 26), cptr.ld1uo(mtmp, 26))) | 0;
+    tmp = (1 + Math.imul(cptr.ld1uo(mtmp, FLD.monst_m_lev), cptr.ld1uo(mtmp, FLD.monst_m_lev))) | 0;
     if ((i = find_mac(mtmp)) < 3)
         tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
-    if (cptr.ld1so(ptr, 30) > NHM.NORMAL_SPEED)
-        tmp = (tmp + ((cptr.ld1so(ptr, 30) > 18) ? 5 : 3)) | 0;
+    if (cptr.ld1so(ptr, FLD.permonst_mmove) > NHM.NORMAL_SPEED)
+        tmp = (tmp + ((cptr.ld1so(ptr, FLD.permonst_mmove) > 18) ? 5 : 3)) | 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, 36);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk);
         if (tmp2 > NHM.AT_BUTT) {
             if (tmp2 == NHM.AT_WEAP)
                 tmp = (tmp + 5) | 0;
@@ -129,25 +130,25 @@ export function experience(mtmp, nk) {
         }
     }
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, 37);
+        tmp2 = cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_adtyp);
         if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND)
-            tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, 26))) | 0;
+            tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, FLD.monst_m_lev))) | 0;
         else if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_SLIM))
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
-            tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
-        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, 39), cptr.ld1uo2(ptr, i, 4, 38))) > 23)
-            tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
-        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, 28) == NHC.S_EEL && !(cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 512n) != 0n)))
+            tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
+        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damd), cptr.ld1uo2(ptr, i, 4, FLD.permonst_mattk + FLD.attack_damn))) > 23)
+            tmp = (tmp + cptr.ld1uo(mtmp, FLD.monst_m_lev)) | 0;
+        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, FLD.permonst_mlet) == NHC.S_EEL && !(cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, FLD.you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 512n) != 0n)))
             tmp = (tmp + 1000) | 0;
     }
-    if (((cptr.ldU64o((ptr), 80) & 33554432n) != 0n))
-        tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, 26)))) | 0;
-    if (cptr.ld1uo(mtmp, 26) > 8)
+    if (((cptr.ldU64o((ptr), FLD.permonst_mflags2) & 33554432n) != 0n))
+        tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, FLD.monst_m_lev)))) | 0;
+    if (cptr.ld1uo(mtmp, FLD.monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;
-    if (cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
+    if (cptr.eq(cptr.ldPtro(mtmp, FLD.monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
         tmp = 1;
-    if ((cptr.ldI32o(mtmp, 124) & 1) | 0 || (cptr.ldI32o(mtmp, 128) & 1) | 0) {
+    if ((cptr.ldI32o(mtmp, FLD.monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, FLD.monst_mcloned) & 1) | 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;
@@ -160,8 +161,8 @@ export function experience(mtmp, nk) {
 
 /** C ref: exper.c:169 — @param {CInt} exper @param {CInt} rexp */
 export function* more_experienced(exper, rexp) {
-    let oldexp = cptr.ldI64o(u, 2376);
-    let oldrexp = cptr.ldI64o(u, 2384);
+    let oldexp = cptr.ldI64o(u, FLD.you_uexp);
+    let oldrexp = cptr.ldI64o(u, FLD.you_urexp);
     let newexp = BigInt.asIntN(64, oldexp + BigInt(exper));
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
     let newrexp = BigInt.asIntN(64, oldrexp + rexpincr);
@@ -170,17 +171,17 @@ export function* more_experienced(exper, rexp) {
     if (newrexp < 0n && rexpincr > 0n)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
-        cptr.stI64o(u, 2376, newexp);
-        if (cptr.ld1so(flags, 38))
+        cptr.stI64o(u, FLD.you_uexp, newexp);
+        if (cptr.ld1so(flags, FLD.flag_showexp))
             cptr.st1(disp, 1);
         if (!cptr.ld1s(disp) && (yield* exp_percent_changing()))
             cptr.st1(disp, 1);
     }
     if (newrexp != oldrexp) {
-        cptr.stI64o(u, 2384, newrexp);
+        cptr.stI64o(u, FLD.you_urexp, newrexp);
     }
-    if (cptr.ldI64o(u, 2384) >= BigInt(((cptr.ldI16o(gu, 216) == NHC.PM_WIZARD) ? 1000 : 2000)))
-        cptr.st1o(flags, 5, 0);
+    if (cptr.ldI64o(u, FLD.you_urexp) >= BigInt(((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD) ? 1000 : 2000)))
+        cptr.st1o(flags, FLD.flag_beginner, 0);
 }
 
 /** C ref: exper.c:207 — @param {CPtr} drainer */
@@ -190,57 +191,57 @@ export function* losexp(drainer) {
     let olduhpmax;
     if (drainer && !strcmp(drainer, __sl2))
         drainer = null;
-    else if ((yield* resists_drli(cptr.add(gy, 8))))
+    else if ((yield* resists_drli(cptr.add(gy, FLD.instance_globals_y_youmonst))))
         return;
-    if (cptr.ldI32o(u, 48) > 1 || drainer)
-        (yield* pline(__sl3, Goodbye(), cptr.ldI32o(u, 48)));
-    if (cptr.ldI32o(u, 48) > 1) {
-        cptr.stI32o(u, 48, (cptr.ldI32o(u, 48) - 1) | 0);
-        (yield* adjabil((cptr.ldI32o(u, 48) + 1) | 0, cptr.ldI32o(u, 48)));
-        (yield* livelog_printf(4096n, __sl4, (cptr.ldI32o(u, 48) + 1) | 0));
+    if (cptr.ldI32o(u, FLD.you_ulevel) > 1 || drainer)
+        (yield* pline(__sl3, Goodbye(), cptr.ldI32o(u, FLD.you_ulevel)));
+    if (cptr.ldI32o(u, FLD.you_ulevel) > 1) {
+        cptr.stI32o(u, FLD.you_ulevel, (cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0);
+        (yield* adjabil((cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0, cptr.ldI32o(u, FLD.you_ulevel)));
+        (yield* livelog_printf(4096n, __sl4, (cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0));
         ;
     } else {
         if (drainer) {
-            cptr.stI32o(svk, 12, NHM.KILLED_BY);
-            if (!cptr.eq(cptr.add(svk, 16), drainer))
-                void cptr.strcpy(cptr.add(svk, 16), drainer);
+            cptr.stI32o(svk, FLD.kinfo_format, NHM.KILLED_BY);
+            if (!cptr.eq(cptr.add(svk, FLD.kinfo_name), drainer))
+                void cptr.strcpy(cptr.add(svk, FLD.kinfo_name), drainer);
             (yield* done(NHC.DIED));
         }
-        if (cptr.ldI32o(u, 48) > 1)
+        if (cptr.ldI32o(u, FLD.you_ulevel) > 1)
             return;
-        cptr.stI64o(u, 2376, 0n);
+        cptr.stI64o(u, FLD.you_uexp, 0n);
         (yield* livelog_printf(4096n, __sl5));
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, 48) >= 0 && cptr.ldI32o(u, 48) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
-    olduhpmax = cptr.ldI32o(u, 2200);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, FLD.you_ulevel) >= 0 && cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    olduhpmax = cptr.ldI32o(u, FLD.you_uhpmax);
     uhpmin = minuhpmax(10);
-    num = cptr.ldI16o2(u, cptr.ldI32o(u, 48), 2, 2220);
-    cptr.stI32o(u, 2200, (cptr.ldI32o(u, 2200) - num) | 0);
-    if (cptr.ldI32o(u, 2200) < uhpmin)
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_uhpinc);
+    cptr.stI32o(u, FLD.you_uhpmax, (cptr.ldI32o(u, FLD.you_uhpmax) - num) | 0);
+    if (cptr.ldI32o(u, FLD.you_uhpmax) < uhpmin)
         setuhpmax(uhpmin, 1);
-    if (cptr.ldI32o(u, 2200) > olduhpmax)
+    if (cptr.ldI32o(u, FLD.you_uhpmax) > olduhpmax)
         setuhpmax(olduhpmax, 1);
-    cptr.stI32o(u, 2196, (cptr.ldI32o(u, 2196) - num) | 0);
-    if (cptr.ldI32o(u, 2196) < 1)
-        cptr.stI32o(u, 2196, 1);
-    else if (cptr.ldI32o(u, 2196) > cptr.ldI32o(u, 2200))
-        cptr.stI32o(u, 2196, cptr.ldI32o(u, 2200));
-    num = cptr.ldI16o2(u, cptr.ldI32o(u, 48), 2, 2280);
-    cptr.stI32o(u, 2212, (cptr.ldI32o(u, 2212) - num) | 0);
-    if (cptr.ldI32o(u, 2212) < 0)
-        cptr.stI32o(u, 2212, 0);
-    cptr.stI32o(u, 2208, (cptr.ldI32o(u, 2208) - num) | 0);
-    if (cptr.ldI32o(u, 2208) < 0)
-        cptr.stI32o(u, 2208, 0);
-    else if (cptr.ldI32o(u, 2208) > cptr.ldI32o(u, 2212))
-        cptr.stI32o(u, 2208, cptr.ldI32o(u, 2212));
-    if (cptr.ldI64o(u, 2376) > 0n)
-        cptr.stI64o(u, 2376, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, 48)) - 1n));
-    if ((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804))) {
-        num = monhp_per_lvl(cptr.add(gy, 8));
-        cptr.stI32o(u, 1816, (cptr.ldI32o(u, 1816) - num) | 0);
-        cptr.stI32o(u, 1812, (cptr.ldI32o(u, 1812) - num) | 0);
-        if (cptr.ldI32o(u, 1812) <= 0)
+    cptr.stI32o(u, FLD.you_uhp, (cptr.ldI32o(u, FLD.you_uhp) - num) | 0);
+    if (cptr.ldI32o(u, FLD.you_uhp) < 1)
+        cptr.stI32o(u, FLD.you_uhp, 1);
+    else if (cptr.ldI32o(u, FLD.you_uhp) > cptr.ldI32o(u, FLD.you_uhpmax))
+        cptr.stI32o(u, FLD.you_uhp, cptr.ldI32o(u, FLD.you_uhpmax));
+    num = cptr.ldI16o2(u, cptr.ldI32o(u, FLD.you_ulevel), 2, FLD.you_ueninc);
+    cptr.stI32o(u, FLD.you_uenmax, (cptr.ldI32o(u, FLD.you_uenmax) - num) | 0);
+    if (cptr.ldI32o(u, FLD.you_uenmax) < 0)
+        cptr.stI32o(u, FLD.you_uenmax, 0);
+    cptr.stI32o(u, FLD.you_uen, (cptr.ldI32o(u, FLD.you_uen) - num) | 0);
+    if (cptr.ldI32o(u, FLD.you_uen) < 0)
+        cptr.stI32o(u, FLD.you_uen, 0);
+    else if (cptr.ldI32o(u, FLD.you_uen) > cptr.ldI32o(u, FLD.you_uenmax))
+        cptr.stI32o(u, FLD.you_uen, cptr.ldI32o(u, FLD.you_uenmax));
+    if (cptr.ldI64o(u, FLD.you_uexp) > 0n)
+        cptr.stI64o(u, FLD.you_uexp, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, FLD.you_ulevel)) - 1n));
+    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+        num = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
+        cptr.stI32o(u, FLD.you_mhmax, (cptr.ldI32o(u, FLD.you_mhmax) - num) | 0);
+        cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) - num) | 0);
+        if (cptr.ldI32o(u, FLD.you_mh) <= 0)
             (yield* rehumanize());
     }
     cptr.st1(disp, 1);
@@ -248,7 +249,7 @@ export function* losexp(drainer) {
 
 /** C ref: exper.c:300 */
 export function* newexplevel() {
-    if (cptr.ldI32o(u, 48) < NHM.MAXULEV && cptr.ldI64o(u, 2376) >= newuexp(cptr.ldI32o(u, 48)))
+    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV && cptr.ldI64o(u, FLD.you_uexp) >= newuexp(cptr.ldI32o(u, FLD.you_ulevel)))
         (yield* pluslvl(1));
 }
 
@@ -258,44 +259,44 @@ export function* pluslvl(incr) {
     let eninc;
     if (!incr)
         (yield* You_feel(__sl9));
-    if ((cptr.ldI32o(u, 1808) != cptr.ldI32o(u, 1804))) {
-        hpinc = monhp_per_lvl(cptr.add(gy, 8));
-        cptr.stI32o(u, 1812, (cptr.ldI32o(u, 1812) + hpinc) | 0);
-        setuhpmax(cptr.ldI32o(u, 1816), 0);
+    if ((cptr.ldI32o(u, FLD.you_umonnum) != cptr.ldI32o(u, FLD.you_umonster))) {
+        hpinc = monhp_per_lvl(cptr.add(gy, FLD.instance_globals_y_youmonst));
+        cptr.stI32o(u, FLD.you_mh, (cptr.ldI32o(u, FLD.you_mh) + hpinc) | 0);
+        setuhpmax(cptr.ldI32o(u, FLD.you_mhmax), 0);
     }
     hpinc = newhp();
-    cptr.stI32o(u, 2196, (cptr.ldI32o(u, 2196) + hpinc) | 0);
-    setuhpmax((cptr.ldI32o(u, 2200) + hpinc) | 0, 1);
+    cptr.stI32o(u, FLD.you_uhp, (cptr.ldI32o(u, FLD.you_uhp) + hpinc) | 0);
+    setuhpmax((cptr.ldI32o(u, FLD.you_uhpmax) + hpinc) | 0, 1);
     eninc = newpw();
-    cptr.stI32o(u, 2212, (cptr.ldI32o(u, 2212) + eninc) | 0);
-    if (cptr.ldI32o(u, 2212) > cptr.ldI32o(u, 2216))
-        cptr.stI32o(u, 2216, cptr.ldI32o(u, 2212));
-    cptr.stI32o(u, 2208, (cptr.ldI32o(u, 2208) + eninc) | 0);
-    if (cptr.ldI32o(u, 48) < NHM.MAXULEV) {
+    cptr.stI32o(u, FLD.you_uenmax, (cptr.ldI32o(u, FLD.you_uenmax) + eninc) | 0);
+    if (cptr.ldI32o(u, FLD.you_uenmax) > cptr.ldI32o(u, FLD.you_uenpeak))
+        cptr.stI32o(u, FLD.you_uenpeak, cptr.ldI32o(u, FLD.you_uenmax));
+    cptr.stI32o(u, FLD.you_uen, (cptr.ldI32o(u, FLD.you_uen) + eninc) | 0);
+    if (cptr.ldI32o(u, FLD.you_ulevel) < NHM.MAXULEV) {
         let old_ach_cnt;
         let newrank;
-        let oldrank = xlev_to_rank(cptr.ldI32o(u, 48));
+        let oldrank = xlev_to_rank(cptr.ldI32o(u, FLD.you_ulevel));
         if (incr) {
-            let tmp = newuexp((cptr.ldI32o(u, 48) + 1) | 0);
-            if (cptr.ldI64o(u, 2376) >= tmp)
-                cptr.stI64o(u, 2376, BigInt.asIntN(64, tmp - 1n));
+            let tmp = newuexp((cptr.ldI32o(u, FLD.you_ulevel) + 1) | 0);
+            if (cptr.ldI64o(u, FLD.you_uexp) >= tmp)
+                cptr.stI64o(u, FLD.you_uexp, BigInt.asIntN(64, tmp - 1n));
         } else {
-            cptr.stI64o(u, 2376, newuexp(cptr.ldI32o(u, 48)));
+            cptr.stI64o(u, FLD.you_uexp, newuexp(cptr.ldI32o(u, FLD.you_ulevel)));
         }
-        cptr.stI32o(u, 48, cptr.ldI32o(u, 48) + 1);
-        (yield* pline(__sl10, (cptr.ldI32o(u, 52) < cptr.ldI32o(u, 48)) ? __sl11 : __sl12, cptr.ldI32o(u, 48)));
-        if (cptr.ldI32o(u, 52) < cptr.ldI32o(u, 48))
-            cptr.stI32o(u, 52, cptr.ldI32o(u, 48));
-        (yield* adjabil((cptr.ldI32o(u, 48) - 1) | 0, cptr.ldI32o(u, 48)));
+        cptr.stI32o(u, FLD.you_ulevel, cptr.ldI32o(u, FLD.you_ulevel) + 1);
+        (yield* pline(__sl10, (cptr.ldI32o(u, FLD.you_ulevelmax) < cptr.ldI32o(u, FLD.you_ulevel)) ? __sl11 : __sl12, cptr.ldI32o(u, FLD.you_ulevel)));
+        if (cptr.ldI32o(u, FLD.you_ulevelmax) < cptr.ldI32o(u, FLD.you_ulevel))
+            cptr.stI32o(u, FLD.you_ulevelmax, cptr.ldI32o(u, FLD.you_ulevel));
+        (yield* adjabil((cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0, cptr.ldI32o(u, FLD.you_ulevel)));
         ;
         old_ach_cnt = count_achievements();
-        newrank = xlev_to_rank(cptr.ldI32o(u, 48));
+        newrank = xlev_to_rank(cptr.ldI32o(u, FLD.you_ulevel));
         if (newrank > oldrank)
             (yield* record_achievement(achieve_rank(newrank)));
         if (count_achievements() == old_ach_cnt)
-            (yield* livelog_printf(4096n, __sl13, (cptr.ldI32o(u, 48) <= cptr.ldI32o(u, 56)) ? __sl14 : __sl11, cptr.ldI32o(u, 48)));
-        if (cptr.ldI32o(u, 48) > cptr.ldI32o(u, 56))
-            cptr.stI32o(u, 56, cptr.ldI32o(u, 48));
+            (yield* livelog_printf(4096n, __sl13, (cptr.ldI32o(u, FLD.you_ulevel) <= cptr.ldI32o(u, FLD.you_ulevelpeak)) ? __sl14 : __sl11, cptr.ldI32o(u, FLD.you_ulevel)));
+        if (cptr.ldI32o(u, FLD.you_ulevel) > cptr.ldI32o(u, FLD.you_ulevelpeak))
+            cptr.stI32o(u, FLD.you_ulevelpeak, cptr.ldI32o(u, FLD.you_ulevel));
     }
     cptr.st1(disp, 1);
 }
@@ -307,16 +308,16 @@ export function rndexp(gaining) {
     let diff;
     let factor;
     let result;
-    minexp = (cptr.ldI32o(u, 48) == 1) ? 0n : newuexp((cptr.ldI32o(u, 48) - 1) | 0);
-    maxexp = newuexp(cptr.ldI32o(u, 48));
+    minexp = (cptr.ldI32o(u, FLD.you_ulevel) == 1) ? 0n : newuexp((cptr.ldI32o(u, FLD.you_ulevel) - 1) | 0);
+    maxexp = newuexp(cptr.ldI32o(u, FLD.you_ulevel));
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
-    if (cptr.ldI32o(u, 48) == NHM.MAXULEV && gaining) {
-        result += (BigInt.asIntN(64, cptr.ldI64o(u, 2376) - minexp));
-        if (result < cptr.ldI64o(u, 2376))
-            result = cptr.ldI64o(u, 2376);
+    if (cptr.ldI32o(u, FLD.you_ulevel) == NHM.MAXULEV && gaining) {
+        result += (BigInt.asIntN(64, cptr.ldI64o(u, FLD.you_uexp) - minexp));
+        if (result < cptr.ldI64o(u, FLD.you_uexp))
+            result = cptr.ldI64o(u, FLD.you_uexp);
     }
     return result;
 }

@@ -10,6 +10,7 @@
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { u, uleft, uright } from './decl.js';
 import { distmin } from './hacklib.js';
 import { sfi_int, sfi_nhcoord, sfo_int, sfo_nhcoord } from './sfbase.js';
@@ -38,14 +39,14 @@ export function initrack() {
 
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16o(uleft.v, 32) == NHC.RIN_STEALTH) || (uright.v && cptr.ldI16o(uright.v, 32) == NHC.RIN_STEALTH))
+    if ((uleft.v && cptr.ldI16o(uleft.v, FLD.obj_otyp) == NHC.RIN_STEALTH) || (uright.v && cptr.ldI16o(uright.v, FLD.obj_otyp) == NHC.RIN_STEALTH))
         return;
     if (utcnt.v < 100)
         utcnt.v++;
     if (utpnt.v == 100)
         utpnt.v = 0;
     cptr.stI16o(utrack, utpnt.v, cptr.ldI16(u), 4);
-    cptr.stI16o2(utrack, utpnt.v, 4, 2, cptr.ldI16o(u, 2));
+    cptr.stI16o2(utrack, utpnt.v, 4, FLD.nhcoord_y, cptr.ldI16o(u, FLD.you_uy));
     utpnt.v++;
 }
 
@@ -60,7 +61,7 @@ export function gettrack(x, y) {
             tc = cptr.add(utrack, 99, 4);
         else
             tc = cptr.add(tc, -1, 4);
-        ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16o(tc, 2));
+        ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16o(tc, FLD.coord_y));
         if (ndist <= 1)
             return (ndist ? tc : null);
     }
@@ -71,14 +72,14 @@ export function gettrack(x, y) {
 export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o2(utrack, i, 4, 2) == y)
+        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o2(utrack, i, 4, FLD.nhcoord_y) == y)
             return 1;
     return 0;
 }
 
 /** C ref: track.c:76 — @param {CPtr} nhfp */
 export function* save_track(nhfp) {
-    if ((cptr.ldI32o((nhfp), 4) & 3)) {
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & 3)) {
         let i;
         (yield* sfo_int(nhfp, utcnt, __sl0));
         (yield* sfo_int(nhfp, utpnt, __sl1));
@@ -86,7 +87,7 @@ export function* save_track(nhfp) {
             (yield* sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2));
         }
     }
-    if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING))
+    if ((cptr.ldI32o((nhfp), FLD.NHFILE_mode) & NHM.FREEING))
         initrack();
 }
 

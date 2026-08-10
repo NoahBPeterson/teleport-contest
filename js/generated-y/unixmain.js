@@ -12,6 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { early_init, init_sound_disp_gamewindows, moveloop, newgame } from './allmain.js';
 import { rng_log_init } from './rnd.js';
 import { ARGV0, flags, ge, gh, gl, gp, gs, has_strong_rngseed, iflags, program_state, svh, svn, svp, u, ynchars } from './decl.js';
@@ -131,25 +132,25 @@ export function* main(argc, argv) {
     dir.v = nh_getenv(__sl4);
     if (!dir.v)
         dir.v = nh_getenv(__sl5);
-    cptr.stI32o(program_state, 108, 1);
+    cptr.stI32o(program_state, FLD.sinfo_early_options, 1);
     (yield* early_options(argc, argv, dir));
-    cptr.stI32o(program_state, 108, 0);
+    cptr.stI32o(program_state, FLD.sinfo_early_options, 0);
     (yield* chdirx(dir.v, 1));
     (yield* initoptions());
     ARGV0.v = cptr.ldPtr(gh);
     panictrace_setsignals(1);
     exact_username = whoami();
-    cptr.stI32o(u, 2196, 1);
-    cptr.stI32o(program_state, 12, 1);
+    cptr.stI32o(u, FLD.you_uhp, 1);
+    cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 1);
     sethanguphandler(hangup);
     (yield* process_options(argc.v, argv.v));
-    (yield* Y.icall((cptr.ldPtro(windowprocs, 48))(argc, argv.v)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_init_nhwindows))(argc, argv.v)));
     (yield* getmailstatus());
     set_playmode();
-    cptr.stI32o(gp, 8, exact_username ? Number(BigInt.asIntN(32, cptr.strlen(svp))) : 0);
+    cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, exact_username ? Number(BigInt.asIntN(32, cptr.strlen(svp))) : 0);
     (yield* plnamesuffix());
-    if (cptr.ld1so(flags, 10)) {
-        cptr.stI32o(gl, 8, 0);
+    if (cptr.ld1so(flags, FLD.flag_debug)) {
+        cptr.stI32o(gl, FLD.instance_globals_l_locknum, 0);
     } else {
         void signal(3, 1);
         void signal(2, 1);
@@ -160,25 +161,25 @@ export function* main(argc, argv) {
     __lbl_attempt_restore: while (true) {
         if (cptr.ld1s(svp)) {
             (yield* getlock());
-            cptr.stI32o(program_state, 12, 0);
+            cptr.stI32o(program_state, FLD.sinfo_preserve_locks, 0);
         }
         if (cptr.ld1s(svp) && (nhfp = (yield* restore_saved_game())) !== null) {
-            let fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
+            let fq_save = fqname(cptr.add(gs, FLD.instance_globals_s_SAVEF), NHM.SAVEPREFIX, 1);
             void chmod(fq_save, 0);
             void signal(2, done1);
-            if (cptr.ld1so(iflags, 137)) {
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 160))(__sl6, 0)));
-                cptr.st1o(iflags, 137, 0);
+            if (cptr.ld1so(iflags, FLD.instance_flags_news)) {
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_display_file))(__sl6, 0)));
+                cptr.st1o(iflags, FLD.instance_flags_news, 0);
             }
-            if (cptr.ldI32o(ge, 32))
-                (yield* Y.icall((cptr.ldPtro(windowprocs, 240))(__sl7)));
+            if (cptr.ldI32o(ge, FLD.instance_globals_e_early_raw_messages))
+                (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl7)));
             else
                 (yield* pline(__sl7));
-            (yield* Y.icall((cptr.ldPtro(windowprocs, 208))()));
+            (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_mark_synch))()));
             if ((yield* dorecover(nhfp))) {
                 resuming = 1;
                 (yield* wd_message());
-                if (cptr.ld1so(flags, 12) || cptr.ld1so(flags, 10)) {
+                if (cptr.ld1so(flags, FLD.flag_explore) || cptr.ld1so(flags, FLD.flag_debug)) {
                     if ((yield* yn_function(__sl8, cptr.decay(ynchars), 110, 1)) == 110) {
                         void (yield* delete_savefile());
                     } else {
@@ -187,20 +188,20 @@ export function* main(argc, argv) {
                     }
                 }
             }
-            if (cptr.ldI32o(program_state, 56)) {
-                cptr.stI32o(program_state, 56, 0);
+            if (cptr.ldI32o(program_state, FLD.sinfo_in_self_recover)) {
+                cptr.stI32o(program_state, FLD.sinfo_in_self_recover, 0);
             }
         }
         if (!resuming) {
             let neednewlock = schar((!cptr.ld1s(svp)));
-            if (!cptr.ld1so(iflags, 143) || cptr.ld1s(iflags) || neednewlock) {
+            if (!cptr.ld1so(iflags, FLD.instance_flags_renameinprogress) || cptr.ld1s(iflags) || neednewlock) {
                 if (!plsel_once)
-                    (yield* Y.icall((cptr.ldPtro(windowprocs, 56))()));
+                    (yield* Y.icall((cptr.ldPtro(windowprocs, FLD.window_procs_win_player_selection))()));
                 plsel_once = 1;
                 if (neednewlock && cptr.ld1s(svp))
                     continue __lbl_attempt_restore;
-                if (cptr.ld1so(iflags, 143)) {
-                    if (!cptr.ldI32o(gl, 8)) {
+                if (cptr.ld1so(iflags, FLD.instance_flags_renameinprogress)) {
+                    if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum)) {
                         delete_levelfile(0);
                         (yield* getlock());
                     }
@@ -241,7 +242,7 @@ function* process_options(argc, argv) {
             case 68:
             case 100:
             if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) || !(yield* strncmpi((arg), (__sl11), -1))) {
-                cptr.st1o(flags, 10, 1), cptr.st1o(flags, 12, 0);
+                cptr.st1o(flags, FLD.flag_debug, 1), cptr.st1o(flags, FLD.flag_explore, 0);
             } else if (!(yield* strncmpi(arg, __sl12, l))) {
                 (yield* load_symset(__sl13, NHC.PRIMARYSET));
                 (yield* switch_symbols(1));
@@ -250,26 +251,26 @@ function* process_options(argc, argv) {
             }
             break;
             case 88:
-            cptr.st1o(flags, 12, 1), cptr.st1o(flags, 10, 0);
+            cptr.st1o(flags, FLD.flag_explore, 1), cptr.st1o(flags, FLD.flag_debug, 0);
             break;
             case 110:
             if (!cptr.ld1so(arg, 2) || !strcmp(arg, __sl15)) {
-                cptr.st1o(iflags, 137, 0);
+                cptr.st1o(iflags, FLD.instance_flags_news, 0);
                 break;
             } else if (!strcmp(arg, __sl16)) {
-                cptr.st1o(iflags, 137, 1);
+                cptr.st1o(iflags, FLD.instance_flags_news, 1);
                 break;
             }
             break;
             case 117:
             if (cptr.ld1so(arg, 2)) {
                 void __builtin___strncpy_chk(svp, cptr.add(arg, 2), 31n, __builtin_object_size(svp, 1));
-                cptr.stI32o(gp, 8, 0);
+                cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, 0);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 void __builtin___strncpy_chk(svp, cptr.ldPtro(argv, 0, 8), 31n, __builtin_object_size(svp, 1));
-                cptr.stI32o(gp, 8, 0);
+                cptr.stI32o(gp, FLD.instance_globals_p_plnamelen, 0);
             } else {
                 (yield* config_error_add(__sl17));
             }
@@ -286,41 +287,41 @@ function* process_options(argc, argv) {
             break;
             case 108:
             if (!cptr.strncmp(arg, __sl21, 7n)) {
-                cptr.stI32o(gl, 480, 1);
+                cptr.stI32o(gl, FLD.instance_globals_l_loglua, 1);
             } else
                 (yield* config_error_add(__sl14, origarg));
             break;
             case 112:
             if (cptr.ld1so(arg, 2)) {
                 if ((i = (yield* str2role(cptr.add(arg, 2)))) >= 0)
-                    cptr.stI32o(flags, 144, i);
+                    cptr.stI32o(flags, FLD.flag_initrole, i);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 if ((i = (yield* str2role(cptr.ldPtro(argv, 0, 8)))) >= 0)
-                    cptr.stI32o(flags, 144, i);
+                    cptr.stI32o(flags, FLD.flag_initrole, i);
             }
             break;
             case 114:
             if (cptr.ld1so(arg, 2)) {
                 if ((i = (yield* str2race(cptr.add(arg, 2)))) >= 0)
-                    cptr.stI32o(flags, 148, i);
+                    cptr.stI32o(flags, FLD.flag_initrace, i);
             } else if (argc > 1) {
                 argc--;
                 argv = cptr.add(argv, 1, 8);
                 if ((i = (yield* str2race(cptr.ldPtro(argv, 0, 8)))) >= 0)
-                    cptr.stI32o(flags, 148, i);
+                    cptr.stI32o(flags, FLD.flag_initrace, i);
             }
             break;
             case 64:
-            cptr.stI32o(flags, 160, 1);
+            cptr.stI32o(flags, FLD.flag_randomall, 1);
             break;
             case 45:
             (yield* config_error_add(__sl14, origarg));
             break;
             default:
             if ((i = (yield* str2role(cptr.add(cptr.ldPtro(argv, 0, 8), 1)))) >= 0) {
-                cptr.stI32o(flags, 144, i);
+                cptr.stI32o(flags, FLD.flag_initrole, i);
                 break;
             }
         }
@@ -330,8 +331,8 @@ function* process_options(argc, argv) {
         let mx_ok = schar((mxplyrs > 0));
         (yield* config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtro(argv, 1, 8), mx_ok ? __sl24 : __sl25));
     }
-    if (!cptr.ldI32o(gl, 8) || (cptr.ldI32o(sysopt, 76) && cptr.ldI32o(gl, 8) > cptr.ldI32o(sysopt, 76)))
-        cptr.stI32o(gl, 8, cptr.ldI32o(sysopt, 76));
+    if (!cptr.ldI32o(gl, FLD.instance_globals_l_locknum) || (cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers) && cptr.ldI32o(gl, FLD.instance_globals_l_locknum) > cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers)))
+        cptr.stI32o(gl, FLD.instance_globals_l_locknum, cptr.ldI32o(sysopt, FLD.sysopt_s_maxplayers));
     (yield* config_error_done());
     return;
 }
@@ -382,41 +383,41 @@ export function sethanguphandler(handler) {
 
 /** C ref: unixmain.c:629 @returns {CInt} */
 export function authorize_wizard_mode() {
-    if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0)) {
-        if (check_user_string(cptr.ldPtro(sysopt, 16)))
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 0)) {
+        if (check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards)))
             return 1;
     }
-    cptr.st1o(iflags, 424, 1);
+    cptr.st1o(iflags, FLD.instance_flags_wiz_error_flag, 1);
     return 0;
 }
 
 /** C ref: unixmain.c:641 @returns {CInt} */
 export function authorize_explore_mode() {
-    if (cptr.ldPtro(sysopt, 32) && cptr.ld1so(cptr.ldPtro(sysopt, 32), 0)) {
-        if (check_user_string(cptr.ldPtro(sysopt, 32)))
+    if (cptr.ldPtro(sysopt, FLD.sysopt_s_explorers) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers), 0)) {
+        if (check_user_string(cptr.ldPtro(sysopt, FLD.sysopt_s_explorers)))
             return 1;
     }
-    cptr.st1o(iflags, 425, 1);
+    cptr.st1o(iflags, FLD.instance_flags_explore_error_flag, 1);
     return 0;
 }
 
 /** C ref: unixmain.c:656 */
 function* wd_message() {
-    if (cptr.ld1so(iflags, 424)) {
-        if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0)) {
-            let tmp = (yield* build_english_list(cptr.ldPtro(sysopt, 16)));
-            (yield* pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, 16), 32) ? __sl31 : __sl24, tmp));
+    if (cptr.ld1so(iflags, FLD.instance_flags_wiz_error_flag)) {
+        if (cptr.ldPtro(sysopt, FLD.sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 0)) {
+            let tmp = (yield* build_english_list(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards)));
+            (yield* pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, FLD.sysopt_s_wizards), 32) ? __sl31 : __sl24, tmp));
             cptr.free(tmp);
         } else {
             (yield* You(__sl32));
         }
-        cptr.st1o(flags, 10, 0);
-        if (!cptr.ld1so(iflags, 425))
+        cptr.st1o(flags, FLD.flag_debug, 0);
+        if (!cptr.ld1so(iflags, FLD.instance_flags_explore_error_flag))
             (yield* pline(__sl33));
-    } else if (cptr.ld1so(iflags, 425)) {
+    } else if (cptr.ld1so(iflags, FLD.instance_flags_explore_error_flag)) {
         (yield* You(__sl34));
-        cptr.st1o(flags, 12, cptr.st1o(iflags, 128, 0));
-    } else if (cptr.ld1so(flags, 12))
+        cptr.st1o(flags, FLD.flag_explore, cptr.st1o(iflags, FLD.instance_flags_deferred_X, 0));
+    } else if (cptr.ld1so(flags, FLD.flag_explore))
         (yield* You(__sl35));
 }
 
@@ -442,7 +443,7 @@ export function check_user_string(optstr) {
     let pwname = null;
     if (cptr.ld1so(optstr, 0) == 42)
         return 1;
-    if (cptr.ldI32o(sysopt, 88))
+    if (cptr.ldI32o(sysopt, FLD.sysopt_s_check_plname))
         pwname = svp;
     else if ((pw = get_unix_pw()) !== null)
         pwname = cptr.ldPtr(pw);
@@ -480,14 +481,14 @@ function get_unix_pw() {
     user = getlogin();
     if (user) {
         __static_get_unix_pw_pw = getpwnam(user);
-        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid))
+        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, FLD.passwd_pw_uid) != uid))
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
         user = nh_getenv(__sl28);
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
-            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid))
+            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, FLD.passwd_pw_uid) != uid))
                 __static_get_unix_pw_pw = null;
         }
         if (__static_get_unix_pw_pw === null) {
@@ -574,7 +575,7 @@ export function get_nhuuid() {
 export function free_nhuuid() {
     let i;
     for (i = 0; i < Number(BigInt.asIntN(32, (37n / 1n))); i++) {
-        cptr.st1o2(svn, i, 1, 4, 0);
+        cptr.st1o2(svn, i, 1, FLD.instance_globals_saved_n_nhuuid, 0);
     }
 }
 

@@ -7,6 +7,7 @@ import { i16, u16, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as cjmp from '../cjmp.js';
 import * as NHC from './nhconst.js';
+import * as FLD from './nhfield.js';
 import { luaE_checkcstack, luaE_extendCI, luaE_resetthread, luaE_shrinkCI } from './lstate.js';
 import { luaS_new, luaS_newlstr } from './lstring.js';
 import { luaM_free_, luaM_realloc_, luaM_saferealloc_ } from './lmem.js';
@@ -42,9 +43,9 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
         {
             {
                 let io = (((oldtop)));
-                let x_ = (cptr.ldPtro((cptr.ldPtro(L, 24)), 272));
+                let x_ = (cptr.ldPtro((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_memerrmsg));
                 cptr.stPtr(((io)), ((((x_)))));
-                (cptr.st1o((io), 8, uchar((((cptr.ld1uo(x_, 8)) | 64)))));
+                (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(x_, FLD.TString_tt)) | 64)))));
                 (void L, (void 0));
             }
             ;
@@ -52,7 +53,7 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
         }
         case 0:
         {
-            (cptr.st1o((((oldtop))), 8, 0));
+            (cptr.st1o((((oldtop))), FLD.TValue_tt_, 0));
             break;
         }
         default:
@@ -60,9 +61,9 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
             (void 0);
             {
                 let io1 = (((oldtop)));
-                let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
+                let io2 = (((cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(1), 16))));
                 cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+                (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
                 (void L, (void 0));
                 (void 0);
             }
@@ -70,33 +71,33 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
             break;
         }
     }
-    cptr.stPtro(L, 16, cptr.add(oldtop, 1, 16));
+    cptr.stPtro(L, FLD.lua_State_top, cptr.add(oldtop, 1, 16));
 }
 
 /** C ref: ldo.c:111 — @param {CPtr} L @param {CInt} errcode */
 export function luaD_throw(L, errcode) {
-    if (cptr.ldPtro(L, 88)) {
-        cptr.stI32o(cptr.ldPtro(L, 88), 200, errcode);
-        cjmp.longjmp(cptr.add((cptr.ldPtro(L, 88)), 8), 1);
+    if (cptr.ldPtro(L, FLD.lua_State_errorJmp)) {
+        cptr.stI32o(cptr.ldPtro(L, FLD.lua_State_errorJmp), FLD.lua_longjmp_status, errcode);
+        cjmp.longjmp(cptr.add((cptr.ldPtro(L, FLD.lua_State_errorJmp)), FLD.lua_longjmp_b), 1);
     } else {
-        let g = (cptr.ldPtro(L, 24));
+        let g = (cptr.ldPtro(L, FLD.lua_State_l_G));
         errcode = luaE_resetthread(L, errcode);
-        cptr.st1o(L, 10, uchar(errcode));
-        if (cptr.ldPtro(cptr.ldPtro(g, 264), 88)) {
+        cptr.st1o(L, FLD.lua_State_status, uchar(errcode));
+        if (cptr.ldPtro(cptr.ldPtro(g, FLD.global_State_mainthread), FLD.lua_State_errorJmp)) {
             {
-                let io1 = (((cptr.postinc(() => cptr.ldPtro(cptr.ldPtro(g, 264), 16), (v) => { cptr.stPtro(cptr.ldPtro(g, 264), 16, v); }, 16))));
-                let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(1), 16))));
+                let io1 = (((cptr.postinc(() => cptr.ldPtro(cptr.ldPtro(g, FLD.global_State_mainthread), FLD.lua_State_top), (v) => { cptr.stPtro(cptr.ldPtro(g, FLD.global_State_mainthread), FLD.lua_State_top, v); }, 16))));
+                let io2 = (((cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(1), 16))));
                 cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+                (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
                 (void L, (void 0));
                 (void 0);
             }
             ;
-            luaD_throw(cptr.ldPtro(g, 264), errcode);
+            luaD_throw(cptr.ldPtro(g, FLD.global_State_mainthread), errcode);
         } else {
-            if (cptr.ldPtro(g, 256)) {
+            if (cptr.ldPtro(g, FLD.global_State_panic)) {
                 (void 0);
-                cptr.ldPtro(g, 256)(L);
+                cptr.ldPtro(g, FLD.global_State_panic)(L);
             }
             abort();
         }
@@ -105,22 +106,22 @@ export function luaD_throw(L, errcode) {
 
 /** C ref: ldo.c:135 — @param {CPtr} L @param {CPtr} f @param {CPtr} ud @returns {CInt} */
 export function luaD_rawrunprotected(L, f, ud) {
-    let oldnCcalls = cptr.ldI32o(L, 176);
+    let oldnCcalls = cptr.ldI32o(L, FLD.lua_State_nCcalls);
     let lj = cptr.alloc(208);
-    cptr.stI32o(lj, 200, 0);
-    cptr.stPtr(lj, cptr.ldPtro(L, 88));
-    cptr.stPtro(L, 88, lj);
+    cptr.stI32o(lj, FLD.lua_longjmp_status, 0);
+    cptr.stPtr(lj, cptr.ldPtro(L, FLD.lua_State_errorJmp));
+    cptr.stPtro(L, FLD.lua_State_errorJmp, lj);
     {
-        const __sj1 = cjmp.idOf(cptr.add((lj), 8));
+        const __sj1 = cjmp.idOf(cptr.add((lj), FLD.lua_longjmp_b));
         let __sv1 = 0;
         try {
             if (__sv1 == 0) {
                 (f)(L, ud);
             }
             ;
-            cptr.stPtro(L, 88, cptr.ldPtr(lj));
-            cptr.stI32o(L, 176, oldnCcalls);
-            return cptr.ldI32o(lj, 200);
+            cptr.stPtro(L, FLD.lua_State_errorJmp, cptr.ldPtr(lj));
+            cptr.stI32o(L, FLD.lua_State_nCcalls, oldnCcalls);
+            return cptr.ldI32o(lj, FLD.lua_longjmp_status);
         } catch (__e1) {
             if (!cjmp.matches(__e1, __sj1)) throw __e1;
             __sv1 = cjmp.jbval(__e1);
@@ -128,9 +129,9 @@ export function luaD_rawrunprotected(L, f, ud) {
                 (f)(L, ud);
             }
             ;
-            cptr.stPtro(L, 88, cptr.ldPtr(lj));
-            cptr.stI32o(L, 176, oldnCcalls);
-            return cptr.ldI32o(lj, 200);
+            cptr.stPtro(L, FLD.lua_State_errorJmp, cptr.ldPtr(lj));
+            cptr.stI32o(L, FLD.lua_State_nCcalls, oldnCcalls);
+            return cptr.ldI32o(lj, FLD.lua_longjmp_status);
         }
     }
 }
@@ -139,13 +140,13 @@ export function luaD_rawrunprotected(L, f, ud) {
 function relstack(L) {
     let ci;
     let up;
-    cptr.stI64o(L, 16, (cptr.diff((((cptr.ldPtro(L, 16)))), (((cptr.ldPtro(L, 48)))))));
-    cptr.stI64o(L, 64, (cptr.diff((((cptr.ldPtro(L, 64)))), (((cptr.ldPtro(L, 48)))))));
-    for (up = cptr.ldPtro(L, 56); !cptr.eq(up, (null)); up = cptr.ldPtro(up, 24))
-        cptr.stI64o(up, 16, (cptr.diff(((((((cptr.ldPtro((up), 16))))))), (((cptr.ldPtro(L, 48)))))));
-    for (ci = cptr.ldPtro(L, 32); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, 16)) {
-        cptr.stI64o(ci, 8, (cptr.diff((((cptr.ldPtro(ci, 8)))), (((cptr.ldPtro(L, 48)))))));
-        cptr.stI64(ci, (cptr.diff((((cptr.ldPtr(ci)))), (((cptr.ldPtro(L, 48)))))));
+    cptr.stI64o(L, FLD.lua_State_top, (cptr.diff((((cptr.ldPtro(L, FLD.lua_State_top)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))));
+    cptr.stI64o(L, FLD.lua_State_tbclist, (cptr.diff((((cptr.ldPtro(L, FLD.lua_State_tbclist)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))));
+    for (up = cptr.ldPtro(L, FLD.lua_State_openupval); !cptr.eq(up, (null)); up = cptr.ldPtro(up, FLD.UpVal_u))
+        cptr.stI64o(up, FLD.UpVal_v, (cptr.diff(((((((cptr.ldPtro((up), FLD.UpVal_v))))))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))));
+    for (ci = cptr.ldPtro(L, FLD.lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, FLD.CallInfo_previous)) {
+        cptr.stI64o(ci, FLD.CallInfo_top, (cptr.diff((((cptr.ldPtro(ci, FLD.CallInfo_top)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))));
+        cptr.stI64(ci, (cptr.diff((((cptr.ldPtr(ci)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))));
     }
 }
 
@@ -153,15 +154,15 @@ function relstack(L) {
 function correctstack(L) {
     let ci;
     let up;
-    cptr.stPtro(L, 16, ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64o(L, 16))))));
-    cptr.stPtro(L, 64, ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64o(L, 64))))));
-    for (up = cptr.ldPtro(L, 56); !cptr.eq(up, (null)); up = cptr.ldPtro(up, 24))
-        cptr.stPtro(up, 16, ((((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64o(up, 16))))))));
-    for (ci = cptr.ldPtro(L, 32); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, 16)) {
-        cptr.stPtro(ci, 8, ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64o(ci, 8))))));
-        cptr.stPtr(ci, ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI64(ci))))));
-        if ((!(cptr.ldU16o((ci), 62) & 2)))
-            cptr.stI32o(ci, 40, 1);
+    cptr.stPtro(L, FLD.lua_State_top, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI64o(L, FLD.lua_State_top))))));
+    cptr.stPtro(L, FLD.lua_State_tbclist, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI64o(L, FLD.lua_State_tbclist))))));
+    for (up = cptr.ldPtro(L, FLD.lua_State_openupval); !cptr.eq(up, (null)); up = cptr.ldPtro(up, FLD.UpVal_u))
+        cptr.stPtro(up, FLD.UpVal_v, ((((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI64o(up, FLD.UpVal_v))))))));
+    for (ci = cptr.ldPtro(L, FLD.lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, FLD.CallInfo_previous)) {
+        cptr.stPtro(ci, FLD.CallInfo_top, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI64o(ci, FLD.CallInfo_top))))));
+        cptr.stPtr(ci, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI64(ci))))));
+        if ((!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2)))
+            cptr.stI32o(ci, FLD.CallInfo_u + 8, 1);
     }
 }
 
@@ -169,28 +170,28 @@ function correctstack(L) {
 export function luaD_errerr(L) {
     let msg = (luaS_newlstr(L, __sl0, BigInt.asUintN(64, (24n / 1n) - 1n)));
     {
-        let io = (((cptr.ldPtro(L, 16))));
+        let io = (((cptr.ldPtro(L, FLD.lua_State_top))));
         let x_ = (msg);
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1o((io), 8, uchar((((cptr.ld1uo(x_, 8)) | 64)))));
+        (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(x_, FLD.TString_tt)) | 64)))));
         (void L, (void 0));
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
     luaD_throw(L, 5);
 }
 
 /** C ref: ldo.c:219 — @param {CPtr} L @param {CInt} newsize @param {CInt} raiseerror @returns {CInt} */
 export function luaD_reallocstack(L, newsize, raiseerror) {
-    let oldsize = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), 40), cptr.ldPtro((L), 48)) / 16n)))));
+    let oldsize = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), FLD.lua_State_stack_last), cptr.ldPtro((L), FLD.lua_State_stack)) / 16n)))));
     let i;
     let newstack;
-    let oldgcstop = cptr.ld1uo((cptr.ldPtro(L, 24)), 103);
+    let oldgcstop = cptr.ld1uo((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_gcstopem);
     (void 0);
     relstack(L);
-    cptr.st1o((cptr.ldPtro(L, 24)), 103, 1);
-    newstack = (((luaM_realloc_(L, cptr.ldPtro(L, 48), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((oldsize + 5) | 0))))) * 16n), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((newsize + 5) | 0))))) * 16n)))));
-    cptr.st1o((cptr.ldPtro(L, 24)), 103, uchar(oldgcstop));
+    cptr.st1o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_gcstopem, 1);
+    newstack = (((luaM_realloc_(L, cptr.ldPtro(L, FLD.lua_State_stack), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((oldsize + 5) | 0))))) * 16n), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((newsize + 5) | 0))))) * 16n)))));
+    cptr.st1o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_gcstopem, uchar(oldgcstop));
     if ((__builtin_expect(BigInt(((cptr.eq(newstack, (null))) != 0)), 0n))) {
         correctstack(L);
         if (raiseerror)
@@ -198,17 +199,17 @@ export function luaD_reallocstack(L, newsize, raiseerror) {
         else
             return 0;
     }
-    cptr.stPtro(L, 48, newstack);
+    cptr.stPtro(L, FLD.lua_State_stack, newstack);
     correctstack(L);
-    cptr.stPtro(L, 40, cptr.add(cptr.ldPtro(L, 48), newsize, 16));
+    cptr.stPtro(L, FLD.lua_State_stack_last, cptr.add(cptr.ldPtro(L, FLD.lua_State_stack), newsize, 16));
     for (i = (oldsize + 5) | 0; i < ((newsize + 5) | 0); i++)
-        (cptr.st1o((((cptr.add(newstack, i, 16)))), 8, 0));
+        (cptr.st1o((((cptr.add(newstack, i, 16)))), FLD.TValue_tt_, 0));
     return 1;
 }
 
 /** C ref: ldo.c:249 — @param {CPtr} L @param {CInt} n @param {CInt} raiseerror @returns {CInt} */
 export function luaD_growstack(L, n, raiseerror) {
-    let size = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), 40), cptr.ldPtro((L), 48)) / 16n)))));
+    let size = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), FLD.lua_State_stack_last), cptr.ldPtro((L), FLD.lua_State_stack)) / 16n)))));
     if ((__builtin_expect(BigInt(((size > 1000000) != 0)), 0n))) {
         (void 0);
         if (raiseerror)
@@ -216,7 +217,7 @@ export function luaD_growstack(L, n, raiseerror) {
         return 0;
     } else if (n < 1000000) {
         let newsize = Math.imul(2, size);
-        let needed = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, 16), cptr.ldPtro(L, 48)) / 16n))))) + n) | 0;
+        let needed = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, FLD.lua_State_top), cptr.ldPtro(L, FLD.lua_State_stack)) / 16n))))) + n) | 0;
         if (newsize > 1000000)
             newsize = 1000000;
         if (newsize < needed)
@@ -234,13 +235,13 @@ export function luaD_growstack(L, n, raiseerror) {
 function stackinuse(L) {
     let ci;
     let res;
-    let lim = cptr.ldPtro(L, 16);
-    for (ci = cptr.ldPtro(L, 32); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, 16)) {
-        if (cptr.cmp(lim, cptr.ldPtro(ci, 8)) < 0)
-            lim = cptr.ldPtro(ci, 8);
+    let lim = cptr.ldPtro(L, FLD.lua_State_top);
+    for (ci = cptr.ldPtro(L, FLD.lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, FLD.CallInfo_previous)) {
+        if (cptr.cmp(lim, cptr.ldPtro(ci, FLD.CallInfo_top)) < 0)
+            lim = cptr.ldPtro(ci, FLD.CallInfo_top);
     }
     (void 0);
-    res = ((Number(BigInt.asIntN(32, ((cptr.diff(lim, cptr.ldPtro(L, 48)) / 16n))))) + 1) | 0;
+    res = ((Number(BigInt.asIntN(32, ((cptr.diff(lim, cptr.ldPtro(L, FLD.lua_State_stack)) / 16n))))) + 1) | 0;
     if (res < 20)
         res = 20;
     return res;
@@ -250,7 +251,7 @@ function stackinuse(L) {
 export function luaD_shrinkstack(L) {
     let inuse = stackinuse(L);
     let max = (inuse > 333333) ? 1000000 : Math.imul(inuse, 3);
-    if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), 40), cptr.ldPtro((L), 48)) / 16n))))) > max) {
+    if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), FLD.lua_State_stack_last), cptr.ldPtro((L), FLD.lua_State_stack)) / 16n))))) > max) {
         let nsize = (inuse > 500000) ? 1000000 : Math.imul(inuse, 2);
         luaD_reallocstack(L, nsize, 0);
     } else
@@ -260,7 +261,7 @@ export function luaD_shrinkstack(L) {
 
 /** C ref: ldo.c:322 — @param {CPtr} L */
 export function luaD_inctop(L) {
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 1n) != 0)), 0n))) {
+    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= 1n) != 0)), 0n))) {
         void 0;
         luaD_growstack(L, 1, 1);
         void 0;
@@ -268,29 +269,29 @@ export function luaD_inctop(L) {
         (void 0);
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
 }
 
 /** C ref: ldo.c:335 — @param {CPtr} L @param {CInt} event @param {CInt} line @param {CInt} ftransfer @param {CInt} ntransfer */
 export function luaD_hook(L, event, line, ftransfer, ntransfer) {
-    let hook = cptr.ldPtro(L, 160);
-    if (hook && cptr.ld1uo(L, 11)) {
+    let hook = cptr.ldPtro(L, FLD.lua_State_hook);
+    if (hook && cptr.ld1uo(L, FLD.lua_State_allowhook)) {
         let mask = 8;
-        let ci = cptr.ldPtro(L, 32);
-        let top = (cptr.diff((((cptr.ldPtro(L, 16)))), (((cptr.ldPtro(L, 48))))));
-        let ci_top = (cptr.diff((((cptr.ldPtro(ci, 8)))), (((cptr.ldPtro(L, 48))))));
+        let ci = cptr.ldPtro(L, FLD.lua_State_ci);
+        let top = (cptr.diff((((cptr.ldPtro(L, FLD.lua_State_top)))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
+        let ci_top = (cptr.diff((((cptr.ldPtro(ci, FLD.CallInfo_top)))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
         let ar = cptr.alloc(136);
         cptr.stI32(ar, event);
-        cptr.stI32o(ar, 48, line);
-        cptr.stPtro(ar, 128, ci);
+        cptr.stI32o(ar, FLD.lua_Debug_currentline, line);
+        cptr.stPtro(ar, FLD.lua_Debug_i_ci, ci);
         if (ntransfer != 0) {
             mask |= 256;
-            cptr.stI16o(ci, 56, u16(ftransfer));
-            cptr.stI16o(ci, 58, u16(ntransfer));
+            cptr.stI16o(ci, FLD.CallInfo_u2, u16(ftransfer));
+            cptr.stI16o(ci, FLD.CallInfo_u2 + 2, u16(ntransfer));
         }
-        if ((!(cptr.ldU16o((ci), 62) & 2)) && cptr.cmp(cptr.ldPtro(L, 16), cptr.ldPtro(ci, 8)) < 0)
-            cptr.stPtro(L, 16, cptr.ldPtro(ci, 8));
-        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 20n) != 0)), 0n))) {
+        if ((!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2)) && cptr.cmp(cptr.ldPtro(L, FLD.lua_State_top), cptr.ldPtro(ci, FLD.CallInfo_top)) < 0)
+            cptr.stPtro(L, FLD.lua_State_top, cptr.ldPtro(ci, FLD.CallInfo_top));
+        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
             void 0;
             luaD_growstack(L, 20, 1);
             void 0;
@@ -298,61 +299,61 @@ export function luaD_hook(L, event, line, ftransfer, ntransfer) {
             (void 0);
         }
         ;
-        if (cptr.cmp(cptr.ldPtro(ci, 8), cptr.add(cptr.ldPtro(L, 16), 20, 16)) < 0)
-            cptr.stPtro(ci, 8, cptr.add(cptr.ldPtro(L, 16), 20, 16));
-        cptr.st1o(L, 11, 0);
-        cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) | mask);
+        if (cptr.cmp(cptr.ldPtro(ci, FLD.CallInfo_top), cptr.add(cptr.ldPtro(L, FLD.lua_State_top), 20, 16)) < 0)
+            cptr.stPtro(ci, FLD.CallInfo_top, cptr.add(cptr.ldPtro(L, FLD.lua_State_top), 20, 16));
+        cptr.st1o(L, FLD.lua_State_allowhook, 0);
+        cptr.stI16o(ci, FLD.CallInfo_callstatus, cptr.ldU16o(ci, FLD.CallInfo_callstatus) | mask);
         (void 0);
         (hook)(L, ar);
         (void 0);
         (void 0);
-        cptr.st1o(L, 11, 1);
-        cptr.stPtro(ci, 8, ((cptr.add((((cptr.ldPtro(L, 48)))), (ci_top)))));
-        cptr.stPtro(L, 16, ((cptr.add((((cptr.ldPtro(L, 48)))), (top)))));
-        cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) & ~mask);
+        cptr.st1o(L, FLD.lua_State_allowhook, 1);
+        cptr.stPtro(ci, FLD.CallInfo_top, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (ci_top)))));
+        cptr.stPtro(L, FLD.lua_State_top, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (top)))));
+        cptr.stI16o(ci, FLD.CallInfo_callstatus, cptr.ldU16o(ci, FLD.CallInfo_callstatus) & ~mask);
     }
 }
 
 /** C ref: ldo.c:376 — @param {CPtr} L @param {CPtr} ci */
 export function luaD_hookcall(L, ci) {
-    cptr.stI32o(L, 180, 0);
-    if (cptr.ldI32o(L, 192) & 1) {
-        let event = (cptr.ldU16o(ci, 62) & 32) ? 4 : 0;
-        let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24);
-        cptr.postinc(() => cptr.ldPtro(ci, 32), (v) => { cptr.stPtro(ci, 32, v); }, 4);
-        luaD_hook(L, event, -1, 1, cptr.ld1uo(p, 10));
-        cptr.postdec(() => cptr.ldPtro(ci, 32), (v) => { cptr.stPtro(ci, 32, v); }, 4);
+    cptr.stI32o(L, FLD.lua_State_oldpc, 0);
+    if (cptr.ldI32o(L, FLD.lua_State_hookmask) & 1) {
+        let event = (cptr.ldU16o(ci, FLD.CallInfo_callstatus) & 32) ? 4 : 0;
+        let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), FLD.LClosure_p);
+        cptr.postinc(() => cptr.ldPtro(ci, FLD.CallInfo_u), (v) => { cptr.stPtro(ci, FLD.CallInfo_u, v); }, 4);
+        luaD_hook(L, event, -1, 1, cptr.ld1uo(p, FLD.Proto_numparams));
+        cptr.postdec(() => cptr.ldPtro(ci, FLD.CallInfo_u), (v) => { cptr.stPtro(ci, FLD.CallInfo_u, v); }, 4);
     }
 }
 
 /** C ref: ldo.c:394 — @param {CPtr} L @param {CPtr} ci @param {CInt} nres */
 function rethook(L, ci, nres) {
-    if (cptr.ldI32o(L, 192) & 2) {
-        let firstres = cptr.add(cptr.ldPtro(L, 16), -(nres), 16);
+    if (cptr.ldI32o(L, FLD.lua_State_hookmask) & 2) {
+        let firstres = cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(nres), 16);
         let delta = 0;
         let ftransfer;
-        if ((!(cptr.ldU16o((ci), 62) & 2))) {
-            let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24);
-            if (cptr.ld1uo(p, 11))
-                delta = (((cptr.ldI32o(ci, 44) + cptr.ld1uo(p, 10)) | 0) + 1) | 0;
+        if ((!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2))) {
+            let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), FLD.LClosure_p);
+            if (cptr.ld1uo(p, FLD.Proto_is_vararg))
+                delta = (((cptr.ldI32o(ci, FLD.CallInfo_u + 12) + cptr.ld1uo(p, FLD.Proto_numparams)) | 0) + 1) | 0;
         }
         cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), delta, 16));
         ftransfer = (Number(BigInt.asUintN(16, (cptr.diff(firstres, cptr.ldPtr(ci)) / 16n))));
         luaD_hook(L, 1, -1, ftransfer, nres);
         cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
     }
-    if ((!(cptr.ldU16o((ci = cptr.ldPtro(ci, 16)), 62) & 2)))
-        cptr.stI32o(L, 180, (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, 32)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), 24)), 64)) / 4n))))) - 1) | 0));
+    if ((!(cptr.ldU16o((ci = cptr.ldPtro(ci, FLD.CallInfo_previous)), FLD.CallInfo_callstatus) & 2)))
+        cptr.stI32o(L, FLD.lua_State_oldpc, (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, FLD.CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), FLD.LClosure_p)), FLD.Proto_code)) / 4n))))) - 1) | 0));
 }
 
 /** C ref: ldo.c:419 — @param {CPtr} L @param {CPtr} func @returns {*} */
 function tryfuncTM(L, func) {
     let tm;
     let p;
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 1n) != 0)), 0n))) {
-        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, 48))))));
+    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= 1n) != 0)), 0n))) {
+        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
         {
-            if (cptr.ldI64o((cptr.ldPtro(L, 24)), 24) > 0n) {
+            if (cptr.ldI64o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_GCdebt) > 0n) {
                 void 0;
                 luaC_step(L);
                 void 0;
@@ -362,29 +363,29 @@ function tryfuncTM(L, func) {
         }
         ;
         luaD_growstack(L, 1, 1);
-        func = ((cptr.add((((cptr.ldPtro(L, 48)))), (t__))));
+        func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (t__))));
     } else {
         (void 0);
     }
     ;
     tm = luaT_gettmbyobj(L, ((func)), NHC.TM_CALL);
-    if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), 8))) & 15)) == 0)) != 0)), 0n)))
+    if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), FLD.TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
         luaG_callerror(L, ((func)));
-    for (p = cptr.ldPtro(L, 16); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {
+    for (p = cptr.ldPtro(L, FLD.lua_State_top); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {
         let io1 = (((p)));
         let io2 = (((cptr.add(p, -(1), 16))));
         cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+        (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
         (void L, (void 0));
         (void 0);
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
     {
         let io1 = (((func)));
         let io2 = (tm);
         cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+        (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
         (void L, (void 0));
         (void 0);
     }
@@ -398,35 +399,35 @@ function moveresults(L, res, nres, wanted) {
     let i;
     switch (wanted) {
         case 0:
-        cptr.stPtro(L, 16, res);
+        cptr.stPtro(L, FLD.lua_State_top, res);
         return;
         case 1:
         if (nres == 0)
-            (cptr.st1o((((res))), 8, 0));
+            (cptr.st1o((((res))), FLD.TValue_tt_, 0));
         else {
             let io1 = (((res)));
-            let io2 = (((cptr.add(cptr.ldPtro(L, 16), -(nres), 16))));
+            let io2 = (((cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(nres), 16))));
             cptr.memcpy(io1, io2, 8);
-            (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+            (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
             (void L, (void 0));
             (void 0);
         }
         ;
-        cptr.stPtro(L, 16, cptr.add(res, 1, 16));
+        cptr.stPtro(L, FLD.lua_State_top, cptr.add(res, 1, 16));
         return;
         case -1:
         wanted = nres;
         break;
         default:
         if (((wanted) < -1)) {
-            cptr.stI16o(cptr.ldPtro(L, 32), 62, cptr.ldU16o(cptr.ldPtro(L, 32), 62) | 512);
-            cptr.stI32o(cptr.ldPtro(L, 32), 56, nres);
+            cptr.stI16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus) | 512);
+            cptr.stI32o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_u2, nres);
             res = luaF_close(L, res, -1, 1);
-            cptr.stI16o(cptr.ldPtro(L, 32), 62, cptr.ldU16o(cptr.ldPtro(L, 32), 62) & -513);
-            if (cptr.ldI32o(L, 192)) {
-                let savedres = (cptr.diff((((res))), (((cptr.ldPtro(L, 48))))));
-                rethook(L, cptr.ldPtro(L, 32), nres);
-                res = ((cptr.add((((cptr.ldPtro(L, 48)))), (savedres))));
+            cptr.stI16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_callstatus) & -513);
+            if (cptr.ldI32o(L, FLD.lua_State_hookmask)) {
+                let savedres = (cptr.diff((((res))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
+                rethook(L, cptr.ldPtro(L, FLD.lua_State_ci), nres);
+                res = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (savedres))));
             }
             wanted = ((-(wanted) - 3) | 0);
             if (wanted == -1)
@@ -434,40 +435,40 @@ function moveresults(L, res, nres, wanted) {
         }
         break;
     }
-    firstresult = cptr.add(cptr.ldPtro(L, 16), -(nres), 16);
+    firstresult = cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(nres), 16);
     if (nres > wanted)
         nres = wanted;
     for (i = 0; i < nres; i++) {
         let io1 = (((cptr.add(res, i, 16))));
         let io2 = (((cptr.add(firstresult, i, 16))));
         cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+        (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
         (void L, (void 0));
         (void 0);
     }
     ;
     for (; i < wanted; i++)
-        (cptr.st1o((((cptr.add(res, i, 16)))), 8, 0));
-    cptr.stPtro(L, 16, cptr.add(res, wanted, 16));
+        (cptr.st1o((((cptr.add(res, i, 16)))), FLD.TValue_tt_, 0));
+    cptr.stPtro(L, FLD.lua_State_top, cptr.add(res, wanted, 16));
 }
 
 /** C ref: ldo.c:492 — @param {CPtr} L @param {CPtr} ci @param {CInt} nres */
 export function luaD_poscall(L, ci, nres) {
-    let wanted = cptr.ldI16o(ci, 60);
-    if ((__builtin_expect(BigInt(((cptr.ldI32o(L, 192) && !((wanted) < -1) ? 1 : 0) != 0)), 0n)))
+    let wanted = cptr.ldI16o(ci, FLD.CallInfo_nresults);
+    if ((__builtin_expect(BigInt(((cptr.ldI32o(L, FLD.lua_State_hookmask) && !((wanted) < -1) ? 1 : 0) != 0)), 0n)))
         rethook(L, ci, nres);
     moveresults(L, cptr.ldPtr(ci), nres, wanted);
     (void 0);
-    cptr.stPtro(L, 32, cptr.ldPtro(ci, 16));
+    cptr.stPtro(L, FLD.lua_State_ci, cptr.ldPtro(ci, FLD.CallInfo_previous));
 }
 
 /** C ref: ldo.c:509 — @param {CPtr} L @param {CPtr} func @param {CInt} nret @param {CInt} mask @param {CPtr} top @returns {CPtr} */
 function prepCallInfo(L, func, nret, mask, top) {
-    let ci = cptr.stPtro(L, 32, (cptr.ldPtro(cptr.ldPtro(L, 32), 24) ? cptr.ldPtro(cptr.ldPtro(L, 32), 24) : luaE_extendCI(L)));
+    let ci = cptr.stPtro(L, FLD.lua_State_ci, (cptr.ldPtro(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_next) ? cptr.ldPtro(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_next) : luaE_extendCI(L)));
     cptr.stPtr(ci, func);
-    cptr.stI16o(ci, 60, i16(nret));
-    cptr.stI16o(ci, 62, u16(mask));
-    cptr.stPtro(ci, 8, top);
+    cptr.stI16o(ci, FLD.CallInfo_nresults, i16(nret));
+    cptr.stI16o(ci, FLD.CallInfo_callstatus, u16(mask));
+    cptr.stPtro(ci, FLD.CallInfo_top, top);
     return ci;
 }
 
@@ -475,10 +476,10 @@ function prepCallInfo(L, func, nret, mask, top) {
 function precallC(L, func, nresults, f) {
     let n;
     let ci;
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 20n) != 0)), 0n))) {
-        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, 48))))));
+    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
+        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
         {
-            if (cptr.ldI64o((cptr.ldPtro(L, 24)), 24) > 0n) {
+            if (cptr.ldI64o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_GCdebt) > 0n) {
                 void 0;
                 luaC_step(L);
                 void 0;
@@ -488,15 +489,15 @@ function precallC(L, func, nresults, f) {
         }
         ;
         luaD_growstack(L, 20, 1);
-        func = ((cptr.add((((cptr.ldPtro(L, 48)))), (t__))));
+        func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (t__))));
     } else {
         (void 0);
     }
     ;
-    cptr.stPtro(L, 32, ci = prepCallInfo(L, func, nresults, 2, cptr.add(cptr.ldPtro(L, 16), 20, 16)));
+    cptr.stPtro(L, FLD.lua_State_ci, ci = prepCallInfo(L, func, nresults, 2, cptr.add(cptr.ldPtro(L, FLD.lua_State_top), 20, 16)));
     (void 0);
-    if ((__builtin_expect(BigInt(((cptr.ldI32o(L, 192) & 1) != 0)), 0n))) {
-        let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, 16), func) / 16n))))) - 1) | 0;
+    if ((__builtin_expect(BigInt(((cptr.ldI32o(L, FLD.lua_State_hookmask) & 1) != 0)), 0n))) {
+        let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, FLD.lua_State_top), func) / 16n))))) - 1) | 0;
         luaD_hook(L, 0, -1, 1, narg);
     }
     (void 0);
@@ -510,21 +511,21 @@ function precallC(L, func, nresults, f) {
 /** C ref: ldo.c:550 — @param {CPtr} L @param {CPtr} ci @param {CPtr} func @param {CInt} narg1 @param {CInt} delta @returns {CInt} */
 export function luaD_pretailcall(L, ci, func, narg1, delta) {
     __lbl_retry: while (true) {
-        switch ((((cptr.ld1uo((((func))), 8))) & 63)) {
+        switch ((((cptr.ld1uo((((func))), FLD.TValue_tt_))) & 63)) {
             case 38:
-            return precallC(L, func, -1, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), 24));
+            return precallC(L, func, -1, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), FLD.CClosure_f));
             case 22:
             return precallC(L, func, -1, (cptr.ldPtr(((((func)))))));
             case 6:
             {
-                let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), 24);
-                let fsize = cptr.ld1uo(p, 12);
-                let nfixparams = cptr.ld1uo(p, 10);
+                let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), FLD.LClosure_p);
+                let fsize = cptr.ld1uo(p, FLD.Proto_maxstacksize);
+                let nfixparams = cptr.ld1uo(p, FLD.Proto_numparams);
                 let i;
-                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= BigInt(((fsize - delta) | 0))) != 0)), 0n))) {
-                    let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, 48))))));
+                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= BigInt(((fsize - delta) | 0))) != 0)), 0n))) {
+                    let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
                     {
-                        if (cptr.ldI64o((cptr.ldPtro(L, 24)), 24) > 0n) {
+                        if (cptr.ldI64o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_GCdebt) > 0n) {
                             void 0;
                             luaC_step(L);
                             void 0;
@@ -534,7 +535,7 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
                     }
                     ;
                     luaD_growstack(L, (fsize - delta) | 0, 1);
-                    func = ((cptr.add((((cptr.ldPtro(L, 48)))), (t__))));
+                    func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (t__))));
                 } else {
                     (void 0);
                 }
@@ -544,19 +545,19 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
                     let io1 = (((cptr.add(cptr.ldPtr(ci), i, 16))));
                     let io2 = (((cptr.add(func, i, 16))));
                     cptr.memcpy(io1, io2, 8);
-                    (cptr.st1o((io1), 8, (cptr.ld1uo(io2, 8))));
+                    (cptr.st1o((io1), FLD.TValue_tt_, (cptr.ld1uo(io2, FLD.TValue_tt_))));
                     (void L, (void 0));
                     (void 0);
                 }
                 ;
                 func = cptr.ldPtr(ci);
                 for (; narg1 <= nfixparams; narg1++)
-                    (cptr.st1o((((cptr.add(func, narg1, 16)))), 8, 0));
-                cptr.stPtro(ci, 8, cptr.add(cptr.add(func, 1, 16), fsize, 16));
+                    (cptr.st1o((((cptr.add(func, narg1, 16)))), FLD.TValue_tt_, 0));
+                cptr.stPtro(ci, FLD.CallInfo_top, cptr.add(cptr.add(func, 1, 16), fsize, 16));
                 (void 0);
-                cptr.stPtro(ci, 32, cptr.ldPtro(p, 64));
-                cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) | 32);
-                cptr.stPtro(L, 16, cptr.add(func, narg1, 16));
+                cptr.stPtro(ci, FLD.CallInfo_u, cptr.ldPtro(p, FLD.Proto_code));
+                cptr.stI16o(ci, FLD.CallInfo_callstatus, cptr.ldU16o(ci, FLD.CallInfo_callstatus) | 32);
+                cptr.stPtro(L, FLD.lua_State_top, cptr.add(func, narg1, 16));
                 return -1;
             }
             default:
@@ -573,9 +574,9 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
 /** C ref: ldo.c:595 — @param {CPtr} L @param {CPtr} func @param {CInt} nresults @returns {CPtr} */
 export function luaD_precall(L, func, nresults) {
     __lbl_retry: while (true) {
-        switch ((((cptr.ld1uo((((func))), 8))) & 63)) {
+        switch ((((cptr.ld1uo((((func))), FLD.TValue_tt_))) & 63)) {
             case 38:
-            precallC(L, func, nresults, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), 24));
+            precallC(L, func, nresults, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), FLD.CClosure_f));
             return null;
             case 22:
             precallC(L, func, nresults, (cptr.ldPtr(((((func)))))));
@@ -583,14 +584,14 @@ export function luaD_precall(L, func, nresults) {
             case 6:
             {
                 let ci;
-                let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), 24);
-                let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, 16), func) / 16n))))) - 1) | 0;
-                let nfixparams = cptr.ld1uo(p, 10);
-                let fsize = cptr.ld1uo(p, 12);
-                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= BigInt((fsize))) != 0)), 0n))) {
-                    let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, 48))))));
+                let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), FLD.LClosure_p);
+                let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, FLD.lua_State_top), func) / 16n))))) - 1) | 0;
+                let nfixparams = cptr.ld1uo(p, FLD.Proto_numparams);
+                let fsize = cptr.ld1uo(p, FLD.Proto_maxstacksize);
+                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= BigInt((fsize))) != 0)), 0n))) {
+                    let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
                     {
-                        if (cptr.ldI64o((cptr.ldPtro(L, 24)), 24) > 0n) {
+                        if (cptr.ldI64o((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_GCdebt) > 0n) {
                             void 0;
                             luaC_step(L);
                             void 0;
@@ -600,15 +601,15 @@ export function luaD_precall(L, func, nresults) {
                     }
                     ;
                     luaD_growstack(L, fsize, 1);
-                    func = ((cptr.add((((cptr.ldPtro(L, 48)))), (t__))));
+                    func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (t__))));
                 } else {
                     (void 0);
                 }
                 ;
-                cptr.stPtro(L, 32, ci = prepCallInfo(L, func, nresults, 0, cptr.add(cptr.add(func, 1, 16), fsize, 16)));
-                cptr.stPtro(ci, 32, cptr.ldPtro(p, 64));
+                cptr.stPtro(L, FLD.lua_State_ci, ci = prepCallInfo(L, func, nresults, 0, cptr.add(cptr.add(func, 1, 16), fsize, 16)));
+                cptr.stPtro(ci, FLD.CallInfo_u, cptr.ldPtro(p, FLD.Proto_code));
                 for (; narg < nfixparams; narg++)
-                    (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16)))), 8, 0));
+                    (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16)))), FLD.TValue_tt_, 0));
                 (void 0);
                 return ci;
             }
@@ -625,12 +626,12 @@ export function luaD_precall(L, func, nresults) {
 /** C ref: ldo.c:635 — @param {CPtr} L @param {CPtr} func @param {CInt} nResults @param {CUInt} inc */
 function ccall(L, func, nResults, inc) {
     let ci;
-    cptr.stI32o(L, 176, (cptr.ldI32o(L, 176) + inc) | 0);
-    if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), 176) & 65535) >>> 0) >= 200) != 0)), 0n))) {
-        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 0n) != 0)), 0n))) {
-            let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, 48))))));
+    cptr.stI32o(L, FLD.lua_State_nCcalls, (cptr.ldI32o(L, FLD.lua_State_nCcalls) + inc) | 0);
+    if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), FLD.lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)), 0n))) {
+        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, FLD.lua_State_stack_last), cptr.ldPtro(L, FLD.lua_State_top)) / 16n <= 0n) != 0)), 0n))) {
+            let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, FLD.lua_State_stack))))));
             luaD_growstack(L, 0, 1);
-            func = ((cptr.add((((cptr.ldPtro(L, 48)))), (t__))));
+            func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (t__))));
         } else {
             (void 0);
         }
@@ -638,10 +639,10 @@ function ccall(L, func, nResults, inc) {
         luaE_checkcstack(L);
     }
     if (!cptr.eq((ci = luaD_precall(L, func, nResults)), (null))) {
-        cptr.stI16o(ci, 62, 4);
+        cptr.stI16o(ci, FLD.CallInfo_callstatus, 4);
         luaV_execute(L, ci);
     }
-    cptr.stI32o(L, 176, (cptr.ldI32o(L, 176) - inc) | 0);
+    cptr.stI32o(L, FLD.lua_State_nCcalls, (cptr.ldI32o(L, FLD.lua_State_nCcalls) - inc) | 0);
 }
 
 /** C ref: ldo.c:653 — @param {CPtr} L @param {CPtr} func @param {CInt} nResults */
@@ -656,40 +657,40 @@ export function luaD_callnoyield(L, func, nResults) {
 
 /** C ref: ldo.c:682 — @param {CPtr} L @param {CPtr} ci @returns {CInt} */
 function finishpcallk(L, ci) {
-    let status = ((cptr.ldU16o((ci), 62) >> 10) & 7);
+    let status = ((cptr.ldU16o((ci), FLD.CallInfo_callstatus) >> 10) & 7);
     if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n)))
         status = 1;
     else {
-        let func = ((cptr.add((((cptr.ldPtro(L, 48)))), (cptr.ldI32o(ci, 56)))));
-        cptr.st1o(L, 11, uchar(((cptr.ldU16o(ci, 62)) & 1)));
+        let func = ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (cptr.ldI32o(ci, FLD.CallInfo_u2)))));
+        cptr.st1o(L, FLD.lua_State_allowhook, uchar(((cptr.ldU16o(ci, FLD.CallInfo_callstatus)) & 1)));
         func = luaF_close(L, func, status, 1);
         luaD_seterrorobj(L, status, func);
         luaD_shrinkstack(L);
-        ((cptr.stI16o((ci), 62, u16(((cptr.ldU16o((ci), 62) & -7169) | 0)))));
+        ((cptr.stI16o((ci), FLD.CallInfo_callstatus, u16(((cptr.ldU16o((ci), FLD.CallInfo_callstatus) & -7169) | 0)))));
     }
-    cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) & -17);
-    cptr.stI64o(L, 168, cptr.ldI64o(ci, 40));
+    cptr.stI16o(ci, FLD.CallInfo_callstatus, cptr.ldU16o(ci, FLD.CallInfo_callstatus) & -17);
+    cptr.stI64o(L, FLD.lua_State_errfunc, cptr.ldI64o(ci, FLD.CallInfo_u + 8));
     return status;
 }
 
 /** C ref: ldo.c:715 — @param {CPtr} L @param {CPtr} ci */
 function finishCcall(L, ci) {
     let n;
-    if (cptr.ldU16o(ci, 62) & 512) {
+    if (cptr.ldU16o(ci, FLD.CallInfo_callstatus) & 512) {
         (void 0);
-        n = cptr.ldI32o(ci, 56);
+        n = cptr.ldI32o(ci, FLD.CallInfo_u2);
     } else {
         let status = 1;
         (void 0);
-        if (cptr.ldU16o(ci, 62) & 16)
+        if (cptr.ldU16o(ci, FLD.CallInfo_callstatus) & 16)
             status = finishpcallk(L, ci);
         {
-            if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, 32), 8), cptr.ldPtro(L, 16)) < 0)
-                cptr.stPtro(cptr.ldPtro(L, 32), 8, cptr.ldPtro(L, 16));
+            if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_top), cptr.ldPtro(L, FLD.lua_State_top)) < 0)
+                cptr.stPtro(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_top, cptr.ldPtro(L, FLD.lua_State_top));
         }
         ;
         (void 0);
-        n = (cptr.ldPtro(ci, 32))(L, status, cptr.ldI64o(ci, 48));
+        n = (cptr.ldPtro(ci, FLD.CallInfo_u))(L, status, cptr.ldI64o(ci, FLD.CallInfo_u + 16));
         (void 0);
         (void L, (void 0));
     }
@@ -700,8 +701,8 @@ function finishCcall(L, ci) {
 function unroll(L, ud) {
     let ci;
     (void (ud));
-    while (!cptr.eq((ci = cptr.ldPtro(L, 32)), cptr.add(L, 96))) {
-        if (!(!(cptr.ldU16o((ci), 62) & 2)))
+    while (!cptr.eq((ci = cptr.ldPtro(L, FLD.lua_State_ci)), cptr.add(L, FLD.lua_State_base_ci))) {
+        if (!(!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2)))
             finishCcall(L, ci);
         else {
             luaV_finishOp(L);
@@ -713,8 +714,8 @@ function unroll(L, ud) {
 /** C ref: ldo.c:761 — @param {CPtr} L @returns {CPtr} */
 function findpcall(L) {
     let ci;
-    for (ci = cptr.ldPtro(L, 32); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, 16)) {
-        if (cptr.ldU16o(ci, 62) & 16)
+    for (ci = cptr.ldPtro(L, FLD.lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, FLD.CallInfo_previous)) {
+        if (cptr.ldU16o(ci, FLD.CallInfo_callstatus) & 16)
             return ci;
     }
     return null;
@@ -722,17 +723,17 @@ function findpcall(L) {
 
 /** C ref: ldo.c:776 — @param {CPtr} L @param {CPtr} msg @param {CInt} narg @returns {CInt} */
 function resume_error(L, msg, narg) {
-    cptr.stPtro(L, 16, cptr.sub(cptr.ldPtro(L, 16), narg, 16));
+    cptr.stPtro(L, FLD.lua_State_top, cptr.sub(cptr.ldPtro(L, FLD.lua_State_top), narg, 16));
     {
-        let io = (((cptr.ldPtro(L, 16))));
+        let io = (((cptr.ldPtro(L, FLD.lua_State_top))));
         let x_ = (luaS_new(L, msg));
         cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1o((io), 8, uchar((((cptr.ld1uo(x_, 8)) | 64)))));
+        (cptr.st1o((io), FLD.TValue_tt_, uchar((((cptr.ld1uo(x_, FLD.TString_tt)) | 64)))));
         (void L, (void 0));
     }
     ;
     {
-        cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
+        cptr.postinc(() => cptr.ldPtro(L, FLD.lua_State_top), (v) => { cptr.stPtro(L, FLD.lua_State_top, v); }, 16);
         (void L, (void 0));
     }
     ;
@@ -743,22 +744,22 @@ function resume_error(L, msg, narg) {
 /** C ref: ldo.c:792 — @param {CPtr} L @param {CPtr} ud */
 function resume(L, ud) {
     let n = cptr.ldI32((((ud))));
-    let firstArg = cptr.add(cptr.ldPtro(L, 16), -(n), 16);
-    let ci = cptr.ldPtro(L, 32);
-    if (cptr.ld1uo(L, 10) == 0)
+    let firstArg = cptr.add(cptr.ldPtro(L, FLD.lua_State_top), -(n), 16);
+    let ci = cptr.ldPtro(L, FLD.lua_State_ci);
+    if (cptr.ld1uo(L, FLD.lua_State_status) == 0)
         ccall(L, cptr.add(firstArg, -(1), 16), -1, 0);
     else {
         (void 0);
-        cptr.st1o(L, 10, 0);
-        if ((!(cptr.ldU16o((ci), 62) & 2))) {
+        cptr.st1o(L, FLD.lua_State_status, 0);
+        if ((!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2))) {
             (void 0);
-            cptr.postdec(() => cptr.ldPtro(ci, 32), (v) => { cptr.stPtro(ci, 32, v); }, 4);
-            cptr.stPtro(L, 16, firstArg);
+            cptr.postdec(() => cptr.ldPtro(ci, FLD.CallInfo_u), (v) => { cptr.stPtro(ci, FLD.CallInfo_u, v); }, 4);
+            cptr.stPtro(L, FLD.lua_State_top, firstArg);
             luaV_execute(L, ci);
         } else {
-            if (cptr.ldPtro(ci, 32) !== (null)) {
+            if (cptr.ldPtro(ci, FLD.CallInfo_u) !== (null)) {
                 (void 0);
-                n = (cptr.ldPtro(ci, 32))(L, 1, cptr.ldI64o(ci, 48));
+                n = (cptr.ldPtro(ci, FLD.CallInfo_u))(L, 1, cptr.ldI64o(ci, FLD.CallInfo_u + 16));
                 (void 0);
                 (void L, (void 0));
             }
@@ -772,8 +773,8 @@ function resume(L, ud) {
 function precover(L, status) {
     let ci;
     while (((status) > 1) && !cptr.eq((ci = findpcall(L)), (null))) {
-        cptr.stPtro(L, 32, ci);
-        ((cptr.stI16o((ci), 62, u16(((cptr.ldU16o((ci), 62) & -7169) | ((status) << 10))))));
+        cptr.stPtro(L, FLD.lua_State_ci, ci);
+        ((cptr.stI16o((ci), FLD.CallInfo_callstatus, u16(((cptr.ldU16o((ci), FLD.CallInfo_callstatus) & -7169) | ((status) << 10))))));
         status = luaD_rawrunprotected(L, unroll, (null));
     }
     return status;
@@ -784,17 +785,17 @@ export function lua_resume(L, from, nargs, nresults) {
     nargs = cptr.box(nargs);
     let status;
     (void 0);
-    if (cptr.ld1uo(L, 10) == 0) {
-        if (!cptr.eq(cptr.ldPtro(L, 32), cptr.add(L, 96)))
+    if (cptr.ld1uo(L, FLD.lua_State_status) == 0) {
+        if (!cptr.eq(cptr.ldPtro(L, FLD.lua_State_ci), cptr.add(L, FLD.lua_State_base_ci)))
             return resume_error(L, __sl2, nargs.v);
-        else if (cptr.diff(cptr.ldPtro(L, 16), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, 32)), 1, 16))) / 16n == BigInt(nargs.v))
+        else if (cptr.diff(cptr.ldPtro(L, FLD.lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, FLD.lua_State_ci)), 1, 16))) / 16n == BigInt(nargs.v))
             return resume_error(L, __sl3, nargs.v);
-    } else if (cptr.ld1uo(L, 10) != 1)
+    } else if (cptr.ld1uo(L, FLD.lua_State_status) != 1)
         return resume_error(L, __sl3, nargs.v);
-    cptr.stI32o(L, 176, (from) ? ((cptr.ldI32o((from), 176) & 65535) >>> 0) : 0);
-    if (((cptr.ldI32o((L), 176) & 65535) >>> 0) >= 200)
+    cptr.stI32o(L, FLD.lua_State_nCcalls, (from) ? ((cptr.ldI32o((from), FLD.lua_State_nCcalls) & 65535) >>> 0) : 0);
+    if (((cptr.ldI32o((L), FLD.lua_State_nCcalls) & 65535) >>> 0) >= 200)
         return resume_error(L, __sl4, nargs.v);
-    (cptr.stI32o(L, 176, cptr.ldI32o(L, 176) + 1)) - (1);
+    (cptr.stI32o(L, FLD.lua_State_nCcalls, cptr.ldI32o(L, FLD.lua_State_nCcalls) + 1)) - (1);
     (void L);
     (void L, (void 0));
     status = luaD_rawrunprotected(L, resume, nargs);
@@ -802,18 +803,18 @@ export function lua_resume(L, from, nargs, nresults) {
     if ((__builtin_expect(BigInt(((!((status) > 1)) != 0)), 1n)))
         (void 0);
     else {
-        cptr.st1o(L, 10, (uchar(((status)))));
-        luaD_seterrorobj(L, status, cptr.ldPtro(L, 16));
-        cptr.stPtro(cptr.ldPtro(L, 32), 8, cptr.ldPtro(L, 16));
+        cptr.st1o(L, FLD.lua_State_status, (uchar(((status)))));
+        luaD_seterrorobj(L, status, cptr.ldPtro(L, FLD.lua_State_top));
+        cptr.stPtro(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_top, cptr.ldPtro(L, FLD.lua_State_top));
     }
-    cptr.stI32(nresults, (status == 1) ? cptr.ldI32o(cptr.ldPtro(L, 32), 56) : (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, 16), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, 32)), 1, 16))) / 16n))))));
+    cptr.stI32(nresults, (status == 1) ? cptr.ldI32o(cptr.ldPtro(L, FLD.lua_State_ci), FLD.CallInfo_u2) : (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, FLD.lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, FLD.lua_State_ci)), 1, 16))) / 16n))))));
     (void 0);
     return status;
 }
 
 /** C ref: ldo.c:877 — @param {CPtr} L @returns {CInt} */
 export function lua_isyieldable(L) {
-    return (((cptr.ldI32o((L), 176) & 4294901760) >>> 0) == 0);
+    return (((cptr.ldI32o((L), FLD.lua_State_nCcalls) & 4294901760) >>> 0) == 0);
 }
 
 /** C ref: ldo.c:882 — @param {CPtr} L @param {CInt} nresults @param {CLongLong} ctx @param {CPtr} k @returns {CInt} */
@@ -821,23 +822,23 @@ export function lua_yieldk(L, nresults, ctx, k) {
     let ci;
     (void L);
     (void 0);
-    ci = cptr.ldPtro(L, 32);
+    ci = cptr.ldPtro(L, FLD.lua_State_ci);
     (void L, (void 0));
-    if ((__builtin_expect(BigInt(((!(((cptr.ldI32o((L), 176) & 4294901760) >>> 0) == 0)) != 0)), 0n))) {
-        if (!cptr.eq(L, cptr.ldPtro((cptr.ldPtro(L, 24)), 264)))
+    if ((__builtin_expect(BigInt(((!(((cptr.ldI32o((L), FLD.lua_State_nCcalls) & 4294901760) >>> 0) == 0)) != 0)), 0n))) {
+        if (!cptr.eq(L, cptr.ldPtro((cptr.ldPtro(L, FLD.lua_State_l_G)), FLD.global_State_mainthread)))
             luaG_runerror(L, __sl5);
         else
             luaG_runerror(L, __sl6);
     }
-    cptr.st1o(L, 10, 1);
-    cptr.stI32o(ci, 56, nresults);
-    if ((!(cptr.ldU16o((ci), 62) & 2))) {
+    cptr.st1o(L, FLD.lua_State_status, 1);
+    cptr.stI32o(ci, FLD.CallInfo_u2, nresults);
+    if ((!(cptr.ldU16o((ci), FLD.CallInfo_callstatus) & 2))) {
         (void 0);
         (void L, (void 0));
         (void L, (void 0));
     } else {
-        if ((cptr.stPtro(ci, 32, k)) !== (null))
-            cptr.stI64o(ci, 48, ctx);
+        if ((cptr.stPtro(ci, FLD.CallInfo_u, k)) !== (null))
+            cptr.stI64o(ci, FLD.CallInfo_u + 16, ctx);
         luaD_throw(L, 1);
     }
     (void 0);
@@ -850,23 +851,23 @@ export function lua_yieldk(L, nresults, ctx, k) {
 /** C ref: ldo.c:925 — @param {CPtr} L @param {CPtr} ud */
 function closepaux(L, ud) {
     let pcl = ((ud));
-    luaF_close(L, cptr.ldPtr(pcl), cptr.ldI32o(pcl, 8), 0);
+    luaF_close(L, cptr.ldPtr(pcl), cptr.ldI32o(pcl, FLD.CloseP_status), 0);
 }
 
 /** C ref: ldo.c:935 — @param {CPtr} L @param {CLongLong} level @param {CInt} status @returns {CInt} */
 export function luaD_closeprotected(L, level, status) {
-    let old_ci = cptr.ldPtro(L, 32);
-    let old_allowhooks = cptr.ld1uo(L, 11);
+    let old_ci = cptr.ldPtro(L, FLD.lua_State_ci);
+    let old_allowhooks = cptr.ld1uo(L, FLD.lua_State_allowhook);
     for (; ; ) {
         let pcl = cptr.alloc(16);
-        cptr.stPtr(pcl, ((cptr.add((((cptr.ldPtro(L, 48)))), (level)))));
-        cptr.stI32o(pcl, 8, status);
+        cptr.stPtr(pcl, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (level)))));
+        cptr.stI32o(pcl, FLD.CloseP_status, status);
         status = luaD_rawrunprotected(L, closepaux, pcl);
         if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n)))
-            return cptr.ldI32o(pcl, 8);
+            return cptr.ldI32o(pcl, FLD.CloseP_status);
         else {
-            cptr.stPtro(L, 32, old_ci);
-            cptr.st1o(L, 11, old_allowhooks);
+            cptr.stPtro(L, FLD.lua_State_ci, old_ci);
+            cptr.st1o(L, FLD.lua_State_allowhook, old_allowhooks);
         }
     }
 }
@@ -874,19 +875,19 @@ export function luaD_closeprotected(L, level, status) {
 /** C ref: ldo.c:957 — @param {CPtr} L @param {CPtr} func @param {CPtr} u @param {CLongLong} old_top @param {CLongLong} ef @returns {CInt} */
 export function luaD_pcall(L, func, u, old_top, ef) {
     let status;
-    let old_ci = cptr.ldPtro(L, 32);
-    let old_allowhooks = cptr.ld1uo(L, 11);
-    let old_errfunc = cptr.ldI64o(L, 168);
-    cptr.stI64o(L, 168, ef);
+    let old_ci = cptr.ldPtro(L, FLD.lua_State_ci);
+    let old_allowhooks = cptr.ld1uo(L, FLD.lua_State_allowhook);
+    let old_errfunc = cptr.ldI64o(L, FLD.lua_State_errfunc);
+    cptr.stI64o(L, FLD.lua_State_errfunc, ef);
     status = luaD_rawrunprotected(L, func, u);
     if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
-        cptr.stPtro(L, 32, old_ci);
-        cptr.st1o(L, 11, old_allowhooks);
+        cptr.stPtro(L, FLD.lua_State_ci, old_ci);
+        cptr.st1o(L, FLD.lua_State_allowhook, old_allowhooks);
         status = luaD_closeprotected(L, old_top, status);
-        luaD_seterrorobj(L, status, ((cptr.add((((cptr.ldPtro(L, 48)))), (old_top)))));
+        luaD_seterrorobj(L, status, ((cptr.add((((cptr.ldPtro(L, FLD.lua_State_stack)))), (old_top)))));
         luaD_shrinkstack(L);
     }
-    cptr.stI64o(L, 168, old_errfunc);
+    cptr.stI64o(L, FLD.lua_State_errfunc, old_errfunc);
     return status;
 }
 
@@ -904,13 +905,13 @@ function checkmode(L, mode, x) {
 function f_parser(L, ud) {
     let cl;
     let p = ((ud));
-    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), 8), (v) => { cptr.stPtro((cptr.ldPtr(p)), 8, v); })))))) : luaZ_fill(cptr.ldPtr(p)));
+    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), FLD.ZIO_p), (v) => { cptr.stPtro((cptr.ldPtr(p)), FLD.ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtr(p)));
     if (c == cptr.ld1so(__sl8, 0, 1)) {
-        checkmode(L, cptr.ldPtro(p, 80), __sl9);
-        cl = luaU_undump(L, cptr.ldPtr(p), cptr.ldPtro(p, 88));
+        checkmode(L, cptr.ldPtro(p, FLD.SParser_mode), __sl9);
+        cl = luaU_undump(L, cptr.ldPtr(p), cptr.ldPtro(p, FLD.SParser_name));
     } else {
-        checkmode(L, cptr.ldPtro(p, 80), __sl10);
-        cl = luaY_parser(L, cptr.ldPtr(p), cptr.add(p, 8), cptr.add(p, 32), cptr.ldPtro(p, 88), c);
+        checkmode(L, cptr.ldPtro(p, FLD.SParser_mode), __sl10);
+        cl = luaY_parser(L, cptr.ldPtr(p), cptr.add(p, FLD.SParser_buff), cptr.add(p, FLD.SParser_dyd), cptr.ldPtro(p, FLD.SParser_name), c);
     }
     (void 0);
     luaF_initupvals(L, cl);
@@ -920,22 +921,22 @@ function f_parser(L, ud) {
 export function luaD_protectedparser(L, z, name, mode) {
     let p = cptr.alloc(96);
     let status;
-    (cptr.stI32o((L), 176, (cptr.ldI32o((L), 176) + 65536) | 0));
+    (cptr.stI32o((L), FLD.lua_State_nCcalls, (cptr.ldI32o((L), FLD.lua_State_nCcalls) + 65536) | 0));
     cptr.stPtr(p, z);
-    cptr.stPtro(p, 88, name);
-    cptr.stPtro(p, 80, mode);
-    cptr.stPtro(p, 32, null);
-    cptr.stI32o(p, 44, 0);
-    cptr.stPtro(p, 48, null);
-    cptr.stI32o(p, 60, 0);
-    cptr.stPtro(p, 64, null);
-    cptr.stI32o(p, 76, 0);
-    (cptr.stPtr((cptr.add(p, 8)), null), cptr.stU64o((cptr.add(p, 8)), 16, 0n));
-    status = luaD_pcall(L, f_parser, p, (cptr.diff((((cptr.ldPtro(L, 16)))), (((cptr.ldPtro(L, 48)))))), cptr.ldI64o(L, 168));
-    (cptr.stPtr((cptr.add(p, 8)), (((luaM_saferealloc_(L, (cptr.ldPtr((cptr.add(p, 8)))), BigInt.asUintN(64, (cptr.ldU64o((cptr.add(p, 8)), 16)) * 1n), 0n))))), cptr.stU64o((cptr.add(p, 8)), 16, 0n));
-    luaM_free_(L, (cptr.ldPtro(p, 32)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, 44)))) * 24n));
-    luaM_free_(L, (cptr.ldPtro(p, 48)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, 60)))) * 24n));
-    luaM_free_(L, (cptr.ldPtro(p, 64)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, 76)))) * 24n));
-    (cptr.stI32o((L), 176, (cptr.ldI32o((L), 176) - 65536) | 0));
+    cptr.stPtro(p, FLD.SParser_name, name);
+    cptr.stPtro(p, FLD.SParser_mode, mode);
+    cptr.stPtro(p, FLD.SParser_dyd, null);
+    cptr.stI32o(p, FLD.SParser_dyd + 12, 0);
+    cptr.stPtro(p, FLD.SParser_dyd + FLD.Dyndata_gt, null);
+    cptr.stI32o(p, FLD.SParser_dyd + FLD.Dyndata_gt + FLD.Labellist_size, 0);
+    cptr.stPtro(p, FLD.SParser_dyd + FLD.Dyndata_label, null);
+    cptr.stI32o(p, FLD.SParser_dyd + FLD.Dyndata_label + FLD.Labellist_size, 0);
+    (cptr.stPtr((cptr.add(p, FLD.SParser_buff)), null), cptr.stU64o((cptr.add(p, FLD.SParser_buff)), FLD.Mbuffer_buffsize, 0n));
+    status = luaD_pcall(L, f_parser, p, (cptr.diff((((cptr.ldPtro(L, FLD.lua_State_top)))), (((cptr.ldPtro(L, FLD.lua_State_stack)))))), cptr.ldI64o(L, FLD.lua_State_errfunc));
+    (cptr.stPtr((cptr.add(p, FLD.SParser_buff)), (((luaM_saferealloc_(L, (cptr.ldPtr((cptr.add(p, FLD.SParser_buff)))), BigInt.asUintN(64, (cptr.ldU64o((cptr.add(p, FLD.SParser_buff)), FLD.Mbuffer_buffsize)) * 1n), 0n))))), cptr.stU64o((cptr.add(p, FLD.SParser_buff)), FLD.Mbuffer_buffsize, 0n));
+    luaM_free_(L, (cptr.ldPtro(p, FLD.SParser_dyd)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, FLD.SParser_dyd + 12)))) * 24n));
+    luaM_free_(L, (cptr.ldPtro(p, FLD.SParser_dyd + FLD.Dyndata_gt)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, FLD.SParser_dyd + FLD.Dyndata_gt + FLD.Labellist_size)))) * 24n));
+    luaM_free_(L, (cptr.ldPtro(p, FLD.SParser_dyd + FLD.Dyndata_label)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, FLD.SParser_dyd + FLD.Dyndata_label + FLD.Labellist_size)))) * 24n));
+    (cptr.stI32o((L), FLD.lua_State_nCcalls, (cptr.ldI32o((L), FLD.lua_State_nCcalls) - 65536) | 0));
     return status;
 }

@@ -11,6 +11,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { obj_descr, objects } from './objects.js';
 import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { gu, gy, svb, svp, u } from './decl.js';
@@ -87,9 +88,9 @@ const __sl54 = cptr.lit("cloth");
 
 /** C ref: write.c:14 — @param {CPtr} otmp @returns {CInt} */
 function* cost(otmp) {
-    if (cptr.ld1so(otmp, 49) == NHC.SPBOOK_CLASS)
-        return (Math.imul(10, cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 85)));
-    switch (cptr.ldI16o(otmp, 32)) {
+    if (cptr.ld1so(otmp, FLD.obj_oclass) == NHC.SPBOOK_CLASS)
+        return (Math.imul(10, cptr.ld1so2(objects, cptr.ldI16o(otmp, FLD.obj_otyp), 120, FLD.objclass_oc_oc2)));
+    switch (cptr.ldI16o(otmp, FLD.obj_otyp)) {
         case NHC.SCR_MAIL:
         return 2;
         case NHC.SCR_LIGHT:
@@ -129,9 +130,9 @@ function* cost(otmp) {
 
 /** C ref: write.c:61 — @param {CPtr} obj @returns {CInt} */
 function write_ok(obj) {
-    if (!obj || (cptr.ld1so(obj, 49) != NHC.SCROLL_CLASS && cptr.ld1so(obj, 49) != NHC.SPBOOK_CLASS))
+    if (!obj || (cptr.ld1so(obj, FLD.obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(obj, FLD.obj_oclass) != NHC.SPBOOK_CLASS))
         return NHC.GETOBJ_EXCLUDE;
-    if (cptr.ldI16o(obj, 32) == NHC.SCR_BLANK_PAPER || cptr.ldI16o(obj, 32) == NHC.SPE_BLANK_PAPER)
+    if (cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SCR_BLANK_PAPER || cptr.ldI16o(obj, FLD.obj_otyp) == NHC.SPE_BLANK_PAPER)
         return NHC.GETOBJ_SUGGEST;
     return NHC.GETOBJ_DOWNPLAY;
 }
@@ -157,10 +158,10 @@ export function* dowrite(pen) {
     let typeword;
     let spell_knowledge;
     __lbl_found: {
-        if (((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 8192n) != 0n)) {
+        if (((cptr.ldU64o((cptr.ldPtro(gy, FLD.instance_globals_y_youmonst + FLD.monst_data)), FLD.permonst_mflags1) & 8192n) != 0n)) {
             (yield* You(__sl1));
             return NHM.ECMD_OK;
-        } else if (cptr.ldI64o2(u, NHC.GLIB, 24, 128)) {
+        } else if (cptr.ldI64o2(u, NHC.GLIB, 24, FLD.you_uprops + FLD.prop_intrinsic)) {
             (yield* pline(__sl2, (yield* Tobjnam(pen, __sl3)), (yield* fingers_or_gloves(0))));
             (yield* dropx(pen));
             return NHM.ECMD_TIME;
@@ -168,18 +169,18 @@ export function* dowrite(pen) {
         paper = (yield* getobj(__sl4, write_ok, NHM.GETOBJ_NOFLAGS));
         if (!paper)
             return NHM.ECMD_CANCEL;
-        typeword = (cptr.ldI16o(paper, 32) == NHC.SPE_NOVEL) ? __sl5 : ((cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) ? __sl6 : __sl7);
-        if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
-            if (!(cptr.ldI32o(paper, 84) & 1)) {
+        typeword = (cptr.ldI16o(paper, FLD.obj_otyp) == NHC.SPE_NOVEL) ? __sl5 : ((cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) ? __sl6 : __sl7);
+        if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked))) {
+            if (!(cptr.ldI32o(paper, FLD.obj_dknown) & 1)) {
                 (yield* You(__sl8, typeword));
                 return NHM.ECMD_OK;
-            } else if (cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) {
+            } else if (cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
                 (yield* pline(__sl9, upstart((yield* ysimple_name(pen)))));
                 return NHM.ECMD_OK;
             }
         }
         (yield* observe_object(paper));
-        if (cptr.ldI16o(paper, 32) != NHC.SCR_BLANK_PAPER && cptr.ldI16o(paper, 32) != NHC.SPE_BLANK_PAPER) {
+        if (cptr.ldI16o(paper, FLD.obj_otyp) != NHC.SCR_BLANK_PAPER && cptr.ldI16o(paper, FLD.obj_otyp) != NHC.SPE_BLANK_PAPER) {
             (yield* pline(__sl10, typeword));
             (yield* exercise(NHC.A_WIS, 0));
             return NHM.ECMD_TIME;
@@ -203,26 +204,26 @@ export function* dowrite(pen) {
         }
         deferred = (real = 0);
         deferralchance = 0;
-        first = cptr.ldI32o2(svb, cptr.ld1so(paper, 49), 4, 16);
-        last = (cptr.ldI32o2(svb, (cptr.ld1so(paper, 49) + 1) | 0, 4, 16) - 1) | 0;
+        first = cptr.ldI32o2(svb, cptr.ld1so(paper, FLD.obj_oclass), 4, FLD.instance_globals_saved_b_bases);
+        last = (cptr.ldI32o2(svb, (cptr.ld1so(paper, FLD.obj_oclass) + 1) | 0, 4, FLD.instance_globals_saved_b_bases) - 1) | 0;
         for (i = first; i <= last; i++) {
             if (!(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)))
                 continue;
             if (!(yield* strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))), (nm), -1))) {
-                if ((cptr.ldI32o2(objects, i, 120, 16) & 1) | 0 || cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) {
+                if ((cptr.ldI32o2(objects, i, 120, FLD.objclass_oc_name_known) & 1) | 0 || cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
                     break __lbl_found;
                 } else {
                     real = (deferred = i);
                     break;
                 }
             }
-            if (!(yield* strncmpi(((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, 120)), 2), 16, 8))), (nm), -1))) {
+            if (!(yield* strncmpi(((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr))), (nm), -1))) {
                 by_descr = 1;
                 break __lbl_found;
             }
         }
         for (i = first; i <= last; i++) {
-            if (cptr.ldPtro2(objects, i, 120, 8) && !(yield* strncmpi((cptr.ldPtro2(objects, i, 120, 8)), (nm), -1)) && !(real && (cptr.ldI32o2(objects, i, 120, 16) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl17, 193, __sl18), rn2(++deferralchance)) : rn2(++deferralchance))) {
+            if (cptr.ldPtro2(objects, i, 120, FLD.objclass_oc_uname) && !(yield* strncmpi((cptr.ldPtro2(objects, i, 120, FLD.objclass_oc_uname)), (nm), -1)) && !(real && (cptr.ldI32o2(objects, i, 120, FLD.objclass_oc_name_known) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl17, 193, __sl18), rn2(++deferralchance)) : rn2(++deferralchance))) {
                 deferred = i;
                 by_descr = 1;
             }
@@ -242,9 +243,9 @@ export function* dowrite(pen) {
         let fanfic = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         let tearup = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
         if (!fanfic) {
-            (yield* You(__sl22, !tearup ? __sl23 : __sl24, !(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) ? __sl25 : __sl26));
+            (yield* You(__sl22, !tearup ? __sl23 : __sl24, !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl25 : __sl26));
         } else {
-            (yield* You(__sl27, !tearup ? __sl28 : __sl29, !(cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) ? __sl30 : __sl31));
+            (yield* You(__sl27, !tearup ? __sl28 : __sl29, !(cptr.ldI64o2(u, NHC.HALLUC, 24, FLD.you_uprops + FLD.prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, FLD.you_uprops))) ? __sl30 : __sl31));
         }
         if (!tearup) {
             (yield* You(__sl32));
@@ -256,17 +257,17 @@ export function* dowrite(pen) {
     } else if (i == NHC.SPE_BOOK_OF_THE_DEAD) {
         (yield* pline(__sl34));
         return NHM.ECMD_TIME;
-    } else if (by_descr && cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS && !(cptr.ldI32o2(objects, i, 120, 16) & 1)) {
+    } else if (by_descr && cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS && !(cptr.ldI32o2(objects, i, 120, FLD.objclass_oc_name_known) & 1)) {
         (yield* pline(__sl35));
         return NHM.ECMD_TIME;
     }
-    if (!((cptr.stI64o(u, 2016, cptr.ldI64o(u, 2016) + 1n)) - (1n)))
+    if (!((cptr.stI64o(u, FLD.you_uconduct + FLD.u_conduct_literate, cptr.ldI64o(u, FLD.you_uconduct + FLD.u_conduct_literate) + 1n)) - (1n)))
         (yield* livelog_printf(32n, __sl36, (yield* an(typeword))));
     new_obj = (yield* mksobj(i, 0, 0));
-    cptr.stI32o(new_obj, 88, ((cptr.ldI32o(paper, 88) & 1) | 0 && (cptr.ldI32o(pen, 88) & 1) | 0 ? 1 : 0) >>> 0);
+    cptr.stI32o(new_obj, FLD.obj_bknown, ((cptr.ldI32o(paper, FLD.obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, FLD.obj_bknown) & 1) | 0 ? 1 : 0) >>> 0);
     (yield* check_unpaid(pen));
     basecost = (yield* cost(new_obj));
-    if (cptr.ld1so(pen, 48) < ((basecost / 2) | 0)) {
+    if (cptr.ld1so(pen, FLD.obj_spe) < ((basecost / 2) | 0)) {
         (yield* Your(__sl37));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
@@ -274,10 +275,10 @@ export function* dowrite(pen) {
     actualcost = (((rng_log_enabled() ? (rng_log_set_caller(__sl17, 265, __sl18), rn2((basecost / 2) | 0)) : rn2((basecost / 2) | 0)) + ((basecost / 2) | 0)) | 0);
     curseval = (bcsign(pen) + bcsign(paper)) | 0;
     (yield* exercise(NHC.A_WIS, 1));
-    if (cptr.ld1so(pen, 48) < actualcost) {
-        cptr.st1o(pen, 48, 0);
+    if (cptr.ld1so(pen, FLD.obj_spe) < actualcost) {
+        cptr.st1o(pen, FLD.obj_spe, 0);
         (yield* Your(__sl38));
-        if (cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) {
+        if (cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
             (yield* pline_The(__sl39));
             (yield* update_inventory());
         } else {
@@ -287,21 +288,21 @@ export function* dowrite(pen) {
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
-    cptr.st1o(pen, 48, cptr.ld1so(pen, 48) - actualcost);
-    if (cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) {
-        spell_knowledge = known_spell(cptr.ldI16o(new_obj, 32));
+    cptr.st1o(pen, FLD.obj_spe, cptr.ld1so(pen, FLD.obj_spe) - actualcost);
+    if (cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
+        spell_knowledge = known_spell(cptr.ldI16o(new_obj, FLD.obj_otyp));
     } else {
         spell_knowledge = NHC.spe_Unknown;
     }
-    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, 32), 120, 16) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, 32), 120, 28) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16o(gu, 216) == NHC.PM_WIZARD) && cptr.ld1so(paper, 49) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) : rnl((((cptr.ldI16o(gu, 216) == NHC.PM_WIZARD) && cptr.ld1so(paper, 49) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15))) {
+    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, FLD.obj_otyp), 120, FLD.objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, FLD.obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) : rnl((((cptr.ldI16o(gu, FLD.instance_globals_u_urole + FLD.Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, FLD.obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15))) {
         (yield* You(__sl41, by_descr ? __sl42 : __sl43));
-        if (cptr.ld1so(paper, 49) == NHC.SPBOOK_CLASS) {
+        if (cptr.ld1so(paper, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
             (yield* You(__sl44));
             (yield* update_inventory());
         } else {
             if (by_descr) {
-                void cptr.strcpy(cptr.decay(namebuf), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(new_obj, 32), 120)), 2), 16, 8)));
-                wipeout_text(cptr.decay(namebuf), (((36 - cptr.ldI32o(u, 48)) | 0) / 6) | 0, 0);
+                void cptr.strcpy(cptr.decay(namebuf), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(new_obj, FLD.obj_otyp), 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr)));
+                wipeout_text(cptr.decay(namebuf), (((36 - cptr.ldI32o(u, FLD.you_ulevel)) | 0) / 6) | 0, 0);
             } else
                 void cptr.sprintf(cptr.decay(namebuf), __sl45, svp);
             (yield* You(__sl46, cptr.decay(namebuf)));
@@ -310,22 +311,22 @@ export function* dowrite(pen) {
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3))) {
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, FLD.you_uprops + FLD.prop_blocked)) && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3))) {
         (yield* You(__sl47));
         (yield* useup(paper));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
     (yield* useup(paper));
-    if (cptr.ld1so(new_obj, 49) == NHC.SPBOOK_CLASS) {
-        (yield* pline_The(__sl48, (yield* new_book_description(cptr.ldI16o(new_obj, 32), cptr.decay(namebuf)))));
+    if (cptr.ld1so(new_obj, FLD.obj_oclass) == NHC.SPBOOK_CLASS) {
+        (yield* pline_The(__sl48, (yield* new_book_description(cptr.ldI16o(new_obj, FLD.obj_otyp), cptr.decay(namebuf)))));
     }
-    cptr.stI32o(new_obj, 60, (curseval > 0) >>> 0);
-    cptr.stI32o(new_obj, 56, (curseval < 0) >>> 0);
-    if (cptr.ldI16o(new_obj, 32) == NHC.SCR_MAIL)
-        cptr.st1o(new_obj, 48, 2);
-    cptr.stI32o(new_obj, 84, 0);
-    if ((cptr.ldI32o2(objects, cptr.ldI16o(new_obj, 32), 120, 16) & 1) | 0 || by_descr)
+    cptr.stI32o(new_obj, FLD.obj_blessed, (curseval > 0) >>> 0);
+    cptr.stI32o(new_obj, FLD.obj_cursed, (curseval < 0) >>> 0);
+    if (cptr.ldI16o(new_obj, FLD.obj_otyp) == NHC.SCR_MAIL)
+        cptr.st1o(new_obj, FLD.obj_spe, 2);
+    cptr.stI32o(new_obj, FLD.obj_dknown, 0);
+    if ((cptr.ldI32o2(objects, cptr.ldI16o(new_obj, FLD.obj_otyp), 120, FLD.objclass_oc_name_known) & 1) | 0 || by_descr)
         (yield* observe_object(new_obj));
     new_obj = (yield* hold_another_object(new_obj, __sl49, (yield* The((yield* aobjnam(new_obj, __sl3)))), null));
     (void (new_obj));
@@ -342,7 +343,7 @@ cptr.stPtro(__static_new_book_description_compositions, 24, null); /** C ref: wr
 function* new_book_description(booktype, outbuf) {
     let descr;
     let comp_p;
-    descr = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, booktype, 120)), 2), 16, 8));
+    descr = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, booktype, 120)), FLD.objclass_oc_descr_idx), 16, FLD.objdescr_oc_descr));
     for (comp_p = __static_new_book_description_compositions; cptr.ldPtr(comp_p); comp_p = cptr.add(comp_p, 1, 8))
         if (!(yield* strncmpi((descr), (cptr.ldPtr(comp_p)), -1)))
             break;

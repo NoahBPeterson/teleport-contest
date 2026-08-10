@@ -5,6 +5,7 @@
 
 import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checklstring, luaL_checkstack, luaL_checkversion_, luaL_error, luaL_optinteger, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 import { lua_createtable, lua_gettop, lua_pushcclosure, lua_pushfstring, lua_pushinteger, lua_pushlstring, lua_pushnil, lua_pushvalue, lua_setfield, lua_toboolean, lua_tointegerx } from './lapi.js';
 
@@ -237,19 +238,19 @@ function iter_codes(L) {
 /** C ref: lutf8lib.c:273 — luaL_Reg[7] */
 const funcs = cptr.alloc(7 * 16);
 cptr.stPtro(funcs, 0, __sl9);
-cptr.stPtro(funcs, 8, byteoffset);
+cptr.stPtro(funcs, 0 + FLD.luaL_Reg_func, byteoffset);
 cptr.stPtro(funcs, 16, __sl10);
-cptr.stPtro(funcs, 24, codepoint);
+cptr.stPtro(funcs, 16 + FLD.luaL_Reg_func, codepoint);
 cptr.stPtro(funcs, 32, __sl11);
-cptr.stPtro(funcs, 40, utfchar);
+cptr.stPtro(funcs, 32 + FLD.luaL_Reg_func, utfchar);
 cptr.stPtro(funcs, 48, __sl12);
-cptr.stPtro(funcs, 56, utflen);
+cptr.stPtro(funcs, 48 + FLD.luaL_Reg_func, utflen);
 cptr.stPtro(funcs, 64, __sl13);
-cptr.stPtro(funcs, 72, iter_codes);
+cptr.stPtro(funcs, 64 + FLD.luaL_Reg_func, iter_codes);
 cptr.stPtro(funcs, 80, __sl14);
-cptr.stPtro(funcs, 88, null);
+cptr.stPtro(funcs, 80 + FLD.luaL_Reg_func, null);
 cptr.stPtro(funcs, 96, null);
-cptr.stPtro(funcs, 104, null);
+cptr.stPtro(funcs, 96 + FLD.luaL_Reg_func, null);
 
 /** C ref: lutf8lib.c:285 — @param {CPtr} L @returns {CInt} */
 export function luaopen_utf8(L) {

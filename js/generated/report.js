@@ -6,6 +6,7 @@
 import { u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { windowprocs } from './windows.js';
 import { ARGV0, gc, gs } from './decl.js';
 import { sysopt } from './sys.js';
@@ -110,7 +111,7 @@ export function crashreport_init(argc, argv) {
 /** C ref: report.c:189 */
 export function crashreport_bidshow() {
     {
-        (cptr.ldPtro(windowprocs, 240))(cptr.decay(bid));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(bid));
     }
 }
 
@@ -173,17 +174,17 @@ let mark = null;
 /** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
 export function submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32o(gc, 424) < 0 || cptr.ldI32o(gc, 424) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, 424)) ? 8192 : (cptr.ldI32o(gc, 424)));
+        urem.v = (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, FLD.instance_globals_c_crash_urlmax)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;
-        if (!cptr.ldPtro(sysopt, 144))
+        if (!cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))
             return 0;
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, 144))));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, 144), BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl), BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -225,7 +226,7 @@ export function submit_web_report(cos, msg, why) {
         if (swr_add_uricoded(getversionstring(cptr.decay(temp2), 200n), uend, urem, mark))
             break __lbl_full;
         ;
-        if (cptr.ldPtro(gc, 416)) {
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_name)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl7)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -235,11 +236,11 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if (swr_add_uricoded(cptr.ldPtro(gc, 416), uend, urem, mark))
+            if (swr_add_uricoded(cptr.ldPtro(gc, FLD.instance_globals_c_crash_name), uend, urem, mark))
                 break __lbl_full;
             ;
         }
-        if (cptr.ldPtro(gc, 408)) {
+        if (cptr.ldPtro(gc, FLD.instance_globals_c_crash_email)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl8)));
             mark = uend.v;
             if (utmp >= urem.v)
@@ -249,7 +250,7 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if (swr_add_uricoded(cptr.ldPtro(gc, 408), uend, urem, mark))
+            if (swr_add_uricoded(cptr.ldPtro(gc, FLD.instance_globals_c_crash_email), uend, urem, mark))
                 break __lbl_full;
             ;
         }
@@ -343,7 +344,7 @@ export function submit_web_report(cos, msg, why) {
         let err = new Uint8Array(400);
         void execve(__sl17, xargv, environ);
         void cptr.sprintf(cptr.decay(err), __sl18, 372, strerror((cptr.ldI32(__error()))));
-        (cptr.ldPtro(windowprocs, 240))(cptr.decay(err));
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(cptr.decay(err));
         exit(1);
     } else {
         let status = cptr.box(0);
@@ -359,7 +360,7 @@ export function submit_web_report(cos, msg, why) {
 /** C ref: report.c:461 @returns {CInt} */
 export function dobugreport() {
     if (!submit_web_report(2, null, __sl19)) {
-        pline(__sl20, (cptr.ldPtro(sysopt, 144) && cptr.ld1s(cptr.ldPtro(sysopt, 144))) ? cptr.ldPtro(sysopt, 144) : __sl21);
+        pline(__sl20, (cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, FLD.sysopt_s_crashreporturl) : __sl21);
     }
     return NHM.ECMD_OK;
 }
@@ -371,7 +372,7 @@ export function NH_panictrace_libc() {
     let x;
     let info;
     let buf = new Uint8Array(256);
-    (cptr.ldPtro(windowprocs, 240))(__sl22);
+    (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl22);
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
@@ -385,8 +386,8 @@ export function NH_panictrace_libc() {
 
 /** C ref: report.c:529 @returns {CInt} */
 export function NH_panictrace_gdb() {
-    let gdbpath = cptr.ldPtro(sysopt, 128);
-    let greppath = cptr.ldPtro(sysopt, 136);
+    let gdbpath = cptr.ldPtro(sysopt, FLD.sysopt_s_gdbpath);
+    let greppath = cptr.ldPtro(sysopt, FLD.sysopt_s_greppath);
     let buf = new Uint8Array(256);
     let gdb;
     if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0)
@@ -396,7 +397,7 @@ export function NH_panictrace_gdb() {
     nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __sl26);
     if (gdb) {
-        (cptr.ldPtro(windowprocs, 240))(__sl22);
+        (cptr.ldPtro(windowprocs, FLD.window_procs_win_raw_print))(__sl22);
         void fprintf(gdb, __sl27);
         void fflush(gdb);
         sleep(4);
@@ -413,13 +414,13 @@ export function get_saved_pline(lineno) {
     let limit = NHM.DUMPLOG_MSG_COUNT;
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
-    p = u32mod(((cptr.ldI32o(gs, 980) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
+    p = u32mod(((cptr.ldI32o(gs, FLD.instance_globals_s_saved_pline_index) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
     while (limit--) {
-        if (cptr.ldPtro2(gs, p, 8, 984)) {
+        if (cptr.ldPtro2(gs, p, 8, FLD.instance_globals_s_saved_plines)) {
             if (lineno--) {
                 p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
-                return cptr.ldPtro2(gs, p, 8, 984);
+                return cptr.ldPtro2(gs, p, 8, FLD.instance_globals_s_saved_plines);
             }
         }
     }

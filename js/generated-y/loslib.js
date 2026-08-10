@@ -8,6 +8,7 @@
 // Transpiler: tools/c2js c2js emit v1+batch
 
 import * as cptr from '../cptr.js';
+import * as FLD from './nhfield.js';
 import { luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkversion_, luaL_error, luaL_execresult, luaL_fileresult, luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
 import { lua_createtable, lua_getfield, lua_pushboolean, lua_pushfstring, lua_pushinteger, lua_pushnumber, lua_pushstring, lua_setfield, lua_settop, lua_toboolean, lua_tointegerx, lua_type } from './lapi.js';
 import { lua_close } from './lstate.js';
@@ -126,15 +127,15 @@ function* setboolfield(L, key, value) {
 
 /** C ref: loslib.c:232 — @param {CPtr} L @param {CPtr} stm */
 function* setallfields(L, stm) {
-    (yield* setfield(L, __sl2, cptr.ldI32o(stm, 20), 1900));
-    (yield* setfield(L, __sl3, cptr.ldI32o(stm, 16), 1));
-    (yield* setfield(L, __sl4, cptr.ldI32o(stm, 12), 0));
-    (yield* setfield(L, __sl5, cptr.ldI32o(stm, 8), 0));
-    (yield* setfield(L, __sl6, cptr.ldI32o(stm, 4), 0));
+    (yield* setfield(L, __sl2, cptr.ldI32o(stm, FLD.tm_tm_year), 1900));
+    (yield* setfield(L, __sl3, cptr.ldI32o(stm, FLD.tm_tm_mon), 1));
+    (yield* setfield(L, __sl4, cptr.ldI32o(stm, FLD.tm_tm_mday), 0));
+    (yield* setfield(L, __sl5, cptr.ldI32o(stm, FLD.tm_tm_hour), 0));
+    (yield* setfield(L, __sl6, cptr.ldI32o(stm, FLD.tm_tm_min), 0));
     (yield* setfield(L, __sl7, cptr.ldI32(stm), 0));
-    (yield* setfield(L, __sl8, cptr.ldI32o(stm, 28), 1));
-    (yield* setfield(L, __sl9, cptr.ldI32o(stm, 24), 1));
-    (yield* setboolfield(L, __sl10, cptr.ldI32o(stm, 32)));
+    (yield* setfield(L, __sl8, cptr.ldI32o(stm, FLD.tm_tm_yday), 1));
+    (yield* setfield(L, __sl9, cptr.ldI32o(stm, FLD.tm_tm_wday), 1));
+    (yield* setboolfield(L, __sl10, cptr.ldI32o(stm, FLD.tm_tm_isdst)));
 }
 
 /** C ref: loslib.c:245 — @param {CPtr} L @param {CPtr} key @returns {CInt} */
@@ -214,14 +215,14 @@ function* os_date(L) {
         (yield* luaL_buffinit(L, b));
         while (cptr.cmp(s, se) < 0) {
             if (cptr.ld1s(s) != 37)
-                (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || (yield* luaL_prepbuffsize((b), 1n)) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
+                (void (cptr.ldU64o((b), FLD.luaL_Buffer_n) < cptr.ldU64o((b), FLD.luaL_Buffer_size) || (yield* luaL_prepbuffsize((b), 1n)) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), FLD.luaL_Buffer_n, cptr.ldU64o((b), FLD.luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
             else {
                 let reslen;
                 let buff = (yield* luaL_prepbuffsize(b, 250n));
                 s = cptr.add(s, 1);
                 s = (yield* checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1)));
                 reslen = strftime(buff, 250n, cptr.decay(cc), stm);
-                (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + (reslen)));
+                (cptr.stU64o((b), FLD.luaL_Buffer_n, cptr.ldU64o((b), FLD.luaL_Buffer_n) + (reslen)));
             }
         }
         (yield* luaL_pushresult(b));
@@ -238,13 +239,13 @@ function* os_time(L) {
         let ts = cptr.alloc(56);
         (yield* luaL_checktype(L, 1, 5));
         (yield* lua_settop(L, 1));
-        cptr.stI32o(ts, 20, (yield* getfield(L, __sl2, -1, 1900)));
-        cptr.stI32o(ts, 16, (yield* getfield(L, __sl3, -1, 1)));
-        cptr.stI32o(ts, 12, (yield* getfield(L, __sl4, -1, 0)));
-        cptr.stI32o(ts, 8, (yield* getfield(L, __sl5, 12, 0)));
-        cptr.stI32o(ts, 4, (yield* getfield(L, __sl6, 0, 0)));
+        cptr.stI32o(ts, FLD.tm_tm_year, (yield* getfield(L, __sl2, -1, 1900)));
+        cptr.stI32o(ts, FLD.tm_tm_mon, (yield* getfield(L, __sl3, -1, 1)));
+        cptr.stI32o(ts, FLD.tm_tm_mday, (yield* getfield(L, __sl4, -1, 0)));
+        cptr.stI32o(ts, FLD.tm_tm_hour, (yield* getfield(L, __sl5, 12, 0)));
+        cptr.stI32o(ts, FLD.tm_tm_min, (yield* getfield(L, __sl6, 0, 0)));
         cptr.stI32(ts, (yield* getfield(L, __sl7, 0, 0)));
-        cptr.stI32o(ts, 32, (yield* getboolfield(L, __sl10)));
+        cptr.stI32o(ts, FLD.tm_tm_isdst, (yield* getboolfield(L, __sl10)));
         t = mktime(ts);
         (yield* setallfields(L, ts));
     }
@@ -303,29 +304,29 @@ function* os_exit(L) {
 /** C ref: loslib.c:407 — luaL_Reg[12] */
 const syslib = cptr.alloc(12 * 16);
 cptr.stPtro(syslib, 0, __sl27);
-cptr.stPtro(syslib, 8, os_clock);
+cptr.stPtro(syslib, 0 + FLD.luaL_Reg_func, os_clock);
 cptr.stPtro(syslib, 16, __sl28);
-cptr.stPtro(syslib, 24, os_date);
+cptr.stPtro(syslib, 16 + FLD.luaL_Reg_func, os_date);
 cptr.stPtro(syslib, 32, __sl29);
-cptr.stPtro(syslib, 40, os_difftime);
+cptr.stPtro(syslib, 32 + FLD.luaL_Reg_func, os_difftime);
 cptr.stPtro(syslib, 48, __sl30);
-cptr.stPtro(syslib, 56, os_execute);
+cptr.stPtro(syslib, 48 + FLD.luaL_Reg_func, os_execute);
 cptr.stPtro(syslib, 64, __sl31);
-cptr.stPtro(syslib, 72, os_exit);
+cptr.stPtro(syslib, 64 + FLD.luaL_Reg_func, os_exit);
 cptr.stPtro(syslib, 80, __sl32);
-cptr.stPtro(syslib, 88, os_getenv);
+cptr.stPtro(syslib, 80 + FLD.luaL_Reg_func, os_getenv);
 cptr.stPtro(syslib, 96, __sl33);
-cptr.stPtro(syslib, 104, os_remove);
+cptr.stPtro(syslib, 96 + FLD.luaL_Reg_func, os_remove);
 cptr.stPtro(syslib, 112, __sl34);
-cptr.stPtro(syslib, 120, os_rename);
+cptr.stPtro(syslib, 112 + FLD.luaL_Reg_func, os_rename);
 cptr.stPtro(syslib, 128, __sl35);
-cptr.stPtro(syslib, 136, os_setlocale);
+cptr.stPtro(syslib, 128 + FLD.luaL_Reg_func, os_setlocale);
 cptr.stPtro(syslib, 144, __sl26);
-cptr.stPtro(syslib, 152, os_time);
+cptr.stPtro(syslib, 144 + FLD.luaL_Reg_func, os_time);
 cptr.stPtro(syslib, 160, __sl36);
-cptr.stPtro(syslib, 168, os_tmpname);
+cptr.stPtro(syslib, 160 + FLD.luaL_Reg_func, os_tmpname);
 cptr.stPtro(syslib, 176, null);
-cptr.stPtro(syslib, 184, null);
+cptr.stPtro(syslib, 176 + FLD.luaL_Reg_func, null);
 
 /** C ref: loslib.c:426 — @param {CPtr} L @returns {CInt} */
 export function* luaopen_os(L) {

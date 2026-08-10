@@ -7,6 +7,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
+import * as FLD from './nhfield.js';
 import { nh_snprintf } from './hacklib.js';
 import { historical_sfi_procs, historical_sfo_procs } from './sfstruct.js';
 
@@ -82,2326 +83,2326 @@ cptr.stPtr(zerosfiflprocs, null);
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
 export function sfo_arti_info(nhfp, d_arti_info, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, complex_dump(d_arti_info));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 8))(nhfp, d_arti_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn))(nhfp, d_arti_info, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 8))(nhfp, d_arti_info, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x))(nhfp, d_arti_info, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
 export function sfi_arti_info(nhfp, d_arti_info, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 8))(nhfp, d_arti_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn))(nhfp, d_arti_info, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 8))(nhfp, d_arti_info, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x))(nhfp, d_arti_info, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_arti_info(cptr.ldPtro(nhfp, 80), d_arti_info, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_arti_info(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_arti_info, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 36n, 1, complex_dump(d_arti_info));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
 export function sfo_nhrect(nhfp, d_nhrect, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_nhrect));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 16))(nhfp, d_nhrect, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhrect))(nhfp, d_nhrect, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 16))(nhfp, d_nhrect, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_nhrect))(nhfp, d_nhrect, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
 export function sfi_nhrect(nhfp, d_nhrect, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 16))(nhfp, d_nhrect, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhrect))(nhfp, d_nhrect, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 16))(nhfp, d_nhrect, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_nhrect))(nhfp, d_nhrect, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_nhrect(cptr.ldPtro(nhfp, 80), d_nhrect, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_nhrect(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_nhrect, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, complex_dump(d_nhrect));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
 export function sfo_branch(nhfp, d_branch, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_branch));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 24))(nhfp, d_branch, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_branch))(nhfp, d_branch, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 24))(nhfp, d_branch, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_branch))(nhfp, d_branch, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
 export function sfi_branch(nhfp, d_branch, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 24))(nhfp, d_branch, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_branch))(nhfp, d_branch, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 24))(nhfp, d_branch, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_branch))(nhfp, d_branch, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_branch(cptr.ldPtro(nhfp, 80), d_branch, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_branch(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_branch, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 32n, 1, complex_dump(d_branch));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
 export function sfo_bubble(nhfp, d_bubble, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 40n, 1, complex_dump(d_bubble));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 32))(nhfp, d_bubble, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bubble))(nhfp, d_bubble, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 32))(nhfp, d_bubble, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_bubble))(nhfp, d_bubble, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
 export function sfi_bubble(nhfp, d_bubble, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 32))(nhfp, d_bubble, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bubble))(nhfp, d_bubble, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 32))(nhfp, d_bubble, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_bubble))(nhfp, d_bubble, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_bubble(cptr.ldPtro(nhfp, 80), d_bubble, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_bubble(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_bubble, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 40n, 1, complex_dump(d_bubble));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
 export function sfo_cemetery(nhfp, d_cemetery, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 184n, 1, complex_dump(d_cemetery));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 40))(nhfp, d_cemetery, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_cemetery))(nhfp, d_cemetery, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 40))(nhfp, d_cemetery, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_cemetery))(nhfp, d_cemetery, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
 export function sfi_cemetery(nhfp, d_cemetery, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 40))(nhfp, d_cemetery, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_cemetery))(nhfp, d_cemetery, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 40))(nhfp, d_cemetery, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_cemetery))(nhfp, d_cemetery, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_cemetery(cptr.ldPtro(nhfp, 80), d_cemetery, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_cemetery(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_cemetery, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 184n, 1, complex_dump(d_cemetery));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
 export function sfo_context_info(nhfp, d_context_info, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 720n, 1, complex_dump(d_context_info));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 48))(nhfp, d_context_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_context_info))(nhfp, d_context_info, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 48))(nhfp, d_context_info, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_context_info))(nhfp, d_context_info, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
 export function sfi_context_info(nhfp, d_context_info, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 48))(nhfp, d_context_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_context_info))(nhfp, d_context_info, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 48))(nhfp, d_context_info, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_context_info))(nhfp, d_context_info, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_context_info(cptr.ldPtro(nhfp, 80), d_context_info, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_context_info(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_context_info, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 720n, 1, complex_dump(d_context_info));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
 export function sfo_nhcoord(nhfp, d_nhcoord, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, complex_dump(d_nhcoord));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 56))(nhfp, d_nhcoord, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhcoord))(nhfp, d_nhcoord, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 56))(nhfp, d_nhcoord, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_nhcoord))(nhfp, d_nhcoord, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
 export function sfi_nhcoord(nhfp, d_nhcoord, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 56))(nhfp, d_nhcoord, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_nhcoord))(nhfp, d_nhcoord, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 56))(nhfp, d_nhcoord, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_nhcoord))(nhfp, d_nhcoord, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_nhcoord(cptr.ldPtro(nhfp, 80), d_nhcoord, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_nhcoord(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_nhcoord, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, complex_dump(d_nhcoord));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
 export function sfo_damage(nhfp, d_damage, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_damage));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 64))(nhfp, d_damage, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_damage))(nhfp, d_damage, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 64))(nhfp, d_damage, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_damage))(nhfp, d_damage, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
 export function sfi_damage(nhfp, d_damage, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 64))(nhfp, d_damage, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_damage))(nhfp, d_damage, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 64))(nhfp, d_damage, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_damage))(nhfp, d_damage, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_damage(cptr.ldPtro(nhfp, 80), d_damage, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_damage(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_damage, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 32n, 1, complex_dump(d_damage));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
 export function sfo_dest_area(nhfp, d_dest_area, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 16n, 1, complex_dump(d_dest_area));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 72))(nhfp, d_dest_area, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dest_area))(nhfp, d_dest_area, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 72))(nhfp, d_dest_area, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dest_area))(nhfp, d_dest_area, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
 export function sfi_dest_area(nhfp, d_dest_area, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 72))(nhfp, d_dest_area, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dest_area))(nhfp, d_dest_area, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 72))(nhfp, d_dest_area, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dest_area))(nhfp, d_dest_area, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_dest_area(cptr.ldPtro(nhfp, 80), d_dest_area, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_dest_area(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_dest_area, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 16n, 1, complex_dump(d_dest_area));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
 export function sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 114n, 1, complex_dump(d_dgn_topology));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 80))(nhfp, d_dgn_topology, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dgn_topology))(nhfp, d_dgn_topology, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 80))(nhfp, d_dgn_topology, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dgn_topology))(nhfp, d_dgn_topology, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
 export function sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 80))(nhfp, d_dgn_topology, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dgn_topology))(nhfp, d_dgn_topology, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 80))(nhfp, d_dgn_topology, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dgn_topology))(nhfp, d_dgn_topology, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_dgn_topology(cptr.ldPtro(nhfp, 80), d_dgn_topology, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_dgn_topology(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_dgn_topology, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 114n, 1, complex_dump(d_dgn_topology));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
 export function sfo_dungeon(nhfp, d_dungeon, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 112n, 1, complex_dump(d_dungeon));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 88))(nhfp, d_dungeon, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dungeon))(nhfp, d_dungeon, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 88))(nhfp, d_dungeon, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dungeon))(nhfp, d_dungeon, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
 export function sfi_dungeon(nhfp, d_dungeon, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 88))(nhfp, d_dungeon, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_dungeon))(nhfp, d_dungeon, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 88))(nhfp, d_dungeon, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_dungeon))(nhfp, d_dungeon, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_dungeon(cptr.ldPtro(nhfp, 80), d_dungeon, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_dungeon(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_dungeon, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 112n, 1, complex_dump(d_dungeon));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
 export function sfo_d_level(nhfp, d_d_level, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, complex_dump(d_d_level));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 96))(nhfp, d_d_level, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_d_level))(nhfp, d_d_level, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 96))(nhfp, d_d_level, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_d_level))(nhfp, d_d_level, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
 export function sfi_d_level(nhfp, d_d_level, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 96))(nhfp, d_d_level, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_d_level))(nhfp, d_d_level, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 96))(nhfp, d_d_level, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_d_level))(nhfp, d_d_level, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_d_level(cptr.ldPtro(nhfp, 80), d_d_level, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_d_level(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_d_level, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, complex_dump(d_d_level));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
 export function sfo_ebones(nhfp, d_ebones, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, complex_dump(d_ebones));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 104))(nhfp, d_ebones, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ebones))(nhfp, d_ebones, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 104))(nhfp, d_ebones, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ebones))(nhfp, d_ebones, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
 export function sfi_ebones(nhfp, d_ebones, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 104))(nhfp, d_ebones, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ebones))(nhfp, d_ebones, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 104))(nhfp, d_ebones, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ebones))(nhfp, d_ebones, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_ebones(cptr.ldPtro(nhfp, 80), d_ebones, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_ebones(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_ebones, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 36n, 1, complex_dump(d_ebones));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
 export function sfo_edog(nhfp, d_edog, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 64n, 1, complex_dump(d_edog));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 112))(nhfp, d_edog, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_edog))(nhfp, d_edog, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 112))(nhfp, d_edog, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_edog))(nhfp, d_edog, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
 export function sfi_edog(nhfp, d_edog, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 112))(nhfp, d_edog, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_edog))(nhfp, d_edog, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 112))(nhfp, d_edog, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_edog))(nhfp, d_edog, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_edog(cptr.ldPtro(nhfp, 80), d_edog, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_edog(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_edog, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 64n, 1, complex_dump(d_edog));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
 export function sfo_egd(nhfp, d_egd, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 652n, 1, complex_dump(d_egd));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 120))(nhfp, d_egd, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_egd))(nhfp, d_egd, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 120))(nhfp, d_egd, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_egd))(nhfp, d_egd, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
 export function sfi_egd(nhfp, d_egd, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 120))(nhfp, d_egd, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_egd))(nhfp, d_egd, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 120))(nhfp, d_egd, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_egd))(nhfp, d_egd, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_egd(cptr.ldPtro(nhfp, 80), d_egd, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_egd(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_egd, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 652n, 1, complex_dump(d_egd));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
 export function sfo_emin(nhfp, d_emin, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_emin));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 128))(nhfp, d_emin, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_emin))(nhfp, d_emin, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 128))(nhfp, d_emin, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_emin))(nhfp, d_emin, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
 export function sfi_emin(nhfp, d_emin, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 128))(nhfp, d_emin, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_emin))(nhfp, d_emin, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 128))(nhfp, d_emin, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_emin))(nhfp, d_emin, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_emin(cptr.ldPtro(nhfp, 80), d_emin, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_emin(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_emin, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, complex_dump(d_emin));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
 export function sfo_engr(nhfp, d_engr, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 80n, 1, complex_dump(d_engr));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 136))(nhfp, d_engr, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_engr))(nhfp, d_engr, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 136))(nhfp, d_engr, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_engr))(nhfp, d_engr, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
 export function sfi_engr(nhfp, d_engr, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 136))(nhfp, d_engr, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_engr))(nhfp, d_engr, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 136))(nhfp, d_engr, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_engr))(nhfp, d_engr, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_engr(cptr.ldPtro(nhfp, 80), d_engr, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_engr(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_engr, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 80n, 1, complex_dump(d_engr));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
 export function sfo_epri(nhfp, d_epri, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 56n, 1, complex_dump(d_epri));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 144))(nhfp, d_epri, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_epri))(nhfp, d_epri, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 144))(nhfp, d_epri, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_epri))(nhfp, d_epri, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
 export function sfi_epri(nhfp, d_epri, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 144))(nhfp, d_epri, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_epri))(nhfp, d_epri, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 144))(nhfp, d_epri, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_epri))(nhfp, d_epri, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_epri(cptr.ldPtro(nhfp, 80), d_epri, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_epri(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_epri, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 56n, 1, complex_dump(d_epri));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
 export function sfo_eshk(nhfp, d_eshk, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4960n, 1, complex_dump(d_eshk));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 152))(nhfp, d_eshk, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_eshk))(nhfp, d_eshk, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 152))(nhfp, d_eshk, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_eshk))(nhfp, d_eshk, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
 export function sfi_eshk(nhfp, d_eshk, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 152))(nhfp, d_eshk, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_eshk))(nhfp, d_eshk, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 152))(nhfp, d_eshk, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_eshk))(nhfp, d_eshk, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_eshk(cptr.ldPtro(nhfp, 80), d_eshk, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_eshk(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_eshk, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4960n, 1, complex_dump(d_eshk));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
 export function sfo_fe(nhfp, d_fe, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 48n, 1, complex_dump(d_fe));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 160))(nhfp, d_fe, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fe))(nhfp, d_fe, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 160))(nhfp, d_fe, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_fe))(nhfp, d_fe, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
 export function sfi_fe(nhfp, d_fe, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 160))(nhfp, d_fe, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fe))(nhfp, d_fe, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 160))(nhfp, d_fe, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_fe))(nhfp, d_fe, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_fe(cptr.ldPtro(nhfp, 80), d_fe, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_fe(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_fe, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 48n, 1, complex_dump(d_fe));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
 export function sfo_flag(nhfp, d_flag, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 208n, 1, complex_dump(d_flag));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 168))(nhfp, d_flag, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_flag))(nhfp, d_flag, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 168))(nhfp, d_flag, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_flag))(nhfp, d_flag, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
 export function sfi_flag(nhfp, d_flag, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 168))(nhfp, d_flag, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_flag))(nhfp, d_flag, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 168))(nhfp, d_flag, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_flag))(nhfp, d_flag, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_flag(cptr.ldPtro(nhfp, 80), d_flag, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_flag(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_flag, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 208n, 1, complex_dump(d_flag));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
 export function sfo_fruit(nhfp, d_fruit, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 48n, 1, complex_dump(d_fruit));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 176))(nhfp, d_fruit, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fruit))(nhfp, d_fruit, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 176))(nhfp, d_fruit, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_fruit))(nhfp, d_fruit, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
 export function sfi_fruit(nhfp, d_fruit, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 176))(nhfp, d_fruit, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_fruit))(nhfp, d_fruit, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 176))(nhfp, d_fruit, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_fruit))(nhfp, d_fruit, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_fruit(cptr.ldPtro(nhfp, 80), d_fruit, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_fruit(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_fruit, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 48n, 1, complex_dump(d_fruit));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
 export function sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_gamelog_line));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 184))(nhfp, d_gamelog_line, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_gamelog_line))(nhfp, d_gamelog_line, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 184))(nhfp, d_gamelog_line, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_gamelog_line))(nhfp, d_gamelog_line, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
 export function sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 184))(nhfp, d_gamelog_line, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_gamelog_line))(nhfp, d_gamelog_line, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 184))(nhfp, d_gamelog_line, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_gamelog_line))(nhfp, d_gamelog_line, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_gamelog_line(cptr.ldPtro(nhfp, 80), d_gamelog_line, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_gamelog_line(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_gamelog_line, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 32n, 1, complex_dump(d_gamelog_line));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
 export function sfo_kinfo(nhfp, d_kinfo, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 272n, 1, complex_dump(d_kinfo));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 192))(nhfp, d_kinfo, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_kinfo))(nhfp, d_kinfo, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 192))(nhfp, d_kinfo, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_kinfo))(nhfp, d_kinfo, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
 export function sfi_kinfo(nhfp, d_kinfo, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 192))(nhfp, d_kinfo, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_kinfo))(nhfp, d_kinfo, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 192))(nhfp, d_kinfo, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_kinfo))(nhfp, d_kinfo, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_kinfo(cptr.ldPtro(nhfp, 80), d_kinfo, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_kinfo(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_kinfo, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 272n, 1, complex_dump(d_kinfo));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
 export function sfo_levelflags(nhfp, d_levelflags, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 128n, 1, complex_dump(d_levelflags));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 200))(nhfp, d_levelflags, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_levelflags))(nhfp, d_levelflags, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 200))(nhfp, d_levelflags, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_levelflags))(nhfp, d_levelflags, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
 export function sfi_levelflags(nhfp, d_levelflags, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 200))(nhfp, d_levelflags, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_levelflags))(nhfp, d_levelflags, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 200))(nhfp, d_levelflags, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_levelflags))(nhfp, d_levelflags, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_levelflags(cptr.ldPtro(nhfp, 80), d_levelflags, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_levelflags(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_levelflags, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 128n, 1, complex_dump(d_levelflags));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
 export function sfo_ls_t(nhfp, d_ls_t, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, complex_dump(d_ls_t));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 208))(nhfp, d_ls_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ls_t))(nhfp, d_ls_t, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 208))(nhfp, d_ls_t, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ls_t))(nhfp, d_ls_t, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
 export function sfi_ls_t(nhfp, d_ls_t, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 208))(nhfp, d_ls_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ls_t))(nhfp, d_ls_t, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 208))(nhfp, d_ls_t, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ls_t))(nhfp, d_ls_t, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_ls_t(cptr.ldPtro(nhfp, 80), d_ls_t, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_ls_t(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_ls_t, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 32n, 1, complex_dump(d_ls_t));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
 export function sfo_linfo(nhfp, d_linfo, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, complex_dump(d_linfo));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 216))(nhfp, d_linfo, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_linfo))(nhfp, d_linfo, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 216))(nhfp, d_linfo, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_linfo))(nhfp, d_linfo, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
 export function sfi_linfo(nhfp, d_linfo, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 216))(nhfp, d_linfo, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_linfo))(nhfp, d_linfo, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 216))(nhfp, d_linfo, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_linfo))(nhfp, d_linfo, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_linfo(cptr.ldPtro(nhfp, 80), d_linfo, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_linfo(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_linfo, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, complex_dump(d_linfo));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
 export function sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 52n, 1, complex_dump(d_mapseen_feat));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 224))(nhfp, d_mapseen_feat, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_feat))(nhfp, d_mapseen_feat, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 224))(nhfp, d_mapseen_feat, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_feat))(nhfp, d_mapseen_feat, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
 export function sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 224))(nhfp, d_mapseen_feat, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_feat))(nhfp, d_mapseen_feat, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 224))(nhfp, d_mapseen_feat, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_feat))(nhfp, d_mapseen_feat, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_mapseen_feat(cptr.ldPtro(nhfp, 80), d_mapseen_feat, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_mapseen_feat(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_mapseen_feat, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 52n, 1, complex_dump(d_mapseen_feat));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
 export function sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 64n, 1, complex_dump(d_mapseen_flags));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 232))(nhfp, d_mapseen_flags, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_flags))(nhfp, d_mapseen_flags, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 232))(nhfp, d_mapseen_flags, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_flags))(nhfp, d_mapseen_flags, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
 export function sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 232))(nhfp, d_mapseen_flags, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_flags))(nhfp, d_mapseen_flags, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 232))(nhfp, d_mapseen_flags, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_flags))(nhfp, d_mapseen_flags, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_mapseen_flags(cptr.ldPtro(nhfp, 80), d_mapseen_flags, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_mapseen_flags(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_mapseen_flags, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 64n, 1, complex_dump(d_mapseen_flags));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
 export function sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_mapseen_rooms));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 240))(nhfp, d_mapseen_rooms, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_rooms))(nhfp, d_mapseen_rooms, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 240))(nhfp, d_mapseen_rooms, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_rooms))(nhfp, d_mapseen_rooms, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
 export function sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 240))(nhfp, d_mapseen_rooms, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mapseen_rooms))(nhfp, d_mapseen_rooms, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 240))(nhfp, d_mapseen_rooms, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mapseen_rooms))(nhfp, d_mapseen_rooms, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_mapseen_rooms(cptr.ldPtro(nhfp, 80), d_mapseen_rooms, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_mapseen_rooms(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_mapseen_rooms, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, complex_dump(d_mapseen_rooms));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
 export function sfo_mkroom(nhfp, d_mkroom, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 224n, 1, complex_dump(d_mkroom));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 248))(nhfp, d_mkroom, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mkroom))(nhfp, d_mkroom, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 248))(nhfp, d_mkroom, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mkroom))(nhfp, d_mkroom, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
 export function sfi_mkroom(nhfp, d_mkroom, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 248))(nhfp, d_mkroom, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mkroom))(nhfp, d_mkroom, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 248))(nhfp, d_mkroom, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mkroom))(nhfp, d_mkroom, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_mkroom(cptr.ldPtro(nhfp, 80), d_mkroom, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_mkroom(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_mkroom, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 224n, 1, complex_dump(d_mkroom));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
 export function sfo_monst(nhfp, d_monst, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 320n, 1, complex_dump(d_monst));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 256))(nhfp, d_monst, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_monst))(nhfp, d_monst, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 256))(nhfp, d_monst, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_monst))(nhfp, d_monst, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
 export function sfi_monst(nhfp, d_monst, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 256))(nhfp, d_monst, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_monst))(nhfp, d_monst, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 256))(nhfp, d_monst, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_monst))(nhfp, d_monst, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_monst(cptr.ldPtro(nhfp, 80), d_monst, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_monst(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_monst, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 320n, 1, complex_dump(d_monst));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
 export function sfo_mvitals(nhfp, d_mvitals, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 12n, 1, complex_dump(d_mvitals));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 264))(nhfp, d_mvitals, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mvitals))(nhfp, d_mvitals, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 264))(nhfp, d_mvitals, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mvitals))(nhfp, d_mvitals, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
 export function sfi_mvitals(nhfp, d_mvitals, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 264))(nhfp, d_mvitals, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_mvitals))(nhfp, d_mvitals, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 264))(nhfp, d_mvitals, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_mvitals))(nhfp, d_mvitals, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_mvitals(cptr.ldPtro(nhfp, 80), d_mvitals, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_mvitals(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_mvitals, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 12n, 1, complex_dump(d_mvitals));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
 export function sfo_obj(nhfp, d_obj, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 216n, 1, complex_dump(d_obj));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 272))(nhfp, d_obj, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_obj))(nhfp, d_obj, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 272))(nhfp, d_obj, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_obj))(nhfp, d_obj, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
 export function sfi_obj(nhfp, d_obj, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 272))(nhfp, d_obj, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_obj))(nhfp, d_obj, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 272))(nhfp, d_obj, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_obj))(nhfp, d_obj, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_obj(cptr.ldPtro(nhfp, 80), d_obj, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_obj(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_obj, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 216n, 1, complex_dump(d_obj));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
 export function sfo_objclass(nhfp, d_objclass, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 280))(nhfp, d_objclass, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_objclass))(nhfp, d_objclass, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 280))(nhfp, d_objclass, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_objclass))(nhfp, d_objclass, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
 export function sfi_objclass(nhfp, d_objclass, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 280))(nhfp, d_objclass, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_objclass))(nhfp, d_objclass, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 280))(nhfp, d_objclass, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_objclass))(nhfp, d_objclass, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_objclass(cptr.ldPtro(nhfp, 80), d_objclass, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_objclass(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_objclass, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 120n, 1, complex_dump(d_objclass));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
 export function sfo_q_score(nhfp, d_q_score, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 88n, 1, complex_dump(d_q_score));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 288))(nhfp, d_q_score, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_q_score))(nhfp, d_q_score, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 288))(nhfp, d_q_score, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_q_score))(nhfp, d_q_score, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
 export function sfi_q_score(nhfp, d_q_score, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 288))(nhfp, d_q_score, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_q_score))(nhfp, d_q_score, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 288))(nhfp, d_q_score, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_q_score))(nhfp, d_q_score, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_q_score(cptr.ldPtro(nhfp, 80), d_q_score, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_q_score(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_q_score, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 88n, 1, complex_dump(d_q_score));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
 export function sfo_rm(nhfp, d_rm, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, complex_dump(d_rm));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 296))(nhfp, d_rm, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_rm))(nhfp, d_rm, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 296))(nhfp, d_rm, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_rm))(nhfp, d_rm, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
 export function sfi_rm(nhfp, d_rm, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 296))(nhfp, d_rm, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_rm))(nhfp, d_rm, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 296))(nhfp, d_rm, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_rm))(nhfp, d_rm, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_rm(cptr.ldPtro(nhfp, 80), d_rm, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_rm(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_rm, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 36n, 1, complex_dump(d_rm));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
 export function sfo_spell(nhfp, d_spell, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_spell));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 304))(nhfp, d_spell, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_spell))(nhfp, d_spell, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 304))(nhfp, d_spell, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_spell))(nhfp, d_spell, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
 export function sfi_spell(nhfp, d_spell, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 304))(nhfp, d_spell, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_spell))(nhfp, d_spell, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 304))(nhfp, d_spell, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_spell))(nhfp, d_spell, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_spell(cptr.ldPtro(nhfp, 80), d_spell, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_spell(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_spell, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, complex_dump(d_spell));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
 export function sfo_stairway(nhfp, d_stairway, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 24n, 1, complex_dump(d_stairway));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 312))(nhfp, d_stairway, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_stairway))(nhfp, d_stairway, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 312))(nhfp, d_stairway, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_stairway))(nhfp, d_stairway, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
 export function sfi_stairway(nhfp, d_stairway, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 312))(nhfp, d_stairway, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_stairway))(nhfp, d_stairway, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 312))(nhfp, d_stairway, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_stairway))(nhfp, d_stairway, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_stairway(cptr.ldPtro(nhfp, 80), d_stairway, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_stairway(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_stairway, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 24n, 1, complex_dump(d_stairway));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
 export function sfo_s_level(nhfp, d_s_level, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 56n, 1, complex_dump(d_s_level));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 320))(nhfp, d_s_level, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_s_level))(nhfp, d_s_level, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 320))(nhfp, d_s_level, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_s_level))(nhfp, d_s_level, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
 export function sfi_s_level(nhfp, d_s_level, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 320))(nhfp, d_s_level, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_s_level))(nhfp, d_s_level, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 320))(nhfp, d_s_level, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_s_level))(nhfp, d_s_level, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_s_level(cptr.ldPtro(nhfp, 80), d_s_level, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_s_level(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_s_level, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 56n, 1, complex_dump(d_s_level));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
 export function sfo_trap(nhfp, d_trap, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 40n, 1, complex_dump(d_trap));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 328))(nhfp, d_trap, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_trap))(nhfp, d_trap, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 328))(nhfp, d_trap, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_trap))(nhfp, d_trap, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
 export function sfi_trap(nhfp, d_trap, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 328))(nhfp, d_trap, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_trap))(nhfp, d_trap, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 328))(nhfp, d_trap, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_trap))(nhfp, d_trap, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_trap(cptr.ldPtro(nhfp, 80), d_trap, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_trap(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_trap, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 40n, 1, complex_dump(d_trap));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
 export function sfo_you(nhfp, d_you, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 344))(nhfp, d_you, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_you))(nhfp, d_you, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 344))(nhfp, d_you, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_you))(nhfp, d_you, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
 export function sfi_you(nhfp, d_you, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 344))(nhfp, d_you, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_you))(nhfp, d_you, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 344))(nhfp, d_you, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_you))(nhfp, d_you, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_you(cptr.ldPtro(nhfp, 80), d_you, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_you(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_you, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2864n, 1, complex_dump(d_you));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
 export function sfo_any(nhfp, d_any, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, complex_dump(d_any));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 352))(nhfp, d_any, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_any))(nhfp, d_any, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 352))(nhfp, d_any, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_any))(nhfp, d_any, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
 export function sfi_any(nhfp, d_any, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 352))(nhfp, d_any, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_any))(nhfp, d_any, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 352))(nhfp, d_any, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_any))(nhfp, d_any, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_any(cptr.ldPtro(nhfp, 80), d_any, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_any(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_any, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, complex_dump(d_any));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
 export function sfo_aligntyp(nhfp, d_aligntyp, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_aligntyp(d_aligntyp));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 360))(nhfp, d_aligntyp, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_aligntyp))(nhfp, d_aligntyp, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 360))(nhfp, d_aligntyp, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_aligntyp))(nhfp, d_aligntyp, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
 export function sfi_aligntyp(nhfp, d_aligntyp, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 360))(nhfp, d_aligntyp, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_aligntyp))(nhfp, d_aligntyp, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 360))(nhfp, d_aligntyp, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_aligntyp))(nhfp, d_aligntyp, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_aligntyp(cptr.ldPtro(nhfp, 80), d_aligntyp, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_aligntyp(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_aligntyp, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, sfvalue_aligntyp(d_aligntyp));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
 export function sfo_boolean(nhfp, d_boolean, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_boolean(d_boolean));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 368))(nhfp, d_boolean, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_boolean))(nhfp, d_boolean, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 368))(nhfp, d_boolean, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_boolean))(nhfp, d_boolean, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
 export function sfi_boolean(nhfp, d_boolean, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 368))(nhfp, d_boolean, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_boolean))(nhfp, d_boolean, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 368))(nhfp, d_boolean, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_boolean))(nhfp, d_boolean, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_boolean(cptr.ldPtro(nhfp, 80), d_boolean, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_boolean(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_boolean, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, sfvalue_boolean(d_boolean));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
 export function sfo_coordxy(nhfp, d_coordxy, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_coordxy));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 376))(nhfp, d_coordxy, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_coordxy))(nhfp, d_coordxy, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 376))(nhfp, d_coordxy, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_coordxy))(nhfp, d_coordxy, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
 export function sfi_coordxy(nhfp, d_coordxy, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 376))(nhfp, d_coordxy, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_coordxy))(nhfp, d_coordxy, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 376))(nhfp, d_coordxy, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_coordxy))(nhfp, d_coordxy, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_coordxy(cptr.ldPtro(nhfp, 80), d_coordxy, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_coordxy(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_coordxy, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_coordxy));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
 export function sfo_int(nhfp, d_int, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int(d_int));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 392))(nhfp, d_int, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int))(nhfp, d_int, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 392))(nhfp, d_int, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int))(nhfp, d_int, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
 export function sfi_int(nhfp, d_int, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 392))(nhfp, d_int, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int))(nhfp, d_int, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 392))(nhfp, d_int, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int))(nhfp, d_int, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_int(cptr.ldPtro(nhfp, 80), d_int, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_int(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_int, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, sfvalue_int(d_int));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
 export function sfo_int16(nhfp, d_int16, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_int16));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 400))(nhfp, d_int16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int16))(nhfp, d_int16, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 400))(nhfp, d_int16, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int16))(nhfp, d_int16, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
 export function sfi_int16(nhfp, d_int16, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 400))(nhfp, d_int16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int16))(nhfp, d_int16, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 400))(nhfp, d_int16, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int16))(nhfp, d_int16, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_int16(cptr.ldPtro(nhfp, 80), d_int16, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_int16(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_int16, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_int16));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
 export function sfo_int32(nhfp, d_int32, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int32(d_int32));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 408))(nhfp, d_int32, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int32))(nhfp, d_int32, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 408))(nhfp, d_int32, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int32))(nhfp, d_int32, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
 export function sfi_int32(nhfp, d_int32, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 408))(nhfp, d_int32, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int32))(nhfp, d_int32, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 408))(nhfp, d_int32, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int32))(nhfp, d_int32, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_int32(cptr.ldPtro(nhfp, 80), d_int32, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_int32(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_int32, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, sfvalue_int32(d_int32));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
 export function sfo_int64(nhfp, d_int64, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_int64(d_int64));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 416))(nhfp, d_int64, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int64))(nhfp, d_int64, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 416))(nhfp, d_int64, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int64))(nhfp, d_int64, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
 export function sfi_int64(nhfp, d_int64, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 416))(nhfp, d_int64, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_int64))(nhfp, d_int64, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 416))(nhfp, d_int64, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_int64))(nhfp, d_int64, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_int64(cptr.ldPtro(nhfp, 80), d_int64, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_int64(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_int64, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_int64(d_int64));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
 export function sfo_long(nhfp, d_long, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_long(d_long));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 424))(nhfp, d_long, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_long))(nhfp, d_long, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 424))(nhfp, d_long, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_long))(nhfp, d_long, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
 export function sfi_long(nhfp, d_long, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 424))(nhfp, d_long, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_long))(nhfp, d_long, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 424))(nhfp, d_long, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_long))(nhfp, d_long, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_long(cptr.ldPtro(nhfp, 80), d_long, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_long(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_long, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_long(d_long));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
 export function sfo_schar(nhfp, d_schar, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_schar(d_schar));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 432))(nhfp, d_schar, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_schar))(nhfp, d_schar, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 432))(nhfp, d_schar, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_schar))(nhfp, d_schar, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
 export function sfi_schar(nhfp, d_schar, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 432))(nhfp, d_schar, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_schar))(nhfp, d_schar, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 432))(nhfp, d_schar, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_schar))(nhfp, d_schar, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_schar(cptr.ldPtro(nhfp, 80), d_schar, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_schar(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_schar, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, sfvalue_schar(d_schar));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
 export function sfo_short(nhfp, d_short, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_short(d_short));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 440))(nhfp, d_short, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_short))(nhfp, d_short, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 440))(nhfp, d_short, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_short))(nhfp, d_short, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
 export function sfi_short(nhfp, d_short, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 440))(nhfp, d_short, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_short))(nhfp, d_short, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 440))(nhfp, d_short, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_short))(nhfp, d_short, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_short(cptr.ldPtro(nhfp, 80), d_short, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_short(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_short, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_short(d_short));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
 export function sfo_size_t(nhfp, d_size_t, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_size_t(d_size_t));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 448))(nhfp, d_size_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_size_t))(nhfp, d_size_t, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 448))(nhfp, d_size_t, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_size_t))(nhfp, d_size_t, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
 export function sfi_size_t(nhfp, d_size_t, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 448))(nhfp, d_size_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_size_t))(nhfp, d_size_t, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 448))(nhfp, d_size_t, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_size_t))(nhfp, d_size_t, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_size_t(cptr.ldPtro(nhfp, 80), d_size_t, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_size_t(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_size_t, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_size_t(d_size_t));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
 export function sfo_time_t(nhfp, d_time_t, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_time_t(d_time_t));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 456))(nhfp, d_time_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_time_t))(nhfp, d_time_t, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 456))(nhfp, d_time_t, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_time_t))(nhfp, d_time_t, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
 export function sfi_time_t(nhfp, d_time_t, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 456))(nhfp, d_time_t, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_time_t))(nhfp, d_time_t, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 456))(nhfp, d_time_t, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_time_t))(nhfp, d_time_t, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_time_t(cptr.ldPtro(nhfp, 80), d_time_t, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_time_t(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_time_t, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_time_t(d_time_t));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
 export function sfo_uchar(nhfp, d_uchar, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_uchar(d_uchar));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 464))(nhfp, d_uchar, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uchar))(nhfp, d_uchar, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 464))(nhfp, d_uchar, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uchar))(nhfp, d_uchar, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
 export function sfi_uchar(nhfp, d_uchar, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 464))(nhfp, d_uchar, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uchar))(nhfp, d_uchar, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 464))(nhfp, d_uchar, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uchar))(nhfp, d_uchar, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_uchar(cptr.ldPtro(nhfp, 80), d_uchar, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_uchar(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_uchar, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, sfvalue_uchar(d_uchar));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
 export function sfo_uint16(nhfp, d_uint16, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_uint16(d_uint16));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 472))(nhfp, d_uint16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint16))(nhfp, d_uint16, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 472))(nhfp, d_uint16, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint16))(nhfp, d_uint16, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
 export function sfi_uint16(nhfp, d_uint16, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 472))(nhfp, d_uint16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint16))(nhfp, d_uint16, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 472))(nhfp, d_uint16, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint16))(nhfp, d_uint16, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_uint16(cptr.ldPtro(nhfp, 80), d_uint16, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_uint16(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_uint16, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_uint16(d_uint16));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
 export function sfo_uint32(nhfp, d_uint32, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_uint32(d_uint32));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 480))(nhfp, d_uint32, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint32))(nhfp, d_uint32, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 480))(nhfp, d_uint32, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint32))(nhfp, d_uint32, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
 export function sfi_uint32(nhfp, d_uint32, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 480))(nhfp, d_uint32, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint32))(nhfp, d_uint32, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 480))(nhfp, d_uint32, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint32))(nhfp, d_uint32, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_uint32(cptr.ldPtro(nhfp, 80), d_uint32, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_uint32(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_uint32, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, sfvalue_uint32(d_uint32));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
 export function sfo_uint64(nhfp, d_uint64, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_uint64(d_uint64));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 488))(nhfp, d_uint64, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint64))(nhfp, d_uint64, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 488))(nhfp, d_uint64, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint64))(nhfp, d_uint64, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
 export function sfi_uint64(nhfp, d_uint64, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 488))(nhfp, d_uint64, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_uint64))(nhfp, d_uint64, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 488))(nhfp, d_uint64, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_uint64))(nhfp, d_uint64, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_uint64(cptr.ldPtro(nhfp, 80), d_uint64, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_uint64(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_uint64, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_uint64(d_uint64));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
 export function sfo_ulong(nhfp, d_ulong, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_ulong(d_ulong));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 496))(nhfp, d_ulong, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ulong))(nhfp, d_ulong, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 496))(nhfp, d_ulong, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ulong))(nhfp, d_ulong, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
 export function sfi_ulong(nhfp, d_ulong, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 496))(nhfp, d_ulong, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ulong))(nhfp, d_ulong, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 496))(nhfp, d_ulong, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ulong))(nhfp, d_ulong, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_ulong(cptr.ldPtro(nhfp, 80), d_ulong, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_ulong(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_ulong, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_ulong(d_ulong));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
 export function sfo_unsigned(nhfp, d_unsigned, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_unsigned(d_unsigned));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 504))(nhfp, d_unsigned, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_unsigned))(nhfp, d_unsigned, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 504))(nhfp, d_unsigned, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_unsigned))(nhfp, d_unsigned, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
 export function sfi_unsigned(nhfp, d_unsigned, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 504))(nhfp, d_unsigned, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_unsigned))(nhfp, d_unsigned, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 504))(nhfp, d_unsigned, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_unsigned))(nhfp, d_unsigned, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_unsigned(cptr.ldPtro(nhfp, 80), d_unsigned, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_unsigned(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_unsigned, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 4n, 1, sfvalue_unsigned(d_unsigned));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
 export function sfo_ushort(nhfp, d_ushort, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_ushort(d_ushort));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 512))(nhfp, d_ushort, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ushort))(nhfp, d_ushort, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 512))(nhfp, d_ushort, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ushort))(nhfp, d_ushort, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
 export function sfi_ushort(nhfp, d_ushort, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 512))(nhfp, d_ushort, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_ushort))(nhfp, d_ushort, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 512))(nhfp, d_ushort, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_ushort))(nhfp, d_ushort, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_ushort(cptr.ldPtro(nhfp, 80), d_ushort, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_ushort(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_ushort, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_ushort(d_ushort));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
 export function sfo_xint16(nhfp, d_xint16, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_xint16(d_xint16));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 520))(nhfp, d_xint16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint16))(nhfp, d_xint16, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 520))(nhfp, d_xint16, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_xint16))(nhfp, d_xint16, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
 export function sfi_xint16(nhfp, d_xint16, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 520))(nhfp, d_xint16, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint16))(nhfp, d_xint16, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 520))(nhfp, d_xint16, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_xint16))(nhfp, d_xint16, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_xint16(cptr.ldPtro(nhfp, 80), d_xint16, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_xint16(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_xint16, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 2n, 1, sfvalue_xint16(d_xint16));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
 export function sfo_xint8(nhfp, d_xint8, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_xint8(d_xint8));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 528))(nhfp, d_xint8, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint8))(nhfp, d_xint8, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 528))(nhfp, d_xint8, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_xint8))(nhfp, d_xint8, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
 export function sfi_xint8(nhfp, d_xint8, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 528))(nhfp, d_xint8, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_xint8))(nhfp, d_xint8, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 528))(nhfp, d_xint8, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_xint8))(nhfp, d_xint8, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_xint8(cptr.ldPtro(nhfp, 80), d_xint8, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_xint8(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_xint8, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, sfvalue_xint8(d_xint8));
     }
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bfsz */
 export function sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 544))(nhfp, d_bitfield, myname, bfsz);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bitfield))(nhfp, d_bitfield, myname, bfsz);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 544))(nhfp, d_bitfield, myname, bfsz);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_bitfield))(nhfp, d_bitfield, myname, bfsz);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
-    if (cptr.ldPtro(nhfp, 56) && !cptr.ld1so(nhfp, 35))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog) && !cptr.ld1so(nhfp, FLD.NHFILE_eof))
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
 }
 
 /** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bfsz */
 export function sfi_bitfield(nhfp, d_bitfield, myname, bfsz) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 544))(nhfp, d_bitfield, myname, bfsz);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_bitfield))(nhfp, d_bitfield, myname, bfsz);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 544))(nhfp, d_bitfield, myname, bfsz);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_bitfield))(nhfp, d_bitfield, myname, bfsz);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_bitfield(cptr.ldPtro(nhfp, 80), d_bitfield, myname, bfsz);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_bitfield(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_bitfield, myname, bfsz);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, 1, bitfield_dump(d_bitfield));
     }
 }
 
 /** C ref: sfbase.c:249 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function sfo_char(nhfp, d_char, myname, cnt) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 1n, cnt, sfvalue_char(d_char, cnt));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 536))(nhfp, d_char, myname, cnt);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_char))(nhfp, d_char, myname, cnt);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 536))(nhfp, d_char, myname, cnt);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_char))(nhfp, d_char, myname, cnt);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c:265 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
 export function sfi_char(nhfp, d_char, myname, cnt) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 536))(nhfp, d_char, myname, cnt);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_char))(nhfp, d_char, myname, cnt);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 536))(nhfp, d_char, myname, cnt);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_char))(nhfp, d_char, myname, cnt);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_char(cptr.ldPtro(nhfp, 80), d_char, myname, cnt);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_char(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_char, myname, cnt);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 1n, cnt, sfvalue_char(d_char, cnt));
     }
 }
 
 /** C ref: sfbase.c:290 — @param {CPtr} nhfp @param {CPtr} d_genericptr @param {CPtr} myname */
 export function sfo_genericptr(nhfp, d_genericptr, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_genericptr(d_genericptr));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 384))(nhfp, d_genericptr, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_genericptr))(nhfp, d_genericptr, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 384))(nhfp, d_genericptr, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_genericptr))(nhfp, d_genericptr, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c:306 — @param {CPtr} nhfp @param {CPtr} d_genericptr @param {CPtr} myname */
 export function sfi_genericptr(nhfp, d_genericptr, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 384))(nhfp, d_genericptr, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_genericptr))(nhfp, d_genericptr, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 384))(nhfp, d_genericptr, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_genericptr))(nhfp, d_genericptr, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            sfo_genericptr(cptr.ldPtro(nhfp, 80), d_genericptr, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            sfo_genericptr(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_genericptr, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 8n, 1, sfvalue_genericptr(d_genericptr));
     }
 }
 
 /** C ref: sfbase.c:330 — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
 export function sfo_version_info(nhfp, d_version_info, myname) {
-    if (cptr.ldPtro(nhfp, 56))
+    if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
         sf_log(nhfp, myname, 24n, 1, complex_dump(d_version_info));
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, 12), 552, 336))(nhfp, d_version_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfoprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_version_info))(nhfp, d_version_info, myname);
     } else {
-        let save_fplog = cptr.ldPtro(nhfp, 56);
-        cptr.stPtro(nhfp, 56, null);
-        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 336))(nhfp, d_version_info, myname);
-        cptr.stPtro(nhfp, 56, save_fplog);
+        let save_fplog = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, null);
+        (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_version_info))(nhfp, d_version_info, myname);
+        cptr.stPtro(nhfp, FLD.NHFILE_fplog, save_fplog);
     }
 }
 
 /** C ref: sfbase.c:348 — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
 export function sfi_version_info(nhfp, d_version_info, myname) {
-    if (cptr.ld1so(nhfp, 32)) {
-        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, 12), 552, 336))(nhfp, d_version_info, myname);
+    if (cptr.ld1so(nhfp, FLD.NHFILE_structlevel)) {
+        (cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_structlevel_procs_fn + FLD.sf_procs_sf_version_info))(nhfp, d_version_info, myname);
     } else {
-        let save_mode = cptr.ldI32o(nhfp, 4);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) & -25);
-        cptr.stI32o(nhfp, 4, cptr.ldI32o(nhfp, 4) | 32);
-        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, 12), 552, 336))(nhfp, d_version_info, myname);
-        cptr.stI32o(nhfp, 4, save_mode);
+        let save_mode = cptr.ldI32o(nhfp, FLD.NHFILE_mode);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) & -25);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, cptr.ldI32o(nhfp, FLD.NHFILE_mode) | 32);
+        (cptr.ldPtro2(sfiflprocs, cptr.ldI32o(nhfp, FLD.NHFILE_fnidx), 552, FLD.sf_fieldlevel_procs_fn_x + FLD.sf_procs_sf_version_info))(nhfp, d_version_info, myname);
+        cptr.stI32o(nhfp, FLD.NHFILE_mode, save_mode);
     }
-    if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
-            cptr.stU64o(d_version_info, 8, cptr.ldU64o(d_version_info, 8) | 1073741824n);
-            sfo_version_info(cptr.ldPtro(nhfp, 80), d_version_info, myname);
+    if (!cptr.ld1so(nhfp, FLD.NHFILE_eof)) {
+        if ((((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert)) {
+            cptr.stU64o(d_version_info, FLD.version_info_feature_set, cptr.ldU64o(d_version_info, FLD.version_info_feature_set) | 1073741824n);
+            sfo_version_info(cptr.ldPtro(nhfp, FLD.NHFILE_nhfpconvert), d_version_info, myname);
         }
-        if (cptr.ldPtro(nhfp, 56))
+        if (cptr.ldPtro(nhfp, FLD.NHFILE_fplog))
             sf_log(nhfp, myname, 24n, 1, complex_dump(d_version_info));
     }
 }
 
 /** C ref: sfbase.c:377 — @param {CPtr} nhfp @param {CPtr} t1 @param {CLongLong} sz @param {CInt} cnt @param {CPtr} txtvalue */
 export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
-    let fp = cptr.ldPtro(nhfp, 56);
+    let fp = cptr.ldPtro(nhfp, FLD.NHFILE_fplog);
     let iocount;
-    let dolog = schar(((cptr.ldI32o(nhfp, 4) & 32) == 0));
+    let dolog = schar(((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & 32) == 0));
     if (fp && dolog) {
-        iocount = ((cptr.ldI32o(nhfp, 4) & NHM.WRITING) == 0) ? cptr.add(nhfp, 16) : cptr.add(nhfp, 24);
+        iocount = ((cptr.ldI32o(nhfp, FLD.NHFILE_mode) & NHM.WRITING) == 0) ? cptr.add(nhfp, FLD.NHFILE_rcount) : cptr.add(nhfp, FLD.NHFILE_wcount);
         void fprintf(fp, __sl0, cptr.ldI64(iocount), t1, sz, cnt, txtvalue);
         fflush(fp);
     }
