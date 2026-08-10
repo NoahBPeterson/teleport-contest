@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { DEADMONSTER, DIR_CLAMP, DIR_LEFT, DIR_RIGHT, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_ROOM, IS_SINK, IS_WATERWALL, Is_airlevel, Is_box, Is_container, Is_qstart, Is_rogue_level, Is_waterlevel, MCORPSENM, MON_AT, M_AP_TYPE, OBJ_AT, OMID, P_SKILL, SURFACE_AT, SchroedingersBox, ZAP_POS, amphibious, bimanual, breathless, cansee, canspotmon, carnivorous, carried, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, completelyburns, couldsee, distu, engulfing_u, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_warning, has_omonst, has_oname, haseyes, hides_under, is_cmap_door, is_corrodeable, is_crackable, is_demon, is_golem, is_hole, is_magical_trap, is_metallic, is_mplayer, is_pick, is_pit, is_poisonable, is_rider, is_rustprone, is_swimmer, is_undead, is_vampshifter, is_weptool, is_whirly, ismnum, min, nohands, noncorporeal, obj_is_generic, perceives, random_monster, random_object, type_is_pname, u_at, undestroyable_trap, unique_corpstat, unpolyable } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, BInvis, Blind, Cold_resistance, Deaf, Disint_resistance, Drain_resistance, Fire_resistance, Fumbling, HFast, HStun, Half_physical_damage, Half_spell_damage, Hallucination, Invis, Levitation, Luck, Passes_walls, Punished, Reflecting, SYSOPT_SEDUCE, Shock_resistance, Sleep_resistance, Stoned, Teleport_control, Unchanging, Underwater, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, putstr, sokoban_dnum, start_menu, wizard } from './nhprop.js';
 import { objects } from './objects.js';
 import { discover_object, observe_object } from './o_init.js';
@@ -668,8 +669,8 @@ export function bhitm(mtmp, otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let zap_type_text = __sl18;
     let obj;
-    let disguised_mimic = schar((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING ? 1 : 0));
-    if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
+    let disguised_mimic = schar((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC && M_AP_TYPE(mtmp) != NHC.M_AP_NOTHING ? 1 : 0));
+    if (engulfing_u(mtmp))
         reveal_invis = 0;
     cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(mtmp, $monst_mx) != cptr.ldI16o(gb, $instance_globals_b_bhitpos) || cptr.ldI16o(mtmp, $monst_my) != cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) ? 1 : 0)));
     skilled_spell = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS && (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 1 : 0));
@@ -680,7 +681,7 @@ export function bhitm(mtmp, otmp) {
         ;
         case NHC.SPE_FORCE_BOLT:
         reveal_invis = 1;
-        learn_it.v = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0));
+        learn_it.v = schar(cansee(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
         if (resists_magm(mtmp)) {
             if (disguised_mimic && !disguised_as_mon(mtmp))
                 seemimic(mtmp);
@@ -709,7 +710,7 @@ export function bhitm(mtmp, otmp) {
                 seemimic(mtmp);
             mon_adjust_speed(mtmp, -1, otmp);
             check_gear_next_turn(mtmp);
-            if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && (cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_AIR_ELEMENTAL, 96)))) {
+            if (engulfing_u(mtmp) && is_whirly(cptr.ldPtro(mtmp, $monst_data))) {
                 You(__sl23, mon_nam(mtmp));
                 pline(__sl24);
                 expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1);
@@ -730,7 +731,7 @@ export function bhitm(mtmp, otmp) {
         wake = 0;
         if (unturn_dead(mtmp))
             wake = 1;
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || (cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((mtmp), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) {
+        if (is_undead(cptr.ldPtro(mtmp, $monst_data)) || is_vampshifter(mtmp)) {
             reveal_invis = 1;
             wake = 1;
             dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 251, __sl22), rnd(8)) : rnd(8));
@@ -740,7 +741,7 @@ export function bhitm(mtmp, otmp) {
                 dmg = spell_damage_bonus(dmg);
             cptr.st1o(svc, $context_info_bypasses, 1);
             if (!resist(mtmp, cptr.ld1so(otmp, $obj_oclass), dmg, NHM.NOTELL)) {
-                if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
+                if (!DEADMONSTER(mtmp))
                     monflee(mtmp, 0, 0, 1);
             }
         }
@@ -748,13 +749,13 @@ export function bhitm(mtmp, otmp) {
         case NHC.WAN_POLYMORPH:
         case NHC.SPE_POLYMORPH:
         case NHC.POT_POLYMORPH:
-        if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)) != NHC.NON_PM)) {
+        if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((mtmp), $monst_mextra) && MCORPSENM(mtmp) != NHC.NON_PM)) {
             ;
         } else if (resists_magm(mtmp)) {
             shieldeff_mon(mtmp);
         } else if (!resist(mtmp, cptr.ld1so(otmp, $obj_oclass), 0, NHM.NOTELL)) {
             let polyspot = schar((otyp != NHC.POT_POLYMORPH));
-            let give_msg = schar((!Hallucination() && (canseemon(mtmp) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) ? 1 : 0));
+            let give_msg = schar((!Hallucination() && (canseemon(mtmp) || engulfing_u(mtmp)) ? 1 : 0));
             if (polyspot)
                 for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj))
                     bypass_obj(obj);
@@ -770,13 +771,13 @@ export function bhitm(mtmp, otmp) {
                     ncflags |= NHM.NC_VIA_WAND_OR_SPELL;
                 if (give_msg)
                     ncflags |= NHM.NC_SHOW_MSG;
-                if (newcham(mtmp, null, ncflags) != 0 || (((cptr.ldI16o(mtmp, $monst_cham)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, $monst_cham)) < NHC.NUMMONS) && newcham(mtmp, cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96), ncflags) != 0)) {
-                    if (give_msg && ((canseemon(mtmp) || sensemon(mtmp)) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))))
+                if (newcham(mtmp, null, ncflags) != 0 || (ismnum(cptr.ldI16o(mtmp, $monst_cham)) && newcham(mtmp, cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96), ncflags) != 0)) {
+                    if (give_msg && (canspotmon(mtmp) || engulfing_u(mtmp)))
                         learn_it.v = 1;
                 }
             }
-            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96))) {
-                if (!(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)) != NHC.NON_PM))
+            if (!DEADMONSTER(mtmp) && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96))) {
+                if (!(cptr.ldPtro((mtmp), $monst_mextra) && MCORPSENM(mtmp) != NHC.NON_PM))
                     newmcorpsenm(mtmp);
                 cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, NHC.PM_LONG_WORM);
                 cptr.st1o(svc, $context_info_bypasses, 1);
@@ -794,7 +795,7 @@ export function bhitm(mtmp, otmp) {
         if (disguised_mimic)
             seemimic(mtmp);
         reveal_invis = schar((!u_teleport_mon(mtmp, 1)));
-        learn_it.v = schar((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0));
+        learn_it.v = schar(canspotmon(mtmp));
         break;
         case NHC.WAN_MAKE_INVISIBLE:
         {
@@ -816,7 +817,7 @@ export function bhitm(mtmp, otmp) {
         }
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
-        if (disguised_mimic && (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.CHEST || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.LARGE_BOX)) || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && ((cptr.ldI32o((mtmp), $monst_mappearance)) >= NHC.S_vodoor && (cptr.ldI32o((mtmp), $monst_mappearance)) <= NHC.S_hcdoor))))
+        if (disguised_mimic && ((M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.CHEST || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.LARGE_BOX)) || (M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE && is_cmap_door(cptr.ldI32o((mtmp), $monst_mappearance)))))
             that_is_a_mimic(mtmp, NHM.MIM_REVEAL);
         wake = closeholdingtrap(mtmp, learn_it);
         break;
@@ -828,7 +829,7 @@ export function bhitm(mtmp, otmp) {
         break;
         case NHC.WAN_OPENING:
         case NHC.SPE_KNOCK:
-        if (disguised_mimic && (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.CHEST || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.LARGE_BOX)) || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && ((cptr.ldI32o((mtmp), $monst_mappearance)) >= NHC.S_vodoor && (cptr.ldI32o((mtmp), $monst_mappearance)) <= NHC.S_hcdoor))))
+        if (disguised_mimic && ((M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.CHEST || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.LARGE_BOX)) || (M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE && is_cmap_door(cptr.ldI32o((mtmp), $monst_mappearance)))))
             that_is_a_mimic(mtmp, NHM.MIM_REVEAL);
         wake = 0;
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
@@ -849,18 +850,18 @@ export function bhitm(mtmp, otmp) {
                 if (canseemon(mtmp))
                     pline(__sl29, Monnam(mtmp));
             }
-            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
+            if (!DEADMONSTER(mtmp)) {
                 wakeup(mtmp, schar((!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n))));
                 abuse_dog(mtmp);
             }
         } else if ((obj = which_armor(mtmp, 1048576n)) !== null) {
             let buf = new Uint8Array(256);
             void cptr.sprintf(cptr.decay(buf), __sl30, s_suffix(Monnam(mtmp)), distant_name(obj, xname));
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
-                if (!(canseemon(mtmp) || sensemon(mtmp)))
+            if (cansee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
+                if (!canspotmon(mtmp))
                     void cptr.strcpy(cptr.decay(buf), An(distant_name(obj, xname)));
                 pline(__sl31, cptr.decay(buf), surface(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-            } else if ((canseemon(mtmp) || sensemon(mtmp))) {
+            } else if (canspotmon(mtmp)) {
                 pline(__sl32, cptr.decay(buf));
             }
             mdrop_obj(mtmp, obj, 0);
@@ -879,7 +880,7 @@ export function bhitm(mtmp, otmp) {
                     mcureblindness(mtmp, schar(canseemon(mtmp)));
                 if (canseemon(mtmp)) {
                     if (disguised_mimic) {
-                        if (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mtmp), $monst_mappearance) == NHC.STRANGE_OBJECT)) {
+                        if ((M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && cptr.ldI32o((mtmp), $monst_mappearance) == NHC.STRANGE_OBJECT)) {
                             set_mimic_sym(mtmp);
                             newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
                         } else
@@ -888,7 +889,7 @@ export function bhitm(mtmp, otmp) {
                         pline(__sl33, Monnam(mtmp), otyp == NHC.SPE_EXTRA_HEALING ? __sl34 : __sl6);
                 }
                 if (cptr.ld1so(mtmp, $monst_mtame) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) && (delta > 0)) {
-                    more_experienced(((delta) < (healamt) ? (delta) : (healamt)), 0);
+                    more_experienced(min(delta, healamt), 0);
                     newexplevel();
                 }
                 if (cptr.ld1so(mtmp, $monst_mtame) || (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
@@ -924,8 +925,8 @@ export function bhitm(mtmp, otmp) {
                 mesg = __sl37;
             if (canseemon(mtmp))
                 pline(__sl30, name, mesg);
-        } else if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC && (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && stone_furniture_type(cptr.ldI32o(mtmp, $monst_mappearance))) || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && stone_object_type(cptr.ldI32o(mtmp, $monst_mappearance))))) {
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+        } else if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC && ((M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE && stone_furniture_type(cptr.ldI32o(mtmp, $monst_mappearance))) || (M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && stone_object_type(cptr.ldI32o(mtmp, $monst_mappearance))))) {
+            if (cansee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
                 set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
                 that_is_a_mimic(mtmp, 3);
             }
@@ -943,10 +944,10 @@ export function bhitm(mtmp, otmp) {
             dmg = spell_damage_bonus(dmg);
         if (resists_drli(mtmp)) {
             shieldeff_mon(mtmp);
-        } else if (!resist(mtmp, cptr.ld1so(otmp, $obj_oclass), dmg, NHM.NOTELL) && !(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
+        } else if (!resist(mtmp, cptr.ld1so(otmp, $obj_oclass), dmg, NHM.NOTELL) && !DEADMONSTER(mtmp)) {
             cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - dmg) | 0);
             cptr.stI32o(mtmp, $monst_mhpmax, (cptr.ldI32o(mtmp, $monst_mhpmax) - dmg) | 0);
-            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || cptr.ldI32o(mtmp, $monst_mhpmax) <= 0 || cptr.ld1uo(mtmp, $monst_m_lev) < 1) {
+            if (DEADMONSTER(mtmp) || cptr.ldI32o(mtmp, $monst_mhpmax) <= 0 || cptr.ld1uo(mtmp, $monst_m_lev) < 1) {
                 killed(mtmp);
             } else {
                 (cptr.st1o(mtmp, $monst_m_lev, cptr.ld1uo(mtmp, $monst_m_lev) + -1)) - (-1);
@@ -962,14 +963,14 @@ export function bhitm(mtmp, otmp) {
         impossible(__sl39, otyp);
         break;
     }
-    if (wake && !(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
+    if (wake && !DEADMONSTER(mtmp)) {
         wakeup(mtmp, schar((helpful_gesture ? 0 : 1)));
         m_respond(mtmp);
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !cptr.ld1so(u, $you_ushops))
             hot_pursuit(mtmp);
     }
-    if (reveal_invis && !(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
+    if (reveal_invis && !DEADMONSTER(mtmp)) {
+        if (cansee(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) && !canspotmon(mtmp))
             map_invisible(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
     }
     if (learn_it.v)
@@ -996,7 +997,7 @@ export function release_hold() {
     } else {
         let relbuf = new Uint8Array(256);
         unstuck(cptr.ldPtro(u, $you_ustuck));
-        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8192n) != 0n))
+        if (!nohands(cptr.ldPtro(mtmp, $monst_data)))
             void cptr.sprintf(cptr.decay(relbuf), __sl44, s_suffix(mon_nam(mtmp)));
         else
             void cptr.sprintf(cptr.decay(relbuf), __sl45, mon_nam(mtmp));
@@ -1008,9 +1009,9 @@ export function release_hold() {
 function probe_objchain(otmp) {
     for (; otmp; otmp = cptr.ldPtr(otmp)) {
         observe_object(otmp);
-        if ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
+        if (Is_container(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
             cptr.stI32o(otmp, $obj_lknown, 1);
-            if (!(cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((otmp), $obj_spe) == 1))
+            if (!SchroedingersBox(otmp))
                 cptr.stI32o(otmp, $obj_cknown, 1);
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN)
             cptr.stI32o(otmp, $obj_known, 1);
@@ -1026,7 +1027,7 @@ export function probe_monster(mtmp) {
         probe_objchain(cptr.ldPtro(mtmp, $monst_minvent));
         void display_minventory(mtmp, 12, null);
     } else {
-        pline(__sl47, noit_Monnam(mtmp), ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) ? __sl48 : __sl6);
+        pline(__sl47, noit_Monnam(mtmp), engulfing_u(mtmp) ? __sl48 : __sl6);
     }
 }
 
@@ -1083,10 +1084,10 @@ export function get_mon_location(mon, xp, yp, locflags) {
 /** C ref: zap.c:713 — @param {CPtr} obj @param {CPtr} cc @param {CInt} adjacentok @returns {CPtr} */
 export function montraits(obj, cc, adjacentok) {
     let mtmp = null;
-    let mtmp2 = (cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((obj), $obj_oextra), $oextra_omonst))) ? get_mtraits(obj, 1) : null;
+    let mtmp2 = has_omonst(obj) ? get_mtraits(obj, 1) : null;
     if (mtmp2) {
         cptr.stPtro(mtmp2, $monst_data, cptr.add(mons, cptr.ldI16o(mtmp2, $monst_mnum), 96));
-        if (cptr.ldI32o(mtmp2, $monst_mhpmax) > 0 || (cptr.eq((cptr.ldPtro(mtmp2, $monst_data)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtro(mtmp2, $monst_data)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.ldPtro(mtmp2, $monst_data)), cptr.add(mons, NHC.PM_PESTILENCE, 96)))) {
+        if (cptr.ldI32o(mtmp2, $monst_mhpmax) > 0 || is_rider(cptr.ldPtro(mtmp2, $monst_data))) {
             mtmp = makemon(cptr.ldPtro(mtmp2, $monst_data), cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), Number(BigInt.asUintN(32, (147463n | (adjacentok ? 16n : 0n)))));
         }
         if (!mtmp) {
@@ -1204,7 +1205,7 @@ export function revive(corpse, by_hero) {
         return null;
     }
     montype.v = cptr.ldI32o(corpse, $obj_corpsenm);
-    is_zomb = schar((cptr.ld1so2(mons, montype.v, 96, $permonst_mlet) == NHC.S_ZOMBIE || (cptr.ld1so(corpse, $obj_where) == NHM.OBJ_BURIED && ((cptr.eq((cptr.add(mons, montype.v, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, montype.v, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, montype.v, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || cptr.ld1so((cptr.add(mons, montype.v, 96)), $permonst_mlet) == NHC.S_TROLL)) ? 1 : 0));
+    is_zomb = schar((cptr.ld1so2(mons, montype.v, 96, $permonst_mlet) == NHC.S_ZOMBIE || (cptr.ld1so(corpse, $obj_where) == NHM.OBJ_BURIED && (is_rider(cptr.add(mons, montype.v, 96)) || cptr.ld1so((cptr.add(mons, montype.v, 96)), $permonst_mlet) == NHC.S_TROLL)) ? 1 : 0));
     cant_finish_meal(corpse);
     x.v = (y.v = 0);
     if (cptr.ld1so(corpse, $obj_where) != NHM.OBJ_CONTAINED) {
@@ -1235,12 +1236,12 @@ export function revive(corpse, by_hero) {
     if (!x.v || (container && ((cptr.ldI32o(container, $obj_olocked) & 1) | 0 || container_nesting.v > 2 || cptr.ldI16o(container, $obj_otyp) == NHC.STATUE || (cptr.ldI16o(container, $obj_otyp) == NHC.BAG_OF_HOLDING && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 952, __sl51), rn2(40)) : rn2(40))))) || (is_zomb && cptr.ld1so(corpse, $obj_where) == NHM.OBJ_BURIED && !zombie_can_dig(x.v, y.v)))
         return null;
     mptr = cptr.add(mons, montype.v, 96);
-    if ((cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
+    if (MON_AT(x.v, y.v)) {
         if (enexto(xy, x.v, y.v, mptr))
             x.v = cptr.ldI16(xy), y.v = cptr.ldI16o(xy, $nhcoord_y);
     }
     if ((cptr.ldI32o(corpse, $obj_oeroded2) & 3) | 0 || (cptr.ld1so2(mons, montype.v, 96, $permonst_mlet) == NHC.S_EEL && !((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP))) {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0))
+        if (cansee(x.v, y.v))
             pline(__sl52, upstart(corpse_xname(corpse, null, NHM.CXN_PFX_THE)));
         return null;
     }
@@ -1252,9 +1253,9 @@ export function revive(corpse, by_hero) {
     if (cant_revive(montype, 1, corpse)) {
         mtmp = makemon(cptr.add(mons, montype.v, 96), x.v, y.v, mmflags);
         if (mtmp) {
-            if ((cptr.ldPtro((corpse), $obj_oextra) && (cptr.ldI32o(cptr.ldPtro((corpse), $obj_oextra), $oextra_omid))))
+            if ((cptr.ldPtro((corpse), $obj_oextra) && OMID(corpse)))
                 free_omid(corpse);
-            if ((cptr.ldPtro((corpse), $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((corpse), $obj_oextra), $oextra_omonst))))
+            if (has_omonst(corpse))
                 free_omonst(corpse);
             if (cptr.ldI16o(mtmp, $monst_cham) == NHC.PM_DOPPELGANGER) {
                 void newcham(mtmp, mptr, NHM.NO_NC_FLAGS);
@@ -1263,7 +1264,7 @@ export function revive(corpse, by_hero) {
                 mon_adjust_speed(mtmp, 2, null);
             }
         }
-    } else if ((cptr.ldPtro((corpse), $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((corpse), $obj_oextra), $oextra_omonst)))) {
+    } else if (has_omonst(corpse)) {
         cptr.stI16(xy, x.v), cptr.stI16o(xy, $nhcoord_y, y.v);
         mtmp = montraits(corpse, xy, 0);
         if (mtmp && cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1))
@@ -1277,7 +1278,7 @@ export function revive(corpse, by_hero) {
         cptr.stI32o(mtmp, $monst_mundetected, 0);
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     }
-    if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
+    if (M_AP_TYPE(mtmp))
         seemimic(mtmp);
     one_of = schar((cptr.ldI64o(corpse, $obj_quan) > 1n));
     if (one_of)
@@ -1285,9 +1286,9 @@ export function revive(corpse, by_hero) {
     if (by_hero) {
         let shkp = null;
         x.v = cptr.ldI16o(corpse, $obj_ox), y.v = cptr.ldI16o(corpse, $obj_oy);
-        if (costly_spot(x.v, y.v) && ((cptr.ld1so((corpse), $obj_where) == NHM.OBJ_INVENT) ? (cptr.ldI32o(corpse, $obj_unpaid) & 1) | 0 : !(cptr.ldI32o(corpse, $obj_no_charge) & 1)))
+        if (costly_spot(x.v, y.v) && (carried(corpse) ? (cptr.ldI32o(corpse, $obj_unpaid) & 1) | 0 : !(cptr.ldI32o(corpse, $obj_no_charge) & 1)))
             shkp = shop_keeper(cptr.ld1s(in_rooms(x.v, y.v, NHC.SHOPBASE)));
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0)) {
+        if (cansee(x.v, y.v)) {
             let buf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(buf), one_of ? __sl53 : __sl6);
             void shk_your(eos(cptr.decay(buf)), corpse);
@@ -1304,11 +1305,11 @@ export function revive(corpse, by_hero) {
         if (shkp && !cptr.eq(mtmp, shkp))
             void stolen_value(corpse, x.v, y.v, schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)), 0);
     }
-    if ((cptr.ldPtro((corpse), $obj_oextra) && (cptr.ldI32o(cptr.ldPtro((corpse), $obj_oextra), $oextra_omid)))) {
+    if ((cptr.ldPtro((corpse), $obj_oextra) && OMID(corpse))) {
         let m_id;
         let ghost;
         let otmp;
-        m_id = (cptr.ldI32o(cptr.ldPtro((corpse), $obj_oextra), $oextra_omid));
+        m_id = OMID(corpse);
         ghost = find_mid(m_id, NHM.FM_FMON);
         if (ghost && cptr.eq(cptr.ldPtro(ghost, $monst_data), cptr.add(mons, NHC.PM_GHOST, 96))) {
             if (canseemon(ghost))
@@ -1327,7 +1328,7 @@ export function revive(corpse, by_hero) {
         }
         free_omid(corpse);
     }
-    if ((cptr.ldPtro((corpse), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((corpse), $obj_oextra)))) && !((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0))
+    if (has_oname(corpse) && !unique_corpstat(cptr.ldPtro(mtmp, $monst_data)))
         mtmp = christen_monst(mtmp, (cptr.ldPtr(cptr.ldPtro((corpse), $obj_oextra))));
     if (cptr.ldI32o(corpse, $obj_oeaten))
         cptr.stI32o(mtmp, $monst_mhp, eaten_stat(cptr.ldI32o(mtmp, $monst_mhp), corpse));
@@ -1413,7 +1414,7 @@ export function unturn_dead(mon) {
                 cptr.st1o(cptr.decay(owner), 0, 0, 1);
             }
             if (youseeit)
-                pline(__sl60, cptr.decay(owner), cptr.decay(corpse), (((cptr.ldU64o((cptr.ldPtro(mtmp2, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp2, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mtmp2, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mtmp2, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl61 : __sl62, different_type ? __sl63 : __sl6, different_type ? an(mon_pmname(mtmp2)) : __sl6);
+                pline(__sl60, cptr.decay(owner), cptr.decay(corpse), (is_undead(cptr.ldPtro(mtmp2, $monst_data)) || cptr.eq((cptr.ldPtro(mtmp2, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(mtmp2, $monst_data)) || cptr.ld1so((cptr.ldPtro(mtmp2, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl61 : __sl62, different_type ? __sl63 : __sl6, different_type ? an(mon_pmname(mtmp2)) : __sl6);
             else if (canseemon(mtmp2))
                 pline(__sl64, Amonnam(mtmp2));
         } else {
@@ -1428,7 +1429,7 @@ export function unturn_dead(mon) {
 /** C ref: zap.c:1225 */
 export function unturn_you() {
     void unturn_dead(cptr.add(gy, $instance_globals_y_youmonst));
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n)) {
+    if (is_undead(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         You_feel(__sl65, HStun() ? __sl66 : __sl6);
         make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl21, 1231, __sl67), rnd(30)) : rnd(30)))), 0);
     } else {
@@ -1439,7 +1440,7 @@ export function unturn_you() {
 /** C ref: zap.c:1239 — @param {CPtr} obj */
 export function cancel_item(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
-    if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
+    if (carried(obj)) {
         switch (otyp) {
             case NHC.RIN_GAIN_STRENGTH:
             if ((cptr.ldI64o(obj, $obj_owornmask) & 393216n) != 0n) {
@@ -1490,7 +1491,7 @@ export function cancel_item(obj) {
             break;
         }
     }
-    if ((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_magic) & 1) | 0 || (cptr.ld1so(obj, $obj_spe) && (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE))) || otyp == NHC.POT_ACID || otyp == NHC.POT_SICKNESS || (otyp == NHC.POT_WATER && ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)) || otyp == NHC.SPE_NOVEL) {
+    if ((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_magic) & 1) | 0 || (cptr.ld1so(obj, $obj_spe) && (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj))) || otyp == NHC.POT_ACID || otyp == NHC.POT_SICKNESS || (otyp == NHC.POT_WATER && ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)) || otyp == NHC.SPE_NOVEL) {
         let cancelled_spe = (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS || otyp == NHC.CRYSTAL_BALL) ? -1 : 0;
         if (cptr.ld1so(obj, $obj_spe) != cancelled_spe && otyp != NHC.WAN_CANCELLATION && otyp != NHC.MAGIC_LAMP && otyp != NHC.CANDELABRUM_OF_INVOCATION) {
             costly_alteration(obj, NHC.COST_CANCEL);
@@ -1521,7 +1522,7 @@ export function cancel_item(obj) {
             break;
         }
     }
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI16o(obj, $obj_timed) && !(cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96)))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI16o(obj, $obj_timed) && !is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96))) {
         let a = cptr.alloc(8); cptr.memcpy(a, obj_to_any(obj), 8);
         let timout = peek_timer(NHC.REVIVE_MON, a);
         if (timout) {
@@ -1545,7 +1546,7 @@ export function blank_novel(obj) {
 /** C ref: zap.c:1382 — @param {CPtr} obj @param {CInt} by_you @returns {CInt} */
 export function drain_item(obj, by_you) {
     let u_ring;
-    if (!obj || (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) && cptr.ld1so(obj, $obj_oclass) != NHC.WEAPON_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.ARMOR_CLASS && !(cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE)) || cptr.ld1so(obj, $obj_spe) <= 0)
+    if (!obj || (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) && cptr.ld1so(obj, $obj_oclass) != NHC.WEAPON_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.ARMOR_CLASS && !is_weptool(obj)) || cptr.ld1so(obj, $obj_spe) <= 0)
         return 0;
     if (defends(NHM.AD_DRLI, obj) || defends_when_carried(NHM.AD_DRLI, obj) || obj_resists(obj, 10, 90))
         return 0;
@@ -1602,14 +1603,14 @@ export function drain_item(obj, by_you) {
     }
     if (cptr.ld1s(disp))
         bot();
-    if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
+    if (carried(obj))
         update_inventory();
     return 1;
 }
 
 /** C ref: zap.c:1458 — @param {CPtr} obj @param {CInt} ochance @param {CInt} achance @returns {CInt} */
 export function obj_resists(obj, ochance, achance) {
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD || cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && (cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD || cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))) {
         return 1;
     } else {
         let chance = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 1469, __sl71), rn2(100)) : rn2(100));
@@ -1734,7 +1735,7 @@ function create_polymon(obj, okind) {
         mdat = cptr.add(mons, pm_index, 96);
     mtmp = makemon(mdat, cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy), NHM.MM_NOMSG);
     polyuse(obj, okind, cptr.ldI32o2(mons, pm_index, 96, $permonst_cwt) | 0);
-    if (mtmp && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+    if (mtmp && cansee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
         pline(__sl85, material, a_monnam(mtmp));
     }
 }
@@ -1769,7 +1770,7 @@ export function do_osshock(obj) {
 
 /** C ref: zap.c:1678 — @param {CPtr} obj @returns {CInt} */
 export function obj_unpolyable(obj) {
-    return schar(((cptr.ldI16o((obj), $obj_otyp) == NHC.WAN_POLYMORPH || cptr.ldI16o((obj), $obj_otyp) == NHC.SPE_POLYMORPH || cptr.ldI16o((obj), $obj_otyp) == NHC.POT_POLYMORPH || cptr.ldI16o((obj), $obj_otyp) == NHC.AMULET_OF_UNCHANGING) || cptr.eq(obj, uball.v) || cptr.eq(obj, uskin.v) || obj_resists(obj, 5, 95) ? 1 : 0));
+    return schar((unpolyable(obj) || cptr.eq(obj, uball.v) || cptr.eq(obj, uskin.v) || obj_resists(obj, 5, 95) ? 1 : 0));
 }
 
 /** C ref: zap.c:1687 — char[4] */
@@ -1822,7 +1823,7 @@ export function poly_obj(obj, id) {
         cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);
         cptr.st1o(otmp, $obj_spe, 0);
         while (tryct--) {
-            mnum = can_be_hatched(((rn2)(NHC.NUMMONS)));
+            mnum = can_be_hatched(random_monster(rn2));
             if (mnum != NHC.NON_PM && !dead_species(mnum, 1)) {
                 cptr.st1o(otmp, $obj_spe, 1);
                 set_corpsenm(otmp, mnum);
@@ -1836,16 +1837,16 @@ export function poly_obj(obj, id) {
     cptr.stI32o(otmp, $obj_cursed, (cptr.ldI32o(obj, $obj_cursed) & 1));
     cptr.stI32o(otmp, $obj_blessed, (cptr.ldI32o(obj, $obj_blessed) & 1));
     if (erosion_matters(otmp)) {
-        if (is_flammable(otmp) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS))
+        if (is_flammable(otmp) || is_rustprone(otmp) || is_crackable(otmp))
             cptr.stI32o(otmp, $obj_oeroded, (cptr.ldI32o(obj, $obj_oeroded) & 3));
-        if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_rottable(otmp))
+        if (is_corrodeable(otmp) || is_rottable(otmp))
             cptr.stI32o(otmp, $obj_oeroded2, (cptr.ldI32o(obj, $obj_oeroded2) & 3));
-        if (((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS)))
+        if ((is_rustprone(otmp) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp)))
             cptr.stI32o(otmp, $obj_oerodeproof, (cptr.ldI32o(obj, $obj_oerodeproof) & 1));
     }
-    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && (cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((otmp), $obj_otyp) == NHC.CHEST))
+    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && Is_box(otmp))
         cptr.stI32o(otmp, $obj_otrapped, 1);
-    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) >= -24 && cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || permapoisoned(otmp)))
+    if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && is_poisonable(otmp))
         cptr.stI32o(otmp, $obj_otrapped, 1);
     if (id == NHC.STRANGE_OBJECT && cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) {
         if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_CROCODILE) {
@@ -1866,7 +1867,7 @@ export function poly_obj(obj, id) {
             o_unleash(obj);
         }
     }
-    if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
+    if (Has_contents(otmp))
         delete_contents(otmp);
     if (cptr.ldI64o(otmp, $obj_quan) > 1n && (!(cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_merge) & 1) || (can_merge && cptr.ldI64o(otmp, $obj_quan) > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl21, 1833, __sl87), rn2(1000)) : rn2(1000))))))
         cptr.stI64o(otmp, $obj_quan, 1n);
@@ -1918,17 +1919,17 @@ export function poly_obj(obj, id) {
         addinv_core1(otmp);
         addinv_core2(otmp);
         if (old_wornmask) {
-            let was_twohanded = schar(((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_big) & 1) | 0 ? 1 : 0));
+            let was_twohanded = schar(bimanual(obj));
             let was_twoweap = cptr.ld1so(u, $you_twoweap);
             new_wornmask = ((old_wornmask & 1792n) != 0n) ? old_wornmask : (wearslot(otmp) & old_wornmask);
             remove_worn_item(obj, 1);
             if ((new_wornmask & 256n) != 0n) {
-                if (was_twohanded || !((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_big) & 1) | 0) || !uarms.v)
+                if (was_twohanded || !bimanual(otmp) || !uarms.v)
                     setuwep(otmp);
-                if (was_twoweap && uwep.v && !((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(uwep.v, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))
+                if (was_twoweap && uwep.v && !bimanual(uwep.v))
                     set_twoweap(1);
             } else if ((new_wornmask & 1024n) != 0n) {
-                if (was_twohanded || !((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_big) & 1) | 0))
+                if (was_twohanded || !bimanual(otmp))
                     setuswapwep(otmp);
                 if (was_twoweap && uswapwep.v)
                     set_twoweap(1);
@@ -1951,9 +1952,9 @@ export function poly_obj(obj, id) {
                 block_point(ox.v, oy.v);
         }
     }
-    if (((otmp && !(cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT)) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) && costly_spot(ox.v, oy.v)) {
+    if (((otmp && !carried(otmp)) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) && costly_spot(ox.v, oy.v)) {
         let shkp = shop_keeper(cptr.ld1s(in_rooms(ox.v, oy.v, NHC.SHOPBASE)));
-        if ((!(cptr.ldI32o(obj, $obj_no_charge) & 1) || ((cptr.ldPtro((obj), $obj_cobj) !== null) && (contained_cost(obj, shkp, 0n, 0, 0) != 0n))) && inhishop(shkp)) {
+        if ((!(cptr.ldI32o(obj, $obj_no_charge) & 1) || (Has_contents(obj) && (contained_cost(obj, shkp, 0n, 0, 0) != 0n))) && inhishop(shkp)) {
             if ((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)) {
                 if (cptr.ld1so(u, $you_ushops) && (cptr.ld1s(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0)) == cptr.ld1s(in_rooms(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 0))) && !costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     make_angry_shk(shkp, ox.v, oy.v);
@@ -1993,9 +1994,9 @@ function stone_to_flesh_obj(obj) {
             smell = 1;
         } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) {
             ptr = cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96);
-            if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM)) {
+            if (is_golem(ptr)) {
                 golem_xform = schar((!cptr.eq(ptr, cptr.add(mons, NHC.PM_FLESH_GOLEM, 96))));
-            } else if (((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((ptr), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((ptr), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((ptr), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((ptr), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
+            } else if (((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((ptr), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((ptr), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((ptr), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((ptr), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(ptr)) || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((ptr), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
                 obj = poly_obj(obj, NHC.MEATBALL);
                 smell = 1;
                 break;
@@ -2007,23 +2008,23 @@ function stone_to_flesh_obj(obj) {
                     ptr = cptr.add(mons, NHC.PM_FLESH_GOLEM, 96);
                 mon = makemon(ptr, oox.v, ooy.v, 131073);
                 if (mon) {
-                    if (costly_spot(oox.v, ooy.v) && ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) ? (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 : !(cptr.ldI32o(obj, $obj_no_charge) & 1))) {
+                    if (costly_spot(oox.v, ooy.v) && (carried(obj) ? (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 : !(cptr.ldI32o(obj, $obj_no_charge) & 1))) {
                         shkp = shop_keeper(cptr.ld1s(in_rooms(oox.v, ooy.v, NHC.SHOPBASE)));
                         stolen_value(obj, oox.v, ooy.v, schar((shkp && (cptr.ldI32o(shkp, $monst_mpeaceful) & 1) | 0 ? 1 : 0)), 0);
                     }
                     if (cptr.ldI16o(obj, $obj_timed))
                         obj_stop_timers(obj);
-                    if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
+                    if (carried(obj))
                         useup(obj);
                     else
                         delobj(obj);
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0))
+                    if (cansee(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)))
                         pline_The(__sl90, golem_xform ? __sl91 : __sl6);
                 }
             }
             if (mon) {
                 ptr = cptr.ldPtro(mon, $monst_data);
-                if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)))
+                if (is_golem(ptr) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)))
                     void newcham(mon, cptr.add(mons, NHC.PM_FLESH_GOLEM, 96), NHM.NC_VIA_WAND_OR_SPELL);
             } else if ((cptr.ldU16o(ptr, $permonst_geno) & 4112) != 0) {
                 res = 0;
@@ -2060,7 +2061,7 @@ function stone_to_flesh_obj(obj) {
     }
     (void (obj));
     if (smell) {
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) || !cptr.ldI64o(u, $you_uconduct) || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n))
+        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) || !cptr.ldI64o(u, $you_uconduct) || !carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             Norep(__sl92);
         else
             Norep(__sl93);
@@ -2110,11 +2111,11 @@ export function bhito(obj, otmp) {
             }
             if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polypiles, cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles) + 1n)) - (1n)))
                 livelog_printf(32n, __sl97, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
-            if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST))
+            if (Is_box(obj))
                 void boxlock(obj, otmp);
             if (obj_shudders(obj)) {
-                let cover = schar(((cptr.eq(obj, cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(obj, $obj_oy), 8), cptr.ldI16o(obj, $obj_ox)) & NHM.IN_SIGHT) != 0))
+                let cover = schar(((cptr.eq(obj, cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+                if (cansee(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
                     learn_it = 1;
                 do_osshock(obj);
                 if (cover)
@@ -2127,16 +2128,16 @@ export function bhito(obj, otmp) {
             case NHC.WAN_PROBING:
             res = !(cptr.ldI32o(obj, $obj_dknown) & 1);
             observe_object(obj);
-            if ((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
+            if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
                 cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
-                if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST) && !(cptr.ldI32o(obj, $obj_tknown) & 1)) {
+                if (Is_box(obj) && !(cptr.ldI32o(obj, $obj_tknown) & 1)) {
                     if ((cptr.ldI32o(obj, $obj_otrapped) & 1))
                         pline(__sl98, Tobjnam(obj, __sl99));
                     cptr.stI32o(obj, $obj_tknown, 1);
                 }
                 if (!cptr.ldPtro(obj, $obj_cobj)) {
                     pline(__sl100, Tobjnam(obj, __sl99));
-                } else if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX && cptr.ld1so((obj), $obj_spe) == 1)) {
+                } else if (SchroedingersBox(obj)) {
                     You(__sl101, the(xname(obj)), an(Hallucination() ? rndmonnam(null) : __sl102));
                     cptr.stI32o(obj, $obj_cknown, 0);
                 } else {
@@ -2161,17 +2162,17 @@ export function bhito(obj, otmp) {
             break;
             case NHC.WAN_STRIKING:
             case NHC.SPE_FORCE_BOLT:
-            maybelearnit = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(obj, $obj_oy), 8), cptr.ldI16o(obj, $obj_ox)) & NHM.IN_SIGHT) != 0) || !Deaf() ? 1 : 0));
+            maybelearnit = schar((cansee(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)) || !Deaf() ? 1 : 0));
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER) {
                 ;
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(obj, $obj_oy), 8), cptr.ldI16o(obj, $obj_ox)) & NHM.IN_SIGHT) != 0))
+                if (cansee(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
                     pline_The(__sl103);
                 else
                     You_hear(__sl104);
                 fracture_rock(obj);
             } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
                 if (break_statue(obj)) {
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(obj, $obj_oy), 8), cptr.ldI16o(obj, $obj_ox)) & NHM.IN_SIGHT) != 0)) {
+                    if (cansee(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy))) {
                         if (Hallucination())
                             pline_The(__sl105, rndmonnam(null));
                         else
@@ -2231,18 +2232,18 @@ export function bhito(obj, otmp) {
                     cptr.stI32o(obj, $obj_oeroded2, save_norevive);
                     res = 0;
                 } else {
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), oy.v, 8), ox.v) & NHM.IN_SIGHT) != 0)) {
-                        if ((canseemon(mtmp) || sensemon(mtmp))) {
+                    if (cansee(ox.v, oy.v)) {
+                        if (canspotmon(mtmp)) {
                             pline(__sl107, upstart(noname_monnam(mtmp, NHM.ARTICLE_THE)));
                             learn_it = schar((by_u ? 1 : cptr.ld1so(gz, $instance_globals_z_zap_oseen)));
                         } else {
-                            if (!((cptr.ldU64o((cptr.add(mons, corpsenm, 96)), $permonst_mflags2) & 524288n) != 0n))
+                            if (!type_is_pname(cptr.add(mons, corpsenm, 96)))
                                 corpsname = The(corpsname);
                             pline(__sl108, corpsname);
                         }
                     } else {
-                        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) && !Deaf() && !(((cptr.ldU64o((cptr.add(mons, corpsenm, 96)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_VORTEX))) {
-                            if (!((cptr.ldU64o((cptr.add(mons, corpsenm, 96)), $permonst_mflags2) & 524288n) != 0n))
+                        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) && !Deaf() && !(is_undead(cptr.add(mons, corpsenm, 96)) || cptr.eq((cptr.add(mons, corpsenm, 96)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.add(mons, corpsenm, 96)) || cptr.ld1so((cptr.add(mons, corpsenm, 96)), $permonst_mlet) == NHC.S_VORTEX))) {
+                            if (!type_is_pname(cptr.add(mons, corpsenm, 96)))
                                 corpsname = an(corpsname);
                             if (!Hallucination())
                                 You_hear(__sl109, corpsname);
@@ -2250,7 +2251,7 @@ export function bhito(obj, otmp) {
                                 You_hear(__sl110);
                             learn_it = schar((by_u ? 1 : cptr.ld1so(gz, $instance_globals_z_zap_oseen)));
                         }
-                        if ((canseemon(mtmp) || sensemon(mtmp)))
+                        if (canspotmon(mtmp))
                             pline(__sl111, Monnam(mtmp));
                     }
                     if (learn_it)
@@ -2262,7 +2263,7 @@ export function bhito(obj, otmp) {
             case NHC.SPE_KNOCK:
             case NHC.WAN_LOCKING:
             case NHC.SPE_WIZARD_LOCK:
-            if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST))
+            if (Is_box(obj))
                 res = boxlock(obj, otmp);
             else
                 res = 0;
@@ -2299,7 +2300,7 @@ export function bhitpile(obj, fhito, tx, ty, zz) {
     let hitanything = 0;
     if (!cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_objects))
         return 0;
-    hidingunder = schar((zz != 0 && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
+    hidingunder = schar((zz != 0 && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
     first = 1;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_FORCE_BOLT || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING) {
         let t = t_at(tx, ty);
@@ -2432,7 +2433,7 @@ export function dozap() {
     let obj;
     let damage;
     let need_dir;
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
+    if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         You(__sl121);
         return NHM.ECMD_OK;
     }
@@ -2479,7 +2480,7 @@ function boxlock_invent(obj) {
     let boxing = 0;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
-        if ((cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((otmp), $obj_otyp) == NHC.CHEST)) {
+        if (Is_box(otmp)) {
             void boxlock(otmp, obj);
             boxing = 1;
         }
@@ -2644,12 +2645,12 @@ export function zapyourself(obj, ordinary) {
         case NHC.WAN_TELEPORTATION:
         case NHC.SPE_TELEPORT_AWAY:
         tele();
-        if ((Teleport_control() && !HStun()) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(u, $you_uy0), 8), cptr.ldI16o(u, $you_ux0)) & NHM.COULD_SEE) != 0) || dist2((cptr.ldI16o(u, $you_ux0)), (cptr.ldI16o(u, $you_uy0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) >= 16)
+        if ((Teleport_control() && !HStun()) || !couldsee(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)) || distu(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)) >= 16)
             learn_it.v = 1;
         break;
         case NHC.WAN_DEATH:
         case NHC.SPE_FINGER_OF_DEATH:
-        if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
+        if ((is_undead(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || is_demon(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             pline((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_DEATH) ? __sl145 : __sl146);
             break;
         }
@@ -2814,7 +2815,7 @@ function zap_steed(obj) {
         case NHC.WAN_TELEPORTATION:
         case NHC.SPE_TELEPORT_AWAY:
         tele();
-        if ((Teleport_control() && !HStun()) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(u, $you_uy0), 8), cptr.ldI16o(u, $you_ux0)) & NHM.COULD_SEE) != 0) || dist2((cptr.ldI16o(u, $you_ux0)), (cptr.ldI16o(u, $you_uy0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) >= 16)
+        if ((Teleport_control() && !HStun()) || !couldsee(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)) || distu(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)) >= 16)
             learnwand(obj);
         steedhit = 1;
         break;
@@ -2919,9 +2920,9 @@ function zap_updown(obj) {
             let ltyp;
             let rememberedltyp = schar(update_mapseen_for(x, y));
             ptmp = (ptmp + bhitpile(obj, bhito, x, y, schar(cptr.ldI32o(u, $you_dz)))) | 0;
-            ltyp = schar(((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)));
+            ltyp = schar(SURFACE_AT(x, y));
             zap_map(x, y, obj);
-            if (ltyp == NHC.ICE || ((ltyp) >= NHC.STAIRS && (ltyp) <= NHC.ALTAR)) {
+            if (ltyp == NHC.ICE || IS_FURNITURE(ltyp)) {
                 surf = __sl164;
                 if (cptr.ld1so3(svl, x, 21, y, 1, 0) != rememberedltyp)
                     ptmp = (ptmp + 1) | 0;
@@ -2967,7 +2968,7 @@ function zap_updown(obj) {
             else
                 destroy_drawbridge(xx.v, yy.v);
             disclose.v = 1;
-        } else if (striking && cptr.ldI32o(u, $you_dz) < 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3307, __sl168), rn2(3)) : rn2(3)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Underwater() && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
+        } else if (striking && cptr.ldI32o(u, $you_dz) < 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3307, __sl168), rn2(3)) : rn2(3)) && !Is_airlevel(cptr.add(u, $you_uz)) && !Is_waterlevel(cptr.add(u, $you_uz)) && !Underwater() && !Is_qstart(cptr.add(u, $you_uz))) {
             let dmg;
             pline(__sl169, ceiling(x, y), body_part(NHC.HEAD));
             dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3314, __sl168), rnd(hard_helmet(uarmh.v) ? 2 : 6)) : rnd(hard_helmet(uarmh.v) ? 2 : 6));
@@ -3007,11 +3008,11 @@ function zap_updown(obj) {
         }
         break;
         case NHC.SPE_STONE_TO_FLESH:
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && cptr.ldI32o(u, $you_dz) < 0)) {
+        if (Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (Is_qstart(cptr.add(u, $you_uz)) && cptr.ldI32o(u, $you_dz) < 0)) {
             pline(__sl123, cptr.ldPtr(c_common_strings));
         } else if (cptr.ldI32o(u, $you_dz) < 0) {
             pline(__sl178, body_part(NHC.FACE));
-        } else if (cptr.ldI32o(u, $you_dz) > 0 && !(cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
+        } else if (cptr.ldI32o(u, $you_dz) > 0 && !OBJ_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             e = engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if (!(e && cptr.ld1so(e, $engr_engr_type) == NHM.ENGRAVE)) {
                 if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
@@ -3029,7 +3030,7 @@ function zap_updown(obj) {
         if (!map_zapped)
             zap_map(x, y, obj);
     } else if (cptr.ldI32o(u, $you_dz) < 0) {
-        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
+        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             let hitit = 0;
             otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
             if (otmp)
@@ -3116,7 +3117,7 @@ export function spell_damage_bonus(dmg) {
 function spell_hit_bonus(skill) {
     let hit_bon = 0;
     let dex = (acurr(NHC.A_DEX));
-    switch ((cptr.ldI16o2(u, spell_skilltype(skill), 6, $you_weapon_skills))) {
+    switch (P_SKILL(spell_skilltype(skill))) {
         case NHC.P_ISRESTRICTED:
         case NHC.P_UNSKILLED:
         hit_bon = -4;
@@ -3151,13 +3152,13 @@ export function exclam(force) {
 
 /** C ref: zap.c:3556 — @param {CPtr} str @param {CPtr} mtmp @param {CPtr} force */
 export function hit(str, mtmp, force) {
-    let verbosely = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) || (cptr.ld1so(flags, $flag_verbose) && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) || (canseemon(mtmp) || sensemon(mtmp)) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))) ? 1 : 0));
+    let verbosely = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) || (cptr.ld1so(flags, $flag_verbose) && (cansee(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || canspotmon(mtmp) || engulfing_u(mtmp))) ? 1 : 0));
     pline(__sl190, The(str), vtense(str, __sl191), verbosely ? mon_nam(mtmp) : __sl164, force);
 }
 
 /** C ref: zap.c:3571 — @param {CPtr} str @param {CPtr} mtmp */
 export function miss(str, mtmp) {
-    pline(__sl192, The(str), vtense(str, __sl193), ((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) || (canseemon(mtmp) || sensemon(mtmp))) && cptr.ld1so(flags, $flag_verbose)) ? mon_nam(mtmp) : __sl164);
+    pline(__sl192, The(str), vtense(str, __sl193), ((cansee(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || canspotmon(mtmp)) && cptr.ld1so(flags, $flag_verbose)) ? mon_nam(mtmp) : __sl164);
 }
 
 /** C ref: zap.c:3579 — @param {CInt} range @param {CPtr} skipstart @param {CPtr} skipend */
@@ -3177,15 +3178,15 @@ function maybe_explode_trap(ttmp, otmp, learn_it) {
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_CANCELLATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_CANCELLATION) {
         let x = cptr.ldI16o(ttmp, $trap_tx);
         let y = cptr.ldI16o(ttmp, $trap_ty);
-        if (((((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.MAGIC_PORTAL || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.VIBRATING_SQUARE)) {
+        if (undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
             shieldeff(x, y);
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+            if (cansee(x, y)) {
                 cptr.stI32o(ttmp, $trap_tseen, 1);
                 newsym(x, y);
                 cptr.st1(learn_it, 1);
             }
-        } else if (((((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.TELEP_TRAP || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.LEVEL_TELEP || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.MAGIC_TRAP || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.ANTI_MAGIC || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.POLY_TRAP)) {
-            let seeit = ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0);
+        } else if (is_magical_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
+            let seeit = cansee(x, y);
             explode(x, y, -423, (20 + (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3616, __sl195), d(3, 6)) : d(3, 6))) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL);
             deltrap(ttmp);
             newsym(x, y);
@@ -3246,14 +3247,14 @@ function zap_map(x, y, obj) {
                 case NHC.WAN_OPENING:
                 case NHC.SPE_KNOCK:
                 if (is_db_wall(x, y)) {
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), dby.v, 8), dbx.v) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+                    if (cansee(dbx.v, dby.v) || cansee(x, y))
                         learn_it.v = 1;
                     open_drawbridge(dbx.v, dby.v);
                 }
                 break;
                 case NHC.WAN_LOCKING:
                 case NHC.SPE_WIZARD_LOCK:
-                if ((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), dby.v, 8), dbx.v) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) && cptr.ld1so3(svl, dbx.v, 756, dby.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN)
+                if ((cansee(dbx.v, dby.v) || cansee(x, y)) && cptr.ld1so3(svl, dbx.v, 756, dby.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN)
                     learn_it.v = 1;
                 close_drawbridge(dbx.v, dby.v);
                 break;
@@ -3277,15 +3278,15 @@ function zap_map(x, y, obj) {
         if (oldtyp != cptr.ld1so3(svl, x, 21, y, 1, 0) || oldglyph != glyph_at(x, y)) {
             learn_it.v = 1;
         }
-        ltyp = schar(((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? db_under_typ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) : cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)));
+        ltyp = schar(SURFACE_AT(x, y));
         if (ltyp == NHC.SDOOR) {
             cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36));
             recalc_block_point(x, y);
             newsym(x, y);
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+            if (cansee(x, y)) {
                 pline(__sl199);
                 learn_it.v = 1;
-            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+            } else if (Is_rogue_level(cptr.add(u, $you_uz))) {
                 draft_message(0);
             }
         } else if (ltyp == NHC.SCORR) {
@@ -3294,7 +3295,7 @@ function zap_map(x, y, obj) {
             newsym(x, y);
             pline(__sl200);
             learn_it.v = 1;
-        } else if (ltyp == NHC.ICE || ((ltyp) >= NHC.STAIRS && (ltyp) <= NHC.ALTAR)) {
+        } else if (ltyp == NHC.ICE || IS_FURNITURE(ltyp)) {
             if (cptr.ldI32o(u, $you_dz) > 0) {
                 force_decor(1);
                 learn_it.v = 1;
@@ -3354,9 +3355,9 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
         } else if (weapon == NHC.THROWN_TETHERED_WEAPON && obj) {
             tethered_weapon = 1;
             weapon = NHC.THROWN_WEAPON;
-            tmp_at(-3, i16(((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((obj), $obj_dknown) & 1) && (cptr.ld1so((obj), $obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))))));
+            tmp_at(-3, i16(((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((random_monster(rn2_on_display_rng)) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, random_object(rn2_on_display_rng))) == NHC.CORPSE) ? ((random_monster(rn2_on_display_rng) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))))));
         } else if (weapon != NHC.ZAPPED_WAND && weapon != NHC.INVIS_BEAM)
-            tmp_at(-4, i16(((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : ((!(cptr.ldI32o((obj), $obj_dknown) & 1) && (cptr.ld1so((obj), $obj_oclass) == NHC.POTION_CLASS || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_REAL_GEM && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_GLASS_GEM)) || (cptr.ldI16o((obj), $obj_otyp) >= NHC.FIRST_SPELL && (cptr.ldI16o((obj), $obj_otyp) <= NHC.LAST_SPELL)))) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))))));
+            tmp_at(-4, i16(((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((random_monster(rn2_on_display_rng)) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, random_object(rn2_on_display_rng))) == NHC.CORPSE) ? ((random_monster(rn2_on_display_rng) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))))));
         while (range-- > 0) {
             let x;
             let y;
@@ -3370,13 +3371,13 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                 cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - ddy);
                 break;
             }
-            if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_PICK_AXE) && inside_shop(x, y) && (mtmp = shkcatch(obj, x, y)) !== null) {
+            if (is_pick(obj) && inside_shop(x, y) && (mtmp = shkcatch(obj, x, y)) !== null) {
                 tmp_at(-7, 0);
                 result = mtmp;
                 break __lbl_bhit_done;
             }
             typ = uchar(cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ));
-            if (((typ) == NHC.WATER) || typ == NHC.LAVAWALL) {
+            if (IS_WATERWALL(typ) || typ == NHC.LAVAWALL) {
                 if (weapon == NHC.THROWN_WEAPON || weapon == NHC.KICKED_WEAPON)
                     break;
             }
@@ -3401,7 +3402,7 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
             mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
             ttmp = t_at(x, y);
             if (!mtmp && ttmp && (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.WEB) && (weapon == NHC.THROWN_WEAPON || weapon == NHC.KICKED_WEAPON) && !(rng_log_enabled() ? (rng_log_set_caller(__sl21, 3930, __sl202), rn2(3)) : rn2(3))) {
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+                if (cansee(x, y)) {
                     pline(__sl203, Yname2(obj));
                     cptr.stI32o(ttmp, $trap_tseen, 1);
                     newsym(x, y);
@@ -3427,14 +3428,14 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                     in_skip = 0;
                     if (range > 3)
                         skiprange(range, skiprange_start, skiprange_end);
-                } else if (mtmp && (cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_EEL || (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 512n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1024n) != 0n)))) {
-                    if (!Blind() && (canseemon(mtmp) || sensemon(mtmp)))
+                } else if (mtmp && (cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_EEL || (is_swimmer(cptr.ldPtro(mtmp, $monst_data)) || amphibious(cptr.ldPtro(mtmp, $monst_data)) || breathless(cptr.ldPtro(mtmp, $monst_data))))) {
+                    if (!Blind() && canspotmon(mtmp))
                         pline(__sl208, Yname2(obj), otense(obj, __sl209), mon_nam(mtmp));
                     mtmp = null;
                 }
             }
             xyglyph = glyph_at(x, y);
-            if (mtmp && (((weapon == NHC.THROWN_WEAPON || weapon == NHC.KICKED_WEAPON) && (shade_miss(cptr.add(gy, $instance_globals_y_youmonst), mtmp, obj, 1, 1) || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && !((((xyglyph) >= NHC.GLYPH_MON_MALE_OFF && (xyglyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((xyglyph) >= NHC.GLYPH_MON_FEM_OFF && (xyglyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((xyglyph) >= NHC.GLYPH_PET_MALE_OFF && (xyglyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((xyglyph) >= NHC.GLYPH_PET_FEM_OFF && (xyglyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((xyglyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (xyglyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((xyglyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (xyglyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((xyglyph) >= NHC.GLYPH_DETECT_MALE_OFF && (xyglyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((xyglyph) >= NHC.GLYPH_DETECT_FEM_OFF && (xyglyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)))) && !((xyglyph) >= NHC.GLYPH_WARNING_OFF && (xyglyph) < ((NHC.GLYPH_WARNING_OFF + 6) | 0)) && !((xyglyph) == NHC.GLYPH_INVIS_OFF)))) || (weapon == NHC.FLASHED_LIGHT && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT)))
+            if (mtmp && (((weapon == NHC.THROWN_WEAPON || weapon == NHC.KICKED_WEAPON) && (shade_miss(cptr.add(gy, $instance_globals_y_youmonst), mtmp, obj, 1, 1) || (M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && !((glyph_is_normal_male_monster(xyglyph) || glyph_is_normal_female_monster(xyglyph)) || (glyph_is_male_pet(xyglyph) || glyph_is_female_pet(xyglyph)) || (glyph_is_ridden_male_monster(xyglyph) || glyph_is_ridden_female_monster(xyglyph)) || (glyph_is_detected_male_monster(xyglyph) || glyph_is_detected_female_monster(xyglyph))) && !glyph_is_warning(xyglyph) && !glyph_is_invisible(xyglyph)))) || (weapon == NHC.FLASHED_LIGHT && M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT)))
                 mtmp = null;
             if (mtmp) {
                 cptr.st1o(gn, $instance_globals_n_notonhead, schar((x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my) ? 1 : 0)));
@@ -3448,14 +3449,14 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                         break __lbl_bhit_done;
                     }
                 } else if (weapon == NHC.INVIS_BEAM) {
-                    if (!(cptr.ldI32o(mtmp, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) {
+                    if (!(cptr.ldI32o(mtmp, $monst_minvis) & 1) || perceives(cptr.ldPtro(mtmp, $monst_data))) {
                         result = mtmp;
                         break __lbl_bhit_done;
                     }
                 } else if (weapon != NHC.ZAPPED_WAND) {
                     if (!tethered_weapon)
                         tmp_at(-7, 0);
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
+                    if (cansee(x, y) && !canspotmon(mtmp))
                         map_invisible(x, y);
                     result = mtmp;
                     break __lbl_bhit_done;
@@ -3476,12 +3477,12 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                 if (bhitpile(obj, fhito, x, y, 0))
                     range--;
             } else {
-                if (weapon == NHC.KICKED_WEAPON && ((cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) || ship_object(obj, x, y, costly_spot(x, y)))) {
+                if (weapon == NHC.KICKED_WEAPON && ((cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS && OBJ_AT(x, y)) || ship_object(obj, x, y, costly_spot(x, y)))) {
                     tmp_at(-7, 0);
                     break __lbl_bhit_done;
                 }
             }
-            if (weapon == NHC.ZAPPED_WAND && (((typ) == NHC.DOOR) || typ == NHC.SDOOR)) {
+            if (weapon == NHC.ZAPPED_WAND && (IS_DOOR(typ) || typ == NHC.SDOOR)) {
                 switch (cptr.ldI16o(obj, $obj_otyp)) {
                     case NHC.WAN_OPENING:
                     case NHC.WAN_LOCKING:
@@ -3490,7 +3491,7 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                     case NHC.SPE_WIZARD_LOCK:
                     case NHC.SPE_FORCE_BOLT:
                     if (doorlock(obj, x, y)) {
-                        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING && !Deaf()))
+                        if (cansee(x, y) || (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING && !Deaf()))
                             learnwand(obj);
                         if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_BROKEN && cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE))) {
                             shopdoor = 1;
@@ -3500,13 +3501,13 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                     break;
                 }
             }
-            if (!((typ) >= NHC.POOL) || closed_door(x, y)) {
+            if (!ZAP_POS(typ) || closed_door(x, y)) {
                 cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(gb, $instance_globals_b_bhitpos) - ddx);
                 cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - ddy);
                 break;
             }
             if (weapon != NHC.ZAPPED_WAND && weapon != NHC.INVIS_BEAM) {
-                if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level)) == NHC.GLYPH_INVIS_OFF) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+                if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level)) == NHC.GLYPH_INVIS_OFF) && cansee(x, y)) {
                     unmap_object(x, y);
                     newsym(x, y);
                 }
@@ -3514,22 +3515,22 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
                 nh_delay_output()();
                 if ((weapon == NHC.KICKED_WEAPON) && is_pool_or_lava(x, y))
                     break;
-                if (((typ) == NHC.SINK) && weapon != NHC.FLASHED_LIGHT)
+                if (IS_SINK(typ) && weapon != NHC.FLASHED_LIGHT)
                     break;
             }
             if (weapon == NHC.THROWN_WEAPON && range > 0 && cptr.ldI16o(obj, $obj_otyp) == NHC.HEAVY_IRON_BALL) {
                 let bobj;
                 let t;
                 if ((bobj = sobj_at(NHC.BOULDER, x, y)) !== null) {
-                    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+                    if (cansee(x, y))
                         pline(__sl210, The(distant_name(obj, xname)), an(xname(bobj)));
                     range = 0;
                 } else if (cptr.eq(obj, uball.v)) {
                     if (!test_move(i16(((x - ddx) | 0)), i16(((y - ddy) | 0)), i16(ddx), i16(ddy), NHM.TEST_MOVE)) {
-                        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+                        if (cansee(x, y))
                             pline(__sl211, The(distant_name(obj, xname)));
                         range = 0;
-                    } else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0 && (t = t_at(x, y)) !== null && (((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.PIT || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.SPIKED_PIT) || ((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.HOLE || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.TRAPDOOR))) {
+                    } else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0 && (t = t_at(x, y)) !== null && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))) {
                         range = 0;
                     }
                 }
@@ -3559,11 +3560,11 @@ export function boomhit(obj, dx, dy) {
     cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     boom = counterclockwise ? NHC.S_boomleft : NHC.S_boomright;
     i = xytodir(dx, dy);
-    tmp_at(-4, i16((((boom) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((boom) <= NHC.S_trwall) ? (((((boom) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((boom) < NHC.S_altar) ? (((((boom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((boom) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((boom) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((boom) <= NHC.S_goodpos) ? (((((boom) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
+    tmp_at(-4, i16((((boom) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((boom) <= NHC.S_trwall) ? (((((boom) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((boom) < NHC.S_altar) ? cmap_a_to_glyph(boom) : (((boom) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(boom) : (((boom) <= NHC.S_goodpos) ? cmap_c_to_glyph(boom) : NHC.MAX_GLYPH))))))));
     for (ct = 0; ct < 10; ct++) {
-        i = ((((i) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
+        i = DIR_CLAMP(i);
         boom = ((((NHC.S_boomleft + NHC.S_boomright) | 0) - boom) | 0);
-        tmp_at(-6, i16((((boom) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((boom) <= NHC.S_trwall) ? (((((boom) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((boom) < NHC.S_altar) ? (((((boom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((boom) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((boom) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((boom) <= NHC.S_goodpos) ? (((((boom) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
+        tmp_at(-6, i16((((boom) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((boom) <= NHC.S_trwall) ? (((((boom) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((boom) < NHC.S_altar) ? cmap_a_to_glyph(boom) : (((boom) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(boom) : (((boom) <= NHC.S_goodpos) ? cmap_c_to_glyph(boom) : NHC.MAX_GLYPH))))))));
         dx = cptr.ld1so(cptr.decay(xdir), i, 1);
         dy = cptr.ld1so(cptr.decay(ydir), i, 1);
         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx);
@@ -3587,7 +3588,7 @@ export function boomhit(obj, dx, dy) {
             cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - dy);
             break;
         }
-        if (((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+        if (u_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
             if (Fumbling() || (rng_log_enabled() ? (rng_log_set_caller(__sl21, 4203, __sl213), rn2(20)) : rn2(20)) >= (acurr(NHC.A_DEX))) {
                 let dam = dmgval(obj.v, cptr.add(gy, $instance_globals_y_youmonst));
                 void thitu((10 + cptr.ld1so(obj.v, $obj_spe)) | 0, ((Half_physical_damage()) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), obj, __sl214);
@@ -3609,7 +3610,7 @@ export function boomhit(obj, dx, dy) {
             break;
         }
         if (ct % 5 != 0)
-            i = counterclockwise ? ((((i) + 7) | 0) % ((NHC.N_DIRS_Z - 2) | 0)) : ((((i) + 1) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
+            i = counterclockwise ? DIR_LEFT(i) : DIR_RIGHT(i);
     }
     tmp_at(-7, 0);
     return null;
@@ -3678,7 +3679,7 @@ export function zhitm(mon, type, nd, ootmp) {
                 tmp = 0;
                 break;
             }
-            if ((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 256n) != 0n) || (cptr.ldI16o((mon), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((mon), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((mon), $monst_cham) == NHC.PM_VLAD_THE_IMPALER) || resists_magm(mon)) {
+            if ((is_undead(cptr.ldPtro(mon, $monst_data)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(mon, $monst_data)) || cptr.ld1so((cptr.ldPtro(mon, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || is_demon(cptr.ldPtro(mon, $monst_data)) || is_vampshifter(mon) || resists_magm(mon)) {
                 sho_shieldeff = 1;
                 break;
             }
@@ -3714,7 +3715,7 @@ export function zhitm(mon, type, nd, ootmp) {
             sho_shieldeff = 1;
             tmp = 0;
         }
-        if (!resists_blnd(mon) && !(type > 0 && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))))) && nd > 2) {
+        if (!resists_blnd(mon) && !(type > 0 && engulfing_u(mon)) && nd > 2) {
             let rnd_tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 4356, __sl217), rnd(50)) : rnd(50)) >>> 0;
             cptr.stI32o(mon, $monst_mcansee, 0);
             if ((((cptr.ldI32o(mon, $monst_mblinded) & 127) + rnd_tmp) >>> 0) > 127)
@@ -3847,7 +3848,7 @@ function zhitu(type, nd, fltxt, sx, sy) {
                 void disintegrate_arm(uarmc.v);
             if (uarmu.v)
                 void disintegrate_arm(uarmu.v);
-        } else if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
+        } else if ((is_undead(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) || is_demon(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             shieldeff(sx, sy);
             You(__sl225);
             break;
@@ -3941,9 +3942,9 @@ export function burn_floor_objects(x, y, give_feedback, u_caused) {
             if (delquan) {
                 if (give_feedback) {
                     cptr.stI64o(obj, $obj_quan, 1n);
-                    void cptr.strcpy(cptr.decay(buf1), ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? xname(obj) : distant_name(obj, xname));
+                    void cptr.strcpy(cptr.decay(buf1), u_at(x, y) ? xname(obj) : distant_name(obj, xname));
                     cptr.stI64o(obj, $obj_quan, 2n);
-                    void cptr.strcpy(cptr.decay(buf2), ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? xname(obj) : distant_name(obj, xname));
+                    void cptr.strcpy(cptr.decay(buf2), u_at(x, y) ? xname(obj) : distant_name(obj, xname));
                     cptr.stI64o(obj, $obj_quan, scrquan);
                 }
                 if (u_caused)
@@ -3977,9 +3978,9 @@ function bounce_dir(sx, sy, ddx, ddy, bounceback) {
         let bounce = 0;
         let lsy = i16(((sy - cptr.ldI32(ddy)) | 0));
         let lsx = i16(((sx - cptr.ldI32(ddx)) | 0));
-        if (isok(sx, lsy) && ((rmn = uchar(cptr.ld1so3(svl, sx, 756, lsy, 36, $instance_globals_saved_l_level + $rm_typ))) >= NHC.POOL) && !closed_door(sx, lsy) && (((rmn) >= NHC.ROOM) || (isok(i16(((sx + cptr.ldI32(ddx)) | 0)), lsy) && ((cptr.ld1so3(svl, (sx + cptr.ldI32(ddx)) | 0, 756, lsy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL))))
+        if (isok(sx, lsy) && ((rmn = uchar(cptr.ld1so3(svl, sx, 756, lsy, 36, $instance_globals_saved_l_level + $rm_typ))) >= NHC.POOL) && !closed_door(sx, lsy) && (IS_ROOM(rmn) || (isok(i16(((sx + cptr.ldI32(ddx)) | 0)), lsy) && ((cptr.ld1so3(svl, (sx + cptr.ldI32(ddx)) | 0, 756, lsy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL))))
             bounce = 1;
-        if (isok(lsx, sy) && ((rmn = uchar(cptr.ld1so3(svl, lsx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ))) >= NHC.POOL) && !closed_door(lsx, sy) && (((rmn) >= NHC.ROOM) || (isok(lsx, i16(((sy + cptr.ldI32(ddy)) | 0))) && ((cptr.ld1so3(svl, lsx, 756, (sy + cptr.ldI32(ddy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL))))
+        if (isok(lsx, sy) && ((rmn = uchar(cptr.ld1so3(svl, lsx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ))) >= NHC.POOL) && !closed_door(lsx, sy) && (IS_ROOM(rmn) || (isok(lsx, i16(((sy + cptr.ldI32(ddy)) | 0))) && ((cptr.ld1so3(svl, lsx, 756, (sy + cptr.ldI32(ddy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL))))
             if (!bounce || (rng_log_enabled() ? (rng_log_set_caller(__sl21, 4686, __sl241), rn2(2)) : rn2(2)))
                 bounce = 2;
         switch (bounce) {
@@ -4068,7 +4069,7 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
                 pline(__sl245, The(flash_str(fltyp, 0)), mon_nam(cptr.ldPtro(u, $you_ustuck)), exclam(tmp));
                 if (tmp == 1000)
                     cptr.stI32o(cptr.ldPtro(u, $you_ustuck), $monst_mhp, 0);
-                if ((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_mhp) < 1))
+                if (DEADMONSTER(cptr.ldPtro(u, $you_ustuck)))
                     killed(cptr.ldPtro(u, $you_ustuck));
             }
             return;
@@ -4099,12 +4100,12 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         }
         case 6: {
         mon = (cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8), sx) & NHM.IN_SIGHT) != 0)) {
-            if (mon && !(canseemon(mon) || sensemon(mon)))
+        if (cansee(sx, sy)) {
+            if (mon && !canspotmon(mon))
                 map_invisible(sx, sy);
             else if (!mon)
                 void unmap_invisible(sx, sy);
-            if (((cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) || (isok(lsx, lsy) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), lsy, 8), lsx) & NHM.IN_SIGHT) != 0)))
+            if (((cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) || (isok(lsx, lsy) && cansee(lsx, lsy)))
                 tmp_at(sx, sy);
             nh_delay_output()();
         }
@@ -4140,7 +4141,7 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         __pc = 18; continue;
         }
         case 17: {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+        if (cansee(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
             hit(flash_str(fltyp, 0), mon, exclam(0));
             shieldeff(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
             void mon_reflects(mon, __sl246);
@@ -4154,14 +4155,14 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         case 18: {
         mon_could_move = schar((cptr.ldI32o(mon, $monst_mcanmove) & 1));
         tmp = zhitm(mon, type, nd, otmp);
-        if ((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) && Math.abs(type) == 24) { __pc = 20; continue; }
+        if (is_rider(cptr.ldPtro(mon, $monst_data)) && Math.abs(type) == 24) { __pc = 20; continue; }
         __pc = 19; continue;
         }
         case 20: {
         if (canseemon(mon)) {
             hit(flash_str(fltyp, 0), mon, __sl188);
             pline(__sl247, Monnam(mon));
-            pline(__sl248, s_suffix(Monnam(mon)), ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) == 1) ? body_part(NHC.EYE) : makeplural(body_part(NHC.EYE)));
+            pline(__sl248, s_suffix(Monnam(mon)), ((!haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2)) == 1) ? body_part(NHC.EYE) : makeplural(body_part(NHC.EYE)));
             pline(__sl249, Monnam(mon));
         }
         cptr.stI32o(mon, $monst_mhp, cptr.ldI32o(mon, $monst_mhpmax));
@@ -4182,12 +4183,12 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         case 21: {
         if (tmp == 1000) {
             disintegrate_mon(mon, type, flash_str(fltyp, 0));
-        } else if ((cptr.ldI32o((mon), $monst_mhp) < 1)) {
+        } else if (DEADMONSTER(mon)) {
             if (type < 0) {
                 monkilled(mon, flash_str(fltyp, 0), NHM.AD_RBRE);
             } else {
                 xkflags = NHM.XKILL_GIVEMSG;
-                if (damgtype == 1 && (cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_PAPER_GOLEM, 96)) || cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_STRAW_GOLEM, 96))))
+                if (damgtype == 1 && completelyburns(cptr.ldPtro(mon, $monst_data)))
                     xkflags |= NHM.XKILL_NOCORPSE;
                 xkilled(mon, xkflags);
             }
@@ -4224,7 +4225,7 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         continue;
         }
         case 10: {
-        if (((sx) == cptr.ldI16(u) && (sy) == cptr.ldI16o(u, $you_uy)) && range >= 0) { __pc = 24; continue; }
+        if (u_at(sx, sy) && range >= 0) { __pc = 24; continue; }
         __pc = 23; continue;
         }
         case 24: {
@@ -4286,11 +4287,11 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
         }
         case 2 /* make_bounce: */: {
         bchance = (!isok(sx, sy) || cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) ? 10 : ((In_mines(cptr.add(u, $you_uz)) && ((cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) ? 20 : 75);
-        if ((--range > 0 && isok(lsx, lsy) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), lsy, 8), lsx) & NHM.IN_SIGHT) != 0)) || fireball) { __pc = 31; continue; }
+        if ((--range > 0 && isok(lsx, lsy) && cansee(lsx, lsy)) || fireball) { __pc = 31; continue; }
         __pc = 30; continue;
         }
         case 31: {
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) { __pc = 33; continue; }
+        if (Is_airlevel(cptr.add(u, $you_uz))) { __pc = 33; continue; }
         __pc = 34; continue;
         }
         case 33: {
@@ -4367,10 +4368,10 @@ export function melt_ice(x, y, msg) {
     if (Underwater())
         vision_recalc(1);
     newsym(x, y);
-    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (cansee(x, y) || u_at(x, y))
         Norep(__sl123, msg);
     if ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null) {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+        if (cansee(x, y))
             pline(__sl266, An(xname(otmp)));
         do {
             obj_extract_self(otmp);
@@ -4379,7 +4380,7 @@ export function melt_ice(x, y, msg) {
         } while (is_pool(x, y) && (otmp = sobj_at(NHC.BOULDER, x, y)) !== null);
         newsym(x, y);
     }
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (u_at(x, y))
         spoteffects(1);
     else if (is_pool(x, y) && (mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null)
         void minliquid(mtmp);
@@ -4420,7 +4421,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
     let mon;
     let t;
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    let see_it = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0));
+    let see_it = schar(cansee(x, y));
     let yourzap;
     let rangemod = 0;
     let damgtype = zaptype(type) % 10;
@@ -4441,7 +4442,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
         if (is_ice(x, y)) {
             melt_ice(x, y, null);
         } else if (is_pool(x, y)) {
-            let on_water_level = schar((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)) ? 1 : 0)));
+            let on_water_level = schar(Is_waterlevel(cptr.add(u, $you_uz)));
             let msggiven = 0;
             let msgtxt = (!Deaf()) ? __sl271 : ((type >= 0) ? __sl272 : null);
             if (!on_water_level) {
@@ -4466,19 +4467,19 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
                 Norep(__sl123, msgtxt);
             if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM) {
                 if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
-                    if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2n) != 0n) && (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
+                    if (is_swimmer(cptr.ldPtro(mon, $monst_data)) && (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
                         cptr.stI32o(mon, $monst_mundetected, 0);
                     }
                 }
                 newsym(x, y);
                 if (t) {
-                    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+                    if (u_at(x, y))
                         dotrap(t, NHM.NO_TRAP_FLAGS);
                     else if (mon)
                         mintrap(mon, NHM.NO_TRAP_FLAGS);
                 }
             }
-        } else if (((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN)) {
+        } else if (IS_FOUNTAIN(cptr.ld1so(lev, $rm_typ))) {
             create_gas_cloud(x, y, (rng_log_enabled() ? (rng_log_set_caller(__sl21, 5230, __sl273), rnd(3)) : rnd(3)), 0);
             if (see_it)
                 pline(__sl277);
@@ -4491,7 +4492,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
             let lava = schar((is_lava(x, y) || lavawall ? 1 : 0));
             let moat = is_moat(x, y);
             let chance = (2 > ((5 + Math.imul(cptr.ld1so(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature), 10)) | 0) ? 2 : ((5 + Math.imul(cptr.ld1so(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature), 10)) | 0));
-            if (((cptr.ld1so(lev, $rm_typ)) == NHC.WATER) || (lavawall && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 5244, __sl273), rn2(chance)) : rn2(chance)))) {
+            if (IS_WATERWALL(cptr.ld1so(lev, $rm_typ)) || (lavawall && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 5244, __sl273), rn2(chance)) : rn2(chance)))) {
                 ;
                 if (see_it)
                     pline_The(__sl278, hliquid(lavawall ? __sl279 : __sl280));
@@ -4532,7 +4533,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
                 } else if (!lava) {
                     You_hear(__sl285);
                 }
-                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+                if (u_at(x, y)) {
                     if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
                         set_uinwater(0);
                         cptr.stI32o(u, $you_uundetected, 0);
@@ -4548,7 +4549,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
                         }
                     }
                 } else if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
-                    if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2n) != 0n) && (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
+                    if (is_swimmer(cptr.ldPtro(mon, $monst_data)) && (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
                         cptr.stI32o(mon, $monst_mundetected, 0);
                         newsym(x, y);
                     }
@@ -4567,7 +4568,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
         }
         break;
         case 6:
-        if (((cptr.ld1so(lev, $rm_typ)) >= NHC.POOL))
+        if (ZAP_POS(cptr.ld1so(lev, $rm_typ)))
             void create_gas_cloud(x, y, 1, 8);
         break;
         case 5:
@@ -4613,7 +4614,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
         newsym(x, y);
         if (see_it)
             pline(__sl294, yourzap ? __sl295 : __sl296, zapverb);
-        else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+        else if (Is_rogue_level(cptr.add(u, $you_uz)))
             draft_message(0);
     }
     if (closed_door(x, y)) {
@@ -4703,8 +4704,8 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
             }
         }
     }
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && damgtype == 1)
-        if (burn_floor_objects(x, y, 0, schar((type > 0))) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0)) {
+    if (OBJ_AT(x, y) && damgtype == 1)
+        if (burn_floor_objects(x, y, 0, schar((type > 0))) && couldsee(x, y)) {
             newsym(x, y);
             You(__sl312, !Blind() ? __sl313 : __sl314);
         }
@@ -4760,7 +4761,7 @@ export function fracture_rock(obj) {
             unblock_point(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
             vision_recalc(0);
         }
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(obj, $obj_oy), 8), cptr.ldI16o(obj, $obj_ox)) & NHM.IN_SIGHT) != 0))
+        if (cansee(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
             newsym(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
     }
 }
@@ -4977,7 +4978,7 @@ function maybe_destroy_item(carrier, obj, dmgtyp) {
         quan = cptr.ldI64o(obj, $obj_quan);
         switch (cptr.ld1so(obj, $obj_oclass)) {
             case NHC.RING_CLASS:
-            if (((cptr.ldI64o(obj, $obj_owornmask) & 393216n) && uarmg.v && !(((cptr.ldI32o2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL)) || cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SHOCK_RESISTANCE) {
+            if (((cptr.ldI64o(obj, $obj_owornmask) & 393216n) && uarmg.v && !is_metallic(uarmg.v)) || cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SHOCK_RESISTANCE) {
                 skip++;
                 break;
             } else if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) | 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 5868, __sl338), rn2(3)) : rn2(3))) {
@@ -5015,7 +5016,7 @@ function maybe_destroy_item(carrier, obj, dmgtyp) {
             pline(__sl345, mult, (cnt == 1n && quan == 1n) ? Yname2(obj) : yname(obj), cptr.ldPtro(cptr.decay(destroy_strings[dindx]), (cnt > 1n), 8));
         }
         if (u_carry) {
-            if (osym == NHC.POTION_CLASS && dmgtyp != NHM.AD_COLD && (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))) {
+            if (osym == NHC.POTION_CLASS && dmgtyp != NHM.AD_COLD && (!breathless(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 potionbreathe(obj);
             }
             if (cptr.ldI64o(obj, $obj_owornmask)) {
@@ -5095,7 +5096,7 @@ export function destroy_items(mon, dmgtyp, dmg_in) {
             where = cptr.ld1so(obj, $obj_where);
         else if (where != cptr.ld1so(obj, $obj_where))
             impossible(__sl349);
-        if (u_carry && ((cptr.ldI64o(obj, $obj_owornmask) != 0n && (cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop) == NHC.LEVITATION || cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop) == NHC.FLYING)) || (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER && ((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) && (Upolyd() ? (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 : (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)))) {
+        if (u_carry && ((cptr.ldI64o(obj, $obj_owornmask) != 0n && (cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop) == NHC.LEVITATION || cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop) == NHC.FLYING)) || (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER && ismnum(cptr.ldI32o(u, $you_ulycn)) && (Upolyd() ? (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 : (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)))) {
             cptr.st1o2(items_to_destroy, i, 24, 16, 1);
         } else {
             cptr.st1o2(items_to_destroy, i, 24, 16, 0);
@@ -5122,7 +5123,7 @@ export function resist(mtmp, oclass, damage, tell) {
     let resisted;
     let alev;
     let dlev;
-    if (oclass == NHC.RING_CLASS && !damage && !tell && ((cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
+    if (oclass == NHC.RING_CLASS && !damage && !tell && is_mplayer(cptr.ldPtro(mtmp, $monst_data)))
         return 1;
     switch (oclass) {
         case NHC.WAND_CLASS:
@@ -5151,7 +5152,7 @@ export function resist(mtmp, oclass, damage, tell) {
     if (dlev > 50)
         dlev = 50;
     else if (dlev < 1)
-        dlev = ((cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)) ? cptr.ldI32o(u, $you_ulevel) : 1;
+        dlev = is_mplayer(cptr.ldPtro(mtmp, $monst_data)) ? cptr.ldI32o(u, $you_ulevel) : 1;
     resisted = (rng_log_enabled() ? (rng_log_set_caller(__sl21, 6141, __sl350), rn2((((100 + alev) | 0) - dlev) | 0)) : rn2((((100 + alev) | 0) - dlev) | 0)) < cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mr);
     if (resisted) {
         if (tell)
@@ -5160,7 +5161,7 @@ export function resist(mtmp, oclass, damage, tell) {
     }
     if (damage) {
         cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - damage) | 0);
-        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
+        if (DEADMONSTER(mtmp)) {
             if (cptr.ld1so(gm, $instance_globals_m_m_using))
                 monkilled(mtmp, __sl6, NHM.AD_RBRE);
             else
@@ -5361,8 +5362,8 @@ export function makewish() {
             livelog_printf((1n | maybe_LL_arti), __sl381, cptr.decay(wish));
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && !u_safe_from_fatal_corpse(otmp, NHC.st_all))
             cptr.stI32o(otmp, $obj_usecount, 1);
-        let verb = (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __sl382 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl383 : __sl384));
-        let oops_msg = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl385 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl386 : (!(cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl387 : __sl388)));
+        let verb = ((Is_airlevel(cptr.add(u, $you_uz)) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __sl382 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl383 : __sl384));
+        let oops_msg = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? __sl385 : ((Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) < NHC.IRONBARS || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) >= NHC.ICE) ? __sl386 : (!(cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_usecount)) ? __sl387 : __sl388)));
         void hold_another_object(otmp, oops_msg, The(aobjnam(otmp, verb)), null);
         cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + (((rng_log_enabled() ? (rng_log_set_caller(__sl21, 6421, __sl377), rn2(100)) : rn2(100)) + 50) | 0)) | 0);
         break __lbl_retry;

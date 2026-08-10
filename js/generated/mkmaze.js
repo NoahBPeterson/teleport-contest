@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { CAN_OVERWRITE_TERRAIN, DEADMONSTER, IS_DOOR, IS_FOUNTAIN, IS_LAVA, IS_SINK, IS_WALL, Is_airlevel, Is_earthlevel, Is_firelevel, Is_medusa_level, Is_stronghold, Is_waterlevel, MON_AT, OBJ_AT, distu, has_mgivenname, is_orc, release_data, u_at, undestroyable_trap, update_file, within_bounded_area } from './nhmacrofn.js';
 import { Deaf, Punished, Swimming, mines_dnum, sokoban_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gb, ge, gf, gi, gl, gn, gr, gu, gv, gw, gx, gy, iflags, program_state, svb, svd, sve, svi, svl, svn, svr, svu, svx, svy, u, uball } from './decl.js';
@@ -190,7 +191,7 @@ function iswall(x, y) {
     if (!isok(x, y))
         return 0;
     type = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    return (((type) && (type) <= NHC.DBWALL) || ((type) == NHC.DOOR) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
+    return (IS_WALL(type) || IS_DOOR(type) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
 }
 
 /** C ref: mkmaze.c:59 — @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -213,16 +214,16 @@ export function set_levltyp(x, y, newtyp) {
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_candig, 1);
             return 1;
         }
-        if ((cptr.ld1so(iflags, $instance_flags_debug_overwrite_stairs) || !((oldtyp) == NHC.LADDER || (oldtyp) == NHC.STAIRS))) {
+        if (CAN_OVERWRITE_TERRAIN(oldtyp)) {
             let was_ice = is_ice(x, y);
             cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, newtyp);
-            if (((newtyp) == NHC.LAVAPOOL || (newtyp) == NHC.LAVAWALL))
+            if (IS_LAVA(newtyp))
                 cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, 1);
             if (was_ice && newtyp != NHC.ICE) {
                 obj_ice_effects(x, y, 1);
                 spot_stop_timers(x, y, NHC.MELT_ICE_AWAY);
             }
-            if ((((oldtyp) == NHC.FOUNTAIN) != ((newtyp) == NHC.FOUNTAIN)) || (((oldtyp) == NHC.SINK) != ((newtyp) == NHC.SINK)))
+            if ((IS_FOUNTAIN(oldtyp) != IS_FOUNTAIN(newtyp)) || (IS_SINK(oldtyp) != IS_SINK(newtyp)))
                 count_level_features();
             return 1;
         }
@@ -235,7 +236,7 @@ export function set_levltyp_lit(x, y, typ, lit) {
     let ret = set_levltyp(x, y, typ);
     if (ret && isok(x, y)) {
         if (lit != -2) {
-            if (((typ) == NHC.LAVAPOOL || (typ) == NHC.LAVAWALL))
+            if (IS_LAVA(typ))
                 lit = 1;
             else if (lit == -1)
                 lit = schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 139, __sl1), rn2(2)) : rn2(2)));
@@ -282,11 +283,11 @@ function wall_cleanup(x1, y1, x2, y2) {
         panic(__sl2, x1, y1, x2, y2);
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
-            if (((x) >= (cptr.ldI16o(gb, $instance_globals_b_bughack)) && (x) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 4)) && (y) >= (cptr.ldI16o(gb, $instance_globals_b_bughack + 2)) && (y) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 6))))
+            if (within_bounded_area(x, y, cptr.ldI16o(gb, $instance_globals_b_bughack), cptr.ldI16o(gb, $instance_globals_b_bughack + 2), cptr.ldI16o(gb, $instance_globals_b_bughack + 4), cptr.ldI16o(gb, $instance_globals_b_bughack + 6)))
                 continue;
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
             type = uchar(cptr.ld1so(lev, $rm_typ));
-            if (((type) && (type) <= NHC.DBWALL) && type != NHC.DBWALL) {
+            if (IS_WALL(type) && type != NHC.DBWALL) {
                 if (is_solid(i16(((x - 1) | 0)), i16(((y - 1) | 0))) && is_solid(i16(((x - 1) | 0)), y) && is_solid(i16(((x - 1) | 0)), i16(((y + 1) | 0))) && is_solid(x, i16(((y - 1) | 0))) && is_solid(x, i16(((y + 1) | 0))) && is_solid(i16(((x + 1) | 0)), i16(((y - 1) | 0))) && is_solid(i16(((x + 1) | 0)), y) && is_solid(i16(((x + 1) | 0)), i16(((y + 1) | 0))))
                     cptr.st1o(lev, $rm_typ, NHC.STONE);
             }
@@ -326,9 +327,9 @@ export function fix_wall_spines(x1, y1, x2, y2) {
         for (y = y1; y <= y2; y++) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
             type = uchar(cptr.ld1so(lev, $rm_typ));
-            if (!(((type) && (type) <= NHC.DBWALL) && type != NHC.DBWALL))
+            if (!(IS_WALL(type) && type != NHC.DBWALL))
                 continue;
-            loc_f = ((x) >= (cptr.ldI16o(gb, $instance_globals_b_bughack)) && (x) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 4)) && (y) >= (cptr.ldI16o(gb, $instance_globals_b_bughack + 2)) && (y) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 6))) ? iswall : iswall_or_stone;
+            loc_f = within_bounded_area(x, y, cptr.ldI16o(gb, $instance_globals_b_bughack), cptr.ldI16o(gb, $instance_globals_b_bughack + 2), cptr.ldI16o(gb, $instance_globals_b_bughack + 4), cptr.ldI16o(gb, $instance_globals_b_bughack + 6)) ? iswall : iswall_or_stone;
             cptr.stI32o(cptr.decay(locale[0]), 0, (loc_f)(i16(((x - 1) | 0)), i16(((y - 1) | 0))), 4);
             cptr.stI32o(cptr.decay(locale[1]), 0, (loc_f)(x, i16(((y - 1) | 0))), 4);
             cptr.stI32o(cptr.decay(locale[2]), 0, (loc_f)(i16(((x + 1) | 0)), i16(((y - 1) | 0))), 4);
@@ -403,7 +404,7 @@ function maze0xy(cc) {
 export function is_exclusion_zone(type, x, y) {
     let ez = cptr.ldPtr(sve);
     while (ez) {
-        if (((type == NHC.LR_DOWNTELE && (cptr.ldI16(ez) == NHC.LR_DOWNTELE || cptr.ldI16(ez) == NHC.LR_TELE)) || (type == NHC.LR_UPTELE && (cptr.ldI16(ez) == NHC.LR_UPTELE || cptr.ldI16(ez) == NHC.LR_TELE)) || type == cptr.ldI16(ez)) && ((x) >= (cptr.ldI16o(ez, $exclusion_zone_lx)) && (x) <= (cptr.ldI16o(ez, $exclusion_zone_hx)) && (y) >= (cptr.ldI16o(ez, $exclusion_zone_ly)) && (y) <= (cptr.ldI16o(ez, $exclusion_zone_hy))))
+        if (((type == NHC.LR_DOWNTELE && (cptr.ldI16(ez) == NHC.LR_DOWNTELE || cptr.ldI16(ez) == NHC.LR_TELE)) || (type == NHC.LR_UPTELE && (cptr.ldI16(ez) == NHC.LR_UPTELE || cptr.ldI16(ez) == NHC.LR_TELE)) || type == cptr.ldI16(ez)) && within_bounded_area(x, y, cptr.ldI16o(ez, $exclusion_zone_lx), cptr.ldI16o(ez, $exclusion_zone_ly), cptr.ldI16o(ez, $exclusion_zone_hx), cptr.ldI16o(ez, $exclusion_zone_hy)))
             return 1;
         ez = cptr.ldPtro(ez, $exclusion_zone_next);
     }
@@ -412,7 +413,7 @@ export function is_exclusion_zone(type, x, y) {
 
 /** C ref: mkmaze.c:341 — @param {CInt} x @param {CInt} y @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @returns {CInt} */
 export function bad_location(x, y, nlx, nly, nhx, nhy) {
-    return schar((occupied(x, y) || ((x) >= (nlx) && (x) <= (nhx) && (y) >= (nly) && (y) <= (nhy)) || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.AIR) ? 1 : 0));
+    return schar((occupied(x, y) || within_bounded_area(x, y, nlx, nly, nhx, nhy) || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.AIR) ? 1 : 0));
 }
 
 /** C ref: mkmaze.c:356 — @param {CInt} lx @param {CInt} ly @param {CInt} hx @param {CInt} hy @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CPtr} lev */
@@ -461,7 +462,7 @@ function put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
             return 0;
         } else {
             let t = t_at(x, y);
-            if (t && !((((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.MAGIC_PORTAL || (((cptr.ldI32o(t, $trap_ttyp) & 31)) | 0) == NHC.VIBRATING_SQUARE)) {
+            if (t && !undestroyable_trap((cptr.ldI32o(t, $trap_ttyp) & 31))) {
                 if (((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) && (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
                     cptr.stI32o(mtmp, $monst_mtrapped, 0);
                 deltrap(t);
@@ -569,7 +570,7 @@ export function fixup_special() {
     let y;
     let croom;
     let added_branch = 0;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
+    if (Is_waterlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(u, $you_uz))) {
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory, 0);
         setup_waterlevel();
     }
@@ -626,7 +627,7 @@ export function fixup_special() {
     if (!added_branch && Is_branchlev(cptr.add(u, $you_uz))) {
         place_lregion(0, 0, 0, 0, 0, 0, 0, 0, NHC.LR_BRANCH, null);
     }
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))))) {
+    if (Is_medusa_level(cptr.add(u, $you_uz))) {
         let otmp;
         let tryct;
         croom = cptr.add(svr, 0, 224);
@@ -653,7 +654,7 @@ export function fixup_special() {
         }
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && In_quest(cptr.add(u, $you_uz))) {
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);
-    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
+    } else if (Is_stronghold(cptr.add(u, $you_uz))) {
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);
     } else if (on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_baalzebub_level))) {
         baalz_fixup();
@@ -782,9 +783,9 @@ function stolen_booty() {
         migrate_orc(mtmp, 1n);
     }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
+        if (DEADMONSTER(mtmp))
             continue;
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
+        if (is_orc(cptr.ldPtro(mtmp, $monst_data)) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
             if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96)))
                 mtmp = christen_orc(mtmp, upstart(gang), __sl16);
         }
@@ -1233,7 +1234,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1248,7 +1249,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1263,7 +1264,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1276,7 +1277,7 @@ export function get_level_extends(left, top, right, bottom) {
             typ = cptr.ld1so(lev, $rm_typ);
             if (typ != NHC.STONE) {
                 found = 1;
-                if (!((typ) && (typ) <= NHC.DBWALL))
+                if (!IS_WALL(typ))
                     nonwall = 1;
             }
         }
@@ -1296,7 +1297,7 @@ export function bound_digging() {
     let xmax = cptr.box(0);
     let ymin = cptr.box(0);
     let ymax = cptr.box(0);
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))
+    if (Is_earthlevel(cptr.add(u, $you_uz)))
         return;
     get_level_extends(xmin, ymin, xmax, ymax);
     for (x = 0; x < NHM.COLNO; x++)
@@ -1335,7 +1336,7 @@ export function fumaroles() {
     let sizemin = 5;
     let snd = 0;
     let loud = 0;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level))))) {
+    if (Is_firelevel(cptr.add(u, $you_uz))) {
         nmax++;
         sizemin = (sizemin + 5) | 0;
     }
@@ -1350,7 +1351,7 @@ export function fumaroles() {
             let r = create_gas_cloud(x, y, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + (sizemin)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + 5) | 0));
             (cptr.stI32o((r), $NhRegion_player_flags, cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS));
             snd = 1;
-            if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 15)
+            if (distu(x, y) < 15)
                 loud = 1;
         }
     }
@@ -1399,7 +1400,7 @@ export function movebubbles() {
         set_wportal();
     vision_recalc(2);
     hero_bubble = null;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+    if (Is_waterlevel(cptr.add(u, $you_uz))) {
         if (Punished())
             bcpin = unplacebc_and_covet_placebc();
         for (b = __static_movebubbles_up ? cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles) : cptr.ldPtro(ge, $instance_globals_e_ebubbles); b; b = __static_movebubbles_up ? cptr.ldPtro(b, $bubble_next) : cptr.ldPtro(b, $bubble_prev)) {
@@ -1412,7 +1413,7 @@ export function movebubbles() {
                             impossible(__sl39, x, y);
                             continue;
                         }
-                        if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
+                        if (OBJ_AT(x, y)) {
                             let olist = null;
                             let otmp;
                             while ((otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
@@ -1429,7 +1430,7 @@ export function movebubbles() {
                             cptr.stPtr(cons, cptr.ldPtro(b, $bubble_cons));
                             cptr.stPtro(b, $bubble_cons, cons);
                         }
-                        if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
+                        if (MON_AT(x, y)) {
                             let mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
                             cons = alloc(24);
                             cptr.stI16o(cons, $container_x, x);
@@ -1446,7 +1447,7 @@ export function movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && u_at(x, y)) {
                             cons = alloc(24);
                             cptr.stI16o(cons, $container_x, x);
                             cptr.stI16o(cons, $container_y, y);
@@ -1469,7 +1470,7 @@ export function movebubbles() {
                         block_point(x, y);
                     }
         }
-    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
+    } else if (Is_airlevel(cptr.add(u, $you_uz))) {
         let xedge;
         let yedge;
         for (x = 1; x <= 79; x++)
@@ -1492,7 +1493,7 @@ export function movebubbles() {
         let ry = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1675, __sl40), rn2(3)) : rn2(3));
         mv_bubble(b, i16(((((cptr.ld1so(b, $bubble_dx) + 1) | 0) - (!cptr.ld1so(b, $bubble_dx) ? rx : (rx ? 1 : 0))) | 0)), i16(((((cptr.ld1so(b, $bubble_dy) + 1) | 0) - (!cptr.ld1so(b, $bubble_dy) ? ry : (ry ? 1 : 0))) | 0)), 0);
     }
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && Punished())
+    if (Is_waterlevel(cptr.add(u, $you_uz)) && Punished())
         lift_covet_and_placebc(bcpin);
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
 }
@@ -1534,7 +1535,7 @@ export function save_waterlevel(nhfp) {
     let b;
     if (!cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles))
         return;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         let n = cptr.box(0);
         for (b = cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles); b; b = cptr.ldPtro(b, $bubble_next))
             ++n.v;
@@ -1547,7 +1548,7 @@ export function save_waterlevel(nhfp) {
             sfo_bubble(nhfp, b, __sl48);
         }
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         unsetup_waterlevel();
 }
 
@@ -1585,7 +1586,7 @@ export function restore_waterlevel(nhfp) {
         cptr.stPtro(b, $bubble_next, null);
     } else {
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
-        impossible(__sl49, ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? __sl50 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __sl51 : __sl52));
+        impossible(__sl49, (Is_waterlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(gu, $instance_globals_u_uz_save))) ? __sl50 : ((Is_airlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(gu, $instance_globals_u_uz_save))) ? __sl51 : __sl52));
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 1);
     }
 }
@@ -1606,7 +1607,7 @@ function setup_waterlevel() {
     let y;
     let xskip;
     let yskip;
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
+    if (!Is_waterlevel(cptr.add(u, $you_uz)) && !Is_airlevel(cptr.add(u, $you_uz)))
         panic(__sl54, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel));
     cptr.stI32(svx, 3);
     cptr.stI32(svy, 1);
@@ -1614,15 +1615,15 @@ function setup_waterlevel() {
     cptr.stI32o(svx, $instance_globals_saved_x_xmax, ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax)) < 78 ? (cptr.ldI32o(svx, $instance_globals_saved_x_xmax)) : 78));
     cptr.stI32o(svy, $instance_globals_saved_y_ymax, 20);
     cptr.stI32o(svy, $instance_globals_saved_y_ymax, ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax)) < 20 ? (cptr.ldI32o(svy, $instance_globals_saved_y_ymax)) : 20));
-    glyph = ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) <= NHC.S_trwall) ? ((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) < NHC.S_altar) ? ((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? ((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : ((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) <= NHC.S_goodpos) ? ((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.S_water : NHC.S_air) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
-    typ = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? NHC.WATER : NHC.AIR;
+    glyph = (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) <= NHC.S_trwall) ? (((((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) < NHC.S_altar) ? (((((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) <= NHC.S_goodpos) ? (((((Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.S_water : NHC.S_air) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+    typ = Is_waterlevel(cptr.add(u, $you_uz)) ? NHC.WATER : NHC.AIR;
     for (x = 1; x <= 79; x++)
         for (y = 0; y <= 20; y++) {
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level, glyph);
             if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE)
                 cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, schar(typ));
         }
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+    if (Is_waterlevel(cptr.add(u, $you_uz))) {
         xskip = i16(((10 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1847, __sl55), rn2(10)) : rn2(10))) | 0));
         yskip = i16(((4 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1848, __sl55), rn2(4)) : rn2(4))) | 0));
     } else {
@@ -1698,7 +1699,7 @@ function mk_bubble(x, y, n) {
 
 /** C ref: mkmaze.c:1929 */
 export function maybe_adjust_hero_bubble() {
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
+    if (!Is_waterlevel(cptr.add(u, $you_uz)))
         return;
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy))
         return;
@@ -1717,7 +1718,7 @@ function mv_bubble(b, dx, dy, ini) {
     let y;
     let cons;
     let ctemp;
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1959, __sl60), rn2(6)) : rn2(6))) {
+    if (!Is_airlevel(cptr.add(u, $you_uz)) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1959, __sl60), rn2(6)) : rn2(6))) {
         if (dx < -1 || dx > 1 || dy < -1 || dy > 1) {
             dx = i16(sgn(dx));
             dy = i16(sgn(dy));
@@ -1760,17 +1761,17 @@ function mv_bubble(b, dx, dy, ini) {
     for (i = 0, x = cptr.ldI16(b); i < cptr.ld1uo2(b, 0, 1, $bubble_bm); i++, x++)
         for (j = 0, y = cptr.ldI16o(b, $bubble_y); j < cptr.ld1uo2(b, 1, 1, $bubble_bm); j++, y++)
             if (cptr.ld1uo2(b, (j + 2) | 0, 1, $bubble_bm) & (1 << i)) {
-                if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+                if (Is_waterlevel(cptr.add(u, $you_uz))) {
                     cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.AIR);
                     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, 1);
                     unblock_point(x, y);
-                } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
+                } else if (Is_airlevel(cptr.add(u, $you_uz))) {
                     cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.CLOUD);
                     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, 1);
                     block_point(x, y);
                 }
             }
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+    if (Is_waterlevel(cptr.add(u, $you_uz))) {
         for (cons = cptr.ldPtro(b, $bubble_cons); cons; cons = ctemp) {
             ctemp = cptr.ldPtr(cons);
             cptr.stI16o(cons, $container_x, cptr.ldI16o(cons, $container_x) + dx);

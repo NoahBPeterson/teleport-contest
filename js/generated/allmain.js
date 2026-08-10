@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { In_endgame, Is_airlevel, Is_waterlevel, MON_AT, ismnum } from './nhmacrofn.js';
 import { BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast, Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy, Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning, cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
 import { crashreport_init } from './report.js';
@@ -418,7 +419,7 @@ export function moveloop_core() {
                         mvl_change = 0;
                     if (Polymorph() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 325, __sl8), rn2(100)) : rn2(100)))
                         mvl_change = 1;
-                    else if (((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 328, __sl8), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
+                    else if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 328, __sl8), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
                         mvl_change = 2;
                     if (mvl_change && !Unchanging()) {
                         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
@@ -457,7 +458,7 @@ export function moveloop_core() {
                         cptr.stI32o(u, $you_udg_cnt, (((rng_log_enabled() ? (rng_log_set_caller(__sl3, 367, __sl8), rn2(200)) : rn2(200)) + 50) | 0) >>> 0);
                     }
                 }
-                if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
+                if (Is_waterlevel(cptr.add(u, $you_uz)) || Is_airlevel(cptr.add(u, $you_uz)))
                     movebubbles();
                 else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles) & 1))
                     fumaroles();
@@ -476,7 +477,7 @@ export function moveloop_core() {
         if (cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             status_eval_next_unhilite();
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_seer_turn)) {
-            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !BClairvoyant())
+            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !In_endgame(cptr.add(u, $you_uz)) && !BClairvoyant())
                 do_vicinity_map(null);
             cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 415, __sl8), rn2(31)) : rn2(31)) + 15) | 0))));
         }
@@ -618,7 +619,7 @@ function regen_hp(wtcap) {
     if (Upolyd()) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             rehumanize();
-        } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Breathless()) {
+        } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Is_waterlevel(cptr.add(u, $you_uz)) && !Breathless()) {
             if (cptr.ldI32o(u, $you_mh) > 1 && !Regeneration() && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 639, __sl16), rn2(cptr.ldI32o(u, $you_mh))) : rn2(cptr.ldI32o(u, $you_mh))) > (rng_log_enabled() ? (rng_log_set_caller(__sl3, 639, __sl16), rn2(8)) : rn2(8)) && (!Half_physical_damage() || !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
                 heal = -1;
         } else if (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax)) {
@@ -719,7 +720,7 @@ export function newgame() {
     u_on_upstairs();
     vision_reset();
     check_special_room(0);
-    if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
+    if (MON_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         mnexto((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);
     void makedog();
     u_init_inventory_attrs();

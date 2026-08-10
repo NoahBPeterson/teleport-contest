@@ -21,7 +21,7 @@ import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
 import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
-import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_HELPERS, JS_RESERVED, assertNoAbsolutePaths } from './emit.mjs';
+import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_FN_MODULE, MACRO_HELPERS, MACRO_FN_HELPERS, JS_RESERVED, assertNoAbsolutePaths } from './emit.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -288,6 +288,195 @@ function scanMacroExprDefs() {
 }
 
 /**
+ * Which C functions are provably PURE — no write to memory, no RNG, no I/O,
+ * transitively.
+ *
+ * This exists for one decision. A function-like macro expands its parameter
+ * once per occurrence in its body, so `glyph_is_object(glyph_at(u.ux, u.uy))`
+ * calls `glyph_at` as many times as the body mentions the parameter, and a JS
+ * helper taking that value calls it once. In a program scored on an exact PRNG
+ * trace, changing how many times a function runs is a parity change — unless
+ * running it fewer times is unobservable, which is exactly what purity means.
+ *
+ * The analysis runs on the slim IR (the C AST), not the emitted JS, because the
+ * emitter needs the answer before any module is written. It is a least
+ * fixed point over the call graph, seeded pessimistically:
+ *
+ *   impure(f) if f writes anywhere it did not itself declare, or calls
+ *             anything not proven pure — including every function whose
+ *             definition this build never saw (libc, the window port, a call
+ *             through a function pointer).
+ *
+ * "Writes anywhere it did not itself declare" is the load-bearing clause. An
+ * assignment to a plain local is unobservable and does not count; an assignment
+ * through a pointer, to a field, to an array element, or to a global does. A
+ * function-static is storage that outlives the call, so a function that
+ * declares one is out. Reading a mutable global IS allowed: between the N
+ * evaluations C would have performed, nothing runs but the macro body, and the
+ * body is itself restricted to pure loads — so all N reads see the same bytes.
+ *
+ * Default is REFUSE: a name reached in no definition is impure, and any shape
+ * this walker does not recognize makes its function impure.
+ */
+const RNG_NEVER_PURE = new Set([
+  'rn2', 'rnd', 'rn1', 'rnl', 'rne', 'rni', 'd', 'rn2_on_rng', 'rnd_on_rng', 'rn1_on_rng',
+  'rn2_on_display_rng', 'rnd_on_display_rng', 'rn2_on_gen_rng', 'RND', 'set_random',
+  'isaac64_init', 'isaac64_next_uint64', 'init_isaac64', 'rng_log_set_caller', 'reseed_random',
+]);
+
+function collectPureFunctions(perFile) {
+  const writes = new Map();   // fn name -> true if it writes storage it does not own
+  const calls = new Map();    // fn name -> Set of callee names
+  const defined = new Set();
+
+  for (const pf of perFile) {
+    if (pf.parseError) continue;
+    for (const d of pf.decls || []) {
+      if (d.kind !== 'FunctionDecl' || !d.name) continue;
+      const body = (d.inner || []).find((c) => c && c.kind === 'CompoundStmt');
+      if (!body) continue;
+      defined.add(d.name);
+      const locals = new Set();   // plain (non-static) locals and parameters: writable
+      const callees = new Set();
+      let impure = false;
+      for (const p of d.inner || []) if (p && p.kind === 'ParmVarDecl' && p.name) locals.add(p.name);
+
+      const lvalueIsOwnLocal = (x) => {
+        // peel the casts/parens clang wraps an lvalue in
+        while (x && (x.kind === 'ParenExpr' || x.kind === 'ImplicitCastExpr' || x.kind === 'CStyleCastExpr')) {
+          x = (x.inner || [])[0];
+        }
+        return !!x && x.kind === 'DeclRefExpr' && locals.has(x.name || x.referencedDecl?.name);
+      };
+
+      (function walk(x) {
+        if (!x || typeof x !== 'object' || impure) return;
+        if (x.kind === 'VarDecl' && x.name) {
+          // a function-static is storage that outlives the call
+          if (x.storageClass === 'static') impure = true;
+          else locals.add(x.name);
+        }
+        if (x.kind === 'BinaryOperator' && x.opcode === '=') {
+          if (!lvalueIsOwnLocal((x.inner || [])[0])) impure = true;
+        }
+        if (x.kind === 'CompoundAssignOperator') {
+          if (!lvalueIsOwnLocal((x.inner || [])[0])) impure = true;
+        }
+        if (x.kind === 'UnaryOperator' && (x.opcode === '++' || x.opcode === '--')) {
+          const tgt = (x.inner || [])[0];
+          if (!lvalueIsOwnLocal(tgt)) impure = true;
+          // stepping a POINTER local is a local write in C, but the emitter
+          // lowers it through cptr.postinc(get, set) — an indirect call whose
+          // effects are not visible where it is written. purity-audit.mjs reads
+          // the emitted code and cannot vouch for it, and the two analyses are
+          // required to agree, so this side gives way (strncmpi is the case).
+          else if (/\*/.test(tgt?.type?.qualType || '')) impure = true;
+        }
+        if (x.kind === 'UnaryOperator' && x.opcode === '&') {
+          // the address of a local can be written through by anything it reaches;
+          // every callee must be pure anyway, but a local whose address escapes
+          // is no longer "storage this function owns"
+          const t = (x.inner || [])[0];
+          if (t && t.kind === 'DeclRefExpr') locals.delete(t.name || t.referencedDecl?.name);
+        }
+        if (x.kind === 'CallExpr') {
+          const callee = calleeNameOf(x);
+          if (!callee) impure = true;            // through a function pointer
+          else callees.add(callee);
+        }
+        if (x.kind === 'GCCAsmStmt' || x.kind === 'VAArgExpr') impure = true;
+        for (const c of x.inner || []) walk(c);
+      })(body);
+
+      // a name defined twice (a TU-local static shadowing a global) is not one
+      // this analysis can reason about
+      if (writes.has(d.name)) { writes.set(d.name, true); continue; }
+      writes.set(d.name, impure);
+      calls.set(d.name, callees);
+    }
+  }
+
+  // least fixed point: start optimistic for defined non-writers, then retract
+  const pure = new Set();
+  for (const [name, w] of writes) if (!w && !RNG_NEVER_PURE.has(name)) pure.add(name);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const name of [...pure]) {
+      for (const c of calls.get(name) || []) {
+        if (!pure.has(c)) { pure.delete(name); changed = true; break; }
+      }
+    }
+  }
+  return pure;
+}
+
+/** the called function's name, or null when the call is not a direct one */
+function calleeNameOf(callNode) {
+  let f = (callNode.inner || [])[0];
+  while (f && (f.kind === 'ImplicitCastExpr' || f.kind === 'ParenExpr')) f = (f.inner || [])[0];
+  if (f && f.kind === 'DeclRefExpr') {
+    const n = f.name || f.referencedDecl?.name;
+    if (n && f.referencedDecl?.kind === 'FunctionDecl') return n;
+    return n || null;
+  }
+  return null;
+}
+
+/**
+ * The same index for FUNCTION-like macros: `header:firstBodyTokenOffset` ->
+ * { name, end, header, params }.
+ *
+ * Same extent key as scanMacroExprDefs and for the same reason — a node whose
+ * spelling ends land on one macro body's first and last token IS that macro's
+ * whole expansion. The difference is that the body mentions parameters, so the
+ * helper this produces takes arguments, and `params` is what names them.
+ *
+ * Refused here rather than later: a macro with no parameters at all (that is
+ * the object-like tier's job), one whose parameter list is not a plain list of
+ * identifiers (varargs `...`, `__VA_ARGS__`), one whose body is a single token
+ * (nothing to name), and one whose body uses `#` or `##`, whose expansion is
+ * not an expression in any useful sense.
+ */
+function scanMacroFnDefs() {
+  const dir = path.join(repoRoot, 'nethack-c/recorder/include');
+  const defRe = /^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)\(([^)]*)\)/;
+  const ID = /^[A-Za-z_]\w*$/;
+  const byExtent = new Map();
+  for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.h')).sort()) {
+    const text = fs.readFileSync(path.join(dir, f), 'latin1');
+    let pos = 0;
+    while (pos < text.length) {
+      let nl = text.indexOf('\n', pos);
+      if (nl < 0) nl = text.length;
+      const m = defRe.exec(text.slice(pos, nl));
+      if (m) {
+        let end = nl;
+        while (end > pos && text[end - 1] === '\r') end--;
+        while (text[end - 1] === '\\' || (end < text.length && text[end - 1] === '\\')) {
+          let nn = text.indexOf('\n', end + 1);
+          if (nn < 0) nn = text.length;
+          end = nn;
+          while (end > pos && text[end - 1] === '\r') end--;
+          if (text[end - 1] !== '\\') break;
+        }
+        const params = m[2].split(',').map((p) => p.trim()).filter((p) => p !== '');
+        const bodyFrom = pos + m[0].length;
+        const toks = cTokenOffsets(text, bodyFrom, end);
+        const body = text.slice(bodyFrom, end);
+        if (params.length && params.every((p) => ID.test(p)) && toks.length > 1 && !/#/.test(body)) {
+          byExtent.set(`${f}:${toks[0]}`, { name: m[1], end: toks[toks.length - 1], header: f, params });
+        }
+        pos = end + 1;
+        continue;
+      }
+      pos = nl + 1;
+    }
+  }
+  return byExtent;
+}
+
+/**
  * Start offsets of the C tokens in text[from, to), skipping comments and
  * backslash-newline splices. Only the first and last matter to the caller.
  */
@@ -482,6 +671,81 @@ function writePropModule(symbols) {
 }
 
 /**
+ * Write js/generated/nhmacrofn.js: one function per FUNCTION-like macro whose
+ * body this port could name (tier 1.12, docs/NOTES-emit-hygiene.md).
+ *
+ * Same shape and same discipline as writePropModule — the names a module
+ * actually imported are read back out of the emitted tree, every helper must
+ * have a captured body, and every free name it reads must be something a module
+ * exports. The one addition is the parameter list, which is the macro's own.
+ */
+function writeMacroFnModule(symbols) {
+  const outDir = path.join(repoRoot, 'js/generated');
+  const base = path.basename(MACRO_FN_MODULE);
+  const used = new Set();
+  const importRe = new RegExp(`import \\{([^}]*)\\} from '\\./${base.replace('.', '\\.')}';`, 'g');
+  for (const f of fs.readdirSync(outDir)) {
+    if (!f.endsWith('.js') || f === base) continue;
+    for (const m of fs.readFileSync(path.join(outDir, f), 'utf8').matchAll(importRe)) {
+      for (const nm of m[1].split(',')) if (nm.trim()) used.add(nm.trim());
+    }
+  }
+  const names = [...used].sort();
+  const missing = names.filter((n) => !MACRO_FN_HELPERS.has(n));
+  if (missing.length) throw new Error(`nhmacrofn: called helpers with no captured body (rebuild with --force): ${missing.join(', ')}`);
+  const byFile = new Map();
+  for (const n of names) {
+    const h = MACRO_FN_HELPERS.get(n);
+    // free storage the body reads, and the provably-pure functions it calls;
+    // both are resolved once here, at the helper module's own scope
+    for (const v of [...h.free, ...(h.calls || [])]) {
+      const sym = symbols.get(v);
+      if (!sym) throw new Error(`nhmacrofn: helper ${n} needs ${v}, which no module exports`);
+      if (!byFile.has(sym.file)) byFile.set(sym.file, new Set());
+      byFile.get(sym.file).add(v);
+    }
+  }
+  const bodies = names.map((n) => {
+    const h = MACRO_FN_HELPERS.get(n);
+    return [`/** C: include/${h.header} — the \`${n}(${h.params.join(', ')})\` macro body */`,
+      `export function ${n}(${h.params.join(', ')}) { return ${h.code}; }`].join('\n');
+  });
+  const text = bodies.join('\n\n');
+  const fieldRefs = new Set([...text.matchAll(new RegExp(`\\${FIELD_PREFIX}([A-Za-z_][A-Za-z0-9_]*)`, 'g'))].map((m) => m[1]));
+  const imports = ["import * as cptr from '../cptr.js';"];
+  if (new RegExp(`\\b${CONST_NS}\\.`).test(text)) imports.push(`import * as ${CONST_NS} from '${CONST_MODULE}';`);
+  if (new RegExp(`\\b${MACRO_NS}\\.`).test(text)) imports.push(`import * as ${MACRO_NS} from '${MACRO_MODULE}';`);
+  if (fieldRefs.size) imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
+  for (const [file, vars] of [...byFile].sort((a, b) => (a[0] < b[0] ? -1 : 1))) {
+    imports.push(`import { ${[...vars].sort().join(', ')} } from './${file}.js';`);
+  }
+  const lines = [
+    '// Generated by tools/c2js — do not edit by hand',
+    '// One function per NetHack FUNCTION-like macro this port could name: the',
+    '// body as this port emits it, with the macro\'s own parameter names, named',
+    '// by the macro that spelled it (macroFnBodyAt()/macroFnHelper() in',
+    '// tools/c2js/emit.mjs).',
+    `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
+    '//',
+    '// C expands a macro parameter once per occurrence in the body; a function',
+    '// evaluates its argument once. A call site therefore takes the name only',
+    '// when putting its arguments back into the body below reproduces that',
+    '// site\'s own inline emission character for character AND re-evaluating',
+    '// each argument was provably unobservable — the argument only loads memory,',
+    '// or every function it calls is provably pure (no write, no RNG, no I/O,',
+    '// transitively). Anything else stays expanded.',
+    '',
+    ...imports,
+    '',
+    ...(fieldRefs.size ? [fieldPreamble(fieldRefs, null, base), ''] : []),
+    text,
+    '',
+  ];
+  fs.writeFileSync(path.join(outDir, base), lines.join('\n'));
+  console.log(`nhmacrofn: ${names.length} function-like macro helpers exported (${MACRO_FN_HELPERS.size} captured)`);
+}
+
+/**
  * The module-scope bindings for the struct field offsets a file uses.
  *
  * A site spells the offset `$monst_data` rather than `FLD.monst_data` because
@@ -547,6 +811,11 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
     const bare = (bodyText + (prelude || '')).match(new RegExp(`\\b${FIELD_NS}\\b(?!\\.)`, 'g'));
     if (bare) throw new Error(`field-offset prefix ${FIELD_NS} collides with an emitted identifier in ${name}.c`);
     imports.push(`import * as ${FIELD_NS} from '${FIELD_MODULE}';`);
+  }
+  if (emitter.macroFnRefs.size) {
+    const clash = [...emitter.macroFnRefs].filter((n) => emitter.declared.has(n));
+    if (clash.length) throw new Error(`function-like macro helper name(s) collide with a declaration in ${name}.c: ${clash.join(', ')}`);
+    imports.push(`import { ${[...emitter.macroFnRefs].sort().join(', ')} } from '${MACRO_FN_MODULE}';`);
   }
   if (emitter.propRefs.size) {
     // bare-name import: a C identifier cannot be named after a live
@@ -687,6 +956,9 @@ function buildAll() {
   // is emitted; see collectFieldOffsets
   const fieldOffsets = collectFieldOffsets(perFile, { externBoxed, recordGlobals, recordArrays, bitfieldWidths });
   const macroExprDefs = scanMacroExprDefs();
+  const macroFnDefs = scanMacroFnDefs();
+  const pureFns = collectPureFunctions(perFile);
+  console.log(`purity: ${pureFns.size} functions proved pure (no write, no RNG, no I/O, transitively)`);
   console.log(`pass 1: ${perFile.length} slim IRs (${rebuilt} rebuilt) in ${((Date.now() - t0) / 1000).toFixed(1)}s; ` +
     `${symbols.size} importable symbols, ${conflicts.size} conflicts`);
 
@@ -712,7 +984,7 @@ function buildAll() {
       // current emitter (prelude included, no cross imports) — the batch
       // import graph reads them from disk, so a stale emission breaks parity
       try {
-        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, recordGlobals, recordArrays, bitfieldWidths });
+        const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, macroFnDefs: PROP_SKIP.has(pf.name) ? null : macroFnDefs, pureFns, recordGlobals, recordArrays, bitfieldWidths });
         const chunks = emitter.emitModule();
         const sha = crypto.createHash('sha256').update(fs.readFileSync(pf.file)).digest('hex');
         const out = assemble({ name: pf.name, srcRel: path.relative(repoRoot, pf.file), sha, emitter, chunks, prelude: loadPrelude(pf.name), crossImports: null });
@@ -726,7 +998,7 @@ function buildAll() {
       continue;
     }
     try {
-      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, recordGlobals, recordArrays, bitfieldWidths });
+      const emitter = new Emitter({ decls: pf.decls, lineOf: pf.lineOf, source: fs.readFileSync(pf.file, 'utf8'), fileName: `${pf.name}.c`, extraRecords: pf.recordDefs, compileCwd: compileCwdFor(pf.file), anonByLoc: pf.anonByLoc, externBoxed, enumValues: pf.enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs: PROP_SKIP.has(pf.name) ? null : macroExprDefs, macroFnDefs: PROP_SKIP.has(pf.name) ? null : macroFnDefs, pureFns, recordGlobals, recordArrays, bitfieldWidths });
       const chunks = emitter.emitModule();
       // cross-file imports: referenced but not declared here. decl.js must
       // stay a leaf (it is the globals hub in a giant import cycle); its one
@@ -761,6 +1033,7 @@ function buildAll() {
   writeMacroModule(macroValues);
   writeFieldModule(fieldOffsets);
   writePropModule(symbols);
+  writeMacroFnModule(symbols);
 
   const ok = results.filter((r) => r.ok === true);
   const skipped = results.filter((r) => r.ok === 'skipped');

@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ABASE, AMAX, DEADMONSTER, FOUNTAIN_IS_LOOTED, FOUNTAIN_IS_WARNED, breathless, cansee, canspotmon, couldsee, glyph_is_cmap, haseyes, is_watch, min, nolimbs, u_at } from './nhmacrofn.js';
 import { Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance, Unchanging, display_nhwindow, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg, ynchars } from './decl.js';
 import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon.js';
@@ -288,7 +289,7 @@ export function dogushforth(drinking) {
 function gush(x, y, poolcnt) {
     let mtmp;
     let ttmp;
-    if ((((x + y) | 0) % 2) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 140, __sl18), rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0)) : rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0))) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) || (sobj_at(NHC.BOULDER, x, y)) || nexttodoor(x, y))
+    if ((((x + y) | 0) % 2) || u_at(x, y) || ((rng_log_enabled() ? (rng_log_set_caller(__sl2, 140, __sl18), rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0)) : rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0))) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) || (sobj_at(NHC.BOULDER, x, y)) || nexttodoor(x, y))
         return;
     if ((ttmp = t_at(x, y)) !== null && !delfloortrap(ttmp))
         return;
@@ -319,12 +320,12 @@ function dofindgem() {
 
 /** C ref: fountain.c:179 — @param {CPtr} mtmp @returns {CInt} */
 function watchman_warn_fountain(mtmp) {
-    if ((cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WATCHMAN, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_WATCH_CAPTAIN, 96))) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+    if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && couldsee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         if (!Deaf()) {
             pline(__sl22, Amonnam(mtmp));
             verbalize(__sl23);
         } else {
-            pline(__sl24, Amonnam(mtmp), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? __sl25 : __sl26, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? mbodypart(mtmp, NHC.HEAD) : makeplural(mbodypart(mtmp, NHC.ARM)));
+            pline(__sl24, Amonnam(mtmp), nolimbs(cptr.ldPtro(mtmp, $monst_data)) ? __sl25 : __sl26, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), nolimbs(cptr.ldPtro(mtmp, $monst_data)) ? mbodypart(mtmp, NHC.HEAD) : makeplural(mbodypart(mtmp, NHC.ARM)));
         }
         return 1;
     }
@@ -333,8 +334,8 @@ function watchman_warn_fountain(mtmp) {
 
 /** C ref: fountain.c:201 — @param {CInt} x @param {CInt} y @param {CInt} isyou */
 export function dryup(x, y, isyou) {
-    if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 204, __sl27), rn2(3)) : rn2(3)) || (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))) {
-        if (isyou && in_town(x, y) && !(((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED)) {
+    if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && (!(rng_log_enabled() ? (rng_log_set_caller(__sl2, 204, __sl27), rn2(3)) : rn2(3)) || FOUNTAIN_IS_WARNED(x, y))) {
+        if (isyou && in_town(x, y) && !FOUNTAIN_IS_WARNED(x, y)) {
             let mtmp;
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) | NHM.F_WARNED);
             ;
@@ -347,9 +348,9 @@ export function dryup(x, y, isyou) {
             if (yn_function(__sl29, cptr.decay(ynchars), 110, 1) == 110)
                 return;
         }
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+        if (cansee(x, y)) {
             let glyph = glyph_at(x, y);
-            if (!((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) || glyph_to_cmap(glyph) != NHC.S_cloud)
+            if (!glyph_is_cmap(glyph) || glyph_to_cmap(glyph) != NHC.S_cloud)
                 pline_The(__sl30);
         }
         set_levltyp(x, y, NHC.ROOM);
@@ -375,8 +376,8 @@ export function drinkfountain() {
         let littleluck = (cptr.ld1so(u, $you_uluck) < 4);
         pline(__sl33);
         for (ii = 0; ii < NHC.A_MAX; ii++)
-            if ((cptr.ld1so2(u, ii, 1, $you_acurr)) < (cptr.ld1so2(u, ii, 1, $you_amax))) {
-                cptr.st1o2(u, ii, 1, $you_acurr, (cptr.ld1so2(u, ii, 1, $you_amax)));
+            if (ABASE(ii) < AMAX(ii)) {
+                cptr.st1o2(u, ii, 1, $you_acurr, AMAX(ii));
                 cptr.st1(disp, 1);
             }
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl2, 265, __sl31), rn2(NHC.A_MAX)) : rn2(NHC.A_MAX));
@@ -469,7 +470,7 @@ export function drinkfountain() {
             exercise(NHC.A_WIS, 1);
             break;
             case 27:
-            if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED)) {
+            if (!FOUNTAIN_IS_LOOTED(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                 dofindgem();
                 break;
             }
@@ -483,7 +484,7 @@ export function drinkfountain() {
                 let mtmp;
                 pline(__sl51, hliquid(__sl50));
                 for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                    if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
+                    if (DEADMONSTER(mtmp))
                         continue;
                     monflee(mtmp, 0, 0, 0);
                 }
@@ -574,7 +575,7 @@ export function dipfountain(obj) {
         dowatersnakes();
         break;
         case 24:
-        if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED)) {
+        if (!FOUNTAIN_IS_LOOTED(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             dofindgem();
             break;
         }
@@ -602,7 +603,7 @@ export function dipfountain(obj) {
                     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
                         let denomination = cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost);
                         let coin_loss = (BigInt.asIntN(64, BigInt.asIntN(64, money + BigInt(denomination)) - 1n)) / BigInt(denomination);
-                        coin_loss = ((coin_loss) < (cptr.ldI64o(otmp, $obj_quan)) ? (coin_loss) : (cptr.ldI64o(otmp, $obj_quan)));
+                        coin_loss = min(coin_loss, cptr.ldI64o(otmp, $obj_quan));
                         cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) - coin_loss);
                         money -= BigInt.asIntN(64, coin_loss * BigInt(denomination));
                         if (!cptr.ldI64o(otmp, $obj_quan))
@@ -617,7 +618,7 @@ export function dipfountain(obj) {
         }
         break;
         case 29:
-        if ((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))
+        if (FOUNTAIN_IS_LOOTED(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             break;
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) | NHM.F_LOOTED);
         ;
@@ -655,7 +656,7 @@ export function wash_hands() {
 
 /** C ref: fountain.c:581 — @param {CInt} x @param {CInt} y */
 export function breaksink(x, y) {
-    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (cansee(x, y) || u_at(x, y))
         pline_The(__sl72);
     set_levltyp(x, y, NHC.FOUNTAIN);
     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, 0);
@@ -696,7 +697,7 @@ export function drinksink() {
         else {
             mtmp = makemon(cptr.add(mons, NHC.PM_SEWER_RAT, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG);
             if (mtmp)
-                pline(__sl81, (Blind() || !(canseemon(mtmp) || sensemon(mtmp))) ? __sl82 : a_monnam(mtmp));
+                pline(__sl81, (Blind() || !canspotmon(mtmp)) ? __sl82 : a_monnam(mtmp));
         }
         break;
         case 4:
@@ -839,7 +840,7 @@ export function dipsink(obj) {
         break;
         default:
         pline(__sl110);
-        if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
+        if (!breathless(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             potionbreathe(obj);
         break;
     }

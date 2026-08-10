@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { C, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_SINK, IS_STWALL, IS_THRONE, IS_TREE, IS_WATERWALL, Is_container, Is_mineend_level, Is_sokoend_level, M, NODIAG, OBJ_AT, cansee, canspotmon, glyph_is_cmap, glyph_is_invisible, has_mgivenname, hides_under, is_hider, is_mind_flayer, is_vampire, is_vampshifter, is_were, likes_gems, next2u, u_at, unmeta, webmaker } from './nhmacrofn.js';
 import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
@@ -1401,9 +1402,9 @@ export function extcmd_via_menu() {
 /** C ref: cmd.c:890 @returns {CInt} */
 export function domonability() {
     let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
-    let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
+    let might_hide = schar((is_hider(uptr) || hides_under(uptr) ? 1 : 0));
     let c = 0;
-    if (might_hide && (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)))) {
+    if (might_hide && webmaker(uptr)) {
         c = yn_function(__sl33, cptr.decay(hidespinchars), 113, 1);
         if (c == 113 || c == 27)
             return NHM.ECMD_OK;
@@ -1416,13 +1417,13 @@ export function domonability() {
         return doremove();
     else if (attacktype(uptr, NHM.AT_GAZE))
         return dogaze();
-    else if (((cptr.ldU64o((uptr), $permonst_mflags2) & 4n) != 0n))
+    else if (is_were(uptr))
         return dosummon();
     else if (c ? c == 104 : might_hide)
         return dohide();
-    else if (c ? c == 115 : (cptr.eq((uptr), cptr.add(mons, NHC.PM_CAVE_SPIDER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) ? 1 : 0))
+    else if (c ? c == 115 : webmaker(uptr))
         return dospinweb();
-    else if ((cptr.eq((uptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((uptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96))))
+    else if (is_mind_flayer(uptr))
         return domindblast();
     else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
         if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
@@ -1433,7 +1434,7 @@ export function domonability() {
         } else {
             There(__sl34);
         }
-    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_UNICORN && ((cptr.ldU64o((uptr), $permonst_mflags2) & 536870912n) != 0n))) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_UNICORN && likes_gems(uptr))) {
         use_unicorn_horn(null);
         return NHM.ECMD_TIME;
     } else if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK) {
@@ -1442,7 +1443,7 @@ export function domonability() {
             pline(__sl36);
         else
             aggravate();
-    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || (cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VAMPIRE_LEADER || cptr.ldI16o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_cham) == NHC.PM_VLAD_THE_IMPALER)) {
+    } else if (is_vampire(uptr) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
         return dopoly();
     } else if (cptr.ldPtro(u, $you_usteed) && attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), NHM.AT_BREA)) {
         void pet_ranged_attk(cptr.ldPtro(u, $you_usteed), 1);
@@ -1493,11 +1494,11 @@ export function makemap_prepost(pre, wiztower) {
         makemap_remove_mons();
         rm_mapseen(ledger_no(cptr.add(u, $you_uz)));
         {
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
+            if (Is_mineend_level(cptr.add(u, $you_uz))) {
                 if (remove_achievement(NHC.ACH_MINE_PRIZE))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl48);
                 cptr.stI32o(svc, $context_info_achieveo, 0);
-            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level))))) {
+            } else if (Is_sokoend_level(cptr.add(u, $you_uz))) {
                 if (remove_achievement(NHC.ACH_SOKO_PRIZE))
                     pline(cptr.decay(__static_makemap_prepost_Unachieve), __sl49);
                 cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
@@ -1703,7 +1704,7 @@ function u_can_see_whole_selection(sel) {
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (isok(x, y) && selection_getpoint(x, y, sel) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+            if (isok(x, y) && selection_getpoint(x, y, sel) && !cansee(x, y))
                 return 0;
     return 1;
 }
@@ -1711,7 +1712,7 @@ function u_can_see_whole_selection(sel) {
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
     let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || ((typ) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (typ) == NHC.STONE)) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
+    if (IS_STWALL(typ) || IS_DOOR(typ) || IS_TREE(typ) || IS_WATERWALL(typ) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
 }
@@ -1723,15 +1724,15 @@ function lookaround_known_room(x, y) {
     let qbuf = new Uint8Array(128);
     set_selection_floodfillchk(dolookaround_floodfill_findroom);
     selection_floodfill(sel, x, y, 1);
-    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (!u_at(x, y))
         set_msg_xy(x, y);
     if (u_have_seen_whole_selection(sel)) {
         let u_in = schar(selection_getpoint(x, y, sel));
-        You(__sl95, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in && u_can_see_whole_selection(sel) ? __sl96 : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) ? __sl97 : __sl98), an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
+        You(__sl95, u_at(x, y) && u_in && u_can_see_whole_selection(sel) ? __sl96 : ((u_at(x, y)) ? __sl97 : __sl98), an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
     } else if (u_have_seen_bounds_selection(sel)) {
-        You(__sl100, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __sl101 : __sl102, an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
+        You(__sl100, u_at(x, y) ? __sl101 : __sl102, an(selection_size_description(sel, cptr.decay(qbuf))), rmno >= 0 ? __sl75 : __sl99);
     } else {
-        You(__sl103, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __sl101 : __sl102);
+        You(__sl103, u_at(x, y) ? __sl101 : __sl102);
     }
     selection_free(sel, 1);
 }
@@ -1763,8 +1764,8 @@ export function dolookaround() {
         for (x = 1; x < NHM.COLNO; x++) {
             let glyph;
             let mapsym;
-            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
-            if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && (gather_locs_interesting(x, y, NHC.GLOC_INTERESTING) || iscorr)) {
+            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && glyph_is_cmap(glyph) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
+            if (!u_at(x, y) && (gather_locs_interesting(x, y, NHC.GLOC_INTERESTING) || iscorr)) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
                 let sym = 0;
@@ -3487,7 +3488,7 @@ export function key2extcmddesc(key) {
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl252);
     else if (movecmd(schar((k = key)), NHC.MV_RUN))
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl250);
-    if (digit(schar(key)) || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) && digit(schar((127 & (key)))))) {
+    if (digit(schar(key)) || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) && digit(schar(unmeta(key))))) {
         cptr.st1o(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 0, 1);
         if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __sl475);
@@ -4195,12 +4196,12 @@ export function reset_commands(initial) {
                 if (mode == NHC.MV_RUN)
                     di = uchar(highc(schar(di)));
                 else if (mode == NHC.MV_RUSH)
-                    di = uchar((31 & (di)));
+                    di = uchar(C(di));
             } else {
                 if (mode == NHC.MV_RUN)
-                    di = uchar((((di) - 128) | 0));
+                    di = uchar(M(di));
                 else if (mode == NHC.MV_RUSH)
-                    di = uchar((((di) - 128) | 0));
+                    di = uchar(M(di));
             }
             cptr.st1o(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, di, 1);
             if ((bind = cmdbind_get(di)) !== null)
@@ -4215,9 +4216,9 @@ export function reset_commands(initial) {
         void bind_key_fn(uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8));
         if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
             void bind_key_fn(uchar(highc(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
-            void bind_key_fn(uchar((31 & (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8));
+            void bind_key_fn(uchar(C(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8));
         } else {
-            void bind_key_fn(uchar((((cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)) - 128) | 0)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
+            void bind_key_fn(uchar(M(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8));
         }
     }
     update_rest_on_space();
@@ -4605,7 +4606,7 @@ export function movecmd(sym, mode) {
 
 /** C ref: cmd.c:3902 @returns {CInt} */
 export function dxdy_moveok() {
-    if (cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
+    if (cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && NODIAG(cptr.ldI32o(u, $you_umonnum)))
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
     return cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) ? 1 : 0;
 }
@@ -4883,9 +4884,9 @@ function help_dir(sym, spkey, msg) {
             putstr()(win, 0, __sl0);
         }
     }
-    void cptr.sprintf(cptr.decay(buf), __sl578, prefixhandling ? __sl579 : __sl0, prefixhandling ? dothat : __sl0, ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? __sl580 : __sl0);
+    void cptr.sprintf(cptr.decay(buf), __sl578, prefixhandling ? __sl579 : __sl0, prefixhandling ? dothat : __sl0, NODIAG(cptr.ldI32o(u, $you_umonnum)) ? __sl580 : __sl0);
     putstr()(win, 0, cptr.decay(buf));
-    show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG)));
+    show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(NODIAG(cptr.ldI32o(u, $you_umonnum))));
     if (!prefixhandling) {
         putstr()(win, 0, __sl0);
         putstr()(win, 0, __sl581);
@@ -4908,7 +4909,7 @@ function help_dir(sym, spkey, msg) {
 /** C ref: cmd.c:4300 — @param {CInt} force_impairment */
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired()) {
-        let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
+        let kmax = NODIAG(cptr.ldI32o(u, $you_umonnum)) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
         let k = cptr.ld1so(cptr.decay(dirs_ord), (rng_log_enabled() ? (rng_log_set_caller(__sl511, 4304, __sl585), rn2(kmax)) : rn2(kmax)), 1);
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), k, 1));
@@ -5030,17 +5031,17 @@ function there_cmd_menu_self(win, x, y, act) {
     let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
     let stway = stairway_at(x, y);
     let ttmp;
-    if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (!u_at(x, y))
         return K;
-    if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK)) && can_reach_floor(0)) {
-        void cptr.sprintf(cptr.decay(buf), __sl595, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, 24, $symdef_explanation));
+    if ((IS_FOUNTAIN(typ) || IS_SINK(typ)) && can_reach_floor(0)) {
+        void cptr.sprintf(cptr.decay(buf), __sl595, cptr.ldPtro2(defsyms, IS_FOUNTAIN(typ) ? NHC.S_fountain : NHC.S_sink, 24, $symdef_explanation));
         mcmd_addmenu(win, NHC.MCMD_QUAFF, cptr.decay(buf)), ++K;
     }
-    if (((typ) == NHC.FOUNTAIN) && can_reach_floor(0))
+    if (IS_FOUNTAIN(typ) && can_reach_floor(0))
         mcmd_addmenu(win, NHC.MCMD_DIP, __sl596), ++K;
-    if (((typ) == NHC.THRONE))
+    if (IS_THRONE(typ))
         mcmd_addmenu(win, NHC.MCMD_SIT, __sl597), ++K;
-    if (((typ) == NHC.ALTAR))
+    if (IS_ALTAR(typ))
         mcmd_addmenu(win, NHC.MCMD_OFFER, __sl598), ++K;
     if (stway && cptr.ld1so(stway, $stairway_up)) {
         void cptr.sprintf(cptr.decay(buf), __sl599, cptr.ld1so(stway, $stairway_isladder) ? __sl77 : __sl76);
@@ -5054,11 +5055,11 @@ function there_cmd_menu_self(win, x, y, act) {
         void cptr.sprintf(cptr.decay(buf), __sl601, x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
         mcmd_addmenu(win, NHC.MCMD_DISMOUNT, cptr.decay(buf)), ++K;
     }
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
+    if (OBJ_AT(x, y)) {
         let otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
         void cptr.sprintf(cptr.decay(buf), __sl602, cptr.ldPtro(otmp, $obj_v) ? __sl603 : doname(otmp));
         mcmd_addmenu(win, NHC.MCMD_PICKUP, cptr.decay(buf)), ++K;
-        if ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), $obj_otyp) <= NHC.BAG_OF_TRICKS)) {
+        if (Is_container(otmp)) {
             void cptr.sprintf(cptr.decay(buf), __sl604, doname(otmp));
             mcmd_addmenu(win, NHC.MCMD_LOOT, cptr.decay(buf)), ++K;
             void cptr.sprintf(cptr.decay(buf), __sl605, doname(otmp));
@@ -5092,9 +5093,9 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
     let ttmp;
     let mtmp;
-    if (!(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+    if (!next2u(x, y))
         return K;
-    if (((typ) == NHC.DOOR)) {
+    if (IS_DOOR(typ)) {
         let key_or_pick;
         let card;
         let dm = (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
@@ -5123,7 +5124,7 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
     if (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __sl623), ++K;
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-    if (mtmp && !(canseemon(mtmp) || sensemon(mtmp)))
+    if (mtmp && !canspotmon(mtmp))
         mtmp = null;
     if (mtmp && which_armor(mtmp, 1048576n)) {
         let mnam = x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0);
@@ -5143,10 +5144,10 @@ function there_cmd_menu_next2u(win, x, y, mod, act) {
         mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf)), ++K;
         void cptr.sprintf(cptr.decay(buf), __sl628, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, cptr.decay(buf)), ++K;
-        void cptr.sprintf(cptr.decay(buf), __sl629, !(cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? __sl630 : __sl631, mon_nam(mtmp));
+        void cptr.sprintf(cptr.decay(buf), __sl629, !has_mgivenname(mtmp) ? __sl630 : __sl631, mon_nam(mtmp));
         mcmd_addmenu(win, NHC.MCMD_NAME, cptr.decay(buf)), ++K;
     }
-    if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
+    if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || glyph_is_invisible(glyph_at(x, y))) {
         void cptr.sprintf(cptr.decay(buf), __sl632, mtmp ? mon_nam(mtmp) : __sl633);
         mcmd_addmenu(win, NHC.MCMD_ATTACK_NEXT2U, cptr.decay(buf)), ++K;
         cptr.stI32(act, NHC.MCMD_ATTACK_NEXT2U);
@@ -5170,7 +5171,7 @@ function there_cmd_menu_far(win, x, y, mod) {
 function there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
     if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
-        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
+        if (!u_at(x, y) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
             mcmd_addmenu(win, NHC.MCMD_LOOK_AT, __sl636), ++K;
     }
     return K;
@@ -5358,15 +5359,15 @@ function there_cmd_menu(x, y, mod) {
     let act = cptr.box(NHC.MCMD_NOTHING);
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (u_at(x, y))
         K = (K + there_cmd_menu_self(win, x, y, act)) | 0;
-    else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+    else if (next2u(x, y))
         K = (K + there_cmd_menu_next2u(win, x, y, mod, act)) | 0;
     else
         K = (K + there_cmd_menu_far(win, x, y, mod)) | 0;
     K = (K + there_cmd_menu_common(win, x, y, mod, act)) | 0;
     if (!K) {
-        if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE)) {
+        if (next2u(x, y) && test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE)) {
             let dir = xytodir(dx, dy);
             cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8));
         } else if (cptr.ld1so(flags, $flag_travelcmd)) {
@@ -5440,7 +5441,7 @@ function domouseaction() {
                 cmdq_add_ec(NHC.CQ_CANNED, dodown);
                 return NHM.ECMD_OK;
             } else if ((o = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null) {
-                cmdq_add_ec(NHC.CQ_CANNED, (cptr.ldI16o((o), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((o), $obj_otyp) <= NHC.BAG_OF_TRICKS) ? doloot : dopickup);
+                cmdq_add_ec(NHC.CQ_CANNED, Is_container(o) ? doloot : dopickup);
                 return NHM.ECMD_OK;
             } else {
                 cmdq_add_ec(NHC.CQ_CANNED, donull);
@@ -5701,7 +5702,7 @@ function dotravel_target() {
     if (!isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
         pline(__sl645);
         return NHM.ECMD_OK;
-    } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+    } else if (u_at(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
         You(__sl646);
         cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
         return NHM.ECMD_OK;

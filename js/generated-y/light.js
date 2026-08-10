@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { DEADMONSTER, Is_candle, canspotmon, ignitable, release_data, u_at, update_file } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
@@ -213,7 +214,7 @@ export function do_light_sources(cs_rows) {
             if (get_mon_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
         }
-        if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
+        if (u_at(cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y))) {
             if (at_hero_range >= cptr.ldI16o(ls, $light_source_range))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -2);
             else
@@ -232,7 +233,7 @@ export function do_light_sources(cs_rows) {
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16o(ls, $light_source_x) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
-                if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
+                if (u_at(cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y))) {
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
@@ -279,7 +280,7 @@ export function* show_transient_light(obj, x, y) {
     (yield* flush_screen(0));
     radius_squared = Math.imul(cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_range));
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
+        if (DEADMONSTER(mon) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <= radius_squared) {
             if (canseemon(mon))
@@ -301,12 +302,12 @@ export function* transient_light_cleanup() {
         (yield* vision_recalc(0));
     mtempcount = 0;
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), $monst_mhp) < 1))
+        if (DEADMONSTER(mon))
             continue;
         if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
             cptr.stI32o(mon, $monst_mtemplit, 0);
             ++mtempcount;
-            if (!(canseemon(mon) || sensemon(mon)))
+            if (!canspotmon(mon))
                 (yield* map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         }
     }
@@ -332,7 +333,7 @@ export function find_mid(nid, fmflags) {
         return cptr.add(gy, $instance_globals_y_youmonst);
     if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
+            if (!DEADMONSTER(mtmp) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -374,14 +375,14 @@ export function* save_light_sources(nhfp, range) {
     let curr;
     (yield* discard_flashes());
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         count.v = (yield* maybe_write_ls(nhfp, range, 0));
         (yield* sfo_int(nhfp, count, __sl16));
         actual = (yield* maybe_write_ls(nhfp, range, 1));
         if (actual != count.v)
             (yield* panic(__sl17, count.v, actual, range));
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+    if (release_data(nhfp)) {
         for (prev = cptr.add(gl, $instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
             if (!cptr.ldPtro(curr, $light_source_id)) {
                 (yield* impossible(__sl18, range));
@@ -545,7 +546,7 @@ function* write_ls(nhfp, ls) {
                     cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
                     cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
                     if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id), monloc), mtmp)) {
-                        (yield* impossible(__sl31, (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? __sl32 : __sl33, cptr.ldI32o(ls, $light_source_id)));
+                        (yield* impossible(__sl31, DEADMONSTER(mtmp) ? __sl32 : __sl33, cptr.ldI32o(ls, $light_source_id)));
                         cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                     }
                 } else {
@@ -604,7 +605,7 @@ export function obj_sheds_light(obj) {
 
 /** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && ((cptr.ldI16o((obj), $obj_otyp) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), $obj_otyp) == NHC.OIL_LAMP || (cptr.ldI16o((obj), $obj_otyp) == NHC.MAGIC_LAMP && cptr.ld1so((obj), $obj_spe) > 0) || cptr.ldI16o((obj), $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((obj), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o((obj), $obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o((obj), $obj_otyp) == NHC.POT_OIL) || artifact_light(obj)) ? 1 : 0));
+    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && (ignitable(obj) || artifact_light(obj)) ? 1 : 0));
 }
 
 /** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
@@ -615,7 +616,7 @@ export function* obj_split_light_source(src, dest) {
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src)) {
             new_ls = (yield* alloc(32));
             cptr.memcpy(new_ls, ls, 32);
-            if ((cptr.ldI16o(src, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, $obj_otyp) == NHC.WAX_CANDLE)) {
+            if (Is_candle(src)) {
                 cptr.stI16o(ls, $light_source_range, i16(candle_light_range(src)));
                 cptr.stI16o(new_ls, $light_source_range, i16(candle_light_range(dest)));
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
@@ -658,7 +659,7 @@ export function candle_light_range(obj) {
     let radius;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         radius = (cptr.ld1so(obj, $obj_spe) < 4) ? 2 : ((cptr.ld1so(obj, $obj_spe) < 7) ? 3 : 4);
-    } else if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE)) {
+    } else if (Is_candle(obj)) {
         let n = cptr.ldI64o(obj, $obj_quan);
         radius = 1;
         while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS) {

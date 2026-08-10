@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { In_endgame, Is_astralevel, M_AP_TYPE, cansee, canspotmon, carried, engulfing_u, glyph_is_body_piletop, glyph_is_fem_statue_piletop, glyph_is_male_statue_piletop, glyph_is_normal_generic_obj, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, hides_under, humanoid, is_animal, is_mplayer, is_plural, is_rider, ismnum, m_next2u, type_is_pname, u_at } from './nhmacrofn.js';
 import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
@@ -455,14 +456,14 @@ export function* new_mgivenname(mon, lth) {
             free_mgivenname(mon);
         cptr.stPtr(cptr.ldPtro((mon), $monst_mextra), (yield* alloc(lth >>> 0)));
     } else {
-        if ((cptr.ldPtro((mon), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mon), $monst_mextra)))))
+        if (has_mgivenname(mon))
             free_mgivenname(mon);
     }
 }
 
 /** C ref: do_name.c:51 — @param {CPtr} mon */
 export function free_mgivenname(mon) {
-    if ((cptr.ldPtro((mon), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mon), $monst_mextra))))) {
+    if (has_mgivenname(mon)) {
         cptr.free((cptr.ldPtr(cptr.ldPtro((mon), $monst_mextra))));
         cptr.stPtr(cptr.ldPtro((mon), $monst_mextra), null);
     }
@@ -477,14 +478,14 @@ export function* new_oname(obj, lth) {
             free_oname(obj);
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), (yield* alloc(lth >>> 0)));
     } else {
-        if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
+        if (has_oname(obj))
             free_oname(obj);
     }
 }
 
 /** C ref: do_name.c:81 — @param {CPtr} obj */
 export function free_oname(obj) {
-    if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))))) {
+    if (has_oname(obj)) {
         cptr.free((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))));
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), null);
     }
@@ -492,7 +493,7 @@ export function free_oname(obj) {
 
 /** C ref: do_name.c:95 — @param {CPtr} obj @returns {CPtr} */
 export function safe_oname(obj) {
-    if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
+    if (has_oname(obj))
         return (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)));
     return __sl0;
 }
@@ -533,11 +534,11 @@ function* alreadynamed(mtmp, monnambuf, usrbuf) {
     let pronounbuf = new Uint8Array(10);
     let p;
     if (!cptr.ld1s(usrbuf)) {
-        let name_not_title = schar(((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 524288n) != 0n) || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ? 1 : 0));
-        (yield* pline(__sl1, upstart(monnambuf), (cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) ? __sl2 : (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), name_not_title ? __sl3 : __sl4));
+        let name_not_title = schar((has_mgivenname(mtmp) || type_is_pname(cptr.ldPtro(mtmp, $monst_data)) || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ? 1 : 0));
+        (yield* pline(__sl1, upstart(monnambuf), is_rider(cptr.ldPtro(mtmp, $monst_data)) ? __sl2 : (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), name_not_title ? __sl3 : __sl4));
         return 1;
     } else if ((yield* fuzzymatch(usrbuf, monnambuf, __sl5, 1)) || (!(yield* strncmpi(monnambuf, __sl6, 4)) && (yield* fuzzymatch(usrbuf, cptr.add(monnambuf, 4), __sl5, 1))) || ((p = (yield* strstri(monnambuf, __sl7))) !== null && (yield* fuzzymatch(usrbuf, cptr.add(p, 10), __sl5, 1))) || ((p = (yield* strstri(monnambuf, __sl8))) !== null && (yield* fuzzymatch(usrbuf, cptr.add(p, 4), __sl5, 1)))) {
-        if ((cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_PESTILENCE, 96)))) {
+        if (is_rider(cptr.ldPtro(mtmp, $monst_data))) {
             (yield* pline(__sl9, upstart(monnambuf)));
         } else {
             (yield* pline(__sl10, upstart(cptr.strcpy(cptr.decay(pronounbuf), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)))), monnambuf));
@@ -569,8 +570,8 @@ function* do_mgivenname() {
     if ((yield* getpos(cc, 0, __sl15)) < 0 || !isok(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
         return;
     cx = cptr.ldI16(cc), cy = cptr.ldI16o(cc, $nhcoord_y);
-    if (((cx) == cptr.ldI16(u) && (cy) == cptr.ldI16o(u, $you_uy))) {
-        if (cptr.ldPtro(u, $you_usteed) && (canseemon(cptr.ldPtro(u, $you_usteed)) || sensemon(cptr.ldPtro(u, $you_usteed)))) {
+    if (u_at(cx, cy)) {
+        if (cptr.ldPtro(u, $you_usteed) && canspotmon(cptr.ldPtro(u, $you_usteed))) {
             mtmp = cptr.ldPtro(u, $you_usteed);
         } else {
             (yield* pline(__sl16, beautiful(), svp));
@@ -580,27 +581,27 @@ function* do_mgivenname() {
         mtmp = (cptr.ldPtro3(svl, cx, 168, cy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (!mtmp && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         let glyph = glyph_at(i16(cx), i16(cy));
-        if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))) {
+        if (glyph_is_swallow(glyph)) {
             mtmp = cptr.ldPtro(u, $you_ustuck);
             do_swallow = 1;
         }
     }
-    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && (!(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) || see_with_infrared(mtmp)) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT || ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()))))) {
+    if (!do_swallow && (!mtmp || (!sensemon(mtmp) && (!(cansee(cx, cy) || see_with_infrared(mtmp)) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE || M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT || ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()))))) {
         (yield* pline(__sl17));
         return;
     }
     void cptr.sprintf(cptr.decay(qbuf), __sl18, (yield* distant_monnam(mtmp, NHM.ARTICLE_THE, cptr.decay(monnambuf))));
-    if (!(yield* name_from_player(cptr.decay(buf), cptr.decay(qbuf), (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))) : null)))
+    if (!(yield* name_from_player(cptr.decay(buf), cptr.decay(qbuf), has_mgivenname(mtmp) ? (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))) : null)))
         return;
     if ((cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
         if (!(yield* alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf))))
             (yield* pline(__sl19, upstart(cptr.decay(monnambuf))));
-    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(Deaf() || ((cptr.ldI32o((mtmp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), $monst_mcanmove) & 1)) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
+    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(Deaf() || helpless(mtmp) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
         if (!(yield* alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf)))) {
             ;
             (yield* verbalize(__sl20, (yield* shkname(mtmp)), cptr.decay(buf)));
         }
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GHOST, 96)) || (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)))) {
+    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GHOST, 96)) || has_ebones(mtmp)) {
         if (!(yield* alreadynamed(mtmp, cptr.decay(monnambuf), cptr.decay(buf))))
             (yield* pline(__sl21, upstart(cptr.decay(monnambuf)), cptr.decay(buf)));
     } else {
@@ -620,12 +621,12 @@ function* do_oname(obj) {
         (yield* pline(__sl22, (yield* Ysimple_name2(obj))));
         return;
     }
-    void cptr.sprintf(cptr.decay(qbuf), __sl23, (cptr.ldI64o((obj), $obj_quan) != 1n || (cptr.ld1so((obj), $obj_oartifact) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD))) ? __sl24 : __sl25);
+    void cptr.sprintf(cptr.decay(qbuf), __sl23, is_plural(obj) ? __sl24 : __sl25);
     void (yield* safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __sl26, obj, xname, simpleonames, __sl27));
     if (!(yield* name_from_player(cptr.decay(buf), cptr.decay(qbuf), safe_oname(obj))))
         return;
     if (cptr.ld1so(obj, $obj_oartifact)) {
-        (yield* pline(__sl28, (cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : __sl29));
+        (yield* pline(__sl28, has_oname(obj) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : __sl29));
         return;
     }
     if ((aname = (yield* artifact_name(cptr.decay(buf), objtyp, 1))) !== null && ((yield* restrict_name(obj, aname)) || exist_artifact(cptr.ldI16o(obj, $obj_otyp), aname))) {
@@ -680,7 +681,7 @@ export function* oname(obj, name, oflgs) {
                 (yield* livelog_printf(64n, __sl36, (yield* ansimpleoname(obj)), (yield* bare_artifactname(obj))));
         }
     }
-    if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !skip_inv_update)
+    if (carried(obj) && !skip_inv_update)
         (yield* update_inventory());
     return obj;
 }
@@ -878,18 +879,18 @@ function* namefloorobj() {
     let fakeobj = 0;
     let use_plural;
     cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-    void cptr.sprintf(cptr.decay(buf), __sl50, ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n)) ? __sl51 : __sl52);
+    void cptr.sprintf(cptr.decay(buf), __sl50, ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? __sl51 : __sl52);
     if ((yield* getpos(cc, 0, cptr.decay(buf))) < 0 || cptr.ldI16(cc) <= 0)
         return;
-    if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+    if (u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
         obj.v = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects));
     } else {
         glyph = glyph_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-        if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))))))
+        if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph))))
             fakeobj = (yield* object_from_map(glyph, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), obj));
     }
     if (!obj.v) {
-        (yield* There(__sl53, ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) ? __sl54 : __sl55));
+        (yield* There(__sl53, u_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) ? __sl54 : __sl55));
         return;
     }
     void cptr.strcpy(cptr.decay(buf), (cptr.ldI16o(obj.v, $obj_otyp) != NHC.STRANGE_OBJECT) ? (yield* simpleonames(obj.v)) : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, 16));
@@ -975,7 +976,7 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     let name_at_start;
     let has_adjectives;
     let insertbuf2;
-    let mappear_as_mon = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
+    let mappear_as_mon = schar((M_AP_TYPE(mtmp) == NHC.M_AP_MONSTER));
     let bp;
     let buf2 = new Uint8Array(256);
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -990,15 +991,15 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     }
     do_hallu = schar((Hallucination() && !(suppress & NHM.SUPPRESS_HALLUCINATION) ? 1 : 0));
     do_invis = schar(((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !(suppress & NHM.SUPPRESS_INVISIBLE) ? 1 : 0));
-    do_it = schar((!(canseemon(mtmp) || sensemon(mtmp)) && article != NHM.ARTICLE_YOUR && !cptr.ldI32(program_state) && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && !(suppress & NHM.SUPPRESS_IT) ? 1 : 0));
+    do_it = schar((!canspotmon(mtmp) && article != NHM.ARTICLE_YOUR && !cptr.ldI32(program_state) && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && !engulfing_u(mtmp) && !(suppress & NHM.SUPPRESS_IT) ? 1 : 0));
     do_saddle = schar((!(suppress & NHM.SUPPRESS_SADDLE)));
     do_mappear = schar((mappear_as_mon && !(suppress & NHM.SUPPRESS_MAPPEARANCE) ? 1 : 0));
     do_exact = schar(((suppress & NHM.EXACT_NAME) == NHM.EXACT_NAME));
-    do_name = schar((!(suppress & NHM.SUPPRESS_NAME) || ((cptr.ldU64o((mdat), $permonst_mflags2) & 524288n) != 0n) ? 1 : 0));
+    do_name = schar((!(suppress & NHM.SUPPRESS_NAME) || type_is_pname(mdat) ? 1 : 0));
     augment_it = schar(((suppress & NHM.AUGMENT_IT) != 0));
     cptr.st1o(buf, 0, 0);
     if (do_it) {
-        let s_one = schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 131072n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n) ? 1 : 0));
+        let s_one = schar((humanoid(mdat) && !is_animal(mdat) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n) ? 1 : 0));
         void cptr.strcpy(buf, !augment_it ? __sl67 : ((!do_hallu ? s_one : !(rng_log_enabled() ? (rng_log_set_caller(__sl33, 881, __sl104), rn2(2)) : rn2(2))) ? __sl105 : __sl106));
         return buf;
     }
@@ -1050,15 +1051,15 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
         let rname = (yield* rndmonnam(rnamecode));
         void cptr.strcat(buf, rname);
         name_at_start = bogon_is_pname(rnamecode.v);
-    } else if (do_name && (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) {
+    } else if (do_name && has_mgivenname(mtmp)) {
         let name = (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)));
         if (cptr.eq(mdat, cptr.add(mons, NHC.PM_GHOST, 96))) {
             void cptr.sprintf(eos(buf), __sl110, (yield* s_suffix(name)));
             name_at_start = 1;
         } else if (called) {
             void cptr.sprintf(eos(buf), __sl111, pm_name, name);
-            name_at_start = schar(((cptr.ldU64o((mdat), $permonst_mflags2) & 524288n) != 0n));
-        } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)) && (bp = (yield* strstri(name, __sl108))) !== null) {
+            name_at_start = schar(type_is_pname(mdat));
+        } else if (is_mplayer(mdat) && (bp = (yield* strstri(name, __sl108))) !== null) {
             let pbuf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(pbuf), name);
             cptr.st1o(cptr.decay(pbuf), BigInt.asIntN(64, cptr.diff(bp, name) + 5n), 0, 1);
@@ -1072,14 +1073,14 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
             void cptr.strcat(buf, name);
             name_at_start = 1;
         }
-    } else if (((cptr.cmp((mdat), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((mdat), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
+    } else if (is_mplayer(mdat) && !In_endgame(cptr.add(u, $you_uz))) {
         let pbuf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(pbuf), rank_of(cptr.ld1uo(mtmp, $monst_m_lev), (cptr.ldI32o((mdat), $permonst_pmidx)), schar((cptr.ldI32o(mtmp, $monst_female) & 1))));
         void cptr.strcat(buf, lcase(cptr.decay(pbuf)));
         name_at_start = 0;
     } else {
         void cptr.strcat(buf, pm_name);
-        name_at_start = schar(((cptr.ldU64o((mdat), $permonst_mflags2) & 524288n) != 0n));
+        name_at_start = schar(type_is_pname(mdat));
     }
     if (name_at_start && (article == NHM.ARTICLE_YOUR || !has_adjectives)) {
         if (cptr.eq(mdat, cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96)))
@@ -1115,22 +1116,22 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
 
 /** C ref: do_name.c:1035 — @param {CPtr} mtmp @returns {CPtr} */
 export function* l_monnam(mtmp) {
-    return (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) ? NHM.SUPPRESS_SADDLE : 0, 1));
+    return (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, (has_mgivenname(mtmp)) ? NHM.SUPPRESS_SADDLE : 0, 1));
 }
 
 /** C ref: do_name.c:1042 — @param {CPtr} mtmp @returns {CPtr} */
 export function* mon_nam(mtmp) {
-    return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))) ? NHM.SUPPRESS_SADDLE : 0, 0));
+    return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, (has_mgivenname(mtmp)) ? NHM.SUPPRESS_SADDLE : 0, 0));
 }
 
 /** C ref: do_name.c:1054 — @param {CPtr} mtmp @returns {CPtr} */
 export function* noit_mon_nam(mtmp) {
-    return (yield* x_monnam(mtmp, NHM.ARTICLE_YOUR, null, ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? 9 : NHM.SUPPRESS_IT), 0));
+    return (yield* x_monnam(mtmp, NHM.ARTICLE_YOUR, null, (has_mgivenname(mtmp) ? 9 : NHM.SUPPRESS_IT), 0));
 }
 
 /** C ref: do_name.c:1065 — @param {CPtr} mtmp @returns {CPtr} */
 export function* some_mon_nam(mtmp) {
-    return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? 72 : NHM.AUGMENT_IT), 0));
+    return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, (has_mgivenname(mtmp) ? 72 : NHM.AUGMENT_IT), 0));
 }
 
 /** C ref: do_name.c:1074 — @param {CPtr} mtmp @returns {CPtr} */
@@ -1169,7 +1170,7 @@ export function* y_monnam(mtmp) {
     let prefix;
     let suppression_flag;
     prefix = cptr.ld1so(mtmp, $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_THE;
-    suppression_flag = ((cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) || cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) ? NHM.SUPPRESS_SADDLE : 0;
+    suppression_flag = (has_mgivenname(mtmp) || cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) ? NHM.SUPPRESS_SADDLE : 0;
     return (yield* x_monnam(mtmp, prefix, null, suppression_flag, 0));
 }
 
@@ -1182,14 +1183,14 @@ export function* YMonnam(mtmp) {
 
 /** C ref: do_name.c:1142 — @param {CPtr} mtmp @param {CPtr} adj @returns {CPtr} */
 export function* Adjmonnam(mtmp, adj) {
-    let bp = (yield* x_monnam(mtmp, NHM.ARTICLE_THE, adj, (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? NHM.SUPPRESS_SADDLE : 0, 0));
+    let bp = (yield* x_monnam(mtmp, NHM.ARTICLE_THE, adj, has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0, 0));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
 /** C ref: do_name.c:1152 — @param {CPtr} mtmp @returns {CPtr} */
 export function* a_monnam(mtmp) {
-    return (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, (cptr.ldPtro((mtmp), $monst_mextra) && (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))) ? NHM.SUPPRESS_SADDLE : 0, 0));
+    return (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0, 0));
 }
 
 /** C ref: do_name.c:1159 — @param {CPtr} mtmp @returns {CPtr} */
@@ -1201,7 +1202,7 @@ export function* Amonnam(mtmp) {
 
 /** C ref: do_name.c:1170 — @param {CPtr} mon @param {CInt} article @param {CPtr} outbuf @returns {CPtr} */
 export function* distant_monnam(mon, article, outbuf) {
-    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
+    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && Is_astralevel(cptr.add(u, $you_uz)) && !m_next2u(mon)) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __sl6 : __sl0);
         void cptr.strcat(outbuf, (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __sl113 : __sl114);
     } else {
@@ -1306,7 +1307,7 @@ export function mon_pmname(mon) {
 
 /** C ref: do_name.c:1321 — @param {CPtr} obj @returns {CPtr} */
 export function* obj_pmname(obj) {
-    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) && ((cptr.ldI32o(obj, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(obj, $obj_corpsenm)) < NHC.NUMMONS)) {
+    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
         let cgend = (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_GENDER);
         let mgend = ((cgend == NHM.CORPSTAT_MALE) ? NHC.MALE : ((cgend == NHM.CORPSTAT_FEMALE) ? NHC.FEMALE : NHC.NEUTRAL));
         let mndx = cptr.ldI32o(obj, $obj_corpsenm);
@@ -1347,7 +1348,7 @@ export function* rndmonnam(code) {
         cptr.st1(code, 0);
     do {
         name = (rn2_on_display_rng(((((NHC.SPECIAL_PM + 100) | 0) - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0;
-    } while (name < NHC.SPECIAL_PM && (((cptr.ldU64o((cptr.add(mons, name, 96)), $permonst_mflags2) & 524288n) != 0n) || (cptr.ldU16o2(mons, name, 96, $permonst_geno) & NHM.G_NOGEN)));
+    } while (name < NHC.SPECIAL_PM && (type_is_pname(cptr.add(mons, name, 96)) || (cptr.ldU16o2(mons, name, 96, $permonst_geno) & NHM.G_NOGEN)));
     if (name >= NHC.SPECIAL_PM) {
         mnam = (yield* bogusmon(cptr.decay(__static_rndmonnam_buf), code));
     } else {

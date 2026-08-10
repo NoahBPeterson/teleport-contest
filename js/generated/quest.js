@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Is_nemesis, Is_qlocate, Is_qstart, helpless } from './nhmacrofn.js';
 import { Deaf, quest_dnum, wizard } from './nhprop.js';
 import { flags, gf, gi, svc, svd, svq, u } from './decl.js';
 import { com_pager, find_quest_artifact, is_quest_artifact, qt_pager } from './questpgr.js';
@@ -153,11 +154,11 @@ export function onquest() {
         return;
     if (!Is_special(cptr.add(u, $you_uz)))
         return;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))))
+    if (Is_qstart(cptr.add(u, $you_uz)))
         on_start();
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))))
+    else if (Is_qlocate(cptr.add(u, $you_uz)))
         on_locate();
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))))
+    else if (Is_nemesis(cptr.add(u, $you_uz)))
         on_goal();
     return;
 }
@@ -445,5 +446,5 @@ export function quest_talk(mtmp) {
 /** C ref: quest.c:514 — @param {CPtr} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
-        cptr.stI32o(svq, $q_score_in_battle, (!((cptr.ldI32o((mtmp), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((mtmp), $monst_mcanmove) & 1)) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0);
+        cptr.stI32o(svq, $q_score_in_battle, (!helpless(mtmp) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0);
 }

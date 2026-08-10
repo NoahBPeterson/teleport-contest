@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { release_data, update_file } from './nhmacrofn.js';
 import { Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
 import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
@@ -368,7 +369,7 @@ export function oinit() {
 export function savenames(nhfp) {
     let i;
     let len = cptr.box(0);
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         for (i = 0; i < ((NHC.MAXOCLASSES + 2) | 0); ++i) {
             sfo_int(nhfp, cptr.add(cptr.add(svb, $instance_globals_saved_b_bases), i, 4), __sl16);
         }
@@ -381,12 +382,12 @@ export function savenames(nhfp) {
     }
     for (i = 0; i < NHC.NUM_OBJECTS; i++)
         if (cptr.ldPtro2(objects, i, 120, $objclass_oc_uname)) {
-            if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+            if (update_file(nhfp)) {
                 len.v = (Strlen_(cptr.ldPtro2(objects, i, 120, $objclass_oc_uname), __sl19, 397) + 1) >>> 0;
                 sfo_unsigned(nhfp, len, __sl20);
                 sfo_char(nhfp, cptr.ldPtro2(objects, i, 120, $objclass_oc_uname), __sl21, len.v | 0);
             }
-            if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+            if (release_data(nhfp)) {
                 cptr.free(cptr.ldPtro2(objects, i, 120, $objclass_oc_uname));
                 cptr.stPtro2(objects, i, 120, $objclass_oc_uname, null);
             }

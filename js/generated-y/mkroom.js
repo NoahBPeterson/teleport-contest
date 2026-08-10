@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_DOOR, In_endgame, MON_AT, OBJ_AT, max, min } from './nhmacrofn.js';
 import { wizard } from './nhprop.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
@@ -442,7 +443,7 @@ function* morguemon() {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(100)) : rn2(100));
     let hd = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2((yield* level_difficulty()))) : rn2((yield* level_difficulty())));
     if (hd > 10 && i < 10) {
-        if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
+        if (In_hell(cptr.add(u, $you_uz)) || In_endgame(cptr.add(u, $you_uz))) {
             return (yield* mkclass(NHC.S_DEMON, 0));
         } else {
             let ndemon_res = (yield* ndemon(-128));
@@ -496,7 +497,7 @@ function* mkswamp() {
             for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++) {
                 if (!((cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || ((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
                     continue;
-                if (!(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
+                if (!OBJ_AT(sx, sy) && !MON_AT(sx, sy) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
                     if (((sx + sy) | 0) % 2) {
                         (yield* del_engr_at(sx, sy));
                         cptr.st1o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ, NHC.POOL);
@@ -556,7 +557,7 @@ export function nexttodoor(sx, sy) {
             if (!isok(i16(((sx + dx) | 0)), i16(((sy + dy) | 0))))
                 continue;
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (sx + dx) | 0, 756), (sy + dy) | 0, 36);
-            if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
+            if (IS_DOOR(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
                 return 1;
         }
     return 0;
@@ -896,8 +897,8 @@ function* invalid_shop_shape(sroom) {
     let insidex = 0;
     let insidey = 0;
     let insidect = 0;
-    for (x = i16((((doorx - 1) | 0) > (cptr.ldI16(sroom)) ? ((doorx - 1) | 0) : (cptr.ldI16(sroom)))); x <= (((doorx + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hx)) ? ((doorx + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hx))); x++) {
-        for (y = i16((((doory - 1) | 0) > (cptr.ldI16o(sroom, $mkroom_ly)) ? ((doory - 1) | 0) : (cptr.ldI16o(sroom, $mkroom_ly)))); y <= (((doory + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hy)) ? ((doory + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hy))); y++) {
+    for (x = i16(max((doorx - 1) | 0, cptr.ldI16(sroom))); x <= min((doorx + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx)); x++) {
+        for (y = i16(max((doory - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly))); y <= min((doory + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy)); y++) {
             if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM) {
                 insidex = x;
                 insidey = y;
@@ -911,8 +912,8 @@ function* invalid_shop_shape(sroom) {
     }
     if (insidect == 1) {
         insidect = 0;
-        for (x = i16((((insidex - 1) | 0) > (cptr.ldI16(sroom)) ? ((insidex - 1) | 0) : (cptr.ldI16(sroom)))); x <= (((insidex + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hx)) ? ((insidex + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hx))); x++) {
-            for (y = i16((((insidey - 1) | 0) > (cptr.ldI16o(sroom, $mkroom_ly)) ? ((insidey - 1) | 0) : (cptr.ldI16o(sroom, $mkroom_ly)))); y <= (((insidey + 1) | 0) < (cptr.ldI16o(sroom, $mkroom_hy)) ? ((insidey + 1) | 0) : (cptr.ldI16o(sroom, $mkroom_hy))); y++) {
+        for (x = i16(max((insidex - 1) | 0, cptr.ldI16(sroom))); x <= min((insidex + 1) | 0, cptr.ldI16o(sroom, $mkroom_hx)); x++) {
+            for (y = i16(max((insidey - 1) | 0, cptr.ldI16o(sroom, $mkroom_ly))); y <= min((insidey + 1) | 0, cptr.ldI16o(sroom, $mkroom_hy)); y++) {
                 if (x == insidex && y == insidey)
                     continue;
                 if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM)

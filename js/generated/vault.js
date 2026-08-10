@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ACCESSIBLE, DEADMONSTER, Has_contents, IS_POOL, IS_ROOM, IS_STWALL, IS_WALL, MON_AT, cansee, canspotmon, carried, couldsee, distu, is_silent, u_at } from './nhmacrofn.js';
 import { Blind, Deaf, Invis, Punished, Strangled, U_AP_TYPE, Underwater, Upolyd } from './nhprop.js';
 import { makemon, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -212,9 +213,9 @@ function clear_fcorr(grd, forceshow) {
     while ((fcbeg = i16(cptr.ldI32o(egrd, $egd_fcbeg))) < cptr.ldI32o(egrd, $egd_fcend)) {
         fcx = cptr.ldI16o2(egrd, fcbeg, 6, $egd_fakecorr);
         fcy = cptr.ldI16o2(egrd, fcbeg, 6, $egd_fakecorr + $fakecorridor_fy);
-        if (((cptr.ldI32o((grd), $monst_mhp) < 1) || !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0)
+        if ((DEADMONSTER(grd) || !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0)
             forceshow = 1;
-        if ((((fcx) == cptr.ldI16(u) && (fcy) == cptr.ldI16o(u, $you_uy)) && !(cptr.ldI32o((grd), $monst_mhp) < 1)) || (!forceshow && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), fcy, 8), fcx) & NHM.COULD_SEE) != 0)) || (Punished() && !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && cptr.ldI16o(uball.v, $obj_ox) == fcx && cptr.ldI16o(uball.v, $obj_oy) == fcy))
+        if ((u_at(fcx, fcy) && !DEADMONSTER(grd)) || (!forceshow && couldsee(fcx, fcy)) || (Punished() && !carried(uball.v) && cptr.ldI16o(uball.v, $obj_ox) == fcx && cptr.ldI16o(uball.v, $obj_oy) == fcy))
             return 0;
         if ((mtmp = (cptr.ldPtro3(svl, fcx, 168, fcy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
             if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
@@ -227,11 +228,11 @@ function clear_fcorr(grd, forceshow) {
             }
         }
         lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), fcx, 756), fcy, 36);
-        if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), fcy, 8), fcx) & NHM.IN_SIGHT) != 0))
+        if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && cansee(fcx, fcy))
             sawcorridor = 1;
         cptr.st1o(lev, $rm_typ, cptr.ld1so2(egrd, fcbeg, 6, $egd_fakecorr + $fakecorridor_ftyp));
         cptr.stI32o(lev, $rm_flags, cptr.ld1uo2(egrd, fcbeg, 6, $egd_fakecorr + $fakecorridor_flags));
-        if (((cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL)) {
+        if (IS_STWALL(cptr.ld1so(lev, $rm_typ))) {
             if ((trap = t_at(fcx, fcy)) !== null)
                 deltrap(trap);
             if (cptr.ld1so(lev, $rm_typ) == NHC.STONE)
@@ -355,13 +356,13 @@ export function vault_occupied(array) {
 
 /** C ref: vault.c:256 — @param {CPtr} grd */
 export function uleftvault(grd) {
-    if (!grd || !(cptr.ldI32o(grd, $monst_isgd) & 1) || (cptr.ldI32o((grd), $monst_mhp) < 1)) {
+    if (!grd || !(cptr.ldI32o(grd, $monst_isgd) & 1) || DEADMONSTER(grd)) {
         impossible(__sl2);
         return;
     }
     if ((money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) || hidden_gold(1)) && um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1)) {
         if ((cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
-            if ((canseemon(grd) || sensemon(grd)))
+            if (canspotmon(grd))
                 pline(__sl3, Monnam(grd));
             cptr.stI32o(grd, $monst_mpeaceful, 0);
         }
@@ -475,7 +476,7 @@ export function invault() {
             else
                 y = (y + dy) | 0;
         }
-        if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+        if (u_at(x, y)) {
             if (cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DOOR)
                 x = (x + 1) | 0;
             else if (cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DOOR)
@@ -512,7 +513,7 @@ export function invault() {
             func = !Blind() ? You_see : You_hear;
             (func)(__sl7, (bcnt == 1) ? an(bname) : makeplural(bname));
         }
-        spotted = schar((canseemon(guard) || sensemon(guard) ? 1 : 0));
+        spotted = schar(canspotmon(guard));
         if (spotted) {
             pline(__sl8, makeplural(pmname(cptr.ldPtro(guard, $monst_data), Mgender(guard))));
             newsym(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my));
@@ -540,7 +541,7 @@ export function invault() {
             mongone(guard);
             return;
         }
-        if (Strangled() || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT) || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
+        if (Strangled() || is_silent(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
             if (Deaf()) {
                 pline(__sl14, noit_Monnam(guard));
             } else {
@@ -631,7 +632,7 @@ export function invault() {
         cptr.stI16o2((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), 0, 6, $egd_fakecorr, i16(x));
         cptr.stI16o2((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), 0, 6, $egd_fakecorr + $fakecorridor_fy, i16(y));
         typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-        if (!((typ) && (typ) <= NHC.DBWALL)) {
+        if (!IS_WALL(typ)) {
             let vlt = cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_vroom);
             let lowx = cptr.ldI16o(svr, vlt, 224);
             let hix = cptr.ldI16o2(svr, vlt, 224, $mkroom_hx);
@@ -738,7 +739,7 @@ function wallify_vault(grd) {
             }
         }
     if (movedgold || fixed) {
-        if (in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0))
+        if (in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) || cansee(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)))
             pline(__sl39, noit_Monnam(grd));
         else
             You_hear(__sl40);
@@ -757,7 +758,7 @@ function gd_mv_monaway(grd, nx, ny) {
             ;
             verbalize(__sl43);
         }
-        if (!rloc(mtmp, 3) || (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
+        if (!rloc(mtmp, 3) || MON_AT(nx, ny))
             m_into_limbo(mtmp);
         recalc_block_point(i16(nx), i16(ny));
     }
@@ -774,8 +775,8 @@ function gd_pick_corridor_gold(grd, goldx, goldy) {
     let tryct;
     let guardx = cptr.ldI16o(grd, $monst_mx);
     let guardy = cptr.ldI16o(grd, $monst_my);
-    let under_u = schar(((goldx) == cptr.ldI16(u) && (goldy) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
-    let see_it = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), goldy, 8), goldx) & NHM.IN_SIGHT) != 0));
+    let under_u = schar(u_at(goldx, goldy));
+    let see_it = schar(cansee(goldx, goldy));
     if (under_u) {
         gold = g_at(i16(goldx), i16(goldy));
         if (!gold) {
@@ -789,7 +790,7 @@ function gd_pick_corridor_gold(grd, goldx, goldy) {
             tryct = 9;
             do {
                 if (enexto(newcc, i16(goldx), i16(goldy), cptr.ldPtro(grd, $monst_data))) {
-                    if ((newdelta = dist2((cptr.ldI16(newcc)), (cptr.ldI16o(newcc, $nhcoord_y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) < bestdelta || (newdelta == bestdelta && dist2(cptr.ldI16(newcc), cptr.ldI16o(newcc, $nhcoord_y), i16(guardx), i16(guardy)) < dist2(cptr.ldI16(bestcc), cptr.ldI16o(bestcc, $nhcoord_y), i16(guardx), i16(guardy)))) {
+                    if ((newdelta = distu(cptr.ldI16(newcc), cptr.ldI16o(newcc, $nhcoord_y))) < bestdelta || (newdelta == bestdelta && dist2(cptr.ldI16(newcc), cptr.ldI16o(newcc, $nhcoord_y), i16(guardx), i16(guardy)) < dist2(cptr.ldI16(bestcc), cptr.ldI16o(bestcc, $nhcoord_y), i16(guardx), i16(guardy)))) {
                         bestdelta = newdelta;
                         cptr.memcpy(bestcc, newcc, 4);
                     }
@@ -834,7 +835,7 @@ function gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     let y;
     let see_guard;
     x = cptr.ldI16o(grd, $monst_mx), y = cptr.ldI16o(grd, $monst_my);
-    see_guard = schar((canseemon(grd) || sensemon(grd) ? 1 : 0));
+    see_guard = schar(canspotmon(grd));
     parkguard(grd);
     wallify_vault(grd);
     restfakecorr(grd);
@@ -845,7 +846,7 @@ function gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    if (!semi_dead && (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))) {
+    if (!semi_dead && (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || cansee(x, y))) {
         if (!disappear_msg_seen && see_guard)
             pline(__sl51, noit_mon_nam(grd));
         return 1;
@@ -855,7 +856,7 @@ function gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
 
 /** C ref: vault.c:869 — @param {CPtr} grd */
 function gd_letknow(grd) {
-    if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0) || !mon_visible(grd))
+    if (!cansee(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) || !mon_visible(grd))
         You_hear(__sl52, m_carrying(grd, NHC.TIN_WHISTLE) ? __sl53 : __sl54);
     else
         You(um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 2) ? __sl55 : __sl56, x_monnam(grd, NHM.ARTICLE_A, __sl57, 0, 0));
@@ -875,7 +876,7 @@ export function gd_move(grd) {
         goldincorridor = 0;
         u_in_vault = 0;
         grd_in_vault = 0;
-        semi_dead = schar((cptr.ldI32o((grd), $monst_mhp) < 1));
+        semi_dead = schar(DEADMONSTER(grd));
         u_carry_gold = 0;
         newspot = 0;
         if (!on_level(cptr.add(egrd, $egd_gdlevel), cptr.add(u, $you_uz)))
@@ -1064,7 +1065,7 @@ export function gd_move(grd) {
         case 16: {
         crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, 756), ny, 36);
         typ = uchar(cptr.ld1so(crm, $rm_typ));
-        if (!((typ) <= NHC.DBWALL) && !((typ) >= NHC.POOL && (typ) <= NHC.DRAWBRIDGE_UP)) { __pc = 18; continue; }
+        if (!IS_STWALL(typ) && !IS_POOL(typ)) { __pc = 18; continue; }
         __pc = 17; continue;
         }
         case 18: {
@@ -1083,7 +1084,7 @@ export function gd_move(grd) {
         }
         case 21: {
         cptr.stI32o(egrd, $egd_gddone, 1);
-        if (((typ) >= NHC.DOOR)) { __pc = 24; continue; }
+        if (ACCESSIBLE(typ)) { __pc = 24; continue; }
         __pc = 23; continue;
         }
         case 24: {
@@ -1178,7 +1179,7 @@ export function gd_move(grd) {
         { __pc = 26; continue; }
         }
         case 32: {
-        if (((typ) >= NHC.ROOM)) { __pc = 35; continue; }
+        if (IS_ROOM(typ)) { __pc = 35; continue; }
         __pc = 34; continue;
         }
         case 35: {
@@ -1199,7 +1200,7 @@ export function gd_move(grd) {
         case 3 /* proceed: */: {
         newspot = 1;
         unblock_point(nx, ny);
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ny, 8), nx) & NHM.IN_SIGHT) != 0))
+        if (cansee(nx, ny))
             newsym(nx, ny);
         if ((nx != ggx || ny != ggy) || (cptr.ldI16o(grd, $monst_mx) != ggx || cptr.ldI16o(grd, $monst_my) != ggy)) { __pc = 37; continue; }
         __pc = 38; continue;
@@ -1252,7 +1253,7 @@ export function gd_move(grd) {
         place_monster(grd, nx, ny);
         if (newspot && g_at(nx, ny)) {
             mpickgold(grd);
-            if ((canseemon(grd) || sensemon(grd)))
+            if (canspotmon(grd))
                 pline(__sl79, Monnam(grd));
         } else
             newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my));
@@ -1310,7 +1311,7 @@ export function hidden_gold(even_if_unknown) {
     let value = 0n;
     let obj;
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
-        if ((cptr.ldPtro((obj), $obj_cobj) !== null) && ((cptr.ldI32o(obj, $obj_cknown) & 1) | 0 || even_if_unknown))
+        if (Has_contents(obj) && ((cptr.ldI32o(obj, $obj_cknown) & 1) | 0 || even_if_unknown))
             value += contained_gold(obj, even_if_unknown);
     return value;
 }

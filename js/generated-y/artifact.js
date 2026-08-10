@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { DEADMONSTER, Has_contents, IS_DOOR, In_endgame, Is_container, Is_dragon_mail, Is_dragon_scales, P_MAX_SKILL, P_SKILL, Race_if, Role_if, amorphous, bigmonst, cansee, canspotmon, carried, couldsee, engulfing_u, glyph_is_trap, has_head, is_covetous, is_demon, is_golem, is_lord, is_mplayer, is_prince, is_undead, ismnum, noncorporeal, u_wield_art } from './nhmacrofn.js';
 import { Antimagic, BInvis, Blind, BlindedTimeout, Cold_resistance, Drain_resistance, ELevitation, Fire_resistance, HBlinded, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Poison_resistance, Role_switch, Shock_resistance, Sick, Slimed, Stone_resistance, Upolyd, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu, tutorial_dnum } from './nhprop.js';
 import { aligns } from './role.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, iflags, program_state, svb, svc, svd, svl, svm, svn, svq, u, uarmg, uleft, uright, uswapwep, uwep } from './decl.js';
@@ -1297,7 +1298,7 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             continue;
         if ((cptr.ldU64o(a, $artifact_spfx) & 1n) || unique)
             continue;
-        if (cptr.ld1uo(a, $artifact_gift_value) > max_giftvalue && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role))))
+        if (cptr.ld1uo(a, $artifact_gift_value) > max_giftvalue && !Role_if(cptr.ldI16o(a, $artifact_role)))
             continue;
         if (!by_align) {
             if (cptr.ldI16(a) == o_typ)
@@ -1305,7 +1306,7 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             continue;
         }
         if ((cptr.ld1so(a, $artifact_alignment) == alignment || cptr.ld1so(a, $artifact_alignment) == -128) && (cptr.ldI16o(a, $artifact_race) == NHC.NON_PM || !((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(a, $artifact_race), 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hatemask)))) != 0n))) {
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role)))) {
+            if (Role_if(cptr.ldI16o(a, $artifact_role))) {
                 cptr.stI16o(eligible, 0, i16(m), 2);
                 n = 1;
                 break;
@@ -1314,9 +1315,9 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             if (cptr.ld1so2(objects, cptr.ldI16(a), 120, $objclass_oc_class) == NHC.WEAPON_CLASS) {
                 let skill = cptr.ld1so2(objects, cptr.ldI16(a), 120, $objclass_oc_subtyp);
                 if (skill < 0)
-                    skill_compatibility = (cptr.ldI16o2(u, -skill, 6, $you_weapon_skills + $skills_max_skill));
+                    skill_compatibility = P_MAX_SKILL(-skill);
                 else
-                    skill_compatibility = (cptr.ldI16o2(u, skill, 6, $you_weapon_skills + $skills_max_skill));
+                    skill_compatibility = P_MAX_SKILL(skill);
             }
             if ((cptr.ld1so(a, $artifact_alignment) != -128 || cptr.ldI32o(u, $you_ugifts) > 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 230, __sl37), rn2(3)) : rn2(3))) && (!(rng_log_enabled() ? (rng_log_set_caller(__sl36, 231, __sl37), rn2(4)) : rn2(4)) || skill_compatibility >= NHC.P_SKILLED || (skill_compatibility >= NHC.P_BASIC && (rng_log_enabled() ? (rng_log_set_caller(__sl36, 232, __sl37), rn2(2)) : rn2(2))))) {
                 cptr.stI16o(eligible, n++, i16(m), 2);
@@ -1570,9 +1571,9 @@ export function defends(adtyp, otmp) {
         return 0;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
         return schar((cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == adtyp));
-    if (((cptr.ldI16o((otmp), $obj_otyp) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16o((otmp), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALES) || (cptr.ldI16o((otmp), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((otmp), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL))) {
+    if ((Is_dragon_scales(otmp) || Is_dragon_mail(otmp))) {
         let otyp = cptr.ldI16o(otmp, $obj_otyp);
-        if ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((otmp), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL))
+        if (Is_dragon_mail(otmp))
             otyp = (otyp + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)) | 0;
         switch (adtyp) {
             case NHM.AD_MAGM:
@@ -1792,9 +1793,9 @@ export function* touch_artifact(obj, mon) {
     yours = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
     self_willed = schar(((cptr.ldU64o(oart, $artifact_spfx) & 4n) != 0n));
     if (yours) {
-        badclass = schar((self_willed && ((cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(oart, $artifact_role)))) || (cptr.ldI16o(oart, $artifact_race) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == (cptr.ldI16o(oart, $artifact_race))))) ? 1 : 0));
+        badclass = schar((self_willed && ((cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !Role_if(cptr.ldI16o(oart, $artifact_role))) || (cptr.ldI16o(oart, $artifact_race) != NHC.NON_PM && !Race_if(cptr.ldI16o(oart, $artifact_race)))) ? 1 : 0));
         badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) != 0n && cptr.ld1so(oart, $artifact_alignment) != -128 && (cptr.ld1so(oart, $artifact_alignment) != cptr.ld1so(u, $you_ualign) || cptr.ldI32o(u, $you_ualign + $align_record) < 0) ? 1 : 0));
-    } else if (!((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)) && !((cptr.cmp((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0))) {
+    } else if (!is_covetous(cptr.ldPtro(mon, $monst_data)) && !is_mplayer(cptr.ldPtro(mon, $monst_data))) {
         badclass = schar((self_willed && cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !cptr.eq(oart, cptr.add(artilist, NHC.ART_EXCALIBUR, 80)) ? 1 : 0));
         badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) && cptr.ld1so(oart, $artifact_alignment) != -128 && (cptr.ld1so(oart, $artifact_alignment) != mon_aligntyp(mon)) ? 1 : 0));
     } else {
@@ -1819,7 +1820,7 @@ export function* touch_artifact(obj, mon) {
     }
     if (badclass && badalign && self_willed) {
         if (yours) {
-            if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
+            if (!carried(obj))
                 (yield* pline(__sl52, (yield* Tobjnam(obj, __sl53))));
             else
                 (yield* pline(__sl54, (yield* Tobjnam(obj, __sl55))));
@@ -1866,7 +1867,7 @@ function* spec_applies(weap, mtmp) {
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 4194304n) {
         return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 8388608n) {
-        return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) || (yours && ((!Upolyd() && (BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))) & cptr.ldU64o(weap, $artifact_mtype))) || ((cptr.ldU64o(weap, $artifact_mtype) & 4n) && ((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS)))) ? 1 : 0);
+        return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) || (yours && ((!Upolyd() && (BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))) & cptr.ldU64o(weap, $artifact_mtype))) || ((cptr.ldU64o(weap, $artifact_mtype) & 4n) && ismnum(cptr.ldI32o(u, $you_ulycn))))) ? 1 : 0);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 16777216n) {
         return yours ? (cptr.ld1so(u, $you_ualign) != cptr.ld1so(weap, $artifact_alignment)) : (cptr.ld1so(ptr, $permonst_maligntyp) == -128 || sgn(cptr.ld1so(ptr, $permonst_maligntyp)) != cptr.ld1so(weap, $artifact_alignment) ? 1 : 0);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 64n) {
@@ -2041,7 +2042,7 @@ function* Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     if (youattack || youdefend || vis) {
         result = 1;
         (yield* pline_The(__sl86, (yield* vtense(null, verb)), hittee));
-        if (attack_indx == NHC.MB_INDEX_PROBE && !(canseemon(mdef) || sensemon(mdef)))
+        if (attack_indx == NHC.MB_INDEX_PROBE && !canspotmon(mdef))
             (yield* map_invisible(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)));
     }
     switch (attack_indx) {
@@ -2155,7 +2156,7 @@ cptr.stPtro(__static_artifact_hit_behead_msg, 8, __sl136); /** C ref: artifact.c
 export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     let youattack = schar((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))));
     let youdefend = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
-    let vis = schar(((!youattack && magr && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(magr, $monst_my), 8), cptr.ldI16o(magr, $monst_mx)) & NHM.IN_SIGHT) != 0)) || (!youdefend && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mdef, $monst_my), 8), cptr.ldI16o(mdef, $monst_mx)) & NHM.IN_SIGHT) != 0)) || (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))) && !Blind()) ? 1 : 0));
+    let vis = schar(((!youattack && magr && cansee(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my))) || (!youdefend && cansee(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my))) || (youattack && engulfing_u(mdef) && !Blind()) ? 1 : 0));
     let realizes_damage;
     let wepdesc;
     let hittee = new Uint8Array(256);
@@ -2215,7 +2216,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     if (spec_ability(otmp, 1024n)) {
         if (is_art(otmp, NHC.ART_TSURUGI_OF_MURAMASA) && dieroll == 1) {
             wepdesc = __sl110;
-            if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
+            if (youattack && engulfing_u(mdef)) {
                 (yield* You(__sl111, (yield* mon_nam(mdef))));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
                 return 1;
@@ -2223,7 +2224,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             if (!youdefend) {
                 if (cptr.ld1so(gn, $instance_globals_n_notonhead))
                     return 0;
-                if ((cptr.ld1uo((cptr.ldPtro(mdef, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
+                if (bigmonst(cptr.ldPtro(mdef, $monst_data))) {
                     if (youattack)
                         (yield* You(__sl112, (yield* mon_nam(mdef))));
                     else if (vis)
@@ -2236,7 +2237,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 (yield* observe_object(otmp));
                 return 1;
             } else {
-                if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
+                if (bigmonst(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                     (yield* pline(__sl115, magr ? (yield* Monnam(magr)) : wepdesc));
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
                     return 1;
@@ -2247,11 +2248,11 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 return 1;
             }
         } else if (is_art(otmp, NHC.ART_VORPAL_BLADE) && (dieroll == 1 || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_JABBERWOCK, 96)))) {
-            if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
+            if (youattack && engulfing_u(mdef))
                 return 0;
             wepdesc = cptr.ldPtro2(artilist, NHC.ART_VORPAL_BLADE, 80, $artifact_name);
             if (!youdefend) {
-                if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 32768n) == 0n) || cptr.ld1so(gn, $instance_globals_n_notonhead) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                if (!has_head(cptr.ldPtro(mdef, $monst_data)) || cptr.ld1so(gn, $instance_globals_n_notonhead) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                     if (youattack)
                         (yield* pline(__sl117, (yield* mon_nam(mdef))));
                     else if (vis)
@@ -2259,7 +2260,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     cptr.stI32(dmgptr, 0);
                     return schar((youattack || vis ? 1 : 0));
                 }
-                if ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
+                if (noncorporeal(cptr.ldPtro(mdef, $monst_data)) || amorphous(cptr.ldPtro(mdef, $monst_data))) {
                     (yield* pline(__sl119, wepdesc, (yield* s_suffix((yield* mon_nam(mdef)))), (yield* mbodypart(mdef, NHC.NECK))));
                     return 1;
                 }
@@ -2270,12 +2271,12 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 (yield* observe_object(otmp));
                 return 1;
             } else {
-                if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 32768n) == 0n)) {
+                if (!has_head(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                     (yield* pline(__sl121, magr ? (yield* mon_nam(magr)) : wepdesc));
                     cptr.stI32(dmgptr, 0);
                     return 1;
                 }
-                if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
+                if (noncorporeal(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || amorphous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                     (yield* pline(__sl122, wepdesc, (yield* body_part(NHC.NECK))));
                     return 1;
                 }
@@ -2287,7 +2288,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         }
     }
     if (spec_ability(otmp, 256n)) {
-        let life = (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl124 : __sl125;
+        let life = (is_undead(cptr.ldPtro(mdef, $monst_data)) || cptr.eq((cptr.ldPtro(mdef, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(mdef, $monst_data)) || cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl124 : __sl125;
         if (!youdefend) {
             let m_lev = cptr.ld1uo(mdef, $monst_m_lev);
             let mhpmax = cptr.ldI32o(mdef, $monst_mhpmax);
@@ -2363,7 +2364,7 @@ export function* doinvoke() {
 
 /** C ref: artifact.c:1762 — @param {CPtr} obj */
 function* nothing_special(obj) {
-    if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
+    if (carried(obj))
         (yield* You_feel(__sl138));
 }
 
@@ -2489,7 +2490,7 @@ function* invoke_create_portal(obj) {
         cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, 112, $dungeon_entry_lev));
     else
         cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, 112, $dungeon_dunlev_ureached));
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) || !(yield* next_to_u())) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 || In_endgame(cptr.add(u, $you_uz)) || In_endgame(newlev) || cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) || !(yield* next_to_u())) {
         (yield* You_feel(__sl145));
     } else {
         if (!Blind())
@@ -2538,19 +2539,19 @@ function* invoke_banish(obj) {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
         let chance = 1;
         mtmp2 = cptr.ldPtr(mtmp);
-        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || !isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
+        if (DEADMONSTER(mtmp) || !isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             continue;
-        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_IMP)
+        if (!is_demon(cptr.ldPtro(mtmp, $monst_data)) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_IMP)
             continue;
-        if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0))
+        if (!couldsee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             continue;
         if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
             continue;
         if (In_quest(cptr.add(u, $you_uz)) && !(cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))
             chance = (chance + 10) | 0;
-        if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2048n) != 0n)))
+        if ((is_demon(cptr.ldPtro(mtmp, $monst_data)) && is_prince(cptr.ldPtro(mtmp, $monst_data))))
             chance = (chance + 2) | 0;
-        if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1024n) != 0n)))
+        if ((is_demon(cptr.ldPtro(mtmp, $monst_data)) && is_lord(cptr.ldPtro(mtmp, $monst_data))))
             chance++;
         cptr.stI32o(mtmp, $monst_msleeping, cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0))));
         if (chance <= 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl36, 1992, __sl151), rn2(chance)) : rn2(chance))) {
@@ -2594,7 +2595,7 @@ function* invoke_storm_spell(obj) {
     let oart = get_artifact(obj);
     let storm = cptr.ld1uo(oart, $artifact_inv_prop) == NHC.SNOWSTORM ? NHC.SPE_CONE_OF_COLD : NHC.SPE_FIREBALL;
     let skill = spell_skilltype(storm);
-    let expertise = (cptr.ldI16o2(u, skill, 6, $you_weapon_skills));
+    let expertise = P_SKILL(skill);
     cptr.stI16o2(u, skill, 6, $you_weapon_skills, NHC.P_EXPERT);
     void (yield* spelleffects(storm, 0, 1));
     cptr.stI16o2(u, skill, 6, $you_weapon_skills, i16(expertise));
@@ -2937,7 +2938,7 @@ export function glow_verb(count, ingsfx) {
 
 /** C ref: artifact.c:2466 — @param {CInt} orc_count */
 export function* Sting_effects(orc_count) {
-    if (is_art(uwep.v, NHC.ART_STING) || is_art(uwep.v, NHC.ART_ORCRIST) || is_art(uwep.v, NHC.ART_GRIMTOOTH)) {
+    if (u_wield_art(NHC.ART_STING) || u_wield_art(NHC.ART_ORCRIST) || u_wield_art(NHC.ART_GRIMTOOTH)) {
         let oldstr = glow_strength(cptr.ldI32(gw));
         let newstr = glow_strength(orc_count);
         if (orc_count == -1 && cptr.ldI32(gw) > 0) {
@@ -3017,7 +3018,7 @@ function* untouchable(obj, drop_untouchable) {
     let carryeffect;
     let invoked;
     let wearmask = BigInt.asIntN(64, ~(512n | (cptr.ld1so(u, $you_twoweap) ? 0n : 1024n) | 2097152n));
-    beingworn = schar((obj.v && ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n || (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS && ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj.v, $obj_corpsenm)) || ((cptr.ldI16o((obj.v), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj.v), $obj_otyp) <= NHC.BAG_OF_TRICKS) && (cptr.ldPtro((obj.v), $obj_cobj) !== null))))) ? 1 : 0));
+    beingworn = schar((obj.v && ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n || (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS && ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj.v, $obj_corpsenm)) || (Is_container(obj.v) && Has_contents(obj.v))))) ? 1 : 0));
     if (!cptr.eq((art = get_artifact(obj.v)), cptr.add(artilist, NHC.ART_NONARTIFACT, 80))) {
         carryeffect = schar((cptr.ld1uo(art, $artifact_cary + $attack_adtyp) || cptr.ldU64o(art, $artifact_cspfx) ? 1 : 0));
         invoked = schar((cptr.ld1uo(art, $artifact_inv_prop) > 0 && cptr.ld1uo(art, $artifact_inv_prop) <= NHC.LAST_PROP && (cptr.ldI64o2(u, cptr.ld1uo(art, $artifact_inv_prop), 24, $you_uprops) & 8192n) != 0n ? 1 : 0));
@@ -3081,19 +3082,19 @@ function count_surround_traps(x, y) {
             if (!isok(dx, dy))
                 continue;
             glyph = glyph_at(dx, dy);
-            if (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) && (glyph) < (((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) + ((NHC.TRAPNUM - 1) | 0)) | 0)))
+            if (glyph_is_trap(glyph))
                 continue;
             if (t_at(dx, dy)) {
                 ++ret;
                 continue;
             }
             levp = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, 756), dy, 36);
-            if (((cptr.ld1so(levp, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(levp, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
+            if (IS_DOOR(cptr.ld1so(levp, $rm_typ)) && (((cptr.ldI32o(levp, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
                 ++ret;
                 continue;
             }
             for (o = cptr.ldPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_objects); o; o = cptr.ldPtro(o, $obj_v))
-                if ((cptr.ldI16o((o), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((o), $obj_otyp) <= NHC.BAG_OF_TRICKS) && (cptr.ldI32o(o, $obj_otrapped) & 1) | 0) {
+                if (Is_container(o) && (cptr.ldI32o(o, $obj_otrapped) & 1) | 0) {
                     ++ret;
                     break;
                 }
@@ -3112,7 +3113,7 @@ cptr.stPtro(__static_mkot_trap_warn_heat, 48, __sl199); /** C ref: artifact.c:27
 
 /** C ref: artifact.c:2753 */
 export function* mkot_trap_warn() {
-    if (!uarmg.v && is_art(uwep.v, NHC.ART_MASTER_KEY_OF_THIEVERY)) {
+    if (!uarmg.v && u_wield_art(NHC.ART_MASTER_KEY_OF_THIEVERY)) {
         let idx;
         let ntraps = count_surround_traps(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (ntraps != cptr.ldI32(gm)) {

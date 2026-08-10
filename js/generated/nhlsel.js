@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { SP_COORD_PACK } from './nhmacrofn.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_optinteger, luaL_setfuncs } from './lauxlib.js';
 import { check_mapchr, get_table_int, get_table_int_opt, get_table_option, lcheck_param_table, nhl_add_table_entry_int, nhl_error, nhl_get_xy_params, nhl_pcall_handle } from './nhlua.js';
 import { selection_clear, selection_do_ellipse, selection_do_gradient, selection_do_grow, selection_do_line, selection_do_randline, selection_filter_mapchar, selection_filter_percent, selection_floodfill, selection_free, selection_from_mkroom, selection_getbounds, selection_getpoint, selection_new, selection_not, selection_recalc_bounds, selection_rndcoord, selection_setpoint, selection_size_description } from './selvar.js';
@@ -186,7 +187,7 @@ function l_selection_setpoint(L) {
     if (x.v == -1 && y.v == -1)
         crd = 16777216n;
     else
-        crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
+        crd = BigInt(SP_COORD_PACK(x.v, y.v));
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, crd);
     selection_setpoint(x.v, y.v, sel, val);
     lua_settop(L, 1);
@@ -229,7 +230,7 @@ function l_selection_getpoint(L) {
     if (x.v == -1 && y.v == -1)
         crd = 16777216n;
     else
-        crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
+        crd = BigInt(SP_COORD_PACK(x.v, y.v));
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, crd);
     val = selection_getpoint(x.v, y.v, sel);
     lua_settop(L, 0);
@@ -440,8 +441,8 @@ function l_selection_line(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl10);
     }
-    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x1.v, y1.v)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x2.v, y2.v)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y2.v, sel.v);
@@ -458,8 +459,8 @@ function l_selection_rect(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl11);
     }
-    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x1.v, y1.v)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x2.v, y2.v)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y1.v, sel.v);
@@ -480,8 +481,8 @@ function l_selection_fillrect(L) {
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __sl12);
     }
-    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x1.v, y1.v)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x2.v, y2.v)));
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     if (x1.v == x2.v) {
@@ -521,8 +522,8 @@ function l_selection_randline(L) {
         void l_selection_new(L);
         void l_selection_check(L, 1);
     }
-    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
-    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+    get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x1.v, y1.v)));
+    get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x2.v, y2.v)));
     void l_selection_clone(L);
     sel = l_selection_check(L, 2);
     selection_do_randline(x1.v, y1.v, x2.v, y2.v, schar(roughness), 12, sel);
@@ -627,7 +628,7 @@ function l_selection_flood(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x.v, y.v)));
     if (isok(x.v, y.v)) {
         set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)));
         selection_floodfill(sel, x.v, y.v, diagonals);
@@ -668,7 +669,7 @@ function l_selection_circle(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x.v, y.v)));
     selection_do_ellipse(sel, x.v, y.v, r, r, !filled);
     lua_settop(L, 1);
     return 1;
@@ -711,7 +712,7 @@ function l_selection_ellipse(L) {
     } else {
         nhl_error(L, __sl20);
     }
-    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+    get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(SP_COORD_PACK(x.v, y.v)));
     selection_do_ellipse(sel, x.v, y.v, r1, r2, !filled);
     lua_settop(L, 1);
     return 1;

@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { DEADMONSTER, IS_DRAWBRIDGE, Is_juiblex_level, Is_stronghold, OBJ_AT, cansee, canspotmon, distu, helpless, is_floater, is_flyer, is_swimmer, likes_lava, noncorporeal, passes_walls, u_at } from './nhmacrofn.js';
 import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
@@ -210,7 +211,7 @@ export function is_moat(x, y) {
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
+    if (!Is_juiblex_level(cptr.add(u, $you_uz)) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
         return 1;
     return 0;
 }
@@ -388,7 +389,7 @@ function u_to_e(etmp) {
 
 /** C ref: dbridge.c:330 — @param {CInt} x @param {CInt} y @param {CPtr} etmp */
 function set_entity(x, y, etmp) {
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (u_at(x, y))
         u_to_e(etmp);
     else
         m_to_e((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), x, y, etmp);
@@ -416,14 +417,14 @@ function* E_phrase(etmp, verb) {
 
 /** C ref: dbridge.c:380 — @param {CPtr} etmp @param {CInt} x @param {CInt} y @returns {CInt} */
 function e_survives_at(etmp, x, y) {
-    if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST))
+    if (noncorporeal(cptr.ldPtro(etmp, $entity_edata)))
         return 1;
     if (is_pool(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || (cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || is_swimmer(cptr.ldPtro(etmp, $entity_edata)) || is_flyer(cptr.ldPtro(etmp, $entity_edata)) || is_floater(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
     if (is_lava(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || (cptr.eq(cptr.ldPtro(etmp, $entity_edata), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq(cptr.ldPtro(etmp, $entity_edata), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || likes_lava(cptr.ldPtro(etmp, $entity_edata)) || is_flyer(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
     if (is_db_wall(x, y))
-        return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 8n) != 0n)));
+        return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : passes_walls(cptr.ldPtro(etmp, $entity_edata))));
     return 1;
 }
 
@@ -458,14 +459,14 @@ function* e_died(etmp, xkill_flags, how) {
             (yield* monkilled(cptr.ldPtr(etmp), (((xkill_flags & NHM.XKILL_NOMSG) != 0) ? null : __sl10), (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
         else
             (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
-        if (!(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
-            let seeit = (canseemon(cptr.ldPtr(etmp)) || sensemon(cptr.ldPtr(etmp)) ? 1 : 0);
+        if (!DEADMONSTER(cptr.ldPtr(etmp))) {
+            let seeit = canspotmon(cptr.ldPtr(etmp));
             xkill_flags |= 5;
             if (cptr.ld1so(svc, $context_info_mon_moving))
                 (yield* monkilled(cptr.ldPtr(etmp), __sl10, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
             else
                 (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
-            if ((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
+            if (DEADMONSTER(cptr.ldPtr(etmp))) {
                 if (seeit)
                     (yield* pline(__sl11, (yield* mon_nam(cptr.ldPtr(etmp))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), 48, $Gender_he))));
             } else {
@@ -482,7 +483,7 @@ function* e_died(etmp, xkill_flags, how) {
 
 /** C ref: dbridge.c:486 — @param {CPtr} etmp @returns {CInt} */
 function automiss(etmp) {
-    return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 8n) != 0n)) || (cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
+    return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : passes_walls(cptr.ldPtro(etmp, $entity_edata))) || noncorporeal(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:496 — @param {CPtr} etmp @param {CInt} chunks @returns {CInt} */
@@ -499,9 +500,9 @@ function* e_missed(etmp, chunks) {
     }
     if (automiss(etmp))
         return 1;
-    if (((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mcanmove) & 1))))
+    if (is_flyer(cptr.ldPtro(etmp, $entity_edata)) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !helpless(cptr.ldPtr(etmp))))
         misses = 5;
-    else if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && Levitation()))
+    else if (is_floater(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && Levitation()))
         misses = 3;
     else if (chunks && is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         misses = 2;
@@ -522,7 +523,7 @@ function* e_missed(etmp, chunks) {
 /** C ref: dbridge.c:531 — @param {CPtr} etmp @returns {CInt} */
 function* e_jumps(etmp) {
     let tmp = 4;
-    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_msleeping) & 1) | 0 || !(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mcanmove) & 1)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
+    if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (helpless(cptr.ldPtr(etmp)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
         return 0;
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? HConfusion() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
@@ -559,7 +560,7 @@ function* do_entity(etmp) {
     at_portcullis = is_db_wall(oldx, oldy);
     crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, 756), oldy, 36);
     if (automiss(etmp) && e_survives_at(etmp, oldx, oldy)) {
-        if (e_inview && (at_portcullis || ((cptr.ld1so(crm, $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so(crm, $rm_typ)) == NHC.DRAWBRIDGE_DOWN)))
+        if (e_inview && (at_portcullis || IS_DRAWBRIDGE(cptr.ld1so(crm, $rm_typ))))
             (yield* pline_The(__sl18, at_portcullis ? __sl19 : __sl20, (yield* e_nam(etmp))));
         if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))))
             (yield* spoteffects(0));
@@ -775,7 +776,7 @@ function* do_entity(etmp) {
                 (yield* You_hear(__sl54));
             }
         if (e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
-            if (e_inview && !((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && !(cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_EYE || cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_LIGHT))
+            if (e_inview && !is_flyer(cptr.ldPtro(etmp, $entity_edata)) && !is_floater(cptr.ldPtro(etmp, $entity_edata)))
                 (yield* pline(__sl55, (yield* E_phrase(etmp, __sl56))));
             return;
         }
@@ -822,8 +823,8 @@ export function* close_drawbridge(x, y) {
     x2.v = x;
     y2.v = y;
     get_wall_for_db(x2, y2);
-    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0)) {
-        (yield* You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16o(u, $you_uy) == y) && !Underwater()) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __sl65 : __sl66));
+    if (cansee(x, y) || cansee(x2.v, y2.v)) {
+        (yield* You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16o(u, $you_uy) == y) && !Underwater()) || distu(x2.v, y2.v) < distu(x, y)) ? __sl65 : __sl66));
     } else {
         ;
         (yield* You_hear(__sl67));
@@ -847,7 +848,7 @@ export function* close_drawbridge(x, y) {
     (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24)));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
     (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24)));
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !Deaf()) {
+    if (OBJ_AT(x, y) && !Deaf()) {
         ;
         (yield* You_hear(__sl68));
     }
@@ -880,8 +881,8 @@ export function* open_drawbridge(x, y) {
     x2.v = x;
     y2.v = y;
     get_wall_for_db(x2, y2);
-    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0)) {
-        (yield* You_see(__sl69, (dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __sl66 : __sl65));
+    if (cansee(x, y) || cansee(x2.v, y2.v)) {
+        (yield* You_see(__sl69, (distu(x2.v, y2.v) < distu(x, y)) ? __sl66 : __sl65));
     } else {
         ;
         (yield* You_hear(__sl70));
@@ -906,7 +907,7 @@ export function* open_drawbridge(x, y) {
     (yield* newsym(x, y));
     (yield* newsym(x2.v, y2.v));
     unblock_point(x2.v, y2.v);
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
+    if (Is_stronghold(cptr.add(u, $you_uz)))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     nokiller();
 }
@@ -924,7 +925,7 @@ export function* destroy_drawbridge(x, y) {
     let etmp1 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24);
     let etmp2 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24);
     lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    if (!((cptr.ld1so(lev1, $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so(lev1, $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
+    if (!IS_DRAWBRIDGE(cptr.ld1so(lev1, $rm_typ)))
         return;
     x2.v = x;
     y2.v = y;
@@ -935,12 +936,12 @@ export function* destroy_drawbridge(x, y) {
         let lava = schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA));
         ;
         if (cptr.ld1so(lev1, $rm_typ) == NHC.DRAWBRIDGE_UP) {
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0) || ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16o(u, $you_uy)))
+            if (cansee(x2.v, y2.v) || u_at(x2.v, y2.v))
                 (yield* pline_The(__sl71, lava ? hliquid(__sl60) : __sl61));
             else
                 (yield* You_hear(__sl72));
         } else {
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+            if (cansee(x, y) || u_at(x, y))
                 (yield* pline_The(__sl73, lava ? hliquid(__sl60) : __sl61));
             else
                 (yield* You_hear(__sl72));
@@ -953,7 +954,7 @@ export function* destroy_drawbridge(x, y) {
         }
     } else {
         ;
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+        if (cansee(x, y) || u_at(x, y))
             (yield* pline_The(__sl74));
         else
             (yield* You_hear(__sl75));
@@ -978,7 +979,7 @@ export function* destroy_drawbridge(x, y) {
     if (!(yield* does_block(x2.v, y2.v, lev2)))
         unblock_point(x2.v, y2.v);
     (yield* vision_recalc(0));
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
+    if (Is_stronghold(cptr.add(u, $you_uz)))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     set_entity(x2.v, y2.v, etmp2);
     if (cptr.ldPtro(etmp2, $entity_edata)) {
@@ -1034,7 +1035,7 @@ export function* destroy_drawbridge(x, y) {
         }
     }
     nokiller();
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
+    if (Is_stronghold(cptr.add(u, $you_uz)))
         cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 3);
 }
 

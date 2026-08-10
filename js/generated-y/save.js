@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Has_contents, MCORPSENM, release_data, update_file } from './nhmacrofn.js';
 import { BALL_IN_MON, CHAIN_IN_MON, clear_nhwindow, discover, display_nhwindow, exit_nhwindows, getmsghistory, mark_synch, wizard } from './nhprop.js';
 import { windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc, svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, ynchars } from './decl.js';
@@ -452,12 +453,12 @@ function* savegamestate(nhfp) {
     (yield* save_bc(nhfp));
     (yield* saveobjchn(nhfp, cptr.add(gm, $instance_globals_m_migrating_objs)));
     (yield* savemonchn(nhfp, cptr.ldPtro(gm, $instance_globals_m_migrating_mons)));
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         cptr.stPtro(gm, $instance_globals_m_migrating_mons, null);
     for (i = 0; i < NHC.NUMMONS; ++i) {
         (yield* sfo_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, 12), __sl25));
     }
-    (yield* save_dungeon(nhfp, schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & 3))), schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)))));
+    (yield* save_dungeon(nhfp, schar((!!update_file(nhfp))), schar((!!release_data(nhfp)))));
     (yield* savelevchn(nhfp));
     (yield* sfo_q_score(nhfp, svq, __sl26));
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
@@ -624,7 +625,7 @@ function* savelev_core(nhfp, lev) {
             (yield* bflush(cptr.ldI32(nhfp)));
     }
     (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+    if (release_data(nhfp)) {
         (yield* clear_level_structures());
         cptr.stPtr(gf, null);
         cptr.stPtro(gb, $instance_globals_b_billobjs, null);
@@ -656,7 +657,7 @@ function* save_bubbles(nhfp, lev) {
     bbubbly.v = 0;
     if (lev == ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)) || lev == ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))
         bbubbly.v = lev;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3))
+    if (update_file(nhfp))
         (yield* sfo_xint8(nhfp, bbubbly, __sl45));
     ;
     if (bbubbly.v)
@@ -669,19 +670,19 @@ export function* savecemetery(nhfp, cemeteryaddr) {
     let nextbones;
     let flag = cptr.box(0);
     flag.v = cptr.ldPtr(cemeteryaddr) ? 0 : -1;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_int(nhfp, flag, __sl46));
     }
     nextbones = cptr.ldPtr(cemeteryaddr);
     while ((thisbones = nextbones) !== null) {
         nextbones = cptr.ldPtr(thisbones);
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             (yield* sfo_cemetery(nhfp, thisbones, __sl47));
         }
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+        if (release_data(nhfp))
             cptr.free(thisbones);
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         cptr.stPtr(cemeteryaddr, null);
 }
 
@@ -693,19 +694,19 @@ function* savedamage(nhfp) {
     damageptr = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist);
     for (tmp_dam = damageptr; tmp_dam; tmp_dam = cptr.ldPtr(tmp_dam))
         xl.v++;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_unsigned(nhfp, xl, __sl48));
     }
     while (damageptr) {
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             (yield* sfo_damage(nhfp, damageptr, __sl49));
         }
         tmp_dam = damageptr;
         damageptr = cptr.ldPtr(damageptr);
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+        if (release_data(nhfp))
             cptr.free(tmp_dam);
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist, null);
 }
 
@@ -714,7 +715,7 @@ function* save_stairs(nhfp) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     let buflen = cptr.box(24);
     while (stway) {
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             let use_relative = schar((cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) ? 1 : 0));
             if (use_relative) {
                 cptr.stI16o(stway, $stairway_tolev + $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) - cptr.ldI16o(u, $you_uz + $d_level_dlevel));
@@ -727,7 +728,7 @@ function* save_stairs(nhfp) {
         }
         stway = cptr.ldPtro(stway, $stairway_next);
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         buflen.v = -1;
         (yield* sfo_int(nhfp, buflen, __sl50));
     }
@@ -790,12 +791,12 @@ function* saveobjchn(nhfp, obj_p) {
     let minusone = cptr.box(-1);
     while (otmp) {
         otmp2 = cptr.ldPtr(otmp);
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             (yield* saveobj(nhfp, otmp));
         }
-        if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
+        if (Has_contents(otmp))
             (yield* saveobjchn(nhfp, cptr.add(otmp, $obj_cobj)));
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+        if (release_data(nhfp)) {
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_victual))) {
                 cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stPtro(svc, $context_info_victual, null);
@@ -823,10 +824,10 @@ function* saveobjchn(nhfp, obj_p) {
         }
         otmp = otmp2;
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_int(nhfp, minusone, __sl52));
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+    if (release_data(nhfp)) {
         if (is_invent)
             allunworn();
         cptr.stPtr(obj_p, null);
@@ -880,7 +881,7 @@ function* savemon(nhfp, mtmp) {
         if (buflen.v > 0) {
             (yield* sfo_ebones(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), __sl75));
         }
-        buflen.v = (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm));
+        buflen.v = MCORPSENM(mtmp);
         (yield* sfo_int(nhfp, buflen, __sl76));
     }
 }
@@ -891,7 +892,7 @@ function* savemonchn(nhfp, mtmp) {
     let minusone = cptr.box(-1);
     while (mtmp) {
         mtmp2 = cptr.ldPtr(mtmp);
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             cptr.stI16o(mtmp, $monst_mnum, (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)));
             if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
                 (yield* forget_temple_entry(mtmp));
@@ -899,7 +900,7 @@ function* savemonchn(nhfp, mtmp) {
         }
         if (cptr.ldPtro(mtmp, $monst_minvent))
             (yield* saveobjchn(nhfp, cptr.add(mtmp, $monst_minvent)));
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
+        if (release_data(nhfp)) {
             if (cptr.eq(mtmp, cptr.ldPtro(svc, $context_info_polearm))) {
                 cptr.stI32o(svc, $context_info_polearm + $polearm_info_m_id, cptr.ldI32o(mtmp, $monst_m_id));
                 cptr.stPtro(svc, $context_info_polearm, null);
@@ -913,7 +914,7 @@ function* savemonchn(nhfp, mtmp) {
         }
         mtmp = mtmp2;
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_int(nhfp, minusone, __sl60));
     }
 }
@@ -928,16 +929,16 @@ function* savetrapchn(nhfp, trap) {
         trap2 = cptr.ldPtr(trap);
         if (use_relative)
             cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) - cptr.ldI16o(u, $you_uz + $d_level_dlevel));
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             (yield* sfo_trap(nhfp, trap, __sl77));
         }
         if (use_relative)
             cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+        if (release_data(nhfp))
             cptr.free((trap));
         trap = trap2;
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_trap(nhfp, __static_savetrapchn_zerotrap, __sl77));
     }
 }
@@ -951,17 +952,17 @@ export function* savefruitchn(nhfp) {
     f1 = cptr.ldPtro(gf, $instance_globals_f_ffruit);
     while (f1) {
         f2 = cptr.ldPtro(f1, $fruit_nextf);
-        if (cptr.ldI32o(f1, $fruit_fid) >= 0 && (cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (cptr.ldI32o(f1, $fruit_fid) >= 0 && update_file(nhfp)) {
             (yield* sfo_fruit(nhfp, f1, __sl78));
         }
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+        if (release_data(nhfp))
             cptr.free((f1));
         f1 = f2;
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_fruit(nhfp, __static_savefruitchn_zerofruit, __sl78));
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         cptr.stPtro(gf, $instance_globals_f_ffruit, null);
 }
 
@@ -972,18 +973,18 @@ function* savelevchn(nhfp) {
     let cnt = cptr.box(0);
     for (tmplev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); tmplev; tmplev = cptr.ldPtr(tmplev))
         cnt.v++;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         (yield* sfo_int(nhfp, cnt, __sl79));
     }
     for (tmplev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); tmplev; tmplev = tmplev2) {
         tmplev2 = cptr.ldPtr(tmplev);
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+        if (update_file(nhfp)) {
             (yield* sfo_s_level(nhfp, tmplev, __sl80));
         }
-        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+        if (release_data(nhfp))
             cptr.free(tmplev);
     }
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
+    if (release_data(nhfp))
         cptr.stPtro(svs, $instance_globals_saved_s_sp_levchn, null);
 }
 
@@ -1012,7 +1013,7 @@ function* save_msghistory(nhfp) {
     let minusone = cptr.box(-1);
     let msglen = cptr.box(0);
     let init = 1;
-    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
+    if (update_file(nhfp)) {
         while ((msg = (yield* Y.icall(getmsghistory()(init)))) !== null) {
             init = 0;
             msglen.v = (yield* Strlen_(msg, __sl87, 1041)) | 0;

@@ -12,6 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { extra_nasty } from './nhmacrofn.js';
 import { Amphibious, Role_switch, Upolyd } from './nhprop.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -165,7 +166,7 @@ export function experience(mtmp, nk) {
         if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
     }
-    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n))
+    if (extra_nasty(ptr))
         tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, $monst_m_lev)))) | 0;
     if (cptr.ld1uo(mtmp, $monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;

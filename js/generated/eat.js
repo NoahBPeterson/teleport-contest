@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { ABASE, AMAX, ATEMP, ATTRMIN, DEADMONSTER, Has_contents, Is_airlevel, Is_astralevel, Is_waterlevel, M_AP_TYPE, acidic, can_teleport, canspotmon, carnivorous, carried, control_teleport, distu, flaming, herbivorous, humanoid, is_clinger, is_dwarf, is_elf, is_giant, is_metallic, is_orc, is_organic, is_rider, is_rustprone, is_undead, is_were, ismnum, metallivorous, nohands, noncorporeal, ofood, perceives, poisonous, telepathic, touch_petrifies, type_is_pname, u_at, verysmall } from './nhmacrofn.js';
 import { Acid_resistance, BInvis, Blind, BlindedTimeout, Breathless, Deaf, Displaced, EConflict, EInvis, EProtection, ERegeneration, ESee_invisible, Fixed_abil, Flying, Glib, HCold_resistance, HConflict, HConfusion, HDisint_resistance, HFast, HFire_resistance, HHallucination, HInvis, HPoison_resistance, HRegeneration, HShock_resistance, HSleep_resistance, HSleepy, HStun, HTelepat, HTeleport_control, HTeleportation, Hallucination, Hunger, Invis, Levitation, Lifesaved, Poison_resistance, See_invisible, Sick, Sleep_resistance, Slimed, Slow_digestion, Stone_resistance, Stoned, Strangled, U_AP_TYPE, Ugender, Unchanging, Upolyd, Vomiting, display_nhwindow } from './nhprop.js';
 import { objects } from './objects.js';
 import { WIN_MAP, c_color_names, c_common_strings, disp, flags, ga, gc, ge, gf, gm, gn, go, gu, gy, hands_obj, iflags, sa_victual, svc, svd, svk, svl, svm, u, uamul, uball, uchain, uleft, uquiver, uright, uswapwep, uwep, ynchars, ynqchars } from './decl.js';
@@ -606,21 +607,21 @@ export function is_edible(obj) {
         return 0;
     if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) && is_flammable(obj))
         return 1;
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n) && (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL) && (!cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_RUST_MONSTER, 96)) || (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON)))
+    if (metallivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && is_metallic(obj) && (!cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_RUST_MONSTER, 96)) || is_rustprone(obj)))
         return 1;
     if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GHOUL)
-        return schar(((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && !(cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_GHOST))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) ? 1 : 0));
-    if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE && (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.WOOD) && !(cptr.ldPtro((obj), $obj_cobj) !== null))
+        return schar(((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && !(cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) ? 1 : 0));
+    if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE && is_organic(obj) && !Has_contents(obj))
         return 1;
     return schar((cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS));
 }
 
 /** C ref: eat.c:126 */
 export function init_uhunger() {
-    cptr.st1(disp, schar((cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY || (cptr.ld1so2(u, NHC.A_STR, 1, $you_atemp)) < 0 ? 1 : 0)));
+    cptr.st1(disp, schar((cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY || ATEMP(NHC.A_STR) < 0 ? 1 : 0)));
     cptr.stI32o(u, $you_uhunger, 900);
     cptr.stI32o(u, $you_uhs, NHC.NOT_HUNGRY);
-    if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_atemp)) < 0) {
+    if (ATEMP(NHC.A_STR) < 0) {
         cptr.st1o2(u, NHC.A_STR, 1, $you_atemp, 0);
         encumber_msg();
     }
@@ -715,10 +716,10 @@ export function eatmupdate() {
     let altapp = 0;
     if (!cptr.ldPtro(ge, $instance_globals_e_eatmbuf) || !cptr.eq(cptr.ldPtro(gn, $instance_globals_n_nomovemsg), cptr.ldPtro(ge, $instance_globals_e_eatmbuf)))
         return;
-    if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.ORANGE) && !Hallucination()) {
+    if ((M_AP_TYPE(cptr.add(gy, $instance_globals_y_youmonst)) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.ORANGE) && !Hallucination()) {
         altmsg = __sl23;
         altapp = NHC.GOLD_PIECE;
-    } else if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.GOLD_PIECE) && Hallucination()) {
+    } else if ((M_AP_TYPE(cptr.add(gy, $instance_globals_y_youmonst)) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.GOLD_PIECE) && Hallucination()) {
         altmsg = __sl24;
         altapp = NHC.ORANGE;
     }
@@ -739,7 +740,7 @@ function food_xname(food, the_pfx) {
     let result;
     if (cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE) {
         result = corpse_xname(food, null, (NHM.CXN_SINGULAR | (the_pfx ? NHM.CXN_PFX_THE : 0)) >>> 0);
-        if (((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(food, $obj_corpsenm), 96)), $permonst_mflags2) & 524288n) != 0n))
+        if (type_is_pname(cptr.add(mons, cptr.ldI32o(food, $obj_corpsenm), 96)))
             the_pfx = 0;
     } else {
         result = singular(food, xname);
@@ -844,12 +845,12 @@ function adj_victual_nutrition() {
     let nut = -cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod);
     (__builtin_expect(BigInt((!(nut > 0))), 0n) ? __assert_rtn(__sl41, __sl27, 344, __sl42) : void 0);
     if (otyp == NHC.LEMBAS_WAFER) {
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
+        if ((Upolyd() ? (is_elf(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
             nut = (nut + ((((nut + 2) | 0) / 4) | 0)) | 0;
-        else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))))
+        else if ((Upolyd() ? (is_orc(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))))
             nut = (nut - ((((nut + 2) | 0) / 4) | 0)) | 0;
     } else if (otyp == NHC.CRAM_RATION) {
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 32n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))))
+        if ((Upolyd() ? (is_dwarf(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))))
             nut = (nut + ((((nut + 3) | 0) / 6) | 0)) | 0;
     }
     nut = ((nut) > 1 ? (nut) : 1);
@@ -859,7 +860,7 @@ function adj_victual_nutrition() {
 /** C ref: eat.c:360 — @param {CPtr} otmp @returns {CPtr} */
 function touchfood(otmp) {
     if (cptr.ldI64o(otmp, $obj_quan) > 1n) {
-        if (!(cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+        if (!carried(otmp))
             void splitobj(otmp, BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) - 1n));
         else
             otmp = splitobj(otmp, 1n);
@@ -875,7 +876,7 @@ function touchfood(otmp) {
         costly_alteration(otmp, NHC.COST_BITE);
         cptr.stI32o(otmp, $obj_oeaten, obj_nutrition(otmp));
     }
-    if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT)) {
+    if (carried(otmp)) {
         freeinv(otmp);
         if (inv_cnt(0) >= NHC.invlet_basic) {
             sellobj_state(NHM.SELL_DONTSELL);
@@ -948,10 +949,10 @@ export function temp_resist(prop) {
 export function eating_dangerous_corpse(res) {
     let food;
     let mnum;
-    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && (food = cptr.ldPtro(svc, $context_info_victual)) !== null && cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE && (mnum = cptr.ldI32o(food, $obj_corpsenm)) >= NHC.LOW_PM && ((cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) || obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
-        if (res == NHC.ACID_RES && ((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 134217728n) != 0n))
+    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && (food = cptr.ldPtro(svc, $context_info_victual)) !== null && cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE && (mnum = cptr.ldI32o(food, $obj_corpsenm)) >= NHC.LOW_PM && (carried(food) || obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
+        if (res == NHC.ACID_RES && acidic(cptr.add(mons, mnum, 96)))
             return 1;
-        if (res == NHC.STONE_RES && ((cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))))
+        if (res == NHC.STONE_RES && (touch_petrifies(cptr.add(mons, mnum, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))))
             return 1;
     }
     return 0;
@@ -960,7 +961,7 @@ export function eating_dangerous_corpse(res) {
 /** C ref: eat.c:519 @returns {CInt} */
 function eatfood() {
     let food = cptr.ldPtro(svc, $context_info_victual);
-    if (food && !(cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) && !obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+    if (food && !carried(food) && !obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         food = null;
     if (!food) {
         do_reset_eat();
@@ -995,7 +996,7 @@ function done_eating(message) {
         cpostfx(cptr.ldI32o(piece, $obj_corpsenm));
     else
         fpostfx(piece);
-    if ((cptr.ld1so((piece), $obj_where) == NHM.OBJ_INVENT))
+    if (carried(piece))
         useup(piece);
     else
         useupf(piece, 1n);
@@ -1009,13 +1010,13 @@ export function eating_conducts(pd) {
         livelog_printf(32n, __sl49, cptr.ldPtro(pd, NHC.NEUTRAL, 8));
         ll_conduct++;
     }
-    if (!(cptr.ld1so((pd), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((pd), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((pd), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((pd), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((pd), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((pd), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((pd), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((pd), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST))) {
+    if (!(cptr.ld1so((pd), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((pd), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((pd), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((pd), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((pd), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((pd), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((pd), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((pd), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(pd))) {
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n)) && !ll_conduct) {
             livelog_printf(32n, __sl50, cptr.ldPtro(pd, NHC.NEUTRAL, 8));
             ll_conduct++;
         }
     }
-    if (!((cptr.ld1so((pd), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((pd), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((pd), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((pd), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((pd), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((pd), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((pd), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((pd), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((pd), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
+    if (!((cptr.ld1so((pd), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((pd), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((pd), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((pd), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((pd), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((pd), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((pd), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((pd), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(pd)) || (cptr.ld1so((pd), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((pd), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
         if (!cptr.ldI64o(u, $you_uconduct) && !ll_conduct)
             livelog_printf(32n, __sl51, cptr.ldPtro(pd, NHC.NEUTRAL, 8));
         violated_vegetarian();
@@ -1030,10 +1031,10 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
     let give_nutrit = 0;
     let result = NHM.M_ATTK_HIT;
     let xtra_dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl27, 611, __sl52), rnd(10)) : rnd(10));
-    if (!cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && (cptr.ldI32o((magr), $monst_mhp) < 1)) {
+    if (!cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && DEADMONSTER(magr)) {
         return NHM.M_ATTK_AGR_DIED;
     }
-    if ((cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST)) {
+    if (noncorporeal(pd)) {
         if (visflag)
             pline(__sl53, (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? __sl54 : s_suffix(Monnam(mdef)));
         return NHM.M_ATTK_MISS;
@@ -1042,10 +1043,10 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
     } else if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
         Your(__sl56);
     } else {
-        if (visflag && (canseemon(mdef) || sensemon(mdef)))
+        if (visflag && canspotmon(mdef))
             pline(__sl57, s_suffix(Monnam(mdef)));
     }
-    if (((cptr.eq((pd), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((pd), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((pd), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
+    if ((touch_petrifies(pd) || cptr.eq((pd), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
         if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
             if (!Stone_resistance() && !Stoned())
                 make_stoned(5n, null, NHM.KILLED_BY_AN, pmname(pd, Mgender(mdef)));
@@ -1053,7 +1054,7 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
             if (visflag && canseemon(magr))
                 pline(__sl58, Monnam(magr));
             monstone(magr);
-            if (!(cptr.ldI32o((magr), $monst_mhp) < 1)) {
+            if (!DEADMONSTER(magr)) {
                 return NHM.M_ATTK_MISS;
             } else {
                 if (cptr.ld1so(magr, $monst_mtame) && !visflag)
@@ -1067,7 +1068,7 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
         if (((cptr.ldU64o((pd), $permonst_mflags1) & 65536n) != 0n)) {
             pline(__sl60, Monnam(mdef));
             return NHM.M_ATTK_MISS;
-        } else if ((cptr.eq((pd), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((pd), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((pd), cptr.add(mons, NHC.PM_PESTILENCE, 96)))) {
+        } else if (is_rider(pd)) {
             pline(__sl61);
             void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl62, pmname(pd, Mgender(mdef)));
             cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
@@ -1076,10 +1077,10 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
             cptr.stI32(dmg_p, (cptr.ldI32(dmg_p) + xtra_dmg) | 0);
         } else {
             morehungry(-(rng_log_enabled() ? (rng_log_set_caller(__sl27, 678, __sl52), rnd(30)) : rnd(30)));
-            if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax))) {
+            if (ABASE(NHC.A_INT) < AMAX(NHC.A_INT)) {
                 cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr) + (rng_log_enabled() ? (rng_log_set_caller(__sl27, 681, __sl52), rnd(4)) : rnd(4)));
-                if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) > (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)))
-                    cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)));
+                if (ABASE(NHC.A_INT) > AMAX(NHC.A_INT))
+                    cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, AMAX(NHC.A_INT));
                 cptr.st1(disp, 1);
             }
             exercise(NHC.A_WIS, 1);
@@ -1087,7 +1088,7 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
         }
         void maybe_cannibal((cptr.ldI32o((pd), $permonst_pmidx)), 1);
     } else if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
-        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) <= (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmin))) {
+        if (ABASE(NHC.A_INT) <= ATTRMIN(NHC.A_INT)) {
             if (Lifesaved()) {
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(__static_eat_brains_brainlessness));
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -1100,25 +1101,25 @@ export function eat_brains(magr, mdef, visflag, dmg_p) {
             void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(__static_eat_brains_brainlessness));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
             done(NHC.DIED);
-            cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, schar((((cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmin)) + 2) | 0)));
+            cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, schar(((ATTRMIN(NHC.A_INT) + 2) | 0)));
             You_feel(__sl65);
         }
         give_nutrit = 1;
         exercise(NHC.A_WIS, 0);
     } else {
         if (((cptr.ldU64o((pd), $permonst_mflags1) & 65536n) != 0n)) {
-            if (visflag && (canseemon(mdef) || sensemon(mdef)))
+            if (visflag && canspotmon(mdef))
                 pline(__sl60, Monnam(mdef));
             return NHM.M_ATTK_MISS;
-        } else if ((cptr.eq((pd), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((pd), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((pd), cptr.add(mons, NHC.PM_PESTILENCE, 96)))) {
+        } else if (is_rider(pd)) {
             mondied(magr);
-            if ((cptr.ldI32o((magr), $monst_mhp) < 1))
+            if (DEADMONSTER(magr))
                 result = NHM.M_ATTK_AGR_DIED;
             cptr.stI32(dmg_p, (cptr.ldI32(dmg_p) + xtra_dmg) | 0);
         } else {
             cptr.stI32(dmg_p, (cptr.ldI32(dmg_p) + xtra_dmg) | 0);
             give_nutrit = 1;
-            if (cptr.ldI32(dmg_p) >= cptr.ldI32o(mdef, $monst_mhp) && visflag && (canseemon(mdef) || sensemon(mdef)))
+            if (cptr.ldI32(dmg_p) >= cptr.ldI32o(mdef, $monst_mhp) && visflag && canspotmon(mdef))
                 pline(__sl66, s_suffix(Monnam(mdef)));
         }
     }
@@ -1137,7 +1138,7 @@ function maybe_cannibal(pm, allowmsg) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == __static_maybe_cannibal_ate_brains)
         return 0;
     __static_maybe_cannibal_ate_brains = cptr.ldI64o(svm, $instance_globals_saved_m_moves);
-    if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) && (((cptr.ldU64o((fptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) || (Upolyd() && same_race(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), fptr)) || (((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) && were_beastie(pm) == cptr.ldI32o(u, $you_ulycn)))) {
+    if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) && (((cptr.ldU64o((fptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) || (Upolyd() && same_race(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), fptr)) || (ismnum(cptr.ldI32o(u, $you_ulycn)) && were_beastie(pm) == cptr.ldI32o(u, $you_ulycn)))) {
         if (allowmsg) {
             if (Upolyd() && ((cptr.ldU64o((fptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n))
                 You(__sl67);
@@ -1153,7 +1154,7 @@ function maybe_cannibal(pm, allowmsg) {
 /** C ref: eat.c:791 — @param {CInt} pm */
 function cprefx(pm) {
     void maybe_cannibal(pm, 1);
-    if (((cptr.eq((cptr.add(mons, pm, 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, pm, 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((cptr.add(mons, pm, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
+    if ((touch_petrifies(cptr.add(mons, pm, 96)) || cptr.eq((cptr.add(mons, pm, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
         if (!Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && polymon(NHC.PM_STONE_GOLEM))) {
             if (cptr.ldPtro(svc, $context_info_tin))
                 use_up_tin(cptr.ldPtro(svc, $context_info_tin));
@@ -1196,7 +1197,7 @@ function cprefx(pm) {
             return;
         }
         case NHC.PM_GREEN_SLIME:
-        if (!Slimed() && !Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || (cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST))) {
+        if (!Slimed() && !Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || noncorporeal(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
             You(__sl75);
             make_slimed(10n, null);
             delayed_killer(NHC.SLIMED, NHM.KILLED_BY_AN, __sl22);
@@ -1204,7 +1205,7 @@ function cprefx(pm) {
         // @FallThrough
         ;
         default:
-        if (((cptr.ldU64o((cptr.add(mons, pm, 96)), $permonst_mflags1) & 134217728n) != 0n) && Stoned())
+        if (acidic(cptr.add(mons, pm, 96)) && Stoned())
             fix_petrification();
         break;
     }
@@ -1329,7 +1330,7 @@ export function intrinsic_possible(type, ptr) {
         }
         break;
         case NHC.TELEPORT:
-        res = ((cptr.ldU64o((ptr), $permonst_mflags1) & 33554432n) != 0n);
+        res = can_teleport(ptr);
         {
             if (res)
                 {
@@ -1342,7 +1343,7 @@ export function intrinsic_possible(type, ptr) {
         }
         break;
         case NHC.TELEPORT_CONTROL:
-        res = ((cptr.ldU64o((ptr), $permonst_mflags1) & 67108864n) != 0n);
+        res = control_teleport(ptr);
         {
             if (res)
                 {
@@ -1355,7 +1356,7 @@ export function intrinsic_possible(type, ptr) {
         }
         break;
         case NHC.TELEPAT:
-        res = (cptr.eq((ptr), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MIND_FLAYER, 96)) || cptr.eq((ptr), cptr.add(mons, NHC.PM_MASTER_MIND_FLAYER, 96)) ? 1 : 0);
+        res = telepathic(ptr);
         {
             if (res)
                 {
@@ -1703,7 +1704,7 @@ function cpostfx(pm) {
         } else {
             if (cptr.ldPtro(svc, $context_info_tin)) {
                 use_up_tin(cptr.ldPtro(svc, $context_info_tin));
-                lesshungry((200 + (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n) ? 5 : 0)) | 0);
+                lesshungry((200 + (metallivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 5 : 0)) | 0);
             }
             You(__sl119, (pm == NHC.PM_GENETIC_ENGINEER) ? __sl142 : __sl143);
             polyself(NHC.POLY_NOFLAGS);
@@ -1730,7 +1731,7 @@ function cpostfx(pm) {
         break;
         case NHC.PM_MIND_FLAYER:
         case NHC.PM_MASTER_MIND_FLAYER:
-        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmax))) {
+        if (ABASE(NHC.A_INT) < (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmax))) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1284, __sl129), rn2(2)) : rn2(2))) {
                 pline(__sl145);
                 void adjattrib(NHC.A_INT, 1, 0);
@@ -1759,7 +1760,7 @@ function cpostfx(pm) {
         else if (tmp > 0)
             givit(tmp, ptr);
     }
-    if (((catch_lycanthropy) >= NHC.LOW_PM && (catch_lycanthropy) < NHC.NUMMONS)) {
+    if (ismnum(catch_lycanthropy)) {
         set_ulycn(catch_lycanthropy);
         retouch_equipment(2);
     }
@@ -1768,7 +1769,7 @@ function cpostfx(pm) {
 
 /** C ref: eat.c:1339 — @param {CPtr} ptr @returns {CInt} */
 export function corpse_intrinsic(ptr) {
-    let conveys_STR = schar(((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n));
+    let conveys_STR = schar(is_giant(ptr));
     let i;
     let count = 0;
     let prop = 0;
@@ -1816,7 +1817,7 @@ export function violated_vegetarian() {
 /** C ref: eat.c:1389 — @param {CInt} alter_type @returns {CPtr} */
 function costly_tin(alter_type) {
     let tin = cptr.ldPtro(svc, $context_info_tin);
-    if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT) ? (cptr.ldI32o(tin, $obj_unpaid) & 1) | 0 : (costly_spot(cptr.ldI16o(tin, $obj_ox), cptr.ldI16o(tin, $obj_oy)) && !(cptr.ldI32o(tin, $obj_no_charge) & 1) ? 1 : 0)) {
+    if (carried(tin) ? (cptr.ldI32o(tin, $obj_unpaid) & 1) | 0 : (costly_spot(cptr.ldI16o(tin, $obj_ox), cptr.ldI16o(tin, $obj_oy)) && !(cptr.ldI32o(tin, $obj_no_charge) & 1) ? 1 : 0)) {
         if (cptr.ldI64o(tin, $obj_quan) > 1n) {
             tin = cptr.stPtro(svc, $context_info_tin, splitobj(tin, 1n));
             cptr.stI32o(svc, $context_info_tin + $tin_info_o_id, cptr.ldI32o(tin, $obj_o_id));
@@ -1864,7 +1865,7 @@ export function tin_details(obj, mnum, buf) {
         } else {
             void cptr.strcpy(eos(buf), __sl156);
         }
-        if (((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))))
+        if (((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))))
             void cptr.sprintf(eos(buf), __sl45, cptr.ldPtro3(mons, mnum, 96, NHC.NEUTRAL, 8, 0));
         else
             void cptr.sprintf(eos(buf), __sl157, cptr.ldPtro3(mons, mnum, 96, NHC.NEUTRAL, 8, 0));
@@ -1875,7 +1876,7 @@ export function tin_details(obj, mnum, buf) {
 export function set_tin_variety(obj, forcetype) {
     let r;
     let mnum = cptr.ldI32o(obj, $obj_corpsenm);
-    if (forcetype == -1 || (forcetype == -3 && (mnum == NHC.NON_PM || !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))))) {
+    if (forcetype == -1 || (forcetype == -3 && (mnum == NHC.NON_PM || !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))))) {
         cptr.stI32o(obj, $obj_corpsenm, NHC.NON_PM);
         cptr.st1o(obj, $obj_spe, 1);
         return;
@@ -1889,7 +1890,7 @@ export function set_tin_variety(obj, forcetype) {
         r = forcetype;
     } else {
         r = (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1481, __sl158), rn2((16 - 1) | 0)) : rn2((16 - 1) | 0));
-        if (r == NHM.ROTTEN_TIN && (((mnum) >= NHC.LOW_PM && (mnum) < NHC.NUMMONS) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || (cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || (mnum) == NHC.PM_ACID_BLOB)))
+        if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, 96)) || (mnum) == NHC.PM_ACID_BLOB)))
             r = NHM.HOMEMADE_TIN;
     }
     cptr.st1o(obj, $obj_spe, schar((-((r + 1) | 0))));
@@ -1911,14 +1912,14 @@ function tin_variety(obj, displ) {
     }
     if (!displ && r == NHM.HOMEMADE_TIN && !(cptr.ldI32o(obj, $obj_blessed) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1506, __sl159), rn2(7)) : rn2(7)))
         r = NHM.ROTTEN_TIN;
-    if (r == NHM.ROTTEN_TIN && (((mnum) >= NHC.LOW_PM && (mnum) < NHC.NUMMONS) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || (cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || (mnum) == NHC.PM_ACID_BLOB)))
+    if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, 96)) || (mnum) == NHC.PM_ACID_BLOB)))
         r = NHM.HOMEMADE_TIN;
     return r;
 }
 
 /** C ref: eat.c:1516 — @param {CPtr} tin */
 function use_up_tin(tin) {
-    if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT))
+    if (carried(tin))
         useup(tin);
     else
         useupf(tin, 1n);
@@ -1933,7 +1934,7 @@ function consume_tin(mesg) {
     let mnum;
     let r;
     let nutamt;
-    let always_eat = schar(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n));
+    let always_eat = schar(metallivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)));
     let tin = cptr.ldPtro(svc, $context_info_tin);
     r = tin_variety(tin, 0);
     if ((cptr.ldI32o(tin, $obj_otrapped) & 1) | 0 || ((cptr.ldI32o(tin, $obj_cursed) & 1) | 0 && r != NHM.HOMEMADE_TIN && !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1537, __sl160), rn2(8)) : rn2(8)))) {
@@ -1968,7 +1969,7 @@ function consume_tin(mesg) {
             what = cptr.ldPtro3(mons, mnum, 96, NHC.NEUTRAL, 8, 0);
             if (the_unique_pm(cptr.add(mons, mnum, 96)))
                 which = 2;
-            else if (((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags2) & 524288n) != 0n))
+            else if (type_is_pname(cptr.add(mons, mnum, 96)))
                 which = 1;
         }
         if (which == 0)
@@ -2050,7 +2051,7 @@ function consume_tin(mesg) {
 
 /** C ref: eat.c:1703 @returns {CInt} */
 function opentin() {
-    if (!(cptr.ld1so((cptr.ldPtro(svc, $context_info_tin)), $obj_where) == NHM.OBJ_INVENT) && (!obj_here(cptr.ldPtro(svc, $context_info_tin), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
+    if (!carried(cptr.ldPtro(svc, $context_info_tin)) && (!obj_here(cptr.ldPtro(svc, $context_info_tin), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
         return 0;
     if ((cptr.stI32o(svc, $context_info_tin + $tin_info_usedtime, cptr.ldI32o(svc, $context_info_tin + $tin_info_usedtime) + 1)) - (1) >= 50) {
         You(__sl183);
@@ -2068,10 +2069,10 @@ function start_tin(otmp) {
     let __go_no_opener = false;
     __skip_no_opener: {
         mesg = null;
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) {
+        if (metallivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             mesg = __sl185;
             tmp = 0;
-        } else if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL))) {
+        } else if ((nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
             You(__sl186);
             return;
         } else if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
@@ -2115,7 +2116,7 @@ function start_tin(otmp) {
             if (cptr.ldI64o(otmp, $obj_quan) > 1n) {
                 otmp = splitobj(otmp, 1n);
             }
-            if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+            if (carried(otmp))
                 dropx(otmp);
             else
                 stackobj(otmp);
@@ -2164,7 +2165,7 @@ function rottenfood(obj) {
         let duration = (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1832, __sl199), rnd(10)) : rnd(10));
         if (!Blind())
             what = __sl203, where = __sl204;
-        else if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
+        else if (Levitation() || Is_airlevel(cptr.add(u, $you_uz)) || Is_waterlevel(cptr.add(u, $you_uz)))
             what = __sl205, where = __sl206;
         else
             what = __sl207, where = (cptr.ldPtro(u, $you_usteed)) ? __sl208 : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -2195,21 +2196,21 @@ function eatcorpse(otmp) {
     let rotted = 0n;
     let ll_conduct = 0;
     let stoneable;
-    let slimeable = schar((mnum == NHC.PM_GREEN_SLIME && !Slimed() && !Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || (cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST)) ? 1 : 0));
+    let slimeable = schar((mnum == NHC.PM_GREEN_SLIME && !Slimed() && !Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || noncorporeal(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
     let glob = schar(((cptr.ldI32o(otmp, $obj_globby) & 1) | 0 ? 1 : 0));
-    (__builtin_expect(BigInt((!(((mnum) >= NHC.LOW_PM && (mnum) < NHC.NUMMONS)))), 0n) ? __assert_rtn(__sl212, __sl27, 1865, __sl213) : void 0);
-    stoneable = schar((((cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
-    if (!(cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)))
+    (__builtin_expect(BigInt((!(ismnum(mnum)))), 0n) ? __assert_rtn(__sl212, __sl27, 1865, __sl213) : void 0);
+    stoneable = schar(((touch_petrifies(cptr.add(mons, mnum, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+    if (!(cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))))
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n))) {
             livelog_printf(32n, __sl214, an(food_xname(otmp, 0)));
             ll_conduct++;
         }
-    if (!((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
+    if (!((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))) {
         if (!cptr.ldI64o(u, $you_uconduct) && !ll_conduct)
             livelog_printf(32n, __sl215, an(food_xname(otmp, 0)));
         violated_vegetarian();
     }
-    if (!((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || (cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || (mnum) == NHC.PM_ACID_BLOB)) {
+    if (!((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, 96)) || (mnum) == NHC.PM_ACID_BLOB)) {
         let age = peek_at_iced_corpse_age(otmp);
         rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / (BigInt.asIntN(64, 10n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl27, 1887, __sl212), rn2(20)) : rn2(20)))));
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -2219,7 +2220,7 @@ function eatcorpse(otmp) {
     }
     if (!glob && !stoneable && !slimeable && rotted > 5n) {
         let cannibal = maybe_cannibal(mnum, 0);
-        pline(__sl216, (cptr.ld1so2(mons, mnum, 96, $permonst_mlet) == NHC.S_FUNGUS) ? __sl217 : (((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? __sl218 : __sl219), cannibal ? __sl220 : __sl22);
+        pline(__sl216, (cptr.ld1so2(mons, mnum, 96, $permonst_mlet) == NHC.S_FUNGUS) ? __sl217 : (((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? __sl218 : __sl219), cannibal ? __sl220 : __sl22);
         if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))) {
             pline(__sl221);
         } else {
@@ -2230,16 +2231,16 @@ function eatcorpse(otmp) {
             make_sick(sick_time, corpse_xname(otmp, __sl222, NHM.CXN_NORMAL), 1, NHM.SICK_VOMITABLE);
             pline(__sl223);
         }
-        if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+        if (carried(otmp))
             useup(otmp);
         else
             useupf(otmp, 1n);
         return 2;
-    } else if (((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 134217728n) != 0n) && !Acid_resistance()) {
+    } else if (acidic(cptr.add(mons, mnum, 96)) && !Acid_resistance()) {
         tp++;
         You(__sl224);
         losehp((rng_log_enabled() ? (rng_log_set_caller(__sl27, 1926, __sl212), rnd(15)) : rnd(15)), !glob ? __sl225 : __sl226, NHM.KILLED_BY_AN);
-    } else if (((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 268435456n) != 0n) && (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1928, __sl212), rn2(5)) : rn2(5))) {
+    } else if (poisonous(cptr.add(mons, mnum, 96)) && (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1928, __sl212), rn2(5)) : rn2(5))) {
         tp++;
         pline(__sl227);
         if (!Poison_resistance()) {
@@ -2252,7 +2253,7 @@ function eatcorpse(otmp) {
         losehp((rng_log_enabled() ? (rng_log_set_caller(__sl27, 1942, __sl212), rnd(8)) : rnd(8)), !glob ? __sl233 : __sl234, NHM.KILLED_BY_AN);
     }
     cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, ((3 + ((!glob ? cptr.ldI32o2(mons, mnum, 96, $permonst_cwt) : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) >>> 0) | 0);
-    if (!tp && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || (cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || (mnum) == NHC.PM_ACID_BLOB) && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1949, __sl212), rn2(7)) : rn2(7)))) {
+    if (!tp && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, 96)) || (mnum) == NHC.PM_ACID_BLOB) && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1949, __sl212), rn2(7)) : rn2(7)))) {
         if (rottenfood(otmp)) {
             cptr.stI32o(otmp, $obj_oeroded, 1);
             otmp = touchfood(otmp);
@@ -2263,7 +2264,7 @@ function eatcorpse(otmp) {
         if (!cptr.ldU16o2(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, $permonst_cnutrit)) {
             if (!retcode)
                 pline_The(__sl235);
-            if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+            if (carried(otmp))
                 useup(otmp);
             else
                 useupf(otmp, 1n);
@@ -2278,15 +2279,15 @@ function eatcorpse(otmp) {
     } else if (tp) {
         ;
     } else {
-        let yummy = schar(((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) ? (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0) : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0)));
-        let palatable = schar(((((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) : ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n)) && (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1988, __sl212), rn2(10)) : rn2(10)) && (rotted < 1n || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1989, __sl212), rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0)) : rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0))) ? 1 : 0));
+        let yummy = schar(((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) ? (!carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && herbivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0) : (carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !herbivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0)));
+        let palatable = schar(((((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? herbivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) : carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) && (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1988, __sl212), rn2(10)) : rn2(10)) && (rotted < 1n || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1989, __sl212), rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0)) : rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0))) ? 1 : 0));
         let pmxnam = food_xname(otmp, 0);
-        let idx = ((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1996, __sl212), rn2(5)) : rn2(5));
+        let idx = ((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl27, 1996, __sl212), rn2(5)) : rn2(5));
         let palat_msg = cptr.ldPtro(__static_eatcorpse_palatable_msgs, idx, 8);
         let use_is = schar((Hallucination() || (palatable && cptr.ld1s(palat_msg) == 73) ? 1 : 0));
         if (!strncmpi(pmxnam, __sl238, 4))
             pmxnam = cptr.add(pmxnam, 4);
-        pline(__sl239, ((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl22 : (the_unique_pm(cptr.add(mons, mnum, 96)) ? __sl240 : __sl241), pmxnam, use_is ? __sl242 : __sl243, Hallucination() ? (yummy ? ((cptr.ldI32o(u, $you_umonnum) == NHC.PM_TIGER) ? __sl244 : __sl245) : (palatable ? __sl246 : __sl247)) : (yummy ? __sl248 : (palatable ? cptr.add(palat_msg, 1) : __sl249)), (yummy || !palatable) ? 33 : 46);
+        pline(__sl239, type_is_pname(cptr.add(mons, mnum, 96)) ? __sl22 : (the_unique_pm(cptr.add(mons, mnum, 96)) ? __sl240 : __sl241), pmxnam, use_is ? __sl242 : __sl243, Hallucination() ? (yummy ? ((cptr.ldI32o(u, $you_umonnum) == NHC.PM_TIGER) ? __sl244 : __sl245) : (palatable ? __sl246 : __sl247)) : (yummy ? __sl248 : (palatable ? cptr.add(palat_msg, 1) : __sl249)), (yummy || !palatable) ? 33 : 46);
     }
     return retcode;
 }
@@ -2367,7 +2368,7 @@ export function eating_glob(glob) {
 
 /** C ref: eat.c:2085 — @param {CPtr} mtmp */
 function garlic_breath(mtmp) {
-    if (olfaction(cptr.ldPtro(mtmp, $monst_data)) && dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 7)
+    if (olfaction(cptr.ldPtro(mtmp, $monst_data)) && distu(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) < 7)
         monflee(mtmp, 0, 0, 0);
 }
 
@@ -2376,7 +2377,7 @@ function fprefx(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
         if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_PYROLISK) {
-            if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+            if (carried(otmp))
                 useup(otmp);
             else
                 useupf(otmp, 1n);
@@ -2398,9 +2399,9 @@ function fprefx(otmp) {
             pline(__sl272, body_part(NHC.STOMACH));
         break;
         case NHC.TRIPE_RATION:
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n)) {
+        if (carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             pline(__sl273);
-        } else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
+        } else if ((Upolyd() ? (is_orc(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
             pline(Hallucination() ? __sl274 : __sl275);
         } else {
             pline(__sl276);
@@ -2411,10 +2412,10 @@ function fprefx(otmp) {
         }
         break;
         case NHC.LEMBAS_WAFER:
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
+        if ((Upolyd() ? (is_orc(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
             pline(__sl45, __sl277);
             break;
-        } else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)))) {
+        } else if ((Upolyd() ? (is_elf(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)))) {
             pline(__sl278);
             break;
         }
@@ -2431,7 +2432,7 @@ function fprefx(otmp) {
             break;
         }
         case NHC.CLOVE_OF_GARLIC:
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n)) {
+        if (is_undead(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             make_vomiting(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl27, 2164, __sl261), rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) : rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) + 5) | 0)), 0);
             break;
         }
@@ -2523,7 +2524,7 @@ function eataccessory(otmp) {
                 case NHC.RIN_SEE_INVISIBLE:
                 set_mimic_blocking();
                 see_monsters();
-                if (Invis() && !oldprop && !ESee_invisible() && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && !Blind()) {
+                if (Invis() && !oldprop && !ESee_invisible() && !perceives(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Blind()) {
                     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                     pline(__sl293);
                     discover_object((typ), 1, 1, 1);
@@ -2631,7 +2632,7 @@ function eatspecial() {
     cptr.stPtro(go, $instance_globals_o_occupation, null);
     cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
-        if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+        if (carried(otmp))
             useupall(otmp);
         else
             useupf(otmp, cptr.ldI64o(otmp, $obj_quan));
@@ -2674,7 +2675,7 @@ function eatspecial() {
         unpunish();
     if (cptr.eq(otmp, uchain.v))
         unpunish();
-    else if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
+    else if (carried(otmp))
         useup(otmp);
     else
         useupf(otmp, 1n);
@@ -2718,7 +2719,7 @@ function foodword(otmp) {
 function fpostfx(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SPRIG_OF_WOLFSBANE:
-        if (((cptr.ldI32o(u, $you_ulycn)) >= NHC.LOW_PM && (cptr.ldI32o(u, $you_ulycn)) < NHC.NUMMONS) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
+        if (ismnum(cptr.ldI32o(u, $you_ulycn)) || is_were(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             you_unwere(1);
         break;
         case NHC.CARROT:
@@ -2760,7 +2761,7 @@ function fpostfx(otmp) {
             heal_legs(0);
         break;
         case NHC.EGG:
-        if (((cptr.ldI32o(otmp, $obj_corpsenm)) >= NHC.LOW_PM && (cptr.ldI32o(otmp, $obj_corpsenm)) < NHC.NUMMONS) && ((cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
+        if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && (touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) || cptr.eq((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), cptr.add(mons, NHC.PM_MEDUSA, 96)))) {
             if (!Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && polymon(NHC.PM_STONE_GOLEM))) {
                 if (!Stoned()) {
                     void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl331, cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, NHC.NEUTRAL, 8, 0));
@@ -2805,10 +2806,10 @@ function edibility_prompts(otmp) {
     void cptr.strcpy(cptr.decay(foodsmell), Tobjnam(otmp, __sl335));
     void cptr.strcpy(cptr.decay(it_or_they), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __sl336 : __sl337);
     if (cadaver || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG || cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN || cptr.ldI16o(otmp, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME) {
-        stoneorslime = schar((((mnum) >= NHC.LOW_PM && (mnum) < NHC.NUMMONS) && ((cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_COCKATRICE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_CHICKATRICE, 96))) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+        stoneorslime = schar((ismnum(mnum) && (touch_petrifies(cptr.add(mons, mnum, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_MEDUSA, 96))) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
         if (mnum == NHC.PM_GREEN_SLIME || cptr.ldI16o(otmp, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME)
-            stoneorslime = schar((!Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SALAMANDER, 96))) || (cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST)) ? 1 : 0));
-        if (cadaver && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || (cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_DEATH, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FAMINE, 96)) || cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_PESTILENCE, 96))) || (mnum) == NHC.PM_ACID_BLOB)) {
+            stoneorslime = schar((!Unchanging() && !(cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) || flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || noncorporeal(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
+        if (cadaver && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, 96)) || (mnum) == NHC.PM_ACID_BLOB)) {
             let age = peek_at_iced_corpse_age(otmp);
             rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / 10n;
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -2826,19 +2827,19 @@ function edibility_prompts(otmp) {
         nh_snprintf(__sl338, 2686, cptr.decay(buf), 256n, __sl341, cptr.decay(foodsmell), cptr.decay(it_or_they));
     } else if ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || (cadaver && rotted > 3n)) {
         nh_snprintf(__sl338, 2690, cptr.decay(buf), 256n, __sl342, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cadaver && ((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 268435456n) != 0n) && !Poison_resistance()) {
+    } else if (cadaver && poisonous(cptr.add(mons, mnum, 96)) && !Poison_resistance()) {
         nh_snprintf(__sl338, 2694, cptr.decay(buf), 256n, __sl343, cptr.decay(foodsmell), cptr.decay(it_or_they));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && !Sleep_resistance()) {
         nh_snprintf(__sl338, 2698, cptr.decay(buf), 256n, __sl344, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cadaver && !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) && !cptr.ldI64o(u, $you_uconduct) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) {
+    } else if (cadaver && !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)))) && !cptr.ldI64o(u, $you_uconduct) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) {
         nh_snprintf(__sl338, 2701, cptr.decay(buf), 256n, __sl345, cptr.decay(foodsmell));
-    } else if (cadaver && ((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 134217728n) != 0n) && !Acid_resistance()) {
+    } else if (cadaver && acidic(cptr.add(mons, mnum, 96)) && !Acid_resistance()) {
         nh_snprintf(__sl338, 2703, cptr.decay(buf), 256n, __sl346, cptr.decay(foodsmell));
-    } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL) && (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) {
+    } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && is_metallic(otmp) && (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) {
         nh_snprintf(__sl338, 2707, cptr.decay(buf), 256n, __sl347, cptr.decay(foodsmell));
-    } else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE || material == NHC.WAX) || (cadaver && !(cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST))))) {
+    } else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE || material == NHC.WAX) || (cadaver && !(cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96)))))) {
         nh_snprintf(__sl338, 2717, cptr.decay(buf), 256n, __sl348, cptr.decay(foodsmell));
-    } else if (!cptr.ldI64o(u, $you_uconduct) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE) || (cadaver && !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GHOST)) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))))) {
+    } else if (!cptr.ldI64o(u, $you_uconduct) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE) || (cadaver && !((cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_BLOB || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_JELLY || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_LIGHT || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_ELEMENTAL && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_STALKER, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_GOLEM && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_FLESH_GOLEM, 96)) && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_LEATHER_GOLEM, 96))) || noncorporeal(cptr.add(mons, mnum, 96))) || (cptr.ld1so((cptr.add(mons, mnum, 96)), $permonst_mlet) == NHC.S_PUDDING && !cptr.eq((cptr.add(mons, mnum, 96)), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96))))))) {
         nh_snprintf(__sl338, 2722, cptr.decay(buf), 256n, __sl349, cptr.decay(foodsmell));
     }
     if (cptr.ld1s(cptr.decay(buf))) {
@@ -2941,13 +2942,13 @@ export function doeat() {
     } else if ((cptr.ldI64o(otmp.v, $obj_owornmask) & 1638527n) != 0n) {
         You_cant(__sl361, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         return NHM.ECMD_OK;
-    } else if (!((cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT) ? retouch_object(otmp, 0) : touch_artifact(otmp.v, cptr.add(gy, $instance_globals_y_youmonst)))) {
+    } else if (!(carried(otmp.v) ? retouch_object(otmp, 0) : touch_artifact(otmp.v, cptr.add(gy, $instance_globals_y_youmonst)))) {
         return NHM.ECMD_TIME;
     }
-    if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) >= NHC.IRON && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp.v, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.MITHRIL) && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && (cptr.ldI32o(otmp.v, $obj_oerodeproof) & 1) | 0) {
+    if (is_metallic(otmp.v) && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && (cptr.ldI32o(otmp.v, $obj_oerodeproof) & 1) | 0) {
         cptr.stI32o(otmp.v, $obj_rknown, 1);
         if (cptr.ldI64o(otmp.v, $obj_quan) > 1n) {
-            if (!(cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT))
+            if (!carried(otmp.v))
                 void splitobj(otmp.v, BigInt.asIntN(64, cptr.ldI64o(otmp.v, $obj_quan) - 1n));
             else
                 otmp.v = splitobj(otmp.v, 1n);
@@ -2960,7 +2961,7 @@ export function doeat() {
             You(__sl364, the(xname(otmp.v)));
         } else {
             You(__sl365, the(xname(otmp.v)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            if ((cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT)) {
+            if (carried(otmp.v)) {
                 if (cptr.ldI64o(otmp.v, $obj_owornmask))
                     remove_worn_item(otmp.v, 0);
                 freeinv(otmp.v);
@@ -3147,7 +3148,7 @@ export function gethungry() {
     let accessorytime;
     if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 || cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;
-    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 3174, __sl380), rn2(10)) : rn2(10))) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) && !Slow_digestion())
+    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || !(rng_log_enabled() ? (rng_log_set_caller(__sl27, 3174, __sl380), rn2(10)) : rn2(10))) && (carnivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || herbivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || metallivorous(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) && !Slow_digestion())
         (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
     accessorytime = (rng_log_enabled() ? (rng_log_set_caller(__sl27, 3191, __sl380), rn2(20)) : rn2(20));
     if (accessorytime % 2) {
@@ -3366,7 +3367,7 @@ function offer_ok(obj) {
         return NHC.GETOBJ_EXCLUDE;
     if (cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR && cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR)
         return NHC.GETOBJ_EXCLUDE_SELECTABLE;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)) ? 1 : 0)) ^ (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
+    if (Is_astralevel(cptr.add(u, $you_uz)) ^ (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
         return NHC.GETOBJ_DOWNPLAY;
     return NHC.GETOBJ_SUGGEST;
 }
@@ -3392,9 +3393,9 @@ export function floorfood(verb, corpsecheck) {
     let offering = schar((!strcmp(verb, __sl408)));
     __lbl_skipfloor: {
         getobj_else = 0;
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested) || !can_reach_floor(1) || (feeding && cptr.ldPtro(u, $you_usteed)) || (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 16n) != 0n) || (Flying() && !Breathless()))))
+        if (cptr.ld1so(iflags, $instance_flags_menu_requested) || !can_reach_floor(1) || (feeding && cptr.ldPtro(u, $you_usteed)) || (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || is_clinger(uptr) || (Flying() && !Breathless()))))
             break __lbl_skipfloor;
-        if (feeding && ((cptr.ldU64o((uptr), $permonst_mflags1) & 2147483648n) != 0n)) {
+        if (feeding && metallivorous(uptr)) {
             let gold;
             let ttmp = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if (ttmp && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
@@ -3425,7 +3426,7 @@ export function floorfood(verb, corpsecheck) {
                 if (nodig || cptr.ldI32o(u, $you_uhunger) > 1500) {
                     pline(__sl416, cptr.decay(qbuf), nodig ? __sl417 : __sl418);
                 } else {
-                    void cptr.strcat(cptr.decay(qbuf), (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) || !((cptr.ldI16o(svc, $context_info_digging + $dig_info_pos)) == cptr.ldI16(u) && (cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz))) ? __sl419 : __sl420);
+                    void cptr.strcat(cptr.decay(qbuf), (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) || !u_at(cptr.ldI16o(svc, $context_info_digging + $dig_info_pos), cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz))) ? __sl419 : __sl420);
                     c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1);
                 }
                 if (c == 121)
@@ -3512,7 +3513,7 @@ export function vomit() {
         }
         if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
             altar_wrath(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 134217728n) != 0n)) {
+        if (acidic(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             if (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
                 melt_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __sl433);
         }
@@ -3592,7 +3593,7 @@ export function Popeye(threat) {
     if (cptr.ldPtro(go, $instance_globals_o_occupation) !== opentin)
         return 0;
     otin = cptr.ldPtro(svc, $context_info_tin);
-    if (!(cptr.ld1so((otin), $obj_where) == NHM.OBJ_INVENT) && (!obj_here(otin, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
+    if (!carried(otin) && (!obj_here(otin, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
         return 0;
     if (!(cptr.ldI32o(otin, $obj_known) & 1))
         return 1;
@@ -3601,9 +3602,9 @@ export function Popeye(threat) {
         case NHC.HUNGER:
         return schar((mndx != NHC.NON_PM || cptr.ld1so(otin, $obj_spe) == 1 ? 1 : 0));
         case NHC.STONED:
-        return schar((((mndx) >= NHC.LOW_PM && (mndx) < NHC.NUMMONS) && (mndx == NHC.PM_LIZARD || ((cptr.ldU64o((cptr.add(mons, mndx, 96)), $permonst_mflags1) & 134217728n) != 0n)) ? 1 : 0));
+        return schar((ismnum(mndx) && (mndx == NHC.PM_LIZARD || acidic(cptr.add(mons, mndx, 96))) ? 1 : 0));
         case NHC.SLIMED:
-        return schar(((cptr.ldI16o((otin), $obj_otyp) == NHC.CORPSE || cptr.ldI16o((otin), $obj_otyp) == NHC.EGG || cptr.ldI16o((otin), $obj_otyp) == NHC.TIN) && cptr.ldI32o((otin), $obj_corpsenm) >= NHC.LOW_PM && (pm_to_cham(cptr.ldI32o((otin), $obj_corpsenm)) != NHC.NON_PM || dmgtype(cptr.add(mons, cptr.ldI32o((otin), $obj_corpsenm), 96), NHM.AD_POLY)) ? 1 : 0));
+        return schar((ofood(otin) && cptr.ldI32o((otin), $obj_corpsenm) >= NHC.LOW_PM && (pm_to_cham(cptr.ldI32o((otin), $obj_corpsenm)) != NHC.NON_PM || dmgtype(cptr.add(mons, cptr.ldI32o((otin), $obj_corpsenm), 96), NHM.AD_POLY)) ? 1 : 0));
         case NHC.SICK:
         case NHC.VOMITING:
         break;

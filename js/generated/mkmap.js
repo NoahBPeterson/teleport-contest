@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { IS_OBSTRUCTED } from './nhmacrofn.js';
 import { gm, gn, gs, svl, svn, svr, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { isok } from './cmd.js';
@@ -317,7 +318,7 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     if (lit) {
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++)
-                if ((!((fg_typ) < NHC.POOL) && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == fg_typ) || (!((bg_typ) < NHC.POOL) && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (bg_typ == NHC.TREE && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (walled && ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)))
+                if ((!IS_OBSTRUCTED(fg_typ) && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == fg_typ) || (!IS_OBSTRUCTED(bg_typ) && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (bg_typ == NHC.TREE && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (walled && ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)))
                     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, 1);
         for (x = 0; x < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); x++)
             cptr.st1o2(svr, x, 224, $mkroom_rlit, 1);

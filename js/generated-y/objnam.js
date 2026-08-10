@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Align2amask, CAN_OVERWRITE_TERRAIN, DEADMONSTER, Has_contents, IS_DOOR, IS_FOUNTAIN, IS_FURNITURE, IS_GRAVE, IS_SINK, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, Is_rogue_level, M_AP_TYPE, bimanual, cansee, carried, distu, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_female, is_gloves, is_human, is_male, is_missile, is_neuter, is_plural, is_poisonable, is_rustprone, is_shield, is_weptool, is_were, is_wet_towel, ismnum, type_is_pname, verysmall } from './nhmacrofn.js';
 import { Blind, EHalluc_resistance, EWarn_of_mon, Flying, Glib, Levitation, Luck, URIGHTY, wizard } from './nhprop.js';
 import { impossible, pline } from './pline.js';
 import { copynchars, digit, dist2, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, ordin, s_suffix, str_start_is, strcasecpy, strncmpi, strstri, strsubst, upstart } from './hacklib.js';
@@ -1096,7 +1097,7 @@ export function* safe_typename(otyp) {
 
 /** C ref: objnam.c:333 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_pname(obj) {
-    if (!cptr.ld1so(obj, $obj_oartifact) || !(cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
+    if (!cptr.ld1so(obj, $obj_oartifact) || !has_oname(obj))
         return 0;
     if (!cptr.ldI32(program_state) && !cptr.ldI32o(iflags, $instance_flags_override_ID)) {
         if (not_fully_identified(obj))
@@ -1116,7 +1117,7 @@ export function* distant_name(obj, func) {
     save_oid = cptr.ldI32o(obj, $obj_o_id);
     if (cptr.ldI32(program_state))
         cptr.stI32o(obj, $obj_o_id, 0);
-    if (get_obj_location(obj, ox, oy, 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), oy.v, 8), ox.v) & NHM.IN_SIGHT) != 0) && (cptr.ld1so(obj, $obj_oartifact) || dist2((ox.v), (oy.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= neardist)) {
+    if (get_obj_location(obj, ox, oy, 0) && cansee(ox.v, oy.v) && (cptr.ld1so(obj, $obj_oartifact) || distu(ox.v, oy.v) <= neardist)) {
         str = (yield* Y.icall((func)(obj)));
     } else {
         cptr.stI32o(gd, $instance_globals_d_distantname, cptr.ldI32o(gd, $instance_globals_d_distantname) + 1);
@@ -1308,7 +1309,7 @@ function* xname_flags(obj, cxn_flags) {
                 void cptr.sprintf(buf, __sl42, dn);
             break;
             case NHC.WEAPON_CLASS:
-            if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -24 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || permapoisoned(obj)) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0)
+            if (is_poisonable(obj) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0)
                 void cptr.strcpy(buf, __sl43);
             // @FallThrough
             ;
@@ -1316,7 +1317,7 @@ function* xname_flags(obj, cxn_flags) {
             case NHC.TOOL_CLASS:
             if (typ == NHC.LENSES)
                 void cptr.strcpy(buf, __sl26);
-            else if ((cptr.ldI16o((obj), $obj_otyp) == NHC.TOWEL && cptr.ld1so((obj), $obj_spe) > 0))
+            else if (is_wet_towel(obj))
                 void cptr.strcpy(buf, (cptr.ld1so(obj, $obj_spe) < 3) ? __sl44 : __sl45);
             if (!dknown)
                 void cptr.strcat(buf, dn);
@@ -1334,7 +1335,7 @@ function* xname_flags(obj, cxn_flags) {
                     nh_snprintf(__sl46, 713, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl47, (yield* just_an(cptr.decay(anbuf), pm_name)), pm_name);
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
-            } else if ((cptr.ldI16o((obj), $obj_otyp) == NHC.TOWEL && cptr.ld1so((obj), $obj_spe) > 0)) {
+            } else if (is_wet_towel(obj)) {
                 if (wizard())
                     {
                         nh_snprintf(__sl46, 716, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl48, cptr.ld1so(obj, $obj_spe));
@@ -1346,9 +1347,9 @@ function* xname_flags(obj, cxn_flags) {
             if (typ >= NHC.GRAY_DRAGON_SCALES && typ <= NHC.YELLOW_DRAGON_SCALES) {
                 void cptr.sprintf(buf, __sl49, actualn);
                 break;
-            } else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS) || (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_GLOVES)) {
+            } else if (is_boots(obj) || is_gloves(obj)) {
                 void cptr.strcpy(buf, __sl26);
-            } else if ((cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.ARM_SHIELD) && !dknown) {
+            } else if (is_shield(obj) && !dknown) {
                 if (cptr.ldI16o(obj, $obj_otyp) >= NHC.ELVEN_SHIELD && cptr.ldI16o(obj, $obj_otyp) <= NHC.ORCISH_SHIELD) {
                     void cptr.strcpy(buf, __sl50);
                     break;
@@ -1417,7 +1418,7 @@ function* xname_flags(obj, cxn_flags) {
             if (typ == NHC.STATUE && omndx != NHC.NON_PM) {
                 let anbuf = new Uint8Array(10);
                 let statue_pmname = (yield* obj_pmname(obj));
-                nh_snprintf(__sl46, 813, buf, bufspaceleft, __sl60, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0) ? __sl61 : __sl13, actualn, ((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl13 : (the_unique_pm(cptr.add(mons, omndx, 96)) ? __sl62 : (yield* just_an(cptr.decay(anbuf), statue_pmname))), statue_pmname);
+                nh_snprintf(__sl46, 813, buf, bufspaceleft, __sl60, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0) ? __sl61 : __sl13, actualn, type_is_pname(cptr.add(mons, omndx, 96)) ? __sl13 : (the_unique_pm(cptr.add(mons, omndx, 96)) ? __sl62 : (yield* just_an(cptr.decay(anbuf), statue_pmname))), statue_pmname);
             } else if (typ == NHC.BOULDER && cptr.ldI32o(obj, $obj_corpsenm) == 1) {
                 void cptr.strcat(cptr.strcpy(buf, __sl63), actualn);
                 cptr.stI32o(obj, $obj_corpsenm, 0);
@@ -1575,7 +1576,7 @@ function* xname_flags(obj, cxn_flags) {
                 break;
             }
         }
-        if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))) && dknown) {
+        if (has_oname(obj) && dknown) {
             {
                 void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __sl89, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                 buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
@@ -1660,7 +1661,7 @@ export function the_unique_obj(obj) {
 /** C ref: objnam.c:1121 — @param {CPtr} ptr @returns {CInt} */
 export function the_unique_pm(ptr) {
     let uniq;
-    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 524288n) != 0n))
+    if (type_is_pname(ptr))
         return 0;
     uniq = schar(((cptr.ldU16o(ptr, $permonst_geno) & NHM.G_UNIQ) ? 1 : 0));
     if (cptr.eq(ptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_LONG_WORM_TAIL, 96)))
@@ -1675,7 +1676,7 @@ function add_erosion_words(obj, prefix) {
     let iscrys = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSKNIFE));
     let rknown;
     rknown = schar(((cptr.ldI32o(iflags, $instance_flags_override_ID) == 0) ? (cptr.ldI32o(obj, $obj_rknown) & 1) | 0 : 1));
-    if (!((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(obj) || is_rottable(obj) || (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((obj), $obj_oclass) == NHC.ARMOR_CLASS)) && !iscrys)
+    if (!(is_rustprone(obj) || is_flammable(obj) || is_rottable(obj) || is_corrodeable(obj) || is_crackable(obj)) && !iscrys)
         return;
     if ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 && !iscrys) {
         switch ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) {
@@ -1686,7 +1687,7 @@ function add_erosion_words(obj, prefix) {
             void cptr.strcat(prefix, __sl94);
             break;
         }
-        void cptr.strcat(prefix, (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl95 : ((((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((obj), $obj_oclass) == NHC.ARMOR_CLASS) ? __sl96 : __sl97));
+        void cptr.strcat(prefix, is_rustprone(obj) ? __sl95 : (is_crackable(obj) ? __sl96 : __sl97));
     }
     if ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0 && !iscrys) {
         switch ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0) {
@@ -1697,17 +1698,17 @@ function add_erosion_words(obj, prefix) {
             void cptr.strcat(prefix, __sl94);
             break;
         }
-        void cptr.strcat(prefix, (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl98 : __sl99);
+        void cptr.strcat(prefix, is_corrodeable(obj) ? __sl98 : __sl99);
     }
     if (rknown && (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0)
-        void cptr.strcat(prefix, iscrys ? __sl100 : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl101 : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl102 : (is_flammable(obj) ? __sl103 : ((((cptr.ldI32o2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((obj), $obj_oclass) == NHC.ARMOR_CLASS) ? __sl104 : (is_rottable(obj) ? __sl105 : __sl13))))));
+        void cptr.strcat(prefix, iscrys ? __sl100 : (is_rustprone(obj) ? __sl101 : (is_corrodeable(obj) ? __sl102 : (is_flammable(obj) ? __sl103 : (is_crackable(obj) ? __sl104 : (is_rottable(obj) ? __sl105 : __sl13))))));
 }
 
 /** C ref: objnam.c:1195 — @param {CPtr} obj @returns {CInt} */
 export function erosion_matters(obj) {
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.TOOL_CLASS:
-        return schar(((cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) ? 1 : 0));
+        return schar((is_weptool(obj) ? 1 : 0));
         case NHC.WEAPON_CLASS:
         case NHC.ARMOR_CLASS:
         case NHC.BALL_CLASS:
@@ -1771,7 +1772,7 @@ function* doname_base(obj, doname_flags) {
         } else if (!fake_arti) {
             void cptr.strcpy(cptr.decay(prefix), __sl111);
         }
-        if (cknown && ((cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(obj, $obj_otyp) == NHC.HORN_OF_PLENTY) ? (cptr.ld1so(obj, $obj_spe) == 0 && !known ? 1 : 0) : (((cptr.ldI16o((obj), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((obj), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) && !(cptr.ldPtro((obj), $obj_cobj) !== null) ? 1 : 0)))
+        if (cknown && ((cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(obj, $obj_otyp) == NHC.HORN_OF_PLENTY) ? (cptr.ld1so(obj, $obj_spe) == 0 && !known ? 1 : 0) : ((Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) && !Has_contents(obj) ? 1 : 0)))
             void cptr.strcat(cptr.decay(prefix), __sl112);
         if (bknown && cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER || !(cptr.ldI32o2(objects, NHC.POT_WATER, 120, $objclass_oc_name_known) & 1) || (!(cptr.ldI32o(obj, $obj_cursed) & 1) && !(cptr.ldI32o(obj, $obj_blessed) & 1)))) {
             if ((cptr.ldI32o(obj, $obj_cursed) & 1))
@@ -1781,9 +1782,9 @@ function* doname_base(obj, doname_flags) {
             else if (!cptr.ld1so(flags, $flag_implicit_uncursed) || ((!known || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) || cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS) && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL && cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC)))
                 void cptr.strcat(cptr.decay(prefix), __sl92);
         }
-        if ((cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && (cptr.ldI32o(obj, $obj_tknown) & 1) | 0 && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
+        if (Is_box(obj) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && (cptr.ldI32o(obj, $obj_tknown) & 1) | 0 && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
             void cptr.strcat(cptr.decay(prefix), __sl115);
-        if (lknown && (cptr.ldI16o((obj), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((obj), $obj_otyp) == NHC.CHEST)) {
+        if (lknown && Is_box(obj)) {
             if ((cptr.ldI32o(obj, $obj_obroken) & 1))
                 void cptr.strcat(cptr.decay(prefix), __sl116);
             else if ((cptr.ldI32o(obj, $obj_olocked) & 1))
@@ -1793,14 +1794,14 @@ function* doname_base(obj, doname_flags) {
         }
         if ((cptr.ldI32o(obj, $obj_greased) & 1))
             void cptr.strcat(cptr.decay(prefix), __sl119);
-        if (cknown && (cptr.ldPtro((obj), $obj_cobj) !== null) && bpspaceleft > 0n) {
+        if (cknown && Has_contents(obj) && bpspaceleft > 0n) {
             itemcount = (yield* count_contents(obj, 0, 0, 1, 0));
             {
                 nh_snprintf(__sl106, 1379, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl120, itemcount, (((itemcount) == 1n) ? __sl13 : __sl121));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         }
-        let __sw4 = (cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) ? NHC.WEAPON_CLASS : cptr.ld1so(obj, $obj_oclass);
+        let __sw4 = is_weptool(obj) ? NHC.WEAPON_CLASS : cptr.ld1so(obj, $obj_oclass);
         if (__sw4 === (NHC.AMULET_CLASS)) { __pc = 5; continue; }
         if (__sw4 === (NHC.ARMOR_CLASS)) { __pc = 6; continue; }
         if (__sw4 === (NHC.WEAPON_CLASS)) { __pc = 7; continue; }
@@ -1873,7 +1874,7 @@ function* doname_base(obj, doname_flags) {
         }
         case 18: {
         mlsh = find_mid(cptr.ldI32o(obj, $obj_corpsenm) >>> 0, NHM.FM_FMON);
-        if (mlsh && !(cptr.ldI32o((mlsh), $monst_mhp) < 1)) {
+        if (mlsh && !DEADMONSTER(mlsh)) {
             {
                 nh_snprintf(__sl106, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl129, (yield* noit_mon_nam(mlsh)));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
@@ -1901,11 +1902,11 @@ function* doname_base(obj, doname_flags) {
         { __pc = 3; continue; }
         }
         case 21: {
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN || (cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE)) { __pc = 23; continue; }
+        if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN || Is_candle(obj)) { __pc = 23; continue; }
         __pc = 22; continue;
         }
         case 23: {
-        if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, $obj_otyp) == NHC.WAX_CANDLE)) {
+        if (Is_candle(obj)) {
             timer = cptr.alloc(8);
             full_burn_time = BigInt.asIntN(64, 20n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost)));
             turns_left = cptr.ldI64o(obj, $obj_age);
@@ -2004,7 +2005,7 @@ function* doname_base(obj, doname_flags) {
         __pc = 31; continue;
         }
         case 30: {
-        if (((omndx) >= NHC.LOW_PM && (omndx) < NHC.NUMMONS) && (known || (cptr.ld1uo2(svm, omndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.MV_KNOWS_EGG))) {
+        if (ismnum(omndx) && (known || (cptr.ld1uo2(svm, omndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.MV_KNOWS_EGG))) {
             void cptr.strcat(cptr.decay(prefix), cptr.ldPtro3(mons, omndx, 96, NHC.NEUTRAL, 8, 0));
             void cptr.strcat(cptr.decay(prefix), __sl142);
             if (cptr.ld1so(obj, $obj_spe) == 1)
@@ -2059,7 +2060,7 @@ function* doname_base(obj, doname_flags) {
         if ((cptr.ldI64o(obj, $obj_owornmask) & 256n) && !cptr.ld1so(gm, $instance_globals_m_mrg_to_wielded)) {
             twoweap_primary = schar((cptr.eq(obj, uwep.v) && cptr.ld1so(u, $you_twoweap) ? 1 : 0));
             tethered = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.AKLYS));
-            if ((cptr.ldI64o(obj, $obj_quan) != 1n || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -23) ? 1 : 0) : !(cptr.ld1so((obj), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((obj), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE))) && !twoweap_primary) {
+            if ((cptr.ldI64o(obj, $obj_quan) != 1n || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? (is_ammo(obj) || is_missile(obj) ? 1 : 0) : !is_weptool(obj))) && !twoweap_primary) {
                 {
                     void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl148, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
@@ -2067,7 +2068,7 @@ function* doname_base(obj, doname_flags) {
             } else {
                 hand_s = (yield* body_part(NHC.HAND));
                 handsbuf = new Uint8Array(40);
-                if (((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_big) & 1) | 0)) {
+                if (bimanual(obj)) {
                     hand_s = cptr.strcpy(cptr.decay(handsbuf), obufp = (yield* makeplural(hand_s)));
                     releaseobuf(obufp);
                 } else {
@@ -2107,7 +2108,7 @@ function* doname_base(obj, doname_flags) {
         if (cptr.ldI64o(obj, $obj_owornmask) & 512n) {
             switch (cptr.ld1so(obj, $obj_oclass)) {
                 case NHC.WEAPON_CLASS:
-                Qtyp = !((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) <= -20) ? 3 : ((cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) != -20) ? 2 : 1);
+                Qtyp = !is_ammo(obj) ? 3 : ((cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_subtyp) != -20) ? 2 : 1);
                 break;
                 case NHC.RING_CLASS:
                 case NHC.AMULET_CLASS:
@@ -2221,14 +2222,14 @@ export function not_fully_identified(otmp) {
         return 0;
     if (!(cptr.ldI32o(otmp, $obj_known) & 1) || !(cptr.ldI32o(otmp, $obj_dknown) & 1) || (!(cptr.ldI32o(otmp, $obj_bknown) & 1) && cptr.ldI16o(otmp, $obj_otyp) != NHC.SCR_MAIL) || !(cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1))
         return 1;
-    if ((!(cptr.ldI32o(otmp, $obj_cknown) & 1) && ((cptr.ldI16o((otmp), $obj_otyp) >= NHC.LARGE_BOX && cptr.ldI16o((otmp), $obj_otyp) <= NHC.BAG_OF_TRICKS) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE)) || (!(cptr.ldI32o(otmp, $obj_lknown) & 1) && (cptr.ldI16o((otmp), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((otmp), $obj_otyp) == NHC.CHEST)))
+    if ((!(cptr.ldI32o(otmp, $obj_cknown) & 1) && (Is_container(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE)) || (!(cptr.ldI32o(otmp, $obj_lknown) & 1) && Is_box(otmp)))
         return 1;
     if (cptr.ld1so(otmp, $obj_oartifact) && undiscovered_artifact(i16(cptr.ld1so(otmp, $obj_oartifact))))
         return 1;
-    if ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0 || (cptr.ld1so(otmp, $obj_oclass) != NHC.ARMOR_CLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.WEAPON_CLASS && !(cptr.ld1so((otmp), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS))
+    if ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0 || (cptr.ld1so(otmp, $obj_oclass) != NHC.ARMOR_CLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(otmp) && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS))
         return 0;
     else
-        return schar(((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((otmp), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS) ? 1 : 0));
+        return schar((is_rustprone(otmp) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp) ? 1 : 0));
 }
 
 /** C ref: objnam.c:1824 — @param {CPtr} otmp @param {CPtr} adjective @param {CUInt} cxn_flags @returns {CPtr} */
@@ -2251,10 +2252,10 @@ export function* corpse_xname(otmp, adjective, cxn_flags) {
         mnam = __sl173;
     } else {
         mnam = (yield* obj_pmname(otmp));
-        if (the_unique_pm(cptr.add(mons, omndx, 96)) || ((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n)) {
+        if (the_unique_pm(cptr.add(mons, omndx, 96)) || type_is_pname(cptr.add(mons, omndx, 96))) {
             mnam = (yield* s_suffix(mnam));
             possessive = 1;
-            if (((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n))
+            if (type_is_pname(cptr.add(mons, omndx, 96)))
                 no_prefix = 1;
             else if (the_unique_pm(cptr.add(mons, omndx, 96)) && !no_prefix)
                 the_prefix = 1;
@@ -2319,7 +2320,7 @@ export function* killer_xname(obj) {
     if (cptr.ld1so(obj, $obj_oartifact))
         return (yield* bare_artifactname(obj));
     cptr.memcpy(save_obj, obj, 216);
-    if ((cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
+    if (has_oname(obj))
         save_oname = (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)));
     cptr.stI32o(obj, $obj_known, cptr.stI32o(obj, $obj_dknown, 1));
     cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, cptr.stI32o(obj, $obj_greased, 0)));
@@ -2374,7 +2375,7 @@ export function* short_oname(obj, func, altfunc, lenlimit) {
         if (Number(BigInt.asUintN(32, cptr.strlen(outbuf))) <= lenlimit)
             return outbuf;
     }
-    save_oname = (cptr.ldPtro((obj), $obj_oextra) && (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : null;
+    save_oname = has_oname(obj) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : null;
     if (save_oname && cptr.strlen(save_oname) >= 12n) {
         void __builtin___strncpy_chk(cptr.decay(onamebuf), save_oname, 8n, __builtin_object_size(cptr.decay(onamebuf), 1));
         void cptr.strcpy(cptr.add(cptr.add(cptr.decay(onamebuf), 12n), -(4)), __sl178);
@@ -2528,7 +2529,7 @@ export function* aobjnam(otmp, verb) {
 /** C ref: objnam.c:2262 — @param {CPtr} obj @param {CPtr} verb @returns {CPtr} */
 export function* yobjnam(obj, verb) {
     let s = (yield* aobjnam(obj, verb));
-    if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
+    if (!carried(obj) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
         let space_left = ((255 - (yield* Strlen_(outbuf, __sl202, 2271))) >>> 0) | 0;
         s = __builtin___strncat_chk(outbuf, s, BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(outbuf, 1));
@@ -2567,14 +2568,14 @@ export function* paydoname(obj) {
     let p;
     let save_cknown = (cptr.ldI32o(obj, $obj_cknown) & 1);
     let save_wizweight = cptr.ld1so(iflags, $instance_flags_wizweight);
-    if ((cptr.ldPtro((obj), $obj_cobj) !== null))
+    if (Has_contents(obj))
         cptr.stI32o(obj, $obj_cknown, 0);
     cptr.st1o(iflags, $instance_flags_wizweight, 0);
     (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
     p = (yield* doname_base(obj, 0));
     (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
     cptr.st1o(iflags, $instance_flags_wizweight, save_wizweight);
-    if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
+    if (Has_contents(obj)) {
         if (!(cptr.ldI32o(obj, $obj_no_charge) & 1)) {
             if (!cptr.strncmp(p, __sl111, 2n))
                 p = cptr.add(p, 2);
@@ -2598,7 +2599,7 @@ export function* paydoname(obj) {
 /** C ref: objnam.c:2359 — @param {CPtr} obj @returns {CPtr} */
 export function* yname(obj) {
     let s = (yield* cxname(obj));
-    if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
+    if (!carried(obj) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
         let space_left = ((255 - (yield* Strlen_(outbuf, __sl206, 2368))) >>> 0) | 0;
         s = __builtin___strncat_chk(outbuf, s, BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(outbuf, 1));
@@ -2713,7 +2714,7 @@ const wrpsym = [NHC.WAND_CLASS, NHC.RING_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLA
 /** C ref: objnam.c:2531 — @param {CPtr} otmp @param {CPtr} verb @returns {CPtr} */
 export function* otense(otmp, verb) {
     let buf;
-    if (!(cptr.ldI64o((otmp), $obj_quan) != 1n || (cptr.ld1so((otmp), $obj_oartifact) == NHC.ART_EYES_OF_THE_OVERWORLD && !undiscovered_artifact(NHC.ART_EYES_OF_THE_OVERWORLD))))
+    if (!is_plural(otmp))
         return (yield* vtense(null, verb));
     buf = nextobuf();
     void cptr.strcpy(buf, verb);
@@ -3764,12 +3765,12 @@ function* wizterrainwish(d) {
             al = -128;
         else
             al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(3)) : rn2(3)) - 1) | 0)));
-        cptr.stI32o(lev, $rm_flags, ((((al) == -128) ? NHM.AM_NONE : (((al) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((al) + 2) | 0))) >>> 0));
+        cptr.stI32o(lev, $rm_flags, Align2amask(al));
         (yield* pline(__sl580, (yield* An(align_str(al)))));
         madeterrain = 1;
     } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(5)))), (__sl581), -1))) || !(cptr.cmp((cptr.add(p, -(9))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(9)))), (__sl582), -1)))) {
         (yield* make_grave(x, y, null));
-        if (((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE)) {
+        if (IS_GRAVE(cptr.ld1so(lev, $rm_typ))) {
             cptr.stI32o(lev, $rm_flags, 0);
             cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 1 : 0) >>> 0);
             (yield* pline(__sl583, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl584 : __sl13));
@@ -3800,11 +3801,11 @@ function* wizterrainwish(d) {
         let dbuf = new Uint8Array(40);
         let old_wall_info;
         let secret = schar((!(cptr.cmp((cptr.add(p, -(11))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(11)))), (__sl594), -1)))));
-        if (cptr.ld1so(lev, $rm_typ) == NHC.DOOR || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || (((cptr.ld1so(lev, $rm_typ)) && (cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL) && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL) || cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
+        if (cptr.ld1so(lev, $rm_typ) == NHC.DOOR || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || (IS_WALL(cptr.ld1so(lev, $rm_typ)) && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL) || cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
             old_wall_info = ((cptr.ld1so(lev, $rm_typ) != NHC.DOOR) ? (cptr.ldI32o(lev, $rm_flags) & 31) | 0 : 0) >>> 0;
             cptr.st1o(lev, $rm_typ, schar((secret ? NHC.SDOOR : NHC.DOOR)));
             cptr.stI32o(lev, $rm_flags, 0);
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+            if (Is_rogue_level(cptr.add(u, $you_uz))) {
                 cptr.stI32o(d, $_readobjnam_data_doorless, 1);
                 cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_broken, 0))));
             }
@@ -3861,11 +3862,11 @@ function* wizterrainwish(d) {
             badterrain = 1;
         }
     } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(4)))), (__sl603), -1))) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(5)))), (__sl604), -1))) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || (yield* strncmpi(((cptr.add(p, -(6)))), (__sl605), -1)))) {
-        if (oldtyp == NHC.ROOM || (((oldtyp) >= NHC.STAIRS && (oldtyp) <= NHC.ALTAR) && (cptr.ld1so(iflags, $instance_flags_debug_overwrite_stairs) || !((oldtyp) == NHC.LADDER || (oldtyp) == NHC.STAIRS))) || oldtyp == NHC.ICE || is_pool_or_lava(x, y)) {
+        if (oldtyp == NHC.ROOM || (IS_FURNITURE(oldtyp) && CAN_OVERWRITE_TERRAIN(oldtyp)) || oldtyp == NHC.ICE || is_pool_or_lava(x, y)) {
             let t;
             cptr.st1o(lev, $rm_typ, NHC.ROOM);
             (yield* pline(__sl606));
-            if (((oldtyp) >= NHC.STAIRS && (oldtyp) <= NHC.ALTAR))
+            if (IS_FURNITURE(oldtyp))
                 count_level_features();
             if ((t = t_at(x, y)) !== null && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.MAGIC_PORTAL)
                 (yield* deltrap(t));
@@ -3890,12 +3891,12 @@ function* wizterrainwish(d) {
                 (yield* reset_utrap(0));
             (yield* recalc_block_point(x, y));
         }
-        if (((oldtyp) == NHC.FOUNTAIN) || ((oldtyp) == NHC.SINK))
+        if (IS_FOUNTAIN(oldtyp) || IS_SINK(oldtyp))
             count_level_features();
         if (!is_ice(x, y))
             (yield* spot_stop_timers(x, y, NHC.MELT_ICE_AWAY));
-        if (((oldtyp) == NHC.FOUNTAIN) || ((oldtyp) == NHC.GRAVE) || ((oldtyp) && (oldtyp) <= NHC.DBWALL) || oldtyp == NHC.IRONBARS || ((oldtyp) == NHC.DOOR) || oldtyp == NHC.SDOOR) {
-            if (!((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN) && !((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE) && !((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && cptr.ld1so(lev, $rm_typ) != NHC.SDOOR)
+        if (IS_FOUNTAIN(oldtyp) || IS_GRAVE(oldtyp) || IS_WALL(oldtyp) || oldtyp == NHC.IRONBARS || IS_DOOR(oldtyp) || oldtyp == NHC.SDOOR) {
+            if (!IS_FOUNTAIN(cptr.ld1so(lev, $rm_typ)) && !IS_GRAVE(cptr.ld1so(lev, $rm_typ)) && !IS_DOOR(cptr.ld1so(lev, $rm_typ)) && cptr.ld1so(lev, $rm_typ) != NHC.SDOOR)
                 cptr.stI32o(lev, $rm_horizontal, 0);
         }
         (yield* switch_terrain());
@@ -4748,10 +4749,10 @@ export function* readobjnam(bp, no_wish) {
             }
             cptr.stI32o(d, $_readobjnam_data_cnt, 0);
         } else if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 0) {
-            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5077, __sl719), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.WAX_CANDLE)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.TOOL_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -25 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -23) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && ((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.GEM_CLASS) && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -22 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -20))))))
+            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5077, __sl719), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && Is_candle(cptr.ldPtr(d))) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || is_missile(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && is_ammo(cptr.ldPtr(d)))))))
                 cptr.stI64o(cptr.ldPtr(d), $obj_quan, BigInt(cptr.ldI32o(d, $_readobjnam_data_cnt)));
         }
-        if (cptr.ldI32o(d, $_readobjnam_data_islit) && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.OIL_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.MAGIC_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.BRASS_LANTERN || (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TALLOW_CANDLE || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.WAX_CANDLE) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.POT_OIL)) {
+        if (cptr.ldI32o(d, $_readobjnam_data_islit) && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.OIL_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.MAGIC_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.BRASS_LANTERN || Is_candle(cptr.ldPtr(d)) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.POT_OIL)) {
             (yield* place_object(cptr.ldPtr(d), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             (yield* begin_burn(cptr.ldPtr(d), 0));
             (yield* obj_extract_self(cptr.ldPtr(d)));
@@ -4760,7 +4761,7 @@ export function* readobjnam(bp, no_wish) {
             cptr.stI32o(d, $_readobjnam_data_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe));
         } else if (wizard()) {
             ;
-        } else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS || (cptr.ld1so((cptr.ldPtr(d)), $obj_oclass) == NHC.TOOL_CLASS && cptr.ld1so2(objects, cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_NONE) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_charged) & 1) | 0)) {
+        } else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS || is_weptool(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_charged) & 1) | 0)) {
             if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5102, __sl719), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
                 cptr.stI32o(d, $_readobjnam_data_spe, 0);
             if (cptr.ldI32o(d, $_readobjnam_data_spe) > 2 && Luck() < 0)
@@ -4806,10 +4807,10 @@ export function* readobjnam(bp, no_wish) {
             case NHC.FIGURINE:
             case NHC.CORPSE:
             {
-                P = (((cptr.ldI32o(d, $_readobjnam_data_mntmp)) >= NHC.LOW_PM && (cptr.ldI32o(d, $_readobjnam_data_mntmp)) < NHC.NUMMONS)) ? cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96) : null;
-                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((!P ? NHM.CORPSTAT_RANDOM : (((cptr.ldU64o((P), $permonst_mflags2) & 262144n) != 0n) ? NHM.CORPSTAT_NEUTER : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.FEMALE && !((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n)) ? NHM.CORPSTAT_FEMALE : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.MALE && !((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_RANDOM))))));
+                P = (ismnum(cptr.ldI32o(d, $_readobjnam_data_mntmp))) ? cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96) : null;
+                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((!P ? NHM.CORPSTAT_RANDOM : (is_neuter(P) ? NHM.CORPSTAT_NEUTER : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.FEMALE && !is_male(P)) ? NHM.CORPSTAT_FEMALE : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.MALE && !is_female(P)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_RANDOM))))));
                 if (P && cptr.ld1so(cptr.ldPtr(d), $obj_spe) == NHM.CORPSTAT_RANDOM)
-                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5163, __sl719), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
+                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((is_male(P) ? NHM.CORPSTAT_MALE : (is_female(P) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5163, __sl719), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
                 if (cptr.ldI32o(d, $_readobjnam_data_ishistoric) && cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.STATUE)
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe) | NHM.CORPSTAT_HISTORIC);
                 break;
@@ -4831,10 +4832,10 @@ export function* readobjnam(bp, no_wish) {
             default:
             cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(cptr.ldI32o(d, $_readobjnam_data_spe)));
         }
-        if (((cptr.ldI32o(d, $_readobjnam_data_mntmp)) >= NHC.LOW_PM && (cptr.ldI32o(d, $_readobjnam_data_mntmp)) < NHC.NUMMONS)) {
+        if (ismnum(cptr.ldI32o(d, $_readobjnam_data_mntmp))) {
             if (cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.PM_LONG_WORM_TAIL)
                 cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.PM_LONG_WORM);
-            if (cptr.ldI32o(d, $_readobjnam_data_typ) != NHC.FIGURINE && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)), $permonst_mflags2) & 4n) != 0n) && (cptr.ld1uo2(svm, cptr.ldI32o(d, $_readobjnam_data_mntmp), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE) != 0 && (humanwere = counter_were(cptr.ldI32o(d, $_readobjnam_data_mntmp))) != NHC.NON_PM)
+            if (cptr.ldI32o(d, $_readobjnam_data_typ) != NHC.FIGURINE && is_were(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)) && (cptr.ld1uo2(svm, cptr.ldI32o(d, $_readobjnam_data_mntmp), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE) != 0 && (humanwere = counter_were(cptr.ldI32o(d, $_readobjnam_data_mntmp))) != NHC.NON_PM)
                 cptr.stI32o(d, $_readobjnam_data_mntmp, humanwere);
             switch (cptr.ldI32o(d, $_readobjnam_data_typ)) {
                 case NHC.TIN:
@@ -4859,12 +4860,12 @@ export function* readobjnam(bp, no_wish) {
                 (yield* set_corpsenm(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_mntmp)));
                 break;
                 case NHC.FIGURINE:
-                if (!(cptr.ldU16o2(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, $permonst_geno) & NHM.G_UNIQ) && (!((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)), $permonst_mflags2) & 8n) != 0n) || ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)), $permonst_mflags2) & 4n) != 0n)) && cptr.ldI32o(d, $_readobjnam_data_mntmp) != NHC.PM_MAIL_DAEMON)
+                if (!(cptr.ldU16o2(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, $permonst_geno) & NHM.G_UNIQ) && (!is_human(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)) || is_were(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96))) && cptr.ldI32o(d, $_readobjnam_data_mntmp) != NHC.PM_MAIL_DAEMON)
                     cptr.stI32o(cptr.ldPtr(d), $obj_corpsenm, cptr.ldI32o(d, $_readobjnam_data_mntmp));
                 break;
                 case NHC.STATUE:
                 cptr.stI32o(cptr.ldPtr(d), $obj_corpsenm, cptr.ldI32o(d, $_readobjnam_data_mntmp));
-                if ((cptr.ldPtro((cptr.ldPtr(d)), $obj_cobj) !== null) && (cptr.ld1uo((cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)), $permonst_msize) < NHM.MZ_SMALL))
+                if (Has_contents(cptr.ldPtr(d)) && verysmall(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96)))
                     (yield* delete_contents(cptr.ldPtr(d)));
                 break;
                 case NHC.SCALE_MAIL:
@@ -4886,11 +4887,11 @@ export function* readobjnam(bp, no_wish) {
         }
         if (erosion_matters(cptr.ldPtr(d))) {
             cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, cptr.stI32o(cptr.ldPtr(d), $obj_oeroded2, 0));
-            if (cptr.ldI32o(d, $_readobjnam_data_eroded) && (is_flammable(cptr.ldPtr(d)) || (((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((cptr.ldPtr(d)), $obj_oclass) == NHC.ARMOR_CLASS)))
+            if (cptr.ldI32o(d, $_readobjnam_data_eroded) && (is_flammable(cptr.ldPtr(d)) || is_rustprone(cptr.ldPtr(d)) || is_crackable(cptr.ldPtr(d))))
                 cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, cptr.ldI32o(d, $_readobjnam_data_eroded) >>> 0);
-            if (cptr.ldI32o(d, $_readobjnam_data_eroded2) && ((((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_rottable(cptr.ldPtr(d))))
+            if (cptr.ldI32o(d, $_readobjnam_data_eroded2) && (is_corrodeable(cptr.ldPtr(d)) || is_rottable(cptr.ldPtr(d))))
                 cptr.stI32o(cptr.ldPtr(d), $obj_oeroded2, cptr.ldI32o(d, $_readobjnam_data_eroded2) >>> 0);
-            if (cptr.ldI32o(d, $_readobjnam_data_erodeproof) && (((((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(cptr.ldPtr(d)) || is_rottable(cptr.ldPtr(d)) || (((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.COPPER || ((cptr.ldI32o2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || (((cptr.ldI32o2(objects, cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so((cptr.ldPtr(d)), $obj_oclass) == NHC.ARMOR_CLASS)) || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.CRYSKNIFE))
+            if (cptr.ldI32o(d, $_readobjnam_data_erodeproof) && ((is_rustprone(cptr.ldPtr(d)) || is_flammable(cptr.ldPtr(d)) || is_rottable(cptr.ldPtr(d)) || is_corrodeable(cptr.ldPtr(d)) || is_crackable(cptr.ldPtr(d))) || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.CRYSKNIFE))
                 cptr.stI32o(cptr.ldPtr(d), $obj_oerodeproof, (Luck() >= 0 || wizard() ? 1 : 0) >>> 0);
         }
         if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WAND_CLASS) {
@@ -4899,25 +4900,25 @@ export function* readobjnam(bp, no_wish) {
             cptr.stI32o(cptr.ldPtr(d), $obj_recharged, cptr.ldI32o(d, $_readobjnam_data_rechrg) >>> 0);
         }
         if (cptr.ldI32o(d, $_readobjnam_data_ispoisoned)) {
-            if (((cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) >= -24 && cptr.ld1so2(objects, cptr.ldI16o(cptr.ldPtr(d), $obj_otyp), 120, $objclass_oc_subtyp) <= -20) || permapoisoned(cptr.ldPtr(d))))
+            if (is_poisonable(cptr.ldPtr(d)))
                 cptr.stI32o(cptr.ldPtr(d), $obj_otrapped, (Luck() >= 0) >>> 0);
             else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.FOOD_CLASS)
                 cptr.stI64o(cptr.ldPtr(d), $obj_age, 1n);
         }
         if (cptr.ldI32o(d, $_readobjnam_data_trapped)) {
-            if ((cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp) == NHC.CHEST) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.TIN)
+            if (Is_box(cptr.ldPtr(d)) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.TIN)
                 cptr.stI32o(cptr.ldPtr(d), $obj_otrapped, (cptr.ldI32o(d, $_readobjnam_data_trapped) == 1) >>> 0);
         }
         if (cptr.ldI32o(d, $_readobjnam_data_contents) == 1) {
             if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.HORN_OF_PLENTY) {
                 if (cptr.ld1so(cptr.ldPtr(d), $obj_spe) > 0)
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, 0);
-            } else if ((cptr.ldPtro((cptr.ldPtr(d)), $obj_cobj) !== null)) {
+            } else if (Has_contents(cptr.ldPtr(d))) {
                 (yield* delete_contents(cptr.ldPtr(d)));
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, (yield* weight(cptr.ldPtr(d))) >>> 0);
             }
         }
-        if ((cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp) == NHC.LARGE_BOX || cptr.ldI16o((cptr.ldPtr(d)), $obj_otyp) == NHC.CHEST)) {
+        if (Is_box(cptr.ldPtr(d))) {
             if (cptr.ldI32o(d, $_readobjnam_data_locked)) {
                 cptr.stI32o(cptr.ldPtr(d), $obj_olocked, 1), cptr.stI32o(cptr.ldPtr(d), $obj_obroken, 0);
             } else if (cptr.ldI32o(d, $_readobjnam_data_unlocked)) {
@@ -5040,9 +5041,9 @@ export function suit_simple_name(suit) {
     let suitnm;
     let esuitp;
     if (suit) {
-        if ((cptr.ldI16o((suit), $obj_otyp) >= NHC.GRAY_DRAGON_SCALE_MAIL && cptr.ldI16o((suit), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALE_MAIL))
+        if (Is_dragon_mail(suit))
             return __sl724;
-        else if ((cptr.ldI16o((suit), $obj_otyp) >= NHC.GRAY_DRAGON_SCALES && cptr.ldI16o((suit), $obj_otyp) <= NHC.YELLOW_DRAGON_SCALES))
+        else if (Is_dragon_scales(suit))
             return __sl495;
         suitnm = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(suit, $obj_otyp), 120))), 16));
         esuitp = eos(suitnm);
@@ -5122,7 +5123,7 @@ export function shirt_simple_name(shirt) {
 
 /** C ref: objnam.c:5606 — @param {CPtr} mtmp @returns {CPtr} */
 export function* mimic_obj_name(mtmp) {
-    if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
+    if (M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT) {
         if (cptr.ldI32o(mtmp, $monst_mappearance) == NHC.GOLD_PIECE)
             return __sl682;
         if (cptr.ldI32o(mtmp, $monst_mappearance) != NHC.STRANGE_OBJECT)

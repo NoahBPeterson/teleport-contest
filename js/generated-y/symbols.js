@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { Is_rogue_level } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, end_menu, preference_update, start_menu } from './nhprop.js';
 import { cg, gc, go, gp, gr, gs, svd, u } from './decl.js';
 import { def_monsyms, def_oc_syms, def_r_oc_syms, def_warnsyms, defsyms } from './drawing.js';
@@ -1627,7 +1628,7 @@ export function* do_symset(rogueflag) {
     }
     if (ready_to_switch)
         (yield* switch_symbols(1));
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+    if (Is_rogue_level(cptr.add(u, $you_uz))) {
         if (rogueflag)
             assign_graphics(NHC.ROGUESET);
     } else if (!rogueflag)

@@ -810,16 +810,59 @@ const FIELD_STATS = { named: 0, unnamed: 0 };
 // C2JS_MACROFNS=0 disables the substitution (the A/B baseline).
 export const PROP_NS = 'nhprop';
 export const PROP_MODULE = './nhprop.js';
+export const MACRO_FN_MODULE = './nhmacrofn.js';
 const MACRO_FNS = process.env.C2JS_MACROFNS !== '0';
 /** name -> { code, free: [names] } for every helper any emitter has captured */
 export const MACRO_HELPERS = new Map();
 const MACRO_FN_STATS = { named: 0, refusedImpure: 0, refusedMismatch: 0, refusedLocal: 0 };
+
+/**
+ * Tier 1.12 — FUNCTION-like macros (docs/NOTES-readability.md §5, "class 4").
+ *
+ * `glyph_is_object(glyph_at(u.ux, u.uy))` is one word in C and, here, twenty
+ * calls to `glyph_at` inside one condition, because C's macro expands its
+ * parameter once per occurrence in the body. That is what §5 deferred, and the
+ * reason it deferred it is that changing how many times a function runs is a
+ * parity change in a program scored on an exact PRNG trace.
+ *
+ * name -> { code, params, free, header, evals }
+ */
+export const MACRO_FN_HELPERS = new Map();
+const MFN_STATS = {
+  named: 0, hoisted: 0, seen: 0,
+  namedSimpleArg: 0,     // case (a): every argument only loads memory
+  namedCallArg: 0,       // case (b): an argument calls a provably pure function
+  namedRepeat: 0,        // ... of which the macro used some argument more than once
+  refusedBody: 0,        // body is not pure loads (the §3 rule, unchanged)
+  refusedAlias: 0,       // the body is nothing but its own parameters
+  refusedArity: 0,       // a parameter the body never mentions, or an extent this cannot read
+  refusedRep: 0,         // the expansion is not a plain value (a pointer, a buffer)
+  refusedArgSplit: 0,    // two occurrences of one parameter did not emit the same text
+  refusedAudit: 0,       // back-substitution did not reproduce the inline emission
+  refusedMismatch: 0,    // a second site emitted a different body for the same name
+  refusedLocal: 0,       // a free name the helper binds means a local here
+  refusedNameClash: 0,   // a parameter name also occurs free in the body
+  refusedRepeat: 0,      // argument re-evaluated and not provably safe to
+  refusedImpureArg: 0,   //   ... because its callee is not provably pure
+  refusedConditional: 0, // first use of the parameter is not unconditional
+};
+
+// C2JS_MACROFN=0 disables the function-like tier (the A/B baseline).
+const MACRO_FN_TIER = process.env.C2JS_MACROFN !== '0';
+const MFN_SEEN = new WeakSet();
+// every callee a case-(b) hoist relied on being pure — the list the notes must justify
+export const MFN_HOISTED_CALLEES = new Map(); // callee -> Set of macro names
 
 // A helper body may contain only pure loads off module-scope storage: no
 // calls but cptr.*, no assignment, no ++/--, no interned string literal (which
 // would leave a dangling __slN in a file whose output no longer mentions it),
 // and no rng_log_set_caller — that one carries the *call site's line number*,
 // so its emission differs per site and could never be shared anyway.
+// cptr is not one thing: ld*/add/sub/cmp/eq/decay/cstr/str*/lit are loads,
+// st*/memcpy/strcpy/alloc/free/box/addr/qsort/printf are effects. The
+// object-like tier never met the difference because no macro body writes;
+// naming it here is what lets the function-like tier admit a body at all.
+const CPTR_READONLY = /^(ld[A-Za-z0-9]*|add|sub|diff|cmp|eq|decay|cstr|strlen|strncmp|strcmp|strchr|strrchr|strstr|isupper|islower|isdigit|isspace|isalpha|toupper|tolower|lit|bytes)$/;
 const HELPER_CALLEE = /([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*)\s*\(/g;
 const HELPER_IDENT = /(^|[^.\w$'"])([A-Za-z_$][\w$]*)/g;
 const HELPER_WORDS = new Set(['cptr', CONST_NS, MACRO_NS, 'BigInt', 'Math', 'null', 'true', 'false',
@@ -836,6 +879,16 @@ if (process.env.C2JS_READ_STATS) {
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
     + `dead scaffold: ${DEAD_STATS.sm} state-machine transitions, ${DEAD_STATS.labelBreak} labeled-region breaks, `
     + `${DEAD_STATS.inlineTail} inline-label tail statements, ${DEAD_STATS.switchTail} switch-body and ${DEAD_STATS.blockTail} block tail statements suppressed\n`
+    + `macro fns:     ${MFN_STATS.named} call sites over ${MACRO_FN_HELPERS.size} helpers — `
+    + `${MFN_STATS.namedSimpleArg} case (a) simple argument, ${MFN_STATS.namedCallArg} case (b) argument calls a provably pure function; `
+    + `${MFN_STATS.namedRepeat} sites had an argument the macro repeated, ${MFN_STATS.hoisted} of those repeats held a call; `
+    + `of ${MFN_STATS.seen} expansions refused ${MFN_STATS.refusedBody} on an impure body, ${MFN_STATS.refusedArity} on arity, `
+    + `${MFN_STATS.refusedAlias} on an alias body, ${MFN_STATS.refusedRep} on a non-value expansion, ${MFN_STATS.refusedArgSplit} on split arguments, `
+    + `${MFN_STATS.refusedAudit} on the back-substitution audit, ${MFN_STATS.refusedMismatch} on a body mismatch, `
+    + `${MFN_STATS.refusedLocal} on a shadowing local, ${MFN_STATS.refusedNameClash} on a parameter name clash, `
+    + `${MFN_STATS.refusedRepeat} on a side-effecting argument, ${MFN_STATS.refusedImpureArg} on an argument whose callee is not provably pure, `
+    + `${MFN_STATS.refusedConditional} because the argument's every occurrence was behind a short circuit\n`
+    + `case (b) hoists rest on: ${[...MFN_HOISTED_CALLEES].map(([c, m]) => `${c} (${[...m].sort().join(', ')})`).join('; ') || '(none)'}\n`
     + `do{}while(0):  ${DO_FLAT_STATS.seen} seen, ${DO_FLAT_STATS.flattened} flattened; refused `
     + `${DO_FLAT_STATS.refusedJump} for a macro-local break/continue and ${DO_FLAT_STATS.refusedSplicedJump} for one the goto lowering spliced in `
     + `(${DO_FLAT_STATS.disagreed} sites where the emitted text and the AST disagreed)\n`));
@@ -867,7 +920,7 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 export const EMIT_VERSION = 11;
 
 export class Emitter {
-  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, recordGlobals, recordArrays, bitfieldWidths }) {
+  constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, macroFnDefs, pureFns, recordGlobals, recordArrays, bitfieldWidths }) {
     this.compileCwd = compileCwd;
     this.externBoxed = externBoxed || new Set();
     this.enumValues = enumValues instanceof Map ? enumValues : new Map(enumValues || []);
@@ -889,6 +942,11 @@ export class Emitter {
     this.macroExprDefs = macroExprDefs instanceof Map ? macroExprDefs : new Map(macroExprDefs || []);
     this.propRefs = new Set(); // helper names this file calls
     this.inHelperBody = false; // capturing a helper body: no nested substitution
+    this.macroFnDefs = macroFnDefs instanceof Map ? macroFnDefs : new Map(macroFnDefs || []);
+    this.pureFns = pureFns instanceof Set ? pureFns : new Set(pureFns || []);
+    this.macroFnRefs = new Set(); // function-like helper names this file calls
+    this.inMacroFn = false;       // capturing one: keep helpers leaves
+    this.argSubst = null;         // node -> the parameter standing in for it
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
     this.decls = decls;
     this.lineOf = lineOf;
@@ -1593,12 +1651,21 @@ export class Emitter {
    * Free module-scope identifiers of an emitted helper body, or null when the
    * body is not one a helper may hold (see the note above MACRO_HELPERS).
    */
-  helperFreeVars(code) {
+  helperFreeVars(code, { pureCalls = null } = {}) {
     if (/__sl|\+\+|--|rng_log/.test(code)) return null;
     if (/[^=!<>+\-*/%&|^]=[^=]/.test(code)) return null; // assignment of any kind
     if (/^[A-Za-z_$][\w$]*$/.test(code)) return null;    // a bare alias names nothing new
     for (const m of code.matchAll(HELPER_CALLEE)) {
-      if (!m[1].startsWith('cptr.')) return null;
+      if (m[1].startsWith('cptr.')) {
+        // cptr is not uniformly pure: st*/memcpy/strcpy/alloc/free/addr write
+        if (!CPTR_READONLY.test(m[1].slice(5))) return null;
+        continue;
+      }
+      // The object-like tier admits no other call at all. The function-like
+      // tier may admit one whose callee is PROVABLY pure — same evidence the
+      // argument hoist runs on — and records it so the module can import it.
+      if (!pureCalls || !this.pureFns.has(m[1])) return null;
+      pureCalls.add(m[1]);
     }
     const free = new Set();
     for (const m of code.matchAll(HELPER_IDENT)) {
@@ -1607,6 +1674,7 @@ export class Emitter {
       if (code[m.index + m[1].length + id.length] === '(') continue; // callee, already checked
       if (id.startsWith(FIELD_PREFIX)) continue; // a field offset; nhprop.js binds its own
       if (this.localNames?.has(id)) return null; // could be a shadowing local
+      if (pureCalls && pureCalls.has(id)) continue;          // a callee already admitted
       if (this.refs.get(id) === 'FunctionDecl') return null; // a function designator, not storage
       free.add(id);
     }
@@ -1641,8 +1709,258 @@ export class Emitter {
     return { code: `${def.name}()`, prec: PREC.atom, rep: 'val' };
   }
 
+  // ----- function-like macro helpers (tier 1.12) -----
+
+  /**
+   * The function-like macro whose whole body this node is, or null. Identical
+   * extent test to macroBodyAt — a node spelling at one macro body's first and
+   * last token IS that macro's complete expansion — against the other index.
+   */
+  macroFnBodyAt(n) {
+    const b = n.range?.begin?.spellingLoc, e = n.range?.end?.spellingLoc;
+    if (!b || !e || b.offset === undefined || e.offset === undefined) return null;
+    if (!b.file || !MACRO_HEADER_RE.test(b.file)) return null;
+    if (!n.range.begin.expansionLoc) return null;
+    const def = this.macroFnDefs.get(`${MACRO_HEADER_RE.exec(b.file)[1]}:${b.offset}`);
+    return def && def.end === e.offset ? def : null;
+  }
+
+  /**
+   * The argument sub-trees of a macro expansion, grouped by the call-site text
+   * they were spelled from.
+   *
+   * Inside an expansion, a node spelled in the macro's own header is body; a
+   * node spelled anywhere else was written at the call site and is therefore an
+   * argument. Descent stops at the first such node, so each group holds maximal
+   * argument trees. Two occurrences of the same parameter expand from the SAME
+   * call-site tokens, so they land in the same group — which makes
+   * `group.nodes.length` the number of times C evaluates that argument, the
+   * quantity this whole tier is about.
+   *
+   * Groups come back in call-site source order, which is argument order.
+   */
+  macroFnArgs(n) {
+    const groups = new Map();
+    // A node spelled in a NetHack header is BODY — including a nested macro's
+    // body, which lives at its own offsets elsewhere in the same header. An
+    // offset range around this macro's own body is not enough: glyph_is_object
+    // expands to four other macros, and reading those as arguments produced a
+    // helper whose entire body was `(glyph)`.
+    //
+    // Everything else is spelled where the call is, and is an argument.
+    const isBody = (loc) => !!loc && !!loc.file && MACRO_HEADER_RE.test(loc.file);
+    let bad = false;
+    (function walk(m) {
+      if (!m || typeof m !== 'object' || bad) return;
+      const b = m.range?.begin?.spellingLoc, e = m.range?.end?.spellingLoc;
+      if (m.range && !isBody(b) && !isBody(e)) {
+        if (!b || b.offset === undefined || !e || e.offset === undefined) { bad = true; return; }
+        const key = `${b.offset}:${e.offset}`;
+        if (!groups.has(key)) groups.set(key, { at: b.offset, nodes: [] });
+        groups.get(key).nodes.push(m);
+        return; // maximal: an argument's own sub-trees are part of the argument
+      }
+      for (const c of m.inner || []) walk(c);
+    })(n);
+    if (bad) return null;
+    return [...groups.values()].sort((a, b) => a.at - b.at);
+  }
+
+  /**
+   * Which groups have at least one occurrence C is guaranteed to evaluate.
+   *
+   * A helper evaluates every argument before the body runs; C evaluates each
+   * occurrence where it sits, which `&&`, `||` and `?:` can skip. For an
+   * argument that only reads memory that is a distinction without a difference
+   * — except that a load can fault. So an argument whose every occurrence sits
+   * behind a short circuit is left alone, and one the body always reaches is
+   * free to move to the call.
+   */
+  macroFnUnconditional(n, groups) {
+    const owner = new Map();
+    groups.forEach((g, i) => g.nodes.forEach((nd) => owner.set(nd, i)));
+    const ok = new Set();
+    (function walk(m, cond) {
+      if (!m || typeof m !== 'object') return;
+      if (owner.has(m)) { if (!cond) ok.add(owner.get(m)); return; }
+      const kids = (m.inner || []).filter((c) => c && c.kind);
+      if (m.kind === 'BinaryOperator' && (m.opcode === '&&' || m.opcode === '||')) {
+        walk(kids[0], cond); walk(kids[1], true); return;
+      }
+      if (m.kind === 'ConditionalOperator' || m.kind === 'BinaryConditionalOperator') {
+        walk(kids[0], cond); for (const c of kids.slice(1)) walk(c, true); return;
+      }
+      for (const c of kids) walk(c, cond);
+    })(n, false);
+    return ok;
+  }
+
+  /**
+   * Is it safe to evaluate this argument once, at the call, instead of once per
+   * occurrence where C spelled it?
+   *
+   * Returns { safe, hasCall, why }. An argument that only loads memory is safe
+   * outright: nothing between C's N evaluations can change what it reads,
+   * because the body is restricted to pure loads too. An argument containing a
+   * call is safe only if every callee is PROVABLY pure — no write, no RNG, no
+   * I/O, transitively (build.mjs collectPureFunctions). Anything unrecognized
+   * is unsafe.
+   */
+  macroFnArgSafe(node) {
+    let safe = true, hasCall = false, why = '';
+    const self = this;
+    (function walk(m) {
+      if (!m || typeof m !== 'object' || !safe) return;
+      if (m.kind === 'BinaryOperator' && m.opcode === '=') { safe = false; why = 'assignment'; return; }
+      if (m.kind === 'CompoundAssignOperator') { safe = false; why = 'compound assignment'; return; }
+      if (m.kind === 'UnaryOperator' && (m.opcode === '++' || m.opcode === '--')) { safe = false; why = 'increment'; return; }
+      if (m.kind === 'CallExpr' || m.kind === 'CXXOperatorCallExpr') {
+        hasCall = true;
+        let f = (m.inner || [])[0];
+        while (f && (f.kind === 'ImplicitCastExpr' || f.kind === 'ParenExpr')) f = (f.inner || [])[0];
+        const name = f && f.kind === 'DeclRefExpr' ? (f.name || f.referencedDecl?.name) : null;
+        if (!name) { safe = false; why = 'call through a function pointer'; return; }
+        if (!self.pureFns.has(name)) { safe = false; why = `${name} is not provably pure`; return; }
+      }
+      for (const c of m.inner || []) walk(c);
+    })(node);
+    return { safe, hasCall, why };
+  }
+
+  /** the functions an argument sub-tree calls */
+  macroFnCallees(node) {
+    const out = new Set();
+    (function walk(m) {
+      if (!m || typeof m !== 'object') return;
+      if (m.kind === 'CallExpr') {
+        let f = (m.inner || [])[0];
+        while (f && (f.kind === 'ImplicitCastExpr' || f.kind === 'ParenExpr')) f = (f.inner || [])[0];
+        const nm = f && f.kind === 'DeclRefExpr' ? (f.name || f.referencedDecl?.name) : null;
+        if (nm) out.add(nm);
+      }
+      for (const c of m.inner || []) walk(c);
+    })(node);
+    return out;
+  }
+
+  /**
+   * Substitute `glyph_is_trap(glyph)` for a whole function-like macro
+   * expansion. Returns null to leave it inline.
+   *
+   * The parameters are what makes this different from the object-like tier, and
+   * every refusal below is one of the two things a parameter can break:
+   * WHAT the body reads (a free name that means a local here — §3's argument,
+   * re-checked per site) and HOW MANY TIMES the argument runs.
+   */
+  macroFnHelper(def, n, opts, fn) {
+    // emitExpr walks a node more than once (the inline emission, the helper
+    // body, the fallback), so count each expansion where it is first decided
+    const fresh = !MFN_SEEN.has(n);
+    if (fresh) { MFN_SEEN.add(n); MFN_STATS.seen++; }
+    const tally = (k) => { if (fresh) MFN_STATS[k]++; };
+    const groups = this.macroFnArgs(n);
+    // every parameter must appear, exactly once in the list, or the positional
+    // mapping from call-site order to parameter order is not one this can trust
+    if (!groups || groups.length !== def.params.length) { tally('refusedArity'); return null; }
+
+    // the inline emission: what this site produces today, and the yardstick
+    const S = fn.call(this, n, opts);
+    if (S.rep !== 'val') { tally('refusedRep'); return null; }
+
+    // each argument on its own; all occurrences of one parameter must agree
+    const args = [];
+    for (const g of groups) {
+      const first = this.emitExpr(g.nodes[0], {});
+      for (let i = 1; i < g.nodes.length; i++) {
+        if (this.emitExpr(g.nodes[i], {}).code !== first.code) { tally('refusedArgSplit'); return null; }
+      }
+      args.push(first);
+    }
+
+    // evaluation count and order
+    const unconditional = this.macroFnUnconditional(n, groups);
+    let anyCall = false, repeats = 0;
+    for (let i = 0; i < groups.length; i++) {
+      const { safe, hasCall } = this.macroFnArgSafe(groups[i].nodes[0]);
+      if (!safe) { tally(hasCall ? 'refusedImpureArg' : 'refusedRepeat'); return null; }
+      if (groups[i].nodes.length > 1) repeats++;
+      if (hasCall) {
+        anyCall = true;
+        // C may reach an occurrence only behind a short circuit; a helper
+        // evaluates the argument before the body runs either way. For a load
+        // that is unobservable, for a call it is not — unless C was always
+        // going to make it.
+        if (!unconditional.has(i)) { tally('refusedConditional'); return null; }
+        if (groups[i].nodes.length > 1) {
+          tally('hoisted');
+          for (const c of this.macroFnCallees(groups[i].nodes[0])) {
+            if (!MFN_HOISTED_CALLEES.has(c)) MFN_HOISTED_CALLEES.set(c, new Set());
+            MFN_HOISTED_CALLEES.get(c).add(def.name);
+          }
+        }
+      }
+    }
+    const caseB = anyCall;
+
+    // the helper body: the same tree with each argument replaced by its
+    // parameter name, at the argument's own precedence so the body is
+    // parenthesized exactly as the inline emission was
+    const subst = new Map();
+    groups.forEach((g, i) => {
+      const p = def.params[i];
+      for (const nd of g.nodes) subst.set(nd, { ...args[i], code: p, const: undefined, boolRaw: undefined });
+    });
+    const saveSubst = this.argSubst, saveIn = this.inMacroFn;
+    this.argSubst = subst; this.inMacroFn = true;
+    let B;
+    try { B = fn.call(this, n, opts); } finally { this.argSubst = saveSubst; this.inMacroFn = saveIn; }
+
+    // the audit, exactly §3's: putting the arguments back into the body must
+    // reproduce the inline emission character for character. It also pins the
+    // parameter names — a body that mentions `glyph` for its own reasons puts
+    // the occurrence count wrong and fails here.
+    let recon = B.code;
+    for (let i = 0; i < def.params.length; i++) {
+      const re = new RegExp(`\\b${def.params[i]}\\b`, 'g');
+      const hits = (B.code.match(re) || []).length;
+      if (hits !== groups[i].nodes.length) { tally('refusedNameClash'); return null; }
+      recon = recon.replace(re, () => args[i].code);
+    }
+    if (recon !== S.code) { tally('refusedAudit'); return null; }
+
+    // a body that is nothing but its own parameters names nothing new — the
+    // alias rule §3 applies to object-like macros, and the shape a
+    // misclassified argument would produce
+    if (B.code.replace(/[()\s]/g, '') === def.params.join('')) { tally('refusedAlias'); return null; }
+    // the body must be the pure loads §3 admits — and the parameters are not
+    // free names, so they are hidden from the free-name scan
+    const probe = B.code.replace(new RegExp(`\\b(${def.params.join('|')})\\b`, 'g'), '0');
+    const pureCalls = new Set();
+    const free = this.helperFreeVars(probe, { pureCalls });
+    if (!free) { tally('refusedBody'); return null; }
+
+    let h = MACRO_FN_HELPERS.get(def.name);
+    if (h && (h.code !== B.code || h.params.join() !== def.params.join())) { tally('refusedMismatch'); return null; }
+    if (!h) {
+      h = { code: B.code, params: def.params.slice(), free, calls: [...pureCalls].sort(), header: def.header };
+      MACRO_FN_HELPERS.set(def.name, h);
+    }
+    // re-checked at EVERY site, never only where the body was captured
+    if (this.localNames && h.free.some((v) => this.localNames.has(v))) {
+      tally('refusedLocal');
+      return null;
+    }
+    if (this.declared?.has(def.name)) { tally('refusedLocal'); return null; }
+    tally('named');
+    tally(caseB ? 'namedCallArg' : 'namedSimpleArg');
+    if (repeats) tally('namedRepeat');
+    this.macroFnRefs.add(def.name);
+    return { code: `${def.name}(${args.map((a) => a.code).join(', ')})`, prec: PREC.atom, rep: 'val' };
+  }
+
   emitExpr(n, opts = {}) {
     if (!n || !n.kind) throw new Error('emitExpr: empty node');
+    if (this.argSubst) { const s = this.argSubst.get(n); if (s) return s; }
     if (!opts.stmtPos && !this.symbolic) {
       const c = this.foldConst(n);
       if (c) {
@@ -1650,7 +1968,11 @@ export class Emitter {
         // proving the fold reproduces the generated code's own runtime value.
         // A folded expression is closed (literals and arithmetic only), so it
         // evaluates standalone. Build-time audit only; off by default.
-        if (FOLD_VERIFY) this.verifyFold(n, c);
+        // Not while a helper body is being captured: verifyFold re-emits the
+        // expression and runs it standalone, and that emission has a parameter
+        // where the argument was, so it is not closed. The same node is
+        // verified on the inline emission, which is the shipped one.
+        if (FOLD_VERIFY && !this.argSubst) this.verifyFold(n, c);
         // a fold that is exactly one enum constant keeps its name
         const nm = this.namedConst(n, c);
         if (nm) return this.constRefExpr(nm, Number(c.v));
@@ -1666,7 +1988,15 @@ export class Emitter {
     if (!fn) throw new Error(`emitExpr: unsupported node kind ${n.kind} (${this.cref(n)})`);
     const def = MACRO_FNS && !opts.stmtPos && !this.symbolic && !this.inHelperBody && this.macroExprDefs.size
       ? this.macroBodyAt(n) : null;
-    if (!def) return fn.call(this, n, opts);
+    if (!def) {
+      const fdef = MACRO_FN_TIER && !opts.stmtPos && !this.symbolic && !this.inHelperBody
+        && !this.inMacroFn && this.macroFnDefs.size ? this.macroFnBodyAt(n) : null;
+      if (fdef) {
+        const sub = this.macroFnHelper(fdef, n, opts, fn);
+        if (sub) return sub;
+      }
+      return fn.call(this, n, opts);
+    }
     this.inHelperBody = true;
     let d;
     try { d = fn.call(this, n, opts); } finally { this.inHelperBody = false; }

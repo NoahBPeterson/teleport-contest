@@ -111,13 +111,13 @@ import * as M93 from './lcorolib.js';
 import * as M94 from './lbaselib.js';
 import * as M95 from './nhlsel.js';
 import * as M96 from './rect.js';
-import * as M97 from './sp_lev.js';
-import * as M98 from './detect.js';
-import * as M99 from './artifact.js';
-import * as M100 from './steed.js';
-import * as M101 from './dogmove.js';
-import * as M102 from './apply.js';
-import * as M103 from './music.js';
+import * as M97 from './artifact.js';
+import * as M98 from './steed.js';
+import * as M99 from './dogmove.js';
+import * as M100 from './apply.js';
+import * as M101 from './music.js';
+import * as M102 from './detect.js';
+import * as M103 from './monmove.js';
 import * as M104 from './attrib.js';
 import * as M105 from './mon.js';
 import * as M106 from './ball.js';
@@ -132,23 +132,23 @@ import * as M114 from './steal.js';
 import * as M115 from './track.js';
 import * as M116 from './mkroom.js';
 import * as M117 from './priest.js';
-import * as M118 from './monmove.js';
-import * as M119 from './mhitm.js';
-import * as M120 from './eat.js';
-import * as M121 from './rumors.js';
-import * as M122 from './read.js';
-import * as M123 from './mail.js';
-import * as M124 from './dig.js';
-import * as M125 from './shknam.js';
-import * as M126 from './timeout.js';
-import * as M127 from './dokick.js';
-import * as M128 from './muse.js';
+import * as M118 from './sp_lev.js';
+import * as M119 from './selvar.js';
+import * as M120 from './nhlobj.js';
+import * as M121 from './dig.js';
+import * as M122 from './shknam.js';
+import * as M123 from './eat.js';
+import * as M124 from './rumors.js';
+import * as M125 from './read.js';
+import * as M126 from './mail.js';
+import * as M127 from './timeout.js';
+import * as M128 from './dokick.js';
 import * as M129 from './mklev.js';
-import * as M130 from './write.js';
-import * as M131 from './selvar.js';
-import * as M132 from './nhlobj.js';
-import * as M133 from './mplayer.js';
-import * as M134 from './mkmap.js';
+import * as M130 from './mplayer.js';
+import * as M131 from './muse.js';
+import * as M132 from './mhitm.js';
+import * as M133 from './mkmap.js';
+import * as M134 from './write.js';
 import * as M135 from './cfgfiles.js';
 import * as M136 from './mdlib.js';
 import * as M137 from './date.js';
@@ -261,13 +261,13 @@ const MODULES = [
     ['lbaselib.js', M94],
     ['nhlsel.js', M95],
     ['rect.js', M96],
-    ['sp_lev.js', M97],
-    ['detect.js', M98],
-    ['artifact.js', M99],
-    ['steed.js', M100],
-    ['dogmove.js', M101],
-    ['apply.js', M102],
-    ['music.js', M103],
+    ['artifact.js', M97],
+    ['steed.js', M98],
+    ['dogmove.js', M99],
+    ['apply.js', M100],
+    ['music.js', M101],
+    ['detect.js', M102],
+    ['monmove.js', M103],
     ['attrib.js', M104],
     ['mon.js', M105],
     ['ball.js', M106],
@@ -282,23 +282,23 @@ const MODULES = [
     ['track.js', M115],
     ['mkroom.js', M116],
     ['priest.js', M117],
-    ['monmove.js', M118],
-    ['mhitm.js', M119],
-    ['eat.js', M120],
-    ['rumors.js', M121],
-    ['read.js', M122],
-    ['mail.js', M123],
-    ['dig.js', M124],
-    ['shknam.js', M125],
-    ['timeout.js', M126],
-    ['dokick.js', M127],
-    ['muse.js', M128],
+    ['sp_lev.js', M118],
+    ['selvar.js', M119],
+    ['nhlobj.js', M120],
+    ['dig.js', M121],
+    ['shknam.js', M122],
+    ['eat.js', M123],
+    ['rumors.js', M124],
+    ['read.js', M125],
+    ['mail.js', M126],
+    ['timeout.js', M127],
+    ['dokick.js', M128],
     ['mklev.js', M129],
-    ['write.js', M130],
-    ['selvar.js', M131],
-    ['nhlobj.js', M132],
-    ['mplayer.js', M133],
-    ['mkmap.js', M134],
+    ['mplayer.js', M130],
+    ['muse.js', M131],
+    ['mhitm.js', M132],
+    ['mkmap.js', M133],
+    ['write.js', M134],
     ['cfgfiles.js', M135],
     ['mdlib.js', M136],
     ['date.js', M137],

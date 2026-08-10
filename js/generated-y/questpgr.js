@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { DEADMONSTER, Has_contents, type_is_pname } from './nhmacrofn.js';
 import { Blind, Role_switch, create_nhwindow, destroy_nhwindow, display_nhwindow, putmsghistory, putstr } from './nhprop.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
@@ -142,7 +143,7 @@ export function* quest_info(typ) {
 /** C ref: questpgr.c:50 @returns {CPtr} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, type_is_pname(cptr.add(mons, i, 96)) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
@@ -163,7 +164,7 @@ function find_qarti(ochain) {
     for (otmp = ochain; otmp; otmp = cptr.ldPtr(otmp)) {
         if (is_quest_artifact(otmp))
             return otmp;
-        if ((cptr.ldPtro((otmp), $obj_cobj) !== null) && (qarti = find_qarti(cptr.ldPtro(otmp, $obj_cobj))) !== null)
+        if (Has_contents(otmp) && (qarti = find_qarti(cptr.ldPtro(otmp, $obj_cobj))) !== null)
             return qarti;
     }
     return null;
@@ -179,14 +180,14 @@ export function find_quest_artifact(whichchains) {
         qarti = find_qarti(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
     if (!qarti && ((whichchains & 16) >>> 0) != 0)
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
+            if (DEADMONSTER(mtmp))
                 continue;
             if ((qarti = find_qarti(cptr.ldPtro(mtmp, $monst_minvent))) !== null)
                 break;
         }
     if (!qarti && ((whichchains & 32) >>> 0) != 0) {
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
+            if (DEADMONSTER(mtmp))
                 continue;
             if ((qarti = find_qarti(cptr.ldPtro(mtmp, $monst_minvent))) !== null)
                 break;
@@ -202,7 +203,7 @@ export function find_quest_artifact(whichchains) {
 /** C ref: questpgr.c:124 @returns {CPtr} */
 function neminame() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, type_is_pname(cptr.add(mons, i, 96)) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 

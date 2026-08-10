@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { C, Is_rogue_level, M, SET__IS_VALUE_VALID } from './nhmacrofn.js';
 import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
@@ -6906,7 +6907,7 @@ function optfn_boulder(optidx, req, negated, opts, op) {
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms, uchar(cptr.ld1so(opts, 0)));
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_rogue_syms, uchar(cptr.ld1so(opts, 0)));
             if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-                let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+                let sym = get_othersym(NHC.SYM_BOULDER, Is_rogue_level(cptr.add(u, $you_uz)) ? NHC.ROGUESET : NHC.PRIMARYSET);
                 if (sym)
                     cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
@@ -7379,7 +7380,7 @@ function optfn_IBMgraphics(optidx, req, negated, opts, op) {
                 return NHC.optn_err;
             } else {
                 switch_symbols(1);
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && Is_rogue_level(cptr.add(u, $you_uz)))
                     assign_graphics(NHC.ROGUESET);
             }
         }
@@ -8441,7 +8442,7 @@ function optfn_roguesymset(optidx, req, negated, opts, op) {
                 config_error_add(__sl644, op, __sl645);
                 return NHC.optn_err;
             } else {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && Is_rogue_level(cptr.add(u, $you_uz)))
                     assign_graphics(NHC.ROGUESET);
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1));
                 cptr.st1o(go, $instance_globals_o_opt_symset_changed, 1);
@@ -10886,23 +10887,23 @@ export function txt2key(txt) {
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
         if (!cptr.ld1so(txt, 1))
-            return uchar((((uchar(cptr.ld1s(txt))) - 128) | 0));
+            return uchar(M(uchar(cptr.ld1s(txt))));
         makemeta = 1;
     }
     if (cptr.ld1s(txt) == 94 || highc(cptr.ld1s(txt)) == 67) {
         uc = uchar(cptr.ld1s(txt));
         if (!cptr.ld1so(txt, 1))
-            return uchar((makemeta ? (((uc) - 128) | 0) : uc));
+            return uchar((makemeta ? M(uc) : uc));
         txt = cptr.add(txt, 1);
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
         if (cptr.ld1s(txt) == 63)
             return uchar((makemeta ? 4294967295 : 127));
-        uc = uchar((31 & (uchar(cptr.ld1s(txt)))));
-        return uchar((makemeta ? (((uc) - 128) | 0) : uc));
+        uc = uchar(C(uchar(cptr.ld1s(txt))));
+        return uchar((makemeta ? M(uc) : uc));
     }
     if (makemeta && cptr.ld1s(txt))
-        return uchar((((uchar(cptr.ld1s(txt))) - 128) | 0));
+        return uchar(M(uchar(cptr.ld1s(txt))));
     if (cptr.ld1s(txt) >= 48 && cptr.ld1s(txt) <= 57) {
         let key = 0;
         let i;
@@ -11024,7 +11025,7 @@ export function initoptions_finish() {
     rcfile();
     void fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null);
     cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __sl139, 16);
-    sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+    sym = get_othersym(NHC.SYM_BOULDER, Is_rogue_level(cptr.add(u, $you_uz)) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
         cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
     reglyph_darkroom();
@@ -11898,7 +11899,7 @@ function doset_simple_menu() {
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
                     k = i;
-                    if (cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+                    if (cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn) === optfn_symset && Is_rogue_level(cptr.add(u, $you_uz))) {
                         k = NHC.opt_roguesymset;
                         name = cptr.ldPtro(allopt, k, 104);
                         cptr.stI32(any, (k + 1) | 0);
@@ -12850,7 +12851,7 @@ cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 /** C ref: options.c:9855 — @param {CPtr} optnam @param {CInt} status */
 export function set_option_mod_status(optnam, status) {
     let k;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         impossible(__sl997, status);
         return;
     }
@@ -12865,7 +12866,7 @@ export function set_option_mod_status(optnam, status) {
 /** C ref: options.c:9881 — @param {CLongLong} optmask @param {CInt} status */
 export function set_wc_option_mod_status(optmask, status) {
     let k = 0;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         impossible(__sl998, status);
         return;
     }
@@ -12901,7 +12902,7 @@ function wc_supported(optnam) {
 /** C ref: options.c:9935 — @param {CLongLong} optmask @param {CInt} status */
 export function set_wc2_option_mod_status(optmask, status) {
     let k = 0;
-    if (((status < NHC.set_in_sysconf) || (status > NHC.set_wiznofuz))) {
+    if (SET__IS_VALUE_VALID(status)) {
         impossible(__sl999, status);
         return;
     }

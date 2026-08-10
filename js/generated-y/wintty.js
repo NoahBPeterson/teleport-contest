@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { COLORVAL } from './nhmacrofn.js';
 import { CO, LI, ul_hack, wizard } from './nhprop.js';
 import { backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov, nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend, tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color, term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor, term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output, tty_nhbell, tty_number_pad, xputs } from './termcap.js';
 import { addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory, tty_putmsghistory, tty_yn_function, update_topl } from './topl.js';
@@ -2344,7 +2345,7 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
                 cptr.stI32o(ttyDisplay, $DisplayDesc_colorflags, 0);
                 colordone = 1;
             } else {
-                color = (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor)) & 16777215) >>> 0);
+                color = COLORVAL(cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor));
             }
         }
         if (!colordone) {
