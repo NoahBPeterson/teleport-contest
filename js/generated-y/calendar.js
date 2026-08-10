@@ -22,7 +22,7 @@ const __sl2 = cptr.lit("%04ld%02d%02d%02d%02d%02d");
 export function* getnow() {
     let fixed_dt = nh_getenv(__sl0);
     let datetime = cptr.box(0n);
-    if (fixed_dt && cptr.ld1s(fixed_dt) ? 1 : 0) {
+    if (fixed_dt && cptr.ld1s(fixed_dt)) {
         let parsed = (yield* time_from_yyyymmddhhmmss(fixed_dt));
         if (parsed != 0n)
             return parsed;
@@ -107,7 +107,7 @@ export function* time_from_yyyymmddhhmmss(buf) {
     let h = new Uint8Array(3);
     let mi = new Uint8Array(3);
     let s = new Uint8Array(3);
-    if (buf && cptr.strlen(buf) == 14n ? 1 : 0) {
+    if (buf && cptr.strlen(buf) == 14n) {
         d = buf;
         p = cptr.decay(y);
         for (k = 0; k < 4; ++k)
@@ -162,7 +162,7 @@ export function* phase_of_the_moon() {
     diy = cptr.ldI32o(lt, 28);
     goldn = ((cptr.ldI32o(lt, 20) % 19) + 1) | 0;
     epact = ((Math.imul(11, goldn) + 18) | 0) % 30;
-    if ((epact == 25 && goldn > 11 ? 1 : 0) || epact == 24 ? 1 : 0)
+    if ((epact == 25 && goldn > 11) || epact == 24)
         epact++;
     return (((((((Math.imul(((diy + epact) | 0), 6)) + 11) | 0) % 177) / 22) | 0) & 7);
 }

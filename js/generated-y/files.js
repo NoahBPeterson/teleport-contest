@@ -166,7 +166,7 @@ export function nh_basename(fname, keep_suffix) {
     let p;
     if ((p = cptr.strrchr(fname, 47)) !== null)
         fname = cptr.add(p, 1);
-    if ((p = cptr.strrchr(fname, 46)) !== null && !keep_suffix ? 1 : 0) {
+    if ((p = cptr.strrchr(fname, 46)) !== null && !keep_suffix) {
         let ln = BigInt.asUintN(64, (cptr.diff(p, fname)));
         if (ln < 80n) {
             __builtin___strncpy_chk(cptr.decay(__static_nh_basename_basebuf), fname, ln, __builtin_object_size(cptr.decay(__static_nh_basename_basebuf), 1));
@@ -194,7 +194,7 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
             void cptr.sprintf(op, __sl0, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
-        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null) ? 1 : 0) {
+        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null)) {
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(sp));
             cptr.st1(op, 0);
             cnt++;
@@ -321,7 +321,7 @@ function* free_nhfile(nhfp) {
 
 /** C ref: files.c:518 — @param {CPtr} nhfp */
 export function* close_nhfile(nhfp) {
-    if (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) != -1 ? 1 : 0)
+    if (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) != -1)
         void (yield* nhclose(cptr.ldI32(nhfp))), cptr.stI32(nhfp, -1);
     else if (cptr.ldPtro(nhfp, 40))
         void fclose(cptr.ldPtro(nhfp, 40)), cptr.stPtro(nhfp, 40, null);
@@ -346,7 +346,7 @@ export function rewind_nhfile(nhfp) {
 /** C ref: files.c:549 — @param {CPtr} nhfp @returns {CPtr} */
 function* viable_nhfile(nhfp) {
     if (nhfp) {
-        if ((((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, 40) ? 1 : 0) || (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) < 0 ? 1 : 0) ? 1 : 0) || (cptr.ld1so(nhfp, 33) && !cptr.ldPtro(nhfp, 40) ? 1 : 0) ? 1 : 0) {
+        if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, 40)) || (cptr.ld1so(nhfp, 32) && cptr.ldI32(nhfp) < 0) || (cptr.ld1so(nhfp, 33) && !cptr.ldPtro(nhfp, 40))) {
             if (cptr.ld1so(nhfp, 33)) {
                 if (cptr.ldPtro(nhfp, 40)) {
                     void fclose(cptr.ldPtro(nhfp, 40));
@@ -439,9 +439,9 @@ export function* open_levelfile(lev, errbuf) {
         cptr.stI32(nhfp, -1);
         cptr.stPtro(nhfp, 40, null);
     }
-    if (nhfp && cptr.ld1so(nhfp, 32) ? 1 : 0) {
+    if (nhfp && cptr.ld1so(nhfp, 32)) {
         cptr.stI32(nhfp, open(fq_lock, 0, 0));
-        if (cptr.ldI32(nhfp) < 0 && errbuf ? 1 : 0)
+        if (cptr.ldI32(nhfp) < 0 && errbuf)
             void cptr.sprintf(errbuf, __sl7, cptr.add(gl, 16), lev, (cptr.ldI32(__error())));
     }
     nhfp = (yield* viable_nhfile(nhfp));
@@ -450,7 +450,7 @@ export function* open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
-    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, 89208) & NHM.LFILE_EXISTS) ? 1 : 0) {
+    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, 89208) & NHM.LFILE_EXISTS)) {
         set_levelfile_name(cptr.add(gl, 16), lev);
         void unlink(fqname(cptr.add(gl, 16), NHM.LEVELPREFIX, 0));
         cptr.st1o2(svl, lev, 1, 89208, cptr.ld1uo2(svl, lev, 1, 89208) & -5);
@@ -533,7 +533,7 @@ export function* create_bonesfile(lev, bonesid, errbuf) {
             if (cptr.ldI32(nhfp) < 0)
                 failed = (cptr.ldI32(__error()));
         }
-        if (failed && errbuf ? 1 : 0)
+        if (failed && errbuf)
             void cptr.sprintf(errbuf, __sl14, cptr.add(gl, 16), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
     }
     nhfp = (yield* viable_nhfile(nhfp));
@@ -550,7 +550,7 @@ export function* commit_bonesfile(lev) {
     tempname = set_bonestemp_name();
     tempname = fqname(tempname, NHM.BONESPREFIX, 1);
     ret = rename(tempname, fq_bones);
-    if (cptr.ld1so(flags, 10) && ret != 0 ? 1 : 0)
+    if (cptr.ld1so(flags, 10) && ret != 0)
         (yield* pline(__sl15, tempname, fq_bones));
 }
 
@@ -610,25 +610,25 @@ export function set_savefile_name(regularize_it) {
     indicator_spot = 2;
     if (regularize_it)
         regularize(cptr.add(cptr.add(gs, 884), regoffset));
-    if ((indicator_spot == 1 && sfindicator ? 1 : 0) && !overflow ? 1 : 0) {
+    if (indicator_spot == 1 && sfindicator && !overflow) {
         if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(sfindicator)) < 53n)
             void cptr.strcat(cptr.add(gs, 884), sfindicator);
         else
             overflow = 2;
     }
-    if (cptr.strlen(__sl17) > 0n && !overflow ? 1 : 0) {
+    if (cptr.strlen(__sl17) > 0n && !overflow) {
         if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(__sl17)) < 53n) {
             void cptr.strcat(cptr.add(gs, 884), __sl17);
         } else
             overflow = 3;
     }
-    if ((indicator_spot == 2 && sfindicator ? 1 : 0) && !overflow ? 1 : 0) {
+    if (indicator_spot == 2 && sfindicator && !overflow) {
         if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(sfindicator)) < 53n)
             void cptr.strcat(cptr.add(gs, 884), sfindicator);
         else
             overflow = 4;
     }
-    if (postappend && !overflow ? 1 : 0) {
+    if (postappend && !overflow) {
         if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, 884)) + cptr.strlen(postappend)) < 53n)
             void cptr.strcat(cptr.add(gs, 884), postappend);
         else
@@ -656,7 +656,7 @@ export function* create_savefile() {
     if (nhfp) {
         cptr.stI32o(nhfp, 8, NHM.NHF_SAVEFILE);
         cptr.stI32o(nhfp, 4, NHM.WRITING);
-        if (cptr.ldI32o(program_state, 56) || do_historical ? 1 : 0) {
+        if (cptr.ldI32o(program_state, 56) || do_historical) {
             (void (do_historical));
             cptr.st1o(nhfp, 32, 1);
             cptr.st1o(nhfp, 33, 0);
@@ -683,7 +683,7 @@ export function* open_savefile() {
     if (nhfp) {
         cptr.stI32o(nhfp, 8, NHM.NHF_SAVEFILE);
         cptr.stI32o(nhfp, 4, NHM.READING);
-        if (cptr.ldI32o(program_state, 56) || do_historical ? 1 : 0) {
+        if (cptr.ldI32o(program_state, 56) || do_historical) {
             do_historical = 1;
             (void (do_historical));
             cptr.st1o(nhfp, 32, 1);
@@ -772,7 +772,7 @@ export function* plname_from_file(filename, without_wait_synch_per_file) {
     {
         let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, 884))));
         let xln = Number(BigInt.asIntN(32, cptr.strlen(__sl20)));
-        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, 884), (sln - xln) | 0, 1), __sl20) ? 1 : 0)
+        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, 884), (sln - xln) | 0, 1), __sl20))
             cptr.st1o2(gs, (sln - xln) | 0, 1, 884, 0);
     }
     (yield* nh_uncompress(cptr.add(gs, 884)));
@@ -940,7 +940,7 @@ function* docompress_file(filename, uncomp) {
         } else {
             void unlink(cfn);
         }
-        if (istty && cptr.ld1so(iflags, 81) ? 1 : 0) {
+        if (istty && cptr.ld1so(iflags, 81)) {
             (yield* Y.icall((cptr.ldPtro(windowprocs, 112))(WIN_MESSAGE.v)));
             (yield* more());
         }
@@ -1063,7 +1063,7 @@ function* make_converted_name(filename) {
         if (dir) {
             finaldirchar = c_eos(dir);
             finaldirchar = cptr.add(finaldirchar, -1);
-            if (!((cptr.ld1s(finaldirchar) == 47 || cptr.ld1s(finaldirchar) == 92 ? 1 : 0) || cptr.ld1s(finaldirchar) == 58 ? 1 : 0)) {
+            if (!(cptr.ld1s(finaldirchar) == 47 || cptr.ld1s(finaldirchar) == 92 || cptr.ld1s(finaldirchar) == 58)) {
                 needsep = 1;
                 ln = (ln + 1) | 0;
             }
@@ -1071,7 +1071,7 @@ function* make_converted_name(filename) {
         }
     }
     unconverted_filename = (yield* alloc((ln + 1) >>> 0));
-    nh_snprintf(__sl50, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __sl51, dir ? dir : __sl17, (dir && needsep ? 1 : 0) ? __sl52 : __sl17, filename);
+    nh_snprintf(__sl50, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __sl51, dir ? dir : __sl17, (dir && needsep) ? __sl52 : __sl17, filename);
     xtra = __sl53;
     ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) | 0;
     converted_filename = (yield* alloc((ln + 1) >>> 0));
@@ -1105,7 +1105,7 @@ export function contains_directory(s) {
     let slen = Number(BigInt.asIntN(32, cptr.strlen(s)));
     let cp = s;
     for (i = 0; i < slen; ++i) {
-        if ((cptr.ld1s(cp) == 92 || cptr.ld1s(cp) == 47 ? 1 : 0) || cptr.ld1s(cp) == 58 ? 1 : 0)
+        if (cptr.ld1s(cp) == 92 || cptr.ld1s(cp) == 47 || cptr.ld1s(cp) == 58)
             return 1;
         cp = cptr.add(cp, 1);
     }
@@ -1174,7 +1174,7 @@ function* fopen_wizkit_file() {
     let tmp_wizkit = new Uint8Array(256);
     let envp;
     envp = nh_getenv(__sl60);
-    if (envp && cptr.ld1s(envp) ? 1 : 0)
+    if (envp && cptr.ld1s(envp))
         void __builtin___strncpy_chk(cptr.add(gw, 23), envp, 127n, __builtin_object_size(cptr.add(gw, 23), 1));
     if (!cptr.ld1so2(gw, 0, 1, 23))
         return null;
@@ -1203,12 +1203,12 @@ function* fopen_wizkit_file() {
 
 /** C ref: files.c:2537 — @param {CPtr} obj */
 function* wizkit_addinv(obj) {
-    if (!obj || cptr.eq(obj, hands_obj) ? 1 : 0)
+    if (!obj || cptr.eq(obj, hands_obj))
         return;
     (yield* observe_object(obj));
     if ((cptr.ldI16o(gu, 216) == NHC.PM_CLERIC))
         cptr.stI32o(obj, 88, 1);
-    if ((cptr.ld1so(obj, 49) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic ? 1 : 0) && !(yield* merge_choice(cptr.ldPtro(gi, 8), obj)) ? 1 : 0) {
+    if (cptr.ld1so(obj, 49) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !(yield* merge_choice(cptr.ldPtro(gi, 8), obj))) {
         (yield* add_to_migration(obj));
         cptr.stI16o(obj, 28, 0);
         cptr.stI16o(obj, 30, 1);
@@ -1239,7 +1239,7 @@ export function* proc_wizkit_line(buf) {
 /** C ref: files.c:2584 */
 export function* read_wizkit() {
     let fp;
-    if (!cptr.ld1so(flags, 10) || !(fp = (yield* fopen_wizkit_file())) ? 1 : 0)
+    if (!cptr.ld1so(flags, 10) || !(fp = (yield* fopen_wizkit_file())))
         return;
     cptr.stI32o(program_state, 100, 1);
     (yield* config_error_init(1, __sl60, 0));
@@ -1270,8 +1270,8 @@ export function* read_sym_file(which_set) {
     (yield* config_error_init(1, __sl67, 0));
     (yield* parse_conf_file(fp, proc_symset_line));
     void fclose(fp);
-    if (!cptr.ld1so(gc, 456) && !cptr.ld1so(gc, 457) ? 1 : 0) {
-        if (cptr.ldPtro2(gs, which_set, 48, 208) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, 48, 208), __sl68, __sl69, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, 48, 208)), (__sl70), -1)) ? 1 : 0) ? 1 : 0)
+    if (!cptr.ld1so(gc, 456) && !cptr.ld1so(gc, 457)) {
+        if (cptr.ldPtro2(gs, which_set, 48, 208) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, 48, 208), __sl68, __sl69, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, 48, 208)), (__sl70), -1))))
             clear_symsetentry(which_set, 1);
         (yield* config_error_done());
         if (cptr.ldPtro2(gs, which_set, 48, 208)) {
@@ -1354,17 +1354,17 @@ export function* debugcore(filename, wildcards) {
     let p;
     if (!cptr.ld1so(flags, 10))
         return 0;
-    if (!filename || !cptr.ld1s(filename) ? 1 : 0)
+    if (!filename || !cptr.ld1s(filename))
         return 0;
     debugfiles = cptr.ldPtro(sysopt, 56);
-    if (!debugfiles || !cptr.ld1s(debugfiles) ? 1 : 0)
+    if (!debugfiles || !cptr.ld1s(debugfiles))
         return 0;
     filename = nh_basename(filename, 1);
-    if (wildcards && (yield* pmatch(debugfiles, filename)) ? 1 : 0)
+    if (wildcards && (yield* pmatch(debugfiles, filename)))
         return 1;
     if ((p = cptr.strstr(debugfiles, filename)) !== null) {
         let l = Number(BigInt.asIntN(32, cptr.strlen(filename)));
-        if (((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 ? 1 : 0) || cptr.ld1so(p, -1) == 47 ? 1 : 0) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0 ? 1 : 0) ? 1 : 0)
+        if ((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 || cptr.ld1so(p, -1) == 47) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0))
             return 1;
     }
     return 0;
@@ -1377,7 +1377,7 @@ export function* reveal_paths(code) {
     let nodumpreason;
     let buf = new Uint8Array(256);
     let filep;
-    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh)) ? 1 : 0) ? cptr.ldPtr(gh) : __sl79;
+    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh))) ? cptr.ldPtr(gh) : __sl79;
     let endp;
     let envp;
     let cwdbuf = new Uint8Array(1024);
@@ -1436,7 +1436,7 @@ function choose_passage(passagecnt, oid) {
     let res;
     if (passagecnt < 1)
         return 0;
-    if (oid != cptr.ldI32o(svc, 632) || cptr.ldI32o(svc, 636) == 0 ? 1 : 0) {
+    if (oid != cptr.ldI32o(svc, 632) || cptr.ldI32o(svc, 636) == 0) {
         let i;
         let range = passagecnt;
         let limit = Number(BigInt.asIntN(32, (30n / 1n)));
@@ -1448,7 +1448,7 @@ function choose_passage(passagecnt, oid) {
         } else {
             cptr.stI32o(svc, 636, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
-                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit ? 1 : 0) {
+                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit) {
                     cptr.st1o2(svc, idx++, 1, 640, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
@@ -1478,7 +1478,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
     __lbl_cleanup: {
         if (nowin_buf)
             cptr.st1(nowin_buf, 0);
-        if (!tribsection || !tribtitle ? 1 : 0) {
+        if (!tribsection || !tribtitle) {
             if (!nowin_buf)
                 (yield* pline(__sl95, badtranslation, tribtitle));
             return grasped;
@@ -1517,7 +1517,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                             cptr.st1(p2, 0);
                             passagecnt = atoi(p1);
                             scope = 2;
-                            if (matchedsection && !(yield* strncmpi((st), (tribtitle), -1)) ? 1 : 0) {
+                            if (matchedsection && !(yield* strncmpi((st), (tribtitle), -1))) {
                                 matchedtitle = 1;
                                 targetpassage = !tribpassage ? choose_passage(passagecnt, oid) : ((tribpassage <= passagecnt) ? tribpassage : 0);
                             } else {
@@ -1530,9 +1530,9 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                     let st = cptr.add(cptr.decay(line), 9, 1);
                     (yield* mungspaces(st));
                     passagenum = atoi(st);
-                    if (passagenum > 0 && passagenum <= passagecnt ? 1 : 0) {
+                    if (passagenum > 0 && passagenum <= passagecnt) {
                         scope = 3;
-                        if (matchedtitle && passagenum == targetpassage ? 1 : 0) {
+                        if (matchedtitle && passagenum == targetpassage) {
                             foundpassage = 1;
                             if (!nowin_buf) {
                                 tribwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_MENU)));

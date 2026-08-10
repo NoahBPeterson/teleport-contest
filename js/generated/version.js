@@ -133,7 +133,7 @@ const __sl108 = cptr.lit("I32LP64");
 
 /** C ref: version.c:22 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
 export function version_string(buf, bufsz) {
-    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0) ? 1 : 0) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2)));
+    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0)) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2)));
     return buf;
 }
 
@@ -172,18 +172,18 @@ export function status_version(buf, bufsz, indent) {
     let showbranch = schar((((vflags & NHM.VI_BRANCH) >>> 0) != 0));
     if (showname) {
         name = nh_basename(cptr.ldPtr(gh), 0);
-        if (!name || !cptr.ld1s(name) ? 1 : 0)
+        if (!name || !cptr.ld1s(name))
             showname = 0;
     }
     if (showbranch) {
         altname = cptr.ldPtro(nomakedefs, 24);
-        if (!altname || !cptr.ld1s(altname) ? 1 : 0)
+        if (!altname || !cptr.ld1s(altname))
             showbranch = 0;
     }
-    if (showname && showbranch ? 1 : 0) {
+    if (showname && showbranch) {
         if (!strncmpi(name, altname, Number(BigInt.asIntN(32, cptr.strlen(name)))))
             showname = 0;
-    } else if (!showname && !showbranch ? 1 : 0) {
+    } else if (!showname && !showbranch) {
         shownum = 1;
     }
     cptr.st1(buf, 0);
@@ -197,7 +197,7 @@ export function status_version(buf, bufsz, indent) {
         indentation = __sl10;
     }
     if (shownum) {
-        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0) ? 1 : 0) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2));
+        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtro(nomakedefs, 40) && cptr.ld1so(cptr.ldPtro(nomakedefs, 40), 0)) ? cptr.ldPtro(nomakedefs, 40) : mdlib_version_string(buf, __sl2));
     }
     return buf;
 }
@@ -227,7 +227,7 @@ export function doextversion() {
     void getversionstring(cptr.decay(buf), 256n);
     if (cptr.strlen(cptr.decay(buf)) >= 80n)
         p = cptr.strrchr(cptr.decay(buf), 40);
-    if (((p && cptr.cmp(p, cptr.decay(buf)) > 0 ? 1 : 0) && cptr.ld1so(p, -1) == 32 ? 1 : 0) && cptr.ld1so(p, 1) != 120 ? 1 : 0)
+    if (p && cptr.cmp(p, cptr.decay(buf)) > 0 && cptr.ld1so(p, -1) == 32 && cptr.ld1so(p, 1) != 120)
         cptr.st1o(p, -1, 0);
     else
         p = null;
@@ -247,7 +247,7 @@ export function doextversion() {
     }
     prolog = 1;
     for (; ; ) {
-        if (use_dlb && !done_dlb ? 1 : 0) {
+        if (use_dlb && !done_dlb) {
             if (!fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
                 done_dlb = 1;
                 continue;
@@ -265,11 +265,11 @@ export function doextversion() {
         void strip_newline(cptr.decay(buf));
         if (cptr.strchr(cptr.decay(buf), 9) !== null)
             void tabexpand(cptr.decay(buf));
-        if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32 ? 1 : 0) {
+        if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32) {
             (cptr.ldPtro(windowprocs, 144))(win, 0, __sl7);
             prolog = 0;
         }
-        if (prolog || !cptr.ld1s(cptr.decay(buf)) ? 1 : 0)
+        if (prolog || !cptr.ld1s(cptr.decay(buf)))
             continue;
         if (cptr.strchr(cptr.decay(buf), 58))
             insert_rtoption(cptr.decay(buf));
@@ -322,7 +322,7 @@ function insert_rtoption(buf) {
     if (!cptr.ld1so2(gl, 0, 1, 552))
         get_lua_version();
     for (i = 0; i < 3; ++i) {
-        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, 8)) ? 1 : 0) {
+        if (strstri(buf, cptr.ldPtro(rt_opts, i, 16)) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, 8))) {
             void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro2(rt_opts, i, 16, 8));
         }
     }
@@ -344,7 +344,7 @@ export function check_version(version_data, filename, complain, utdflags) {
                 (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1);
         }
         return 0;
-    } else if ((cptr.ldU64o(version_data, 8) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) != (cptr.ldU64o(nomakedefs, 64) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, 16) != cptr.ldU64o(nomakedefs, 80) ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ldU64o(version_data, 8) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) != (cptr.ldU64o(nomakedefs, 64) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, 72))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, 16) != cptr.ldU64o(nomakedefs, 80))) {
         if (complain) {
             pline(__sl22, filename);
             (cptr.ldPtro(windowprocs, 120))(WIN_MESSAGE.v, 1);
@@ -632,7 +632,7 @@ export function uptodate(nhfp, name, utdflags) {
     let verbose = schar((name ? 1 : 0));
     sfi_char(nhfp, indicator, __sl101, 1);
     if ((sfstatus = compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags)) != NHM.SF_UPTODATE) {
-        if (sfstatus > 0 && idx_1st_mismatch.v ? 1 : 0) {
+        if (sfstatus > 0 && idx_1st_mismatch.v) {
             if (!quietly)
                 raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, 8));
         }
@@ -671,17 +671,17 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
             let dm = datamodel(0);
             let dmfile;
             dmfile = what_datamodel_is_this(0, cptr.ld1uo(cptr.decay(cscbuf), 1, 1), cptr.ld1uo(cptr.decay(cscbuf), 2, 1), cptr.ld1uo(cptr.decay(cscbuf), 3, 1), cptr.ld1uo(cptr.decay(cscbuf), 4, 1), cptr.ld1uo(cptr.decay(cscbuf), 5, 1));
-            if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107) ? 1 : 0) {
+            if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107)) {
                 dmmismatch = NHM.SF_DM_IL32LLP64_ON_ILP32LL64;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107) ? 1 : 0) {
+            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107)) {
                 dmmismatch = NHM.SF_DM_I32LP64_ON_ILP32LL64;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108) ? 1 : 0) {
+            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108)) {
                 dmmismatch = NHM.SF_DM_ILP32LL64_ON_I32LP64;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106) ? 1 : 0) {
+            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106)) {
                 dmmismatch = NHM.SF_DM_ILP32LL64_ON_IL32LLP64;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106) ? 1 : 0) {
+            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106)) {
                 dmmismatch = NHM.SF_DM_I32LP64_ON_IL32LLP64;
-            } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108) ? 1 : 0) {
+            } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108)) {
                 dmmismatch = NHM.SF_DM_IL32LLP64_ON_I32LP64;
             }
             if (idx_1st_mismatch)

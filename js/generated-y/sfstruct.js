@@ -1400,7 +1400,7 @@ export function* bwrite(fd, loc, num) {
         if (num == 0) {
             return;
         }
-        if (cptr.ldI32o(bw_buffered, idx, 4) && cptr.ldPtro(bw_FILE, idx, 8) ? 1 : 0) {
+        if (cptr.ldI32o(bw_buffered, idx, 4) && cptr.ldPtro(bw_FILE, idx, 8)) {
             failed = schar((fwrite(loc, BigInt.asUintN(64, BigInt((num | 0))), 1n, cptr.ldPtro(bw_FILE, idx, 8)) != 1n));
         } else {
             failed = schar((cptr.write(fd, loc, BigInt(num >>> 0)) != BigInt(num >>> 0)));
@@ -1420,7 +1420,7 @@ export function* mread(fd, buf, len) {
     let rlen;
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
-        if ((cptr.ldI32o(restoreinfo, 8) == 1) || (cptr.ldI32o(program_state, 92) == 1) ? 1 : 0) {
+        if ((cptr.ldI32o(restoreinfo, 8) == 1) || (cptr.ldI32o(program_state, 92) == 1)) {
             cptr.stI32o(restoreinfo, 8, -1);
             return;
         } else {

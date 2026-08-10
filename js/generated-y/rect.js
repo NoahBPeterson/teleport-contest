@@ -64,7 +64,7 @@ export function get_rect_ind(r) {
     hx = cptr.ldI16o(r, 4);
     hy = cptr.ldI16o(r, 6);
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (((lx == cptr.ldI16(rectp) && ly == cptr.ldI16o(rectp, 2) ? 1 : 0) && hx == cptr.ldI16o(rectp, 4) ? 1 : 0) && hy == cptr.ldI16o(rectp, 6) ? 1 : 0)
+        if (lx == cptr.ldI16(rectp) && ly == cptr.ldI16o(rectp, 2) && hx == cptr.ldI16o(rectp, 4) && hy == cptr.ldI16o(rectp, 6))
             return i;
     return -1;
 }
@@ -82,7 +82,7 @@ export function get_rect(r) {
     hx = cptr.ldI16o(r, 4);
     hy = cptr.ldI16o(r, 6);
     for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (((lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16o(rectp, 2) ? 1 : 0) && hx <= cptr.ldI16o(rectp, 4) ? 1 : 0) && hy <= cptr.ldI16o(rectp, 6) ? 1 : 0)
+        if (lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16o(rectp, 2) && hx <= cptr.ldI16o(rectp, 4) && hy <= cptr.ldI16o(rectp, 6))
             return rectp;
     return null;
 }
@@ -94,13 +94,13 @@ export function rnd_rect() {
 
 /** C ref: rect.c:116 — @param {CPtr} r1 @param {CPtr} r2 @param {CPtr} r3 @returns {CInt} */
 function intersect(r1, r2, r3) {
-    if (((cptr.ldI16(r2) > cptr.ldI16o(r1, 4) || cptr.ldI16o(r2, 2) > cptr.ldI16o(r1, 6) ? 1 : 0) || cptr.ldI16o(r2, 4) < cptr.ldI16(r1) ? 1 : 0) || cptr.ldI16o(r2, 6) < cptr.ldI16o(r1, 2) ? 1 : 0)
+    if (cptr.ldI16(r2) > cptr.ldI16o(r1, 4) || cptr.ldI16o(r2, 2) > cptr.ldI16o(r1, 6) || cptr.ldI16o(r2, 4) < cptr.ldI16(r1) || cptr.ldI16o(r2, 6) < cptr.ldI16o(r1, 2))
         return 0;
     cptr.stI16(r3, i16((cptr.ldI16(r2) > cptr.ldI16(r1) ? cptr.ldI16(r2) : cptr.ldI16(r1))));
     cptr.stI16o(r3, 2, i16((cptr.ldI16o(r2, 2) > cptr.ldI16o(r1, 2) ? cptr.ldI16o(r2, 2) : cptr.ldI16o(r1, 2))));
     cptr.stI16o(r3, 4, i16((cptr.ldI16o(r2, 4) > cptr.ldI16o(r1, 4) ? cptr.ldI16o(r1, 4) : cptr.ldI16o(r2, 4))));
     cptr.stI16o(r3, 6, i16((cptr.ldI16o(r2, 6) > cptr.ldI16o(r1, 6) ? cptr.ldI16o(r1, 6) : cptr.ldI16o(r2, 6))));
-    if (cptr.ldI16(r3) > cptr.ldI16o(r3, 4) || cptr.ldI16o(r3, 2) > cptr.ldI16o(r3, 6) ? 1 : 0)
+    if (cptr.ldI16(r3) > cptr.ldI16o(r3, 4) || cptr.ldI16o(r3, 2) > cptr.ldI16o(r3, 6))
         return 0;
     return 1;
 }

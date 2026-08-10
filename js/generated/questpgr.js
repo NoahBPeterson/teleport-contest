@@ -122,7 +122,7 @@ function find_qarti(ochain) {
     for (otmp = ochain; otmp; otmp = cptr.ldPtr(otmp)) {
         if (is_quest_artifact(otmp))
             return otmp;
-        if ((cptr.ldPtro((otmp), 16) !== null) && (qarti = find_qarti(cptr.ldPtro(otmp, 16))) !== null ? 1 : 0)
+        if ((cptr.ldPtro((otmp), 16) !== null) && (qarti = find_qarti(cptr.ldPtro(otmp, 16))) !== null)
             return qarti;
     }
     return null;
@@ -134,16 +134,16 @@ export function find_quest_artifact(whichchains) {
     let qarti = null;
     if (((whichchains & 8) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtro(gi, 8));
-    if (!qarti && ((whichchains & 2) >>> 0) != 0 ? 1 : 0)
+    if (!qarti && ((whichchains & 2) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtro(svl, 89040));
-    if (!qarti && ((whichchains & 16) >>> 0) != 0 ? 1 : 0)
+    if (!qarti && ((whichchains & 16) >>> 0) != 0)
         for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o((mtmp), 52) < 1))
                 continue;
             if ((qarti = find_qarti(cptr.ldPtro(mtmp, 280))) !== null)
                 break;
         }
-    if (!qarti && ((whichchains & 32) >>> 0) != 0 ? 1 : 0) {
+    if (!qarti && ((whichchains & 32) >>> 0) != 0) {
         for (mtmp = cptr.ldPtro(gm, 192); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o((mtmp), 52) < 1))
                 continue;
@@ -153,7 +153,7 @@ export function find_quest_artifact(whichchains) {
         if (!qarti)
             qarti = find_qarti(cptr.ldPtro(gm, 176));
     }
-    if (!qarti && ((whichchains & 64) >>> 0) != 0 ? 1 : 0)
+    if (!qarti && ((whichchains & 64) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtro(svl, 89048));
     return qarti;
 }
@@ -185,7 +185,7 @@ export function stinky_nemesis(mon) {
     if (mesg.v) {
         let p;
         void strNsubst(mesg.v, __sl5, __sl6, 0);
-        if ((((p = strstri(mesg.v, __sl7)) !== null || (p = strstri(mesg.v, __sl8)) !== null ? 1 : 0) || (p = strstri(mesg.v, __sl9)) !== null ? 1 : 0) && (strstri(p, __sl10) || strstri(p, __sl11) ? 1 : 0) ? 1 : 0)
+        if (((p = strstri(mesg.v, __sl7)) !== null || (p = strstri(mesg.v, __sl8)) !== null || (p = strstri(mesg.v, __sl9)) !== null) && (strstri(p, __sl10) || strstri(p, __sl11)))
             res = 1;
         cptr.free(mesg.v);
     }
@@ -197,7 +197,7 @@ function qtext_pronoun(who, which) {
     let pnoun;
     let godgend;
     let lwhich = lowc(which);
-    if (who == 111 && (strstri(cptr.add(gc, 497), __sl12) || strncmpi((cptr.add(gc, 497)), (makesingular(cptr.add(gc, 497))), -1) ? 1 : 0) ? 1 : 0) {
+    if (who == 111 && (strstri(cptr.add(gc, 497), __sl12) || strncmpi((cptr.add(gc, 497)), (makesingular(cptr.add(gc, 497))), -1))) {
         pnoun = (lwhich == 104) ? __sl13 : ((lwhich == 105) ? __sl14 : ((lwhich == 106) ? __sl15 : __sl16));
     } else {
         godgend = (who == 100) ? (cptr.ldI32o(svq, 76) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, 68) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, 72) & 3) | 0 : 2));
@@ -217,7 +217,7 @@ function convert_arg(c) {
         str = svp;
         break;
         case 99:
-        str = (cptr.ld1so(flags, 13) && cptr.ldPtro(gu, 16) ? 1 : 0) ? cptr.ldPtro(gu, 16) : cptr.ldPtro(gu, 8);
+        str = (cptr.ld1so(flags, 13) && cptr.ldPtro(gu, 16)) ? cptr.ldPtro(gu, 16) : cptr.ldPtro(gu, 8);
         break;
         case 114:
         str = rank_of(cptr.ldI32o(u, 48), (cptr.ldI16o(gu, 216)), cptr.ld1so(flags, 13));
@@ -280,7 +280,7 @@ function convert_arg(c) {
         str = __sl24;
         break;
         case 120:
-        str = ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? __sl25 : __sl26;
+        str = ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? __sl25 : __sl26;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
@@ -569,7 +569,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             lua_gettable(L, -2);
             text = dupstr((luaL_checklstring(L, -1, null)));
         }
-        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n ? 1 : 0) ? 1 : 0) {
+        if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n)) {
             output = 2;
             if (!synopsis) {
                 let tmpbuf = new Uint8Array(256);
@@ -578,7 +578,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
                 synopsis = dupstr(cptr.decay(tmpbuf));
             }
         }
-        if (output == 0 || output == 1 ? 1 : 0)
+        if (output == 0 || output == 1)
             deliver_by_pline(text);
         else
             deliver_by_window(text, (output == 3) ? NHM.NHW_MENU : NHM.NHW_TEXT);
@@ -618,12 +618,12 @@ export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16o(gu, 226);
-        if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
+        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD))
             return cptr.add(mons, qpm, 96);
         return mkclass(cptr.ld1so(gu, 230), 0);
     }
     qpm = cptr.ldI16o(gu, 228);
-    if ((qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) ? 1 : 0) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD) ? 1 : 0)
+    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, 18) & NHM.G_GENOD))
         return cptr.add(mons, qpm, 96);
     return mkclass(cptr.ld1so(gu, 231), 0);
 }

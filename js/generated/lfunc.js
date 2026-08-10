@@ -44,7 +44,7 @@ export function luaF_initupvals(L, cl) {
         cptr.stPtro(uv, 16, cptr.add(uv, 24));
         (cptr.st1o((cptr.ldPtro(uv, 16)), 8, 0));
         cptr.stPtro2(cl, i, 8, 32, uv);
-        ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((uv), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((uv))))) : (void 0));
+        ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((uv), 9)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((uv))))) : (void 0));
     }
 }
 
@@ -71,7 +71,7 @@ export function luaF_findupval(L, level) {
     let pp = cptr.add(L, 56);
     let p;
     (void 0);
-    while (!cptr.eq((p = cptr.ldPtr(pp)), (null)) && cptr.cmp((((cptr.ldPtro((p), 16)))), level) >= 0 ? 1 : 0) {
+    while (!cptr.eq((p = cptr.ldPtr(pp)), (null)) && cptr.cmp((((cptr.ldPtro((p), 16)))), level) >= 0) {
         (void 0);
         if (cptr.eq((((cptr.ldPtro((p), 16)))), level))
             return p;
@@ -146,7 +146,7 @@ function prepcallclosemth(L, level, status, yy) {
 /** C ref: lfunc.c:168 — @param {CPtr} L @param {CPtr} level */
 export function luaF_newtbcupval(L, level) {
     (void 0);
-    if ((((cptr.ld1uo(((((level)))), 8)) == 1) || (((((cptr.ld1uo(((((level)))), 8))) & 15)) == 0) ? 1 : 0))
+    if ((((cptr.ld1uo(((((level)))), 8)) == 1) || (((((cptr.ld1uo(((((level)))), 8))) & 15)) == 0)))
         return;
     checkclosemth(L, level);
     while (BigInt((Number(BigInt.asUintN(32, ((cptr.diff(level, cptr.ldPtro(L, 64)) / 16n))))) >>> 0) > 65535n) {
@@ -169,7 +169,7 @@ export function luaF_unlinkupval(uv) {
 export function luaF_closeupval(L, level) {
     let uv;
     let upl;
-    while (!cptr.eq((uv = cptr.ldPtro(L, 56)), (null)) && cptr.cmp((upl = (((cptr.ldPtro((uv), 16))))), level) >= 0 ? 1 : 0) {
+    while (!cptr.eq((uv = cptr.ldPtro(L, 56)), (null)) && cptr.cmp((upl = (((cptr.ldPtro((uv), 16))))), level) >= 0) {
         let slot = cptr.add(uv, 24);
         (void 0);
         luaF_unlinkupval(uv);
@@ -185,7 +185,7 @@ export function luaF_closeupval(L, level) {
         cptr.stPtro(uv, 16, slot);
         if (!((cptr.ld1uo((uv), 9)) & 24)) {
             ((cptr.st1o((uv), 9, cptr.ld1uo((uv), 9) | 32)));
-            (((cptr.ld1uo((slot), 8)) & 64) ? ((((cptr.ld1uo((uv), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((slot))))), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((slot))))))))) : (void 0)) : (void 0));
+            (((cptr.ld1uo((slot), 8)) & 64) ? ((((cptr.ld1uo((uv), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((slot))))), 9)) & 24)) ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((slot))))))))) : (void 0)) : (void 0));
         }
     }
 }
@@ -195,7 +195,7 @@ function poptbclist(L) {
     let tbc = cptr.ldPtro(L, 64);
     (void 0);
     tbc = cptr.sub(tbc, cptr.ldU16o(tbc, 10), 16);
-    while (cptr.cmp(tbc, cptr.ldPtro(L, 48)) > 0 && cptr.ldU16o(tbc, 10) == 0 ? 1 : 0)
+    while (cptr.cmp(tbc, cptr.ldPtro(L, 48)) > 0 && cptr.ldU16o(tbc, 10) == 0)
         tbc = cptr.sub(tbc, 65535n, 16);
     cptr.stPtro(L, 64, tbc);
 }
@@ -255,7 +255,7 @@ export function luaF_freeproto(L, f) {
 /** C ref: lfunc.c:283 — @param {CPtr} f @param {CInt} local_number @param {CInt} pc @returns {CPtr} */
 export function luaF_getlocalname(f, local_number, pc) {
     let i;
-    for (i = 0; i < cptr.ldI32o(f, 36) && cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 8) <= pc ? 1 : 0; i++) {
+    for (i = 0; i < cptr.ldI32o(f, 36) && cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 8) <= pc; i++) {
         if (pc < cptr.ldI32o2(cptr.ldPtro(f, 104), i, 16, 12)) {
             local_number--;
             if (local_number == 0)

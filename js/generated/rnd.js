@@ -140,12 +140,12 @@ let rng_caller_func = null;
 export function rng_log_init() {
     let logpath = getenv(__sl0);
     let disp = getenv(__sl1);
-    if (logpath && cptr.ld1s(logpath) ? 1 : 0) {
+    if (logpath && cptr.ld1s(logpath)) {
         rng_logfile = fopen(logpath, __sl2);
         if (rng_logfile)
             setvbuf(rng_logfile, null, 1, 0n);
     }
-    rng_log_disp = schar((((disp && cptr.ld1s(disp) ? 1 : 0) && cptr.ld1s(disp) != 48 ? 1 : 0) ? 1 : 0));
+    rng_log_disp = schar(((disp && cptr.ld1s(disp) && cptr.ld1s(disp) != 48) ? 1 : 0));
 }
 
 /** C ref: rnd.c:52 @returns {CInt} */
@@ -227,7 +227,7 @@ function RND(x) {
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
     let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, 4144, 16)) % BigInt.asUintN(64, BigInt(x)))));
-    if (rng_logfile && rng_log_disp ? 1 : 0) {
+    if (rng_logfile && rng_log_disp) {
         rng_call_count++;
         fprintf(rng_logfile, __sl7, rng_call_count, x, result);
         if (rng_caller_file) {
@@ -263,7 +263,7 @@ export function rnl(x) {
         adjustment = Math.imul((((Math.abs(adjustment) + 1) | 0) / 3) | 0, sgn(adjustment));
     }
     i = RND(x);
-    if (adjustment && rn2((37 + Math.abs(adjustment)) | 0) ? 1 : 0) {
+    if (adjustment && rn2((37 + Math.abs(adjustment)) | 0)) {
         i = (i - adjustment) | 0;
         if (i < 0)
             i = 0;
@@ -315,7 +315,7 @@ export function rne(x) {
     let utmp;
     utmp = (cptr.ldI32o(u, 48) < 15) ? 5 : (cptr.ldI32o(u, 48) / 3) | 0;
     tmp = 1;
-    while (tmp < utmp && !rn2(x) ? 1 : 0)
+    while (tmp < utmp && !rn2(x))
         tmp++;
     if (rng_logfile) {
         let buf = new Uint8Array(32);

@@ -257,19 +257,19 @@ cptr.stI32o(mon_wizard_spells, 44, NHC.MCAST_DEATH_TOUCH);
 
 /** C ref: mcastu.c:63 — @param {CPtr} mtmp @param {CInt} undirected */
 function* cursetxt(mtmp, undirected) {
-    if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.COULD_SEE) != 0) ? 1 : 0) {
+    if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.COULD_SEE) != 0)) {
         let point_msg;
         if (undirected)
             point_msg = __sl0;
-        else if ((((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) || ((cptr.ld1uo((cptr.add(gy, 8)), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, 8)), 60) == NHC.STRANGE_OBJECT ? 1 : 0) ? 1 : 0) || (cptr.ldI32o(u, 1856) & 1) | 0 ? 1 : 0)
+        else if ((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112)) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2))) || ((cptr.ld1uo((cptr.add(gy, 8)), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, 8)), 60) == NHC.STRANGE_OBJECT) || (cptr.ldI32o(u, 1856) & 1) | 0)
             point_msg = __sl1;
-        else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+        else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112)) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2)))
             point_msg = __sl2;
         else
             point_msg = __sl3;
         (yield* pline_mon(mtmp, __sl4, (yield* Monnam(mtmp)), point_msg));
-    } else if ((!(cptr.ldI64o(svm, 8) % 4n) || !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 81, __sl6), rn2(4)) : rn2(4)) ? 1 : 0)) {
-        if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+    } else if ((!(cptr.ldI64o(svm, 8) % 4n) || !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 81, __sl6), rn2(4)) : rn2(4)))) {
+        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114)))
             (yield* Norep(__sl7));
     }
 }
@@ -288,14 +288,14 @@ function* choose_monster_spell(mtmp, adtyp) {
         list = mon_cleric_spells;
         len = 10;
     }
-    if (!list || len < 1 ? 1 : 0)
+    if (!list || len < 1)
         return NHC.MCAST_PSI_BOLT;
     maxlev = cptr.ldI32o(mcast_data, cptr.ldI32o(list, (len - 1) | 0, 4), 8);
     spellval = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 111, __sl8), rn2(cptr.ld1uo(mtmp, 26))) : rn2(cptr.ld1uo(mtmp, 26)));
-    if (spellval > maxlev && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 112, __sl8), rn2(maxlev)) : rn2(maxlev)) ? 1 : 0)
+    if (spellval > maxlev && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 112, __sl8), rn2(maxlev)) : rn2(maxlev)))
         spellval = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 113, __sl8), rn2(maxlev)) : rn2(maxlev));
     for (i = (len - 1) | 0; i >= 0; i--)
-        if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), 8) <= spellval && !(yield* spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4))) ? 1 : 0)
+        if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), 8) <= spellval && !(yield* spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4))))
             return cptr.ldI32o(list, i, 4);
     return cptr.ldI32o(list, 0, 4);
 }
@@ -306,23 +306,23 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     let ml = cptr.ld1uo(mtmp, 26);
     let ret;
     let spellnum = 0;
-    if ((cptr.ld1uo(mattk, 1) == NHM.AD_SPEL || cptr.ld1uo(mattk, 1) == NHM.AD_CLRC ? 1 : 0) && ml ? 1 : 0) {
+    if ((cptr.ld1uo(mattk, 1) == NHM.AD_SPEL || cptr.ld1uo(mattk, 1) == NHM.AD_CLRC) && ml) {
         let cnt = 40;
         do {
             spellnum = (yield* choose_monster_spell(mtmp, cptr.ld1uo(mattk, 1)));
             if (!thinks_it_foundyou) {
-                if (!is_undirected_spell(spellnum) || (yield* spell_would_be_useless(mtmp, spellnum)) ? 1 : 0) {
+                if (!is_undirected_spell(spellnum) || (yield* spell_would_be_useless(mtmp, spellnum))) {
                     if (foundyou)
                         (yield* impossible(__sl9));
                     return NHM.M_ATTK_MISS;
                 }
                 break;
             }
-        } while (--cnt > 0 && (yield* spell_would_be_useless(mtmp, spellnum)) ? 1 : 0);
+        } while (--cnt > 0 && (yield* spell_would_be_useless(mtmp, spellnum)));
         if (cnt == 0)
             return NHM.M_ATTK_MISS;
     }
-    if ((((cptr.ldI32o(mtmp, 100) & 1) | 0 || cptr.ldI32o(mtmp, 80) ? 1 : 0) || !ml ? 1 : 0) || (cptr.ldU64o((mtmp), 72) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, 1)))) ? 1 : 0) {
+    if ((cptr.ldI32o(mtmp, 100) & 1) | 0 || cptr.ldI32o(mtmp, 80) || !ml || (cptr.ldU64o((mtmp), 72) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, 1))))) {
         (yield* cursetxt(mtmp, is_undirected_spell(spellnum)));
         return NHM.M_ATTK_MISS;
     }
@@ -333,28 +333,28 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
             cptr.stI32o(iflags, 40, save_plnmsg);
         }
     } while (0);
-    if (cptr.ld1uo(mattk, 1) == NHM.AD_SPEL || cptr.ld1uo(mattk, 1) == NHM.AD_CLRC ? 1 : 0) {
+    if (cptr.ld1uo(mattk, 1) == NHM.AD_SPEL || cptr.ld1uo(mattk, 1) == NHM.AD_CLRC) {
         cptr.stI32o(mtmp, 80, ((cptr.ld1uo(mtmp, 26) < 8) ? ((10 - cptr.ld1uo(mtmp, 26)) | 0) : 2));
     }
-    if ((!foundyou && thinks_it_foundyou ? 1 : 0) && !is_undirected_spell(spellnum) ? 1 : 0) {
+    if (!foundyou && thinks_it_foundyou && !is_undirected_spell(spellnum)) {
         (yield* pline_mon(mtmp, __sl11, canseemon(mtmp) ? (yield* Monnam(mtmp)) : __sl12, is_waterwall(cptr.ldI16o(mtmp, 32), cptr.ldI16o(mtmp, 34)) ? __sl13 : __sl14));
         return NHM.M_ATTK_MISS;
     }
     nomul(0);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl5, 208, __sl15), rn2(Math.imul(ml, 10))) : rn2(Math.imul(ml, 10))) < ((cptr.ldI32o(mtmp, 164) & 1) | 0 ? 100 : 20)) {
         ;
-        if (canseemon(mtmp) && !((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) ? 1 : 0) {
+        if (canseemon(mtmp) && !(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
             set_msg_xy(cptr.ldI16o(mtmp, 28), cptr.ldI16o(mtmp, 30));
             (yield* pline_The(__sl16, (yield* mon_nam(mtmp))));
         }
         return NHM.M_ATTK_MISS;
     }
-    if ((canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) || !is_undirected_spell(spellnum) ? 1 : 0) {
-        (yield* pline_mon(mtmp, __sl17, (canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : (((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) ? 1 : 0) && !((cptr.ldI16o(mtmp, 32)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, 34)) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) ? __sl19 : (((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112) ? 1 : 0) && !((cptr.ldI16o(mtmp, 32)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, 34)) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) ? __sl20 : __sl21))));
+    if ((canseemon(mtmp) || sensemon(mtmp)) || !is_undirected_spell(spellnum)) {
+        (yield* pline_mon(mtmp, __sl17, (canseemon(mtmp) || sensemon(mtmp)) ? (yield* Monnam(mtmp)) : __sl12, is_undirected_spell(spellnum) ? __sl18 : ((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112)) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) && !((cptr.ldI16o(mtmp, 32)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, 34)) == cptr.ldI16o(u, 2))) ? __sl19 : (((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112)) && !((cptr.ldI16o(mtmp, 32)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, 34)) == cptr.ldI16o(u, 2))) ? __sl20 : __sl21))));
     }
     if (!foundyou) {
         dmg = 0;
-        if (cptr.ld1uo(mattk, 1) != NHM.AD_SPEL && cptr.ld1uo(mattk, 1) != NHM.AD_CLRC ? 1 : 0) {
+        if (cptr.ld1uo(mattk, 1) != NHM.AD_SPEL && cptr.ld1uo(mattk, 1) != NHM.AD_CLRC) {
             (yield* impossible(__sl22, (yield* Monnam(mtmp)), cptr.ld1uo(mattk, 1)));
             return NHM.M_ATTK_MISS;
         }
@@ -362,13 +362,13 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 241, __sl15), d((((((ml / 2) | 0) + cptr.ld1uo(mattk, 2)) | 0)), (cptr.ld1uo(mattk, 3)))) : d((((((ml / 2) | 0) + cptr.ld1uo(mattk, 2)) | 0)), (cptr.ld1uo(mattk, 3))));
     else
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 243, __sl15), d((((((ml / 2) | 0) + 1) | 0)), 6)) : d((((((ml / 2) | 0) + 1) | 0)), 6));
-    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
         dmg = (((dmg + 1) | 0) / 2) | 0;
     ret = NHM.M_ATTK_HIT;
     switch (cptr.ld1uo(mattk, 1)) {
         case NHM.AD_FIRE:
         (yield* pline(__sl23));
-        if ((cptr.ldI64o2(u, NHC.FIRE_RES, 24, 128) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, 112) ? 1 : 0)) {
+        if ((cptr.ldI64o2(u, NHC.FIRE_RES, 24, 128) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, 112))) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
             (yield* pline(__sl24));
             monstseesu(2n);
@@ -381,7 +381,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         break;
         case NHM.AD_COLD:
         (yield* pline(__sl25));
-        if ((cptr.ldI64o2(u, NHC.COLD_RES, 24, 128) || cptr.ldI64o2(u, NHC.COLD_RES, 24, 112) ? 1 : 0)) {
+        if ((cptr.ldI64o2(u, NHC.COLD_RES, 24, 128) || cptr.ldI64o2(u, NHC.COLD_RES, 24, 112))) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
             (yield* pline(__sl24));
             monstseesu(4n);
@@ -393,7 +393,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         break;
         case NHM.AD_MAGM:
         (yield* You(__sl26));
-        if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+        if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
             (yield* pline_The(__sl27));
             monstseesu(1n);
@@ -456,10 +456,10 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     void cptr.strcpy(outbuf, deathreason);
     if (mtmp) {
         let mptr = cptr.ldPtro(mtmp, 8);
-        let champtr = (((cptr.ldI16o(mtmp, 22)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, 22)) < NHC.NUMMONS ? 1 : 0)) ? cptr.add(mons, cptr.ldI16o(mtmp, 22), 96) : mptr;
+        let champtr = (((cptr.ldI16o(mtmp, 22)) >= NHC.LOW_PM && (cptr.ldI16o(mtmp, 22)) < NHC.NUMMONS)) ? cptr.add(mons, cptr.ldI16o(mtmp, 22), 96) : mptr;
         let realnm = pmname(champtr, Mgender(mtmp));
         let fakenm = pmname(mptr, Mgender(mtmp));
-        if (!((cptr.ldU64o((champtr), 80) & 524288n) != 0n) && !the_unique_pm(mptr) ? 1 : 0)
+        if (!((cptr.ldU64o((champtr), 80) & 524288n) != 0n) && !the_unique_pm(mptr))
             realnm = (yield* an(realnm));
         void cptr.sprintf(eos(outbuf), __sl33, the_unique_pm(mptr) ? __sl34 : __sl18, realnm);
         if (!cptr.eq(champtr, mptr))
@@ -471,17 +471,17 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
 /** C ref: mcastu.c:389 — @param {CPtr} mtmp */
 function* mcast_death_touch(mtmp) {
     (yield* pline(__sl36, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, 8))));
-    if (((((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_MANES, 96)) ? 1 : 0) || ((cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_VORTEX ? 1 : 0) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 256n) != 0n) ? 1 : 0) {
+    if ((((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_VORTEX)) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 256n) != 0n)) {
         (yield* You(__sl37));
-    } else if (!(cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 394, __sl38), rn2(cptr.ld1uo(mtmp, 26))) : rn2(cptr.ld1uo(mtmp, 26))) > 12 ? 1 : 0) {
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0)) {
+    } else if (!(cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112)) && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 394, __sl38), rn2(cptr.ld1uo(mtmp, 26))) : rn2(cptr.ld1uo(mtmp, 26))) > 12) {
+        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) {
             (yield* You(__sl39));
         } else {
             (yield* touch_of_death(mtmp));
         }
         monstunseesu(1n);
     } else {
-        if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+        if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
             monstseesu(1n);
         }
@@ -491,7 +491,7 @@ function* mcast_death_touch(mtmp) {
 
 /** C ref: mcastu.c:411 — @param {CPtr} mtmp */
 function* mcast_clone_wiz(mtmp) {
-    if ((cptr.ldI32o(mtmp, 196) & 1) | 0 && cptr.ldI32o(svc, 4) == 1 ? 1 : 0) {
+    if ((cptr.ldI32o(mtmp, 196) & 1) | 0 && cptr.ldI32o(svc, 4) == 1) {
         (yield* pline(__sl41));
         (yield* clonewiz());
     } else
@@ -509,9 +509,9 @@ function* mcast_summon_mons(mtmp) {
     } else {
         let one = schar((count == 1));
         let mappear = one ? __sl45 : __sl46;
-        if ((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+        if (((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112)) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2)))
             (yield* pline(__sl47, mappear, one ? __sl48 : __sl49));
-        else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+        else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112)) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2)))
             (yield* pline(__sl50, mappear, one ? __sl51 : __sl49));
         else
             (yield* pline(__sl52, mappear));
@@ -520,7 +520,7 @@ function* mcast_summon_mons(mtmp) {
 
 /** C ref: mcastu.c:450 */
 function* mcast_destroy_armor() {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         (yield* pline(__sl53));
@@ -533,7 +533,7 @@ function* mcast_destroy_armor() {
 
 /** C ref: mcastu.c:466 — @param {CPtr} mtmp @param {CInt} dmg */
 function* mcast_weaken_you(mtmp, dmg) {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         (yield* You_feel(__sl55));
@@ -543,7 +543,7 @@ function* mcast_weaken_you(mtmp, dmg) {
         dmg = (cptr.ld1uo(mtmp, 26) - 6) | 0;
         if (dmg < 1)
             dmg = 1;
-        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* losestr((rng_log_enabled() ? (rng_log_set_caller(__sl5, 481, __sl57), rnd(dmg)) : rnd(dmg)), (yield* death_inflicted_by(cptr.decay(kbuf), __sl58, mtmp)), NHM.KILLED_BY));
         cptr.st1o2(svk, 0, 1, 16, 0);
@@ -553,11 +553,11 @@ function* mcast_weaken_you(mtmp, dmg) {
 
 /** C ref: mcastu.c:490 — @param {CPtr} mtmp */
 function* mcast_disappear(mtmp) {
-    if (!(cptr.ldI32o(mtmp, 88) & 1) && !(cptr.ldI32o(mtmp, 92) & 1) ? 1 : 0) {
+    if (!(cptr.ldI32o(mtmp, 88) & 1) && !(cptr.ldI32o(mtmp, 92) & 1)) {
         if (canseemon(mtmp))
-            (yield* pline_mon(mtmp, __sl59, (yield* Monnam(mtmp)), !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112) ? 1 : 0) ? __sl60 : __sl61));
+            (yield* pline_mon(mtmp, __sl59, (yield* Monnam(mtmp)), !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112)) ? __sl60 : __sl61));
         (yield* mon_set_minvis(mtmp, 0));
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp) ? 1 : 0) ? 1 : 0)
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.IN_SIGHT) != 0) && !(canseemon(mtmp) || sensemon(mtmp)))
             (yield* map_invisible(cptr.ldI16o(mtmp, 28), cptr.ldI16o(mtmp, 30)));
     } else
         (yield* impossible(__sl62));
@@ -565,7 +565,7 @@ function* mcast_disappear(mtmp) {
 
 /** C ref: mcastu.c:504 — @param {CInt} dmg */
 function* mcast_stun_you(dmg) {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0) || cptr.ldI64o2(u, NHC.FREE_ACTION, 24, 112) ? 1 : 0) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112)) || cptr.ldI64o2(u, NHC.FREE_ACTION, 24, 112)) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         if (!cptr.ldI64o2(u, NHC.STUNNED, 24, 128))
@@ -574,7 +574,7 @@ function* mcast_stun_you(dmg) {
     } else {
         (yield* You(cptr.ldI64o2(u, NHC.STUNNED, 24, 128) ? __sl64 : __sl65));
         dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 514, __sl66), d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4)) : d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4));
-        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* make_stunned(BigInt.asIntN(64, (cptr.ldI64o2(u, NHC.STUNNED, 24, 128) & 16777215n) + BigInt(dmg)), 0));
         monstunseesu(1n);
@@ -585,7 +585,7 @@ function* mcast_stun_you(dmg) {
 function* mcast_geyser(dmg) {
     (yield* pline(__sl67));
     dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 529, __sl68), d(8, 6)) : d(8, 6));
-    if ((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 112) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 112)))
         dmg = (((dmg + 1) | 0) / 2) | 0;
     return dmg;
 }
@@ -595,14 +595,14 @@ function* mcast_fire_pillar(mtmp, dmg) {
     let orig_dmg;
     (yield* pline(__sl69));
     orig_dmg = (dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 545, __sl70), d(8, 6)) : d(8, 6)));
-    if ((cptr.ldI64o2(u, NHC.FIRE_RES, 24, 128) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.FIRE_RES, 24, 128) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(2n);
         dmg = 0;
     } else {
         monstunseesu(2n);
     }
-    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
         dmg = (((dmg + 1) | 0) / 2) | 0;
     (yield* burn_away_slime());
     void (yield* burnarmor(cptr.add(gy, 8)));
@@ -620,7 +620,7 @@ function* mcast_lightning(mtmp, dmg) {
     (yield* pline(__sl71));
     reflects = (yield* ureflects(__sl72, __sl18));
     orig_dmg = (dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl5, 574, __sl73), d(8, 6)) : d(8, 6)));
-    if (reflects || (cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 128) || cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 112) ? 1 : 0) ? 1 : 0) {
+    if (reflects || (cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 128) || cptr.ldI64o2(u, NHC.SHOCK_RES, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         dmg = 0;
         if (reflects) {
@@ -632,7 +632,7 @@ function* mcast_lightning(mtmp, dmg) {
     } else {
         monstunseesu(288n);
     }
-    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
         dmg = (((dmg + 1) | 0) / 2) | 0;
     void (yield* destroy_items(cptr.add(gy, 8), NHM.AD_ELEC, orig_dmg));
     (yield* mon_spell_hits_spot(mtmp, NHM.AD_ELEC, cptr.ldI16(u), cptr.ldI16o(u, 2)));
@@ -642,7 +642,7 @@ function* mcast_lightning(mtmp, dmg) {
 
 /** C ref: mcastu.c:601 — @param {CInt} dmg @returns {CInt} */
 function* mcast_psi_bolt(dmg) {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         dmg = (((dmg + 1) | 0) / 2) | 0;
@@ -662,7 +662,7 @@ function* mcast_psi_bolt(dmg) {
 
 /** C ref: mcastu.c:624 — @param {CInt} dmg @returns {CInt} */
 function* mcast_open_wounds(dmg) {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         dmg = (((dmg + 1) | 0) / 2) | 0;
@@ -702,27 +702,27 @@ function* mcast_insects(mtmp) {
     for (i = 0; i <= quan; i++) {
         if (!(yield* enexto(bypos, cptr.ldI16o(mtmp, 32), cptr.ldI16o(mtmp, 34), cptr.ldPtro(mtmp, 8))))
             return;
-        if ((pm = (yield* mkclass(let$, 0))) !== null && (mtmp2 = (yield* makemon(pm, cptr.ldI16(bypos), cptr.ldI16o(bypos, 2), 131104))) !== null ? 1 : 0) {
+        if ((pm = (yield* mkclass(let$, 0))) !== null && (mtmp2 = (yield* makemon(pm, cptr.ldI16(bypos), cptr.ldI16o(bypos, 2), 131104))) !== null) {
             success = 1;
             cptr.stI32o(mtmp2, 144, cptr.stI32o(mtmp2, 168, cptr.st1o(mtmp2, 65, 0)));
             set_malign(mtmp2);
         }
     }
     newseen = monster_census(1);
-    seecaster = schar(((canseemon(mtmp) || tp_sensemon(mtmp) ? 1 : 0) || (cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 128) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 112) ? 1 : 0) ? 1 : 0));
+    seecaster = schar((canseemon(mtmp) || tp_sensemon(mtmp) || (cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 128) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 112)) ? 1 : 0));
     what = (let$ == NHC.S_SNAKE) ? __sl83 : __sl84;
-    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))))
         what = (yield* makeplural((yield* bogusmon(cptr.decay(whatbuf), null))));
     fmt = null;
     if (!seecaster) {
-        if (newseen <= oldseen || (cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+        if (newseen <= oldseen || (cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted()))) {
             (yield* You_hear(__sl85, what));
         } else {
             let arg;
             if (!cptr.eq(what, cptr.decay(whatbuf)))
                 what = cptr.strcpy(cptr.decay(whatbuf), what);
             arg = (newseen == ((oldseen + 1) | 0)) ? (yield* an((yield* makesingular(what)))) : cptr.decay(whatbuf);
-            if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+            if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
                 ;
                 (yield* You_hear(__sl86, arg, (yield* vtense(arg, __sl87))));
             } else {
@@ -734,9 +734,9 @@ function* mcast_insects(mtmp) {
         what = __sl18;
     } else if (let$ == NHC.S_SNAKE) {
         fmt = __sl90;
-    } else if ((((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120) ? 1 : 0) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) {
+    } else if (((cptr.ldI64o2(u, NHC.INVIS, 24, 128) || cptr.ldI64o2(u, NHC.INVIS, 24, 112)) && !cptr.ldI64o2(u, NHC.INVIS, 24, 120)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 16777216n) != 0n) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2))) {
         fmt = __sl91;
-    } else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112) ? 1 : 0) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) {
+    } else if ((cptr.ldI64o2(u, NHC.DISPLACED, 24, 128) || cptr.ldI64o2(u, NHC.DISPLACED, 24, 112)) && (cptr.ldI16o(mtmp, 32) != cptr.ldI16(u) || cptr.ldI16o(mtmp, 34) != cptr.ldI16o(u, 2))) {
         fmt = __sl92;
     } else {
         fmt = __sl93;
@@ -750,11 +750,11 @@ function* mcast_insects(mtmp) {
 
 /** C ref: mcastu.c:729 */
 function* mcast_blind_you() {
-    if (!(cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
-        let num_eyes = (!((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) ? 1 : 0) ? 1 : 2));
+    if (!(cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
+        let num_eyes = (!((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 4096n) == 0n) ? 0 : ((cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2));
         (yield* pline(__sl94, (num_eyes == 1) ? (yield* body_part(NHC.EYE)) : (yield* makeplural((yield* body_part(NHC.EYE))))));
-        (yield* make_blinded((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0) ? 100n : 200n, 0));
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
+        (yield* make_blinded((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)) ? 100n : 200n, 0));
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
             (yield* Your(__sl95, cptr.ldPtro(c_common_strings, 72)));
     } else
         (yield* impossible(__sl96));
@@ -763,7 +763,7 @@ function* mcast_blind_you() {
 /** C ref: mcastu.c:746 — @param {CPtr} mtmp @returns {CInt} */
 function* mcast_paralyze(mtmp) {
     let dmg = 0;
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0) || cptr.ldI64o2(u, NHC.FREE_ACTION, 24, 112) ? 1 : 0) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112)) || cptr.ldI64o2(u, NHC.FREE_ACTION, 24, 112)) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         if (cptr.ldI64o(gm, 8) >= 0n)
@@ -773,7 +773,7 @@ function* mcast_paralyze(mtmp) {
         if (cptr.ldI64o(gm, 8) >= 0n)
             (yield* You(__sl98));
         dmg = (4 + cptr.ld1uo(mtmp, 26)) | 0;
-        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
             dmg = (((dmg + 1) | 0) / 2) | 0;
         monstunseesu(1n);
     }
@@ -785,17 +785,17 @@ function* mcast_paralyze(mtmp) {
 
 /** C ref: mcastu.c:771 — @param {CPtr} mtmp */
 function* mcast_confuse_you(mtmp) {
-    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0)) {
+    if ((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112))) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, 2)));
         monstseesu(1n);
         (yield* You_feel(__sl100));
     } else {
         let oldprop = schar((!!cptr.ldI64o2(u, NHC.CONFUSION, 24, 128)));
         let dmg = cptr.ld1uo(mtmp, 26);
-        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, 112)))
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* make_confused(BigInt.asIntN(64, cptr.ldI64o2(u, NHC.CONFUSION, 24, 128) + BigInt(dmg)), 1));
-        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))))
             (yield* You_feel(__sl101, oldprop ? __sl102 : __sl103));
         else
             (yield* You_feel(__sl104, oldprop ? __sl105 : __sl18));
@@ -809,7 +809,7 @@ function* mcast_spell(mtmp, dmg, spellnum) {
         (yield* impossible(__sl106, spellnum, dmg));
         return;
     }
-    if (dmg == 0 && !is_undirected_spell(spellnum) ? 1 : 0) {
+    if (dmg == 0 && !is_undirected_spell(spellnum)) {
         (yield* impossible(__sl107, spellnum));
         return;
     }
@@ -918,7 +918,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
     }
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
-        if (((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112) ? 1 : 0) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? 1 : 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 934, __sl111), rn2(2)) : rn2(2)) ? 1 : 0)
+        if (((cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 128) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, 112)) || (cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 934, __sl111), rn2(2)) : rn2(2)))
             return 1;
         break;
         case NHC.MCAST_GEYSER:
@@ -926,7 +926,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
             return 1;
         break;
         case NHC.MCAST_CLONE_WIZ:
-        if (!(cptr.ldI32o(mtmp, 196) & 1) || cptr.ldI32o(svc, 4) > 1 ? 1 : 0)
+        if (!(cptr.ldI32o(mtmp, 196) & 1) || cptr.ldI32o(svc, 4) > 1)
             return 1;
         break;
         case NHC.MCAST_AGGRAVATION:
@@ -938,9 +938,9 @@ function* spell_would_be_useless(mtmp, spellnum) {
             return 1;
         break;
         case NHC.MCAST_DISAPPEAR:
-        if ((cptr.ldI32o(mtmp, 88) & 1) | 0 || (cptr.ldI32o(mtmp, 92) & 1) | 0 ? 1 : 0)
+        if ((cptr.ldI32o(mtmp, 88) & 1) | 0 || (cptr.ldI32o(mtmp, 92) & 1) | 0)
             return 1;
-        if ((cptr.ldI32o(mtmp, 168) & 1) | 0 && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ldI32o(mtmp, 168) & 1) | 0 && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112)))
             return 1;
         break;
         case NHC.MCAST_CURE_SELF:
@@ -948,7 +948,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
             return 1;
         break;
         case NHC.MCAST_BLIND_YOU:
-        if ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
+        if ((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
             return 1;
         break;
         default:
@@ -959,13 +959,13 @@ function* spell_would_be_useless(mtmp, spellnum) {
 
 /** C ref: mcastu.c:989 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
 export function* buzzmu(mtmp, mattk) {
-    if (!((cptr.ld1uo(mattk, 1)) >= NHM.AD_MAGM && (cptr.ld1uo(mattk, 1)) <= NHM.AD_SPC2 ? 1 : 0))
+    if (!((cptr.ld1uo(mattk, 1)) >= NHM.AD_MAGM && (cptr.ld1uo(mattk, 1)) <= NHM.AD_SPC2))
         return NHM.M_ATTK_MISS;
-    if ((cptr.ldI32o(mtmp, 100) & 1) | 0 || (cptr.ldU64o((mtmp), 72) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, 1)))) ? 1 : 0) {
+    if ((cptr.ldI32o(mtmp, 100) & 1) | 0 || (cptr.ldU64o((mtmp), 72) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, 1))))) {
         (yield* cursetxt(mtmp, 0));
         return NHM.M_ATTK_MISS;
     }
-    if (lined_up(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 1000, __sl112), rn2(3)) : rn2(3)) ? 1 : 0) {
+    if (lined_up(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl5, 1000, __sl112), rn2(3)) : rn2(3))) {
         nomul(0);
         if (canseemon(mtmp))
             (yield* pline_mon(mtmp, __sl113, (yield* Monnam(mtmp)), flash_str((Math.abs(((cptr.ld1uo(mattk, 1)) - NHM.AD_MAGM) | 0) % 10), 0)));

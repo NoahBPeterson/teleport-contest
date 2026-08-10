@@ -436,9 +436,9 @@ function db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
         (fprintf(__stderrp, (__sl34), (__sl35)), fflush(__stderrp));
-        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __sl36) == 0 ? 1 : 0)
+        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __sl36) == 0)
             return 0;
-        if (luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __sl37, null) || lua_pcallk(L, 0, 0, 0, 0n, null) ? 1 : 0)
+        if (luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __sl37, null) || lua_pcallk(L, 0, 0, 0, 0n, null))
             (fprintf(__stderrp, (__sl38), (luaL_tolstring(L, -1, null))), fflush(__stderrp));
         lua_settop(L, 0);
     }
@@ -449,7 +449,7 @@ function db_traceback(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
     let msg = lua_tolstring(L, ((arg.v + 1) | 0), null);
-    if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0) ? 1 : 0)
+    if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
         lua_pushvalue(L, (arg.v + 1) | 0);
     else {
         let level = Number(BigInt.asIntN(32, luaL_optinteger(L, (arg.v + 2) | 0, BigInt(((cptr.eq(L, L1)) ? 1 : 0)))));

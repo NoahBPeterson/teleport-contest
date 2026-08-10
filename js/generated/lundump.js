@@ -119,7 +119,7 @@ function loadStringN(S, p) {
         loadBlock(S, (cptr.add((ts), 24)), BigInt.asUintN(64, (size) * 1n));
         cptr.postdec(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
     }
-    ((((cptr.ld1uo((p), 9)) & 32) && ((cptr.ld1uo((ts), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
+    ((((cptr.ld1uo((p), 9)) & 32) && ((cptr.ld1uo((ts), 9)) & 24)) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
     return ts;
 }
 
@@ -203,7 +203,7 @@ function loadProtos(S, f) {
         cptr.stPtro(cptr.ldPtro(f, 72), i, null, 8);
     for (i = 0; i < n; i++) {
         cptr.stPtro(cptr.ldPtro(f, 72), i, luaF_newproto(cptr.ldPtr(S)), 8);
-        ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)))))) : (void 0));
+        ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)), 9)) & 24)) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtro(cptr.ldPtro(f, 72), i, 8)))))) : (void 0));
         loadFunction(S, cptr.ldPtro(cptr.ldPtro(f, 72), i, 8), cptr.ldPtro(f, 112));
     }
 }
@@ -309,7 +309,7 @@ function checkHeader(S) {
 export function luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);
     let cl;
-    if (cptr.ld1s(name) == 64 || cptr.ld1s(name) == 61 ? 1 : 0)
+    if (cptr.ld1s(name) == 64 || cptr.ld1s(name) == 61)
         cptr.stPtro(S, 16, cptr.add(name, 1));
     else if (cptr.ld1s(name) == cptr.ld1so(__sl5, 0, 1))
         cptr.stPtro(S, 16, __sl16);
@@ -329,7 +329,7 @@ export function luaU_undump(L, Z, name) {
     ;
     luaD_inctop(L);
     cptr.stPtro(cl, 24, luaF_newproto(L));
-    ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, 24)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, 24)))))) : (void 0));
+    ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, 24)), 9)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, 24)))))) : (void 0));
     loadFunction(S, cptr.ldPtro(cl, 24), null);
     (void 0);
     ;

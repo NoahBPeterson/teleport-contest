@@ -46,7 +46,7 @@ export function setioctls() {
 
 /** C ref: ioctl.c:161 @returns {CInt} */
 export function* dosuspend() {
-    if ((!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) ? 1 : 0) || !check_user_string(cptr.ldPtro(sysopt, 40)) ? 1 : 0) {
+    if (!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) || !check_user_string(cptr.ldPtro(sysopt, 40))) {
         (yield* Norep(__sl0));
         return 0;
     }

@@ -250,7 +250,7 @@ function stackinuse(L) {
 export function luaD_shrinkstack(L) {
     let inuse = stackinuse(L);
     let max = (inuse > 333333) ? 1000000 : Math.imul(inuse, 3);
-    if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), 40), cptr.ldPtro((L), 48)) / 16n))))) > max ? 1 : 0) {
+    if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), 40), cptr.ldPtro((L), 48)) / 16n))))) > max) {
         let nsize = (inuse > 500000) ? 1000000 : Math.imul(inuse, 2);
         luaD_reallocstack(L, nsize, 0);
     } else
@@ -274,7 +274,7 @@ export function luaD_inctop(L) {
 /** C ref: ldo.c:335 — @param {CPtr} L @param {CInt} event @param {CInt} line @param {CInt} ftransfer @param {CInt} ntransfer */
 export function luaD_hook(L, event, line, ftransfer, ntransfer) {
     let hook = cptr.ldPtro(L, 160);
-    if (hook && cptr.ld1uo(L, 11) ? 1 : 0) {
+    if (hook && cptr.ld1uo(L, 11)) {
         let mask = 8;
         let ci = cptr.ldPtro(L, 32);
         let top = (cptr.diff((((cptr.ldPtro(L, 16)))), (((cptr.ldPtro(L, 48))))));
@@ -288,7 +288,7 @@ export function luaD_hook(L, event, line, ftransfer, ntransfer) {
             cptr.stI16o(ci, 56, u16(ftransfer));
             cptr.stI16o(ci, 58, u16(ntransfer));
         }
-        if ((!(cptr.ldU16o((ci), 62) & 2)) && cptr.cmp(cptr.ldPtro(L, 16), cptr.ldPtro(ci, 8)) < 0 ? 1 : 0)
+        if ((!(cptr.ldU16o((ci), 62) & 2)) && cptr.cmp(cptr.ldPtro(L, 16), cptr.ldPtro(ci, 8)) < 0)
             cptr.stPtro(L, 16, cptr.ldPtro(ci, 8));
         if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, 40), cptr.ldPtro(L, 16)) / 16n <= 20n) != 0)), 0n))) {
             void 0;
@@ -684,7 +684,7 @@ function finishCcall(L, ci) {
         if (cptr.ldU16o(ci, 62) & 16)
             status = finishpcallk(L, ci);
         {
-            if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, 32), 8), cptr.ldPtro(L, 16)) < 0 ? 1 : 0)
+            if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, 32), 8), cptr.ldPtro(L, 16)) < 0)
                 cptr.stPtro(cptr.ldPtro(L, 32), 8, cptr.ldPtro(L, 16));
         }
         ;
@@ -771,7 +771,7 @@ function resume(L, ud) {
 /** C ref: ldo.c:831 — @param {CPtr} L @param {CInt} status @returns {CInt} */
 function precover(L, status) {
     let ci;
-    while (((status) > 1) && !cptr.eq((ci = findpcall(L)), (null)) ? 1 : 0) {
+    while (((status) > 1) && !cptr.eq((ci = findpcall(L)), (null))) {
         cptr.stPtro(L, 32, ci);
         ((cptr.stI16o((ci), 62, u16(((cptr.ldU16o((ci), 62) & -7169) | ((status) << 10))))));
         status = luaD_rawrunprotected(L, unroll, (null));
@@ -894,7 +894,7 @@ export function luaD_pcall(L, func, u, old_top, ef) {
 
 /** C ref: ldo.c:990 — @param {CPtr} L @param {CPtr} mode @param {CPtr} x */
 function checkmode(L, mode, x) {
-    if (mode && cptr.eq(cptr.strchr(mode, cptr.ld1so(x, 0)), (null)) ? 1 : 0) {
+    if (mode && cptr.eq(cptr.strchr(mode, cptr.ld1so(x, 0)), (null))) {
         luaO_pushfstring(L, __sl7, x, mode);
         luaD_throw(L, 3);
     }

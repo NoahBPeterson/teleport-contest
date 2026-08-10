@@ -21,7 +21,7 @@ const __sl1 = cptr.lit("\x19\x93\r\n\x1a\n");
 
 /** C ref: ldump.c:41 — @param {CPtr} D @param {CPtr} b @param {CLongLong} size */
 function* dumpBlock(D, b, size) {
-    if (cptr.ldI32o(D, 28) == 0 && size > 0n ? 1 : 0) {
+    if (cptr.ldI32o(D, 28) == 0 && size > 0n) {
         (void 0);
         cptr.stI32o(D, 28, (yield* Y.icall((cptr.ldPtro(D, 8))(cptr.ldPtr(D), b, size, cptr.ldPtro(D, 16)))));
         (void 0);
@@ -156,7 +156,7 @@ function* dumpDebug(D, f) {
 
 /** C ref: ldump.c:183 — @param {CPtr} D @param {CPtr} f @param {CPtr} psource */
 function* dumpFunction(D, f, psource) {
-    if (cptr.ldI32o(D, 24) || cptr.eq(cptr.ldPtro(f, 112), psource) ? 1 : 0)
+    if (cptr.ldI32o(D, 24) || cptr.eq(cptr.ldPtro(f, 112), psource))
         (yield* dumpString(D, null));
     else
         (yield* dumpString(D, cptr.ldPtro(f, 112)));

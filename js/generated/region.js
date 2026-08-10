@@ -97,13 +97,13 @@ const callbacks = [inside_gas_cloud, expire_gas_cloud];
 
 /** C ref: region.c:54 — @param {CPtr} r @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_rect(r, x, y) {
-    return schar((((x >= cptr.ldI16(r) && x <= cptr.ldI16o(r, 4) ? 1 : 0) && y >= cptr.ldI16o(r, 2) ? 1 : 0) && y <= cptr.ldI16o(r, 6) ? 1 : 0));
+    return schar((x >= cptr.ldI16(r) && x <= cptr.ldI16o(r, 4) && y >= cptr.ldI16o(r, 2) && y <= cptr.ldI16o(r, 6) ? 1 : 0));
 }
 
 /** C ref: region.c:63 — @param {CPtr} reg @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_region(reg, x, y) {
     let i;
-    if (reg === null || !inside_rect(reg, x, y) ? 1 : 0)
+    if (reg === null || !inside_rect(reg, x, y))
         return 0;
     for (i = 0; i < cptr.ldI16o(reg, 16); i++)
         if (inside_rect(cptr.add(cptr.ldPtro(reg, 8), i, 8), x, y))
@@ -294,11 +294,11 @@ export function remove_region(reg) {
     if (cptr.ld1so(reg, 76)) {
         let pass;
         let tmp_uinwater = schar((cptr.ldI32o(u, 1852) & 1));
-        for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? 1 : 2); ++pass) {
+        for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? 1 : 2); ++pass) {
             cptr.stI32o(u, 1852, ((pass == 1) ? 0 : tmp_uinwater) >>> 0);
             for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, 4); x++)
                 for (y = cptr.ldI16o(reg, 2); y <= cptr.ldI16o(reg, 6); y++)
-                    if (isok(i16(x), i16(y)) && inside_region(reg, x, y) ? 1 : 0) {
+                    if (isok(i16(x), i16(y)) && inside_region(reg, x, y)) {
                         if (pass == 1) {
                             if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36)))
                                 unblock_point(x, y);
@@ -335,7 +335,7 @@ export function run_regions() {
     cptr.stI32o(gg, 94980, 0);
     for (i = (cptr.ldI32o(svn, 48) - 1) | 0; i >= 0; i--) {
         if (cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) == 0n) {
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 48)) == -1 || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), null) ? 1 : 0)
+            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 48)) == -1 || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), null))
                 remove_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8));
         }
     }
@@ -343,12 +343,12 @@ export function run_regions() {
         if (cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) > 0n)
             (cptr.stI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40, cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) + -1n)) - (-1n);
         f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 58);
-        if (f_indx != -1 && ((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) ? 1 : 0)
+        if (f_indx != -1 && ((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0))
             void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), null);
         if (f_indx != -1) {
             for (j = 0; j < cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 72); j++) {
                 let mtmp = find_mid(cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 64), j, 4), NHM.FM_FMON);
-                if ((!mtmp || (cptr.ldI32o((mtmp), 52) < 1) ? 1 : 0) || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mtmp) ? 1 : 0) {
+                if (!mtmp || (cptr.ldI32o((mtmp), 52) < 1) || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mtmp)) {
                     k = (cptr.stI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 72, cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 72) - 1));
                     cptr.stI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 64), j, cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 64), k, 4), 4);
                     cptr.stI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 64), k, 0, 4);
@@ -384,7 +384,7 @@ export function in_out_region(x, y) {
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
         if (cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 18))
             continue;
-        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y) ? 1 : 0) {
+        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y)) {
             (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & 4294967294));
             if (cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 32) !== null)
                 pline(__sl7, cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 32));
@@ -395,7 +395,7 @@ export function in_out_region(x, y) {
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
         if (cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 18))
             continue;
-        if (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y) ? 1 : 0) {
+        if (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y)) {
             (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) | NHM.REG_HERO_INSIDE));
             if (cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 24) !== null)
                 pline(__sl7, cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 24));
@@ -421,7 +421,7 @@ export function m_in_out_region(mon, x, y) {
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
         if (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 20) == cptr.ldI32o(mon, 16))
             continue;
-        if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y) ? 1 : 0) {
+        if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y)) {
             remove_mon_from_reg(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon);
             if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 56)) != -1)
                 void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon);
@@ -430,7 +430,7 @@ export function m_in_out_region(mon, x, y) {
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
         if (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 20) == cptr.ldI32o(mon, 16))
             continue;
-        if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y) ? 1 : 0) {
+        if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y)) {
             add_mon_to_reg(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon);
             if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 52)) != -1)
                 void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), mon);
@@ -443,7 +443,7 @@ export function m_in_out_region(mon, x, y) {
 export function update_player_regions() {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, 48); i++)
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 18) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), cptr.ldI16(u), cptr.ldI16o(u, 2)) ? 1 : 0)
+        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 18) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), cptr.ldI16(u), cptr.ldI16o(u, 2)))
             (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) | NHM.REG_HERO_INSIDE));
         else
             (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & 4294967294));
@@ -465,7 +465,7 @@ export function update_monster_region(mon) {
 
 /** C ref: region.c:651 — @param {CPtr} reg @returns {CInt} */
 export function reg_damg(reg) {
-    let damg = (!cptr.ld1so(reg, 76) || cptr.ldI64o(reg, 40) == -2n ? 1 : 0) ? 0 : cptr.ldI32o(reg, 88);
+    let damg = (!cptr.ld1so(reg, 76) || cptr.ldI64o(reg, 40) == -2n) ? 0 : cptr.ldI32o(reg, 88);
     return damg;
 }
 
@@ -473,7 +473,7 @@ export function reg_damg(reg) {
 export function any_visible_region() {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 76) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) == -2n ? 1 : 0)
+        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 76) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) == -2n)
             continue;
         return 1;
     }
@@ -491,7 +491,7 @@ export function visible_region_summary(win) {
     let fldsep = cptr.ld1so(iflags, 136) ? __sl8 : __sl9;
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
         reg = cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8);
-        if (!cptr.ld1so(reg, 76) || cptr.ldI64o(reg, 40) == -2n ? 1 : 0)
+        if (!cptr.ld1so(reg, 76) || cptr.ldI64o(reg, 40) == -2n)
             continue;
         if (!hdr_done++) {
             (cptr.ldPtro(windowprocs, 144))(win, 0, __sl5);
@@ -513,7 +513,7 @@ export function visible_region_summary(win) {
 export function visible_region_at(x, y) {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, 48); i++) {
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 76) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) == -2n ? 1 : 0)
+        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 76) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) == -2n)
             continue;
         if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), x, y))
             return cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8);
@@ -671,7 +671,7 @@ export function rest_regions(nhfp) {
         r = cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8);
         if (cptr.ldI64o(r, 40) == 0n)
             remove_region(r);
-        else if (ghostly && cptr.ldI16o(r, 72) > 0 ? 1 : 0)
+        else if (ghostly && cptr.ldI16o(r, 72) > 0)
             reset_region_mids(r);
     }
 }
@@ -725,7 +725,7 @@ export function expire_gas_cloud(p1, p2) {
         cptr.stI64o(reg, 40, 2n);
         return 0;
     }
-    for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) ? 1 : 2); ++pass) {
+    for (pass = 1; pass <= (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) ? 1 : 2); ++pass) {
         for (x = cptr.ldI16(reg); x <= cptr.ldI16o(reg, 4); x++) {
             for (y = cptr.ldI16o(reg, 2); y <= cptr.ldI16o(reg, 6); y++) {
                 if (inside_region(reg, x, y)) {
@@ -734,7 +734,7 @@ export function expire_gas_cloud(p1, p2) {
                             unblock_point(x, y);
                     } else {
                         if (!(cptr.ldI32o(u, 1848) & 1)) {
-                            if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0))
+                            if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2)))
                                 cptr.st1o(gg, 94976, 1);
                             else if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), y, 8), x) & NHM.IN_SIGHT) != 0))
                                 (cptr.stI32o(gg, 94980, cptr.ldI32o(gg, 94980) + 1)) - (1);
@@ -753,23 +753,23 @@ export function inside_gas_cloud(p1, p2) {
     let mtmp = p2;
     let umon = mtmp ? mtmp : cptr.add(gy, 8);
     let dam = cptr.ldI32o(reg, 88);
-    if ((cptr.ldI64o(reg, 40) < 20n && umon ? 1 : 0) && cptr.eq(cptr.ldPtro(umon, 8), cptr.add(mons, NHC.PM_FOG_CLOUD, 96)) ? 1 : 0)
+    if (cptr.ldI64o(reg, 40) < 20n && umon && cptr.eq(cptr.ldPtro(umon, 8), cptr.add(mons, NHC.PM_FOG_CLOUD, 96)))
         cptr.stI64o(reg, 40, cptr.ldI64o(reg, 40) + 5n);
     if (dam < 1)
         return 0;
     if (!mtmp) {
         if (m_poisongas_ok(cptr.add(gy, 8)) == NHM.M_POISONGAS_OK)
             return 0;
-        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
+        if (!((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
             Your(__sl41, makeplural(body_part(NHC.EYE)));
             make_blinded(1n, 0);
         }
-        if (!(cptr.ldI64o2(u, NHC.POISON_RES, 24, 128) || cptr.ldI64o2(u, NHC.POISON_RES, 24, 112) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.POISON_RES, 24, 128) || cptr.ldI64o2(u, NHC.POISON_RES, 24, 112))) {
             pline(__sl42, cptr.ldPtro(c_common_strings, 48), makeplural(body_part(NHC.LUNG)));
             You(__sl43);
             wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, 2), 2);
-            dam = (((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 112) ? 1 : 0)) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
-            if (((ublindf.v && cptr.ldI16o(ublindf.v, 32) == NHC.TOWEL ? 1 : 0) && cptr.ld1so(ublindf.v, 48) > 0 ? 1 : 0))
+            dam = (((cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 128) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, 112))) ? (((((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0) + 1) | 0) / 2) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1122, __sl45), rnd(dam)) : rnd(dam)) + 5) | 0));
+            if ((ublindf.v && cptr.ldI16o(ublindf.v, 32) == NHC.TOWEL && cptr.ld1so(ublindf.v, 48) > 0))
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __sl46, NHM.KILLED_BY_AN);
             monstunseesu(64n);
@@ -784,13 +784,13 @@ export function inside_gas_cloud(p1, p2) {
         mtmp = p2;
         if (m_poisongas_ok(mtmp) != NHM.M_POISONGAS_OK) {
             if (!(cptr.ld1uo((cptr.ldPtro(mtmp, 8)), 66) == NHC.MS_SILENT)) {
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.IN_SIGHT) != 0) || (dist2((cptr.ldI16o(mtmp, 28)), (cptr.ldI16o(mtmp, 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) < 8) ? 1 : 0)
+                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mtmp, 30), 8), cptr.ldI16o(mtmp, 28)) & NHM.IN_SIGHT) != 0) || (dist2((cptr.ldI16o(mtmp, 28)), (cptr.ldI16o(mtmp, 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) < 8))
                     pline(__sl48, Monnam(mtmp));
                 wake_nearto(cptr.ldI16o(mtmp, 28), cptr.ldI16o(mtmp, 30), 2);
             }
             if ((!((cptr.ldI32o((reg), 60) & NHM.REG_NOT_HEROS) >>> 0)))
                 setmangry(mtmp, 1);
-            if (((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 4096n) == 0n) && (cptr.ldI32o(mtmp, 112) & 1) | 0 ? 1 : 0) {
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, 8)), 72) & 4096n) == 0n) && (cptr.ldI32o(mtmp, 112) & 1) | 0) {
                 cptr.stI32o(mtmp, 148, 1);
                 cptr.stI32o(mtmp, 112, 0);
             }
@@ -815,23 +815,23 @@ export function inside_gas_cloud(p1, p2) {
 function is_hero_inside_gas_cloud() {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, 48); i++)
-        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 58) == 0 ? 1 : 0)
+        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8)), 60) & NHM.REG_HERO_INSIDE) >>> 0) && cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 58) == 0)
             return 1;
     return 0;
 }
 
 /** C ref: region.c:1182 — @param {CPtr} cloud @param {CInt} damage @param {CInt} inside_cloud */
 function make_gas_cloud(cloud, damage, inside_cloud) {
-    if (!cptr.ld1so(gi, 4) && !cptr.ld1so(svc, 77) ? 1 : 0)
+    if (!cptr.ld1so(gi, 4) && !cptr.ld1so(svc, 77))
         (cptr.stI32o((cloud), 60, cptr.ldI32o((cloud), 60) & 4294967293));
     cptr.stI16o(cloud, 58, 0);
     cptr.stI16o(cloud, 48, 1);
     cptr.memcpy(cptr.add(cloud, 88), cptr.add(cg, 536), 8);
     cptr.stI32o(cloud, 88, damage);
     cptr.st1o(cloud, 76, 1);
-    cptr.stI32o(cloud, 80, (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, 1894)), 2) || cptr.ldI16((cptr.add(svd, 1894))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)) ? 1 : 0)) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16o(svd, 1874))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
+    cptr.stI32o(cloud, 80, (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, 24)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, 1894)), 2) || cptr.ldI16((cptr.add(svd, 1894)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1894)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, 24))) == (cptr.ldI16o(svd, 1874))) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
     add_region(cloud);
-    if ((!cptr.ld1so(gi, 4) && !inside_cloud ? 1 : 0) && is_hero_inside_gas_cloud() ? 1 : 0) {
+    if (!cptr.ld1so(gi, 4) && !inside_cloud && is_hero_inside_gas_cloud()) {
         You(__sl49, damage ? __sl50 : __sl51);
         cptr.stI32o(iflags, 40, NHC.PLNMSG_ENVELOPED_IN_GAS);
     }
@@ -850,7 +850,7 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
     let curridx;
     let newidx = 1;
     let inside_cloud = is_hero_inside_gas_cloud();
-    if (((!cptr.ld1so(svc, 77) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0) && cloudsize == 1 ? 1 : 0) && (!damage || (damage && m_poisongas_ok(cptr.add(gy, 8)) == NHM.M_POISONGAS_OK ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if (!cptr.ld1so(svc, 77) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2)) && cloudsize == 1 && (!damage || (damage && m_poisongas_ok(cptr.add(gy, 8)) == NHM.M_POISONGAS_OK)))
         inside_cloud = 1;
     if (cloudsize > 150) {
         impossible(__sl52, cloudsize);
@@ -876,12 +876,12 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
             if (valid_cloud_pos(i16(((xx + dx) | 0)), i16(((yy + dy) | 0)))) {
                 nvalid++;
                 for (j = 0; j < newidx; ++j) {
-                    if (cptr.ldI16o(xcoords, j, 2) == ((xx + dx) | 0) && cptr.ldI16o(ycoords, j, 2) == ((yy + dy) | 0) ? 1 : 0) {
+                    if (cptr.ldI16o(xcoords, j, 2) == ((xx + dx) | 0) && cptr.ldI16o(ycoords, j, 2) == ((yy + dy) | 0)) {
                         isunpicked = 0;
                         break;
                     }
                 }
-                if (nvalid == 4 && !(rng_log_enabled() ? (rng_log_set_caller(__sl44, 1279, __sl53), rn2(2)) : rn2(2)) ? 1 : 0)
+                if (nvalid == 4 && !(rng_log_enabled() ? (rng_log_set_caller(__sl44, 1279, __sl53), rn2(2)) : rn2(2)))
                     continue;
                 if (isunpicked) {
                     cptr.stI16o(xcoords, newidx, i16(((xx + dx) | 0)), 2);
@@ -937,9 +937,9 @@ export function region_danger() {
             continue;
         f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 58);
         if (f_indx == 0) {
-            if (((((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_MANES, 96)) ? 1 : 0) || ((cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_VORTEX ? 1 : 0) ? 1 : 0) || ((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 1024n) != 0n) ? 1 : 0) ? 1 : 0)
+            if ((((cptr.ldU64o((cptr.ldPtro(gy, 16)), 80) & 2n) != 0n) || cptr.eq((cptr.ldPtro(gy, 16)), cptr.add(mons, NHC.PM_MANES, 96)) || ((cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_GOLEM) || cptr.ld1so((cptr.ldPtro(gy, 16)), 28) == NHC.S_VORTEX)) || (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 1024n) != 0n)))
                 continue;
-            if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, 128) || cptr.ldI64o2(u, NHC.POISON_RES, 24, 112) ? 1 : 0))
+            if ((cptr.ldI64o2(u, NHC.POISON_RES, 24, 128) || cptr.ldI64o2(u, NHC.POISON_RES, 24, 112)))
                 continue;
             ++n;
         }
@@ -958,11 +958,11 @@ export function region_safety() {
             continue;
         f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 58);
         if (f_indx == 0) {
-            if (!n++ && cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) >= 0n ? 1 : 0)
+            if (!n++ && cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8), 40) >= 0n)
                 r = cptr.ldPtro(cptr.ldPtro(gr, 344), i, 8);
         }
     }
-    if (n > 1 || (n == 1 && !r ? 1 : 0) ? 1 : 0) {
+    if (n > 1 || (n == 1 && !r)) {
         void safe_teleds(NHM.TELEDS_NO_FLAGS);
         if (region_danger()) {
             set_itimeout(cptr.add(cptr.add(cptr.add(u, 112), NHC.MAGICAL_BREATHING, 24), 16), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl44, 1391, __sl54), d(4, 4)) : d(4, 4)) + 4) | 0)));

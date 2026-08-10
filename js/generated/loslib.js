@@ -165,7 +165,7 @@ function getfield(L, key, d, delta) {
 function checkoption(L, conv, convlen, buff) {
     let option = __sl14;
     let oplen = 1;
-    for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen ? 1 : 0; option = cptr.add(option, oplen)) {
+    for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen; option = cptr.add(option, oplen)) {
         if (cptr.ld1s(option) == 124)
             oplen++;
         else if (memcmp(conv, option, BigInt.asUintN(64, BigInt(oplen))) == 0) {
@@ -244,7 +244,7 @@ function os_time(L) {
         t = mktime(ts);
         setallfields(L, ts);
     }
-    if (t != t || t == -1n ? 1 : 0)
+    if (t != t || t == -1n)
         return luaL_error(L, __sl20);
     lua_pushinteger(L, (t));
     return 1;

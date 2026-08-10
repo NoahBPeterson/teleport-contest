@@ -72,7 +72,7 @@ const __sl54 = cptr.lit("stderr");
 
 /** C ref: liolib.c:40 — @param {CPtr} mode @returns {CInt} */
 function* l_checkmode(mode) {
-    return (((cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__sl0, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) ? 1 : 0) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1) ? 1 : 0) ? 1 : 0) && (strspn(mode, __sl1) == cptr.strlen(mode)) ? 1 : 0);
+    return (cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__sl0, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) && (strspn(mode, __sl1) == cptr.strlen(mode)) ? 1 : 0);
 }
 
 /** C ref: liolib.c:155 — typedef LStream (type alias only, no runtime output) */
@@ -142,7 +142,7 @@ function* io_close(L) {
 /** C ref: liolib.c:235 — @param {CPtr} L @returns {CInt} */
 function* f_gc(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
-    if (!(cptr.ldPtro((p), 8) === (null)) && !cptr.eq(cptr.ldPtr(p), (null)) ? 1 : 0)
+    if (!(cptr.ldPtro((p), 8) === (null)) && !cptr.eq(cptr.ldPtr(p), (null)))
         (yield* aux_close(L));
     return 0;
 }
@@ -194,7 +194,7 @@ function* io_popen(L) {
     let filename = ((yield* luaL_checklstring(L, 1, null)));
     let mode = ((yield* luaL_optlstring(L, 2, (__sl10), null)));
     let p = (yield* newprefile(L));
-    (void ((__builtin_expect(BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119 ? 1 : 0) && cptr.ld1so(mode, 1) == 0 ? 1 : 0)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__sl11))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) && cptr.ld1so(mode, 1) == 0 ? 1 : 0)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__sl11))) ? 1 : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, (fflush(null), popen(filename, mode)));
     cptr.stPtro(p, 8, io_pclose);
@@ -307,7 +307,7 @@ function* nextc(rn) {
 
 /** C ref: liolib.c:457 — @param {CPtr} rn @param {CPtr} set @returns {CInt} */
 function* test2(rn, set) {
-    if (cptr.ldI32o(rn, 8) == cptr.ld1so(set, 0) || cptr.ldI32o(rn, 8) == cptr.ld1so(set, 1) ? 1 : 0)
+    if (cptr.ldI32o(rn, 8) == cptr.ld1so(set, 0) || cptr.ldI32o(rn, 8) == cptr.ld1so(set, 1))
         return (yield* nextc(rn));
     else
         return 0;
@@ -316,7 +316,7 @@ function* test2(rn, set) {
 /** C ref: liolib.c:467 — @param {CPtr} rn @param {CInt} hex @returns {CInt} */
 function* readdigits(rn, hex) {
     let count = 0;
-    while ((hex ? isxdigit(cptr.ldI32o(rn, 8)) : isdigit(cptr.ldI32o(rn, 8))) && (yield* nextc(rn)) ? 1 : 0)
+    while ((hex ? isxdigit(cptr.ldI32o(rn, 8)) : isdigit(cptr.ldI32o(rn, 8))) && (yield* nextc(rn)))
         count++;
     return count;
 }
@@ -345,7 +345,7 @@ function* read_number(L, f) {
     count = (count + (yield* readdigits(rn, hex))) | 0;
     if ((yield* test2(rn, cptr.decay(decp))))
         count = (count + (yield* readdigits(rn, hex))) | 0;
-    if (count > 0 && (yield* test2(rn, (hex ? __sl19 : __sl20))) ? 1 : 0) {
+    if (count > 0 && (yield* test2(rn, (hex ? __sl19 : __sl20)))) {
         (yield* test2(rn, __sl16));
         (yield* readdigits(rn, 0));
     }
@@ -377,12 +377,12 @@ function* read_line(L, f, chop) {
         let buff = (yield* luaL_prepbuffsize(b, 1024n));
         let i = 0;
         flockfile(f);
-        while ((i < 1024 && (c = (cptr.stI32o((f), 8, cptr.ldI32o((f), 8) + -1) < 0 ? __srget(f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((f)), (v) => { cptr.stPtr((f), v); }))))) != -1 ? 1 : 0) && c != 10 ? 1 : 0)
+        while (i < 1024 && (c = (cptr.stI32o((f), 8, cptr.ldI32o((f), 8) + -1) < 0 ? __srget(f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((f)), (v) => { cptr.stPtr((f), v); }))))) != -1 && c != 10)
             cptr.st1o(buff, i++, schar(c));
         funlockfile(f);
         (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + BigInt.asUintN(64, BigInt((i)))));
-    } while (c != -1 && c != 10 ? 1 : 0);
-    if (!chop && c == 10 ? 1 : 0)
+    } while (c != -1 && c != 10);
+    if (!chop && c == 10)
         (void (cptr.ldU64o((b), 16) < cptr.ldU64o((b), 8) || (yield* luaL_prepbuffsize((b), 1n)) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), 16, cptr.ldU64o((b), 16) + 1n)) - (1n), schar((c)))));
     (yield* luaL_pushresult(b));
     return (c == 10 || lua_rawlen(L, -1) > 0n ? 1 : 0);
@@ -427,7 +427,7 @@ function* g_read(L, f, first) {
     } else {
         (yield* luaL_checkstack(L, (nargs + 20) | 0, __sl15));
         success = 1;
-        for (n = first; nargs-- && success ? 1 : 0; n++) {
+        for (n = first; nargs-- && success; n++) {
             if (lua_type(L, n) == 3) {
                 let l = BigInt.asUintN(64, (yield* luaL_checkinteger(L, n)));
                 success = (l == 0n) ? (yield* test_eof(L, f)) : (yield* read_chars(L, f, l));

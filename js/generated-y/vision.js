@@ -232,7 +232,7 @@ const right_ptrs = (function () { const flat = new Uint8Array(21 * 80 * 2); cons
 
 /** C ref: vision.c:105 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function get_viz_clear(x, y) {
-    if (isok(i16(x), i16(y)) && !cptr.ld1so(cptr.decay(viz_clear[y]), x, 1) ? 1 : 0)
+    if (isok(i16(x), i16(y)) && !cptr.ld1so(cptr.decay(viz_clear[y]), x, 1))
         return 1;
     return 0;
 }
@@ -258,18 +258,18 @@ export function* does_block(x, y, lev) {
     let obj;
     let mon;
     if (cptr.ldI32o(gs, 1416) == 0) {
-        cptr.stI32o(gs, 1416, (cptr.ld1so(flags, 10) && (yield* debugcore(__sl0, 0)) ? 1 : 0) ? 1 : -1);
+        cptr.stI32o(gs, 1416, (cptr.ld1so(flags, 10) && (yield* debugcore(__sl0, 0))) ? 1 : -1);
     }
-    if ((((cptr.ld1so(lev, 4)) < NHC.POOL) || cptr.ld1so(lev, 4) == NHC.TREE ? 1 : 0) || (((cptr.ld1so(lev, 4)) == NHC.DOOR) && (((cptr.ldI32o(lev, 8) & 31) | 0) & 28) ? 1 : 0) ? 1 : 0)
+    if (((cptr.ld1so(lev, 4)) < NHC.POOL) || cptr.ld1so(lev, 4) == NHC.TREE || (((cptr.ld1so(lev, 4)) == NHC.DOOR) && (((cptr.ldI32o(lev, 8) & 31) | 0) & 28)))
         return 1;
     if (cptr.ldI32o(gs, 1416) != 1) {
-        if (((cptr.ld1so(lev, 4) == NHC.CLOUD || ((cptr.ld1so(lev, 4)) == NHC.WATER) ? 1 : 0) || cptr.ld1so(lev, 4) == NHC.LAVAWALL ? 1 : 0) || (((cptr.ldI32o(u, 1852) & 1)) | 0 && is_moat(i16(x), i16(y)) ? 1 : 0) ? 1 : 0)
+        if (cptr.ld1so(lev, 4) == NHC.CLOUD || ((cptr.ld1so(lev, 4)) == NHC.WATER) || cptr.ld1so(lev, 4) == NHC.LAVAWALL || (((cptr.ldI32o(u, 1852) & 1)) | 0 && is_moat(i16(x), i16(y))))
             return 1;
     }
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, 62160); obj; obj = cptr.ldPtro(obj, 8))
         if (cptr.ldI16o(obj, 32) == NHC.BOULDER)
             return 1;
-    if (((mon = (cptr.ldPtro3(svl, x, 168, y, 8, 75600))) && (!(cptr.ldI32o(mon, 88) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((cptr.ld1uo((mon), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), 60) == NHC.BOULDER ? 1 : 0) || ((cptr.ld1uo((mon), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (((cptr.ldI32o((mon), 60) == NHC.S_hcdoor || cptr.ldI32o((mon), 60) == NHC.S_vcdoor ? 1 : 0) || cptr.ldI32o((mon), 60) < NHC.S_ndoor ? 1 : 0) || cptr.ldI32o((mon), 60) == NHC.S_tree ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, 75600))) && (!(cptr.ldI32o(mon, 88) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112))) && (((cptr.ld1uo((mon), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), 60) == NHC.BOULDER) || ((cptr.ld1uo((mon), 64) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mon), 60) == NHC.S_hcdoor || cptr.ldI32o((mon), 60) == NHC.S_vcdoor || cptr.ldI32o((mon), 60) < NHC.S_ndoor || cptr.ldI32o((mon), 60) == NHC.S_tree))))
         return 1;
     if (cptr.ldI32o(gs, 1416) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -316,7 +316,7 @@ export function* vision_reset() {
                 block = !block;
             }
         i = dig_left;
-        if (!block && dig_left ? 1 : 0)
+        if (!block && dig_left)
             dig_left--;
         for (; i < NHM.COLNO; i++) {
             cptr.stI16o(cptr.decay(left_ptrs[y]), i, i16(dig_left), 2);
@@ -388,7 +388,7 @@ function* rogue_vision(next, rmin, rmax) {
             cptr.stI16o(rmax, zy, i16(xhi), 2);
         for (zx = xlo; zx <= xhi; zx++) {
             cptr.st1o(cptr.ldPtro(next, zy, 8), zx, 3);
-            if (in_door && (zx == cptr.ldI16(u) || zy == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+            if (in_door && (zx == cptr.ldI16(u) || zy == cptr.ldI16o(u, 2)))
                 (yield* newsym(i16(zx), i16(zy)));
         }
     }
@@ -417,12 +417,12 @@ export function* vision_recalc(control) {
     let oldseenv;
     __lbl_skip: {
         cptr.st1o(gv, 144, 0);
-        if ((cptr.ld1so(gi, 4) || cptr.ldI32o(program_state, 40) ? 1 : 0) || !cptr.ld1so(iflags, 82) ? 1 : 0)
+        if (cptr.ld1so(gi, 4) || cptr.ldI32o(program_state, 40) || !cptr.ld1so(iflags, 82))
             return;
         (yield* get_unused_cs(next_array, next_rmin, next_rmax));
-        if ((cptr.ldI32o(u, 1848) & 1) | 0 || control == 2 ? 1 : 0) {
+        if ((cptr.ldI32o(u, 1848) & 1) | 0 || control == 2) {
             ;
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
+        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
             (yield* view_from(cptr.ldI16o(u, 2), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null));
             temp_array = cptr.ldPtro(gv, 120);
             cptr.stPtro(gv, 120, next_array.v);
@@ -435,23 +435,23 @@ export function* vision_recalc(control) {
                         (yield* newsym(i16(col), i16(row)));
             }
             break __lbl_skip;
-        } else if ((((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1800)) ? 1 : 0))) {
+        } else if ((((cptr.ldI16o((cptr.add(svd, 1800)), 2) || cptr.ldI16((cptr.add(svd, 1800)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1800))))) {
             (yield* rogue_vision(next_array.v, next_rmin.v, next_rmax.v));
         } else {
             let lo_col;
             let has_night_vision = 1;
-            if (((cptr.ldI32o(u, 1852) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, 1856)), 2) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) ? 1 : 0) {
+            if (((cptr.ldI32o(u, 1852) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, 1856)), 2) || cptr.ldI16((cptr.add(svd, 1856)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1856))))) {
                 has_night_vision = 0;
                 lo_col = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
                 for (row = (cptr.ldI16o(u, 2) - 1) | 0; row <= ((cptr.ldI16o(u, 2) + 1) | 0); row++)
                     for (col = lo_col; col <= ((cptr.ldI16(u) + 1) | 0); col++) {
-                        if (!isok(i16(col), i16(row)) || !is_pool(i16(col), i16(row)) ? 1 : 0)
+                        if (!isok(i16(col), i16(row)) || !is_pool(i16(col), i16(row)))
                             continue;
                         cptr.stI16o(next_rmin.v, row, i16(((cptr.ldI16o(next_rmin.v, row, 2)) < (col) ? (cptr.ldI16o(next_rmin.v, row, 2)) : (col))), 2);
                         cptr.stI16o(next_rmax.v, row, i16(((cptr.ldI16o(next_rmax.v, row, 2)) > (col) ? (cptr.ldI16o(next_rmax.v, row, 2)) : (col))), 2);
                         cptr.st1o(cptr.ldPtro(next_array.v, row, 8), col, 3);
                     }
-            } else if (cptr.ldI32o(u, 60) && cptr.ldI32o(u, 64) == NHC.TT_PIT ? 1 : 0) {
+            } else if (cptr.ldI32o(u, 60) && cptr.ldI32o(u, 64) == NHC.TT_PIT) {
                 for (row = (cptr.ldI16o(u, 2) - 1) | 0; row <= ((cptr.ldI16o(u, 2) + 1) | 0); row++) {
                     if (row < 0)
                         continue;
@@ -482,7 +482,7 @@ export function* vision_recalc(control) {
                             cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
                             oldseenv = cptr.ld1uo3(svl, col, 756, row, 36, 1685);
                             cptr.st1o3(svl, col, 756, row, 36, 1685, 255);
-                            if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255 ? 1 : 0)
+                            if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255)
                                 (yield* newsym(i16(col), i16(row)));
                         }
                         cptr.stI16o(next_rmin.v, row, i16(((start) < (cptr.ldI16o(next_rmin.v, row, 2)) ? (start) : (cptr.ldI16o(next_rmin.v, row, 2)))), 2);
@@ -495,7 +495,7 @@ export function* vision_recalc(control) {
                     cptr.stI16o(next_rmax.v, cptr.ldI16o(u, 2), i16(((cptr.ldI16(u)) > (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, 2), 2)) ? (cptr.ldI16(u)) : (cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, 2), 2)))), 2);
                 }
             }
-            if (has_night_vision && cptr.ldI32o(u, 1780) < cptr.ldI32o(u, 1776) ? 1 : 0) {
+            if (has_night_vision && cptr.ldI32o(u, 1780) < cptr.ldI32o(u, 1776)) {
                 if (!cptr.ldI32o(u, 1776)) {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, 2), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, 2), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
                     cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, 2), 36, 1685, 255);
@@ -540,18 +540,18 @@ export function* vision_recalc(control) {
                     if (cptr.ld1uo(next_row, col) & NHM.IN_SIGHT) {
                         oldseenv = cptr.ld1uo(lev, 5);
                         cptr.st1o(lev, 5, cptr.ld1uo(lev, 5) | (cptr.ld1u(sv)));
-                        if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5) ? 1 : 0)
+                        if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5))
                             (yield* newsym(i16(col), i16(row)));
-                    } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && ((cptr.ldI32o(lev, 16) & 1) | 0 || (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT) ? 1 : 0) ? 1 : 0) {
-                        if (((((cptr.ld1so(lev, 4)) == NHC.DOOR) || cptr.ld1so(lev, 4) == NHC.SDOOR ? 1 : 0) || ((cptr.ld1so(lev, 4)) && (cptr.ld1so(lev, 4)) <= NHC.DBWALL ? 1 : 0) ? 1 : 0) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1) ? 1 : 0) {
+                    } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && ((cptr.ldI32o(lev, 16) & 1) | 0 || (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT))) {
+                        if ((((cptr.ld1so(lev, 4)) == NHC.DOOR) || cptr.ld1so(lev, 4) == NHC.SDOOR || ((cptr.ld1so(lev, 4)) && (cptr.ld1so(lev, 4)) <= NHC.DBWALL)) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
                             flev = cptr.add(cptr.add(cptr.add(svl, 1680), (col + dx) | 0, 756), (row + dy) | 0, 36);
-                            if ((cptr.ldI32o(flev, 16) & 1) | 0 || cptr.ld1uo(cptr.ldPtro(next_array.v, (row + dy) | 0, 8), (col + dx) | 0) & NHM.TEMP_LIT ? 1 : 0) {
+                            if ((cptr.ldI32o(flev, 16) & 1) | 0 || cptr.ld1uo(cptr.ldPtro(next_array.v, (row + dy) | 0, 8), (col + dx) | 0) & NHM.TEMP_LIT) {
                                 cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
                                 oldseenv = cptr.ld1uo(lev, 5);
                                 cptr.st1o(lev, 5, cptr.ld1uo(lev, 5) | (cptr.ld1u(sv)));
-                                if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5) ? 1 : 0)
+                                if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5))
                                     (yield* newsym(i16(col), i16(row)));
                             } else
                                 { __go_not_in_sight = true; break __skip_not_in_sight; }
@@ -559,10 +559,10 @@ export function* vision_recalc(control) {
                             cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
                             oldseenv = cptr.ld1uo(lev, 5);
                             cptr.st1o(lev, 5, cptr.ld1uo(lev, 5) | (cptr.ld1u(sv)));
-                            if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5) ? 1 : 0)
+                            if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, 5))
                                 (yield* newsym(i16(col), i16(row)));
                         }
-                    } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && (cptr.ldI32o(lev, 20) & 1) | 0 ? 1 : 0) {
+                    } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && (cptr.ldI32o(lev, 20) & 1) | 0) {
                         cptr.stI32o(lev, 20, 0);
                         (yield* newsym(i16(col), i16(row)));
                     } else {
@@ -570,7 +570,7 @@ export function* vision_recalc(control) {
                     }
                 }
                 if (__go_not_in_sight) {
-                    if ((cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) ^ (cptr.ld1uo(old_row, col) & NHM.COULD_SEE)) ? 1 : 0) {
+                    if ((cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) ^ (cptr.ld1uo(old_row, col) & NHM.COULD_SEE))) {
                         if (col != 0)
                             (yield* newsym(i16(col), i16(row)));
                     }
@@ -589,7 +589,7 @@ export function* vision_recalc(control) {
 /** C ref: vision.c:865 — @param {CInt} x @param {CInt} y */
 export function* block_point(x, y) {
     if (cptr.ldI32o(gs, 1416) == 0) {
-        cptr.stI32o(gs, 1416, (cptr.ld1so(flags, 10) && (yield* debugcore(__sl0, 0)) ? 1 : 0) ? 1 : -1);
+        cptr.stI32o(gs, 1416, (cptr.ld1so(flags, 10) && (yield* debugcore(__sl0, 0))) ? 1 : -1);
     }
     if (cptr.ldI32o(gs, 1416) == 1) {
         if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, 1680), x, 756), y, 36))))
@@ -637,7 +637,7 @@ function dig_point(row, col) {
             for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), 78, 2); i < 79; i++)
                 cptr.stI16o(cptr.decay(right_ptrs[row]), i, 78, 2);
         }
-    } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1) ? 1 : 0) {
+    } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i <= col; i++) {
             if (!cptr.ld1so(cptr.decay(viz_clear[row]), i, 1))
                 continue;
@@ -698,7 +698,7 @@ function fill_point(row, col) {
             for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), 78, 2); i < 79; i++)
                 cptr.stI16o(cptr.decay(right_ptrs[row]), i, 79, 2);
         }
-    } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1) ? 1 : 0) {
+    } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
         for (i = (cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2) + 1) | 0; i <= col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(col), 2);
         if (!cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2))
@@ -897,7 +897,7 @@ export function clear_path(col1, row1, col2, row2) {
                     result = 1;
                 }
                 ;
-            } else if (row1 == row2 && col1 == col2 ? 1 : 0) {
+            } else if (row1 == row2 && col1 == col2) {
                 result = 1;
             } else {
                 {
@@ -967,7 +967,7 @@ function* right_side(row, left, right_mark, limits) {
     let row_max = null;
     let lim_max;
     nrow = (row + step.v) | 0;
-    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
+    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2))))) ? 1 : 0;
     if (!vis_func) {
         rowp = cptr.ldPtro(cs_rows, row, 8);
         row_min = cptr.add(cs_left, row, 2);
@@ -1236,7 +1236,7 @@ function* right_side(row, left, right_mark, limits) {
         } else
             right = right_edge;
         if (left <= right) {
-            if (((left == right && left == start_col ? 1 : 0) && start_col < 79 ? 1 : 0) && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col + 1) | 0) ? 1 : 0)
+            if (left == right && left == start_col && start_col < 79 && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col + 1) | 0))
                 right = (start_col + 1) | 0;
             if (right > lim_max)
                 right = lim_max;
@@ -1280,7 +1280,7 @@ function* left_side(row, left_mark, right, limits) {
     let row_max = null;
     let lim_min;
     nrow = (row + step.v) | 0;
-    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO ? 1 : 0) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2)))) ? 1 : 0) ? 1 : 0;
+    deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2))))) ? 1 : 0;
     if (!vis_func) {
         rowp = cptr.ldPtro(cs_rows, row, 8);
         row_min = cptr.add(cs_left, row, 2);
@@ -1549,7 +1549,7 @@ function* left_side(row, left_mark, right, limits) {
         } else
             left = left_edge;
         if (left <= right) {
-            if (((left == right && right == start_col ? 1 : 0) && start_col > 0 ? 1 : 0) && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col - 1) | 0) ? 1 : 0)
+            if (left == right && right == start_col && start_col > 0 && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col - 1) | 0))
                 left = (start_col - 1) | 0;
             if (left < lim_min)
                 left = lim_min;
@@ -1603,7 +1603,7 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
         right = (scol == 79) ? 79 : (cptr.ld1so(cptr.ldPtro(viz_clear_rows, srow, 8), (scol + 1) | 0) ? cptr.ldI16o(cptr.decay(right_ptrs[srow]), (scol + 1) | 0, 2) : (scol + 1) | 0);
     }
     if (range) {
-        if (range > NHM.MAX_RADIUS || range < 1 ? 1 : 0)
+        if (range > NHM.MAX_RADIUS || range < 1)
             (yield* panic(__sl7, range));
         limits = cptr.add((cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2)), 1, 2);
         if (left < ((scol - range) | 0))
@@ -1643,7 +1643,7 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
 
 /** C ref: vision.c:2107 — @param {CInt} scol @param {CInt} srow @param {CInt} range @param {CPtr} func @param {CPtr} arg */
 export function* do_clear_area(scol, srow, range, func, arg) {
-    if (scol != cptr.ldI16(u) || srow != cptr.ldI16o(u, 2) ? 1 : 0) {
+    if (scol != cptr.ldI16(u) || srow != cptr.ldI16o(u, 2)) {
         (yield* view_from(srow, scol, null, null, null, range, func, arg));
     } else {
         let x;
@@ -1654,8 +1654,8 @@ export function* do_clear_area(scol, srow, range, func, arg) {
         let offset;
         let limits;
         let override_vision;
-        override_vision = schar((detecting(func) && ((((cptr.ldI16o((cptr.add(svd, 1856)), 2) || cptr.ldI16((cptr.add(svd, 1856))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)) ? 1 : 0)) || (((cptr.ldI16o((cptr.add(svd, 1864)), 2) || cptr.ldI16((cptr.add(svd, 1864))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1864)) ? 1 : 0)) ? 1 : 0) ? 1 : 0));
-        if (range > NHM.MAX_RADIUS || range < 1 ? 1 : 0)
+        override_vision = schar((detecting(func) && ((((cptr.ldI16o((cptr.add(svd, 1856)), 2) || cptr.ldI16((cptr.add(svd, 1856)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1856)))) || (((cptr.ldI16o((cptr.add(svd, 1864)), 2) || cptr.ldI16((cptr.add(svd, 1864)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1864))))) ? 1 : 0));
+        if (range > NHM.MAX_RADIUS || range < 1)
             (yield* panic(__sl9, range));
         if (cptr.ld1so(gv, 144))
             (yield* vision_recalc(0));
@@ -1671,7 +1671,7 @@ export function* do_clear_area(scol, srow, range, func, arg) {
             if ((max_x = ((scol + offset) | 0)) >= NHM.COLNO)
                 max_x = 79;
             for (x = min_x; x <= max_x; x++)
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), y, 8), x) & NHM.COULD_SEE) != 0) || override_vision ? 1 : 0)
+                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), y, 8), x) & NHM.COULD_SEE) != 0) || override_vision)
                     (yield* Y.icall((func)(i16(x), i16(y), arg)));
         }
     }
@@ -1682,19 +1682,19 @@ export function howmonseen(mon) {
     let useemon = schar(canseemon(mon));
     let xraydist = (cptr.ldI32o(u, 1780) < 0) ? -1 : (Math.imul(cptr.ldI32o(u, 1780), cptr.ldI32o(u, 1780)));
     let how_seen = 0;
-    if ((((cptr.ldI32o(mon, 200) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mon, 30), 8), cptr.ldI16o(mon, 28)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mon, 30), 8), cptr.ldI16o(mon, 28)) & NHM.COULD_SEE) != 0) ? 1 : 0)) && mon_visible(mon) ? 1 : 0) && !(cptr.ldI32o(mon, 88) & 1) ? 1 : 0)
+    if (((cptr.ldI32o(mon, 200) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mon, 30), 8), cptr.ldI16o(mon, 28)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(mon, 30), 8), cptr.ldI16o(mon, 28)) & NHM.COULD_SEE) != 0) ? 1 : 0)) && mon_visible(mon) && !(cptr.ldI32o(mon, 88) & 1))
         how_seen |= NHM.MONSEEN_NORMAL;
-    if (useemon && (cptr.ldI32o(mon, 88) & 1) | 0 ? 1 : 0)
+    if (useemon && (cptr.ldI32o(mon, 88) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
-    if ((!(cptr.ldI32o(mon, 88) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112) ? 1 : 0) ? 1 : 0) && see_with_infrared(mon) ? 1 : 0)
+    if ((!(cptr.ldI32o(mon, 88) & 1) || (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 128) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, 112))) && see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
     if (tp_sensemon(mon))
         how_seen |= NHM.MONSEEN_TELEPAT;
-    if ((useemon && xraydist > 0 ? 1 : 0) && dist2((cptr.ldI16o((mon), 28)), (cptr.ldI16o((mon), 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= xraydist ? 1 : 0)
+    if (useemon && xraydist > 0 && dist2((cptr.ldI16o((mon), 28)), (cptr.ldI16o((mon), 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= xraydist)
         how_seen |= NHM.MONSEEN_XRAYVIS;
-    if ((cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 128) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 112) ? 1 : 0))
+    if ((cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 128) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, 112)))
         how_seen |= NHM.MONSEEN_DETECT;
-    if (((cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, 128) || cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, 112) ? 1 : 0) && (((cptr.ldU64o(svc, 552) & cptr.ldU64o(cptr.ldPtro((mon), 8), 80)) != 0n || (cptr.ldU64o(svc, 560) & cptr.ldU64o(cptr.ldPtro((mon), 8), 80)) != 0n ? 1 : 0) || (cptr.ldPtro(svc, 568) && (cptr.eq(cptr.ldPtro(svc, 568), cptr.ldPtro((mon), 8))) ? 1 : 0) ? 1 : 0) ? 1 : 0))
+    if (((cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, 128) || cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, 112)) && ((cptr.ldU64o(svc, 552) & cptr.ldU64o(cptr.ldPtro((mon), 8), 80)) != 0n || (cptr.ldU64o(svc, 560) & cptr.ldU64o(cptr.ldPtro((mon), 8), 80)) != 0n || (cptr.ldPtro(svc, 568) && (cptr.eq(cptr.ldPtro(svc, 568), cptr.ldPtro((mon), 8)))))))
         how_seen |= NHM.MONSEEN_WARNMON;
     return how_seen;
 }

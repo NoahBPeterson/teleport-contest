@@ -69,7 +69,7 @@ export function* dumplogmsg(line) {
     let oldest = cptr.ldPtro2(gs, indx, 8, 984);
     if (!cptr.strncmp(line, __sl0, 15n))
         return;
-    if (oldest && cptr.strlen(oldest) >= cptr.strlen(line) ? 1 : 0) {
+    if (oldest && cptr.strlen(oldest) >= cptr.strlen(line)) {
         void cptr.strcpy(oldest, line);
     } else {
         if (oldest)
@@ -93,9 +93,9 @@ function* putmesg(line) {
     let attr = NHM.ATR_NONE;
     if (cptr.ld1so(iflags, 88))
         return;
-    if (((cptr.ldI32o(gp, 240) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64o(windowprocs, 24) & 16384n) != 0n ? 1 : 0)
+    if (((cptr.ldI32o(gp, 240) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64o(windowprocs, 24) & 16384n) != 0n)
         attr |= NHM.ATR_URGENT;
-    if (((cptr.ldI32o(gp, 240) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, 24) & 32768n) != 0n ? 1 : 0)
+    if (((cptr.ldI32o(gp, 240) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, 24) & 32768n) != 0n)
         attr |= NHM.ATR_NOHISTORY;
     (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(WIN_MESSAGE.v, attr, line)));
     ;
@@ -164,13 +164,13 @@ function* vpline(line, the_args) {
     __lbl_pline_done: {
         cptr.memcpy(a11y_mesgxy, cptr.add(a11y, 2), 4);
         cptr.stI16o(a11y, 2, cptr.stI16o(a11y, 4, 0));
-        if (!line || !cptr.ld1s(line) ? 1 : 0)
+        if (!line || !cptr.ld1s(line))
             return;
         if (cptr.ldI32o(program_state, 8))
             return;
         if (cptr.ldI32o(program_state, 100))
             return;
-        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, 2)) ? 1 : 0) {
+        if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, 2))) {
             let tmp;
             let dirstr;
             let dirstrbuf = new Uint8Array(128);
@@ -185,7 +185,7 @@ function* vpline(line, the_args) {
         }
         if (!cptr.strchr(line, 37)) {
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
-        } else if ((cptr.ld1so(line, 0) == 37 && cptr.ld1so(line, 1) == 115 ? 1 : 0) && !cptr.ld1so(line, 2) ? 1 : 0) {
+        } else if (cptr.ld1so(line, 0) == 37 && cptr.ld1so(line, 1) == 115 && !cptr.ld1so(line, 2)) {
             line = cptr.vaArg(the_args, 'ptr');
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
         } else {
@@ -207,7 +207,7 @@ function* vpline(line, the_args) {
         msgtyp = NHM.MSGTYP_NORMAL;
         if (((cptr.ldI32o(gp, 240) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             (yield* dumplogmsg(line));
-        if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, 81) ? 1 : 0) {
+        if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, 81)) {
             (yield* Y.icall((cptr.ldPtro(windowprocs, 240))(line)));
             cptr.stI32o(iflags, 40, NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
@@ -215,7 +215,7 @@ function* vpline(line, the_args) {
         no_repeat = schar((((cptr.ldI32o(gp, 240) & NHM.PLINE_NOREPEAT) >>> 0) ? 1 : 0));
         if (((cptr.ldI32o(gp, 240) & NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32o(gp, 240) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, 244)) ? 1 : 0) ? 1 : 0) ? 1 : 0)
+            if (((cptr.ldI32o(gp, 240) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, 244)))))
                 break __lbl_pline_done;
         }
         if (cptr.ld1so(gv, 144)) {
@@ -307,7 +307,7 @@ export function* You_feel(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+    if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n))))))), __sl5);
     else
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n))))))), __sl6);
@@ -346,12 +346,12 @@ export function* There(line, ...__va) {
 export function* You_hear(line, ...__va) {
     let the_args;
     let tmp;
-    if ((((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0) && !(cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0) ? 1 : 0) || !cptr.ld1s(flags) ? 1 : 0)
+    if (((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114)) && !(cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
         return;
     the_args = cptr.vaList(__va);
     if (((cptr.ldI32o(u, 1852) & 1)))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n))))))), __sl10);
-    else if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+    else if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n))))))), __sl11);
     else
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n))))))), __sl12);
@@ -364,9 +364,9 @@ export function* You_see(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted() ? 1 : 0) ? 1 : 0))
+    if ((cptr.ldI64o(gm, 8) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n))))))), __sl13);
-    else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0))
+    else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n))))))), __sl14);
     else
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n))))))), __sl15);
@@ -398,7 +398,7 @@ export function* gamelog_add(glflags, gltime, str) {
     cptr.stI64o(tmp, 8, glflags);
     cptr.stPtro(tmp, 16, (yield* dupstr(str)));
     cptr.stPtro(tmp, 24, null);
-    while (lst && cptr.ldPtro(lst, 24) ? 1 : 0)
+    while (lst && cptr.ldPtro(lst, 24))
         lst = cptr.ldPtro(lst, 24);
     if (!lst)
         cptr.stPtro(gg, 94968, tmp);
@@ -493,7 +493,7 @@ let use_pline_handler = 1;
 function* execplinehandler(line) {
     let f;
     let args = cptr.alloc(3 * 8);
-    if (!use_pline_handler || !cptr.ldPtro(sysopt, 64) ? 1 : 0)
+    if (!use_pline_handler || !cptr.ldPtro(sysopt, 64))
         return;
     f = fork();
     if (f == 0) {

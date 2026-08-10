@@ -98,7 +98,7 @@ export function main(argc, argv) {
         let mac_tmp_len;
         let mac_lhs_len = 0;
         getcwd(cptr.decay(mac_cwd), 1024n);
-        if (cptr.ld1so(mac_exe, 0) == 47 && !strcmp(cptr.decay(mac_cwd), __sl0) ? 1 : 0) {
+        if (cptr.ld1so(mac_exe, 0) == 47 && !strcmp(cptr.decay(mac_cwd), __sl0)) {
             if ((mac_exe = cptr.strrchr(mac_exe, 47)))
                 mac_exe = cptr.add(mac_exe, 1);
             else
@@ -157,7 +157,7 @@ export function main(argc, argv) {
             getlock();
             cptr.stI32o(program_state, 12, 0);
         }
-        if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null ? 1 : 0) {
+        if (cptr.ld1s(svp) && (nhfp = restore_saved_game()) !== null) {
             let fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
             void chmod(fq_save, 0);
             void signal(2, done1);
@@ -173,7 +173,7 @@ export function main(argc, argv) {
             if (dorecover(nhfp)) {
                 resuming = 1;
                 wd_message();
-                if (cptr.ld1so(flags, 12) || cptr.ld1so(flags, 10) ? 1 : 0) {
+                if (cptr.ld1so(flags, 12) || cptr.ld1so(flags, 10)) {
                     if (yn_function(__sl8, cptr.decay(ynchars), 110, 1) == 110) {
                         void delete_savefile();
                     } else {
@@ -188,11 +188,11 @@ export function main(argc, argv) {
         }
         if (!resuming) {
             let neednewlock = schar((!cptr.ld1s(svp)));
-            if ((!cptr.ld1so(iflags, 143) || cptr.ld1s(iflags) ? 1 : 0) || neednewlock ? 1 : 0) {
+            if (!cptr.ld1so(iflags, 143) || cptr.ld1s(iflags) || neednewlock) {
                 if (!plsel_once)
                     (cptr.ldPtro(windowprocs, 56))();
                 plsel_once = 1;
-                if (neednewlock && cptr.ld1s(svp) ? 1 : 0)
+                if (neednewlock && cptr.ld1s(svp))
                     continue __lbl_attempt_restore;
                 if (cptr.ld1so(iflags, 143)) {
                     if (!cptr.ldI32o(gl, 8)) {
@@ -221,21 +221,21 @@ function process_options(argc, argv) {
     let i;
     let l;
     config_error_init(0, __sl9, 0);
-    while (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) == 45 ? 1 : 0) {
+    while (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) == 45) {
         argv = cptr.add(argv, 1, 8);
         argc--;
         arg = (origarg = cptr.ldPtro(argv, 0, 8));
-        if (((cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 ? 1 : 0) && cptr.ld1so(arg, 2) != 0 ? 1 : 0) && ((cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 ? 1 : 0) && cptr.ld1so(arg, 3) != 58 ? 1 : 0) ? 1 : 0)
+        if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 && cptr.ld1so(arg, 2) != 0 && (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
             arg = cptr.add(arg, 1);
         l = Number(BigInt.asIntN(32, cptr.strlen(arg)));
-        if (l < 6 && !cptr.strncmp(arg, __sl10, 4n) ? 1 : 0)
+        if (l < 6 && !cptr.strncmp(arg, __sl10, 4n))
             l = 6;
         else if (l < 4)
             l = 4;
         switch (cptr.ld1so(arg, 1)) {
             case 68:
             case 100:
-            if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2) ? 1 : 0) || !strncmpi((arg), (__sl11), -1) ? 1 : 0) {
+            if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) || !strncmpi((arg), (__sl11), -1)) {
                 cptr.st1o(flags, 10, 1), cptr.st1o(flags, 12, 0);
             } else if (!strncmpi(arg, __sl12, l)) {
                 load_symset(__sl13, NHC.PRIMARYSET);
@@ -248,7 +248,7 @@ function process_options(argc, argv) {
             cptr.st1o(flags, 12, 1), cptr.st1o(flags, 10, 0);
             break;
             case 110:
-            if (!cptr.ld1so(arg, 2) || !strcmp(arg, __sl15) ? 1 : 0) {
+            if (!cptr.ld1so(arg, 2) || !strcmp(arg, __sl15)) {
                 cptr.st1o(iflags, 137, 0);
                 break;
             } else if (!strcmp(arg, __sl16)) {
@@ -325,7 +325,7 @@ function process_options(argc, argv) {
         let mx_ok = schar((mxplyrs > 0));
         config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtro(argv, 1, 8), mx_ok ? __sl24 : __sl25);
     }
-    if (!cptr.ldI32o(gl, 8) || (cptr.ldI32o(sysopt, 76) && cptr.ldI32o(gl, 8) > cptr.ldI32o(sysopt, 76) ? 1 : 0) ? 1 : 0)
+    if (!cptr.ldI32o(gl, 8) || (cptr.ldI32o(sysopt, 76) && cptr.ldI32o(gl, 8) > cptr.ldI32o(sysopt, 76)))
         cptr.stI32o(gl, 8, cptr.ldI32o(sysopt, 76));
     config_error_done();
     return;
@@ -333,12 +333,12 @@ function process_options(argc, argv) {
 
 /** C ref: unixmain.c:491 — @param {CPtr} dir @param {CInt} wr */
 export function chdirx(dir, wr) {
-    if (dir && strcmp(dir, __sl26) ? 1 : 0) {
+    if (dir && strcmp(dir, __sl26)) {
     } else {
     }
     if (!dir)
         dir = __sl26;
-    if (dir && chdir(dir) < 0 ? 1 : 0) {
+    if (dir && chdir(dir) < 0) {
         perror(dir);
         error(__sl27, dir);
     }
@@ -353,11 +353,11 @@ export function whoami() {
     if (!cptr.ld1s(svp)) {
         let s;
         s = nh_getenv(__sl28);
-        if (!s || !cptr.ld1s(s) ? 1 : 0)
+        if (!s || !cptr.ld1s(s))
             s = nh_getenv(__sl29);
-        if (!s || !cptr.ld1s(s) ? 1 : 0)
+        if (!s || !cptr.ld1s(s))
             s = getlogin();
-        if (s && cptr.ld1s(s) ? 1 : 0) {
+        if (s && cptr.ld1s(s)) {
             void __builtin___strncpy_chk(svp, s, 31n, __builtin_object_size(svp, 1));
             if (cptr.strchr(svp, 45))
                 return 1;
@@ -377,7 +377,7 @@ export function sethanguphandler(handler) {
 
 /** C ref: unixmain.c:629 @returns {CInt} */
 export function authorize_wizard_mode() {
-    if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0) ? 1 : 0) {
+    if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0)) {
         if (check_user_string(cptr.ldPtro(sysopt, 16)))
             return 1;
     }
@@ -387,7 +387,7 @@ export function authorize_wizard_mode() {
 
 /** C ref: unixmain.c:641 @returns {CInt} */
 export function authorize_explore_mode() {
-    if (cptr.ldPtro(sysopt, 32) && cptr.ld1so(cptr.ldPtro(sysopt, 32), 0) ? 1 : 0) {
+    if (cptr.ldPtro(sysopt, 32) && cptr.ld1so(cptr.ldPtro(sysopt, 32), 0)) {
         if (check_user_string(cptr.ldPtro(sysopt, 32)))
             return 1;
     }
@@ -398,7 +398,7 @@ export function authorize_explore_mode() {
 /** C ref: unixmain.c:656 */
 function wd_message() {
     if (cptr.ld1so(iflags, 424)) {
-        if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0) ? 1 : 0) {
+        if (cptr.ldPtro(sysopt, 16) && cptr.ld1so(cptr.ldPtro(sysopt, 16), 0)) {
             let tmp = build_english_list(cptr.ldPtro(sysopt, 16));
             pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, 16), 32) ? __sl31 : __sl24, tmp);
             cptr.free(tmp);
@@ -441,7 +441,7 @@ export function check_user_string(optstr) {
         pwname = svp;
     else if ((pw = get_unix_pw()) !== null)
         pwname = cptr.ldPtr(pw);
-    if (!pwname || !cptr.ld1s(pwname) ? 1 : 0)
+    if (!pwname || !cptr.ld1s(pwname))
         return 0;
     pwlen = Number(BigInt.asIntN(32, cptr.strlen(pwname)));
     eop = eos(optstr);
@@ -454,10 +454,10 @@ export function check_user_string(optstr) {
             continue;
         }
         if (!cptr.strncmp(w, pwname, BigInt.asUintN(64, BigInt(pwlen)))) {
-            if (!cptr.ld1so(w, pwlen) || isspace(cptr.ld1so(w, pwlen)) ? 1 : 0)
+            if (!cptr.ld1so(w, pwlen) || isspace(cptr.ld1so(w, pwlen)))
                 return 1;
         }
-        while (cptr.ld1s(w) && !isspace(cptr.ld1s(w)) ? 1 : 0)
+        while (cptr.ld1s(w) && !isspace(cptr.ld1s(w)))
             w = cptr.add(w, 1);
     }
     return 0;
@@ -475,14 +475,14 @@ function get_unix_pw() {
     user = getlogin();
     if (user) {
         __static_get_unix_pw_pw = getpwnam(user);
-        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid) ? 1 : 0)
+        if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid))
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
         user = nh_getenv(__sl28);
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
-            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid) ? 1 : 0)
+            if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, 16) != uid))
                 __static_get_unix_pw_pw = null;
         }
         if (__static_get_unix_pw_pw === null) {
@@ -514,7 +514,7 @@ export function port_insert_pastebuf(buf) {
             break __lbl_error;
         }
         len = cptr.strlen(buf);
-        if (len > 0n && cptr.ld1so(buf, BigInt.asUintN(64, len - 1n)) == 10 ? 1 : 0)
+        if (len > 0n && cptr.ld1so(buf, BigInt.asUintN(64, len - 1n)) == 10)
             len--;
         if (len != fwrite(buf, 1n, len, PB)) {
             errarg = __sl39;

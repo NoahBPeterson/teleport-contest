@@ -45,7 +45,7 @@ function* checkfield(L, key, n) {
 function* checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;
-        if ((((yield* lua_getmetatable(L, arg)) && (!(what & 1) || (yield* checkfield(L, __sl0, ++n)) ? 1 : 0) ? 1 : 0) && (!(what & 2) || (yield* checkfield(L, __sl1, ++n)) ? 1 : 0) ? 1 : 0) && (!(what & 4) || (yield* checkfield(L, __sl2, ++n)) ? 1 : 0) ? 1 : 0) {
+        if ((yield* lua_getmetatable(L, arg)) && (!(what & 1) || (yield* checkfield(L, __sl0, ++n))) && (!(what & 2) || (yield* checkfield(L, __sl1, ++n))) && (!(what & 4) || (yield* checkfield(L, __sl2, ++n)))) {
             (yield* lua_settop(L, (-(n) - 1) | 0));
         } else
             (yield* luaL_checktype(L, arg, 5));
@@ -113,7 +113,7 @@ function* tmove(L) {
         (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__sl5))) ? 1 : 0));
         n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);
         (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || (yield* luaL_argerror(L, 4, (__sl6))) ? 1 : 0));
-        if ((t > e || t <= f ? 1 : 0) || (tt != 1 && !(yield* lua_compare(L, 1, tt, 0)) ? 1 : 0) ? 1 : 0) {
+        if (t > e || t <= f || (tt != 1 && !(yield* lua_compare(L, 1, tt, 0)))) {
             for (i = 0n; i < n; i++) {
                 (yield* lua_geti(L, 1, BigInt.asIntN(64, f + i)));
                 (yield* lua_seti(L, tt, BigInt.asIntN(64, t + i)));
@@ -269,7 +269,7 @@ function* auxsort(L, lo, up, rnd) {
             (yield* lua_settop(L, -3));
         if ((up - lo) >>> 0 == 1)
             return;
-        if ((up - lo) >>> 0 < 100 || rnd == 0 ? 1 : 0)
+        if ((up - lo) >>> 0 < 100 || rnd == 0)
             p = u32div(((lo + up) >>> 0), 2);
         else
             p = choosePivot(lo, up, rnd);

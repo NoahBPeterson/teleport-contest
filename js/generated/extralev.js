@@ -76,7 +76,7 @@ function roguecorr(x, y, dir) {
             fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, 198) + cptr.ldI16o3(gr, x, 48, y, 16, 202)) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) <= NHC.DBWALL ? 1 : 0))
+            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) <= NHC.DBWALL))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, 208), 224));
             cptr.stI32o3(svl, fromx, 756, fromy, 36, 1688, NHM.D_NODOOR);
@@ -98,7 +98,7 @@ function roguecorr(x, y, dir) {
             toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, 198) - 1) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) && (cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) <= NHC.DBWALL ? 1 : 0))
+            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) && (cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) <= NHC.DBWALL))
                 impossible(__sl5, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, 208), 224));
             cptr.stI32o3(svl, tox, 756, toy, 36, 1688, NHM.D_NODOOR);
@@ -118,7 +118,7 @@ function roguecorr(x, y, dir) {
             fromy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, 198) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 100, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, 202))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, 202)))) | 0));
             fromx = i16(fromx + ((1 + Math.imul(26, x)) | 0));
             fromy = i16(fromy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) <= NHC.DBWALL ? 1 : 0))
+            if (!((cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) && (cptr.ld1so3(svl, fromx, 756, fromy, 36, 1684)) <= NHC.DBWALL))
                 impossible(__sl3, fromx, fromy);
             dodoor(fromx, fromy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, 208), 224));
             cptr.stI32o3(svl, fromx, 756, fromy, 36, 1688, NHM.D_NODOOR);
@@ -140,7 +140,7 @@ function roguecorr(x, y, dir) {
             toy = i16(((cptr.ldI16o3(gr, x, 48, y, 16, 198) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 122, __sl2), rn2(cptr.ldI16o3(gr, x, 48, y, 16, 202))) : rn2(cptr.ldI16o3(gr, x, 48, y, 16, 202)))) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
-            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) && (cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) <= NHC.DBWALL ? 1 : 0))
+            if (!((cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) && (cptr.ld1so3(svl, tox, 756, toy, 36, 1684)) <= NHC.DBWALL))
                 impossible(__sl7, tox, toy);
             dodoor(tox, toy, cptr.add(svr, cptr.ldI32o3(gr, x, 48, y, 16, 208), 224));
             cptr.stI32o3(svl, tox, 756, toy, 36, 1688, NHM.D_NODOOR);
@@ -159,13 +159,13 @@ function miniwalk(x, y) {
     let dirs = cptr.alloc(4 * 4);
     while (1) {
         q = 0;
-        if ((x > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 4)) ? 1 : 0) && (!cptr.ld1uo3(gr, (x - 1) | 0, 48, y, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
+        if (x > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 4)) && (!cptr.ld1uo3(gr, (x - 1) | 0, 48, y, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 148, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 0, 4);
-        if ((x < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 8)) ? 1 : 0) && (!cptr.ld1uo3(gr, (x + 1) | 0, 48, y, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
+        if (x < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 8)) && (!cptr.ld1uo3(gr, (x + 1) | 0, 48, y, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 151, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 1, 4);
-        if ((y > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 1)) ? 1 : 0) && (!cptr.ld1uo3(gr, x, 48, (y - 1) | 0, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
+        if (y > 0 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 1)) && (!cptr.ld1uo3(gr, x, 48, (y - 1) | 0, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 154, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 2, 4);
-        if ((y < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 2)) ? 1 : 0) && (!cptr.ld1uo3(gr, x, 48, (y + 1) | 0, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10)) ? 1 : 0) ? 1 : 0)
+        if (y < 2 && (!((cptr.ld1uo3(gr, x, 48, y, 16, 205)) & 2)) && (!cptr.ld1uo3(gr, x, 48, (y + 1) | 0, 16, 205) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 157, __sl9), rn2(10)) : rn2(10))))
             cptr.stI32o(dirs, q++, 3, 4);
         if (!q)
             return;
@@ -203,7 +203,7 @@ export function makeroguerooms() {
     cptr.stI32o(svn, 44, 0);
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32o(svn, 44) || (x < 2 && y < 2 ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl10), rn2(5)) : rn2(5)) && (cptr.ldI32o(svn, 44) || (x < 2 && y < 2))) {
                 cptr.st1o3(gr, x, 48, y, 16, 204, 0);
                 cptr.stI16o2(cptr.add(gr, x, 48), y, 16, 196, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 225, __sl10), rn2(22)) : rn2(22)) + 2) | 0)));
                 cptr.stI16o2(cptr.add(gr, x, 48), y, 16, 198, i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl10), rn2((y == 2) ? 4 : 3)) : rn2((y == 2) ? 4 : 3)) + 2) | 0)));

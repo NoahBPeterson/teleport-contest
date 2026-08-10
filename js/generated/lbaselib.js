@@ -125,7 +125,7 @@ function luaB_tonumber(L) {
         } else {
             let l = cptr.box(0n);
             let s = lua_tolstring(L, 1, l);
-            if (!cptr.eq(s, (null)) && lua_stringtonumber(L, s) == BigInt.asUintN(64, l.v + 1n) ? 1 : 0)
+            if (!cptr.eq(s, (null)) && lua_stringtonumber(L, s) == BigInt.asUintN(64, l.v + 1n))
                 return 1;
             luaL_checkany(L, 1);
         }
@@ -150,7 +150,7 @@ function luaB_tonumber(L) {
 function luaB_error(L) {
     let level = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 1n)));
     lua_settop(L, 1);
-    if (lua_type(L, 1) == 4 && level > 0 ? 1 : 0) {
+    if (lua_type(L, 1) == 4 && level > 0) {
         luaL_where(L, level);
         lua_pushvalue(L, 1);
         lua_concat(L, 2);
@@ -482,7 +482,7 @@ function luaB_assert(L) {
 /** C ref: lbaselib.c:438 — @param {CPtr} L @returns {CInt} */
 function luaB_select(L) {
     let n = lua_gettop(L);
-    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, 1, null)) == 35 ? 1 : 0) {
+    if (lua_type(L, 1) == 4 && cptr.ld1s(lua_tolstring(L, 1, null)) == 35) {
         lua_pushinteger(L, BigInt(((n - 1) | 0)));
         return 1;
     } else {

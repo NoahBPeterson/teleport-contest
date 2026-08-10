@@ -109,7 +109,7 @@ function math_toint(L) {
 /** C ref: lmathlib.c:86 — @param {CPtr} L @param {CDouble} d */
 function pushnumint(L, d) {
     let n = cptr.box(0n);
-    if ((((d) >= Number((-9223372036854775808n)) && (d) < -Number((-9223372036854775808n)) ? 1 : 0) && (cptr.stI64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1) ? 1 : 0))
+    if (((d) >= Number((-9223372036854775808n)) && (d) < -Number((-9223372036854775808n)) && (cptr.stI64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1)))
         lua_pushinteger(L, n.v);
     else
         lua_pushnumber(L, d);
@@ -139,7 +139,7 @@ function math_ceil(L) {
 
 /** C ref: lmathlib.c:117 — @param {CPtr} L @returns {CInt} */
 function math_fmod(L) {
-    if (lua_isinteger(L, 1) && lua_isinteger(L, 2) ? 1 : 0) {
+    if (lua_isinteger(L, 1) && lua_isinteger(L, 2)) {
         let d = lua_tointegerx(L, 2, null);
         if (BigInt.asUintN(64, BigInt.asUintN(64, d) + 1n) <= 1n) {
             (void ((__builtin_expect(BigInt(((d != 0n) != 0)), 1n)) || luaL_argerror(L, 2, (__sl0)) ? 1 : 0));

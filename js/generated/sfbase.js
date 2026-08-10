@@ -106,7 +106,7 @@ export function sfi_arti_info(nhfp, d_arti_info, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_arti_info(cptr.ldPtro(nhfp, 80), d_arti_info, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -140,7 +140,7 @@ export function sfi_nhrect(nhfp, d_nhrect, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_nhrect(cptr.ldPtro(nhfp, 80), d_nhrect, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -174,7 +174,7 @@ export function sfi_branch(nhfp, d_branch, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_branch(cptr.ldPtro(nhfp, 80), d_branch, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -208,7 +208,7 @@ export function sfi_bubble(nhfp, d_bubble, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_bubble(cptr.ldPtro(nhfp, 80), d_bubble, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -242,7 +242,7 @@ export function sfi_cemetery(nhfp, d_cemetery, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_cemetery(cptr.ldPtro(nhfp, 80), d_cemetery, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -276,7 +276,7 @@ export function sfi_context_info(nhfp, d_context_info, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_context_info(cptr.ldPtro(nhfp, 80), d_context_info, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -310,7 +310,7 @@ export function sfi_nhcoord(nhfp, d_nhcoord, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_nhcoord(cptr.ldPtro(nhfp, 80), d_nhcoord, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -344,7 +344,7 @@ export function sfi_damage(nhfp, d_damage, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_damage(cptr.ldPtro(nhfp, 80), d_damage, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -378,7 +378,7 @@ export function sfi_dest_area(nhfp, d_dest_area, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_dest_area(cptr.ldPtro(nhfp, 80), d_dest_area, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -412,7 +412,7 @@ export function sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_dgn_topology(cptr.ldPtro(nhfp, 80), d_dgn_topology, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -446,7 +446,7 @@ export function sfi_dungeon(nhfp, d_dungeon, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_dungeon(cptr.ldPtro(nhfp, 80), d_dungeon, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -480,7 +480,7 @@ export function sfi_d_level(nhfp, d_d_level, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_d_level(cptr.ldPtro(nhfp, 80), d_d_level, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -514,7 +514,7 @@ export function sfi_ebones(nhfp, d_ebones, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_ebones(cptr.ldPtro(nhfp, 80), d_ebones, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -548,7 +548,7 @@ export function sfi_edog(nhfp, d_edog, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_edog(cptr.ldPtro(nhfp, 80), d_edog, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -582,7 +582,7 @@ export function sfi_egd(nhfp, d_egd, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_egd(cptr.ldPtro(nhfp, 80), d_egd, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -616,7 +616,7 @@ export function sfi_emin(nhfp, d_emin, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_emin(cptr.ldPtro(nhfp, 80), d_emin, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -650,7 +650,7 @@ export function sfi_engr(nhfp, d_engr, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_engr(cptr.ldPtro(nhfp, 80), d_engr, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -684,7 +684,7 @@ export function sfi_epri(nhfp, d_epri, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_epri(cptr.ldPtro(nhfp, 80), d_epri, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -718,7 +718,7 @@ export function sfi_eshk(nhfp, d_eshk, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_eshk(cptr.ldPtro(nhfp, 80), d_eshk, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -752,7 +752,7 @@ export function sfi_fe(nhfp, d_fe, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_fe(cptr.ldPtro(nhfp, 80), d_fe, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -786,7 +786,7 @@ export function sfi_flag(nhfp, d_flag, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_flag(cptr.ldPtro(nhfp, 80), d_flag, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -820,7 +820,7 @@ export function sfi_fruit(nhfp, d_fruit, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_fruit(cptr.ldPtro(nhfp, 80), d_fruit, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -854,7 +854,7 @@ export function sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_gamelog_line(cptr.ldPtro(nhfp, 80), d_gamelog_line, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -888,7 +888,7 @@ export function sfi_kinfo(nhfp, d_kinfo, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_kinfo(cptr.ldPtro(nhfp, 80), d_kinfo, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -922,7 +922,7 @@ export function sfi_levelflags(nhfp, d_levelflags, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_levelflags(cptr.ldPtro(nhfp, 80), d_levelflags, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -956,7 +956,7 @@ export function sfi_ls_t(nhfp, d_ls_t, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_ls_t(cptr.ldPtro(nhfp, 80), d_ls_t, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -990,7 +990,7 @@ export function sfi_linfo(nhfp, d_linfo, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_linfo(cptr.ldPtro(nhfp, 80), d_linfo, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1024,7 +1024,7 @@ export function sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_mapseen_feat(cptr.ldPtro(nhfp, 80), d_mapseen_feat, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1058,7 +1058,7 @@ export function sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_mapseen_flags(cptr.ldPtro(nhfp, 80), d_mapseen_flags, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1092,7 +1092,7 @@ export function sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_mapseen_rooms(cptr.ldPtro(nhfp, 80), d_mapseen_rooms, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1126,7 +1126,7 @@ export function sfi_mkroom(nhfp, d_mkroom, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_mkroom(cptr.ldPtro(nhfp, 80), d_mkroom, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1160,7 +1160,7 @@ export function sfi_monst(nhfp, d_monst, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_monst(cptr.ldPtro(nhfp, 80), d_monst, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1194,7 +1194,7 @@ export function sfi_mvitals(nhfp, d_mvitals, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_mvitals(cptr.ldPtro(nhfp, 80), d_mvitals, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1228,7 +1228,7 @@ export function sfi_obj(nhfp, d_obj, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_obj(cptr.ldPtro(nhfp, 80), d_obj, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1262,7 +1262,7 @@ export function sfi_objclass(nhfp, d_objclass, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_objclass(cptr.ldPtro(nhfp, 80), d_objclass, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1296,7 +1296,7 @@ export function sfi_q_score(nhfp, d_q_score, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_q_score(cptr.ldPtro(nhfp, 80), d_q_score, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1330,7 +1330,7 @@ export function sfi_rm(nhfp, d_rm, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_rm(cptr.ldPtro(nhfp, 80), d_rm, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1364,7 +1364,7 @@ export function sfi_spell(nhfp, d_spell, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_spell(cptr.ldPtro(nhfp, 80), d_spell, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1398,7 +1398,7 @@ export function sfi_stairway(nhfp, d_stairway, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_stairway(cptr.ldPtro(nhfp, 80), d_stairway, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1432,7 +1432,7 @@ export function sfi_s_level(nhfp, d_s_level, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_s_level(cptr.ldPtro(nhfp, 80), d_s_level, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1466,7 +1466,7 @@ export function sfi_trap(nhfp, d_trap, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_trap(cptr.ldPtro(nhfp, 80), d_trap, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1500,7 +1500,7 @@ export function sfi_you(nhfp, d_you, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_you(cptr.ldPtro(nhfp, 80), d_you, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1534,7 +1534,7 @@ export function sfi_any(nhfp, d_any, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_any(cptr.ldPtro(nhfp, 80), d_any, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1568,7 +1568,7 @@ export function sfi_aligntyp(nhfp, d_aligntyp, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_aligntyp(cptr.ldPtro(nhfp, 80), d_aligntyp, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1602,7 +1602,7 @@ export function sfi_boolean(nhfp, d_boolean, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_boolean(cptr.ldPtro(nhfp, 80), d_boolean, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1636,7 +1636,7 @@ export function sfi_coordxy(nhfp, d_coordxy, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_coordxy(cptr.ldPtro(nhfp, 80), d_coordxy, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1670,7 +1670,7 @@ export function sfi_int(nhfp, d_int, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_int(cptr.ldPtro(nhfp, 80), d_int, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1704,7 +1704,7 @@ export function sfi_int16(nhfp, d_int16, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_int16(cptr.ldPtro(nhfp, 80), d_int16, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1738,7 +1738,7 @@ export function sfi_int32(nhfp, d_int32, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_int32(cptr.ldPtro(nhfp, 80), d_int32, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1772,7 +1772,7 @@ export function sfi_int64(nhfp, d_int64, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_int64(cptr.ldPtro(nhfp, 80), d_int64, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1806,7 +1806,7 @@ export function sfi_long(nhfp, d_long, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_long(cptr.ldPtro(nhfp, 80), d_long, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1840,7 +1840,7 @@ export function sfi_schar(nhfp, d_schar, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_schar(cptr.ldPtro(nhfp, 80), d_schar, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1874,7 +1874,7 @@ export function sfi_short(nhfp, d_short, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_short(cptr.ldPtro(nhfp, 80), d_short, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1908,7 +1908,7 @@ export function sfi_size_t(nhfp, d_size_t, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_size_t(cptr.ldPtro(nhfp, 80), d_size_t, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1942,7 +1942,7 @@ export function sfi_time_t(nhfp, d_time_t, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_time_t(cptr.ldPtro(nhfp, 80), d_time_t, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -1976,7 +1976,7 @@ export function sfi_uchar(nhfp, d_uchar, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_uchar(cptr.ldPtro(nhfp, 80), d_uchar, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2010,7 +2010,7 @@ export function sfi_uint16(nhfp, d_uint16, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_uint16(cptr.ldPtro(nhfp, 80), d_uint16, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2044,7 +2044,7 @@ export function sfi_uint32(nhfp, d_uint32, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_uint32(cptr.ldPtro(nhfp, 80), d_uint32, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2078,7 +2078,7 @@ export function sfi_uint64(nhfp, d_uint64, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_uint64(cptr.ldPtro(nhfp, 80), d_uint64, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2112,7 +2112,7 @@ export function sfi_ulong(nhfp, d_ulong, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_ulong(cptr.ldPtro(nhfp, 80), d_ulong, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2146,7 +2146,7 @@ export function sfi_unsigned(nhfp, d_unsigned, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_unsigned(cptr.ldPtro(nhfp, 80), d_unsigned, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2180,7 +2180,7 @@ export function sfi_ushort(nhfp, d_ushort, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_ushort(cptr.ldPtro(nhfp, 80), d_ushort, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2214,7 +2214,7 @@ export function sfi_xint16(nhfp, d_xint16, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_xint16(cptr.ldPtro(nhfp, 80), d_xint16, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2248,7 +2248,7 @@ export function sfi_xint8(nhfp, d_xint8, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_xint8(cptr.ldPtro(nhfp, 80), d_xint8, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2268,7 +2268,7 @@ export function sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
         (cptr.ldPtro2(sfoflprocs, cptr.ldI32o(nhfp, 12), 552, 544))(nhfp, d_bitfield, myname, bfsz);
         cptr.stPtro(nhfp, 56, save_fplog);
     }
-    if (cptr.ldPtro(nhfp, 56) && !cptr.ld1so(nhfp, 35) ? 1 : 0)
+    if (cptr.ldPtro(nhfp, 56) && !cptr.ld1so(nhfp, 35))
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
 }
 
@@ -2284,7 +2284,7 @@ export function sfi_bitfield(nhfp, d_bitfield, myname, bfsz) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_bitfield(cptr.ldPtro(nhfp, 80), d_bitfield, myname, bfsz);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2318,7 +2318,7 @@ export function sfi_char(nhfp, d_char, myname, cnt) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_char(cptr.ldPtro(nhfp, 80), d_char, myname, cnt);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2352,7 +2352,7 @@ export function sfi_genericptr(nhfp, d_genericptr, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             sfo_genericptr(cptr.ldPtro(nhfp, 80), d_genericptr, myname);
         }
         if (cptr.ldPtro(nhfp, 56))
@@ -2386,7 +2386,7 @@ export function sfi_version_info(nhfp, d_version_info, myname) {
         cptr.stI32o(nhfp, 4, save_mode);
     }
     if (!cptr.ld1so(nhfp, 35)) {
-        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0) ? 1 : 0) && cptr.ldPtro(nhfp, 80) ? 1 : 0) {
+        if ((((cptr.ldI32o(nhfp, 4) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, 4) & NHM.UNCONVERTING) != 0)) && cptr.ldPtro(nhfp, 80)) {
             cptr.stU64o(d_version_info, 8, cptr.ldU64o(d_version_info, 8) | 1073741824n);
             sfo_version_info(cptr.ldPtro(nhfp, 80), d_version_info, myname);
         }
@@ -2400,7 +2400,7 @@ export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
     let fp = cptr.ldPtro(nhfp, 56);
     let iocount;
     let dolog = schar(((cptr.ldI32o(nhfp, 4) & 32) == 0));
-    if (fp && dolog ? 1 : 0) {
+    if (fp && dolog) {
         iocount = ((cptr.ldI32o(nhfp, 4) & NHM.WRITING) == 0) ? cptr.add(nhfp, 16) : cptr.add(nhfp, 24);
         void fprintf(fp, __sl0, cptr.ldI64(iocount), t1, sz, cnt, txtvalue);
         fflush(fp);

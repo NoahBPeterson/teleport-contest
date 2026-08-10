@@ -113,7 +113,7 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
         {
             let i1 = cptr.box(0n);
             let i2 = cptr.box(0n);
-            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((p1)), 8)) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, NHC.F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1uo(((p2)), 8)) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, NHC.F2Ieq)) ? 1 : 0) {
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((p1)), 8)) == 3)) != 0)), 1n)) ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1) : luaV_tointegerns(p1, i1, NHC.F2Ieq)) && ((__builtin_expect(BigInt(((((cptr.ld1uo(((p2)), 8)) == 3)) != 0)), 1n)) ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1) : luaV_tointegerns(p2, i2, NHC.F2Ieq))) {
                 {
                     let io = (res);
                     cptr.stI64(((io)), ((yield* intarith(L, op, i1.v, i2.v))));
@@ -129,7 +129,7 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
         {
             let n1;
             let n2;
-            if ((((cptr.ld1uo(((p1)), 8)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), 8)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), 8)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), 8)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0)) ? 1 : 0) {
+            if ((((cptr.ld1uo(((p1)), 8)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), 8)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), 8)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), 8)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
                 {
                     let io = (res);
                     cptr.stF64(((io)), (numarith(L, op, n1, n2)));
@@ -144,7 +144,7 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
         {
             let n1;
             let n2;
-            if (((cptr.ld1uo(((p1)), 8)) == 3) && ((cptr.ld1uo(((p2)), 8)) == 3) ? 1 : 0) {
+            if (((cptr.ld1uo(((p1)), 8)) == 3) && ((cptr.ld1uo(((p2)), 8)) == 3)) {
                 {
                     let io = (res);
                     cptr.stI64(((io)), ((yield* intarith(L, op, (cptr.ldI64(((p1)))), (cptr.ldI64(((p2))))))));
@@ -152,7 +152,7 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
                 }
                 ;
                 return 1;
-            } else if ((((cptr.ld1uo(((p1)), 8)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), 8)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), 8)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), 8)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0)) ? 1 : 0) {
+            } else if ((((cptr.ld1uo(((p1)), 8)) == 19) ? (n1 = (cptr.ldF64(((p1)))), 1) : (((cptr.ld1uo(((p1)), 8)) == 3) ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1) : 0)) && (((cptr.ld1uo(((p2)), 8)) == 19) ? (n2 = (cptr.ldF64(((p2)))), 1) : (((cptr.ld1uo(((p2)), 8)) == 3) ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1) : 0))) {
                 {
                     let io = (res);
                     cptr.stF64(((io)), (numarith(L, op, n1, n2)));
@@ -213,7 +213,7 @@ function l_str2d(s, result) {
     if (cptr.eq(endptr, (null))) {
         let buff = new Uint8Array(201);
         let pdot = cptr.strchr(s, 46);
-        if (cptr.eq(pdot, (null)) || cptr.strlen(s) > 200n ? 1 : 0)
+        if (cptr.eq(pdot, (null)) || cptr.strlen(s) > 200n)
             return null;
         cptr.strcpy(cptr.decay(buff), s);
         cptr.st1o(cptr.decay(buff), cptr.diff(pdot, s), (cptr.ld1so(cptr.ldPtr(localeconv()), 0)), 1);
@@ -233,7 +233,7 @@ function* l_str2int(s, result) {
     while ((cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 8))
         s.v = cptr.add(s.v, 1);
     neg = (yield* isneg(s));
-    if (cptr.ld1so(s.v, 0) == 48 && (cptr.ld1so(s.v, 1) == 120 || cptr.ld1so(s.v, 1) == 88 ? 1 : 0) ? 1 : 0) {
+    if (cptr.ld1so(s.v, 0) == 48 && (cptr.ld1so(s.v, 1) == 120 || cptr.ld1so(s.v, 1) == 88)) {
         s.v = cptr.add(s.v, 2);
         for (; (cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 16); s.v = cptr.add(s.v, 1)) {
             a = BigInt.asUintN(64, BigInt.asUintN(64, a * 16n) + BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ld1s(s.v)))));
@@ -242,7 +242,7 @@ function* l_str2int(s, result) {
     } else {
         for (; (cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 2); s.v = cptr.add(s.v, 1)) {
             let d = (cptr.ld1s(s.v) - 48) | 0;
-            if (a >= 922337203685477580n && (a > 922337203685477580n || d > ((7 + neg) | 0) ? 1 : 0) ? 1 : 0)
+            if (a >= 922337203685477580n && (a > 922337203685477580n || d > ((7 + neg) | 0)))
                 return null;
             a = BigInt.asUintN(64, BigInt.asUintN(64, a * 10n) + BigInt.asUintN(64, BigInt(d)));
             empty = 0;
@@ -250,7 +250,7 @@ function* l_str2int(s, result) {
     }
     while ((cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 8))
         s.v = cptr.add(s.v, 1);
-    if (empty || cptr.ld1s(s.v) != 0 ? 1 : 0)
+    if (empty || cptr.ld1s(s.v) != 0)
         return null;
     else {
         cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? BigInt.asUintN(64, 0n - a) : a))));
@@ -511,7 +511,7 @@ export function luaO_chunkid(out, source, srclen) {
         let nl = cptr.strchr(source, 10);
         (cptr.memcpy(out, __sl9, BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n)))));
         bufflen -= BigInt.asUintN(64, (BigInt.asUintN(64, 15n / 1n - 1n)) + 1n);
-        if (srclen < bufflen && cptr.eq(nl, (null)) ? 1 : 0) {
+        if (srclen < bufflen && cptr.eq(nl, (null))) {
             (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));
         } else {
             if (!cptr.eq(nl, (null)))

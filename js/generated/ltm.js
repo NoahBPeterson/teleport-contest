@@ -136,7 +136,7 @@ export function luaT_gettmbyobj(L, o, event) {
 /** C ref: ltm.c:91 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */
 export function luaT_objtypename(L, o) {
     let mt;
-    if ((((cptr.ld1uo(((o)), 8)) == 69) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), 40)), (null)) ? 1 : 0) || (((cptr.ld1uo(((o)), 8)) == 71) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), 24)), (null)) ? 1 : 0) ? 1 : 0) {
+    if ((((cptr.ld1uo(((o)), 8)) == 69) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), 40)), (null))) || (((cptr.ld1uo(((o)), 8)) == 71) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), 24)), (null)))) {
         let name = luaH_getshortstr(mt, luaS_new(L, __sl35));
         if ((((((cptr.ld1uo(((name)), 8))) & 15)) == 4))
             return (cptr.add((((((((cptr.ldPtr(((name)))))))))), 24));
@@ -260,7 +260,7 @@ export function luaT_trybinTM(L, p1, p2, res, event) {
             case NHC.TM_SHR:
             case NHC.TM_BNOT:
             {
-                if ((((((cptr.ld1uo(((p1)), 8))) & 15)) == 3) && (((((cptr.ld1uo(((p2)), 8))) & 15)) == 3) ? 1 : 0)
+                if ((((((cptr.ld1uo(((p1)), 8))) & 15)) == 3) && (((((cptr.ld1uo(((p2)), 8))) & 15)) == 3))
                     luaG_tointerror(L, p1, p2);
                 else
                     luaG_opinterror(L, p1, p2, __sl36);
@@ -301,7 +301,7 @@ export function luaT_trybiniTM(L, p1, i2, flip, res, event) {
 /** C ref: ltm.c:201 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {*} event @returns {CInt} */
 export function luaT_callorderTM(L, p1, p2, event) {
     if (callbinTM(L, p1, p2, cptr.ldPtro(L, 16), event))
-        return !(((cptr.ld1uo(((((cptr.ldPtro(L, 16))))), 8)) == 1) || (((((cptr.ld1uo(((((cptr.ldPtro(L, 16))))), 8))) & 15)) == 0) ? 1 : 0);
+        return !(((cptr.ld1uo(((((cptr.ldPtro(L, 16))))), 8)) == 1) || (((((cptr.ld1uo(((((cptr.ldPtro(L, 16))))), 8))) & 15)) == 0));
     luaG_ordererror(L, p1, p2);
     return 0;
 }
@@ -397,7 +397,7 @@ export function luaT_getvarargs(L, ci, where, wanted) {
         ;
         cptr.stPtro(L, 16, cptr.add(where, nextra, 16));
     }
-    for (i = 0; i < wanted && i < nextra ? 1 : 0; i++) {
+    for (i = 0; i < wanted && i < nextra; i++) {
         let io1 = (((cptr.add(where, i, 16))));
         let io2 = (((cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), i, 16))));
         cptr.memcpy(io1, io2, 8);

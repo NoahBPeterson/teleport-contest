@@ -230,16 +230,16 @@ function fopen_config_file(filename, src) {
     let tmp_config = new Uint8Array(256);
     let envp;
     if (src == NHC.set_in_sysconf) {
-        if (filename && cptr.ld1s(filename) ? 1 : 0) {
+        if (filename && cptr.ld1s(filename)) {
             set_configfile_name(fqname(filename, NHM.SYSCONFPREFIX, 0));
             fp = fopen(cptr.decay(configfile), __sl8);
         } else
             fp = null;
         return fp;
     }
-    if (filename && cptr.ld1s(filename) ? 1 : 0) {
+    if (filename && cptr.ld1s(filename)) {
         set_configfile_name(filename);
-        if (!cptr.strncmp(cptr.decay(configfile), __sl9, 2n) && (envp = nh_getenv(__sl10)) !== null ? 1 : 0) {
+        if (!cptr.strncmp(cptr.decay(configfile), __sl9, 2n) && (envp = nh_getenv(__sl10)) !== null) {
             nh_snprintf(__sl11, 251, cptr.decay(tmp_config), 256n, __sl12, envp, cptr.add(cptr.decay(configfile), 2));
             set_configfile_name(cptr.decay(tmp_config));
         }
@@ -297,13 +297,13 @@ function get_uchars(bufp, list, modlist, size, name) {
             case 9:
             case 10:
             if (havenum) {
-                if (num || !modlist ? 1 : 0)
+                if (num || !modlist)
                     cptr.st1o(list, count, uchar(num));
                 count++;
                 num = 0;
                 havenum = 0;
             }
-            if (count == size || !cptr.ld1s(bufp) ? 1 : 0)
+            if (count == size || !cptr.ld1s(bufp))
                 return count;
             bufp = cptr.add(bufp, 1);
             break;
@@ -351,7 +351,7 @@ function choose_random_part(str, sep) {
     }
     csep = (rng_log_enabled() ? (rng_log_set_caller(__sl20, 480, __sl21), rn2(nsep)) : rn2(nsep));
     str = begin;
-    while ((csep > 0) && cptr.ld1s(str) ? 1 : 0) {
+    while ((csep > 0) && cptr.ld1s(str)) {
         str = cptr.add(str, 1);
         if (cptr.ld1s(str) == sep)
             csep--;
@@ -360,7 +360,7 @@ function choose_random_part(str, sep) {
         if (cptr.ld1s(str) == sep)
             str = cptr.add(str, 1);
         begin = str;
-        while (cptr.ld1s(str) && cptr.ld1s(str) != sep ? 1 : 0) {
+        while (cptr.ld1s(str) && cptr.ld1s(str) != sep) {
             str = cptr.add(str, 1);
             len++;
         }
@@ -396,7 +396,7 @@ function is_config_section(str) {
         return null;
     for (c = cptr.add(z, 1); cptr.ld1s(c) == 32; c = cptr.add(c, 1))
         continue;
-    if (cptr.ld1s(c) && cptr.ld1s(c) != 35 ? 1 : 0)
+    if (cptr.ld1s(c) && cptr.ld1s(c) != 35)
         return null;
     cptr.st1(z, 0);
     return trimspaces(a);
@@ -448,7 +448,7 @@ function find_optparam(buf) {
     let altp;
     bufp = cptr.strchr(buf, 61);
     altp = cptr.strchr(buf, 58);
-    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0 ? 1 : 0) ? 1 : 0)
+    if (!bufp || (altp && cptr.cmp(altp, bufp) < 0))
         bufp = altp;
     return bufp;
 }
@@ -567,7 +567,7 @@ function cnf_line_WIZARDS(bufp) {
     if (cptr.ldPtro(sysopt, 16))
         cptr.free(cptr.ldPtro(sysopt, 16));
     cptr.stPtro(sysopt, 16, dupstr(bufp));
-    if (cptr.strlen(cptr.ldPtro(sysopt, 16)) && strcmp(cptr.ldPtro(sysopt, 16), __sl25) ? 1 : 0) {
+    if (cptr.strlen(cptr.ldPtro(sysopt, 16)) && strcmp(cptr.ldPtro(sysopt, 16), __sl25)) {
         if (cptr.ldPtro(sysopt, 24))
             cptr.free(cptr.ldPtro(sysopt, 24));
         cptr.stPtro(sysopt, 24, build_english_list(cptr.ldPtro(sysopt, 16)));
@@ -665,7 +665,7 @@ function cnf_line_SEDUCE(bufp) {
     let n = !!atoi(bufp);
     let src = cptr.ldI32o(iflags, 52);
     let in_sysconf = schar((src == NHC.set_in_sysconf));
-    if ((!in_sysconf && !cptr.ldI32o(sysopt, 80) ? 1 : 0) && n != 0 ? 1 : 0) {
+    if (!in_sysconf && !cptr.ldI32o(sysopt, 80) && n != 0) {
         config_error_add(__sl26);
         n = 0;
     }
@@ -684,7 +684,7 @@ function cnf_line_HIDEUSAGE(bufp) {
 /** C ref: cfgfiles.c:955 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_MAXPLAYERS(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 25 ? 1 : 0) {
+    if (n < 0 || n > 25) {
         config_error_add(__sl27);
         n = 5;
     }
@@ -706,7 +706,7 @@ function cnf_line_PERSMAX(bufp) {
 /** C ref: cfgfiles.c:982 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PERS_IS_UID(bufp) {
     let n = atoi(bufp);
-    if (n != 0 && n != 1 ? 1 : 0) {
+    if (n != 0 && n != 1) {
         config_error_add(__sl29);
         n = 0;
     }
@@ -750,7 +750,7 @@ function cnf_line_MAX_STATUENAME_RANK(bufp) {
 /** C ref: cfgfiles.c:1035 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_LIVELOG(bufp) {
     let L = strtol(bufp, null, 0);
-    if (L < 0n || L > 65535n ? 1 : 0) {
+    if (L < 0n || L > 65535n) {
         config_error_add(__sl33);
         return 0;
     }
@@ -761,7 +761,7 @@ function cnf_line_LIVELOG(bufp) {
 /** C ref: cfgfiles.c:1052 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_LIBC(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 2 ? 1 : 0) {
+    if (n < 0 || n > 2) {
         config_error_add(__sl34);
         n = 0;
     }
@@ -772,7 +772,7 @@ function cnf_line_PANICTRACE_LIBC(bufp) {
 /** C ref: cfgfiles.c:1067 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_GDB(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 2 ? 1 : 0) {
+    if (n < 0 || n > 2) {
         config_error_add(__sl35);
         n = 0;
     }
@@ -815,7 +815,7 @@ function cnf_line_CRASHREPORTURL(bufp) {
 /** C ref: cfgfiles.c:1121 — @param {CPtr} bufp @returns {CInt} */
 function cnf_line_ACCESSIBILITY(bufp) {
     let n = atoi(bufp);
-    if (n < 0 || n > 1 ? 1 : 0) {
+    if (n < 0 || n > 1) {
         config_error_add(__sl38);
         n = 0;
     }
@@ -1217,7 +1217,7 @@ export function parse_config_line(origbuf) {
     let bufp;
     let buf = new Uint8Array(1024);
     let i;
-    while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9 ? 1 : 0)
+    while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9)
         origbuf = cptr.add(origbuf, 1);
     void __builtin___strncpy_chk(cptr.decay(buf), origbuf, 1023n, __builtin_object_size(cptr.decay(buf), 1));
     cptr.st1o(cptr.decay(buf), 1023n, 0, 1);
@@ -1232,7 +1232,7 @@ export function parse_config_line(origbuf) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1so2(config_line_stmt, i, 24, 12) && !in_sysconf ? 1 : 0)
+        if (cptr.ld1so2(config_line_stmt, i, 24, 12) && !in_sysconf)
             continue;
         if (match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o2(config_line_stmt, i, 24, 8), 1)) {
             let parm = cptr.ld1so2(config_line_stmt, i, 24, 13) ? origbuf : bufp;
@@ -1264,7 +1264,7 @@ export function config_error_init(from_file, sourcename, secure) {
     cptr.st1o(tmp, 9, from_file);
     cptr.st1o(tmp, 10, secure);
     cptr.st1o2(tmp, 0, 1, 11, 0);
-    if (sourcename && cptr.ld1so(sourcename, 0) ? 1 : 0) {
+    if (sourcename && cptr.ld1so(sourcename, 0)) {
         void __builtin___strncpy_chk(cptr.add(tmp, 1035), sourcename, 255n, __builtin_object_size(cptr.add(tmp, 1035), 1));
         cptr.st1o2(tmp, 255n, 1, 1035, 0);
     } else
@@ -1279,11 +1279,11 @@ function config_error_nextline(line) {
     let ced = config_error_data;
     if (!ced)
         return 0;
-    if (cptr.ldI32o(ced, 4) && cptr.ld1so(ced, 10) ? 1 : 0)
+    if (cptr.ldI32o(ced, 4) && cptr.ld1so(ced, 10))
         return 0;
     (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
     cptr.st1o(ced, 8, 0);
-    if (line && cptr.ld1so(line, 0) ? 1 : 0) {
+    if (line && cptr.ld1so(line, 0)) {
         void __builtin___strncpy_chk(cptr.add(ced, 11), line, 1023n, __builtin_object_size(cptr.add(ced, 11), 1));
         cptr.st1o2(ced, 1023n, 1, 11, 0);
     } else
@@ -1317,7 +1317,7 @@ export function l_get_config_errors(L) {
 export function config_erradd(buf) {
     let lineno = new Uint8Array(128);
     let punct;
-    if (!buf || !cptr.ld1s(buf) ? 1 : 0)
+    if (!buf || !cptr.ld1s(buf))
         buf = __sl105;
     punct = cptr.add(c_eos(buf), -(1));
     punct = cptr.strchr(__sl106, cptr.ld1s(punct)) ? __sl17 : __sl107;
@@ -1335,11 +1335,11 @@ export function config_erradd(buf) {
         return;
     }
     (cptr.stI32o(config_error_data, 4, cptr.ldI32o(config_error_data, 4) + 1)) - (1);
-    if (!cptr.ld1so(config_error_data, 8) && !cptr.ld1so(config_error_data, 10) ? 1 : 0) {
+    if (!cptr.ld1so(config_error_data, 8) && !cptr.ld1so(config_error_data, 10)) {
         pline(__sl110, cptr.add(config_error_data, 11));
         cptr.st1o(config_error_data, 8, 1);
     }
-    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1so(config_error_data, 10) ? 1 : 0) {
+    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1so(config_error_data, 10)) {
         void cptr.sprintf(cptr.decay(lineno), __sl111, cptr.ldI32(config_error_data));
     } else
         cptr.st1o(cptr.decay(lineno), 0, 0, 1);
@@ -1435,7 +1435,7 @@ function parse_conf_buf(p, proc) {
             cptr.st1o(p, 33, schar((cptr.cmp(cptr.predec(() => cptr.ldPtro(p, 16), (v) => { cptr.stPtro(p, 16, v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtro(p, 16)) == 92 ? 1 : 0)));
             if (cptr.ld1so(p, 33))
                 cptr.st1(cptr.ldPtro(p, 16), 0);
-            while (cptr.cmp(cptr.ldPtro(p, 16), cptr.ldPtr(p)) >= 0 && ((cptr.ld1s(cptr.ldPtro(p, 16)) == 32 || cptr.ld1s(cptr.ldPtro(p, 16)) == 9 ? 1 : 0) || cptr.ld1s(cptr.ldPtro(p, 16)) == 13 ? 1 : 0) ? 1 : 0)
+            while (cptr.cmp(cptr.ldPtro(p, 16), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtro(p, 16)) == 32 || cptr.ld1s(cptr.ldPtro(p, 16)) == 9 || cptr.ld1s(cptr.ldPtro(p, 16)) == 13))
                 cptr.st1(cptr.postdec(() => cptr.ldPtro(p, 16), (v) => { cptr.stPtro(p, 16, v); }), 0);
             if (!config_error_nextline(cptr.ldPtr(p))) {
                 cptr.stI32o(p, 12, 0);
@@ -1445,9 +1445,9 @@ function parse_conf_buf(p, proc) {
                 return;
             }
             cptr.stPtro(p, 16, cptr.ldPtr(p));
-            while (cptr.ld1s(cptr.ldPtro(p, 16)) == 32 || cptr.ld1s(cptr.ldPtro(p, 16)) == 9 ? 1 : 0)
+            while (cptr.ld1s(cptr.ldPtro(p, 16)) == 32 || cptr.ld1s(cptr.ldPtro(p, 16)) == 9)
                 cptr.preinc(() => cptr.ldPtro(p, 16), (v) => { cptr.stPtro(p, 16, v); });
-            if (!cptr.ld1s(cptr.ldPtro(p, 16)) || cptr.ld1s(cptr.ldPtro(p, 16)) == 35 ? 1 : 0)
+            if (!cptr.ld1s(cptr.ldPtro(p, 16)) || cptr.ld1s(cptr.ldPtro(p, 16)) == 35)
                 ignoreline = 1;
             if (cptr.ldPtro(p, 24))
                 oldline = 1;
@@ -1465,7 +1465,7 @@ function parse_conf_buf(p, proc) {
                 if (cptr.strlen(cptr.ldPtro(p, 24)) >= BigInt(cptr.ldI32o(p, 8) >>> 0))
                     cptr.st1o(cptr.ldPtro(p, 24), (cptr.ldI32o(p, 8) - 1) >>> 0, 0);
             }
-            if (cptr.ld1so(p, 33) || (ignoreline && !oldline ? 1 : 0) ? 1 : 0)
+            if (cptr.ld1so(p, 33) || (ignoreline && !oldline))
                 return;
             if (handle_config_section(cptr.ldPtro(p, 24))) {
                 cptr.free(cptr.ldPtro(p, 24)), cptr.stPtro(p, 24, null);
@@ -1507,9 +1507,9 @@ export function parse_conf_str(str, proc) {
     cnf_parser_init(parser);
     free_config_sections();
     config_error_init(0, __sl125, 0);
-    while (str && cptr.ld1s(str) ? 1 : 0) {
+    while (str && cptr.ld1s(str)) {
         len = 0n;
-        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32o(parser, 8) - 1) >>> 0) >>> 0) ? 1 : 0) {
+        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32o(parser, 8) - 1) >>> 0) >>> 0)) {
             cptr.st1o(cptr.ldPtr(parser), len, cptr.ld1s(str));
             len++;
             str = cptr.add(str, 1);
@@ -1578,9 +1578,9 @@ export function rcfile() {
         namesrc = __sl115;
         nameval = cptr.ldPtro(gc, 432);
         xtraopts = opts;
-        if (opts && ((cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 ? 1 : 0) || cptr.ld1s(opts) == 64 ? 1 : 0) ? 1 : 0)
+        if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64))
             xtraopts = null;
-    } else if (opts && ((cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 ? 1 : 0) || cptr.ld1s(opts) == 64 ? 1 : 0) ? 1 : 0) {
+    } else if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64)) {
         if (cptr.ld1s(opts) == 64)
             opts = cptr.add(opts, 1);
         namesrc = envname;
@@ -1591,7 +1591,7 @@ export function rcfile() {
         xtraopts = opts;
     }
     cptr.stI32o(go, 520, NHC.rc_file_opt);
-    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128 ? 1 : 0) {
+    if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128) {
         config_error_init(1, namesrc, 0);
         config_error_add(__sl128, nameval);
         config_error_done();
@@ -1646,13 +1646,13 @@ export function disregard_all_config_statements() {
 
 /** C ref: cfgfiles.c:1997 — @param {CInt} statement_idx */
 export function heed_this_config_statement(statement_idx) {
-    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
+    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length)
         cptr.st1o(cptr.decay(disregarded_config_lines), statement_idx, 0, 1);
 }
 
 /** C ref: cfgfiles.c:2003 — @param {CInt} statement_idx */
 export function disregard_this_config_statement(statement_idx) {
-    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length ? 1 : 0)
+    if (statement_idx >= 0 && statement_idx < disregarded_config_lines.length)
         cptr.st1o(cptr.decay(disregarded_config_lines), statement_idx, 1, 1);
 }
 

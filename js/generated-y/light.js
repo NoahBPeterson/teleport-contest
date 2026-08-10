@@ -91,7 +91,7 @@ export function* new_light_source(x, y, range, type, id) {
 /** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr} id @returns {CPtr} */
 function* new_light_core(x, y, range, type, id) {
     let ls;
-    if ((range > NHM.MAX_RADIUS || range < 0 ? 1 : 0) || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null ? 1 : 0) ? 1 : 0) ? 1 : 0) {
+    if (range > NHM.MAX_RADIUS || range < 0 || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
         (yield* impossible(__sl0, range));
         return null;
     }
@@ -181,13 +181,13 @@ export function do_light_sources(cs_rows) {
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
         cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -2);
         if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
-            if (cptr.ldI16o(ls, 12) == 0 || get_obj_location(cptr.ldPtro(ls, 24), cptr.add(ls, 8), cptr.add(ls, 10), 0) ? 1 : 0)
+            if (cptr.ldI16o(ls, 12) == 0 || get_obj_location(cptr.ldPtro(ls, 24), cptr.add(ls, 8), cptr.add(ls, 10), 0))
                 cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 1);
         } else if (cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
             if (get_mon_location(cptr.ldPtro(ls, 24), cptr.add(ls, 8), cptr.add(ls, 10), 0))
                 cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) | 1);
         }
-        if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2) ? 1 : 0)) {
+        if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2))) {
             if (at_hero_range >= cptr.ldI16o(ls, 12))
                 cptr.stI16o(ls, 14, cptr.ldI16o(ls, 14) & -2);
             else
@@ -206,13 +206,13 @@ export function do_light_sources(cs_rows) {
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16o(ls, 8) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
-                if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2) ? 1 : 0)) {
+                if (((cptr.ldI16o(ls, 8)) == cptr.ldI16(u) && (cptr.ldI16o(ls, 10)) == cptr.ldI16o(u, 2))) {
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 } else {
                     for (x = min_x; x <= max_x; x++)
-                        if ((cptr.ldI16o(ls, 8) == x && cptr.ldI16o(ls, 10) == y ? 1 : 0) || clear_path(cptr.ldI16o(ls, 8), cptr.ldI16o(ls, 10), x, y) ? 1 : 0)
+                        if ((cptr.ldI16o(ls, 8) == x && cptr.ldI16o(ls, 10) == y) || clear_path(cptr.ldI16o(ls, 8), cptr.ldI16o(ls, 10), x, y))
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 }
             }
@@ -240,7 +240,7 @@ export function* show_transient_light(obj, x, y) {
                 break;
         }
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 285, __sl9) : void 0);
-        if (!ls || cptr.ld1so(obj, 52) != NHM.OBJ_FREE ? 1 : 0) {
+        if (!ls || cptr.ld1so(obj, 52) != NHM.OBJ_FREE) {
             (yield* impossible(__sl10, (cptr.ldI32o(obj, 76) & 1) | 0 ? __sl11 : __sl12, (yield* simpleonames(obj)), (yield* otense(obj, __sl13)), !ls ? __sl14 : __sl15));
             return;
         }
@@ -253,7 +253,7 @@ export function* show_transient_light(obj, x, y) {
     (yield* flush_screen(0));
     radius_squared = Math.imul(cptr.ldI16o(ls, 12), cptr.ldI16o(ls, 12));
     for (mon = cptr.ldPtro(svl, 89056); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), 52) < 1) || ((cptr.ldI32o(mon, 188) & 1) | 0 && !cptr.ldI16o(mon, 28) ? 1 : 0) ? 1 : 0)
+        if ((cptr.ldI32o((mon), 52) < 1) || ((cptr.ldI32o(mon, 188) & 1) | 0 && !cptr.ldI16o(mon, 28)))
             continue;
         if (dist2(cptr.ldI16o(mon, 28), cptr.ldI16o(mon, 30), x, y) <= radius_squared) {
             if (canseemon(mon))
@@ -280,7 +280,7 @@ export function* transient_light_cleanup() {
         if ((cptr.ldI32o(mon, 204) & 1)) {
             cptr.stI32o(mon, 204, 0);
             ++mtempcount;
-            if (!(canseemon(mon) || sensemon(mon) ? 1 : 0))
+            if (!(canseemon(mon) || sensemon(mon)))
                 (yield* map_invisible(cptr.ldI16o(mon, 28), cptr.ldI16o(mon, 30)));
         }
     }
@@ -294,7 +294,7 @@ function* discard_flashes() {
     let nxt_ls;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = nxt_ls) {
         nxt_ls = cptr.ldPtr(ls);
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && !cptr.ldPtro(ls, 24) ? 1 : 0)
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && !cptr.ldPtro(ls, 24))
             (yield* delete_ls(ls));
     }
 }
@@ -302,11 +302,11 @@ function* discard_flashes() {
 /** C ref: light.c:376 — @param {CUInt} nid @param {CUInt} fmflags @returns {CPtr} */
 export function find_mid(nid, fmflags) {
     let mtmp;
-    if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1 ? 1 : 0)
+    if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1)
         return cptr.add(gy, 8);
     if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (!(cptr.ldI32o((mtmp), 52) < 1) && cptr.ldI32o(mtmp, 16) == nid ? 1 : 0)
+            if (!(cptr.ldI32o((mtmp), 52) < 1) && cptr.ldI32o(mtmp, 16) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (mtmp = cptr.ldPtro(gm, 192); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -322,7 +322,7 @@ export function find_mid(nid, fmflags) {
 /** C ref: light.c:398 — @param {CPtr} mon @param {CUInt} fmflags @returns {CUInt} */
 function whereis_mon(mon, fmflags) {
     let mtmp;
-    if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)) ? 1 : 0)
+    if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, 8)))
         return NHM.FM_YOU;
     if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -416,9 +416,9 @@ export function* relink_light_sources(ghostly) {
     let ls;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls)) {
         if (cptr.ldI16o(ls, 14) & 2) {
-            if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER ? 1 : 0) {
+            if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
                 nid.v = cptr.ldI32o(ls, 24);
-                if (ghostly && !lookup_id_mapping(nid.v, nid) ? 1 : 0)
+                if (ghostly && !lookup_id_mapping(nid.v, nid))
                     (yield* panic(__sl21));
                 which = 0;
                 if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT) {
@@ -499,7 +499,7 @@ function* write_ls(nhfp, ls) {
     let arg_save = cptr.alloc(8);
     let otmp;
     let mtmp;
-    if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER ? 1 : 0) {
+    if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT || cptr.ldI16o(ls, 16) == NHC.LS_MONSTER) {
         if (cptr.ldI16o(ls, 14) & 2) {
             (yield* sfo_ls_t(nhfp, ls, __sl20));
         } else {
@@ -544,7 +544,7 @@ function* write_ls(nhfp, ls) {
 export function obj_move_light_source(src, dest) {
     let ls;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src) ? 1 : 0)
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src))
             cptr.stPtro(ls, 24, dest);
     cptr.stI32o(src, 76, 0);
     cptr.stI32o(dest, 76, 1);
@@ -560,7 +560,7 @@ export function* snuff_light_source(x, y) {
     let ls;
     let obj;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if ((cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.ldI16o(ls, 8) == x ? 1 : 0) && cptr.ldI16o(ls, 10) == y ? 1 : 0) {
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.ldI16o(ls, 8) == x && cptr.ldI16o(ls, 10) == y) {
             obj = cptr.ldPtro(ls, 24);
             if (obj_is_burning(obj)) {
                 if (artifact_light(obj))
@@ -578,7 +578,7 @@ export function obj_sheds_light(obj) {
 
 /** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar(((cptr.ldI32o(obj, 76) & 1) | 0 && (((((((cptr.ldI16o((obj), 32) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), 32) == NHC.OIL_LAMP ? 1 : 0) || (cptr.ldI16o((obj), 32) == NHC.MAGIC_LAMP && cptr.ld1so((obj), 48) > 0 ? 1 : 0) ? 1 : 0) || cptr.ldI16o((obj), 32) == NHC.CANDELABRUM_OF_INVOCATION ? 1 : 0) || cptr.ldI16o((obj), 32) == NHC.TALLOW_CANDLE ? 1 : 0) || cptr.ldI16o((obj), 32) == NHC.WAX_CANDLE ? 1 : 0) || cptr.ldI16o((obj), 32) == NHC.POT_OIL ? 1 : 0) || artifact_light(obj) ? 1 : 0) ? 1 : 0));
+    return schar(((cptr.ldI32o(obj, 76) & 1) | 0 && ((cptr.ldI16o((obj), 32) == NHC.BRASS_LANTERN || cptr.ldI16o((obj), 32) == NHC.OIL_LAMP || (cptr.ldI16o((obj), 32) == NHC.MAGIC_LAMP && cptr.ld1so((obj), 48) > 0) || cptr.ldI16o((obj), 32) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o((obj), 32) == NHC.TALLOW_CANDLE || cptr.ldI16o((obj), 32) == NHC.WAX_CANDLE || cptr.ldI16o((obj), 32) == NHC.POT_OIL) || artifact_light(obj)) ? 1 : 0));
 }
 
 /** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
@@ -586,10 +586,10 @@ export function* obj_split_light_source(src, dest) {
     let ls;
     let new_ls;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src) ? 1 : 0) {
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), src)) {
             new_ls = (yield* alloc(32));
             cptr.memcpy(new_ls, ls, 32);
-            if ((cptr.ldI16o(src, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, 32) == NHC.WAX_CANDLE ? 1 : 0)) {
+            if ((cptr.ldI16o(src, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(src, 32) == NHC.WAX_CANDLE)) {
                 cptr.stI16o(ls, 12, i16(candle_light_range(src)));
                 cptr.stI16o(new_ls, 12, i16(candle_light_range(dest)));
                 cptr.st1o(gv, 144, 1);
@@ -607,7 +607,7 @@ export function* obj_merge_light_sources(src, dest) {
     if (!cptr.eq(src, dest))
         (yield* end_burn(src, 1));
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), dest) ? 1 : 0) {
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), dest)) {
             cptr.stI16o(ls, 12, i16(candle_light_range(dest)));
             cptr.st1o(gv, 144, 1);
             break;
@@ -618,7 +618,7 @@ export function* obj_merge_light_sources(src, dest) {
 export function* obj_adjust_light_radius(obj, new_radius) {
     let ls;
     for (ls = cptr.ldPtro(gl, 72); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), obj) ? 1 : 0) {
+        if (cptr.ldI16o(ls, 16) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, 24), obj)) {
             if (new_radius != cptr.ldI16o(ls, 12))
                 cptr.st1o(gv, 144, 1);
             cptr.stI16o(ls, 12, i16(new_radius));
@@ -632,10 +632,10 @@ export function candle_light_range(obj) {
     let radius;
     if (cptr.ldI16o(obj, 32) == NHC.CANDELABRUM_OF_INVOCATION) {
         radius = (cptr.ld1so(obj, 48) < 4) ? 2 : ((cptr.ld1so(obj, 48) < 7) ? 3 : 4);
-    } else if ((cptr.ldI16o(obj, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, 32) == NHC.WAX_CANDLE ? 1 : 0)) {
+    } else if ((cptr.ldI16o(obj, 32) == NHC.TALLOW_CANDLE || cptr.ldI16o(obj, 32) == NHC.WAX_CANDLE)) {
         let n = cptr.ldI64o(obj, 40);
         radius = 1;
-        while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS ? 1 : 0) {
+        while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS) {
             radius++;
         }
     } else {
@@ -647,7 +647,7 @@ export function candle_light_range(obj) {
 /** C ref: light.c:881 — @param {CPtr} obj @returns {CInt} */
 export function arti_light_radius(obj) {
     let res;
-    if (!(cptr.ldI32o(obj, 76) & 1) || !artifact_light(obj) ? 1 : 0)
+    if (!(cptr.ldI32o(obj, 76) & 1) || !artifact_light(obj))
         return 0;
     res = ((cptr.ldI32o(obj, 60) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, 56) & 1) ? 2 : 1));
     if (cptr.eq(obj, uskin.v))

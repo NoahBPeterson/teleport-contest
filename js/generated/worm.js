@@ -191,7 +191,7 @@ export function wormgone(worm) {
     toss_wsegs(cptr.ldPtro(wtails, wnum, 8), 1);
     cptr.stPtro(wheads, wnum, cptr.stPtro(wtails, wnum, null, 8), 8);
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
-    if (cptr.eq(cptr.ldPtro(worm, 8), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), 312) && (cptr.ldI32o(cptr.ldPtro((worm), 312), 56)) != NHC.NON_PM ? 1 : 0) ? 1 : 0)
+    if (cptr.eq(cptr.ldPtro(worm, 8), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), 312) && (cptr.ldI32o(cptr.ldPtro((worm), 312), 56)) != NHC.NON_PM))
         cptr.stI32o(cptr.ldPtro((worm), 312), 56, NHC.NON_PM);
 }
 
@@ -216,7 +216,7 @@ export function cutworm(worm, x, y, cuttier) {
     let new_wnum;
     if (!wnum)
         return;
-    if (x == cptr.ldI16o(worm, 28) && y == cptr.ldI16o(worm, 30) ? 1 : 0)
+    if (x == cptr.ldI16o(worm, 28) && y == cptr.ldI16o(worm, 30))
         return;
     cut_chance = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl4), rnd(20)) : rnd(20));
     if (cuttier)
@@ -224,7 +224,7 @@ export function cutworm(worm, x, y, cuttier) {
     if (cut_chance < 17)
         return;
     curr = cptr.ldPtro(wtails, wnum, 8);
-    while ((cptr.ldI16o(curr, 8) != x) || (cptr.ldI16o(curr, 10) != y) ? 1 : 0) {
+    while ((cptr.ldI16o(curr, 8) != x) || (cptr.ldI16o(curr, 10) != y)) {
         curr = cptr.ldPtr(curr);
         if (!curr) {
             impossible(__sl5, x, y);
@@ -239,7 +239,7 @@ export function cutworm(worm, x, y, cuttier) {
     cptr.stPtro(wtails, wnum, cptr.ldPtr(curr), 8);
     cptr.stPtr(curr, null);
     new_worm = null;
-    new_wnum = (cptr.ld1uo(worm, 26) >= 3 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 427, __sl4), rn2(3)) : rn2(3)) ? 1 : 0) ? get_wormno() : 0;
+    new_wnum = (cptr.ld1uo(worm, 26) >= 3 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 427, __sl4), rn2(3)) : rn2(3))) ? get_wormno() : 0;
     if (new_wnum) {
         cptr.stPtro3(svl, x, 168, y, 8, 75600, null);
         new_worm = clone_mon(worm, x, y);
@@ -247,7 +247,7 @@ export function cutworm(worm, x, y, cuttier) {
     if (!new_worm) {
         cptr.stPtro3(svl, x, 168, y, 8, 75600, worm);
         if (cptr.ld1so(svc, 77)) {
-            if ((canseemon(worm) || sensemon(worm) ? 1 : 0))
+            if ((canseemon(worm) || sensemon(worm)))
                 pline(__sl6, s_suffix(mon_nam(worm)));
         } else
             You(__sl7, mon_nam(worm));
@@ -287,7 +287,7 @@ export function see_wsegs(worm) {
 export function detect_wsegs(worm, use_detection_glyph) {
     let num;
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8);
-    let what_tail = ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112) ? 1 : 0) ? 1 : 0) ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
+    let what_tail = ((cptr.ldI64o2(u, NHC.HALLUC, 24, 128) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 128) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, 112))) ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
     while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, 200) & 31), 8))) {
         num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, 65) ? (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, 84) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
         show_glyph(cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10), num);
@@ -368,7 +368,7 @@ export function place_wsegs(worm, oldworm) {
         let x = cptr.ldI16o(curr, 8);
         let y = cptr.ldI16o(curr, 10);
         let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, 75600));
-        if (oldworm && cptr.eq(mtmp, oldworm) ? 1 : 0)
+        if (oldworm && cptr.eq(mtmp, oldworm))
             cptr.stPtro3(svl, x, 168, y, 8, 75600, null);
         else if (mtmp)
             impossible(__sl14, x, y);
@@ -395,7 +395,7 @@ export function sanity_check_worm(worm) {
         return;
     }
     wnum = (cptr.ldI32o(worm, 200) & 31) | 0;
-    if (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8) ? 1 : 0) {
+    if (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8)) {
         impossible(__sl18, wnum);
         return;
     }
@@ -436,12 +436,12 @@ export function place_worm_tail_randomly(worm, x, y) {
     let new_tail;
     let ox = x;
     let oy = y;
-    if (wnum && (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8) ? 1 : 0) ? 1 : 0) {
+    if (wnum && (!cptr.ldPtro(wtails, wnum, 8) || !cptr.ldPtro(wheads, wnum, 8))) {
         impossible(__sl21);
         return;
     }
     if (cptr.eq(cptr.ldPtro(wtails, wnum, 8), cptr.ldPtro(wheads, wnum, 8))) {
-        if (cptr.ldI16o(curr, 8) && (cptr.ldI16o(curr, 8) != cptr.ldI16o(worm, 28) || cptr.ldI16o(curr, 10) != cptr.ldI16o(worm, 30) ? 1 : 0) ? 1 : 0) {
+        if (cptr.ldI16o(curr, 8) && (cptr.ldI16o(curr, 8) != cptr.ldI16o(worm, 28) || cptr.ldI16o(curr, 10) != cptr.ldI16o(worm, 30))) {
             impossible(__sl22, cptr.ldI16o(curr, 8), cptr.ldI16o(curr, 10), cptr.ldI16o(worm, 28), cptr.ldI16o(worm, 30));
             if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600)), worm))
                 cptr.stPtro3(svl, cptr.ldI16o(curr, 8), 168, cptr.ldI16o(curr, 10), 8, 75600, null);
@@ -532,18 +532,18 @@ export function worm_cross(x1, y1, x2, y2) {
         impossible(__sl23);
         return 0;
     }
-    if (x1 == x2 || y1 == y2 ? 1 : 0)
+    if (x1 == x2 || y1 == y2)
         return 0;
     worm = (cptr.ldPtro3(svl, x1, 168, y2, 8, 75600));
-    if (!worm || !cptr.eq((cptr.ldPtro3(svl, x2, 168, y1, 8, 75600)), worm) ? 1 : 0)
+    if (!worm || !cptr.eq((cptr.ldPtro3(svl, x2, 168, y1, 8, 75600)), worm))
         return 0;
     for (curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8); curr; curr = wnxt) {
         wnxt = cptr.ldPtr(curr);
         if (!wnxt)
             break;
-        if (cptr.ldI16o(curr, 8) == x1 && cptr.ldI16o(curr, 10) == y2 ? 1 : 0)
+        if (cptr.ldI16o(curr, 8) == x1 && cptr.ldI16o(curr, 10) == y2)
             return schar((cptr.ldI16o(wnxt, 8) == x2 && cptr.ldI16o(wnxt, 10) == y1 ? 1 : 0));
-        if (cptr.ldI16o(curr, 8) == x2 && cptr.ldI16o(curr, 10) == y1 ? 1 : 0)
+        if (cptr.ldI16o(curr, 8) == x2 && cptr.ldI16o(curr, 10) == y1)
             return schar((cptr.ldI16o(wnxt, 8) == x1 && cptr.ldI16o(wnxt, 10) == y2 ? 1 : 0));
     }
     return 0;
@@ -552,14 +552,14 @@ export function worm_cross(x1, y1, x2, y2) {
 /** C ref: worm.c:946 — @param {CPtr} worm @param {CInt} x @param {CInt} y @returns {CInt} */
 export function wseg_at(worm, x, y) {
     let res = 0;
-    if ((worm && (cptr.ldI32o(worm, 200) & 31) | 0 ? 1 : 0) && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), worm) ? 1 : 0) {
+    if (worm && (cptr.ldI32o(worm, 200) & 31) | 0 && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), worm)) {
         let curr;
         let i;
         let n;
         let wx = i16(x);
         let wy = i16(y);
         for (i = 0, curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, 200) & 31), 8); curr; curr = cptr.ldPtr(curr)) {
-            if (cptr.ldI16o(curr, 8) == wx && cptr.ldI16o(curr, 10) == wy ? 1 : 0)
+            if (cptr.ldI16o(curr, 8) == wx && cptr.ldI16o(curr, 10) == wy)
                 break;
             ++i;
         }

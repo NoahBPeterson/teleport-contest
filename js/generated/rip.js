@@ -81,7 +81,7 @@ export function genl_outrip(tmpwin, how, when) {
         let i;
         let i0 = Number(BigInt.asIntN(32, cptr.strlen(dpx)));
         if (i0 > 16) {
-            for (i = 16; (i > 0) && (i0 > 16) ? 1 : 0; --i)
+            for (i = 16; (i > 0) && (i0 > 16); --i)
                 if (cptr.ld1so(dpx, i) == 32)
                     i0 = i;
             if (!i)

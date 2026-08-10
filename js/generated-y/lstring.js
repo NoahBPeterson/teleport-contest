@@ -21,7 +21,7 @@ const __sl0 = cptr.lit("not enough memory");
 export function luaS_eqlngstr(a, b) {
     let len = cptr.ldU64o(a, 16);
     (void 0);
-    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, 16)) && (memcmp((cptr.add((a), 24)), (cptr.add((b), 24)), len) == 0) ? 1 : 0) ? 1 : 0;
+    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, 16)) && (memcmp((cptr.add((a), 24)), (cptr.add((b), 24)), len) == 0)) ? 1 : 0;
 }
 
 /** C ref: lstring.c:43 — @param {CPtr} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
@@ -159,7 +159,7 @@ function* internshrstr(L, str, l) {
     let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, 12)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     (void 0);
     for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, 16)) {
-        if (l == BigInt(cptr.ld1uo(ts, 11) >>> 0) && (memcmp(str, (cptr.add((ts), 24)), BigInt.asUintN(64, l * 1n)) == 0) ? 1 : 0) {
+        if (l == BigInt(cptr.ld1uo(ts, 11) >>> 0) && (memcmp(str, (cptr.add((ts), 24)), BigInt.asUintN(64, l * 1n)) == 0)) {
             if (((cptr.ld1uo((ts), 9)) & ((cptr.ld1uo((g), 100) ^ 24))))
                 (cptr.st1o((ts), 9, cptr.ld1uo((ts), 9) ^ 24));
             return ts;

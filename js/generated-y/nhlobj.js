@@ -156,10 +156,10 @@ function* l_obj_gc(L) {
     let obj;
     let otmp;
     let lo = (yield* l_obj_check(L, 1));
-    if (lo && (obj = cptr.ldPtro(lo, 8)) !== null ? 1 : 0) {
+    if (lo && (obj = cptr.ldPtro(lo, 8)) !== null) {
         if (cptr.ldI32o(obj, 200) > 0)
             (cptr.stI32o(obj, 200, cptr.ldI32o(obj, 200) + -1)) - (-1);
-        if (!cptr.ldI32o(obj, 200) && (cptr.ld1so(obj, 52) == NHM.OBJ_FREE || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0) {
+        if (!cptr.ldI32o(obj, 200) && (cptr.ld1so(obj, 52) == NHM.OBJ_FREE || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE)) {
             if ((cptr.ldPtro((obj), 16) !== null)) {
                 while ((otmp = cptr.ldPtro(obj, 16)) !== null) {
                     (yield* obj_extract_self(otmp));
@@ -207,7 +207,7 @@ function* l_obj_add_to_container(L) {
     let lo = (yield* l_obj_check(L, 2));
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) || !(((lobox) && cptr.ldPtro((lobox), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lobox), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) ? 1 : 0)
+    if (!((lo) && cptr.ldPtro((lo), 8) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE) || !((lobox) && cptr.ldPtro((lobox), 8) && cptr.ld1so(cptr.ldPtro((lobox), 8), 52) != NHM.OBJ_LUAFREE))
         return 0;
     refs = cptr.ldI32o(cptr.ldPtro(lo, 8), 200) | 0;
     (yield* obj_extract_self(cptr.ldPtro(lo, 8)));
@@ -225,7 +225,7 @@ export function* nhl_obj_u_giveobj(L) {
     let lo = (yield* l_obj_check(L, 1));
     let otmp;
     let refs;
-    if (!(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) || cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_INVENT ? 1 : 0)
+    if (!((lo) && cptr.ldPtro((lo), 8) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE) || cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_INVENT)
         return 0;
     refs = cptr.ldI32o(cptr.ldPtro(lo, 8), 200) | 0;
     (yield* obj_extract_self(cptr.ldPtro(lo, 8)));
@@ -250,7 +250,7 @@ function* l_obj_objects_to_table(L) {
         otyp = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 1))));
     } else if (lua_type(L, 1) == 7) {
         let lo = (yield* l_obj_check(L, 1));
-        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
+        if (lo && cptr.ldPtro(lo, 8))
             otyp = cptr.ldI16o(cptr.ldPtro(lo, 8), 32);
     }
     (yield* lua_settop(L, -2));
@@ -296,7 +296,7 @@ function* l_obj_to_table(L) {
     let lo = (yield* l_obj_check(L, 1));
     let obj = cptr.ldPtro(lo, 8);
     (yield* lua_createtable(L, 0, 0));
-    if (!obj || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE ? 1 : 0) {
+    if (!obj || cptr.ld1so(obj, 52) == NHM.OBJ_LUAFREE) {
         (yield* nhl_add_table_entry_int(L, __sl29, 1n));
         return 1;
     }
@@ -315,7 +315,7 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __sl40, BigInt(cptr.ld1so(obj, 48))));
     if (cptr.ldI16o(obj, 32) == NHC.STATUE)
         (yield* nhl_add_table_entry_int(L, __sl41, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_HISTORIC) != 0))));
-    if (cptr.ldI16o(obj, 32) == NHC.CORPSE || cptr.ldI16o(obj, 32) == NHC.STATUE ? 1 : 0) {
+    if (cptr.ldI16o(obj, 32) == NHC.CORPSE || cptr.ldI16o(obj, 32) == NHC.STATUE) {
         (yield* nhl_add_table_entry_int(L, __sl42, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_MALE) != 0))));
         (yield* nhl_add_table_entry_int(L, __sl43, BigInt(((cptr.ld1so(obj, 48) & NHM.CORPSTAT_FEMALE) != 0))));
     }
@@ -339,7 +339,7 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __sl59, BigInt((cptr.ldI32o(obj, 120) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl60, BigInt((cptr.ldI32o(obj, 124) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl61, BigInt((cptr.ldI32o(obj, 128) & 1) >>> 0)));
-    if ((((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -24 ? 1 : 0) && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -20 ? 1 : 0) || permapoisoned(obj) ? 1 : 0))
+    if (((cptr.ld1so(obj, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) >= -24 && cptr.ld1so2(objects, cptr.ldI16o(obj, 32), 120, 68) <= -20) || permapoisoned(obj)))
         (yield* nhl_add_table_entry_int(L, __sl62, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0)));
     else
         (yield* nhl_add_table_entry_int(L, __sl63, BigInt((cptr.ldI32o(obj, 132) & 1) >>> 0)));
@@ -354,14 +354,14 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __sl72, BigInt((cptr.ldI32o(obj, 96) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl73, BigInt((cptr.ldI32o(obj, 100) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl74, BigInt(cptr.ldI32o(obj, 168))));
-    if (cptr.ldI32o(obj, 168) != NHC.NON_PM && ((((cptr.ldI16o(obj, 32) == NHC.TIN || cptr.ldI16o(obj, 32) == NHC.CORPSE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.EGG ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.FIGURINE ? 1 : 0) || cptr.ldI16o(obj, 32) == NHC.STATUE ? 1 : 0) ? 1 : 0)
+    if (cptr.ldI32o(obj, 168) != NHC.NON_PM && (cptr.ldI16o(obj, 32) == NHC.TIN || cptr.ldI16o(obj, 32) == NHC.CORPSE || cptr.ldI16o(obj, 32) == NHC.EGG || cptr.ldI16o(obj, 32) == NHC.FIGURINE || cptr.ldI16o(obj, 32) == NHC.STATUE))
         (yield* nhl_add_table_entry_str(L, __sl75, cptr.ldPtro3(mons, cptr.ldI32o(obj, 168), 96, NHC.NEUTRAL, 8, 0)));
     (yield* nhl_add_table_entry_int(L, __sl76, BigInt(cptr.ldI32o(obj, 172))));
     (yield* nhl_add_table_entry_int(L, __sl77, BigInt(cptr.ldI32o(obj, 176) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __sl78, cptr.ldI64o(obj, 184)));
     (yield* nhl_add_table_entry_int(L, __sl79, cptr.ldI64o(obj, 192)));
     (yield* nhl_add_table_entry_int(L, __sl80, BigInt((cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208))) ? 1 : 0))));
-    if ((cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208))) ? 1 : 0))
+    if ((cptr.ldPtro((obj), 208) && (cptr.ldPtr(cptr.ldPtro((obj), 208)))))
         (yield* nhl_add_table_entry_str(L, __sl81, (cptr.ldPtr(cptr.ldPtro((obj), 208)))));
     return 1;
 }
@@ -369,7 +369,7 @@ function* l_obj_to_table(L) {
 /** C ref: nhlobj.c:350 — @param {CPtr} L @returns {CInt} */
 function* l_obj_new_readobjnam(L) {
     let argc = lua_gettop(L);
-    if (argc == 1 && lua_type(L, 1) == 4 ? 1 : 0) {
+    if (argc == 1 && lua_type(L, 1) == 4) {
         let buf = new Uint8Array(256);
         let otmp;
         void cptr.sprintf(cptr.decay(buf), __sl82, ((yield* luaL_checklstring(L, 1, null))));
@@ -378,7 +378,7 @@ function* l_obj_new_readobjnam(L) {
             otmp = null;
         void (yield* l_obj_push(L, otmp));
         return 1;
-    } else if (argc == 1 && lua_type(L, 1) == 5 ? 1 : 0) {
+    } else if (argc == 1 && lua_type(L, 1) == 5) {
         let id = i16((yield* get_table_objtype(L)));
         let class$ = i16((yield* get_table_objclass(L)));
         let otmp;
@@ -427,7 +427,7 @@ function* l_obj_placeobj(L) {
     y.v = Number(BigInt.asIntN(16, (yield* luaL_checkinteger(L, 3))));
     cvt_to_abscoord(x, y);
     (yield* lua_settop(L, -4));
-    if ((((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0)) {
+    if (((lo) && cptr.ldPtro((lo), 8) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE)) {
         (yield* obj_extract_self(cptr.ldPtro(lo, 8)));
         (yield* place_object(cptr.ldPtro(lo, 8), x.v, y.v));
         (yield* newsym(x.v, y.v));
@@ -445,8 +445,8 @@ function* l_obj_nextobj(L) {
         let use_nexthere = 0;
         if (argc == 2)
             use_nexthere = schar(lua_toboolean(L, 2));
-        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
-            void (yield* l_obj_push(L, (use_nexthere && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_FLOOR ? 1 : 0) ? cptr.ldPtro(cptr.ldPtro(lo, 8), 8) : cptr.ldPtr(cptr.ldPtro(lo, 8))));
+        if (lo && cptr.ldPtro(lo, 8))
+            void (yield* l_obj_push(L, (use_nexthere && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_FLOOR) ? cptr.ldPtro(cptr.ldPtro(lo, 8), 8) : cptr.ldPtr(cptr.ldPtro(lo, 8))));
     }
     return 1;
 }
@@ -454,7 +454,7 @@ function* l_obj_nextobj(L) {
 /** C ref: nhlobj.c:469 — @param {CPtr} L @returns {CInt} */
 function* l_obj_container(L) {
     let lo = (yield* l_obj_check(L, 1));
-    if ((lo && cptr.ldPtro(lo, 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_CONTAINED ? 1 : 0)
+    if (lo && cptr.ldPtro(lo, 8) && cptr.ld1so(cptr.ldPtro(lo, 8), 52) == NHM.OBJ_CONTAINED)
         void (yield* l_obj_push(L, cptr.ldPtro(cptr.ldPtro(lo, 8), 8)));
     else
         void (yield* l_obj_push(L, null));
@@ -464,7 +464,7 @@ function* l_obj_container(L) {
 /** C ref: nhlobj.c:483 — @param {CPtr} L @returns {CInt} */
 function* l_obj_isnull(L) {
     let lo = (yield* l_obj_check(L, 1));
-    (yield* lua_pushboolean(L, !(((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0)));
+    (yield* lua_pushboolean(L, !((lo) && cptr.ldPtro((lo), 8) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE)));
     return 1;
 }
 
@@ -474,7 +474,7 @@ function* l_obj_timer_has(L) {
     if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, 8)) {
             (yield* lua_pushboolean(L, obj_has_timer(cptr.ldPtro(lo, 8), timertype)));
             return 1;
         } else {
@@ -492,7 +492,7 @@ function* l_obj_timer_peek(L) {
     if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, 8)) {
             (yield* lua_pushinteger(L, peek_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8)))));
             return 1;
         } else {
@@ -509,13 +509,13 @@ function* l_obj_timer_stop(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
         let lo = (yield* l_obj_check(L, 1));
-        if (lo && cptr.ldPtro(lo, 8) ? 1 : 0)
+        if (lo && cptr.ldPtro(lo, 8))
             (yield* obj_stop_timers(cptr.ldPtro(lo, 8)));
         return 0;
     } else if (argc == 2) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
-        if ((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, 8)) {
             (yield* lua_pushinteger(L, (yield* stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8))))));
             return 1;
         } else {
@@ -534,7 +534,7 @@ function* l_obj_timer_start(L) {
         let lo = (yield* l_obj_check(L, 1));
         let timertype = (yield* nhl_get_timertype(L, 2));
         let when = (yield* luaL_checkinteger(L, 3));
-        if (((((((((((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE ? 1 : 0) || (timertype) == NHC.REVIVE_MON ? 1 : 0) || (timertype) == NHC.ZOMBIFY_MON ? 1 : 0) || (timertype) == NHC.BURN_OBJECT ? 1 : 0) || (timertype) == NHC.HATCH_EGG ? 1 : 0) || (timertype) == NHC.FIG_TRANSFORM ? 1 : 0) || (timertype) == NHC.SHRINK_GLOB ? 1 : 0) && lo ? 1 : 0) && cptr.ldPtro(lo, 8) ? 1 : 0) && when > 0n ? 1 : 0) {
+        if (((timertype) == NHC.ROT_ORGANIC || (timertype) == NHC.ROT_CORPSE || (timertype) == NHC.REVIVE_MON || (timertype) == NHC.ZOMBIFY_MON || (timertype) == NHC.BURN_OBJECT || (timertype) == NHC.HATCH_EGG || (timertype) == NHC.FIG_TRANSFORM || (timertype) == NHC.SHRINK_GLOB) && lo && cptr.ldPtro(lo, 8) && when > 0n) {
             if (obj_has_timer(cptr.ldPtro(lo, 8), timertype))
                 (yield* stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, 8))));
             (yield* start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtro(lo, 8))));
@@ -560,7 +560,7 @@ function* l_obj_bury(L) {
         cvt_to_abscoord(x, y);
     } else
         (yield* nhl_error(L, __sl90));
-    if ((((lo) && cptr.ldPtro((lo), 8) ? 1 : 0) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE ? 1 : 0) && isok(x.v, y.v) ? 1 : 0) {
+    if (((lo) && cptr.ldPtro((lo), 8) && cptr.ld1so(cptr.ldPtro((lo), 8), 52) != NHM.OBJ_LUAFREE) && isok(x.v, y.v)) {
         cptr.stI16o(cptr.ldPtro(lo, 8), 28, x.v);
         cptr.stI16o(cptr.ldPtro(lo, 8), 30, y.v);
         void (yield* bury_an_obj(cptr.ldPtro(lo, 8), dealloced));

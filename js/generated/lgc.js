@@ -149,7 +149,7 @@ function reallymarkobject(g, o) {
                 (cptr.st1o(uv, 9, (uchar((((cptr.ld1uo(uv, 9) & -25) | 32))))));
             {
                 (void cptr.ldPtro(g, 264), (void 0));
-                if ((((cptr.ld1uo((cptr.ldPtro(uv, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, 16)))))), 9)) & 24) ? 1 : 0))
+                if ((((cptr.ld1uo((cptr.ldPtro(uv, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, 16)))))), 9)) & 24)))
                     reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, 16))))));
             }
             ;
@@ -221,7 +221,7 @@ function remarkupvals(g) {
     let work = 0;
     while (!cptr.eq((thread = cptr.ldPtr(p)), (null))) {
         work++;
-        if (!((cptr.ld1uo((thread), 9)) & 24) && !cptr.eq(cptr.ldPtro(thread, 56), (null)) ? 1 : 0)
+        if (!((cptr.ld1uo((thread), 9)) & 24) && !cptr.eq(cptr.ldPtro(thread, 56), (null)))
             p = cptr.add(thread, 80);
         else {
             let uv;
@@ -235,7 +235,7 @@ function remarkupvals(g) {
                     (void 0);
                     {
                         (void cptr.ldPtro(g, 264), (void 0));
-                        if ((((cptr.ld1uo((cptr.ldPtro(uv, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, 16)))))), 9)) & 24) ? 1 : 0))
+                        if ((((cptr.ld1uo((cptr.ldPtro(uv, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, 16)))))), 9)) & 24)))
                             reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, 16))))));
                     }
                     ;
@@ -262,7 +262,7 @@ function restartcollection(g) {
     ;
     {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(g, 64)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, 64)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(g, 64)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, 64)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, 64))))));
     }
     ;
@@ -290,15 +290,15 @@ function traverseweakvalue(g, h) {
         else {
             (void 0);
             {
-                if (((cptr.ld1uo((n), 9)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), 16))))), 9)) & 24) ? 1 : 0)
+                if (((cptr.ld1uo((n), 9)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), 16))))), 9)) & 24))
                     reallymarkobject(g, (cptr.ldPtr((cptr.add((n), 16)))));
             }
             ;
-            if (!hasclears && iscleared(g, (((cptr.ld1uo((((n))), 8)) & 64) ? (cptr.ldPtr(((((n)))))) : null)) ? 1 : 0)
+            if (!hasclears && iscleared(g, (((cptr.ld1uo((((n))), 8)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
                 hasclears = 1;
         }
     }
-    if (cptr.ld1uo(g, 101) == 2 && hasclears ? 1 : 0)
+    if (cptr.ld1uo(g, 101) == 2 && hasclears)
         linkgclist_(((((h)))), cptr.add((h), 48), cptr.add(g, 152));
     else
         linkgclist_(((((h)))), cptr.add((h), 48), cptr.add(g, 144));
@@ -313,7 +313,7 @@ function traverseephemeron(g, h, inv) {
     let asize = luaH_realasize(h);
     let nsize = ((1 << (cptr.ld1uo((h), 11)))) >>> 0;
     for (i = 0; i < asize; i++) {
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, 16), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16)))))), 9)) & 24) ? 1 : 0)) {
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, 16), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16)))))), 9)) & 24))) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16))))));
         }
@@ -324,9 +324,9 @@ function traverseephemeron(g, h, inv) {
             clearkey(n);
         else if (iscleared(g, (((cptr.ld1uo((n), 9)) & 64) ? (cptr.ldPtr((cptr.add((n), 16)))) : null))) {
             hasclears = 1;
-            if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24) ? 1 : 0))
+            if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24)))
                 hasww = 1;
-        } else if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24) ? 1 : 0)) {
+        } else if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24))) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((((n)))))));
         }
@@ -350,7 +350,7 @@ function traversestrongtable(g, h) {
     let asize = luaH_realasize(h);
     for (i = 0; i < asize; i++) {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, 16), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, 16), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, 16), i, 16))))));
     }
     ;
@@ -360,13 +360,13 @@ function traversestrongtable(g, h) {
         else {
             (void 0);
             {
-                if (((cptr.ld1uo((n), 9)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), 16))))), 9)) & 24) ? 1 : 0)
+                if (((cptr.ld1uo((n), 9)) & 64) && ((cptr.ld1uo(((cptr.ldPtr((cptr.add((n), 16))))), 9)) & 24))
                     reallymarkobject(g, (cptr.ldPtr((cptr.add((n), 16)))));
             }
             ;
             {
                 (void cptr.ldPtro(g, 264), (void 0));
-                if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24) ? 1 : 0))
+                if ((((cptr.ld1uo((((n))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), 9)) & 24)))
                     reallymarkobject(g, (cptr.ldPtr(((((n)))))));
             }
             ;
@@ -389,7 +389,7 @@ function traversetable(g, h) {
         ;
     }
     ;
-    if ((mode && ((cptr.ld1uo(((mode)), 8)) == 68) ? 1 : 0) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), 24)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), 24)), 118)))), (weakkey || weakvalue ? 1 : 0)) ? 1 : 0) {
+    if (mode && ((cptr.ld1uo(((mode)), 8)) == 68) && ((void ((smode = ((((((cptr.ldPtr(((mode)))))))))))), (void ((weakkey = cptr.strchr((cptr.add((smode), 24)), 107)))), (void ((weakvalue = cptr.strchr((cptr.add((smode), 24)), 118)))), (weakkey || weakvalue ? 1 : 0))) {
         if (!weakkey)
             traverseweakvalue(g, h);
         else if (!weakvalue)
@@ -414,7 +414,7 @@ function traverseudata(g, u) {
     ;
     for (i = 0; i < cptr.ldU16o(u, 10); i++) {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(u, 40), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(cptr.add(u, 40), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, 40), i, 16))))));
     }
     ;
@@ -435,7 +435,7 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32o(f, 20); i++) {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, 56), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, 56), i, 16)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, 56), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, 56), i, 16)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(f, 56), i, 16))))));
     }
     ;
@@ -471,7 +471,7 @@ function traverseCclosure(g, cl) {
     let i;
     for (i = 0; i < cptr.ld1uo(cl, 10); i++) {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, 32), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, 32), i, 16)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, 32), i, 16))))));
     }
     ;
@@ -507,14 +507,14 @@ function traverseLclosure(g, cl) {
 function traversethread(g, th) {
     let uv;
     let o = cptr.ldPtro(th, 48);
-    if (((cptr.ld1uo((th), 9) & 7) > 1) || cptr.ld1uo(g, 101) == 0 ? 1 : 0)
+    if (((cptr.ld1uo((th), 9) & 7) > 1) || cptr.ld1uo(g, 101) == 0)
         linkgclist_(((((th)))), cptr.add((th), 72), cptr.add(g, 144));
     if (cptr.eq(o, (null)))
         return 1;
     (void 0);
     for (; cptr.cmp(o, cptr.ldPtro(th, 16)) < 0; o = cptr.add(o, 1, 16)) {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((((o))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((o))))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((((o))), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((o))))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((((o)))))));
     }
     ;
@@ -528,7 +528,7 @@ function traversethread(g, th) {
             luaD_shrinkstack(th);
         for (o = cptr.ldPtro(th, 16); cptr.cmp(o, cptr.add(cptr.ldPtro(th, 40), 5, 16)) < 0; o = cptr.add(o, 1, 16))
             (cptr.st1o((((o))), 8, 0));
-        if (!(!cptr.eq(cptr.ldPtro(th, 80), th)) && !cptr.eq(cptr.ldPtro(th, 56), (null)) ? 1 : 0) {
+        if (!(!cptr.eq(cptr.ldPtro(th, 80), th)) && !cptr.eq(cptr.ldPtro(th, 56), (null))) {
             cptr.stPtro(th, 80, cptr.ldPtro(g, 248));
             cptr.stPtro(g, 248, th);
         }
@@ -691,7 +691,7 @@ function sweeplist(L, p, countin, countout) {
     let ow = (cptr.ld1uo((g), 100) ^ 24);
     let i;
     let white = (uchar(((cptr.ld1uo((g), 100) & 24))));
-    for (i = 0; !cptr.eq(cptr.ldPtr(p), (null)) && i < countin ? 1 : 0; i++) {
+    for (i = 0; !cptr.eq(cptr.ldPtr(p), (null)) && i < countin; i++) {
         let curr = cptr.ldPtr(p);
         let marked = cptr.ld1uo(curr, 9);
         if (((marked) & (ow))) {
@@ -735,7 +735,7 @@ function udata2finalize(g) {
     cptr.stPtr(o, cptr.ldPtro(g, 112));
     cptr.stPtro(g, 112, o);
     (cptr.st1o(o, 9, cptr.ld1uo(o, 9) & 191));
-    if ((3 <= cptr.ld1uo((g), 101) && cptr.ld1uo((g), 101) <= 6 ? 1 : 0))
+    if ((3 <= cptr.ld1uo((g), 101) && cptr.ld1uo((g), 101) <= 6))
         (cptr.st1o(o, 9, (uchar((((cptr.ld1uo(o, 9) & -57) | (uchar(((cptr.ld1uo((g), 100) & 24))))))))));
     else if ((cptr.ld1uo((o), 9) & 7) == 3)
         cptr.stPtro(g, 216, o);
@@ -802,7 +802,7 @@ function GCTM(L) {
 function runafewfinalizers(L, n) {
     let g = (cptr.ldPtro(L, 24));
     let i;
-    for (i = 0; i < n && cptr.ldPtro(g, 176) ? 1 : 0; i++)
+    for (i = 0; i < n && cptr.ldPtro(g, 176); i++)
         GCTM(L);
     return i;
 }
@@ -828,7 +828,7 @@ function separatetobefnz(g, all) {
     let lastnext = findlast(cptr.add(g, 176));
     while (!cptr.eq((curr = cptr.ldPtr(p)), cptr.ldPtro(g, 232))) {
         (void 0);
-        if (!(((cptr.ld1uo((curr), 9)) & 24) || all ? 1 : 0))
+        if (!(((cptr.ld1uo((curr), 9)) & 24) || all))
             p = curr;
         else {
             if (cptr.eq(curr, cptr.ldPtro(g, 224)))
@@ -858,11 +858,11 @@ function correctpointers(g, o) {
 /** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
 export function luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtro(L, 24));
-    if ((((cptr.ld1uo((o), 9)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), 10) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, 280)))), (null)) ? 1 : 0) || (cptr.ld1uo(g, 106) & 4) ? 1 : 0)
+    if (((cptr.ld1uo((o), 9)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), 10) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, 280)))), (null)) || (cptr.ld1uo(g, 106) & 4))
         return;
     else {
         let p;
-        if ((3 <= cptr.ld1uo((g), 101) && cptr.ld1uo((g), 101) <= 6 ? 1 : 0)) {
+        if ((3 <= cptr.ld1uo((g), 101) && cptr.ld1uo((g), 101) <= 6)) {
             (cptr.st1o(o, 9, (uchar((((cptr.ld1uo(o, 9) & -57) | (uchar(((cptr.ld1uo((g), 100) & 24))))))))));
             if (cptr.eq(cptr.ldPtro(g, 120), o))
                 cptr.stPtro(g, 120, sweeptolive(L, cptr.ldPtro(g, 120)));
@@ -905,7 +905,7 @@ function sweep2old(L, p) {
             if (cptr.ld1uo(curr, 8) == 8) {
                 let th = (((((curr)))));
                 linkgclist_(((((th)))), cptr.add((th), 72), cptr.add(g, 144));
-            } else if (cptr.ld1uo(curr, 8) == 9 && (!cptr.eq(cptr.ldPtro(((((((curr)))))), 16), cptr.add(((((((curr)))))), 24))) ? 1 : 0)
+            } else if (cptr.ld1uo(curr, 8) == 9 && (!cptr.eq(cptr.ldPtro(((((((curr)))))), 16), cptr.add(((((((curr)))))), 24))))
                 (cptr.st1o(curr, 9, cptr.ld1uo(curr, 9) & 199));
             else
                 ((cptr.st1o((curr), 9, cptr.ld1uo((curr), 9) | 32)));
@@ -931,7 +931,7 @@ function sweepgen(L, g, p, limit, pfirstold1) {
                 cptr.st1o(curr, 9, (uchar(((marked | 1 | white)))));
             } else {
                 (cptr.st1o((curr), 9, (uchar((((cptr.ld1uo((curr), 9) & -8) | cptr.ld1uo(cptr.decay(__static_sweepgen_nextage), (cptr.ld1uo((curr), 9) & 7), 1)))))));
-                if ((cptr.ld1uo((curr), 9) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)) ? 1 : 0)
+                if ((cptr.ld1uo((curr), 9) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)))
                     cptr.stPtr(pfirstold1, curr);
             }
             p = curr;
@@ -1134,7 +1134,7 @@ function genstep(L, g) {
     else {
         let majorbase = cptr.ldU64o(g, 32);
         let majorinc = BigInt.asUintN(64, (majorbase / 100n) * BigInt.asUintN(64, BigInt((Math.imul((cptr.ld1uo(g, 105)), 4)))));
-        if (cptr.ldI64o(g, 24) > 0n && (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), 16) + cptr.ldI64o((g), 24))))) > BigInt.asUintN(64, majorbase + majorinc) ? 1 : 0) {
+        if (cptr.ldI64o(g, 24) > 0n && (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), 16) + cptr.ldI64o((g), 24))))) > BigInt.asUintN(64, majorbase + majorinc)) {
             let numobjs = fullgen(L, g);
             if ((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), 16) + cptr.ldI64o((g), 24))))) < BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
                 (void 0);
@@ -1200,7 +1200,7 @@ function atomic(L) {
     ;
     {
         (void cptr.ldPtro(g, 264), (void 0));
-        if ((((cptr.ld1uo((cptr.add(g, 64)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, 64)))))), 9)) & 24) ? 1 : 0))
+        if ((((cptr.ld1uo((cptr.add(g, 64)), 8)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, 64)))))), 9)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, 64))))));
     }
     ;
@@ -1298,7 +1298,7 @@ function singlestep(L) {
         }
         case 7:
         {
-            if (cptr.ldPtro(g, 176) && !cptr.ld1uo(g, 107) ? 1 : 0) {
+            if (cptr.ldPtro(g, 176) && !cptr.ld1uo(g, 107)) {
                 cptr.st1o(g, 103, 0);
                 work = BigInt.asUintN(64, BigInt(Math.imul(runafewfinalizers(L, 10), 50)));
             } else {
@@ -1330,7 +1330,7 @@ function incstep(L, g) {
     do {
         let work = singlestep(L);
         debt -= BigInt.asIntN(64, work);
-    } while (debt > -stepsize && cptr.ld1uo(g, 101) != 8 ? 1 : 0);
+    } while (debt > -stepsize && cptr.ld1uo(g, 101) != 8);
     if (cptr.ld1uo(g, 101) == 8)
         setpause(g);
     else {
@@ -1345,7 +1345,7 @@ export function luaC_step(L) {
     if (!(cptr.ld1uo((g), 106) == 0))
         luaE_setdebt(g, -2000n);
     else {
-        if ((cptr.ld1uo(g, 102) == 1 || cptr.ldU64o(g, 40) != 0n ? 1 : 0))
+        if ((cptr.ld1uo(g, 102) == 1 || cptr.ldU64o(g, 40) != 0n))
             genstep(L, g);
         else
             incstep(L, g);

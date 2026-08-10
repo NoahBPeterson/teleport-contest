@@ -114,9 +114,9 @@ let CapMons = null;
 /** C ref: rumors.c:67 — @param {CPtr} line */
 function unpadline(line) {
     let p = eos(line);
-    if (cptr.cmp(p, line) > 0 && cptr.ld1so(p, -1) == 10 ? 1 : 0)
+    if (cptr.cmp(p, line) > 0 && cptr.ld1so(p, -1) == 10)
         p = cptr.add(p, -1);
-    while (cptr.cmp(p, line) > 0 && cptr.ld1so(p, -1) == 95 ? 1 : 0)
+    while (cptr.cmp(p, line) > 0 && cptr.ld1so(p, -1) == 95)
         p = cptr.add(p, -1);
     cptr.st1(p, 0);
 }
@@ -131,7 +131,7 @@ function init_rumors(fp) {
     let line = new Uint8Array(256);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if ((sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64o(gt, 400) > 0n ? 1 : 0) && cptr.ldI64o(gf, 104) > 0n ? 1 : 0) {
+    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, 400), cptr.add(gt, 408), false_count, cptr.add(gf, 104), cptr.add(gf, 112), eof_offset) == 7 && cptr.ldI64o(gt, 400) > 0n && cptr.ldI64o(gf, 104) > 0n) {
         cptr.stI64o(gt, 416, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, 408)) + cptr.ldI64o(gt, 400)));
         cptr.stI64o(gf, 120, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, 112)) + cptr.ldI64o(gf, 104)));
     } else {
@@ -181,7 +181,7 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
                 return cptr.strcpy(rumor_buf, __sl6);
             }
             void cptr.strcpy(rumor_buf, (yield* get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, NHM.MD_PAD_RUMORS)));
-        } while ((count++ < 50 && exclude_cookie ? 1 : 0) && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0);
+        } while (count++ < 50 && exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))));
         void fclose(rumors);
         if (count >= 50)
             (yield* impossible(__sl7));
@@ -191,7 +191,7 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
         (yield* couldnt_open_file(__sl0));
         cptr.stI64o(gt, 400, -1n);
     }
-    if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))) ? 1 : 0) {
+    if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
         let src = cptr.add(rumor_buf, marklen);
         let dst = rumor_buf;
         for (; cptr.ld1s(src) != 0; src = cptr.add(src, 1), dst = cptr.add(dst, 1)) {
@@ -237,7 +237,7 @@ export function* rumor_check() {
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
             (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, 416) ? 1 : 0)
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, 416))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
@@ -251,7 +251,7 @@ export function* rumor_check() {
                 cptr.st1(endp, 0);
             void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
             (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, 120) ? 1 : 0)
+            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, 120))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
@@ -318,7 +318,7 @@ function* others_check(ftype, fname, winptr) {
                 break __lbl_closeit;
             }
             cptr.st1(cptr.decay(line), 0);
-            if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10 ? 1 : 0) {
+            if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
                 void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __sl27 : __sl28);
                 (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
@@ -376,10 +376,10 @@ function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
         chunkoffset = BigInt((yield* Y.icall((rng)(Number(BigInt.asIntN(32, filechunksize))))));
         void fseek(fh, BigInt.asIntN(64, startpos + chunkoffset), 0);
         void fgets(buf, bufsiz | 0, fh);
-        if (!padlength || Number(BigInt.asUintN(32, cptr.strlen(buf))) <= (padlength + 1) >>> 0 ? 1 : 0)
+        if (!padlength || Number(BigInt.asUintN(32, cptr.strlen(buf))) <= (padlength + 1) >>> 0)
             break;
     }
-    if (ftell(fh) >= endpos || !fgets(buf, bufsiz | 0, fh) ? 1 : 0) {
+    if (ftell(fh) >= endpos || !fgets(buf, bufsiz | 0, fh)) {
         void fseek(fh, startpos, 0);
         void fgets(buf, bufsiz | 0, fh);
     }
@@ -420,9 +420,9 @@ export function* outrumor(truth, mechanism) {
     let buf = new Uint8Array(256);
     let reading = schar((mechanism == NHM.BY_COOKIE || mechanism == NHM.BY_PAPER ? 1 : 0));
     if (reading) {
-        if (is_fainted() && mechanism == NHM.BY_COOKIE ? 1 : 0) {
+        if (is_fainted() && mechanism == NHM.BY_COOKIE) {
             return;
-        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0)) {
+        } else if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120))) {
             if (mechanism == NHM.BY_COOKIE)
                 (yield* pline(cptr.decay(__static_outrumor_fortune_msg)));
             (yield* pline(__sl33));
@@ -456,7 +456,7 @@ function* init_oracles(fp) {
     let cnt = cptr.box(0);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0 ? 1 : 0) {
+    if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0) {
         cptr.stI32(svo, cnt.v >>> 0);
         cptr.stPtro(svo, 8, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n))))));
         for (i = 0; i < cnt.v; i++) {
@@ -513,7 +513,7 @@ export function* outoracle(special, delphi) {
     let endp;
     let line = new Uint8Array(80);
     let xbuf = new Uint8Array(256);
-    if (cptr.ldI32o(go, 552) < 0 || (cptr.ldI32o(go, 552) > 0 && cptr.ldI32(svo) == 0 ? 1 : 0) ? 1 : 0)
+    if (cptr.ldI32o(go, 552) < 0 || (cptr.ldI32o(go, 552) > 0 && cptr.ldI32(svo) == 0))
         return;
     oracles = fopen(__sl46, __sl1);
     if (oracles) {
@@ -524,7 +524,7 @@ export function* outoracle(special, delphi) {
                 if (cptr.ldI32(svo) == 0)
                     break __lbl_close_oracles;
             }
-            if (cptr.ldI32(svo) <= 1 && !special ? 1 : 0)
+            if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;
             oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl3, 665, __sl47), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, 8), oracle_idx, 8)), 0);
@@ -536,7 +536,7 @@ export function* outoracle(special, delphi) {
             else
                 (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl50)));
             (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, __sl13)));
-            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51) ? 1 : 0) {
+            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51)) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
                 (yield* Y.icall((cptr.ldPtro(windowprocs, 144))(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
@@ -584,7 +584,7 @@ export function* doconsult(oracl) {
         u_pay = minor_cost;
         break;
         case 110:
-        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, 552) < 0 ? 1 : 0) ? 1 : 0)
+        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, 552) < 0))
             return NHM.ECMD_OK;
         void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, (yield* currency(BigInt(major_cost))));
         if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121)
@@ -594,7 +594,7 @@ export function* doconsult(oracl) {
     }
     (yield* money2mon(oracl, BigInt(u_pay)));
     cptr.st1(disp, 1);
-    if (!(cptr.ldI32o(u, 1888) & 1) && !(cptr.ldI32o(u, 1884) & 1) ? 1 : 0)
+    if (!(cptr.ldI32o(u, 1888) & 1) && !(cptr.ldI32o(u, 1884) & 1))
         (yield* record_achievement(NHC.ACH_ORCL));
     add_xpts = 0;
     if (u_pay == minor_cost) {
@@ -605,7 +605,7 @@ export function* doconsult(oracl) {
     } else {
         let cheapskate = schar((u_pay < major_cost));
         (yield* outoracle(cheapskate, 1));
-        if (!cheapskate && !(cptr.ldI32o(u, 1888) & 1) ? 1 : 0)
+        if (!cheapskate && !(cptr.ldI32o(u, 1888) & 1))
             add_xpts = (u_pay / ((cptr.ldI32o(u, 1884) & 1) | 0 ? 25 : 10)) | 0;
         cptr.stI32o(u, 1888, 1);
         (yield* exercise(NHC.A_WIS, schar((!cheapskate))));
@@ -632,7 +632,7 @@ export function* CapitalMon(word) {
     let i;
     let wln;
     let nln;
-    if ((!word || !cptr.ld1s(word) ? 1 : 0) || cptr.ld1s(word) == lowc(cptr.ld1s(word)) ? 1 : 0)
+    if (!word || !cptr.ld1s(word) || cptr.ld1s(word) == lowc(cptr.ld1s(word)))
         return 0;
     if (!CapMons)
         (yield* init_CapMons());
@@ -643,7 +643,7 @@ export function* CapitalMon(word) {
         nln = Number(BigInt.asUintN(32, cptr.strlen(nam)));
         if (wln < nln)
             continue;
-        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && ((!cptr.ld1so(word, nln) || cptr.ld1so(word, nln) == 32 ? 1 : 0) || cptr.ld1so(word, nln) == 39 ? 1 : 0) ? 1 : 0)
+        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && (!cptr.ld1so(word, nln) || cptr.ld1so(word, nln) == 32 || cptr.ld1so(word, nln) == 39))
             return 1;
     }
     return 0;
@@ -663,11 +663,11 @@ function* init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
             mptr = cptr.add(mons, mndx, 96);
-            if ((cptr.ldU16o(mptr, 34) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr) ? 1 : 0)
+            if ((cptr.ldU16o(mptr, 34) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
                 continue;
             for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
                 nam = cptr.ldPtro(mptr, mgend, 8);
-                if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam)) ? 1 : 0) {
+                if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam))) {
                     if (pass == 2)
                         cptr.stPtro(CapMons, CapMonstCnt, nam, 8);
                     ++CapMonstCnt;
@@ -687,11 +687,11 @@ function* init_CapMons() {
                     cptr.st1(endp, 0);
                 void (yield* xcrypt(cptr.decay(hline), cptr.decay(xbuf)));
                 unpadline(cptr.decay(xbuf));
-                if (!cptr.ld1so(cptr.decay(xbuf), 0, 1) || !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1so(cptr.decay(xbuf), 0, 1)) ? 1 : 0)
+                if (!cptr.ld1so(cptr.decay(xbuf), 0, 1) || !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1so(cptr.decay(xbuf), 0, 1)))
                     code = 0, startp = cptr.add(cptr.decay(xbuf), 0, 1);
                 else
                     code = cptr.ld1so(cptr.decay(xbuf), 0, 1), startp = cptr.add(cptr.decay(xbuf), 1, 1);
-                if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code) ? 1 : 0) {
+                if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code)) {
                     if (pass == 2)
                         cptr.stPtro(CapMons, (CapMonstCnt + CapBogonCnt) >>> 0, (yield* dupstr(startp)), 8);
                     ++CapBogonCnt;
@@ -707,7 +707,7 @@ function* init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (cptr.ld1so(flags, 10) && (yield* debugcore(__sl62, 0)) ? 1 : 0) {
+    if (cptr.ld1so(flags, 10) && (yield* debugcore(__sl62, 0))) {
         let buf = new Uint8Array(256);
         let i;
         let tmpwin = (yield* Y.icall((cptr.ldPtro(windowprocs, 104))(NHM.NHW_TEXT)));

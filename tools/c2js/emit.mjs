@@ -145,6 +145,29 @@ function operand(e, parentPrec, side) {
   return e;
 }
 
+// ------------------------------------------------- `? 1 : 0` elision ------
+//
+// C11 6.5.13/14 make `a && b` an int 0 or 1, and JS's `&&` yields the raw
+// operand instead, so every logical operator is emitted as `... ? 1 : 0`.
+// That normalization is load-bearing wherever the value is *stored* or does
+// *arithmetic* — and dead weight wherever the value is only ever tested for
+// truth, which is where the overwhelming majority of them land: `if (a && b)`,
+// `while (...)`, `!(...)`, `(...) ? x : y`, and the operands of another
+// logical operator.
+//
+// A descriptor produced by `&&`/`||` therefore carries `boolRaw`, holding both
+// the normalized code it actually emitted and the un-normalized form.  A
+// consumer that only needs truthiness asks for the raw form through
+// `asBool()`.  The stored `.code` is compared before the swap is taken, so a
+// descriptor that was spread into a *different* code string (`{...inner,
+// code: ...}`, of which the emitter has many) can never hand back a raw form
+// that no longer corresponds to it — the guard makes staleness inert rather
+// than wrong.
+//
+// C2JS_BOOLCTX=0 restores the unconditional `? 1 : 0` (the A/B baseline).
+const BOOL_CTX = process.env.C2JS_BOOLCTX !== '0';
+const BOOL_STATS = { elided: 0, kept: 0 };
+
 // ---------------------------------------------------- constant folding ----
 //
 // Macro-heavy C expands to expressions that are compile-time constant but
@@ -711,6 +734,36 @@ export class Emitter {
     return e.prec < ctxPrec ? `(${e.code})` : e.code;
   }
 
+  // ----- `? 1 : 0` elision (see the note above BOOL_CTX) -----
+
+  /**
+   * Descriptor for a logical operator: `inner ? 1 : 0`, remembering the bare
+   * `inner` for consumers that only test truth.
+   */
+  boolNorm(inner, innerPrec) {
+    const code = `${inner} ? 1 : 0`;
+    return { code, prec: PREC.cond, rep: 'val', boolRaw: { code, raw: inner, prec: innerPrec } };
+  }
+
+  /**
+   * The same value, with C's int-0/1 normalization dropped — legal only where
+   * the result is consumed as a truth value and nowhere else.
+   *
+   * `boolRaw.code === d.code` is the staleness guard: descriptors are routinely
+   * respread with a rewritten `code` (casts, parens, bitfield narrowing), and a
+   * carried-over `boolRaw` must not be honoured for code it no longer describes.
+   */
+  asBool(d) {
+    if (!BOOL_CTX || !d || !d.boolRaw || d.boolRaw.code !== d.code) { if (d?.boolRaw) BOOL_STATS.kept++; return d; }
+    BOOL_STATS.elided++;
+    return { ...d, code: d.boolRaw.raw, prec: d.boolRaw.prec, boolRaw: undefined };
+  }
+
+  /** emit a node that is used only as a condition */
+  condExpr(n, opts) {
+    return this.asBool(this.emitExpr(n, opts));
+  }
+
   // ----- constant folding -----
 
   /**
@@ -1164,7 +1217,11 @@ export class Emitter {
 
   expr_ParenExpr(n) {
     const inner = this.emitExpr(n.inner[0]);
-    return { ...inner, code: `(${inner.code})`, prec: PREC.atom };
+    const code = `(${inner.code})`;
+    // parens are transparent to truth-testing, so carry the bare form across
+    const boolRaw = inner.boolRaw && inner.boolRaw.code === inner.code
+      ? { code, raw: `(${inner.boolRaw.raw})`, prec: PREC.atom } : undefined;
+    return { ...inner, code, prec: PREC.atom, boolRaw };
   }
 
   expr_PredefinedExpr(n) {
@@ -1694,7 +1751,8 @@ export class Emitter {
         return { code: n.isPostfix ? `${this.group(this.emitExpr(sub), PREC.postfix)}${n.opcode}` : `${n.opcode}${this.group(this.emitExpr(sub), PREC.unary)}`, prec: n.isPostfix ? PREC.postfix : PREC.unary, rep: 'val' };
       }
       case '-': case '!': case '~': {
-        const e = this.emitExpr(sub);
+        // `!` tests its operand for truth and nothing else
+        const e = n.opcode === '!' ? this.condExpr(sub) : this.emitExpr(sub);
         // 64-bit ~: JS BigInt ~ is infinite-precision (~0n = -1n); C wraps to
         // the operand width — mask with the operand's signedness
         if (n.opcode === '~' && subT.cls === 'int' && subT.bits === 64) {
@@ -1840,11 +1898,18 @@ export class Emitter {
       if (lf) {
         const decisive = op === '&&' ? lf.v === 0n : lf.v !== 0n;
         if (decisive) return { code: op === '&&' ? '0' : '1', prec: PREC.atom, const: op === '&&' ? '0' : '1', rep: 'val' };
-        return { code: `${operand(r0, PREC.cond, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
+        // the surviving operand alone decides the result; in a truth test the
+        // normalization around it is redundant, so offer the bare form too
+        const only = this.asBool(r0);
+        return this.boolNorm(operand(only, PREC.cond, 'right').code, only.prec);
       }
       // C11 6.5.13/14: the result is int 0 or 1 — JS would yield the raw
-      // operand (breaks narrow casts/stores of the result, e.g. boolean())
-      return { code: `${operand(l0, p, 'left').code} ${op} ${operand(r0, p, 'right').code} ? 1 : 0`, prec: PREC.cond, rep: 'val' };
+      // operand (breaks narrow casts/stores of the result, e.g. boolean()).
+      // Both operands of a logical operator are themselves only tested for
+      // truth, so each drops its own normalization unconditionally — that is
+      // true no matter what *this* result is used for.
+      const lb = this.asBool(l0), rb = this.asBool(r0);
+      return this.boolNorm(`${operand(lb, p, 'left').code} ${op} ${operand(rb, p, 'right').code}`, p);
     }
     // pointer arithmetic
     if ((op === '+' || op === '-') && (lT.cls === 'ptr' || rT.cls === 'ptr') && !(lT.cls === 'ptr' && rT.cls === 'ptr' && op === '+')) {
@@ -2032,7 +2097,7 @@ export class Emitter {
       const cs = this.foldConst(n.inner[0]);
       if (cs) return this.emitExpr(n.inner[cs.v !== 0n ? 1 : 2]);
     }
-    const c = this.emitExpr(n.inner[0]);
+    const c = this.condExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);
     // Constant condition: C evaluates only the live arm, so the dead arm's
@@ -2676,7 +2741,7 @@ export class Emitter {
     const cont = this.sm.synth++;
     const thenState = this.sm.synth++;
     const elseState = elseS ? this.sm.synth++ : cont;
-    const condCode = this.emitExpr(cond).code;
+    const condCode = this.condExpr(cond).code;
     // finish the current case with the pure dispatcher
     this.smLine(`if (${condCode}) { __pc = ${thenState}; continue; }`);
     this.smLine(`__pc = ${elseState}; continue;`);
@@ -2723,14 +2788,14 @@ export class Emitter {
     if (isFor) {
       const slot = (i) => (kids[i] && kids[i].kind ? kids[i] : null);
       const cond = kids.length === 5 ? slot(2) : kids.slice(0, -1).filter((k) => k && k.kind)[1];
-      if (cond) this.smLine(`if (!(${this.emitExpr(cond).code})) { __pc = ${cont}; continue; }`);
+      if (cond) this.smLine(`if (!(${this.condExpr(cond).code})) { __pc = ${cont}; continue; }`);
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     } else if (isDo) {
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     } else {
-      this.smLine(`if (!(${this.emitExpr(kids[0]).code})) { __pc = ${cont}; continue; }`);
+      this.smLine(`if (!(${this.condExpr(kids[0]).code})) { __pc = ${cont}; continue; }`);
       this.smLine(`__pc = ${body}; continue;`);
       this.sm.cur = null;
     }
@@ -2738,7 +2803,7 @@ export class Emitter {
     const ctx2 = { ...ctx, breakTo: cont, continueTo: incState };
     this.smOpen(body);
     this.emitSMSeq(bodyItems, ctx2);
-    if (isDo) this.smLine(`if (${this.emitExpr(kids[1]).code}) { __pc = ${body}; continue; }`);
+    if (isDo) this.smLine(`if (${this.condExpr(kids[1]).code}) { __pc = ${body}; continue; }`);
     if (isFor) this.smClose(incState); else this.smClose(isDo ? cont : head);
     if (isFor) {
       this.smOpen(incState);
@@ -3444,7 +3509,7 @@ export class Emitter {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [cond, thenS, elseS] = kids;
     const lines = [];
-    const condCode = this.emitExpr(cond).code;
+    const condCode = this.condExpr(cond).code;
     if (thenS.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(thenS, indent);
       lines.push(`${indent}if (${condCode}) ${block[0].trimStart()}`);
@@ -3492,7 +3557,7 @@ export class Emitter {
     const initCode = !init ? '' : init.kind === 'DeclStmt'
       ? this.stmt_DeclStmt(init, '').join(' ').trim().replace(/;$/, '')
       : this.emitExpr(init, { stmtPos: true }).code;
-    const condCode = cond ? this.emitExpr(cond).code : '';
+    const condCode = cond ? this.condExpr(cond).code : '';
     const incCode = inc ? this.emitExpr(inc, { stmtPos: true }).code : '';
     const head = `${indent}for (${initCode}; ${condCode}; ${incCode})`;
     return this.loopBody(head, body, indent);
@@ -3509,7 +3574,7 @@ export class Emitter {
   stmt_WhileStmt(n, indent) {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [cond, body] = kids;
-    return this.loopBody(`${indent}while (${this.emitExpr(cond).code})`, body, indent);
+    return this.loopBody(`${indent}while (${this.condExpr(cond).code})`, body, indent);
   }
 
   stmt_DoStmt(n, indent) {
@@ -3517,9 +3582,9 @@ export class Emitter {
     const [body, cond] = kids;
     if (body.kind === 'CompoundStmt') {
       const block = this.stmt_CompoundStmt(body, indent);
-      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.emitExpr(cond).code});`];
+      return [`${indent}do ${block[0].trimStart()}`, ...block.slice(1, -1), `${indent}} while (${this.condExpr(cond).code});`];
     }
-    return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.emitExpr(cond).code});`];
+    return [`${indent}do`, ...this.emitStmt(body, indent + '    '), `${indent}while (${this.condExpr(cond).code});`];
   }
 
   stmt_ReturnStmt(n, indent) {

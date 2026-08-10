@@ -121,7 +121,7 @@ export function luaK_nil(fs, from, n) {
     if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_LOADNIL) {
         let pfrom = (((((((cptr.ldI32(previous)) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
         let pl = (pfrom + ((((((((cptr.ldI32(previous)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) | 0;
-        if ((pfrom <= from && from <= ((pl + 1) | 0) ? 1 : 0) || (from <= pfrom && pfrom <= ((l + 1) | 0) ? 1 : 0) ? 1 : 0) {
+        if ((pfrom <= from && from <= ((pl + 1) | 0)) || (from <= pfrom && pfrom <= ((l + 1) | 0))) {
             if (pfrom < from)
                 from = pfrom;
             if (pl > l)
@@ -148,7 +148,7 @@ function fixjump(fs, pc, dest) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), 64), pc, 4);
     let offset = (dest - ((pc + 1) | 0)) | 0;
     (void 0);
-    if (!(-16777215 <= offset && offset <= 16777216 ? 1 : 0))
+    if (!(-16777215 <= offset && offset <= 16777216))
         luaX_syntaxerror(cptr.ldPtro(fs, 16), __sl0);
     (void 0);
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) | (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) & (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
@@ -206,7 +206,7 @@ export function luaK_getlabel(fs) {
 /** C ref: lcode.c:244 — @param {CPtr} fs @param {CInt} pc @returns {CPtr} */
 function getjumpcontrol(fs, pc) {
     let pi = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), 64), pc, 4);
-    if (pc >= 1 && (cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(pi, -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 16) ? 1 : 0)
+    if (pc >= 1 && (cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(pi, -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 16))
         return cptr.add(pi, -(1), 4);
     else
         return pi;
@@ -217,7 +217,7 @@ function patchtestreg(fs, node, reg) {
     let i = getjumpcontrol(fs, node);
     if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
         return 0;
-    if (reg != 255 && reg != ((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) ? 1 : 0)
+    if (reg != 255 && reg != ((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
         (cptr.stI32(i, (((((cptr.ldI32(i)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
     else {
         cptr.stI32(i, ((((((((66) << 0) >>> 0) | ((((((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) >>> 0) << 7) >>> 0)) >>> 0 | 0) >>> 0 | 0) >>> 0 | ((((((((((((cptr.ldI32(i)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) >>> 0) << 15) >>> 0)) >>> 0));
@@ -259,7 +259,7 @@ export function luaK_patchtohere(fs, list) {
 function savelineinfo(fs, f, line) {
     let linedif = (line - cptr.ldI32o(fs, 40)) | 0;
     let pc = (cptr.ldI32o(fs, 32) - 1) | 0;
-    if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, 69)) >= 128 ? 1 : 0) {
+    if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, 69)) >= 128) {
         (cptr.stPtro(f, 96, ((luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, 16), 56), cptr.ldPtro(f, 96), cptr.ldI32o(fs, 52), cptr.add(f, 40), 8, 2147483647, __sl1)))));
         cptr.stI32o(cptr.ldPtro(f, 96), cptr.ldI32o(fs, 52), pc, 8);
         cptr.stI32o2(cptr.ldPtro(f, 96), (cptr.stI32o(fs, 52, cptr.ldI32o(fs, 52) + 1)) - (1), 8, 4, line);
@@ -405,7 +405,7 @@ function addk(fs, key, v) {
     let oldsize;
     if (((cptr.ld1uo(((idx)), 8)) == 3)) {
         k = (Number(BigInt.asIntN(32, (((cptr.ldI64(((idx)))))))));
-        if ((k < cptr.ldI32o(fs, 44) && (((cptr.ld1uo((cptr.add(cptr.ldPtro(f, 56), k, 16)), 8))) & 63) == (((cptr.ld1uo((v), 8))) & 63) ? 1 : 0) && luaV_equalobj(null, cptr.add(cptr.ldPtro(f, 56), k, 16), v) ? 1 : 0)
+        if (k < cptr.ldI32o(fs, 44) && (((cptr.ld1uo((cptr.add(cptr.ldPtro(f, 56), k, 16)), 8))) & 63) == (((cptr.ld1uo((v), 8))) & 63) && luaV_equalobj(null, cptr.add(cptr.ldPtro(f, 56), k, 16), v))
             return k;
     }
     oldsize = cptr.ldI32o(f, 20);
@@ -430,7 +430,7 @@ function addk(fs, key, v) {
     }
     ;
     (cptr.stI32o(fs, 44, cptr.ldI32o(fs, 44) + 1)) - (1);
-    (((cptr.ld1uo((v), 8)) & 64) ? ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((v))))), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((f)))), (((((cptr.ldPtr(((v))))))))) : (void 0)) : (void 0));
+    (((cptr.ld1uo((v), 8)) & 64) ? ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((v))))), 9)) & 24)) ? luaC_barrier_(L, ((((f)))), (((((cptr.ldPtr(((v))))))))) : (void 0)) : (void 0));
     return k;
 }
 
@@ -539,7 +539,7 @@ export function luaK_int(fs, reg, i) {
 /** C ref: lcode.c:681 — @param {CPtr} fs @param {CInt} reg @param {CDouble} f */
 function luaK_float(fs, reg, f) {
     let fi = cptr.box(0n);
-    if (luaV_flttointeger(f, fi, NHC.F2Ieq) && fitsBx(fi.v) ? 1 : 0)
+    if (luaV_flttointeger(f, fi, NHC.F2Ieq) && fitsBx(fi.v))
         codeAsBx(fs, NHC.OP_LOADF, reg, (Number(BigInt.asIntN(32, ((fi.v))))));
     else
         luaK_codek(fs, reg, luaK_numberK(fs, f));
@@ -759,7 +759,7 @@ function exp2reg(fs, e, reg) {
         let final;
         let p_f = -1;
         let p_t = -1;
-        if (need_value(fs, cptr.ldI32o(e, 16)) || need_value(fs, cptr.ldI32o(e, 20)) ? 1 : 0) {
+        if (need_value(fs, cptr.ldI32o(e, 16)) || need_value(fs, cptr.ldI32o(e, 20))) {
             let fj = (cptr.ldI32(e) == NHC.VJMP) ? -1 : luaK_jump(fs);
             p_f = code_loadbool(fs, reg, NHC.OP_LFALSESKIP);
             p_t = code_loadbool(fs, reg, NHC.OP_LOADTRUE);
@@ -799,13 +799,13 @@ export function luaK_exp2anyreg(fs, e) {
 
 /** C ref: lcode.c:978 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_exp2anyregup(fs, e) {
-    if (cptr.ldI32(e) != NHC.VUPVAL || (cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) ? 1 : 0)
+    if (cptr.ldI32(e) != NHC.VUPVAL || (cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)))
         luaK_exp2anyreg(fs, e);
 }
 
 /** C ref: lcode.c:988 — @param {CPtr} fs @param {CPtr} e */
 export function luaK_exp2val(fs, e) {
-    if (cptr.ldI32(e) == NHC.VJMP || (cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) ? 1 : 0)
+    if (cptr.ldI32(e) == NHC.VJMP || (cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)))
         luaK_exp2anyreg(fs, e);
     else
         luaK_dischargevars(fs, e);
@@ -1044,7 +1044,7 @@ function codenot(fs, e) {
 
 /** C ref: lcode.c:1222 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
 function isKstr(fs, e) {
-    return (((cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) ? 1 : 0) && cptr.ldI32o(e, 8) <= 255 ? 1 : 0) && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), 56), cptr.ldI32o(e, 8), 16))), 8)) == 68) ? 1 : 0);
+    return (cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) && cptr.ldI32o(e, 8) <= 255 && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), 56), cptr.ldI32o(e, 8), 16))), 8)) == 68) ? 1 : 0);
 }
 
 /** C ref: lcode.c:1230 — @param {CPtr} e @returns {CInt} */
@@ -1067,11 +1067,11 @@ function isSCnumber(e, pi, isfloat) {
     let i = cptr.box(0n);
     if (cptr.ldI32(e) == NHC.VKINT)
         i.v = cptr.ldI64o(e, 8);
-    else if (cptr.ldI32(e) == NHC.VKFLT && luaV_flttointeger(cptr.ldF64o(e, 8), i, NHC.F2Ieq) ? 1 : 0)
+    else if (cptr.ldI32(e) == NHC.VKFLT && luaV_flttointeger(cptr.ldF64o(e, 8), i, NHC.F2Ieq))
         cptr.stI32(isfloat, 1);
     else
         return 0;
-    if (!(cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) && fitsC(i.v) ? 1 : 0) {
+    if (!(cptr.ldI32o((e), 16) != cptr.ldI32o((e), 20)) && fitsC(i.v)) {
         cptr.stI32(pi, ((((Number(BigInt.asIntN(32, ((i.v)))))) + 127) | 0));
         return 1;
     } else
@@ -1083,7 +1083,7 @@ export function luaK_indexed(fs, t, k) {
     if (cptr.ldI32(k) == NHC.VKSTR)
         str2K(fs, k);
     (void 0);
-    if (cptr.ldI32(t) == NHC.VUPVAL && !isKstr(fs, k) ? 1 : 0)
+    if (cptr.ldI32(t) == NHC.VUPVAL && !isKstr(fs, k))
         luaK_exp2anyreg(fs, t);
     if (cptr.ldI32(t) == NHC.VUPVAL) {
         let temp = cptr.ldI32o(t, 8);
@@ -1133,7 +1133,7 @@ function constfolding(fs, op, e1, e2) {
     let v1 = cptr.alloc(16);
     let v2 = cptr.alloc(16);
     let res = cptr.alloc(16);
-    if ((!tonumeral(e1, v1) || !tonumeral(e2, v2) ? 1 : 0) || !validop(op, v1, v2) ? 1 : 0)
+    if (!tonumeral(e1, v1) || !tonumeral(e2, v2) || !validop(op, v1, v2))
         return 0;
     luaO_rawarith(cptr.ldPtro(cptr.ldPtro(fs, 16), 56), op, v1, v2, res);
     if (((cptr.ld1uo(((res)), 8)) == 3)) {
@@ -1141,7 +1141,7 @@ function constfolding(fs, op, e1, e2) {
         cptr.stI64o(e1, 8, (cptr.ldI64(((res)))));
     } else {
         let n = (cptr.ldF64(((res))));
-        if ((!(((n)) == ((n)))) || n == 0 ? 1 : 0)
+        if ((!(((n)) == ((n)))) || n == 0)
             return 0;
         cptr.stI32(e1, NHC.VKFLT);
         cptr.stF64o(e1, 8, n);
@@ -1217,7 +1217,7 @@ function finishbinexpneg(fs, e1, e2, op, line, event) {
         return 0;
     else {
         let i2 = cptr.ldI64o(e2, 8);
-        if (!(fitsC(i2) && fitsC(-i2) ? 1 : 0))
+        if (!(fitsC(i2) && fitsC(-i2)))
             return 0;
         else {
             let v2 = (Number(BigInt.asIntN(32, ((i2)))));
@@ -1244,7 +1244,7 @@ function codebinNoK(fs, opr, e1, e2, flip, line) {
 
 /** C ref: lcode.c:1503 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line */
 function codearith(fs, opr, e1, e2, flip, line) {
-    if (tonumeral(e2, null) && luaK_exp2K(fs, e2) ? 1 : 0)
+    if (tonumeral(e2, null) && luaK_exp2K(fs, e2))
         codebinK(fs, opr, e1, e2, flip, line);
     else
         codebinNoK(fs, opr, e1, e2, flip, line);
@@ -1257,7 +1257,7 @@ function codecommutative(fs, op, e1, e2, line) {
         swapexps(e1, e2);
         flip = 1;
     }
-    if (op == NHC.OPR_ADD && isSCint(e2) ? 1 : 0)
+    if (op == NHC.OPR_ADD && isSCint(e2))
         codebini(fs, NHC.OP_ADDI, e1, e2, flip, line, NHC.TM_ADD);
     else
         codearith(fs, op, e1, e2, flip, line);
@@ -1270,7 +1270,7 @@ function codebitwise(fs, opr, e1, e2, line) {
         swapexps(e1, e2);
         flip = 1;
     }
-    if (cptr.ldI32(e2) == NHC.VKINT && luaK_exp2K(fs, e2) ? 1 : 0)
+    if (cptr.ldI32(e2) == NHC.VKINT && luaK_exp2K(fs, e2))
         codebinK(fs, opr, e1, e2, flip, line);
     else
         codebinNoK(fs, opr, e1, e2, flip, line);
@@ -1431,7 +1431,7 @@ function codeconcat(fs, e1, e2, line) {
 /** C ref: lcode.c:1706 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
 export function luaK_posfix(fs, opr, e1, e2, line) {
     luaK_dischargevars(fs, e2);
-    if (((opr) <= NHC.OPR_SHR) && constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2) ? 1 : 0)
+    if (((opr) <= NHC.OPR_SHR) && constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2))
         return;
     switch (opr) {
         case NHC.OPR_AND:
@@ -1579,7 +1579,7 @@ export function luaK_finish(fs) {
             case NHC.OP_RETURN0:
             case NHC.OP_RETURN1:
             {
-                if (!(cptr.ld1uo(fs, 70) || cptr.ld1uo(p, 11) ? 1 : 0))
+                if (!(cptr.ld1uo(fs, 70) || cptr.ld1uo(p, 11)))
                     break;
                 (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((70) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0)));
             }

@@ -50,7 +50,7 @@ export function* sys_early_init() {
     cptr.stI32o(sysopt, 116, 1);
     cptr.stI32o(sysopt, 108, 1);
     cptr.stI32o(sysopt, 120, 10);
-    if (cptr.ldI32o(sysopt, 108) != 0 && cptr.ldI32o(sysopt, 108) != 1 ? 1 : 0)
+    if (cptr.ldI32o(sysopt, 108) != 0 && cptr.ldI32o(sysopt, 108) != 1)
         (yield* panic(__sl1));
     if (cptr.ldPtro(sysopt, 128))
         cptr.free(cptr.ldPtro(sysopt, 128));

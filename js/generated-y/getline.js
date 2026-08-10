@@ -48,7 +48,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
     let c;
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let doprev = 0;
-    if (cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE && !(cptr.ldI32(cw) & NHM.WIN_STOP) ? 1 : 0)
+    if (cptr.ldI32o(ttyDisplay, 24) == NHM.TOPLINE_NEED_MORE && !(cptr.ldI32(cw) & NHM.WIN_STOP))
         (yield* more());
     cptr.stI32(cw, cptr.ldI32(cw) & -2);
     cptr.stI32o(ttyDisplay, 24, NHM.TOPLINE_SPECIAL_PROMPT);
@@ -61,10 +61,10 @@ function* hooked_tty_getlin(query, bufp, hook) {
         term_curs_set(1);
         c = (yield* pgetchar());
         term_curs_set(0);
-        if (c == 27 || c == -1 ? 1 : 0) {
+        if (c == 27 || c == -1) {
             if (c == -1)
                 cptr.st1o(iflags, 7, 1);
-            if (c == 27 && cptr.ld1so(obufp, 0) != 0 ? 1 : 0) {
+            if (c == 27 && cptr.ld1so(obufp, 0) != 0) {
                 cptr.st1o(obufp, 0, 0);
                 bufp = obufp;
                 (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
@@ -85,7 +85,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
         if (c == 16) {
             let sav = cptr.ldI32o(ttyDisplay, 36);
             cptr.stI32o(ttyDisplay, 36, 0);
-            if (cptr.ld1so(iflags, 176) == 115 || (cptr.ld1so(iflags, 176) == 99 && !doprev ? 1 : 0) ? 1 : 0) {
+            if (cptr.ld1so(iflags, 176) == 115 || (cptr.ld1so(iflags, 176) == 99 && !doprev)) {
                 if (!doprev)
                     void (yield* tty_doprev_message());
                 void (yield* tty_doprev_message());
@@ -112,7 +112,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
             cptr.st1(bufp, 0);
             (yield* addtopl(obufp));
         }
-        if (c == erase_char || c == 8 ? 1 : 0) {
+        if (c == erase_char || c == 8) {
             if (!cptr.eq(bufp, obufp)) {
                 let i;
                 bufp = cptr.add(bufp, -1);
@@ -124,15 +124,15 @@ function* hooked_tty_getlin(query, bufp, hook) {
                 cptr.st1(bufp, 0);
             } else
                 tty_nhbell();
-        } else if (c == 10 || c == 13 ? 1 : 0) {
+        } else if (c == 10 || c == 13) {
             break;
-        } else if ((32 <= uchar(c) && c != 127 ? 1 : 0) && (cptr.diff(bufp, obufp) < 255n && cptr.diff(bufp, obufp) < 80n ? 1 : 0) ? 1 : 0) {
+        } else if (32 <= uchar(c) && c != 127 && (cptr.diff(bufp, obufp) < 255n && cptr.diff(bufp, obufp) < 80n)) {
             let i = eos(bufp);
             cptr.st1(bufp, schar(c));
             cptr.st1o(bufp, 1, 0);
             (yield* putsyms(bufp));
             bufp = cptr.add(bufp, 1);
-            if (hook && (yield* Y.icall((hook)(obufp))) ? 1 : 0) {
+            if (hook && (yield* Y.icall((hook)(obufp)))) {
                 (yield* putsyms(bufp));
                 for (i = bufp; cptr.ld1s(i); i = cptr.add(i, 1))
                     (yield* putsyms(__sl2));
@@ -143,7 +143,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
                 for (; cptr.cmp(s, bufp) > 0; s = cptr.add(s, -1))
                     (yield* putsyms(__sl2));
             }
-        } else if (c == kill_char || c == 127 ? 1 : 0) {
+        } else if (c == kill_char || c == 127) {
             for (; cptr.ld1s(bufp); bufp = cptr.add(bufp, 1))
                 (yield* putsyms(__sl1));
             for (; !cptr.eq(bufp, obufp); bufp = cptr.add(bufp, -1))
@@ -167,8 +167,8 @@ export function* xwaitforspace(s) {
     let c;
     let x = ttyDisplay ? cptr.ld1so(ttyDisplay, 48) : 10;
     morc.v = 0;
-    while (!cptr.ldI32o(program_state, 8) && (c = (yield* tty_nhgetch())) != -1 ? 1 : 0) {
-        if (c == 10 || c == 13 ? 1 : 0)
+    while (!cptr.ldI32o(program_state, 8) && (c = (yield* tty_nhgetch())) != -1) {
+        if (c == 10 || c == 13)
             break;
         if (cptr.ld1so(iflags, 127)) {
             if (c == 27) {
@@ -177,7 +177,7 @@ export function* xwaitforspace(s) {
                 morc.v = 27;
                 break;
             }
-            if (((s && cptr.strchr(s, c) ? 1 : 0) || c == x ? 1 : 0) || (x == 10 && c == 13 ? 1 : 0) ? 1 : 0) {
+            if ((s && cptr.strchr(s, c)) || c == x || (x == 10 && c == 13)) {
                 morc.v = schar(c);
                 break;
             }
@@ -212,7 +212,7 @@ export function* tty_get_ext_cmd() {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (yield* hooked_tty_getlin(cptr.decay(extcmd_char), cptr.decay(buf), !cptr.ldI32(gi) ? ext_cmd_getlin_hook : no_hook));
     void (yield* mungspaces(cptr.decay(buf)));
-    nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27 ? 1 : 0) ? -1 : (yield* extcmds_match(cptr.decay(buf), 3, ecmatches));
+    nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27) ? -1 : (yield* extcmds_match(cptr.decay(buf), 3, ecmatches));
     if (nmatches != 1) {
         if (nmatches != -1)
             (yield* pline(__sl4, visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)), cptr.decay(buf)));

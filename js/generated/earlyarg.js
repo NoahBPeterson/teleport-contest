@@ -1351,7 +1351,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let argc = cptr.ldI32(argc_p);
     let argv = cptr.ldPtr(argv_p);
     let p;
-    let nextarg = (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) != 45 ? 1 : 0) ? cptr.ldPtro(argv, 1, 8) : null;
+    let nextarg = (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) != 45) ? cptr.ldPtro(argv, 1, 8) : null;
     let l;
     let opttype = (lflags & NHC.ArgVal_mask);
     let oneletterok = schar(((lflags & NHC.ArgNam_mask) == NHC.ArgNamOneLetter));
@@ -1369,7 +1369,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     }
     if ((p = cptr.strchr(arg, 61)) === null)
         p = cptr.strchr(arg, 58);
-    if (p && opttype == NHC.ArgValDisallowed ? 1 : 0)
+    if (p && opttype == NHC.ArgValDisallowed)
         {
             if (complain)
                 config_error_add(__sl9, origarg);
@@ -1379,7 +1379,7 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
             return null;
         }
     l = Number(BigInt.asIntN(32, (p ? (cptr.diff(p, arg)) : BigInt.asIntN(64, cptr.strlen(arg)))));
-    if ((l > 2 || oneletterok ? 1 : 0) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l))) ? 1 : 0) {
+    if ((l > 2 || oneletterok) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l)))) {
         if (p)
             p = cptr.add(p, 1);
         else if (opttype == NHC.ArgValRequired)
@@ -1415,8 +1415,8 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
             return null;
         }
     }
-    if (!p || !cptr.ld1s(p) ? 1 : 0) {
-        if (nextarg && (opttype == NHC.ArgValRequired || opttype == NHC.ArgValOptional ? 1 : 0) ? 1 : 0)
+    if (!p || !cptr.ld1s(p)) {
+        if (nextarg && (opttype == NHC.ArgValRequired || opttype == NHC.ArgValOptional))
             p = nextarg, cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
         else if (opttype == NHC.ArgValRequired)
             {
@@ -1465,7 +1465,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
     if (argcheck(cptr.ldI32(argc_p), cptr.ldPtr(argv_p), NHC.ARG_DUMPGLYPHIDS) == 2)
         opt_terminate();
     config_error_init(0, __sl11, 0);
-    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtro((cptr.ldPtr(argv_p)), 1, 8), __sl12) ? 1 : 0)
+    if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtro((cptr.ldPtr(argv_p)), 1, 8), __sl12))
         opt_usage(cptr.ldPtr(hackdir_p));
     for (ndx = 1; ndx < cptr.ldI32(argc_p); ndx = (ndx + (consumed ? 0 : 1)) | 0) {
         consumed = 0;
@@ -1474,7 +1474,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
         arg = (origarg = cptr.ldPtro(argv.v, 0, 8));
         if (cptr.ld1s(arg) != 45)
             continue;
-        if (((cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 ? 1 : 0) && cptr.ld1so(arg, 2) != 0 ? 1 : 0) && ((cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 ? 1 : 0) && cptr.ld1so(arg, 3) != 58 ? 1 : 0) ? 1 : 0)
+        if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 && cptr.ld1so(arg, 2) != 0 && (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
             arg = cptr.add(arg, 1);
         switch (cptr.ld1so(arg, 1)) {
             case 98:
@@ -1507,7 +1507,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             break;
             case 104:
             case 63:
-            if (lopt(arg, NHC.ArgValDisallowed, __sl15, origarg, argc, argv) || lopt(arg, (NHC.ArgValDisallowed | NHC.ArgNamOneLetter), __sl16, origarg, argc, argv) ? 1 : 0)
+            if (lopt(arg, NHC.ArgValDisallowed, __sl15, origarg, argc, argv) || lopt(arg, (NHC.ArgValDisallowed | NHC.ArgNamOneLetter), __sl16, origarg, argc, argv))
                 opt_usage(cptr.ldPtr(hackdir_p));
             break;
             case 110:
@@ -1605,7 +1605,7 @@ export function argcheck(argc, argv, e_arg) {
             break;
         }
     }
-    if (idx >= 8 || argc < 1 ? 1 : 0)
+    if (idx >= 8 || argc < 1)
         return 0;
     for (i = 0; i < argc; ++i) {
         if (cptr.ld1so(cptr.ldPtro(argv, i, 8), 0) != 45)
@@ -1691,12 +1691,12 @@ function debug_fields(opts) {
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
-    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))) ? 1 : 0)
+    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
     if (!cptr.ld1s(opts)) {
         return;
     }
-    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl31, 2) ? 1 : 0) {
+    while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __sl31, 2)) {
         if (cptr.ld1s(opts) == 33)
             opts = cptr.add(opts, 1);
         else
@@ -4285,7 +4285,7 @@ function dump_enums() {
             nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 24) - cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 16)) | 0)) ? __sl24 : cptr.ldPtro2(__static_dump_enums_edmp, i, 32, 8);
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
             if (cptr.ldI32o2(__static_dump_enums_edmp, i, 32, 20) > 0) {
-                nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) <= 126 ? 1 : 0) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) : 32);
+                nh_snprintf(__sl1240, 788, cptr.decay(comment), 256n, __sl1241, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) <= 126) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) : 32);
             } else {
                 cptr.st1o(cptr.decay(comment), 0, 0, 1);
             }

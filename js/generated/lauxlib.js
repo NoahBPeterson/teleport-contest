@@ -84,7 +84,7 @@ const __sl69 = cptr.lit("version mismatch: app. needs %f, Lua core provides %f")
 
 /** C ref: lauxlib.c:52 — @param {CPtr} L @param {CInt} objidx @param {CInt} level @returns {CInt} */
 function findfield(L, objidx, level) {
-    if (level == 0 || !(lua_type(L, -1) == 5) ? 1 : 0)
+    if (level == 0 || !(lua_type(L, -1) == 5))
         return 0;
     lua_pushnil(L);
     while (lua_next(L, -2)) {
@@ -273,18 +273,18 @@ export function luaL_fileresult(L, stat, fname) {
 
 /** C ref: lauxlib.c:288 — @param {CPtr} L @param {CInt} stat @returns {CInt} */
 export function luaL_execresult(L, stat) {
-    if (stat != 0 && (cptr.ldI32(__error())) != 0 ? 1 : 0)
+    if (stat != 0 && (cptr.ldI32(__error())) != 0)
         return luaL_fileresult(L, 0, null);
     else {
         let what = __sl29;
         if ((((stat) & 127) == 0)) {
             stat = (((stat) >> 8) & 255);
-        } else if ((((stat) & 127) != 127 && ((stat) & 127) != 0 ? 1 : 0)) {
+        } else if ((((stat) & 127) != 127 && ((stat) & 127) != 0)) {
             stat = (((stat) & 127));
             what = __sl30;
         }
         ;
-        if (cptr.ld1s(what) == 101 && stat == 0 ? 1 : 0)
+        if (cptr.ld1s(what) == 101 && stat == 0)
             lua_pushboolean(L, 1);
         else
             lua_pushnil(L);
@@ -634,7 +634,7 @@ function errfile(L, what, fnameindex) {
 /** C ref: lauxlib.c:755 — @param {CPtr} f @returns {CInt} */
 function skipBOM(f) {
     let c = getc(f);
-    if ((c == 239 && getc(f) == 187 ? 1 : 0) && getc(f) == 191 ? 1 : 0)
+    if (c == 239 && getc(f) == 187 && getc(f) == 191)
         return getc(f);
     else
         return c;
@@ -646,7 +646,7 @@ function skipcomment(f, cp) {
     if (c == 35) {
         do {
             c = getc(f);
-        } while (c != -1 && c != 10 ? 1 : 0);
+        } while (c != -1 && c != 10);
         cptr.stI32(cp, getc(f));
         return 1;
     } else
@@ -894,7 +894,7 @@ function panic(L) {
 
 /** C ref: lauxlib.c:1066 — @param {CPtr} L @param {CPtr} message @param {CInt} tocont @returns {CInt} */
 function checkcontrol(L, message, tocont) {
-    if (tocont || cptr.ld1s((cptr.postinc(() => message, (v) => { message = v; }))) != 64 ? 1 : 0)
+    if (tocont || cptr.ld1s((cptr.postinc(() => message, (v) => { message = v; }))) != 64)
         return 0;
     else {
         if (strcmp(message, __sl63) == 0)

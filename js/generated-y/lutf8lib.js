@@ -65,12 +65,12 @@ function utf8_decode(s, val, strict) {
             res = (((res << 6) >>> 0) | ((cc & 63) >>> 0)) >>> 0;
         }
         res |= ((((c & 127) >>> 0) << (Math.imul(count, 5))) >>> 0);
-        if ((count > 5 || res > 2147483647 ? 1 : 0) || res < cptr.ldU64o(__static_utf8_decode_limits, count, 8) ? 1 : 0)
+        if (count > 5 || res > 2147483647 || res < cptr.ldU64o(__static_utf8_decode_limits, count, 8))
             return null;
         s = cptr.add(s, count);
     }
     if (strict) {
-        if (res > 1114111 || (55296 <= res && res <= 57343 ? 1 : 0) ? 1 : 0)
+        if (res > 1114111 || (55296 <= res && res <= 57343))
             return null;
     }
     if (val)
@@ -166,21 +166,21 @@ function* byteoffset(L) {
     posi = u_posrelat((yield* luaL_optinteger(L, 3, posi)), len.v);
     (void ((__builtin_expect(BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__sl7))) ? 1 : 0));
     if (n == 0n) {
-        while (posi > 0n && (((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128) ? 1 : 0)
+        while (posi > 0n && (((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128))
             posi--;
     } else {
         if ((((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128))
             return (yield* luaL_error(L, __sl8));
         if (n < 0n) {
-            while (n < 0n && posi > 0n ? 1 : 0) {
+            while (n < 0n && posi > 0n) {
                 do {
                     posi--;
-                } while (posi > 0n && (((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128) ? 1 : 0);
+                } while (posi > 0n && (((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128));
                 n++;
             }
         } else {
             n--;
-            while (n > 0n && posi < BigInt.asIntN(64, len.v) ? 1 : 0) {
+            while (n > 0n && posi < BigInt.asIntN(64, len.v)) {
                 do {
                     posi++;
                 } while ((((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128));
@@ -209,7 +209,7 @@ function* iter_aux(L, strict) {
     else {
         let code = cptr.box(0);
         let next = utf8_decode(cptr.add(s, n), code, strict);
-        if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128) ? 1 : 0)
+        if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128))
             return (yield* luaL_error(L, __sl4));
         (yield* lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, n + 1n))));
         (yield* lua_pushinteger(L, BigInt(code.v >>> 0)));

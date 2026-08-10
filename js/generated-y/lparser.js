@@ -147,7 +147,7 @@ function* registerlocalvar(ls, fs, varname) {
         cptr.stPtro(cptr.ldPtro(f, 104), oldsize++, null, 16);
     cptr.stPtro(cptr.ldPtro(f, 104), cptr.ldI16o(fs, 64), varname, 16);
     cptr.stI32o2(cptr.ldPtro(f, 104), cptr.ldI16o(fs, 64), 16, 8, cptr.ldI32o(fs, 32));
-    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((varname), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((f)))), ((((varname))))) : (void 0));
+    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((varname), 9)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((f)))), ((((varname))))) : (void 0));
     return (cptr.stI16o(fs, 64, cptr.ldI16o(fs, 64) + 1)) - (1);
 }
 
@@ -299,7 +299,7 @@ function* newupvalue(fs, name, v) {
         (void 0);
     }
     cptr.stPtr(up, name);
-    ((((cptr.ld1uo((cptr.ldPtr(fs)), 9)) & 32) && ((cptr.ld1uo((name), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtro(cptr.ldPtro(fs, 16), 56), ((((cptr.ldPtr(fs))))), ((((name))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(fs)), 9)) & 32) && ((cptr.ld1uo((name), 9)) & 24)) ? luaC_barrier_(cptr.ldPtro(cptr.ldPtro(fs, 16), 56), ((((cptr.ldPtr(fs))))), ((((name))))) : (void 0));
     return (cptr.ld1uo(fs, 67) - 1) | 0;
 }
 
@@ -343,13 +343,13 @@ function* singlevaraux(fs, n, var$, base) {
     else {
         let v = searchvar(fs, n, var$);
         if (v >= 0) {
-            if (v == NHC.VLOCAL && !base ? 1 : 0)
+            if (v == NHC.VLOCAL && !base)
                 markupval(fs, cptr.ldU16o(var$, 10));
         } else {
             let idx = searchupvalue(fs, n);
             if (idx < 0) {
                 (yield* singlevaraux(cptr.ldPtro(fs, 8), n, var$, 0));
-                if (cptr.ldI32(var$) == NHC.VLOCAL || cptr.ldI32(var$) == NHC.VUPVAL ? 1 : 0)
+                if (cptr.ldI32(var$) == NHC.VLOCAL || cptr.ldI32(var$) == NHC.VUPVAL)
                     idx = (yield* newupvalue(fs, n, var$));
                 else
                     return;
@@ -378,7 +378,7 @@ function* singlevar(ls, var$) {
 function* adjust_assign(ls, nvars, nexps, e) {
     let fs = cptr.ldPtro(ls, 48);
     let needed = (nvars - nexps) | 0;
-    if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG ? 1 : 0)) {
+    if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG)) {
         let extra = (needed + 1) | 0;
         if (extra < 0)
             extra = 0;
@@ -525,7 +525,7 @@ function* leaveblock(fs) {
     (void 0);
     if (cptr.ld1uo(bl, 18))
         hasclose = (yield* createlabel(ls, ((yield* luaS_newlstr(cptr.ldPtro(ls, 56), __sl10, BigInt.asUintN(64, (6n / 1n) - 1n)))), 0, 0));
-    if ((!hasclose && cptr.ldPtr(bl) ? 1 : 0) && cptr.ld1uo(bl, 17) ? 1 : 0)
+    if (!hasclose && cptr.ldPtr(bl) && cptr.ld1uo(bl, 17))
         (yield* luaK_codeABCk(fs, NHC.OP_CLOSE, stklevel, 0, 0, 0));
     cptr.st1o(fs, 68, uchar(stklevel));
     cptr.stI32o(cptr.ldPtro(ls, 88), 40, cptr.ldI32o(bl, 8));
@@ -551,7 +551,7 @@ function* addprototype(ls) {
             cptr.stPtro(cptr.ldPtro(f, 72), oldsize++, null, 8);
     }
     cptr.stPtro(cptr.ldPtro(f, 72), (cptr.stI32o(fs, 48, cptr.ldI32o(fs, 48) + 1)) - (1), clp = (yield* luaF_newproto(L)), 8);
-    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((clp), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((f)))), ((((clp))))) : (void 0));
+    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((clp), 9)) & 24)) ? luaC_barrier_(L, ((((f)))), ((((clp))))) : (void 0));
     return clp;
 }
 
@@ -584,7 +584,7 @@ function open_func(ls, fs, bl) {
     cptr.stI32o(fs, 60, cptr.ldI32o(cptr.ldPtro(ls, 88), 40));
     cptr.stPtro(fs, 24, null);
     cptr.stPtro(f, 112, cptr.ldPtro(ls, 96));
-    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(f, 112)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((f)))), ((((cptr.ldPtro(f, 112)))))) : (void 0));
+    ((((cptr.ld1uo((f), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(f, 112)), 9)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((f)))), ((((cptr.ldPtro(f, 112)))))) : (void 0));
     cptr.st1o(f, 12, 2);
     enterblock(fs, bl, 0);
 }
@@ -704,7 +704,7 @@ function* closelistfield(fs, cc) {
 function* lastlistfield(fs, cc) {
     if (cptr.ldI32o(cc, 40) == 0)
         return;
-    if (((cptr.ldI32(cc)) == NHC.VCALL || (cptr.ldI32(cc)) == NHC.VVARARG ? 1 : 0)) {
+    if (((cptr.ldI32(cc)) == NHC.VCALL || (cptr.ldI32(cc)) == NHC.VVARARG)) {
         (yield* luaK_setreturns(fs, cc, -1));
         (yield* luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, 24), 8), cptr.ldI32o(cc, 36), -1));
         (cptr.stI32o(cc, 36, cptr.ldI32o(cc, 36) + -1)) - (-1);
@@ -765,7 +765,7 @@ function* constructor(ls, t) {
             break;
         (yield* closelistfield(fs, cc));
         (yield* field(ls, cc));
-    } while ((yield* testnext(ls, 44)) || (yield* testnext(ls, 59)) ? 1 : 0);
+    } while ((yield* testnext(ls, 44)) || (yield* testnext(ls, 59)));
     (yield* check_match(ls, 125, 123, line));
     (yield* lastlistfield(fs, cc));
     luaK_settablesize(fs, pc, cptr.ldI32o(t, 8), cptr.ldI32o(cc, 36), cptr.ldI32o(cc, 32));
@@ -801,7 +801,7 @@ function* parlist(ls) {
                 default:
                 (yield* luaX_syntaxerror(ls, __sl15));
             }
-        } while (!isvararg && (yield* testnext(ls, 44)) ? 1 : 0);
+        } while (!isvararg && (yield* testnext(ls, 44)));
     }
     (yield* adjustlocalvars(ls, nparams));
     cptr.st1o(f, 10, (((cptr.ld1uo(fs, 66)))));
@@ -859,7 +859,7 @@ function* funcargs(ls, f) {
                 cptr.stI32(args, NHC.VVOID);
             else {
                 (yield* explist(ls, args));
-                if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG ? 1 : 0))
+                if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG))
                     (yield* luaK_setreturns(fs, args, -1));
             }
             (yield* check_match(ls, 41, 40, line));
@@ -883,7 +883,7 @@ function* funcargs(ls, f) {
     }
     (void 0);
     base = cptr.ldI32o(f, 8);
-    if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG ? 1 : 0))
+    if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG))
         nparams = -1;
     else {
         if (cptr.ldI32(args) != NHC.VVOID)
@@ -1154,7 +1154,7 @@ function* subexpr(ls, v, limit) {
     } else
         (yield* simpleexp(ls, v));
     op = getbinopr(cptr.ldI32o(ls, 16));
-    while (op != NHC.OPR_NOBINOPR && cptr.ld1uo(priority, op, 2) > limit ? 1 : 0) {
+    while (op != NHC.OPR_NOBINOPR && cptr.ld1uo(priority, op, 2) > limit) {
         let v2 = cptr.alloc(24);
         let nextop;
         let line = cptr.ldI32o(ls, 4);
@@ -1190,19 +1190,19 @@ function* check_conflict(ls, lh, v) {
     let extra = cptr.ld1uo(fs, 68);
     let conflict = 0;
     for (; lh; lh = cptr.ldPtr(lh)) {
-        if ((NHC.VINDEXED <= (cptr.ldI32o(lh, 8)) && (cptr.ldI32o(lh, 8)) <= NHC.VINDEXSTR ? 1 : 0)) {
+        if ((NHC.VINDEXED <= (cptr.ldI32o(lh, 8)) && (cptr.ldI32o(lh, 8)) <= NHC.VINDEXSTR)) {
             if (cptr.ldI32o(lh, 8) == NHC.VINDEXUP) {
-                if (cptr.ldI32(v) == NHC.VUPVAL && cptr.ld1uo(lh, 18) == cptr.ldI32o(v, 8) ? 1 : 0) {
+                if (cptr.ldI32(v) == NHC.VUPVAL && cptr.ld1uo(lh, 18) == cptr.ldI32o(v, 8)) {
                     conflict = 1;
                     cptr.stI32o(lh, 8, NHC.VINDEXSTR);
                     cptr.st1o(lh, 18, uchar(extra));
                 }
             } else {
-                if (cptr.ldI32(v) == NHC.VLOCAL && cptr.ld1uo(lh, 18) == cptr.ld1uo(v, 8) ? 1 : 0) {
+                if (cptr.ldI32(v) == NHC.VLOCAL && cptr.ld1uo(lh, 18) == cptr.ld1uo(v, 8)) {
                     conflict = 1;
                     cptr.st1o(lh, 18, uchar(extra));
                 }
-                if ((cptr.ldI32o(lh, 8) == NHC.VINDEXED && cptr.ldI32(v) == NHC.VLOCAL ? 1 : 0) && cptr.ldI16o(lh, 16) == cptr.ld1uo(v, 8) ? 1 : 0) {
+                if (cptr.ldI32o(lh, 8) == NHC.VINDEXED && cptr.ldI32(v) == NHC.VLOCAL && cptr.ldI16o(lh, 16) == cptr.ld1uo(v, 8)) {
                     conflict = 1;
                     cptr.stI16o(lh, 16, i16(extra));
                 }
@@ -1222,7 +1222,7 @@ function* check_conflict(ls, lh, v) {
 function* restassign(ls, lh, nvars) {
     let e = cptr.alloc(24);
     {
-        if (!((NHC.VLOCAL <= (cptr.ldI32o(lh, 8)) && (cptr.ldI32o(lh, 8)) <= NHC.VINDEXSTR ? 1 : 0)))
+        if (!((NHC.VLOCAL <= (cptr.ldI32o(lh, 8)) && (cptr.ldI32o(lh, 8)) <= NHC.VINDEXSTR)))
             (yield* luaX_syntaxerror(ls, __sl20));
     }
     ;
@@ -1231,7 +1231,7 @@ function* restassign(ls, lh, nvars) {
         let nv = cptr.alloc(32);
         cptr.stPtr(nv, lh);
         (yield* suffixedexp(ls, cptr.add(nv, 8)));
-        if (!(NHC.VINDEXED <= (cptr.ldI32o(nv, 8)) && (cptr.ldI32o(nv, 8)) <= NHC.VINDEXSTR ? 1 : 0))
+        if (!(NHC.VINDEXED <= (cptr.ldI32o(nv, 8)) && (cptr.ldI32o(nv, 8)) <= NHC.VINDEXSTR))
             (yield* check_conflict(ls, lh, cptr.add(nv, 8)));
         (yield* luaE_incCstack(cptr.ldPtro(ls, 56)));
         (yield* restassign(ls, nv, (nvars + 1) | 0));
@@ -1298,7 +1298,7 @@ function* checkrepeated(ls, name) {
 /** C ref: lparser.c:1457 — @param {CPtr} ls @param {CPtr} name @param {CInt} line */
 function* labelstat(ls, name, line) {
     (yield* checknext(ls, NHC.TK_DBCOLON));
-    while (cptr.ldI32o(ls, 16) == 59 || cptr.ldI32o(ls, 16) == NHC.TK_DBCOLON ? 1 : 0)
+    while (cptr.ldI32o(ls, 16) == 59 || cptr.ldI32o(ls, 16) == NHC.TK_DBCOLON)
         (yield* statement(ls));
     (yield* checkrepeated(ls, name));
     (yield* createlabel(ls, name, line, block_follow(ls, 0)));
@@ -1502,7 +1502,7 @@ function* test_then_block(ls, escapelist) {
     }
     (yield* statlist(ls));
     (yield* leaveblock(fs));
-    if (cptr.ldI32o(ls, 16) == NHC.TK_ELSE || cptr.ldI32o(ls, 16) == NHC.TK_ELSEIF ? 1 : 0)
+    if (cptr.ldI32o(ls, 16) == NHC.TK_ELSE || cptr.ldI32o(ls, 16) == NHC.TK_ELSEIF)
         (yield* luaK_concat(fs, escapelist, (yield* luaK_jump(fs))));
     (yield* luaK_patchtohere(fs, jf));
 }
@@ -1582,7 +1582,7 @@ function* localstat(ls) {
         nexps = 0;
     }
     var$ = getlocalvardesc(fs, vidx);
-    if ((nvars == nexps && cptr.ld1uo(var$, 9) == 1 ? 1 : 0) && luaK_exp2const(fs, e, var$) ? 1 : 0) {
+    if (nvars == nexps && cptr.ld1uo(var$, 9) == 1 && luaK_exp2const(fs, e, var$)) {
         cptr.st1o(var$, 9, 3);
         (yield* adjustlocalvars(ls, (nvars - 1) | 0));
         cptr.postinc1(cptr.add(fs, 66));
@@ -1624,7 +1624,7 @@ function* exprstat(ls) {
     let fs = cptr.ldPtro(ls, 48);
     let v = cptr.alloc(32);
     (yield* suffixedexp(ls, cptr.add(v, 8)));
-    if (cptr.ldI32o(ls, 16) == 61 || cptr.ldI32o(ls, 16) == 44 ? 1 : 0) {
+    if (cptr.ldI32o(ls, 16) == 61 || cptr.ldI32o(ls, 16) == 44) {
         cptr.stPtr(v, null);
         (yield* restassign(ls, v, 1));
     } else {
@@ -1645,13 +1645,13 @@ function* retstat(ls) {
     let e = cptr.alloc(24);
     let nret;
     let first = luaY_nvarstack(fs);
-    if (block_follow(ls, 1) || cptr.ldI32o(ls, 16) == 59 ? 1 : 0)
+    if (block_follow(ls, 1) || cptr.ldI32o(ls, 16) == 59)
         nret = 0;
     else {
         nret = (yield* explist(ls, e));
-        if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG ? 1 : 0)) {
+        if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG)) {
             (yield* luaK_setreturns(fs, e, -1));
-            if ((cptr.ldI32(e) == NHC.VCALL && nret == 1 ? 1 : 0) && !cptr.ld1uo(cptr.ldPtro(fs, 24), 19) ? 1 : 0) {
+            if (cptr.ldI32(e) == NHC.VCALL && nret == 1 && !cptr.ld1uo(cptr.ldPtro(fs, 24), 19)) {
                 (cptr.stI32o(cptr.ldPtro(cptr.ldPtr((fs)), 64), cptr.ldI32o((e), 8), ((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), 64), cptr.ldI32o((e), 8), 4))) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((69) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0), 4));
                 (void 0);
             }
@@ -1765,7 +1765,7 @@ function* mainfunc(ls, fs) {
     cptr.st1o(env, 9, 0);
     cptr.st1o(env, 10, 0);
     cptr.stPtr(env, cptr.ldPtro(ls, 104));
-    ((((cptr.ld1uo((cptr.ldPtr(fs)), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtr(env)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((cptr.ldPtr(fs))))), ((((cptr.ldPtr(env)))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(fs)), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtr(env)), 9)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, 56), ((((cptr.ldPtr(fs))))), ((((cptr.ldPtr(env)))))) : (void 0));
     (yield* luaX_next(ls));
     (yield* statlist(ls));
     (yield* check(ls, NHC.TK_EOS));
@@ -1797,9 +1797,9 @@ export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     ;
     (yield* luaD_inctop(L));
     cptr.stPtr(funcstate, cptr.stPtro(cl, 24, (yield* luaF_newproto(L))));
-    ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, 24)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, 24)))))) : (void 0));
+    ((((cptr.ld1uo((cl), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, 24)), 9)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, 24)))))) : (void 0));
     cptr.stPtro(cptr.ldPtr(funcstate), 112, (yield* luaS_new(L, name)));
-    ((((cptr.ld1uo((cptr.ldPtr(funcstate)), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtr(funcstate), 112)), 9)) & 24) ? 1 : 0) ? luaC_barrier_(L, ((((cptr.ldPtr(funcstate))))), ((((cptr.ldPtro(cptr.ldPtr(funcstate), 112)))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(funcstate)), 9)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtr(funcstate), 112)), 9)) & 24)) ? luaC_barrier_(L, ((((cptr.ldPtr(funcstate))))), ((((cptr.ldPtro(cptr.ldPtr(funcstate), 112)))))) : (void 0));
     cptr.stPtro(lexstate, 72, buff);
     cptr.stPtro(lexstate, 88, dyd);
     cptr.stI32o(dyd, 8, cptr.stI32o(dyd, 24, cptr.stI32o(dyd, 40, 0)));

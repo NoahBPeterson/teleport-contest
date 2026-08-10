@@ -143,7 +143,7 @@ export function* choose_windows(s) {
             continue;
         if (!(yield* strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1))) {
             cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, 16), 416);
-            if (cptr.ldPtro(gl, 544) && cptr.ldPtro(cptr.ldPtro(gl, 544), 8) ? 1 : 0)
+            if (cptr.ldPtro(gl, 544) && cptr.ldPtro(cptr.ldPtro(gl, 544), 8))
                 (yield* Y.icall((cptr.ldPtro(cptr.ldPtro(gl, 544), 8))(NHM.WININIT_UNDO)));
             if (cptr.ldPtro2(winchoices, i, 16, 8))
                 (yield* Y.icall((cptr.ldPtro2(winchoices, i, 16, 8))(NHM.WININIT)));
@@ -286,7 +286,7 @@ let previnterface_exit_nhwindows = null;
 export function nhwindows_hangup() {
     let previnterface_getmsghistory = null;
     cptr.st1o(iflags, 125, 0);
-    if (cptr.ld1so(iflags, 81) && cptr.ldPtro(windowprocs, 80) !== hup_exit_nhwindows ? 1 : 0)
+    if (cptr.ld1so(iflags, 81) && cptr.ldPtro(windowprocs, 80) !== hup_exit_nhwindows)
         previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, 80);
     if (cptr.ldPtro(windowprocs, 344) !== cptr.ldPtro(hup_procs, 344))
         previnterface_getmsghistory = cptr.ldPtro(windowprocs, 344);
@@ -601,7 +601,7 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         }
         return;
     }
-    if (!(idx == NHC.BL_FLUSH || idx == NHC.BL_RESET ? 1 : 0))
+    if (!(idx == NHC.BL_FLUSH || idx == NHC.BL_RESET))
         return;
     nb = cptr.decay(newbot1);
     cptr.st1(nb, 0);
@@ -609,7 +609,7 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         if (cptr.ld1so(cptr.decay(status_activefields), idx1, 1))
             void cptr.strcpy(nb = eos(nb), cptr.ldPtro(status_vals, idx1, 8));
     }
-    lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) && cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __sl23) ? 1 : 0) ? 9 : 0) >>> 0;
+    lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) && cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __sl23)) ? 9 : 0) >>> 0;
     for (pass = 1; pass <= 4; pass++) {
         fieldlist = cptr.decay(__static_genl_status_update_fieldorder[pass]);
         nb = cptr.decay(newbot2);
@@ -641,7 +641,7 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                 }
                 void cptr.strcpy(nb = eos(nb), val);
             }
-            if ((idx2 == NHC.BL_CONDITION && pass < 4 ? 1 : 0) && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n ? 1 : 0)
+            if (idx2 == NHC.BL_CONDITION && pass < 4 && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n)
                 break;
         }
         if (idx2 == NHC.BL_FLUSH) {
@@ -764,7 +764,7 @@ export function dump_redirect(onoff_flag) {
 
 /** C ref: windows.c:1397 — @param {CInt} color @returns {CInt} */
 export function has_color(color) {
-    return (((cptr.ld1so(iflags, 184) && cptr.ldPtr(windowprocs) ? 1 : 0) && (cptr.ldU64o(windowprocs, 16) & 1n) ? 1 : 0) && cptr.ld1so2(windowprocs, color, 1, 32) ? 1 : 0);
+    return (cptr.ld1so(iflags, 184) && cptr.ldPtr(windowprocs) && (cptr.ldU64o(windowprocs, 16) & 1n) && cptr.ld1so2(windowprocs, color, 1, 32) ? 1 : 0);
 }
 
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
@@ -795,7 +795,7 @@ export function decode_glyph(str, glyph_ptr) {
     let dcount = 0;
     let retval = 0;
     let dp;
-    for (; cptr.ld1s(str) && ++dcount <= 4 ? 1 : 0; str = cptr.add(str, 1)) {
+    for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
         if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
             retval++;
             rndchk = ((Math.imul(rndchk, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
@@ -804,7 +804,7 @@ export function decode_glyph(str, glyph_ptr) {
     }
     if (rndchk == cptr.ldI32o(svc, 24)) {
         cptr.stI32(glyph_ptr, dcount = 0);
-        for (; cptr.ld1s(str) && ++dcount <= 4 ? 1 : 0; str = cptr.add(str, 1)) {
+        for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
             if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
                 retval++;
                 cptr.stI32(glyph_ptr, ((Math.imul(cptr.ldI32(glyph_ptr), 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0);
@@ -893,10 +893,10 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
 export function mixed_to_glyphinfo(str, gip) {
     let dcount;
     let ggv = cptr.box(0);
-    if (!str || !gip ? 1 : 0)
+    if (!str || !gip)
         return __sl24;
     cptr.memcpy(gip, nul_glyphinfo.v, 48);
-    if (cptr.ld1s(str) == 92 && cptr.ld1s((cptr.add(str, 1))) == 71 ? 1 : 0) {
+    if (cptr.ld1s(str) == 92 && cptr.ld1s((cptr.add(str, 1))) == 71) {
         if ((dcount = decode_glyph(cptr.add(str, 2), ggv))) {
             map_glyphinfo(0, 0, ggv.v, 0, gip);
             str = cptr.add(str, ((dcount + 2) | 0));
@@ -919,7 +919,7 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
     let next_accelerator;
     let accelerator = 0;
     let clr = NHM.NO_COLOR;
-    if (!class_list || !class_select ? 1 : 0)
+    if (!class_list || !class_select)
         return 0;
     next_accelerator = 97;
     cptr.memcpy(any, cptr.add(cg, 536), 8);
@@ -931,7 +931,7 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
         switch (category) {
             case 0:
             idx = def_char_to_monclass(cptr.ld1s(class_list));
-            if (!((idx) >= 0 && (idx) < 61 ? 1 : 0)) {
+            if (!((idx) >= 0 && (idx) < 61)) {
                 (yield* panic(__sl32, cptr.ld1s(class_list)));
             }
             text = cptr.ldPtro2(def_monsyms, idx, 24, 16);
@@ -940,7 +940,7 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
             break;
             case 1:
             idx = def_char_to_objclass(cptr.ld1s(class_list));
-            if (!((idx) >= 0 && (idx) < 18 ? 1 : 0)) {
+            if (!((idx) >= 0 && (idx) < 18)) {
                 (yield* panic(__sl33, cptr.ld1s(class_list)));
             }
             text = cptr.ldPtro2(def_oc_syms, idx, 24, 16);
@@ -950,7 +950,7 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
             default:
             (yield* panic(__sl35, category));
         }
-        if (way && cptr.ld1s(class_select) ? 1 : 0) {
+        if (way && cptr.ld1s(class_select)) {
             if (cptr.strchr(class_select, cptr.ld1s(class_list))) {
                 selected = 1;
             }
@@ -967,7 +967,7 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
         }
         class_list = cptr.add(class_list, 1);
     }
-    if (category == 1 && next_accelerator <= 122 ? 1 : 0) {
+    if (category == 1 && next_accelerator <= 122) {
         (yield* add_menu_str(win, __sl4));
         cptr.memcpy(any, cptr.add(cg, 536), 8);
         cptr.stI32(any, 32);

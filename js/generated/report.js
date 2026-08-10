@@ -64,7 +64,7 @@ export function crashreport_init(argc, argv) {
         let ctxp = ctxp_;
         if (!CC_MD4_Init(ctxp))
             break __lbl_skip;
-        if (!binfile || !cptr.ld1s(binfile) ? 1 : 0) {
+        if (!binfile || !cptr.ld1s(binfile)) {
             break __lbl_skip;
         }
         ;
@@ -117,7 +117,7 @@ export function crashreport_bidshow() {
 /** C ref: report.c:237 — @param {CPtr} in @param {CPtr} out @param {CPtr} remaining @param {CPtr} markp @returns {CInt} */
 export function swr_add_uricoded(in$, out, remaining, markp) {
     while (cptr.ld1s(in$)) {
-        if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__sl1, cptr.ld1s(in$)) ? 1 : 0) {
+        if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__sl1, cptr.ld1s(in$))) {
             cptr.st1(cptr.ldPtr(out), cptr.ld1s(in$));
             cptr.postinc(() => cptr.ldPtr(out), (v) => { cptr.stPtr(out, v); });
             (cptr.stI32(remaining, cptr.ldI32(remaining) + -1)) - (-1);
@@ -173,7 +173,7 @@ let mark = null;
 /** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
 export function submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32o(gc, 424) < 0 || cptr.ldI32o(gc, 424) > 8192 ? 1 : 0) ? 8192 : (8192 < (cptr.ldI32o(gc, 424)) ? 8192 : (cptr.ldI32o(gc, 424)));
+        urem.v = (cptr.ldI32o(gc, 424) < 0 || cptr.ldI32o(gc, 424) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, 424)) ? 8192 : (cptr.ldI32o(gc, 424)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;
@@ -359,7 +359,7 @@ export function submit_web_report(cos, msg, why) {
 /** C ref: report.c:461 @returns {CInt} */
 export function dobugreport() {
     if (!submit_web_report(2, null, __sl19)) {
-        pline(__sl20, (cptr.ldPtro(sysopt, 144) && cptr.ld1s(cptr.ldPtro(sysopt, 144)) ? 1 : 0) ? cptr.ldPtro(sysopt, 144) : __sl21);
+        pline(__sl20, (cptr.ldPtro(sysopt, 144) && cptr.ld1s(cptr.ldPtro(sysopt, 144))) ? cptr.ldPtro(sysopt, 144) : __sl21);
     }
     return NHM.ECMD_OK;
 }
@@ -389,9 +389,9 @@ export function NH_panictrace_gdb() {
     let greppath = cptr.ldPtro(sysopt, 136);
     let buf = new Uint8Array(256);
     let gdb;
-    if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0 ? 1 : 0)
+    if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0)
         return 0;
-    if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0 ? 1 : 0)
+    if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0)
         return 0;
     nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __sl26);

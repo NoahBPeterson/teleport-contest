@@ -126,15 +126,15 @@ export function experience(mtmp, nk) {
     }
     for (i = 0; i < NHM.NATTK; i++) {
         tmp2 = cptr.ld1uo2(ptr, i, 4, 37);
-        if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND ? 1 : 0)
+        if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND)
             tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, 26))) | 0;
-        else if (((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) ? 1 : 0) || (tmp2 == NHM.AD_SLIM) ? 1 : 0)
+        else if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_SLIM))
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
         if ((Math.imul(cptr.ld1uo2(ptr, i, 4, 39), cptr.ld1uo2(ptr, i, 4, 38))) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, 26)) | 0;
-        if ((tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, 28) == NHC.S_EEL ? 1 : 0) && !((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) ? 1 : 0) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 512n) != 0n) ? 1 : 0) ? 1 : 0)
+        if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, 28) == NHC.S_EEL && !(cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 128) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, 112) || ((cptr.ldU64o((cptr.ldPtro(gy, 16)), 72) & 512n) != 0n)))
             tmp = (tmp + 1000) | 0;
     }
     if (((cptr.ldU64o((ptr), 80) & 33554432n) != 0n))
@@ -143,8 +143,8 @@ export function experience(mtmp, nk) {
         tmp = (tmp + 50) | 0;
     if (cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
         tmp = 1;
-    if ((cptr.ldI32o(mtmp, 124) & 1) | 0 || (cptr.ldI32o(mtmp, 128) & 1) | 0 ? 1 : 0) {
-        for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1 ? 1 : 0; ++i) {
+    if ((cptr.ldI32o(mtmp, 124) & 1) | 0 || (cptr.ldI32o(mtmp, 128) & 1) | 0) {
+        for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;
             if (i & 1)
@@ -161,15 +161,15 @@ export function more_experienced(exper, rexp) {
     let newexp = BigInt.asIntN(64, oldexp + BigInt(exper));
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
     let newrexp = BigInt.asIntN(64, oldrexp + rexpincr);
-    if (newexp < 0n && exper > 0 ? 1 : 0)
+    if (newexp < 0n && exper > 0)
         newexp = 9223372036854775807n;
-    if (newrexp < 0n && rexpincr > 0n ? 1 : 0)
+    if (newrexp < 0n && rexpincr > 0n)
         newrexp = 9223372036854775807n;
     if (newexp != oldexp) {
         cptr.stI64o(u, 2376, newexp);
         if (cptr.ld1so(flags, 38))
             cptr.st1(disp, 1);
-        if (!cptr.ld1s(disp) && exp_percent_changing() ? 1 : 0)
+        if (!cptr.ld1s(disp) && exp_percent_changing())
             cptr.st1(disp, 1);
     }
     if (newrexp != oldrexp) {
@@ -184,11 +184,11 @@ export function losexp(drainer) {
     let num;
     let uhpmin;
     let olduhpmax;
-    if (drainer && !strcmp(drainer, __sl2) ? 1 : 0)
+    if (drainer && !strcmp(drainer, __sl2))
         drainer = null;
     else if (resists_drli(cptr.add(gy, 8)))
         return;
-    if (cptr.ldI32o(u, 48) > 1 || drainer ? 1 : 0)
+    if (cptr.ldI32o(u, 48) > 1 || drainer)
         pline(__sl3, Goodbye(), cptr.ldI32o(u, 48));
     if (cptr.ldI32o(u, 48) > 1) {
         cptr.stI32o(u, 48, (cptr.ldI32o(u, 48) - 1) | 0);
@@ -207,7 +207,7 @@ export function losexp(drainer) {
         cptr.stI64o(u, 2376, 0n);
         livelog_printf(4096n, __sl5);
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, 48) >= 0 && cptr.ldI32o(u, 48) < NHM.MAXULEV ? 1 : 0))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, 48) >= 0 && cptr.ldI32o(u, 48) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl7, 247, __sl8) : void 0);
     olduhpmax = cptr.ldI32o(u, 2200);
     uhpmin = minuhpmax(10);
     num = cptr.ldI16o2(u, cptr.ldI32o(u, 48), 2, 2220);
@@ -244,7 +244,7 @@ export function losexp(drainer) {
 
 /** C ref: exper.c:300 */
 export function newexplevel() {
-    if (cptr.ldI32o(u, 48) < NHM.MAXULEV && cptr.ldI64o(u, 2376) >= newuexp(cptr.ldI32o(u, 48)) ? 1 : 0)
+    if (cptr.ldI32o(u, 48) < NHM.MAXULEV && cptr.ldI64o(u, 2376) >= newuexp(cptr.ldI32o(u, 48)))
         pluslvl(1);
 }
 
@@ -309,7 +309,7 @@ export function rndexp(gaining) {
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl15), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
-    if (cptr.ldI32o(u, 48) == NHM.MAXULEV && gaining ? 1 : 0) {
+    if (cptr.ldI32o(u, 48) == NHM.MAXULEV && gaining) {
         result += (BigInt.asIntN(64, cptr.ldI64o(u, 2376) - minexp));
         if (result < cptr.ldI64o(u, 2376))
             result = cptr.ldI64o(u, 2376);

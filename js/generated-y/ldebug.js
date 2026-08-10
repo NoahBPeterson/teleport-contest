@@ -64,13 +64,13 @@ function currentpc(ci) {
 
 /** C ref: ldebug.c:63 — @param {CPtr} f @param {CInt} pc @param {CPtr} basepc @returns {CInt} */
 function getbaseline(f, pc, basepc) {
-    if (cptr.ldI32o(f, 40) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, 96), 0, 8) ? 1 : 0) {
+    if (cptr.ldI32o(f, 40) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, 96), 0, 8)) {
         cptr.stI32(basepc, -1);
         return cptr.ldI32o(f, 44);
     } else {
         let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;
         (void 0);
-        while (((i + 1) | 0) < cptr.ldI32o(f, 40) && pc >= cptr.ldI32o(cptr.ldPtro(f, 96), (i + 1) | 0, 8) ? 1 : 0)
+        while (((i + 1) | 0) < cptr.ldI32o(f, 40) && pc >= cptr.ldI32o(cptr.ldPtro(f, 96), (i + 1) | 0, 8))
             i++;
         cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, 96), i, 8));
         return cptr.ldI32o2(cptr.ldPtro(f, 96), i, 8, 4);
@@ -106,7 +106,7 @@ function settraps(ci) {
 
 /** C ref: ldebug.c:134 — @param {CPtr} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
 export function lua_sethook(L, func, mask, count) {
-    if (func === (null) || mask == 0 ? 1 : 0) {
+    if (func === (null) || mask == 0) {
         mask = 0;
         func = null;
     }
@@ -140,9 +140,9 @@ export function lua_getstack(L, level, ar) {
     if (level < 0)
         return 0;
     (void 0);
-    for (ci = cptr.ldPtro(L, 32); level > 0 && !cptr.eq(ci, cptr.add(L, 96)) ? 1 : 0; ci = cptr.ldPtro(ci, 16))
+    for (ci = cptr.ldPtro(L, 32); level > 0 && !cptr.eq(ci, cptr.add(L, 96)); ci = cptr.ldPtro(ci, 16))
         level--;
-    if (level == 0 && !cptr.eq(ci, cptr.add(L, 96)) ? 1 : 0) {
+    if (level == 0 && !cptr.eq(ci, cptr.add(L, 96))) {
         status = 1;
         cptr.stPtro(ar, 128, ci);
     } else
@@ -184,7 +184,7 @@ export function luaG_findlocal(L, ci, n, pos) {
     }
     if (cptr.eq(name, (null))) {
         let limit = (cptr.eq(ci, cptr.ldPtro(L, 32))) ? cptr.ldPtro(L, 16) : cptr.ldPtr(cptr.ldPtro(ci, 24));
-        if (cptr.diff(limit, base) / 16n >= BigInt(n) && n > 0 ? 1 : 0) {
+        if (cptr.diff(limit, base) / 16n >= BigInt(n) && n > 0) {
             name = (!(cptr.ldU16o((ci), 62) & 2)) ? __sl2 : __sl3;
         } else
             return null;
@@ -251,7 +251,7 @@ export function* lua_setlocal(L, ar, n) {
 
 /** C ref: ldebug.c:259 — @param {CPtr} ar @param {CPtr} cl */
 function funcinfo(ar, cl) {
-    if (!(!cptr.eq((cl), (null)) && cptr.ld1uo((cl), 8) == 6 ? 1 : 0)) {
+    if (!(!cptr.eq((cl), (null)) && cptr.ld1uo((cl), 8) == 6)) {
         cptr.stPtro(ar, 32, __sl4);
         cptr.stU64o(ar, 40, (BigInt.asUintN(64, 5n / 1n - 1n)));
         cptr.stI32o(ar, 52, -1);
@@ -283,7 +283,7 @@ function nextline(p, currentline, pc) {
 
 /** C ref: ldebug.c:293 — @param {CPtr} L @param {CPtr} f */
 function* collectvalidlines(L, f) {
-    if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6 ? 1 : 0)) {
+    if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6)) {
         (cptr.st1o((((cptr.ldPtro(L, 16)))), 8, 0));
         {
             cptr.postinc(() => cptr.ldPtro(L, 16), (v) => { cptr.stPtro(L, 16, v); }, 16);
@@ -328,7 +328,7 @@ function* collectvalidlines(L, f) {
 
 /** C ref: ldebug.c:324 — @param {CPtr} L @param {CPtr} ci @param {CPtr} name @returns {CPtr} */
 function getfuncname(L, ci, name) {
-    if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, 62) & 32) ? 1 : 0)
+    if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, 62) & 32))
         return funcnamefromcall(L, cptr.ldPtro(ci, 16), name);
     else
         return null;
@@ -346,13 +346,13 @@ function auxgetinfo(L, what, ar, f, ci) {
             }
             case 108:
             {
-                cptr.stI32o(ar, 48, (ci && (!(cptr.ldU16o((ci), 62) & 2)) ? 1 : 0) ? getcurrentline(ci) : -1);
+                cptr.stI32o(ar, 48, (ci && (!(cptr.ldU16o((ci), 62) & 2))) ? getcurrentline(ci) : -1);
                 break;
             }
             case 117:
             {
                 cptr.st1o(ar, 60, uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, 10))));
-                if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6 ? 1 : 0)) {
+                if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), 8) == 6)) {
                     cptr.st1o(ar, 62, 1);
                     cptr.st1o(ar, 61, 0);
                 } else {
@@ -377,7 +377,7 @@ function auxgetinfo(L, what, ar, f, ci) {
             }
             case 114:
             {
-                if (cptr.eq(ci, (null)) || !(cptr.ldU16o(ci, 62) & 256) ? 1 : 0)
+                if (cptr.eq(ci, (null)) || !(cptr.ldU16o(ci, 62) & 256))
                     cptr.stI16o(ar, 64, cptr.stI16o(ar, 66, 0));
                 else {
                     cptr.stI16o(ar, 64, cptr.ldU16o(ci, 56));
@@ -413,7 +413,7 @@ export function* lua_getinfo(L, what, ar) {
         func = ((cptr.ldPtr(ci)));
         (void 0);
     }
-    cl = (((cptr.ld1uo(((func)), 8)) == 70) || ((cptr.ld1uo(((func)), 8)) == 102) ? 1 : 0) ? ((((((cptr.ldPtr(((func))))))))) : null;
+    cl = (((cptr.ld1uo(((func)), 8)) == 70) || ((cptr.ld1uo(((func)), 8)) == 102)) ? ((((((cptr.ldPtr(((func))))))))) : null;
     status = auxgetinfo(L, what, ar, cl, ci);
     if (cptr.strchr(what, 102)) {
         {
@@ -479,7 +479,7 @@ function findsetreg(p, lastpc, reg) {
             {
                 let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
                 let dest = (((pc + 1) | 0) + b) | 0;
-                if (dest <= lastpc && dest > jmptarget ? 1 : 0)
+                if (dest <= lastpc && dest > jmptarget)
                     jmptarget = dest;
                 change = 0;
                 break;
@@ -544,7 +544,7 @@ function basicgetobjname(p, ppc, reg, name) {
 function rname(p, pc, c, name) {
     pc = cptr.box(pc);
     let what = basicgetobjname(p, pc, c, name);
-    if (!(what && cptr.ld1s(what) == 99 ? 1 : 0))
+    if (!(what && cptr.ld1s(what) == 99))
         cptr.stPtr(name, __sl0);
 }
 
@@ -566,10 +566,10 @@ function isEnv(p, pc, i, isup) {
         name.v = upvalname(p, t);
     else {
         let what = basicgetobjname(p, pc, t, name);
-        if (!cptr.eq(what, cptr.decay(strlocal)) && !cptr.eq(what, cptr.decay(strupval)) ? 1 : 0)
+        if (!cptr.eq(what, cptr.decay(strlocal)) && !cptr.eq(what, cptr.decay(strupval)))
             name.v = null;
     }
-    return (name.v && strcmp(name.v, __sl11) == 0 ? 1 : 0) ? __sl12 : __sl13;
+    return (name.v && strcmp(name.v, __sl11) == 0) ? __sl12 : __sl13;
 }
 
 /** C ref: ldebug.c:575 — @param {CPtr} p @param {CInt} lastpc @param {CInt} reg @param {CPtr} name @returns {CPtr} */
@@ -775,7 +775,7 @@ export function* luaG_forerror(L, o, what) {
 
 /** C ref: ldebug.c:787 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
 export function* luaG_concaterror(L, p1, p2) {
-    if ((((((cptr.ld1uo(((p1)), 8))) & 15)) == 4) || (((((cptr.ld1uo(((p1)), 8))) & 15)) == 3) ? 1 : 0)
+    if ((((((cptr.ld1uo(((p1)), 8))) & 15)) == 4) || (((((cptr.ld1uo(((p1)), 8))) & 15)) == 3))
         p1 = p2;
     (yield* luaG_typeerror(L, p1, __sl24));
 }
@@ -934,14 +934,14 @@ export function* luaG_traceexec(L, pc) {
         cptr.stI16o(ci, 62, cptr.ldU16o(ci, 62) & -65);
         return 1;
     }
-    if (!((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0 ? 1 : 0))
+    if (!((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, 32), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0))
         cptr.stPtro(L, 16, cptr.ldPtro(ci, 8));
     if (counthook)
         (yield* luaD_hook(L, 3, -1, 0, 0));
     if (mask & 4) {
         let oldpc = (cptr.ldI32o(L, 180) < cptr.ldI32o(p, 24)) ? cptr.ldI32o(L, 180) : 0;
         let npci = (((Number(BigInt.asIntN(32, ((cptr.diff((pc), cptr.ldPtro((p), 64)) / 4n))))) - 1) | 0);
-        if (npci <= oldpc || changedline(p, oldpc, npci) ? 1 : 0) {
+        if (npci <= oldpc || changedline(p, oldpc, npci)) {
             let newline = luaG_getfuncline(p, npci);
             (yield* luaD_hook(L, 2, newline, 0, 0));
         }

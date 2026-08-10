@@ -91,7 +91,7 @@ export function getmailstatus() {
             cptr.stI32o(iflags, 40, save_plnmsg);
         }
     } while (0);
-    if (mailbox && stat(mailbox, omstat) ? 1 : 0) {
+    if (mailbox && stat(mailbox, omstat)) {
         cptr.stI64o(omstat, 48, 0n);
     }
 }
@@ -104,13 +104,13 @@ function md_start(startp) {
     let dd;
     let max_distance;
     let stway = cptr.ldPtro(gs, 8);
-    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112) ? 1 : 0) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120) ? 1 : 0) && !(cptr.ldI64o2(u, NHC.TELEPAT, 24, 128) || cptr.ldI64o2(u, NHC.TELEPAT, 24, 112) ? 1 : 0) ? 1 : 0) {
+    if (((cptr.ldI64o2(u, NHC.BLINDED, 24, 128) || cptr.ldI64o2(u, NHC.BLINDED, 24, 112)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, 120)) && !(cptr.ldI64o2(u, NHC.TELEPAT, 24, 128) || cptr.ldI64o2(u, NHC.TELEPAT, 24, 112))) {
         if (!enexto(startp, cptr.ldI16(u), cptr.ldI16o(u, 2), null))
             return 0;
         return 1;
     }
     while (stway) {
-        if (cptr.ldI16o(stway, 4) == cptr.ldI16o(u, 24) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(stway, 2), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0) ? 1 : 0) {
+        if (cptr.ldI16o(stway, 4) == cptr.ldI16o(u, 24) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(stway, 2), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0)) {
             cptr.stI16(startp, cptr.ldI16(stway));
             cptr.stI16o(startp, 2, cptr.ldI16o(stway, 2));
             return 1;
@@ -128,7 +128,7 @@ function md_start(startp) {
                         max_distance = dd;
                         cptr.stI16o(startp, 2, i16(row));
                         cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, 128), row, 2));
-                    } else if ((enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, 128), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) ? 1 : 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0) ? 1 : 0) {
+                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, 128), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -139,7 +139,7 @@ function md_start(startp) {
                         max_distance = dd;
                         cptr.stI16o(startp, 2, i16(row));
                         cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, 136), row, 2));
-                    } else if ((enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, 136), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) ? 1 : 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0) ? 1 : 0) {
+                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, 136), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, 120), cptr.ldI16o(testcc, 2), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -166,18 +166,18 @@ function md_stop(stopp, startp) {
     let min_distance = -1;
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
         for (y = i16(((cptr.ldI16o(u, 2) - 1) | 0)); y <= ((cptr.ldI16o(u, 2) + 1) | 0); y++) {
-            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2) ? 1 : 0) ? 1 : 0)
+            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, 2)))
                 continue;
-            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null) ? 1 : 0) {
+            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, 2)));
-                if ((min_distance < 0 || distance < min_distance ? 1 : 0) || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 261, __sl5), rn2(2)) : rn2(2)) ? 1 : 0) ? 1 : 0) {
+                if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 261, __sl5), rn2(2)) : rn2(2)))) {
                     cptr.stI16(stopp, x);
                     cptr.stI16o(stopp, 2, y);
                     min_distance = distance;
                 }
             }
         }
-    if (min_distance < 0 && !enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, 2), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)) ? 1 : 0)
+    if (min_distance < 0 && !enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, 2), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
         return 0;
     return 1;
 }
@@ -207,7 +207,7 @@ function md_rush(md, tx, ty) {
         d1 = dist2(i16(fx), i16(fy), i16(tx), i16(ty));
         for (dx = -1; dx <= 1; dx++)
             for (dy = -1; dy <= 1; dy++)
-                if (((dx || dy ? 1 : 0) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) ? 1 : 0) && !((cptr.ld1so3(svl, (fx + dx) | 0, 756, (fy + dy) | 0, 36, 1684)) <= NHC.DBWALL) ? 1 : 0) {
+                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, 756, (fy + dy) | 0, 36, 1684)) <= NHC.DBWALL)) {
                     d2 = dist2(i16(((fx + dx) | 0)), i16(((fy + dy) | 0)), i16(tx), i16(ty));
                     if (d2 < d1) {
                         d1 = d2;
@@ -215,18 +215,18 @@ function md_rush(md, tx, ty) {
                         nfy = (fy + dy) | 0;
                     }
                 }
-        if (nfx == fx && nfy == fy ? 1 : 0)
+        if (nfx == fx && nfy == fy)
             break;
         fx = nfx;
         fy = nfy;
-        if (fx == tx && fy == ty ? 1 : 0)
+        if (fx == tx && fy == ty)
             break;
         mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, 75600));
-        if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
             ;
             if (mon)
                 verbalize(__sl9, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__sl2, 340, __sl10), rn2(3)) : rn2(3)), 8)));
-            else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, 2) ? 1 : 0))
+            else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, 2)))
                 verbalize(__sl11);
         }
         if (mon)
@@ -237,7 +237,7 @@ function md_rush(md, tx, ty) {
         (cptr.ldPtro(windowprocs, 320))();
         cptr.stPtro3(svl, fx, 168, fy, 8, 75600, null);
         if (mon) {
-            if ((cptr.ldI16o(mon, 28) != fx) || (cptr.ldI16o(mon, 30) != fy) ? 1 : 0)
+            if ((cptr.ldI16o(mon, 28) != fx) || (cptr.ldI16o(mon, 30) != fy))
                 cptr.stPtro3(svl, fx, 168, fy, 8, 75600, mon);
             else
                 place_monster(mon, i16(fx), i16(fy));
@@ -248,14 +248,14 @@ function md_rush(md, tx, ty) {
         cptr.stPtro3(svl, fx, 168, fy, 8, 75600, null);
         place_monster(md, i16(fx), i16(fy));
         newsym(i16(fx), i16(fy));
-        if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
             ;
             verbalize(__sl12);
         } else {
             pline(__sl13, cptr.ldPtro(c_common_strings, 64));
         }
         cptr.stPtro3(svl, fx, 168, fy, 8, 75600, null);
-        if ((cptr.ldI16o(mon, 28) != fx) || (cptr.ldI16o(mon, 30) != fy) ? 1 : 0)
+        if ((cptr.ldI16o(mon, 28) != fx) || (cptr.ldI16o(mon, 30) != fy))
             cptr.stPtro3(svl, fx, 168, fy, 8, 75600, mon);
         else
             place_monster(mon, i16(fx), i16(fy));
@@ -277,14 +277,14 @@ function newmail(info) {
     let message_seen = 0;
     __lbl_give_up: {
     __lbl_go_back: {
-        if (!md_start(start) || !md_stop(stop, start) ? 1 : 0)
+        if (!md_start(start) || !md_stop(stop, start))
             break __lbl_give_up;
         if (!(md = makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, 96), cptr.ldI16(start), cptr.ldI16o(start, 2), NHM.NO_MM_FLAGS)))
             break __lbl_give_up;
         if (!md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, 2)))
             break __lbl_go_back;
         message_seen = 1;
-        if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+        if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
             ;
             verbalize(__sl14, Hello(md), svp, cptr.ldPtro(info, 8));
         } else {
@@ -297,7 +297,7 @@ function newmail(info) {
             if (cptr.ldPtro(info, 24))
                 new_omailcmd(obj, cptr.ldPtro(info, 24));
             if (!(dist2((cptr.ldI16o((md), 28)), (cptr.ldI16o((md), 30)), cptr.ldI16(u), cptr.ldI16o(u, 2)) <= 2)) {
-                if (!((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0)) {
+                if (!(cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114))) {
                     ;
                     verbalize(__sl16);
                 } else {
@@ -313,7 +313,7 @@ function newmail(info) {
             cptr.stI16o(md, 28, cptr.stI16o(md, 30, 0));
         mongone(md);
     }
-    if (!message_seen && cptr.ldI32(info) == NHM.MSG_OTHER ? 1 : 0)
+    if (!message_seen && cptr.ldI32(info) == NHM.MSG_OTHER)
         pline(__sl18, cptr.ldPtro(info, 8));
 }
 
@@ -326,7 +326,7 @@ cptr.stPtro(__static_ckmailstatus_deliver, 24, null);
 /** C ref: mail.c:550 */
 export function ckmailstatus() {
     ck_server_admin_msg();
-    if (((!mailbox || (cptr.ldI32o(u, 1848) & 1) | 0 ? 1 : 0) || !cptr.ld1so(flags, 6) ? 1 : 0) || cptr.ldI64o(svm, 8) < BigInt.asIntN(64, laststattime + 50n) ? 1 : 0)
+    if (!mailbox || (cptr.ldI32o(u, 1848) & 1) | 0 || !cptr.ld1so(flags, 6) || cptr.ldI64o(svm, 8) < BigInt.asIntN(64, laststattime + 50n))
         return;
     laststattime = cptr.ldI64o(svm, 8);
     if (stat(mailbox, nmstat)) {

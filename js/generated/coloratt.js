@@ -1411,11 +1411,11 @@ export function color_attr_parse_str(ca, str) {
         amp = cptr.add(amp, 1);
         c = match_str2clr(cptr.decay(buf), 0);
         a = match_str2attr(amp, 1);
-        if (c >= NHM.CLR_MAX && a == -1 ? 1 : 0) {
+        if (c >= NHM.CLR_MAX && a == -1) {
             c = match_str2clr(amp, 0);
             a = match_str2attr(cptr.decay(buf), 1);
         }
-        if (c >= NHM.CLR_MAX || a == -1 ? 1 : 0)
+        if (c >= NHM.CLR_MAX || a == -1)
             return 0;
     } else {
         tmp = match_str2attr(cptr.decay(buf), 0);
@@ -1461,7 +1461,7 @@ export function attr2attrname(attr) {
 export function clr2colorname(clr) {
     let i;
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, 16) && cptr.ldI32o2(colornames, i, 16, 8) == clr ? 1 : 0)
+        if (cptr.ldPtro(colornames, i, 16) && cptr.ldI32o2(colornames, i, 16, 8) == clr)
             return cptr.ldPtro(colornames, i, 16);
     return null;
 }
@@ -1471,13 +1471,13 @@ export function match_str2clr(str, suppress_msg) {
     let i;
     let c = NHM.CLR_MAX;
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, 16) && fuzzymatch(str, cptr.ldPtro(colornames, i, 16), __sl168, 1) ? 1 : 0) {
+        if (cptr.ldPtro(colornames, i, 16) && fuzzymatch(str, cptr.ldPtro(colornames, i, 16), __sl168, 1)) {
             c = cptr.ldI32o2(colornames, i, 16, 8);
             break;
         }
-    if (i == 27 && digit(cptr.ld1s(str)) ? 1 : 0)
+    if (i == 27 && digit(cptr.ld1s(str)))
         c = atoi(str);
-    if (c < 0 || c >= NHM.CLR_MAX ? 1 : 0) {
+    if (c < 0 || c >= NHM.CLR_MAX) {
         if (!suppress_msg)
             config_error_add(__sl169, str);
         c = NHM.CLR_MAX;
@@ -1490,11 +1490,11 @@ export function match_str2attr(str, complain) {
     let i;
     let a = -1;
     for (i = 0; i < 11; i++)
-        if (cptr.ldPtro(attrnames, i, 16) && fuzzymatch(str, cptr.ldPtro(attrnames, i, 16), __sl168, 1) ? 1 : 0) {
+        if (cptr.ldPtro(attrnames, i, 16) && fuzzymatch(str, cptr.ldPtro(attrnames, i, 16), __sl168, 1)) {
             a = cptr.ldI32o2(attrnames, i, 16, 8);
             break;
         }
-    if (a == -1 && complain ? 1 : 0)
+    if (a == -1 && complain)
         config_error_add(__sl170, str);
     return a;
 }
@@ -1517,7 +1517,7 @@ export function query_attr(prompt, dflt_attr) {
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o2(attrnames, i, 16, 8), clr, cptr.ldPtro(attrnames, i, 16), (cptr.ldI32o2(attrnames, i, 16, 8) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, (prompt && cptr.ld1s(prompt) ? 1 : 0) ? prompt : __sl172);
+    (cptr.ldPtro(windowprocs, 184))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl172);
     pick_cnt = select_menu(tmpwin, allow_many ? NHM.PICK_ANY : NHM.PICK_ONE, picks);
     (cptr.ldPtro(windowprocs, 128))(tmpwin);
     if (pick_cnt > 0) {
@@ -1526,7 +1526,7 @@ export function query_attr(prompt, dflt_attr) {
         if (allow_many) {
             for (i = 0; i < pick_cnt; ++i) {
                 j = (cptr.ldI32o(picks.v, i, 24) - 1) | 0;
-                if (cptr.ldI32o2(attrnames, j, 16, 8) != NHM.ATR_NONE || pick_cnt == 1 ? 1 : 0) {
+                if (cptr.ldI32o2(attrnames, j, 16, 8) != NHM.ATR_NONE || pick_cnt == 1) {
                     switch (cptr.ldI32o2(attrnames, j, 16, 8)) {
                         case NHM.ATR_NONE:
                         k = NHC.HL_NONE;
@@ -1554,13 +1554,13 @@ export function query_attr(prompt, dflt_attr) {
             }
         } else {
             j = (cptr.ldI32o(picks.v, 0, 24) - 1) | 0;
-            if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, 16, 8) == dflt_attr ? 1 : 0)
+            if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, 16, 8) == dflt_attr)
                 j = (cptr.ldI32o(picks.v, 1, 24) - 1) | 0;
             k = cptr.ldI32o2(attrnames, j, 16, 8);
         }
         cptr.free(picks.v);
         return k;
-    } else if (pick_cnt == 0 && !allow_many ? 1 : 0) {
+    } else if (pick_cnt == 0 && !allow_many) {
         return dflt_attr;
     }
     return -1;
@@ -1583,13 +1583,13 @@ export function query_color(prompt, dflt_color) {
         cptr.stI32(any, (i + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtro(colornames, i, 16), (cptr.ldI32o2(colornames, i, 16, 8) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
-    (cptr.ldPtro(windowprocs, 184))(tmpwin, (prompt && cptr.ld1s(prompt) ? 1 : 0) ? prompt : __sl173);
+    (cptr.ldPtro(windowprocs, 184))(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __sl173);
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     (cptr.ldPtro(windowprocs, 128))(tmpwin);
     basic_menu_colors(0);
     if (pick_cnt > 0) {
         i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, 24) - 1) | 0, 16, 8);
-        if (pick_cnt == 2 && i == NHM.NO_COLOR ? 1 : 0)
+        if (pick_cnt == 2 && i == NHM.NO_COLOR)
             i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 1, 24) - 1) | 0, 16, 8);
         cptr.free(picks.v);
         return i;
@@ -1618,7 +1618,7 @@ export function basic_menu_colors(load_colors) {
                 if (!cptr.ldPtro(colornames, i, 16))
                     break;
                 c = cptr.ldI32o2(colornames, i, 16, 8);
-                if ((c == NHM.CLR_BLACK || c == NHM.CLR_WHITE ? 1 : 0) || c == NHM.NO_COLOR ? 1 : 0)
+                if (c == NHM.CLR_BLACK || c == NHM.CLR_WHITE || c == NHM.NO_COLOR)
                     continue;
                 void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtro(colornames, i, 16));
                 add_menu_coloring_parsed(cptr.decay(cnm), c, NHM.ATR_NONE);
@@ -1686,7 +1686,7 @@ export function add_menu_coloring(tmpstr) {
     }
     cptr.st1(cs, 0);
     tmps = cptr.decay(str);
-    if (cptr.ld1s(tmps) == 34 || cptr.ld1s(tmps) == 39 ? 1 : 0) {
+    if (cptr.ld1s(tmps) == 34 || cptr.ld1s(tmps) == 39) {
         cs = cptr.add(cs, -1);
         while (isspace(uchar(cptr.ld1s(cs))))
             cs = cptr.add(cs, -1);
@@ -1766,7 +1766,7 @@ export function check_enhanced_colors(buf) {
             void cptr.memcpy(cptr.add(altbuf, greyoffset), __sl7, 4n);
         }
         for (color = 0; color < 155; ++color) {
-            if (fuzzymatch(buf, cptr.ldPtro2(colortable, color, 48, 16), __sl168, 1) || (altbuf && fuzzymatch(altbuf, cptr.ldPtro2(colortable, color, 48, 16), __sl168, 1) ? 1 : 0) ? 1 : 0) {
+            if (fuzzymatch(buf, cptr.ldPtro2(colortable, color, 48, 16), __sl168, 1) || (altbuf && fuzzymatch(altbuf, cptr.ldPtro2(colortable, color, 48, 16), __sl168, 1))) {
                 retcolor = colortable_to_int32(cptr.add(colortable, color, 48));
                 break;
             }
@@ -1795,7 +1795,7 @@ export function wc_color_name(colorindx) {
             nh_snprintf(__sl181, 784, cptr.decay(__static_wc_color_name_hexcolor), 8n, __sl184, Number(BigInt.asUintN(8, r)), Number(BigInt.asUintN(8, g)), Number(BigInt.asUintN(8, b)));
             result = cptr.decay(__static_wc_color_name_hexcolor);
             for (indx = 16; indx < 155; ++indx)
-                if ((cptr.ldI64o2(colortable, indx, 48, 24) == r && cptr.ldI64o2(colortable, indx, 48, 32) == g ? 1 : 0) && cptr.ldI64o2(colortable, indx, 48, 40) == b ? 1 : 0) {
+                if (cptr.ldI64o2(colortable, indx, 48, 24) == r && cptr.ldI64o2(colortable, indx, 48, 32) == g && cptr.ldI64o2(colortable, indx, 48, 40) == b) {
                     result = cptr.ldPtro2(colortable, indx, 48, 16);
                     break;
                 }
@@ -1808,7 +1808,7 @@ export function wc_color_name(colorindx) {
 export function onlyhexdigits(buf) {
     let dp = buf;
     for (dp = buf; cptr.ld1s(dp); dp = cptr.add(dp, 1)) {
-        if (!(cptr.strchr(cptr.decay(hexdd), cptr.ld1s(dp)) || cptr.ld1s(dp) == 45 ? 1 : 0))
+        if (!(cptr.strchr(cptr.decay(hexdd), cptr.ld1s(dp)) || cptr.ld1s(dp) == 45))
             return 0;
     }
     return 1;
@@ -1828,11 +1828,11 @@ export function rgbstr_to_int32(rgbstr) {
     let buf = new Uint8Array(256);
     let dash = 0;
     nh_snprintf(__sl185, 823, cptr.decay(buf), 256n, __sl176, rgbstr ? rgbstr : __sl186);
-    if (cptr.ld1s(cptr.decay(buf)) && onlyhexdigits(cptr.decay(buf)) ? 1 : 0) {
+    if (cptr.ld1s(cptr.decay(buf)) && onlyhexdigits(cptr.decay(buf))) {
         c_g = (c_b = null);
         c_r = (cp = cptr.decay(buf));
         while (cptr.ld1s(cp)) {
-            if (digit(cptr.ld1s(cp)) || cptr.ld1s(cp) == 45 ? 1 : 0) {
+            if (digit(cptr.ld1s(cp)) || cptr.ld1s(cp) == 45) {
                 if (cptr.ld1s(cp) == 45) {
                     cptr.st1(cp, 0);
                     milestone++;
@@ -1850,7 +1850,7 @@ export function rgbstr_to_int32(rgbstr) {
                 return -1;
             }
         }
-        if (((((c_r && c_g ? 1 : 0) && c_b ? 1 : 0) && (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n ? 1 : 0) ? 1 : 0) && (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n ? 1 : 0) ? 1 : 0) && (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n ? 1 : 0) ? 1 : 0) {
+        if (c_r && c_g && c_b && (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n) && (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n) && (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n)) {
             r = atoi(c_r);
             g = atoi(c_g);
             b = atoi(c_b);
@@ -2398,7 +2398,7 @@ export function closest_color(lcolor, closecolor, clridx) {
             similar = current;
         }
     }
-    if ((closecolor && clridx ? 1 : 0) && color_index >= 0 ? 1 : 0) {
+    if (closecolor && clridx && color_index >= 0) {
         cptr.stI32(closecolor, cptr.ldI32o2(color_256_definitions, color_index, 8, 4));
         cptr.stI16(clridx, u16(cptr.ldI32o(color_256_definitions, color_index, 8)));
         retbool = 1;
@@ -2409,7 +2409,7 @@ export function closest_color(lcolor, closecolor, clridx) {
 /** C ref: coloratt.c:1024 — @param {CInt} idx @returns {*} */
 export function get_nhcolor_from_256_index(idx) {
     let retcolor = 16777224;
-    if (((idx) >= 0 && (idx) < 240 ? 1 : 0))
+    if (((idx) >= 0 && (idx) < 240))
         retcolor = cptr.ldI32o2(color_256_definitions, idx, 8, 4);
     return retcolor;
 }

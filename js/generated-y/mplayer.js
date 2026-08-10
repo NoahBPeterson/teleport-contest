@@ -161,15 +161,15 @@ function dev_name() {
         match = 0;
         i = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 52, __sl41), rn2(n)) : rn2(n));
         for (mtmp = cptr.ldPtro(svl, 89056); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (!((cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
+            if (!((cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((cptr.ldPtro(mtmp, 8)), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), 312) && (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) ? 1 : 0)) ? (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
+            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), ((cptr.ldPtro((mtmp), 312) && (cptr.ldPtr(cptr.ldPtro((mtmp), 312))))) ? (cptr.ldPtr(cptr.ldPtro((mtmp), 312))) : __sl39, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
                 match = 1;
                 break;
             }
         }
         m++;
-    } while (match && m < 100 ? 1 : 0);
+    } while (match && m < 100);
     if (match)
         return null;
     return (cptr.ldPtro(developers, i, 8));
@@ -182,11 +182,11 @@ function get_mplname(mtmp, nam) {
     devnam = dev_name();
     if (!devnam)
         void cptr.strcpy(nam, fmlkind ? __sl42 : __sl43);
-    else if (fmlkind && !!strcmp(devnam, __sl6) ? 1 : 0)
+    else if (fmlkind && !!strcmp(devnam, __sl6))
         void cptr.strcpy(nam, (rng_log_enabled() ? (rng_log_set_caller(__sl40, 81, __sl44), rn2(2)) : rn2(2)) ? __sl45 : __sl42);
     else
         void cptr.strcpy(nam, devnam);
-    if (fmlkind || !strcmp(nam, __sl6) ? 1 : 0)
+    if (fmlkind || !strcmp(nam, __sl6))
         cptr.stI32o(mtmp, 84, 1);
     else
         cptr.stI32o(mtmp, 84, 0);
@@ -215,7 +215,7 @@ function* mk_mplayer_armor(mon, typ) {
 export function* mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
-    if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0) ? 1 : 0))
+    if (!((cptr.cmp((ptr), cptr.add(mons, NHC.PM_ARCHEOLOGIST, 96)) >= 0) && (cptr.cmp((ptr), cptr.add(mons, NHC.PM_WIZARD, 96)) <= 0)))
         return (null);
     if ((cptr.ldPtro3(svl, x, 168, y, 8, 75600) !== null))
         void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, 75600)), 5));
@@ -345,10 +345,10 @@ export function* mk_mplayer(ptr, x, y, special) {
                 cptr.stI32o(otmp, 120, 1);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl40, 262, __sl48), rn2(2)) : rn2(2)))
                 cptr.stI32o(otmp, 140, 1);
-            if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)) ? 1 : 0)
+            if (special && (rng_log_enabled() ? (rng_log_set_caller(__sl40, 265, __sl48), rn2(2)) : rn2(2)))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
-            if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, 32), 120, 20) & 1) | 0 && !cptr.ld1so(otmp, 51) ? 1 : 0) && monmightthrowwep(otmp) ? 1 : 0)
-                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR ? 1 : 0) ? 4 : 8))));
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, 32), 120, 20) & 1) | 0 && !cptr.ld1so(otmp, 51) && monmightthrowwep(otmp))
+                cptr.stI64o(otmp, 40, cptr.ldI64o(otmp, 40) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl40, 270, __sl48), rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR) ? 4 : 8)) : rn2((cptr.ld1so(otmp, 49) == NHC.WEAPON_CLASS && cptr.ld1so2(objects, cptr.ldI16o(otmp, 32), 120, 68) == NHC.P_SPEAR) ? 4 : 8))));
             cptr.stI32o(otmp, 36, (yield* weight(otmp)) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
                 cptr.st1o(otmp, 48, schar((rng_log_enabled() ? (rng_log_set_caller(__sl40, 274, __sl48), rnd(4)) : rnd(4))));
@@ -403,7 +403,7 @@ export function* create_mplayers(num, special) {
         do {
             x = (((rng_log_enabled() ? (rng_log_set_caller(__sl40, 342, __sl50), rn2(76)) : rn2(76)) + 2) | 0);
             y = (rng_log_enabled() ? (rng_log_set_caller(__sl40, 343, __sl50), rnd(19)) : rnd(19));
-        } while (!(yield* goodpos(i16(x), i16(y), fakemon, 0)) && tryct++ <= 50 ? 1 : 0);
+        } while (!(yield* goodpos(i16(x), i16(y), fakemon, 0)) && tryct++ <= 50);
         if (tryct > 50)
             return;
         void (yield* mk_mplayer(cptr.add(mons, pm, 96), i16(x), i16(y), special));

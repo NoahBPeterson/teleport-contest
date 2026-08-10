@@ -98,7 +98,7 @@ function* setpath(L, fieldname, envname, dft) {
     let path = getenv(nver);
     if (cptr.eq(path, (null)))
         path = getenv(envname);
-    if (cptr.eq(path, (null)) || (yield* noenv(L)) ? 1 : 0)
+    if (cptr.eq(path, (null)) || (yield* noenv(L)))
         (yield* lua_pushstring(L, dft));
     else if (cptr.eq((dftmark = cptr.strstr(path, __sl4)), (null)))
         (yield* lua_pushstring(L, path));
@@ -232,7 +232,7 @@ function* searchpath(L, name, path, sep, dirsep) {
     let pathname = cptr.box(0);
     let endpathname;
     let filename;
-    if (cptr.ld1s(sep) != 0 && !cptr.eq(cptr.strchr(name, cptr.ld1s(sep)), (null)) ? 1 : 0)
+    if (cptr.ld1s(sep) != 0 && !cptr.eq(cptr.strchr(name, cptr.ld1s(sep)), (null)))
         name = (yield* luaL_gsub(L, name, sep, dirsep));
     (yield* luaL_buffinit(L, buff));
     (yield* luaL_addgsub(buff, path, __sl12, name));

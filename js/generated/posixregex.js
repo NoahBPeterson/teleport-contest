@@ -48,7 +48,7 @@ export function regex_error_desc(re, errbuf) {
 /** C ref: posixregex.c:92 — @param {CPtr} s @param {CPtr} re @returns {CInt} */
 export function regex_match(s, re) {
     let result;
-    if (!re || !s ? 1 : 0)
+    if (!re || !s)
         return 0;
     if ((result = regexec(re, s, 0n, null, 0))) {
         if (result != 1)

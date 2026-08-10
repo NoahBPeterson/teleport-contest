@@ -203,7 +203,7 @@ export function* dosave0() {
         if ((cptr.ldI32o(iflags, 408) & 1))
             cptr.stI32o(u, 1868, 1), cptr.stI32o(iflags, 408, 0);
         (yield* done_object_cleanup());
-        if (!cptr.ldI32o(program_state, 16) || !cptr.ld1so2(gs, 0, 1, 884) ? 1 : 0)
+        if (!cptr.ldI32o(program_state, 16) || !cptr.ld1so2(gs, 0, 1, 884))
             break __lbl_done;
         fq_save = fqname(cptr.add(gs, 884), NHM.SAVEPREFIX, 1);
         sethanguphandler(1);
@@ -232,7 +232,7 @@ export function* dosave0() {
             void (yield* delete_savefile());
             break __lbl_done;
         }
-        if (nhfp && cptr.ldPtro(nhfp, 56) ? 1 : 0) {
+        if (nhfp && cptr.ldPtro(nhfp, 56)) {
             cptr.stI64o(nhfp, 16, cptr.stI64o(nhfp, 24, 0n));
         }
         (yield* vision_recalc(2));
@@ -246,8 +246,8 @@ export function* dosave0() {
         cptr.stI32o(nhfp, 4, 6);
         (yield* store_version(nhfp));
         (yield* store_plname_in_file(nhfp));
-        cptr.stPtro(gl, 496, (((cptr.ldI32o(u, 1848) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1so(uball.v, 52) == NHM.OBJ_FREE ? 1 : 0) ? uball.v : null);
-        cptr.stPtro(gl, 504, (((cptr.ldI32o(u, 1848) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1so(uchain.v, 52) == NHM.OBJ_FREE ? 1 : 0) ? uchain.v : null);
+        cptr.stPtro(gl, 496, ((cptr.ldI32o(u, 1848) & 1) | 0 && uball.v && cptr.ld1so(uball.v, 52) == NHM.OBJ_FREE) ? uball.v : null);
+        cptr.stPtro(gl, 504, ((cptr.ldI32o(u, 1848) & 1) | 0 && uchain.v && cptr.ld1so(uchain.v, 52) == NHM.OBJ_FREE) ? uchain.v : null);
         (yield* savelev(nhfp, schar(ledger_no(cptr.add(u, 24)))));
         (yield* savegamestate(nhfp));
         cptr.memcpy(cptr.add(gu, 432), cptr.add(u, 24), 4);
@@ -404,7 +404,7 @@ export function* savestateinlock() {
     let whynot = new Uint8Array(256);
     let nhfp;
     (cptr.stI32o(program_state, 28, cptr.ldI32o(program_state, 28) + 1)) - (1);
-    if (cptr.ld1so(flags, 21) || cptr.ld1so(gh, 96) ? 1 : 0) {
+    if (cptr.ld1so(flags, 21) || cptr.ld1so(gh, 96)) {
         nhfp = (yield* open_levelfile(0, cptr.decay(whynot)));
         if ((yield* tricked_fileremoved(nhfp, cptr.decay(whynot)))) {
             (cptr.stI32o(program_state, 28, cptr.ldI32o(program_state, 28) + -1)) - (-1);
@@ -438,8 +438,8 @@ export function* savestateinlock() {
             (yield* save_savefile_name(nhfp));
             (yield* store_version(nhfp));
             (yield* store_plname_in_file(nhfp));
-            cptr.stPtro(gl, 496, (((cptr.ldI32o(u, 1848) & 1) | 0 && uball.v ? 1 : 0) && cptr.ld1so(uball.v, 52) == NHM.OBJ_FREE ? 1 : 0) ? uball.v : null);
-            cptr.stPtro(gl, 504, (((cptr.ldI32o(u, 1848) & 1) | 0 && uchain.v ? 1 : 0) && cptr.ld1so(uchain.v, 52) == NHM.OBJ_FREE ? 1 : 0) ? uchain.v : null);
+            cptr.stPtro(gl, 496, ((cptr.ldI32o(u, 1848) & 1) | 0 && uball.v && cptr.ld1so(uball.v, 52) == NHM.OBJ_FREE) ? uball.v : null);
+            cptr.stPtro(gl, 504, ((cptr.ldI32o(u, 1848) & 1) | 0 && uchain.v && cptr.ld1so(uchain.v, 52) == NHM.OBJ_FREE) ? uchain.v : null);
             (yield* savegamestate(nhfp));
         }
         (yield* close_nhfile(nhfp));
@@ -452,8 +452,8 @@ export function* savestateinlock() {
 /** C ref: save.c:429 — @param {CPtr} nhfp @param {CInt} lev */
 export function* savelev(nhfp, lev) {
     let set_uz_save = schar((cptr.ldI16o(gu, 432) == 0 && cptr.ldI16o(gu, 434) == 0 ? 1 : 0));
-    if (set_uz_save && (cptr.ldI32o(nhfp, 4) & 3) ? 1 : 0) {
-        if (cptr.ldI16o(u, 24) == 0 && cptr.ldI16o(u, 26) == 0 ? 1 : 0) {
+    if (set_uz_save && (cptr.ldI32o(nhfp, 4) & 3)) {
+        if (cptr.ldI16o(u, 24) == 0 && cptr.ldI16o(u, 26) == 0) {
             cptr.stI32o(program_state, 16, 0);
             (yield* panic(__sl34));
         }
@@ -480,7 +480,7 @@ function* savelev_core(nhfp, lev) {
                 (yield* dmonsfree());
             if (cptr.ldPtr(go))
                 (yield* dobjsfree());
-            if (lev.v >= 0 && lev.v <= maxledgerno() ? 1 : 0)
+            if (lev.v >= 0 && lev.v <= maxledgerno())
                 cptr.st1o2(svl, lev.v, 1, 89208, cptr.ld1uo2(svl, lev.v, 1, 89208) | NHM.VISITED);
             (yield* sfo_int(nhfp, svh, __sl31));
             (yield* sfo_xint8(nhfp, lev, __sl36));
@@ -562,7 +562,7 @@ function* savelevl(nhfp) {
 function* save_bubbles(nhfp, lev) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
-    if (lev == ledger_no(cptr.add(svd, 1856)) || lev == ledger_no(cptr.add(svd, 1864)) ? 1 : 0)
+    if (lev == ledger_no(cptr.add(svd, 1856)) || lev == ledger_no(cptr.add(svd, 1864)))
         bbubbly.v = lev;
     if ((cptr.ldI32o((nhfp), 4) & 3))
         (yield* sfo_xint8(nhfp, bbubbly, __sl45));
@@ -859,7 +859,7 @@ export function* savefruitchn(nhfp) {
     f1 = cptr.ldPtro(gf, 88);
     while (f1) {
         f2 = cptr.ldPtro(f1, 40);
-        if (cptr.ldI32o(f1, 32) >= 0 && (cptr.ldI32o((nhfp), 4) & 3) ? 1 : 0) {
+        if (cptr.ldI32o(f1, 32) >= 0 && (cptr.ldI32o((nhfp), 4) & 3)) {
             (yield* sfo_fruit(nhfp, f1, __sl78));
         }
         if ((cptr.ldI32o((nhfp), 4) & NHM.FREEING))

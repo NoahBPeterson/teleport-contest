@@ -169,10 +169,10 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
     let uval = 0;
     if (cptr.ldPtro(findwhat, 16))
         cptr.stI32(cptr.ldPtro(findwhat, 16), glyph);
-    (__builtin_expect(BigInt((!(idx >= 0 && idx < NHC.NUM_GRAPHICS ? 1 : 0))), 0n) ? __assert_rtn(__sl0, __sl1, 66, __sl2) : void 0);
+    (__builtin_expect(BigInt((!(idx >= 0 && idx < NHC.NUM_GRAPHICS))), 0n) ? __assert_rtn(__sl0, __sl1, 66, __sl2) : void 0);
     if (cptr.ldPtro(findwhat, 32))
         uval = (yield* unicode_val(cptr.ldPtro(findwhat, 32)));
-    if (uval && (yield* unicodeval_to_utf8str(uval, cptr.decay(utf8str), 6n)) ? 1 : 0) {
+    if (uval && (yield* unicodeval_to_utf8str(uval, cptr.decay(utf8str), 6n))) {
         if (cptr.ldPtro2(gs, idx, 48, 208)) {
             (yield* add_custom_urep_entry(cptr.ldPtro2(gs, idx, 48, 208), glyph, uval >>> 0, cptr.decay(utf8str), cptr.ldI32o(gs, 880)));
         } else {
@@ -209,7 +209,7 @@ export function* glyphrep_to_custom_map_entries(op, glyphptr) {
     c_unicode = (c_colorval = null);
     c_glyphid = (cp = cptr.decay(buf));
     while (cptr.ld1s(cp)) {
-        if (cptr.ld1s(cp) == 58 || cptr.ld1s(cp) == 47 ? 1 : 0) {
+        if (cptr.ld1s(cp) == 58 || cptr.ld1s(cp) == 47) {
             if (cptr.ld1s(cp) == 58) {
                 colon = 1;
                 cptr.st1(cp, 0);
@@ -229,19 +229,19 @@ export function* glyphrep_to_custom_map_entries(op, glyphptr) {
             slash = 0;
         }
     }
-    if (c_glyphid && cptr.ld1s(c_glyphid) == 32 ? 1 : 0)
+    if (c_glyphid && cptr.ld1s(c_glyphid) == 32)
         c_glyphid = cptr.add(c_glyphid, 1);
-    if (c_colorval && cptr.ld1s(c_colorval) == 32 ? 1 : 0)
+    if (c_colorval && cptr.ld1s(c_colorval) == 32)
         c_colorval = cptr.add(c_colorval, 1);
-    if (c_unicode && cptr.ld1s(c_unicode) == 32 ? 1 : 0) {
+    if (c_unicode && cptr.ld1s(c_unicode) == 32) {
         while (cptr.ld1s(c_unicode) == 32) {
             c_unicode = cptr.add(c_unicode, 1);
         }
     }
-    if (c_unicode && !cptr.ld1s(c_unicode) ? 1 : 0)
+    if (c_unicode && !cptr.ld1s(c_unicode))
         c_unicode = null;
-    if ((c_colorval && (rgb = BigInt((yield* rgbstr_to_int32(c_colorval)))) != -1n ? 1 : 0) || !c_colorval ? 1 : 0) {
-        cptr.stI32o(to_custom_symbol_find, 24, Number(BigInt.asUintN(32, ((rgb == -1n || !c_colorval ? 1 : 0) ? 0n : ((rgb == 0n) ? nonzero_black : rgb)))));
+    if ((c_colorval && (rgb = BigInt((yield* rgbstr_to_int32(c_colorval)))) != -1n) || !c_colorval) {
+        cptr.stI32o(to_custom_symbol_find, 24, Number(BigInt.asUintN(32, ((rgb == -1n || !c_colorval) ? 0n : ((rgb == 0n) ? nonzero_black : rgb)))));
     }
     if (c_unicode)
         cptr.stPtro(to_custom_symbol_find, 32, c_unicode);
@@ -255,11 +255,11 @@ export function* glyphrep_to_custom_map_entries(op, glyphptr) {
 function fix_glyphname(str) {
     let c;
     for (c = str; cptr.ld1s(c); c = cptr.add(c, 1)) {
-        if (cptr.ld1s(c) >= 65 && cptr.ld1s(c) <= 90 ? 1 : 0)
+        if (cptr.ld1s(c) >= 65 && cptr.ld1s(c) <= 90)
             cptr.st1(c, cptr.ld1s(c) + 32);
-        else if (cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57 ? 1 : 0)
+        else if (cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57)
             ;
-        else if (cptr.ld1s(c) < 97 || cptr.ld1s(c) > 122 ? 1 : 0)
+        else if (cptr.ld1s(c) < 97 || cptr.ld1s(c) > 122)
             cptr.st1(c, 95);
     }
     return str;
@@ -269,30 +269,30 @@ function fix_glyphname(str) {
 export function glyph_to_cmap(glyph) {
     if (glyph == NHC.GLYPH_CMAP_STONE_OFF)
         return NHC.S_stone;
-    else if (((glyph) >= NHC.GLYPH_CMAP_MAIN_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MAIN_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_MAIN_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MAIN_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_MAIN_OFF) | 0) + NHC.S_vwall) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_MINES_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MINES_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_MINES_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MINES_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_MINES_OFF) | 0) + NHC.S_vwall) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_GEH_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_GEH_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_GEH_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_GEH_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_GEH_OFF) | 0) + NHC.S_vwall) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_KNOX_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_KNOX_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_KNOX_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_KNOX_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_KNOX_OFF) | 0) + NHC.S_vwall) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_SOKO_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_SOKO_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_SOKO_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_SOKO_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_SOKO_OFF) | 0) + NHC.S_vwall) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_A_OFF && (glyph) < ((((((NHC.S_brdnladder - NHC.S_ndoor) | 0) + 1) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_A_OFF && (glyph) < ((((((NHC.S_brdnladder - NHC.S_ndoor) | 0) + 1) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_A_OFF) | 0) + NHC.S_ndoor) | 0;
-    else if (((glyph) >= NHC.GLYPH_ALTAR_OFF && (glyph) < ((5 + NHC.GLYPH_ALTAR_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_ALTAR_OFF && (glyph) < ((5 + NHC.GLYPH_ALTAR_OFF) | 0)))
         return NHC.S_altar;
-    else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0))))
         return (((glyph - NHC.GLYPH_CMAP_B_OFF) | 0) + NHC.S_grave) | 0;
-    else if (((glyph) >= NHC.GLYPH_CMAP_C_OFF && (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_CMAP_C_OFF && (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)))
         return (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
-    else if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0) ? 1 : 0))
+    else if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0)))
         return ((((glyph - NHC.GLYPH_ZAP_OFF) | 0) % 4) + NHC.S_vbeam) | 0;
-    else if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0))
-        return ((((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0) + NHC.S_sw_tl) | 0;
-    else if (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0))
-        return ((((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
+    else if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0)))
+        return ((((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0) + NHC.S_sw_tl) | 0;
+    else if (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)))
+        return ((((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
     else
         return NHC.MAXPCHARS;
 }
@@ -314,11 +314,11 @@ function* glyph_find_core(id, findwhat) {
                         do_callback = 1;
                     break;
                     case NHC.find_pm:
-                    if (((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) && cptr.ld1so2(mons, (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 96, 28) == cptr.ldI32o(findwhat, 4) ? 1 : 0)
+                    if (((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)))) && cptr.ld1so2(mons, (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 96, 28) == cptr.ldI32o(findwhat, 4))
                         do_callback = 1;
                     break;
                     case NHC.find_oc:
-                    if (((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) && (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) == cptr.ldI32o(findwhat, 4) ? 1 : 0)
+                    if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))))) && (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS)))) == cptr.ldI32o(findwhat, 4))
                         do_callback = 1;
                     break;
                     case NHC.find_glyph:
@@ -434,7 +434,7 @@ function find_glyphid_in_cache_by_glyphnum(glyphnum) {
     if (!glyphid_cache)
         return null;
     for (idx = 0n; idx < glyphid_cache_size; ++idx) {
-        if (cptr.ldI32o(glyphid_cache, idx, 16) == glyphnum && cptr.ldPtro2(glyphid_cache, idx, 16, 8) !== null ? 1 : 0) {
+        if (cptr.ldI32o(glyphid_cache, idx, 16) == glyphnum && cptr.ldPtro2(glyphid_cache, idx, 16, 8) !== null) {
             return cptr.ldPtro2(glyphid_cache, idx, 16, 8);
         }
     }
@@ -447,7 +447,7 @@ function glyph_hash(id) {
     let i;
     for (i = 0n; cptr.ld1so(id, i) != 0; ++i) {
         let ch = cptr.ld1so(id, i);
-        if (65 <= ch && ch <= 90 ? 1 : 0) {
+        if (65 <= ch && ch <= 90) {
             ch = schar(ch + 32);
         }
         hash = (((hash << 1) >>> 0) | (hash >>> 31)) >>> 0;
@@ -527,18 +527,18 @@ export function* apply_customizations(which_set, docustomize) {
     let custs;
     for (custs = 0; custs < NHC.custom_count; ++custs) {
         sc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), custs, 32);
-        if (cptr.ldI32o(sc, 8) && cptr.ldPtro(sc, 16) ? 1 : 0) {
+        if (cptr.ldI32o(sc, 8) && cptr.ldPtro(sc, 16)) {
             at_least_one = 1;
             details = cptr.ldPtro(sc, 16);
             while (details) {
-                if (cptr.ld1so(iflags, 183) && do_symbols ? 1 : 0) {
+                if (cptr.ld1so(iflags, 183) && do_symbols) {
                     if (cptr.ldI32o(sc, 12) == NHC.custom_ureps) {
                         gmap = cptr.add(glyphmap, cptr.ldI32(details), 32);
                         if (cptr.ldI32o2(gs, which_set, 48, 228) == NHC.H_UTF8)
                             void (yield* set_map_u(gmap, cptr.ldI32o(details, 8), cptr.ldPtro(details, 16)));
                     }
                 }
-                if (cptr.ld1so(iflags, 182) && do_colors ? 1 : 0) {
+                if (cptr.ld1so(iflags, 182) && do_colors) {
                     if (cptr.ldI32o(sc, 12) == NHC.custom_nhcolor) {
                         gmap = cptr.add(glyphmap, cptr.ldI32(details), 32);
                         void set_map_customcolor(gmap, cptr.ldI32o(details, 4));
@@ -598,7 +598,7 @@ function* shuffle_customizations() {
                 cptr.stI32o(tmp_customcolor, i, cptr.ldI32o2(obj_glyphs, idx, 32, 12), 4);
                 cptr.stI16o(tmp_color256idx, i, cptr.ldU16o2(obj_glyphs, idx, 32, 16), 2);
                 cptr.stPtro(tmp_u, i, cptr.ldPtro2(obj_glyphs, idx, 32, 24), 8);
-                if (!cptr.eq(cptr.ldPtro2(obj_glyphs, idx, 32, 24), (null)) || cptr.ldI32o2(obj_glyphs, idx, 32, 12) != 0 ? 1 : 0) {
+                if (!cptr.eq(cptr.ldPtro2(obj_glyphs, idx, 32, 24), (null)) || cptr.ldI32o2(obj_glyphs, idx, 32, 12) != 0) {
                     cptr.stI32o(duplicate, idx, i, 4);
                     cptr.stPtro2(obj_glyphs, idx, 32, 24, null);
                     cptr.stI32o2(obj_glyphs, idx, 32, 12, 0);
@@ -621,7 +621,7 @@ function* shuffle_customizations() {
 /** C ref: glyphs.c:736 — @param {CPtr} customization_name @param {*} custtype @param {*} which_set @returns {CPtr} */
 export function find_matching_customization(customization_name, custtype, which_set) {
     let gdc = cptr.add(cptr.add(cptr.add(gs, 296), which_set, 128), custtype, 32);
-    if (((cptr.ldI32o(gdc, 12) == custtype) && cptr.ldPtr(gdc) ? 1 : 0) && (strcmp(customization_name, cptr.ldPtr(gdc)) == 0) ? 1 : 0)
+    if ((cptr.ldI32o(gdc, 12) == custtype) && cptr.ldPtr(gdc) && (strcmp(customization_name, cptr.ldPtr(gdc)) == 0))
         return cptr.ldPtro(gdc, 16);
     return null;
 }
@@ -755,7 +755,7 @@ function* parse_id(id, findwhat) {
     let is_S = 0;
     let is_G = 0;
     let buf = (function () { const flat = new Uint8Array(4 * (128 * 1)); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1))); a.buf = flat; return a; })();
-    if (cptr.ldI32(findwhat) == NHC.find_nothing && cptr.ldI32o(findwhat, 48) ? 1 : 0) {
+    if (cptr.ldI32(findwhat) == NHC.find_nothing && cptr.ldI32o(findwhat, 48)) {
         if (cptr.ldI32o(findwhat, 48) == NHC.res_dump_glyphids) {
             if (cptr.ldPtro(findwhat, 56)) {
                 fp = cptr.ldPtro(findwhat, 56);
@@ -765,34 +765,34 @@ function* parse_id(id, findwhat) {
             }
         }
         if (cptr.ldI32o(findwhat, 48) == NHC.res_fill_cache) {
-            if (cptr.ldPtro(findwhat, 56) && cptr.eq(cptr.ldPtro(findwhat, 56), glyphid_cache) ? 1 : 0) {
+            if (cptr.ldPtro(findwhat, 56) && cptr.eq(cptr.ldPtro(findwhat, 56), glyphid_cache)) {
                 filling_cache = 1;
             } else {
                 return 0;
             }
         }
     }
-    is_G = schar(((id && cptr.ld1so(id, 0) == 71 ? 1 : 0) && cptr.ld1so(id, 1) == 95 ? 1 : 0));
-    is_S = schar(((id && cptr.ld1so(id, 0) == 83 ? 1 : 0) && cptr.ld1so(id, 1) == 95 ? 1 : 0));
-    if ((((is_G && !glyphid_cache ? 1 : 0) || filling_cache ? 1 : 0) || dump_ids ? 1 : 0) || is_S ? 1 : 0) {
+    is_G = schar((id && cptr.ld1so(id, 0) == 71 && cptr.ld1so(id, 1) == 95 ? 1 : 0));
+    is_S = schar((id && cptr.ld1so(id, 0) == 83 && cptr.ld1so(id, 1) == 95 ? 1 : 0));
+    if ((is_G && !glyphid_cache) || filling_cache || dump_ids || is_S) {
         while (cptr.ldI32o(loadsyms, i, 16)) {
-            if (!pm_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_MON ? 1 : 0)
+            if (!pm_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_MON)
                 pm_offset = i;
-            if ((!pm_count && pm_offset ? 1 : 0) && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_MON ? 1 : 0)
+            if (!pm_count && pm_offset && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_MON)
                 pm_count = (i - pm_offset) | 0;
-            if (!oc_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_OC ? 1 : 0)
+            if (!oc_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_OC)
                 oc_offset = i;
-            if ((!oc_count && oc_offset ? 1 : 0) && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_OC ? 1 : 0)
+            if (!oc_count && oc_offset && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_OC)
                 oc_count = (i - oc_offset) | 0;
-            if (!cmap_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_PCHAR ? 1 : 0)
+            if (!cmap_offset && cptr.ldI32o(loadsyms, i, 16) == NHC.SYM_PCHAR)
                 cmap_offset = i;
-            if ((!cmap_count && cmap_offset ? 1 : 0) && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_PCHAR ? 1 : 0)
+            if (!cmap_count && cmap_offset && cptr.ldI32o(loadsyms, i, 16) != NHC.SYM_PCHAR)
                 cmap_count = (i - cmap_offset) | 0;
             i++;
         }
     }
-    if ((is_G || filling_cache ? 1 : 0) || dump_ids ? 1 : 0) {
-        if ((!filling_cache && id ? 1 : 0) && glyphid_cache ? 1 : 0) {
+    if (is_G || filling_cache || dump_ids) {
+        if (!filling_cache && id && glyphid_cache) {
             let val = (yield* find_glyph_in_cache(id));
             if (val >= 0) {
                 cptr.stI32(findwhat, NHC.find_glyph);
@@ -810,55 +810,55 @@ function* parse_id(id, findwhat) {
                 skip_base = 0;
                 skip_this_one = 0;
                 cptr.st1o(cptr.decay(buf[0]), 0, cptr.st1o(cptr.decay(buf[1]), 0, cptr.st1o(cptr.decay(buf[2]), 0, cptr.st1o(cptr.decay(buf[3]), 0, 0, 1), 1), 1), 1);
-                if (((((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
+                if (((((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) || ((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0))))) {
                     buf2 = __sl8;
-                    buf3 = cptr.ldPtro2(monsdump, (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 16, 8);
-                    if (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    buf3 = cptr.ldPtro2(monsdump, (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0)) ? (((glyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))), 16, 8);
+                    if (((glyph) >= NHC.GLYPH_MON_MALE_OFF && (glyph) < ((NHC.GLYPH_MON_MALE_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl9;
-                    } else if (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_MON_FEM_OFF && (glyph) < ((NHC.GLYPH_MON_FEM_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl10;
-                    } else if (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_RIDDEN_MALE_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_MALE_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl11;
-                    } else if (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_RIDDEN_FEM_OFF && (glyph) < ((NHC.GLYPH_RIDDEN_FEM_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl12;
-                    } else if (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_DETECT_MALE_OFF && (glyph) < ((NHC.GLYPH_DETECT_MALE_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl13;
-                    } else if (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_DETECT_FEM_OFF && (glyph) < ((NHC.GLYPH_DETECT_FEM_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl14;
-                    } else if (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_PET_MALE_OFF && (glyph) < ((NHC.GLYPH_PET_MALE_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl15;
-                    } else if (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_PET_FEM_OFF && (glyph) < ((NHC.GLYPH_PET_FEM_OFF + NHC.NUMMONS) | 0))) {
                         buf2 = __sl16;
                     }
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0)) {
-                    buf2 = (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? __sl18 : __sl19;
-                    buf3 = cptr.ldPtro2(monsdump, ((((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? (((glyph) - NHC.GLYPH_BODY_PILETOP_OFF) | 0) : (((glyph) - NHC.GLYPH_BODY_OFF) | 0)), 16, 8);
+                } else if (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))))) {
+                    buf2 = (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? __sl18 : __sl19;
+                    buf3 = cptr.ldPtro2(monsdump, ((((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_BODY_PILETOP_OFF) | 0) : (((glyph) - NHC.GLYPH_BODY_OFF) | 0)), 16, 8);
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
-                    buf2 = (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? __sl20 : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? __sl21 : ((((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? __sl22 : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? __sl23 : __sl8)));
-                    buf3 = cptr.ldPtro2(monsdump, ((((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? (((glyph) - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0) : ((((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? (((glyph) - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_STATUE_FEM_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? (((glyph) - NHC.GLYPH_STATUE_MALE_OFF) | 0) : NHC.MAX_GLYPH)))), 16, 8);
+                } else if ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))))) {
+                    buf2 = (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? __sl20 : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? __sl21 : ((((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? __sl22 : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? __sl23 : __sl8)));
+                    buf3 = cptr.ldPtro2(monsdump, ((((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0) : ((((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0))) ? (((glyph) - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? (((glyph) - NHC.GLYPH_STATUE_FEM_OFF) | 0) : (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? (((glyph) - NHC.GLYPH_STATUE_MALE_OFF) | 0) : NHC.MAX_GLYPH)))), 16, 8);
                     void cptr.strcpy(cptr.decay(buf[0]), __sl17);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
-                } else if (((((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0)) {
-                    i = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? 1 : 0) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
-                    if (((i > NHC.SCR_STINKING_CLOUD) && (i < NHC.SCR_MAIL) ? 1 : 0) || ((i > NHC.WAN_LIGHTNING) && (i < NHC.GOLD_PIECE) ? 1 : 0) ? 1 : 0)
+                } else if ((((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))))) {
+                    i = (((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))) ? NHC.CORPSE : ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((glyph) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) ? NHC.STATUE : ((((glyph) > NHC.GLYPH_OBJ_OFF && (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ? (((glyph) - (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF && (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ? (((glyph) - (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0) : NHC.NUM_OBJECTS))));
+                    if (((i > NHC.SCR_STINKING_CLOUD) && (i < NHC.SCR_MAIL)) || ((i > NHC.WAN_LIGHTNING) && (i < NHC.GOLD_PIECE)))
                         skip_this_one = 1;
                     if (!skip_this_one) {
-                        if ((i >= NHC.WAN_LIGHT) && (i <= NHC.WAN_LIGHTNING) ? 1 : 0)
+                        if ((i >= NHC.WAN_LIGHT) && (i <= NHC.WAN_LIGHTNING))
                             buf2 = __sl24;
-                        else if ((i >= NHC.SPE_DIG) && (i < NHC.SPE_BLANK_PAPER) ? 1 : 0)
+                        else if ((i >= NHC.SPE_DIG) && (i < NHC.SPE_BLANK_PAPER))
                             buf2 = __sl25;
-                        else if ((i >= NHC.SCR_ENCHANT_ARMOR) && (i <= NHC.SCR_STINKING_CLOUD) ? 1 : 0)
+                        else if ((i >= NHC.SCR_ENCHANT_ARMOR) && (i <= NHC.SCR_STINKING_CLOUD))
                             buf2 = __sl26;
-                        else if ((i >= NHC.POT_GAIN_ABILITY) && (i <= NHC.POT_WATER) ? 1 : 0)
+                        else if ((i >= NHC.POT_GAIN_ABILITY) && (i <= NHC.POT_WATER))
                             buf2 = (i == NHC.POT_WATER) ? __sl27 : __sl28;
-                        else if ((i >= NHC.RIN_ADORNMENT) && (i <= NHC.RIN_PROTECTION_FROM_SHAPE_CHAN) ? 1 : 0)
+                        else if ((i >= NHC.RIN_ADORNMENT) && (i <= NHC.RIN_PROTECTION_FROM_SHAPE_CHAN))
                             buf2 = __sl29;
                         else if (i == NHC.LAND_MINE)
                             buf2 = __sl30;
@@ -866,12 +866,12 @@ function* parse_id(id, findwhat) {
                             buf2 = __sl8;
                         buf3 = (i == NHC.SCR_BLANK_PAPER) ? __sl31 : ((i == NHC.SPE_BLANK_PAPER) ? __sl32 : ((i == NHC.SLIME_MOLD) ? __sl33 : (cptr.ldPtro(obj_descr, i, 16) ? cptr.ldPtro(obj_descr, i, 16) : cptr.ldPtro2(obj_descr, i, 16, 8))));
                         void cptr.strcpy(cptr.decay(buf[0]), __sl17);
-                        if (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0) ? 1 : 0) ? 1 : 0))
+                        if (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF || ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))))
                             void cptr.strcat(cptr.decay(buf[0]), __sl34);
                         void cptr.strcat(cptr.decay(buf[0]), buf2);
                         void cptr.strcat(cptr.decay(buf[0]), buf3);
                     }
-                } else if (((((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0) ? 1 : 0) || ((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0) ? 1 : 0) {
+                } else if (((glyph) >= NHC.GLYPH_CMAP_STONE_OFF && (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)) || ((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0)) || ((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0)) || ((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0))) {
                     let cmap = -1;
                     buf2 = __sl8;
                     buf3 = __sl8;
@@ -880,24 +880,24 @@ function* parse_id(id, findwhat) {
                         cmap = NHC.S_stone;
                         buf3 = __sl35;
                         skip_base = 1;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_GEH_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_GEH_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_GEH_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_GEH_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_GEH_OFF) | 0) + NHC.S_vwall) | 0;
                         buf4 = __sl36;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_KNOX_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_KNOX_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_KNOX_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_KNOX_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_KNOX_OFF) | 0) + NHC.S_vwall) | 0;
                         buf4 = __sl37;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_MAIN_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MAIN_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_MAIN_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MAIN_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_MAIN_OFF) | 0) + NHC.S_vwall) | 0;
                         buf4 = __sl38;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_MINES_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MINES_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_MINES_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MINES_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_MINES_OFF) | 0) + NHC.S_vwall) | 0;
                         buf4 = __sl39;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_SOKO_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_SOKO_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_SOKO_OFF && (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_SOKO_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_SOKO_OFF) | 0) + NHC.S_vwall) | 0;
                         buf4 = __sl40;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_A_OFF && (glyph) < ((((((NHC.S_brdnladder - NHC.S_ndoor) | 0) + 1) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_A_OFF && (glyph) < ((((((NHC.S_brdnladder - NHC.S_ndoor) | 0) + 1) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_A_OFF) | 0) + NHC.S_ndoor) | 0;
-                    } else if (((glyph) >= NHC.GLYPH_ALTAR_OFF && (glyph) < ((5 + NHC.GLYPH_ALTAR_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_ALTAR_OFF && (glyph) < ((5 + NHC.GLYPH_ALTAR_OFF) | 0))) {
                         j = ((glyph - NHC.GLYPH_ALTAR_OFF) | 0);
                         cmap = NHC.S_altar;
                         if (j != NHC.altar_other) {
@@ -907,9 +907,9 @@ function* parse_id(id, findwhat) {
                             buf3 = __sl43;
                             skip_base = 1;
                         }
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_B_OFF && ((glyph) < ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_B_OFF) | 0) + NHC.S_grave) | 0;
-                    } else if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_ZAP_OFF && (glyph) < (((8 << 2) + NHC.GLYPH_ZAP_OFF) | 0))) {
                         j = ((glyph - NHC.GLYPH_ZAP_OFF) | 0);
                         cmap = ((j % 4) + NHC.S_vbeam) | 0;
                         nh_snprintf(__sl41, 1042, cptr.decay(buf[2]), 128n, __sl5, cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, 16, 8), 2));
@@ -917,11 +917,11 @@ function* parse_id(id, findwhat) {
                         buf3 = cptr.decay(buf[3]);
                         buf2 = __sl8;
                         skip_base = 1;
-                    } else if (((glyph) >= NHC.GLYPH_CMAP_C_OFF && (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_CMAP_C_OFF && (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
-                    } else if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))) {
                         j = (glyph - NHC.GLYPH_SWALLOW_OFF) | 0;
-                        cmap = (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0) ? 1 : 0) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0);
+                        cmap = (((glyph) >= NHC.GLYPH_SWALLOW_OFF && (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7) : 0);
                         mnum = (j / ((((NHC.S_sw_br - NHC.S_sw_tl) | 0) + 1) | 0)) | 0;
                         void cptr.strcpy(cptr.decay(buf[3]), __sl45);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtro2(monsdump, mnum, 16, 8));
@@ -929,11 +929,11 @@ function* parse_id(id, findwhat) {
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtro(__static_parse_id_swallow_texts, cmap, 8));
                         buf3 = cptr.decay(buf[3]);
                         skip_base = 1;
-                    } else if (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0)) {
+                    } else if (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0))) {
                         let expl;
                         j = (glyph - NHC.GLYPH_EXPLODE_OFF) | 0;
                         expl = (j / ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) | 0;
-                        cmap = ((((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0) ? 1 : 0) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
+                        cmap = ((((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)) ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) : 0) + NHC.S_expl_tl) | 0;
                         i = (cmap - NHC.S_expl_tl) | 0;
                         nh_snprintf(__sl41, 1082, cptr.decay(buf[2]), 128n, __sl47, cptr.ldPtro(__static_parse_id_expl_type_texts, expl, 8));
                         buf2 = cptr.decay(buf[2]);
@@ -942,7 +942,7 @@ function* parse_id(id, findwhat) {
                         skip_base = 1;
                     }
                     if (!skip_base) {
-                        if (cmap >= 0 && cmap < NHC.MAXPCHARS ? 1 : 0) {
+                        if (cmap >= 0 && cmap < NHC.MAXPCHARS) {
                             buf3 = cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, 16, 8), 2);
                         }
                     }
@@ -956,7 +956,7 @@ function* parse_id(id, findwhat) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl51);
                 } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl52);
-                } else if (((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < ((NHC.GLYPH_WARNING_OFF + 6) | 0) ? 1 : 0)) {
+                } else if (((glyph) >= NHC.GLYPH_WARNING_OFF && (glyph) < ((NHC.GLYPH_WARNING_OFF + 6) | 0))) {
                     j = (glyph - NHC.GLYPH_WARNING_OFF) | 0;
                     nh_snprintf(__sl41, 1106, cptr.decay(buf[0]), 128n, __sl53, __sl54, j);
                 }
@@ -1005,7 +1005,7 @@ function* parse_id(id, findwhat) {
             }
         }
     }
-    if (dump_ids || filling_cache ? 1 : 0)
+    if (dump_ids || filling_cache)
         return 1;
     cptr.stI32(findwhat, NHC.find_nothing);
     cptr.stI32o(findwhat, 4, 0);

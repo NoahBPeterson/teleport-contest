@@ -84,12 +84,12 @@ function* luaB_auxwrap(L) {
     let r = (yield* auxresume(L, co, lua_gettop(L)));
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         let stat = lua_status(co);
-        if (stat != 0 && stat != 1 ? 1 : 0) {
+        if (stat != 0 && stat != 1) {
             stat = (yield* lua_closethread(co, L));
             (void 0);
             (yield* lua_xmove(co, L, 1));
         }
-        if (stat != 4 && lua_type(L, -1) == 4 ? 1 : 0) {
+        if (stat != 4 && lua_type(L, -1) == 4) {
             (yield* luaL_where(L, 1));
             lua_rotate(L, -2, 1);
             (yield* lua_concat(L, 2));

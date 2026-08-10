@@ -93,7 +93,7 @@ export function* getlock() {
     let fq_lock;
     __lbl_gotlock: {
         if (!strcmp(cptr.ldPtr(windowprocs), __sl0))
-            if (!isatty(0) && !getenv(__sl1) ? 1 : 0)
+            if (!isatty(0) && !getenv(__sl1))
                 (yield* error(__sl2));
         if (!(yield* lock_file(__sl3, NHM.LOCKPREFIX, 10))) {
             (yield* Y.icall((cptr.ldPtro(windowprocs, 216))()));
@@ -118,7 +118,7 @@ export function* getlock() {
                 }
                 too_old = veryold(fd);
                 void close(fd);
-                if (too_old && eraseoldlocks() ? 1 : 0)
+                if (too_old && eraseoldlocks())
                     break __lbl_gotlock;
             } while (i < cptr.ldI32o(gl, 8));
             (yield* unlock_file(__sl3));
@@ -134,7 +134,7 @@ export function* getlock() {
             }
             too_old = veryold(fd);
             void close(fd);
-            if (too_old && eraseoldlocks() ? 1 : 0)
+            if (too_old && eraseoldlocks())
                 break __lbl_gotlock;
             (yield* unlock_file(__sl3));
             if (cptr.ld1so(iflags, 81)) {
@@ -146,11 +146,11 @@ export function* getlock() {
                     let tmp;
                     void putchar(c);
                     void fflush(__stdoutp);
-                    while ((tmp = (yield* getchar())) != 10 && tmp != -1 ? 1 : 0)
+                    while ((tmp = (yield* getchar())) != 10 && tmp != -1)
                         ;
                 }
             }
-            if (c == 121 || c == 89 ? 1 : 0) {
+            if (c == 121 || c == 89) {
                 if (eraseoldlocks()) {
                     break __lbl_gotlock;
                 } else {
@@ -191,7 +191,7 @@ export function* ask_about_panic_save() {
         void fflush(__stdoutp);
         do {
             c = (yield* getchar());
-            if ((c == -1 || c == 27 ? 1 : 0) || c == 0 ? 1 : 0)
+            if (c == -1 || c == 27 || c == 0)
                 break;
             c = lowc(schar(c));
         } while (!cptr.strchr(__sl18, c));
@@ -209,14 +209,14 @@ export function* ask_about_panic_save() {
 /** C ref: unixunix.c:297 — @param {CPtr} s */
 export function regularize(s) {
     let lp;
-    while (((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null ? 1 : 0) || (lp = cptr.strchr(s, 32)) !== null ? 1 : 0)
+    while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
         cptr.st1(lp, 95);
 }
 
 /** C ref: unixunix.c:344 @returns {CInt} */
 export function* dosh() {
     let str;
-    if ((!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) ? 1 : 0) || !check_user_string(cptr.ldPtro(sysopt, 40)) ? 1 : 0) {
+    if (!cptr.ldPtro(sysopt, 40) || !cptr.ld1so(cptr.ldPtro(sysopt, 40), 0) || !check_user_string(cptr.ldPtro(sysopt, 40))) {
         (yield* Norep(__sl19));
         return 0;
     }

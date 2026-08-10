@@ -79,7 +79,7 @@ function on_start() {
     if (!((cptr.ldI32(svq) & 1))) {
         qt_pager(__sl0);
         cptr.stI32(svq, 1);
-    } else if ((cptr.ldI16o(u, 28) != cptr.ldI16o(u, 24)) || (cptr.ldI16o(u, 30) < cptr.ldI16o(u, 26)) ? 1 : 0) {
+    } else if ((cptr.ldI16o(u, 28) != cptr.ldI16o(u, 24)) || (cptr.ldI16o(u, 30) < cptr.ldI16o(u, 26))) {
         if ((((cptr.ldI32o(svq, 8) & 7)) | 0) <= 2)
             qt_pager(__sl1);
         else
@@ -120,15 +120,15 @@ function on_goal() {
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if ((cptr.ldI32o(u, 1904) & 1) | 0 || (on_level(cptr.add(u, 28), cptr.add(u, 24))) ? 1 : 0)
+    if ((cptr.ldI32o(u, 1904) & 1) | 0 || (on_level(cptr.add(u, 28), cptr.add(u, 24))))
         return;
     if (!Is_special(cptr.add(u, 24)))
         return;
-    if ((((cptr.ldI16o((cptr.add(svd, 1882)), 2) || cptr.ldI16((cptr.add(svd, 1882))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1882)) ? 1 : 0)))
+    if ((((cptr.ldI16o((cptr.add(svd, 1882)), 2) || cptr.ldI16((cptr.add(svd, 1882)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1882)))))
         on_start();
-    else if ((((cptr.ldI16o((cptr.add(svd, 1886)), 2) || cptr.ldI16((cptr.add(svd, 1886))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1886)) ? 1 : 0)))
+    else if ((((cptr.ldI16o((cptr.add(svd, 1886)), 2) || cptr.ldI16((cptr.add(svd, 1886)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1886)))))
         on_locate();
-    else if ((((cptr.ldI16o((cptr.add(svd, 1890)), 2) || cptr.ldI16((cptr.add(svd, 1890))) ? 1 : 0) && on_level(cptr.add(u, 24), cptr.add(svd, 1890)) ? 1 : 0)))
+    else if ((((cptr.ldI16o((cptr.add(svd, 1890)), 2) || cptr.ldI16((cptr.add(svd, 1890)))) && on_level(cptr.add(u, 24), cptr.add(svd, 1890)))))
         on_goal();
     return;
 }
@@ -160,7 +160,7 @@ export function artitouch(obj) {
 
 /** C ref: quest.c:140 @returns {CInt} */
 export function ok_to_quest() {
-    return schar((((((cptr.ldI32o(svq, 16) & 1)) | 0 || ((cptr.ldI32o(svq, 64) & 1)) | 0 ? 1 : 0) && is_pure(0) > 0 ? 1 : 0) || ((cptr.ldI32o(svq, 20) & 1)) | 0 ? 1 : 0));
+    return schar((((((cptr.ldI32o(svq, 16) & 1)) | 0 || ((cptr.ldI32o(svq, 64) & 1)) | 0) && is_pure(0) > 0) || ((cptr.ldI32o(svq, 20) & 1)) | 0 ? 1 : 0));
 }
 
 /** C ref: quest.c:147 @returns {CInt} */
@@ -172,7 +172,7 @@ function not_capable() {
 function is_pure(talk) {
     let purity;
     let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, 2184);
-    if (cptr.ld1so(flags, 10) && talk ? 1 : 0) {
+    if (cptr.ld1so(flags, 10) && talk) {
         if (cptr.ld1so(u, 2172) != original_alignment) {
             You(__sl10, align_str(cptr.ld1so(u, 2172)), align_str(original_alignment));
         } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) != original_alignment) {
@@ -183,7 +183,7 @@ function is_pure(talk) {
                 cptr.stI32o(u, 2176, NHM.MIN_QUEST_ALIGN);
         }
     }
-    purity = ((cptr.ldI32o(u, 2176) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, 2172) == original_alignment ? 1 : 0) && cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) == original_alignment ? 1 : 0) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) != original_alignment) ? -1 : 0);
+    purity = (cptr.ldI32o(u, 2176) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, 2172) == original_alignment && cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) == original_alignment) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, 2184) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -216,8 +216,8 @@ function expulsion(seal) {
 /** C ref: quest.c:226 — @param {CPtr} obj */
 export function finish_quest(obj) {
     let otmp;
-    if (obj && !is_quest_artifact(obj) ? 1 : 0) {
-        if (((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) ? 1 : 0) || cptr.ld1so(u, 2114) ? 1 : 0))
+    if (obj && !is_quest_artifact(obj)) {
+        if ((cptr.ldI64o2(u, NHC.DEAF, 24, 128) || cptr.ldI64o2(u, NHC.DEAF, 24, 112) || cptr.ld1so(u, 2114)))
             return;
         fully_identify_obj(obj);
         if (cptr.ldI16o(obj, 32) == NHC.AMULET_OF_YENDOR) {
@@ -250,9 +250,9 @@ export function finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr} mtmp */
 function chat_with_leader(mtmp) {
-    if (!(cptr.ldI32o(mtmp, 168) & 1) || ((cptr.ldI32o(svq, 12) & 1)) | 0 ? 1 : 0)
+    if (!(cptr.ldI32o(mtmp, 168) & 1) || ((cptr.ldI32o(svq, 12) & 1)) | 0)
         return;
-    if ((cptr.ldI32o(u, 1960) & 1) | 0 && !((cptr.ldI32o(svq, 40) & 1)) ? 1 : 0)
+    if ((cptr.ldI32o(u, 1960) & 1) | 0 && !((cptr.ldI32o(svq, 40) & 1)))
         cptr.stI32o(svq, 52, 1);
     if (((cptr.ldI32o(svq, 64) & 1))) {
         if ((cptr.ldI32o(u, 1944) & 1))
@@ -329,7 +329,7 @@ export function nemesis_speaks() {
     if (!((cptr.ldI32o(svq, 48) & 1))) {
         if ((cptr.ldI32o(u, 1960) & 1))
             qt_pager(__sl34);
-        else if ((((cptr.ldI32o(svq, 36) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, 40) & 1)) ? 1 : 0)
+        else if ((((cptr.ldI32o(svq, 36) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, 40) & 1)))
             qt_pager(__sl35);
         else if ((((cptr.ldI32o(svq, 36) & 7)) | 0) < 4)
             qt_pager(__sl36);
@@ -354,7 +354,7 @@ export function nemesis_stinks(mx, my) {
 
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
-    if ((cptr.ldI32o(u, 1960) & 1) | 0 && ((cptr.ldI32o(svq, 44) & 1)) | 0 ? 1 : 0)
+    if ((cptr.ldI32o(u, 1960) & 1) | 0 && ((cptr.ldI32o(svq, 44) & 1)) | 0)
         qt_pager(__sl40);
     else
         qt_pager(__sl41);
@@ -362,7 +362,7 @@ function chat_with_guardian() {
 
 /** C ref: quest.c:451 — @param {CPtr} mtmp */
 function prisoner_speaks(mtmp) {
-    if (cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, 224) & 805306368n) ? 1 : 0) {
+    if (cptr.eq(cptr.ldPtro(mtmp, 8), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, 224) & 805306368n)) {
         if (canseemon(mtmp))
             pline(__sl42, Monnam(mtmp));
         ;
@@ -416,5 +416,5 @@ export function quest_talk(mtmp) {
 /** C ref: quest.c:514 — @param {CPtr} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1uo(cptr.ldPtro(mtmp, 8), 66) == NHC.MS_NEMESIS)
-        cptr.stI32o(svq, 48, (!((cptr.ldI32o((mtmp), 144) & 1) | 0 || !(cptr.ldI32o((mtmp), 160) & 1) ? 1 : 0) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, 2)) ? 1 : 0) >>> 0);
+        cptr.stI32o(svq, 48, (!((cptr.ldI32o((mtmp), 144) & 1) | 0 || !(cptr.ldI32o((mtmp), 160) & 1)) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, 2)) ? 1 : 0) >>> 0);
 }

@@ -14,7 +14,7 @@ export function luaZ_fill(z) {
     (void 0);
     buff = cptr.ldPtro(z, 16)(L, cptr.ldPtro(z, 24), size);
     (void 0);
-    if (cptr.eq(buff, (null)) || size.v == 0n ? 1 : 0)
+    if (cptr.eq(buff, (null)) || size.v == 0n)
         return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));
     cptr.stPtro(z, 8, buff);
