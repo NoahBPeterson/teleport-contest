@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_ALTAR, IS_GRAVE, IS_SINK, IS_THRONE, Is_box, OBJ_AT, amorphous, cansee, haseyes, humanoid, is_hider, is_prince, is_swimmer, is_vampire, lays_eggs, likes_lava, slithy, u_wield_art } from './nhmacrofn.js';
+import { Is_box, eggs_in_water, eyecount, likes_lava } from './nhmacrofn.js';
 import { Acid_resistance, Antimagic, Blind, Blind_telepat, BlindedTimeout, Cold_resistance, Deaf, Drain_resistance, Fire_resistance, Flying, HAggravate_monster, HCold_resistance, HConfusion, HFast, HFire_resistance, HInvis, HPoison_resistance, HProtection, HSee_invisible, HStealth, HTelepat, HTeleportation, Half_physical_damage, Half_spell_damage, Hallucination, Levitation, Luck, See_invisible, Shock_resistance, Slimed, Underwater, Upolyd, wizard } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gv, gy, iflags, svd, svl, u, uarm, uarmf, uwep, ynchars } from './decl.js';
 import { remove_worn_item } from './steal.js';
@@ -342,7 +342,7 @@ function* throne_sit_effect() {
                 if (!Blind()) {
                     (yield* Your(__sl21));
                 } else {
-                    let num_of_eyes = (!haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 0 : ((cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_CYCLOPS, 96)) || cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) ? 1 : 2));
+                    let num_of_eyes = eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
                     let eye = (yield* body_part(NHC.EYE));
                     switch (num_of_eyes) {
                         default:
@@ -386,7 +386,7 @@ function* throne_sit_effect() {
             break;
         }
     } else {
-        if (is_prince(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0)
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2048n) != 0n) || (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0)
             (yield* You_feel(__sl30));
         else
             (yield* You_feel(__sl31));
@@ -395,7 +395,7 @@ function* throne_sit_effect() {
         cptr.st1o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_flags, 0);
         (yield* map_background(tx, ty, 0));
         (yield* newsym_force(tx, ty));
-        (yield* pline_The(__sl33, cansee(tx, ty) ? __sl34 : __sl35));
+        (yield* pline_The(__sl33, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ty, 8), tx) & NHM.IN_SIGHT) != 0) ? __sl34 : __sl35));
     }
 }
 
@@ -470,7 +470,7 @@ function* special_throne_effect(effect) {
             break;
         }
         case 11:
-        if (is_vampire(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE)) {
             (yield* You_feel(__sl45));
         } else {
             (yield* pline(__sl46));
@@ -504,7 +504,7 @@ function* lay_an_egg() {
     } else if (cptr.ldI32o(u, $you_uhunger) < cptr.ldU16o2(objects, NHC.EGG, 120, $objclass_oc_nutrition)) {
         (yield* You(__sl54));
         return NHM.ECMD_OK;
-    } else if ((lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+    } else if (eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         if (!(((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) {
             (yield* pline(__sl55));
             return NHM.ECMD_OK;
@@ -521,7 +521,7 @@ function* lay_an_egg() {
     (yield* set_corpsenm(uegg, egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 0)));
     cptr.stI32o(uegg, $obj_known, 1);
     (yield* observe_object(uegg));
-    (yield* You(__sl57, (lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? __sl58 : __sl59));
+    (yield* You(__sl57, eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl58 : __sl59));
     (yield* dropy(uegg));
     (yield* stackobj(uegg));
     (yield* morehungry(cptr.ldU16o2(objects, NHC.EGG, 120, $objclass_oc_nutrition)));
@@ -540,7 +540,7 @@ export function* dosit() {
             (yield* You(__sl60, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
             return NHM.ECMD_OK;
         }
-        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && is_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
+        if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
             cptr.stI32o(u, $you_uundetected, 0);
         if (!can_reach_floor(0)) {
             if ((cptr.ldI32o(u, $you_uswallow) & 1))
@@ -551,7 +551,7 @@ export function* dosit() {
                 (yield* You(__sl63));
             return NHM.ECMD_OK;
         } else if (cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            if (humanoid(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))
+            if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n))
                 (yield* pline(__sl64, (yield* Monnam(cptr.ldPtro(u, $you_ustuck))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_ustuck), NHM.PRONOUN_HALLU), 48, $Gender_his))));
             else
                 (yield* pline(__sl65, (yield* Monnam(cptr.ldPtro(u, $you_ustuck)))));
@@ -561,7 +561,7 @@ export function* dosit() {
         } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN && (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN || is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
             { __go_in_water = true; break __skip_in_water; }
         }
-        if (OBJ_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
+        if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !(uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
             let obj;
             obj = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
             if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DRAGON && cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
@@ -569,11 +569,11 @@ export function* dosit() {
             } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL) {
                 (yield* pline(__sl69));
             } else {
-                if (slithy(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+                if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n))
                     (yield* You(__sl70, (yield* the((yield* xname(obj))))));
                 else
                     (yield* You(__sl71, (yield* the((yield* xname(obj))))));
-                if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && amorphous(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))
+                if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mflags1) & 4n) != 0n))
                     (yield* pline(__sl72));
                 else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE) {
                     if (!Deaf()) {
@@ -615,20 +615,20 @@ export function* dosit() {
                 (yield* You(__sl85, Flying() ? __sl86 : __sl87));
                 (yield* dotrap(trap, NHM.VIASITTING));
             }
-        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && !(lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+        } else if ((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && !eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
                 (yield* There(__sl88));
             else
                 (yield* You(__sl89));
-        } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_EEL && is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+        } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             __go_in_water = true; break __skip_in_water;
-        } else if (IS_SINK(typ)) {
+        } else if (((typ) == NHC.SINK)) {
             (yield* You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_sink, 24, $symdef_explanation)));
-            (yield* Your(__sl90, humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl91 : __sl92));
-        } else if (IS_ALTAR(typ)) {
+            (yield* Your(__sl90, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl91 : __sl92));
+        } else if (((typ) == NHC.ALTAR)) {
             (yield* You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_altar, 24, $symdef_explanation)));
             (yield* altar_wrath(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        } else if (IS_GRAVE(typ)) {
+        } else if (((typ) == NHC.GRAVE)) {
             (yield* You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_grave, 24, $symdef_explanation)));
         } else if (typ == NHC.STAIRS) {
             (yield* You(cptr.decay(__static_dosit_sit_message), __sl93));
@@ -649,10 +649,10 @@ export function* dosit() {
                 (yield* pline_The(__sl98));
         } else if (typ == NHC.DRAWBRIDGE_DOWN) {
             (yield* You(cptr.decay(__static_dosit_sit_message), __sl99));
-        } else if (IS_THRONE(typ)) {
+        } else if (((typ) == NHC.THRONE)) {
             (yield* You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_throne, 24, $symdef_explanation)));
             (yield* throne_sit_effect());
-        } else if (lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n)) {
             return (yield* lay_an_egg());
         } else {
             (yield* pline(__sl100, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
@@ -683,7 +683,7 @@ export function* rndcurse() {
     let cnt;
     let onum;
     let otmp;
-    if (u_wield_art(NHC.ART_MAGICBANE) && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 576, __sl104), rn2(20)) : rn2(20))) {
+    if (is_art(uwep.v, NHC.ART_MAGICBANE) && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 576, __sl104), rn2(20)) : rn2(20))) {
         (yield* You(cptr.decay(__static_rndcurse_mal_aura), __sl105));
         return;
     }

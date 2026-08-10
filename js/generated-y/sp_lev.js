@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, IS_DOOR, IS_DRAWBRIDGE, IS_LAVA, IS_OBSTRUCTED, IS_POOL, IS_STWALL, IS_WALL, In_endgame, MON_AT, SPACE_POS, SP_COORD_PACK, SP_COORD_X, SP_COORD_Y, amphibious, carried, emits_light, glyph_is_cmap, is_female, is_floater, is_flyer, is_hole, is_male, is_pit, is_swimmer, is_vampshifter, ismnum, likes_lava, max, min, monsym, noncorporeal, passes_walls, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
+import { Align2amask, IS_DRAWBRIDGE, IS_LAVA, IS_POOL, IS_WALL, emits_light, glyph_is_cmap, is_floater, is_hole, is_pit, is_vampshifter, ismnum, likes_lava, max, min, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
 import { Protection_from_shape_changers, Punished } from './nhprop.js';
 import { cg, emptystr, gc, gd, gf, gi, gl, gm, gn, gr, gs, gt, gu, gx, gy, head_engr, iflags, svc, svd, sve, svi, svl, svm, svn, svr, u, uball, uchain } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
@@ -667,7 +667,7 @@ export function reset_xystart_size() {
 
 /** C ref: sp_lev.c:217 — @param {CInt} typ @param {CInt} levltyp @returns {CInt} */
 export function match_maptyps(typ, levltyp) {
-    if ((typ == NHC.MATCH_WALL) && !IS_STWALL(levltyp))
+    if ((typ == NHC.MATCH_WALL) && !((levltyp) <= NHC.DBWALL))
         return 0;
     if ((typ < NHC.MAX_TYPE) && (typ != levltyp))
         return 0;
@@ -950,7 +950,7 @@ export function* flip_level(flp, extras) {
     if (extras) {
         if (Punished() && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) {
             ball_active = 1;
-            if (carried(uball.v))
+            if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT))
                 cptr.stI16o(uball.v, $obj_ox, cptr.ldI16(u)), cptr.stI16o(uball.v, $obj_oy, cptr.ldI16o(u, $you_uy));
             ball_fliparea = schar(((((cptr.ldI16o(uball.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uball.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uball.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uball.v, $obj_oy)) <= maxy.v ? 1 : 0) == ((cptr.ldI16o(uchain.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uchain.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uchain.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uchain.v, $obj_oy)) <= maxy.v ? 1 : 0)) && (((cptr.ldI16o(uball.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uball.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uball.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uball.v, $obj_oy)) <= maxy.v ? 1 : 0) == ((cptr.ldI16(u)) >= minx.v && (cptr.ldI16(u)) <= maxx.v && (cptr.ldI16o(u, $you_uy)) >= miny.v && (cptr.ldI16o(u, $you_uy)) <= maxy.v ? 1 : 0)) ? 1 : 0));
             if (!ball_fliparea)
@@ -1489,7 +1489,7 @@ function rndtrap() {
             break;
             case NHC.ROLLING_BOULDER_TRAP:
             case NHC.ROCKTRAP:
-            if (In_endgame(cptr.add(u, $you_uz)))
+            if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
                 rtrap = NHC.NO_TRAP;
             break;
         }
@@ -1579,9 +1579,9 @@ function* is_ok_location(x, y, humidity) {
         return (yield* Y.icall(is_ok_location_func(x, y)));
     if ((humidity & NHM.ANY_LOC) >>> 0)
         return 1;
-    if (((humidity & NHM.SOLID) >>> 0) && IS_OBSTRUCTED(typ))
+    if (((humidity & NHM.SOLID) >>> 0) && ((typ) < NHC.POOL))
         return 1;
-    if (((humidity & 65) >>> 0) && SPACE_POS(typ)) {
+    if (((humidity & 65) >>> 0) && ((typ) > NHC.DOOR)) {
         let bould = schar((!cptr.eq(sobj_at(NHC.BOULDER, x, y), (null))));
         if (!bould || (bould && ((humidity & NHM.SOLID) >>> 0)))
             return 1;
@@ -1611,8 +1611,8 @@ function get_unpacked_coord(loc, defhumidity) {
     } else {
         cptr.stI16(__static_get_unpacked_coord_c, 0);
         cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_getloc_flags, defhumidity >>> 0);
-        cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_x, Number(BigInt.asIntN(32, SP_COORD_X(loc))));
-        cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_y, Number(BigInt.asIntN(32, SP_COORD_Y(loc))));
+        cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_x, Number(BigInt.asIntN(32, (loc & 255n))));
+        cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_y, Number(BigInt.asIntN(32, ((loc >> 16n) & 255n))));
     }
     return __static_get_unpacked_coord_c;
 }
@@ -2062,7 +2062,7 @@ function m_bad_boulder_spot(x, y) {
     if (sobj_at(NHC.BOULDER, x, y))
         return 1;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    if (IS_DOOR(cptr.ld1so(lev, $rm_typ)) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 12) != 0)
+    if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 12) != 0)
         return 1;
     return 0;
 }
@@ -2072,11 +2072,11 @@ function pm_to_humidity(pm) {
     let loc = NHM.DRY;
     if (!pm)
         return loc;
-    if (cptr.ld1so(pm, $permonst_mlet) == NHC.S_EEL || amphibious(pm) || is_swimmer(pm))
+    if (cptr.ld1so(pm, $permonst_mlet) == NHC.S_EEL || ((cptr.ldU64o((pm), $permonst_mflags1) & 512n) != 0n) || ((cptr.ldU64o((pm), $permonst_mflags1) & 2n) != 0n))
         loc = NHM.WET;
-    if (is_flyer(pm) || is_floater(pm))
+    if (((cptr.ldU64o((pm), $permonst_mflags1) & 1n) != 0n) || is_floater(pm))
         loc |= 6;
-    if (passes_walls(pm) || noncorporeal(pm))
+    if (((cptr.ldU64o((pm), $permonst_mflags1) & 8n) != 0n) || (cptr.ld1so((pm), $permonst_mlet) == NHC.S_GHOST))
         loc |= NHM.SOLID;
     if ((cptr.eq((pm), cptr.add(mons, NHC.PM_FIRE_VORTEX, 96)) || cptr.eq((pm), cptr.add(mons, NHC.PM_FLAMING_SPHERE, 96)) || likes_lava(pm)))
         loc |= NHM.HOT;
@@ -2138,7 +2138,7 @@ function* create_monster(m, croom) {
     } else {
         (yield* get_location_coord(x, y, NHM.DRY, croom, cptr.ldI64o(m, $monster_coord)));
     }
-    if (MON_AT(x.v, y.v) && (yield* enexto(cc, x.v, y.v, pm)))
+    if ((cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (yield* enexto(cc, x.v, y.v, pm)))
         x.v = cptr.ldI16(cc), y.v = cptr.ldI16o(cc, $nhcoord_y);
     if (croom && !inside_room(croom, x.v, y.v))
         return;
@@ -2186,7 +2186,7 @@ function* create_monster(m, croom) {
                             x.v = cptr.ldI16o(m, $monster_x);
                             y.v = cptr.ldI16o(m, $monster_y);
                             (yield* get_location(x, y, NHM.DRY, croom));
-                            if (MON_AT(x.v, y.v) && (yield* enexto(cc, x.v, y.v, pm)))
+                            if ((cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (yield* enexto(cc, x.v, y.v, pm)))
                                 x.v = cptr.ldI16(cc), y.v = cptr.ldI16o(cc, $nhcoord_y);
                         } while (m_bad_boulder_spot(x.v, y.v) && --retrylimit > 0);
                         (yield* place_monster(mtmp, x.v, y.v));
@@ -3078,8 +3078,8 @@ function* find_montype(L, s, mgender) {
     let mgend = cptr.box(NHC.NEUTRAL);
     i = (yield* name_to_monplus(s, null, mgend));
     if (i >= NHC.LOW_PM && i < NHC.NUMMONS) {
-        if (is_male(cptr.add(mons, i, 96)) || is_female(cptr.add(mons, i, 96)))
-            mgend.v = is_female(cptr.add(mons, i, 96)) ? NHC.FEMALE : NHC.MALE;
+        if (((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 131072n) != 0n))
+            mgend.v = ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 131072n) != 0n) ? NHC.FEMALE : NHC.MALE;
         else
             mgend.v = (mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : (rng_log_enabled() ? (rng_log_set_caller(__sl4, 3156, __sl67), rn2(2)) : rn2(2)));
         if (mgender)
@@ -3235,7 +3235,7 @@ export function* lspo_monster(L) {
         }
         (yield* get_table_xy_or_coord(L, mx, my));
         cptr.stI16o(tmpmons, $monster_id, i16((yield* get_table_montype(L, mgend))));
-        if (mgend.v != NHC.NEUTRAL && (cptr.ldI16o(tmpmons, $monster_female) == -1 || is_female(cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96)) || is_male(cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96))))
+        if (mgend.v != NHC.NEUTRAL && (cptr.ldI16o(tmpmons, $monster_female) == -1 || ((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96)), $permonst_mflags2) & 131072n) != 0n) || ((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96)), $permonst_mflags2) & 65536n) != 0n)))
             cptr.stI16o(tmpmons, $monster_female, i16(mgend.v));
         if (cptr.ldI16o(tmpmons, $monster_female) == -1)
             cptr.stI16o(tmpmons, $monster_female, 0);
@@ -3255,7 +3255,7 @@ export function* lspo_monster(L) {
     else
         cptr.stI64o(tmpmons, $monster_coord, (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n))));
     if (cptr.ldI16o(tmpmons, $monster_id) != NHC.NON_PM && cptr.ldI16o(tmpmons, $monster_class) == -1)
-        cptr.stI16o(tmpmons, $monster_class, i16(monsym(cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96))));
+        cptr.stI16o(tmpmons, $monster_class, i16((cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), 96)), $permonst_mlet), 24))));
     (yield* create_monster(tmpmons, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
     if ((cptr.ldI16o(tmpmons, $monster_has_invent) & NHM.CUSTOM_INVENT) && lua_type(L, -1) == 6) {
         (lua_rotate(L, -2, -1), (yield* lua_settop(L, -2)));
@@ -3731,7 +3731,7 @@ export function* lspo_engraving(L) {
     if (x.v == -1 && y.v == -1)
         ecoord = 16777216n;
     else
-        ecoord = BigInt(SP_COORD_PACK(x.v, y.v));
+        ecoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), ecoord));
     (yield* make_engr_at(x.v, y.v, txt, null, 0n, etyp));
     {
@@ -4008,7 +4008,7 @@ function* l_create_stairway(L, using_ladder) {
         set_ok_location_func(good_stair_loc);
         scoord = 16777216n;
     } else
-        scoord = BigInt(SP_COORD_PACK(x.v, y.v));
+        scoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), scoord));
     set_ok_location_func(null);
     if ((badtrap = t_at(x.v, y.v)) !== null)
@@ -4495,7 +4495,7 @@ export function* lspo_door(L) {
         cptr.stI16(tmpd, i16(cptr.ldI32o(__static_lspo_door_walldirs2i, (yield* get_table_option(L, __sl290, __sl279, __static_lspo_door_walldirs)), 4)));
         (yield* create_door(tmpd, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
     } else {
-        (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(SP_COORD_PACK(x.v, y.v))));
+        (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
         if (!isok(x.v, y.v)) {
             (yield* nhl_error(L, __sl291));
             return 0;
@@ -4618,7 +4618,7 @@ export function* lspo_feature(L) {
         fcoord = 16777216n;
         humidity = NHM.DRY;
     } else {
-        fcoord = BigInt(SP_COORD_PACK(x.v, y.v));
+        fcoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
         humidity = NHM.ANY_LOC;
     }
     (yield* get_location_coord(x, y, humidity, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), fcoord));
@@ -4732,7 +4732,7 @@ export function* lspo_terrain(L) {
     if (sel) {
         (yield* selection_iterate(sel, sel_set_ter, tmpterrain));
     } else {
-        (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(SP_COORD_PACK(x.v, y.v))));
+        (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
         if (!isok(x.v, y.v)) {
             (yield* nhl_error(L, __sl315));
             return 0;
@@ -5134,8 +5134,8 @@ export function* lspo_exclusion(L) {
     (yield* get_table_region(L, __sl52, x1, y1, x2, y2, 0));
     a1.v = Number(BigInt.asIntN(16, x1.v)), b1.v = Number(BigInt.asIntN(16, y1.v));
     a2.v = Number(BigInt.asIntN(16, x2.v)), b2.v = Number(BigInt.asIntN(16, y2.v));
-    (yield* get_location_coord(a1, b1, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(SP_COORD_PACK(a1.v, b1.v))));
-    (yield* get_location_coord(a2, b2, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(SP_COORD_PACK(a2.v, b2.v))));
+    (yield* get_location_coord(a1, b1, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((a1.v) & 255) + (((b1.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(a2, b2, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((a2.v) & 255) + (((b2.v) & 255) << 16)) | 0))));
     cptr.stI16o(ez, $exclusion_zone_lx, a1.v);
     cptr.stI16o(ez, $exclusion_zone_ly, b1.v);
     cptr.stI16o(ez, $exclusion_zone_hx, a2.v);

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { MON_AT, cansee, couldsee, m_next2u, u_at } from './nhmacrofn.js';
+import { m_next2u } from './nhmacrofn.js';
 import { Blind, Blind_telepat, Deaf, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { nh_getenv } from './options.js';
 import { alloc, dupstr } from './alloc.js';
@@ -136,7 +136,7 @@ function md_start(startp) {
         return 1;
     }
     while (stway) {
-        if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && couldsee(cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy))) {
+        if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(stway, $stairway_sy), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0)) {
             cptr.stI16(startp, cptr.ldI16(stway));
             cptr.stI16o(startp, $coord_y, cptr.ldI16o(stway, $stairway_sy));
             return 1;
@@ -154,7 +154,7 @@ function md_start(startp) {
                         max_distance = dd;
                         cptr.stI16o(startp, $coord_y, i16(row));
                         cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2));
-                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), i16(row), null) && !cansee(cptr.ldI16(testcc), cptr.ldI16o(testcc, $nhcoord_y)) && couldsee(cptr.ldI16(testcc), cptr.ldI16o(testcc, $nhcoord_y))) {
+                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -165,7 +165,7 @@ function md_start(startp) {
                         max_distance = dd;
                         cptr.stI16o(startp, $coord_y, i16(row));
                         cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2));
-                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), i16(row), null) && !cansee(cptr.ldI16(testcc), cptr.ldI16o(testcc, $nhcoord_y)) && couldsee(cptr.ldI16(testcc), cptr.ldI16o(testcc, $nhcoord_y))) {
+                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -191,9 +191,9 @@ function md_stop(stopp, startp) {
     let min_distance = -1;
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
         for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++) {
-            if (!isok(x, y) || u_at(x, y))
+            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
-            if (accessible(x, y) && !MON_AT(x, y)) {
+            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
                 if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 261, __sl5), rn2(2)) : rn2(2)))) {
                     cptr.stI16(stopp, x);
@@ -251,7 +251,7 @@ function md_rush(md, tx, ty) {
             ;
             if (mon)
                 verbalize(__sl9, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__sl2, 340, __sl10), rn2(3)) : rn2(3)), 8)));
-            else if (u_at(fx, fy))
+            else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, $you_uy)))
                 verbalize(__sl11);
         }
         if (mon)

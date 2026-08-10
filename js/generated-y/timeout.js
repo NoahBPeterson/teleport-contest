@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_candle, NODIAG, cansee, carried, emits_light, is_silent, is_were, nolimbs, release_data, touch_petrifies, type_is_pname, update_file } from './nhmacrofn.js';
+import { Is_candle, emits_light, touch_petrifies } from './nhmacrofn.js';
 import { Acid_resistance, BInvis, Blind, Breathless, Deaf, Displaced, EFumbling, ELevitation, EPasses_walls, Fast, Fire_resistance, Flying, Fumbling, HConfusion, HDeaf, HFlying, HFumbling, HLevitation, HMagical_breathing, HPasses_walls, HSleepy, HStun, Hallucination, Invis, Levitation, Passes_walls, Poison_resistance, Protection_from_shape_changers, See_invisible, Sick, Sleep_resistance, Sleepy, Slimed, Stone_resistance, Stoned, Strangled, Unchanging, Upolyd, Very_fast, Vomiting, Warn_of_mon, Wounded_legs, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gb, gm, gn, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svm, svq, svt, u, uamul, uarmf, uarmh, uswapwep, uwep } from './decl.js';
 import { eos, highc, ing_suffix, s_suffix, strstri, strsubst, upstart } from './hacklib.js';
@@ -617,7 +617,7 @@ function* stoned_dialogue() {
     if (i > 0n && i <= BigInt(5)) {
         let buf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(stoned_texts, BigInt.asIntN(64, BigInt(5) - i), 8));
-        if (nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* strstri(cptr.decay(buf), __sl73)))
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && (yield* strstri(cptr.decay(buf), __sl73)))
             void strsubst(cptr.decay(buf), __sl73, __sl74);
         (yield* urgent_pline(__sl75, cptr.decay(buf)));
     }
@@ -829,7 +829,7 @@ function* slime_dialogue() {
     if ((t % 2n) != 0n && i >= 0n && i < BigInt(5)) {
         let buf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(slime_texts, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(5) - i) - 1n), 8));
-        if (nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* strstri(cptr.decay(buf), __sl73)))
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && (yield* strstri(cptr.decay(buf), __sl73)))
             void strsubst(cptr.decay(buf), __sl73, __sl74);
         if (cptr.strchr(cptr.decay(buf), 37)) {
             if (i == 4n) {
@@ -994,7 +994,7 @@ export function* nh_timeout() {
     if (cptr.ldI32o(u, $you_mtimedone) && !cptr.stI32o(u, $you_mtimedone, cptr.ldI32o(u, $you_mtimedone) + -1)) {
         if (Unchanging())
             cptr.stI32o(u, $you_mtimedone, (rng_log_enabled() ? (rng_log_set_caller(__sl84, 643, __sl134), rnd((Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0)) : rnd((Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0)));
-        else if (is_were(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+        else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
             (yield* you_unwere(0));
         else
             (yield* rehumanize());
@@ -1054,7 +1054,7 @@ export function* nh_timeout() {
                 }
                 (yield* dealloc_killer(kptr));
                 if ((m_idx = (yield* name_to_mon(cptr.add(svk, $kinfo_name), null))) >= NHC.LOW_PM) {
-                    if (type_is_pname(cptr.add(mons, m_idx, 96))) {
+                    if (((cptr.ldU64o((cptr.add(mons, m_idx, 96)), $permonst_mflags2) & 524288n) != 0n)) {
                         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                     } else if (cptr.ldU16o2(mons, m_idx, 96, $permonst_geno) & NHM.G_UNIQ) {
                         void cptr.strcpy(cptr.add(svk, $kinfo_name), (yield* the(cptr.add(svk, $kinfo_name))));
@@ -1291,18 +1291,18 @@ export function* hatch_egg(arg, timeout) {
         return;
     mon = (mon2 = null);
     mnum = big_to_little(cptr.ldI32o(egg, $obj_corpsenm));
-    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && carried(egg) && !(rng_log_enabled() ? (rng_log_set_caller(__sl84, 1035, __sl168), rn2(2)) : rn2(2))) ? 1 : 0));
+    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !(rng_log_enabled() ? (rng_log_set_caller(__sl84, 1035, __sl168), rn2(2)) : rn2(2))) ? 1 : 0));
     silent = schar((timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
     if (get_obj_location(egg, x, y, 0)) {
         hatchcount = (rng_log_enabled() ? (rng_log_set_caller(__sl84, 1042, __sl168), rnd(Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))))) : rnd(Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan)))));
-        cansee_hatchspot = schar((cansee(x.v, y.v) && !silent ? 1 : 0));
+        cansee_hatchspot = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) && !silent ? 1 : 0));
         if (!(cptr.ldU16o2(mons, mnum, 96, $permonst_geno) & NHM.G_UNIQ) && !(cptr.ld1uo2(svm, mnum, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             for (i = hatchcount; i > 0; i--) {
                 if (!(yield* enexto(cc, x.v, y.v, cptr.add(mons, mnum, 96))) || !(mon = (yield* makemon(cptr.add(mons, mnum, 96), cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 131073))))
                     break;
-                if ((yours && !silent) || (carried(egg) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON)) {
+                if ((yours && !silent) || ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON)) {
                     if ((yield* tamedog(mon, null, 0))) {
-                        if (carried(egg) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_DRAGON)
+                        if ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_DRAGON)
                             cptr.st1o(mon, $monst_mtame, 20);
                     }
                 }
@@ -1332,7 +1332,7 @@ export function* hatch_egg(arg, timeout) {
             else
                 (yield* You_see(__sl173, cptr.decay(monnambuf), locomotion(cptr.ldPtro(mon, $monst_data), __sl172)));
             if (yours) {
-                (yield* pline(__sl174, siblings ? __sl175 : __sl176, (yield* ing_suffix(cry_sound(mon))), (is_silent(cptr.ldPtro(mon, $monst_data)) || Deaf()) ? __sl177 : __sl178, cptr.ld1so(flags, $flag_female) ? __sl179 : __sl180, cptr.ld1so(egg, $obj_spe) ? __sl159 : __sl181));
+                (yield* pline(__sl174, siblings ? __sl175 : __sl176, (yield* ing_suffix(cry_sound(mon))), ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msound) == NHC.MS_SILENT) || Deaf()) ? __sl177 : __sl178, cptr.ld1so(flags, $flag_female) ? __sl179 : __sl180, cptr.ld1so(egg, $obj_spe) ? __sl159 : __sl181));
             } else if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON && !Deaf()) {
                 ;
                 (yield* verbalize(__sl182));
@@ -1348,7 +1348,7 @@ export function* hatch_egg(arg, timeout) {
             case NHM.OBJ_MINVENT:
             if (cansee_hatchspot) {
                 mon2 = cptr.ldPtro(egg, $obj_v);
-                if (canseemon(mon2) && (!(cptr.ldI32o(mon2, $monst_wormno) & 31) || cansee(cptr.ldI16o(mon2, $monst_mx), cptr.ldI16o(mon2, $monst_my)))) {
+                if (canseemon(mon2) && (!(cptr.ldI32o(mon2, $monst_wormno) & 31) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon2, $monst_my), 8), cptr.ldI16o(mon2, $monst_mx)) & NHM.IN_SIGHT) != 0))) {
                     void cptr.sprintf(cptr.decay(carriedby), __sl184, (yield* s_suffix((yield* a_monnam(mon2)))));
                     knows_egg = 1;
                 } else if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
@@ -1368,12 +1368,12 @@ export function* hatch_egg(arg, timeout) {
         if (cptr.ldI64o(egg, $obj_quan) > 0n) {
             (yield* attach_egg_hatch_timeout(egg, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl84, 1172, __sl168), rnd(12)) : rnd(12)))));
             (yield* container_weight(egg));
-        } else if (carried(egg)) {
+        } else if ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT)) {
             (yield* useup(egg));
         } else {
             (yield* obj_extract_self(egg));
             (yield* obfree(egg, null));
-            if ((mon = (cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && !(yield* hideunder(mon)) && cansee(x.v, y.v))
+            if ((mon = (cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && !(yield* hideunder(mon)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0))
                 redraw = 1;
         }
         if (redraw)
@@ -1426,7 +1426,7 @@ function* slip_or_trip() {
             (yield* You(__sl208));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
         } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl84, 1287, __sl199), rn2((10 + (acurr(NHC.A_DEX))) | 0)) : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
-            if (!NODIAG(cptr.ldI32o(u, $you_umonnum)))
+            if (!((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
                 confdir(1);
             if (((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0) != cptr.ldI16o(u, $you_ux0) || ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0) != cptr.ldI16o(u, $you_uy0))
                 (yield* hurtle(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), 1, 0));
@@ -1536,7 +1536,7 @@ export function* burn_object(arg, timeout) {
         return;
     }
     if (get_obj_location(obj, x, y, 0)) {
-        canseeit = schar((!Blind() && cansee(x.v, y.v) ? 1 : 0));
+        canseeit = schar((!Blind() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) ? 1 : 0));
         void (yield* Shk_Your(cptr.decay(whose), obj));
     } else {
         canseeit = 0;
@@ -1561,7 +1561,7 @@ export function* burn_object(arg, timeout) {
             }
         }
         (yield* end_burn(obj, 0));
-        if (carried(obj)) {
+        if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
             (yield* useupall(obj));
         } else {
             if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
@@ -1693,10 +1693,10 @@ export function* burn_object(arg, timeout) {
             if (menorah) {
                 cptr.st1o(obj, $obj_spe, 0);
                 cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
-                if (carried(obj))
+                if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
                     need_invupdate = 1;
             } else {
-                if (carried(obj)) {
+                if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
                     (yield* useupall(obj));
                 } else {
                     let onfloor = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
@@ -1783,13 +1783,13 @@ export function* begin_burn(obj, already_lit) {
         if ((yield* start_timer(turns, NHC.TIMER_OBJECT, NHC.BURN_OBJECT, obj_to_any(obj)))) {
             cptr.stI32o(obj, $obj_lamplit, 1);
             cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) - turns);
-            if (carried(obj) && !already_lit)
+            if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
                 (yield* update_inventory());
         } else {
             cptr.stI32o(obj, $obj_lamplit, 0);
         }
     } else {
-        if (carried(obj) && !already_lit)
+        if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
             (yield* update_inventory());
     }
     if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && !already_lit) {
@@ -2390,7 +2390,7 @@ export function* save_timers(nhfp, range) {
     let prev;
     let next_timer = null;
     let count = cptr.box(0);
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         if (range == NHM.RANGE_GLOBAL) {
             (yield* sfo_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __sl315));
             ;
@@ -2399,7 +2399,7 @@ export function* save_timers(nhfp, range) {
         (yield* sfo_int(nhfp, count, __sl316));
         void (yield* maybe_write_timer(nhfp, range, 1));
     }
-    if (release_data(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (prev = null, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = next_timer) {
             next_timer = cptr.ldPtr(curr);
             if (!(!!(range == NHM.RANGE_LEVEL) ^ !!(yield* timer_is_local(curr)))) {

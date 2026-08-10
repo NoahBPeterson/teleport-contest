@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, is_mines_prize, is_soko_prize, is_undead, ismnum, likes_gems, likes_gold, likes_magic, u_at, unhideable_trap, unique_corpstat } from './nhmacrofn.js';
+import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, ismnum } from './nhmacrofn.js';
 import { Punished, Role_switch, URIGHTY, discover, wizard } from './nhprop.js';
 import { In_hell, Is_botlevel, Is_branchlev, Is_special, assign_level, depth, dunlevs_in_dungeon, ledger_no, maxledgerno, on_level } from './dungeon.js';
 import { flags, gb, gf, gi, gs, gu, iflags, program_state, svc, svd, svl, svn, svp, svr, u, uball, ynchars } from './decl.js';
@@ -213,7 +213,7 @@ function resetobjs(ochain, restore) {
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
                 cptr.st1o(otmp, $obj_spe, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
-                if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && unique_corpstat(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)))
+                if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), $permonst_geno) & NHM.G_UNIQ) != 0))
                     cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
                 let mnum = cptr.box(cptr.ldI32o(otmp, $obj_corpsenm));
@@ -222,7 +222,7 @@ function resetobjs(ochain, restore) {
                     if (mnum.v == NHC.PM_DOPPELGANGER && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
                         set_corpsenm(otmp, mnum.v);
                 }
-            } else if (is_mines_prize(otmp) || is_soko_prize(otmp)) {
+            } else if ((cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) || (cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid))) {
                 cptr.stI32o(otmp, $obj_nomerge, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
                 cptr.stI16o(otmp, $obj_otyp, NHC.FAKE_AMULET_OF_YENDOR);
@@ -275,11 +275,11 @@ function give_to_nearby_mon(otmp, x, y) {
         for (yy = (y - 1) | 0; yy <= ((y + 1) | 0); ++yy) {
             if (!isok(i16(xx), i16(yy)))
                 continue;
-            if (u_at(xx, yy))
+            if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16o(u, $you_uy)))
                 continue;
             if (!(mtmp = (cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))))
                 continue;
-            if (!(likes_gold(cptr.ldPtro(mtmp, $monst_data)) || likes_gems(cptr.ldPtro(mtmp, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || likes_magic(cptr.ldPtro(mtmp, $monst_data))))
+            if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2147483648n) != 0n)))
                 continue;
             nmon++;
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 247, __sl1), rn2(nmon)) : rn2(nmon)))
@@ -298,7 +298,7 @@ export function drop_upon_death(mtmp, cont, x, y) {
     cptr.st1o(u, $you_twoweap, 0);
     while ((otmp = cptr.ldPtro(gi, $instance_globals_i_invent)) !== null) {
         obj_extract_self(otmp);
-        if (!mtmp || is_undead(cptr.ldPtro(mtmp, $monst_data)))
+        if (!mtmp || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n))
             obj_no_longer_held(otmp);
         if ((cont || artifact_light(otmp)) && obj_is_burning(otmp))
             end_burn(otmp, 1);
@@ -492,7 +492,7 @@ export function savebones(how, when, corpse) {
     }
     for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
         cptr.stI32o(ttmp, $trap_madeby_u, 0);
-        cptr.stI32o(ttmp, $trap_tseen, unhideable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) >>> 0);
+        cptr.stI32o(ttmp, $trap_tseen, ((((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) | 0) == NHC.HOLE) >>> 0);
     }
     set_ghostly_objlist(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
     resetobjs(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist), 0);

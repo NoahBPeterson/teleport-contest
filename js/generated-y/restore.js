@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, OMID, age_is_relative, has_omonst, hides_under, ismnum, likes_gems } from './nhmacrofn.js';
+import { age_is_relative, has_omid, has_omonst, is_unicorn, ismnum } from './nhmacrofn.js';
 import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
@@ -422,7 +422,7 @@ function* restobjchn(nhfp, frozen) {
             (yield* ghostfruit(otmp));
         if (ghostly && !frozen && !age_is_relative(otmp))
             cptr.stI64o(otmp, $obj_age, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves)) + cptr.ldI64o(otmp, $obj_age)));
-        if (Has_contents(otmp)) {
+        if ((cptr.ldPtro((otmp), $obj_cobj) !== null)) {
             let otmp3;
             cptr.stPtro(otmp, $obj_cobj, (yield* restobjchn(nhfp, schar((cptr.ldI16o((otmp), $obj_otyp) == NHC.ICE_BOX ? 1 : 0)))));
             for (otmp3 = cptr.ldPtro(otmp, $obj_cobj); otmp3; otmp3 = cptr.ldPtr(otmp3))
@@ -1021,14 +1021,14 @@ export function* getlev(nhfp, pid, lev) {
             (yield* place_monster(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
                 (yield* place_wsegs(mtmp, null));
-            if (hides_under(cptr.ldPtro(mtmp, $monst_data)) && (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) && (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
                 void (yield* hideunder(mtmp));
         }
         if (!cptr.ldI16o(u, $you_uz + $d_level_dlevel) || cptr.ldI32o(program_state, $sinfo_restoring) == NHC.REST_LEVELS)
             continue;
         if (ghostly) {
             if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1))
-                cptr.stI32o(mtmp, $monst_mpeaceful, (((cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_UNICORN && likes_gems(cptr.ldPtro(mtmp, $monst_data))) && (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) ? 1 : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0);
+                cptr.stI32o(mtmp, $monst_mpeaceful, ((is_unicorn(cptr.ldPtro(mtmp, $monst_data)) && (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) ? 1 : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0);
             set_malign(mtmp);
         } else if (elapsed > 0n) {
             (yield* mon_catchup_elapsed_time(mtmp, elapsed));
@@ -1250,8 +1250,8 @@ function reset_oattached_mids(ghostly) {
             cptr.stI32o(mtmp, $monst_m_id, 0);
             cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
         }
-        if (ghostly && (cptr.ldPtro((otmp), $obj_oextra) && OMID(otmp))) {
-            oldid = OMID(otmp);
+        if (ghostly && has_omid(otmp)) {
+            oldid = (cptr.ldI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid));
             if (lookup_id_mapping(oldid, nid))
                 cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, nid.v);
             else

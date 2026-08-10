@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, IS_DOOR, IS_ROOM, IS_WALL, In_endgame, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mgivenname, is_golem, is_undead, next2u, u_at } from './nhmacrofn.js';
+import { IS_WALL, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_mgivenname, weirdnonliving } from './nhmacrofn.js';
 import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
@@ -386,7 +386,7 @@ function* makemap_unmakemon(mtmp, migratory) {
         (cptr.st1o2(svm, ndx, 12, $instance_globals_saved_m_mvitals, cptr.ld1uo2(svm, ndx, 12, $instance_globals_saved_m_mvitals) + -1)) - (-1);
     if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
         cptr.stI32o(mtmp, $monst_isgd, 0);
-    } else if (DEADMONSTER(mtmp)) {
+    } else if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
         return;
     } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && on_level(cptr.add(u, $you_uz), cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shoplevel))) {
         (yield* setpaid(mtmp));
@@ -406,7 +406,7 @@ export function* makemap_remove_mons() {
     let mprev;
     (yield* keepdogs(1));
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         (yield* makemap_unmakemon(mtmp, 0));
     }
@@ -541,7 +541,7 @@ export function* wiz_kill() {
                 break;
             }
         } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-            mtmp = next2u(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) ? cptr.ldPtro(u, $you_ustuck) : null;
+            mtmp = (dist2(((cptr.ldI16(cc))), ((cptr.ldI16o(cc, $nhcoord_y))), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) ? cptr.ldPtro(u, $you_ustuck) : null;
         } else {
             mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         }
@@ -554,11 +554,11 @@ export function* wiz_kill() {
             let adjs = tame ? (!seen ? __sl11 : __sl12) : (!seen ? __sl13 : null);
             let Mn = (yield* x_monnam(mtmp, articl, adjs, flgs, 0));
             if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
-                (yield* You(__sl14, (is_undead(cptr.ldPtro(mtmp, $monst_data)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(mtmp, $monst_data)) || cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl15 : __sl16, Mn));
+                (yield* You(__sl14, (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) ? __sl15 : __sl16, Mn));
                 (yield* xkilled(mtmp, NHM.XKILL_NOMSG));
             } else {
                 cptr.st1o(svc, $context_info_mon_moving, 1);
-                (yield* pline(__sl17, upstart(Mn), (is_undead(cptr.ldPtro(mtmp, $monst_data)) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || (is_golem(cptr.ldPtro(mtmp, $monst_data)) || cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_VORTEX)) ? __sl18 : __sl19));
+                (yield* pline(__sl17, upstart(Mn), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || cptr.eq((cptr.ldPtro(mtmp, $monst_data)), cptr.add(mons, NHC.PM_MANES, 96)) || weirdnonliving(cptr.ldPtro(mtmp, $monst_data))) ? __sl18 : __sl19));
                 (yield* monkilled(mtmp, null, NHM.AD_PHYS));
                 cptr.st1o(svc, $context_info_mon_moving, 0);
             }
@@ -697,7 +697,7 @@ export function* wiz_telekinesis() {
                 return NHM.ECMD_CANCEL;
             if (mtmp) {
                 (yield* mhurtle(mtmp, cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), 6));
-                if (!DEADMONSTER(mtmp) && canspotmon(mtmp)) {
+                if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && canspotmon(mtmp)) {
                     cptr.stI16(cc, cptr.ldI16o(mtmp, $monst_mx));
                     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                 }
@@ -761,7 +761,7 @@ export function* wiz_show_seenv() {
         startx++;
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = startx, curx = 0; x < stopx; x++, curx = i16(curx + 2)) {
-            if (u_at(x, y)) {
+            if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                 cptr.st1o(cptr.decay(row), curx, cptr.st1o(cptr.decay(row), (curx + 1) | 0, 64, 1), 1);
             } else {
                 v = cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv) & 255;
@@ -795,7 +795,7 @@ export function* wiz_show_vision() {
     (yield* Y.icall(putstr()(win, 0, __sl41)));
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 1; x < NHM.COLNO; x++) {
-            if (u_at(x, y)) {
+            if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                 cptr.st1o(cptr.decay(row), x, 64, 1);
             } else {
                 v = cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x);
@@ -827,13 +827,13 @@ export function* wiz_show_wmodes() {
     for (y = 0; y < NHM.ROWNO; y++) {
         for (x = 0; x < NHM.COLNO; x++) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-            if (u_at(x, y))
+            if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 cptr.st1o(cptr.decay(row), x, 64, 1);
             else if (IS_WALL(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
                 cptr.st1o(cptr.decay(row), x, schar(((48 + (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK)) | 0)), 1);
             else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                 cptr.st1o(cptr.decay(row), x, 35, 1);
-            else if (IS_ROOM(cptr.ld1so(lev, $rm_typ)) || IS_DOOR(cptr.ld1so(lev, $rm_typ)))
+            else if (((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) || ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
                 cptr.st1o(cptr.decay(row), x, 46, 1);
             else
                 cptr.st1o(cptr.decay(row), x, 120, 1);
@@ -943,7 +943,7 @@ export function* wiz_map_levltyp() {
             void cptr.strcat(cptr.decay(dsc), __sl76);
         else if (cptr.ldI16o(u, $you_uz) == tower_dnum())
             void cptr.strcat(cptr.decay(dsc), __sl77);
-        else if (In_endgame(cptr.add(u, $you_uz)))
+        else if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
             void cptr.strcat(cptr.decay(dsc), __sl78);
         else {
             let brname = cptr.add(svd, cptr.ldI16o(u, $you_uz), 112);
@@ -1037,7 +1037,7 @@ export function* wiz_smell() {
                 (yield* map_invisible(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
         } else {
             (yield* You(__sl92));
-            if (glyph_is_invisible(glyph))
+            if (((glyph) == NHC.GLYPH_INVIS_OFF))
                 (yield* unmap_invisible(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
         }
     } while (1);

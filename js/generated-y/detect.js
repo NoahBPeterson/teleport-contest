@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Has_contents, IS_DOOR, IS_FURNITURE, Is_box, MCORPSENM, M_AP_TYPE, OBJ_AT, SchroedingersBox, cansee, canspotmon, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, distu, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_unexplored, glyph_is_warning, helpless, hides_under, is_cmap_furniture, is_hider, monsndx, monsym, trap_to_defsym, u_at } from './nhmacrofn.js';
+import { IS_FURNITURE, Is_box, SchroedingersBox, canspotmon, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_trap, glyph_is_warning, has_mcorpsenm, helpless, is_cmap_furniture } from './nhmacrofn.js';
 import { Blind, BlindedTimeout, Clairvoyant, Deaf, EDetect_monsters, HConfusion, HHallucination, HStun, Half_physical_damage, Hallucination, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, c_common_strings, cg, flags, ga, gd, gf, gi, gk, gm, gn, gs, gu, gv, gy, iflags, quitchars, svd, svl, u, ublindf, uwep } from './decl.js';
 import { back_to_glyph, canseemon, cls, docrt, feel_location, feel_newsym, flash_glyph_at, flush_screen, glyph_at, magic_map_background, map_background, map_engraving, map_invisible, map_object, map_trap, mon_visible, newsym, see_monsters, sensemon, show_glyph, swallowed, under_ground, under_water, unmap_invisible, unmap_object, warning_of, xy_set_wall_state } from './display.js';
@@ -323,7 +323,7 @@ function* browse_map(ter_typ, ter_explain) {
 
 /** C ref: detect.c:122 — @param {CPtr} mtmp @param {CInt} showtail */
 function* map_monst(mtmp, showtail) {
-    let glyph = (monsym(cptr.ldPtro(mtmp, $monst_data)) == 32) ? (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(mtmp, $monst_mtame) ? (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
+    let glyph = ((cptr.ld1so(def_monsyms, cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet), 24)) == 32) ? (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(mtmp, $monst_mtame) ? (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
     (yield* show_glyph(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), glyph));
     if (showtail && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)))
         (yield* detect_wsegs(mtmp, 0));
@@ -339,7 +339,7 @@ export function trapped_chest_at(ttyp, x, y) {
         return 0;
     if (sobj_at(NHC.CHEST, x, y) || sobj_at(NHC.LARGE_BOX, x, y))
         return 1;
-    if (u_at(x, y)) {
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0)
                 return 1;
@@ -364,7 +364,7 @@ export function trapped_door_at(ttyp, x, y) {
     if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 188, __sl2), rn2(20)) : rn2(20))))
         return 0;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    if (!IS_DOOR(cptr.ld1so(lev, $rm_typ)))
+    if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
         return 0;
     if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 3) != 0 && trapped_chest_at(ttyp, x, y))
         return 0;
@@ -377,11 +377,11 @@ export function o_in(obj, oclass) {
     let temp;
     if (cptr.ld1so(obj, $obj_oclass) == oclass)
         return obj;
-    if (Has_contents(obj) && !SchroedingersBox(obj)) {
+    if ((cptr.ldPtro((obj), $obj_cobj) !== null) && !SchroedingersBox(obj)) {
         for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp))
             if (cptr.ld1so(otmp, $obj_oclass) == oclass)
                 return otmp;
-            else if (Has_contents(otmp) && (temp = o_in(otmp, oclass)) !== null)
+            else if ((cptr.ldPtro((otmp), $obj_cobj) !== null) && (temp = o_in(otmp, oclass)) !== null)
                 return temp;
     }
     return null;
@@ -393,11 +393,11 @@ export function o_material(obj, material) {
     let temp;
     if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) == material)
         return obj;
-    if (Has_contents(obj)) {
+    if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp))
             if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) == material)
                 return otmp;
-            else if (Has_contents(otmp) && (temp = o_material(otmp, material)) !== null)
+            else if ((cptr.ldPtro((otmp), $obj_cobj) !== null) && (temp = o_material(otmp, material)) !== null)
                 return temp;
     }
     return null;
@@ -407,7 +407,7 @@ export function o_material(obj, material) {
 function* observe_recursively(obj) {
     let otmp;
     (yield* observe_object(obj));
-    if (Has_contents(obj)) {
+    if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp))
             (yield* observe_recursively(otmp));
     }
@@ -477,7 +477,7 @@ export function* gold_detect(sobj) {
     __lbl_outgoldmap: {
         cptr.st1o(gk, $instance_globals_k_known, stale = (yield* clear_stale_map(NHC.COIN_CLASS, ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 ? NHC.GOLD : 0) >>> 0)));
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
                 continue;
             if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == NHC.PM_GOLD_GOLEM) {
                 if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
@@ -547,7 +547,7 @@ export function* gold_detect(sobj) {
             ugold = 1;
     }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
             continue;
         temp = null;
         if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == NHC.PM_GOLD_GOLEM) {
@@ -607,7 +607,7 @@ export function* food_detect(sobj) {
                 ct++;
         }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp && (!ct || !ctu); mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
             continue;
         for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             if (o_in(obj, oclass)) {
@@ -664,7 +664,7 @@ export function* food_detect(sobj) {
                 (yield* map_object(temp, 1));
             }
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
                 continue;
             for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj))
                 if ((temp = o_in(obj, oclass)) !== null) {
@@ -747,7 +747,7 @@ export function* object_detect(detector, class$) {
     if (cptr.ldPtro(u, $you_usteed))
         cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)), cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_my, cptr.ldI16o(u, $you_uy));
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
             continue;
         for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
             if ((!class$ && !boulder) || o_in(obj, schar(class$)) || o_in(obj, schar(boulder)))
@@ -755,7 +755,7 @@ export function* object_detect(detector, class$) {
             if (do_dknown)
                 (yield* observe_recursively(obj));
         }
-        if ((is_cursed && M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && (!class$ || class$ == cptr.ld1so2(objects, cptr.ldI32o(mtmp, $monst_mappearance), 120, $objclass_oc_class))) || (findgold(cptr.ldPtro(mtmp, $monst_minvent)) && (!class$ || class$ == NHC.COIN_CLASS))) {
+        if ((is_cursed && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (!class$ || class$ == cptr.ld1so2(objects, cptr.ldI32o(mtmp, $monst_mappearance), 120, $objclass_oc_class))) || (findgold(cptr.ldPtro(mtmp, $monst_minvent)) && (!class$ || class$ == NHC.COIN_CLASS))) {
             ct++;
             break;
         }
@@ -797,7 +797,7 @@ export function* object_detect(detector, class$) {
                     break;
                 }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
             continue;
         for (obj = cptr.ldPtro(mtmp, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             if ((!class$ && !boulder) || (otmp = o_in(obj, schar(class$))) !== null || (otmp = o_in(obj, schar(boulder))) !== null) {
@@ -808,14 +808,14 @@ export function* object_detect(detector, class$) {
                 (yield* map_object(otmp, 1));
                 break;
             }
-        if (is_cursed && M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT && (!class$ || class$ == cptr.ld1so2(objects, cptr.ldI32o(mtmp, $monst_mappearance), 120, $objclass_oc_class))) {
+        if (is_cursed && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (!class$ || class$ == cptr.ld1so2(objects, cptr.ldI32o(mtmp, $monst_mappearance), 120, $objclass_oc_class))) {
             let temp = cptr.alloc(216);
             cptr.memcpy(temp, cg, 216);
             cptr.stI16o(temp, $obj_otyp, i16(cptr.ldI32o(mtmp, $monst_mappearance)));
             cptr.stI64o(temp, $obj_quan, 1n);
             cptr.stI16o(temp, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(temp, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
-            cptr.stI32o(temp, $obj_corpsenm, (cptr.ldPtro((mtmp), $monst_mextra) && MCORPSENM(mtmp) != NHC.NON_PM) ? MCORPSENM(mtmp) : NHC.PM_TENGU);
+            cptr.stI32o(temp, $obj_corpsenm, has_mcorpsenm(mtmp) ? (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)) : NHC.PM_TENGU);
             (yield* map_object(temp, 1));
         } else if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) && (!class$ || class$ == NHC.COIN_CLASS)) {
             let gold = cptr.alloc(216);
@@ -845,7 +845,7 @@ export function* monster_detect(otmp, mclass) {
     let mtmp;
     let mcnt = 0;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
             continue;
         ++mcnt;
         break;
@@ -861,7 +861,7 @@ export function* monster_detect(otmp, mclass) {
         (yield* cls());
         unconstrained = unconstrain_map();
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx)))
                 continue;
             if (!mclass || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == mclass || (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && mclass == NHC.S_WORM_TAIL))
                 (yield* map_monst(mtmp, 1));
@@ -923,17 +923,17 @@ function* detect_obj_traps(objlist, show_them, how, ft) {
     let trapglyph;
     let result = 0;
     cptr.stI32o(dummytrap, $trap_ttyp, NHC.TRAPPED_CHEST);
-    trapglyph = ft ? (((trap_to_defsym(dummytrap)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(dummytrap)) <= NHC.S_trwall) ? (((((trap_to_defsym(dummytrap)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(dummytrap)) < NHC.S_altar) ? (((((trap_to_defsym(dummytrap)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(dummytrap)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(dummytrap)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(dummytrap)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(dummytrap)) <= NHC.S_goodpos) ? (((((trap_to_defsym(dummytrap)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : NHC.GLYPH_NOTHING_OFF;
+    trapglyph = ft ? (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : NHC.GLYPH_NOTHING_OFF;
     for (otmp = objlist; otmp; otmp = cptr.ldPtr(otmp)) {
         x.v = (y.v = 0);
-        if ((Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) || Has_contents(otmp)) {
+        if ((Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) || (cptr.ldPtro((otmp), $obj_cobj) !== null)) {
             if (!get_obj_location(otmp, x, y, 3) || !isok(x.v, y.v) || (ft && (x.v != cptr.ldI16(ft) || y.v != cptr.ldI16o(ft, $nhcoord_y))))
                 continue;
         }
         if (Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) {
             cptr.stI32o(otmp, $obj_tknown, 1);
             (yield* observe_object(otmp));
-            result |= u_at(x.v, y.v) ? 1 : 2;
+            result |= ((x.v) == cptr.ldI16(u) && (y.v) == cptr.ldI16o(u, $you_uy)) ? 1 : 2;
             if (ft) {
                 (yield* flash_glyph_at(x.v, y.v, trapglyph, 6));
             }
@@ -946,7 +946,7 @@ function* detect_obj_traps(objlist, show_them, how, ft) {
                 cptr.postinc1(cptr.add(ft, $found_things_num_traps));
             }
         }
-        if (Has_contents(otmp))
+        if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             result |= (yield* detect_obj_traps(cptr.ldPtro(otmp, $obj_cobj), show_them, how, ft));
     }
     return result;
@@ -965,7 +965,7 @@ function* display_trap_map(cursed_src) {
     void (yield* detect_obj_traps(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist), 1, cursed_src, null));
     void (yield* detect_obj_traps(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist), 1, cursed_src, null));
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if (DEADMONSTER(mon) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
+        if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         void (yield* detect_obj_traps(cptr.ldPtro(mon, $monst_minvent), 1, cursed_src, null));
     }
@@ -1025,7 +1025,7 @@ export function* trap_detect(sobj) {
         found = 1;
     }
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if (DEADMONSTER(mon) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
+        if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         if ((tr = (yield* detect_obj_traps(cptr.ldPtro(mon, $monst_minvent), 0, 0, null))) != 0) {
             if (tr & 2) {
@@ -1078,7 +1078,7 @@ function* furniture_detect() {
                 (yield* magic_map_background(x, y, 1));
             } else if (is_cmap_furniture(sym)) {
                 ++found;
-                if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && M_AP_TYPE(mon) == NHC.M_AP_FURNITURE)
+                if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE)
                     (yield* seemimic(mon));
                 if (!mon || !canspotmon(mon))
                     (yield* map_invisible(x, y));
@@ -1379,7 +1379,7 @@ export function* do_vicinity_map(sobj) {
         for (zy = lo_y; zy <= hi_y; zy++) {
             oldglyph = glyph_at(i16(zx), i16(zy));
             (yield* show_map_spot(i16(zx), i16(zy), Number(BigInt.asIntN(8, cptr.ldI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic)))));
-            if (OBJ_AT(zx, zy)) {
+            if ((cptr.ldPtro3(svl, zx, 168, zy, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
                 otmp = cptr.ldPtro3(svl, zx, 168, zy, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
                 if (extended)
                     (yield* observe_object(otmp));
@@ -1394,7 +1394,7 @@ export function* do_vicinity_map(sobj) {
                 else
                     (yield* map_monst(mtmp, 0));
                 newglyph = glyph_at(i16(zx), i16(zy));
-                if (extended && newglyph != oldglyph && !glyph_is_invisible(newglyph))
+                if (extended && newglyph != oldglyph && !((newglyph) == NHC.GLYPH_INVIS_OFF))
                     mdetected = 1;
             }
         }
@@ -1413,7 +1413,7 @@ export function* do_vicinity_map(sobj) {
     cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), uchar(save_viz_uyux));
     for (zx = lo_x; zx <= hi_x; zx++)
         for (zy = lo_y; zy <= hi_y; zy++) {
-            if (u_at(zx, zy))
+            if (((zx) == cptr.ldI16(u) && (zy) == cptr.ldI16o(u, $you_uy)))
                 continue;
             newglyph = glyph_at(i16(zx), i16(zy));
             if (((glyph_is_normal_male_monster(newglyph) || glyph_is_normal_female_monster(newglyph)) || (glyph_is_male_pet(newglyph) || glyph_is_female_pet(newglyph)) || (glyph_is_ridden_male_monster(newglyph) || glyph_is_ridden_female_monster(newglyph)) || (glyph_is_detected_male_monster(newglyph) || glyph_is_detected_female_monster(newglyph))) && (glyph_is_normal_female_monster(newglyph) ? (((newglyph) - NHC.GLYPH_MON_FEM_OFF) | 0) : (glyph_is_normal_male_monster(newglyph) ? (((newglyph) - NHC.GLYPH_MON_MALE_OFF) | 0) : (glyph_is_female_pet(newglyph) ? (((newglyph) - NHC.GLYPH_PET_FEM_OFF) | 0) : (glyph_is_male_pet(newglyph) ? (((newglyph) - NHC.GLYPH_PET_MALE_OFF) | 0) : (glyph_is_detected_female_monster(newglyph) ? (((newglyph) - NHC.GLYPH_DETECT_FEM_OFF) | 0) : (glyph_is_detected_male_monster(newglyph) ? (((newglyph) - NHC.GLYPH_DETECT_MALE_OFF) | 0) : (glyph_is_ridden_female_monster(newglyph) ? (((newglyph) - NHC.GLYPH_RIDDEN_FEM_OFF) | 0) : (glyph_is_ridden_male_monster(newglyph) ? (((newglyph) - NHC.GLYPH_RIDDEN_MALE_OFF) | 0) : NHC.NUMMONS)))))))) != NHC.PM_LONG_WORM_TAIL) {
@@ -1442,7 +1442,7 @@ export function cvt_sdoor_to_door(lev) {
 
 /** C ref: detect.c:1610 — @param {CInt} zx @param {CInt} zy @param {CInt} glyph */
 function* foundone(zx, zy, glyph) {
-    if (glyph_is_cmap(glyph) || glyph_is_unexplored(glyph))
+    if (glyph_is_cmap(glyph) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF))
         cptr.st1o3(svl, zx, 756, zy, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
     {
         let save_viz = cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), zy, 8), zx);
@@ -1459,13 +1459,13 @@ function* findone(zx, zy, whatfound) {
     let ttmp = t_at(zx, zy);
     let mtmp = (cptr.ldPtro3(svl, zx, 168, zy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     let found_p = whatfound;
-    if (mtmp && (DEADMONSTER(mtmp) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx))))
+    if (mtmp && ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mtmp, $monst_mx))))
         mtmp = (null);
     cptr.stI16(found_p, zx);
     cptr.stI16o(found_p, $nhcoord_y, zy);
     if (cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) {
         let sym = uchar(((cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? NHC.S_hcdoor : NHC.S_vcdoor));
-        (yield* flash_glyph_at(zx, zy, (((sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((sym) <= NHC.S_trwall) ? (((((sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((sym) < NHC.S_altar) ? cmap_a_to_glyph(sym) : (((sym) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(sym) : (((sym) <= NHC.S_goodpos) ? cmap_c_to_glyph(sym) : NHC.MAX_GLYPH)))))), 6));
+        (yield* flash_glyph_at(zx, zy, (((sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((sym) <= NHC.S_trwall) ? (((((sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((sym) < NHC.S_altar) ? (((((sym) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((sym) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((sym) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((sym) <= NHC.S_goodpos) ? (((((sym) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))), 6));
         cvt_sdoor_to_door(lev);
         (yield* recalc_block_point(zx, zy));
         (yield* magic_map_background(zx, zy, 0));
@@ -1480,39 +1480,39 @@ function* findone(zx, zy, whatfound) {
         cptr.postinc1(cptr.add(found_p, $found_things_num_scorrs));
     }
     if (ttmp && !(cptr.ldI32o(ttmp, $trap_tseen) & 1) && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.STATUE_TRAP) {
-        (yield* flash_glyph_at(zx, zy, (((trap_to_defsym(ttmp)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(ttmp)) <= NHC.S_trwall) ? (((((trap_to_defsym(ttmp)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(ttmp)) < NHC.S_altar) ? (((((trap_to_defsym(ttmp)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(ttmp)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(ttmp)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(ttmp)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(ttmp)) <= NHC.S_goodpos) ? (((((trap_to_defsym(ttmp)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))), 6));
+        (yield* flash_glyph_at(zx, zy, (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))), 6));
         cptr.stI32o(ttmp, $trap_tseen, 1);
         (yield* sense_trap(ttmp, zx, zy, 0));
-        (yield* foundone(zx, zy, (((trap_to_defsym(ttmp)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(ttmp)) <= NHC.S_trwall) ? (((((trap_to_defsym(ttmp)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(ttmp)) < NHC.S_altar) ? (((((trap_to_defsym(ttmp)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(ttmp)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(ttmp)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(ttmp)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(ttmp)) <= NHC.S_goodpos) ? (((((trap_to_defsym(ttmp)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
+        (yield* foundone(zx, zy, (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((ttmp), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
         cptr.postinc1(cptr.add(found_p, $found_things_num_traps));
     }
     if (closed_door(zx, zy) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
         cptr.stI32o(dummytrap, $trap_ttyp, NHC.TRAPPED_DOOR);
         cptr.stI16o(dummytrap, $trap_tx, zx), cptr.stI16o(dummytrap, $trap_ty, zy);
-        (yield* flash_glyph_at(zx, zy, (((trap_to_defsym(dummytrap)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(dummytrap)) <= NHC.S_trwall) ? (((((trap_to_defsym(dummytrap)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(dummytrap)) < NHC.S_altar) ? (((((trap_to_defsym(dummytrap)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(dummytrap)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(dummytrap)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(dummytrap)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(dummytrap)) <= NHC.S_goodpos) ? (((((trap_to_defsym(dummytrap)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))), 6));
+        (yield* flash_glyph_at(zx, zy, (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))), 6));
         cptr.stI32o(dummytrap, $trap_tseen, 1);
         (yield* sense_trap(dummytrap, zx, zy, 0));
-        (yield* foundone(zx, zy, (((trap_to_defsym(dummytrap)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(dummytrap)) <= NHC.S_trwall) ? (((((trap_to_defsym(dummytrap)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(dummytrap)) < NHC.S_altar) ? (((((trap_to_defsym(dummytrap)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(dummytrap)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(dummytrap)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(dummytrap)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(dummytrap)) <= NHC.S_goodpos) ? (((((trap_to_defsym(dummytrap)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
+        (yield* foundone(zx, zy, (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((dummytrap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
         cptr.postinc1(cptr.add(found_p, $found_things_num_traps));
     }
     void (yield* detect_obj_traps(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist), 1, 0, found_p));
     void (yield* detect_obj_traps(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist), 1, 0, found_p));
     if (mtmp)
         void (yield* detect_obj_traps(cptr.ldPtro(mtmp, $monst_minvent), 1, 0, found_p));
-    if (u_at(zx, zy))
+    if (((zx) == cptr.ldI16(u) && (zy) == cptr.ldI16o(u, $you_uy)))
         void (yield* detect_obj_traps(cptr.ldPtro(gi, $instance_globals_i_invent), 1, 0, found_p));
-    if (mtmp && (!canspotmon(mtmp) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || M_AP_TYPE(mtmp))) {
-        if (M_AP_TYPE(mtmp)) {
-            (yield* flash_glyph_at(zx, zy, (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6));
+    if (mtmp && (!canspotmon(mtmp) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK))) {
+        if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
+            (yield* flash_glyph_at(zx, zy, (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6));
             (yield* seemimic(mtmp));
             cptr.postinc1(cptr.add(found_p, $found_things_num_mons));
-        } else if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (is_hider(cptr.ldPtro(mtmp, $monst_data)) || hides_under(cptr.ldPtro(mtmp, $monst_data)) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
-            (yield* flash_glyph_at(zx, zy, (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(mtmp)) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6));
+        } else if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
+            (yield* flash_glyph_at(zx, zy, (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0), 6));
             cptr.stI32o(mtmp, $monst_mundetected, 0);
             (yield* newsym(zx, zy));
             cptr.postinc1(cptr.add(found_p, $found_things_num_mons));
         }
-        if (!glyph_is_invisible(cptr.ldI32(lev))) {
+        if (!((cptr.ldI32(lev)) == NHC.GLYPH_INVIS_OFF)) {
             if (!canspotmon(mtmp)) {
                 (yield* flash_glyph_at(zx, zy, NHC.GLYPH_INVIS_OFF, 6));
                 (yield* map_invisible(zx, zy));
@@ -1534,7 +1534,7 @@ function* openone(zx, zy, num) {
     let ttmp;
     let otmp;
     let num_p = num;
-    if (OBJ_AT(zx.v, zy.v)) {
+    if ((cptr.ldPtro3(svl, zx.v, 168, zy.v, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
         for (otmp = cptr.ldPtro3(svl, zx.v, 168, zy.v, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
             if (Is_box(otmp) && (cptr.ldI32o(otmp, $obj_olocked) & 1) | 0) {
                 cptr.stI32o(otmp, $obj_olocked, 0);
@@ -1546,10 +1546,10 @@ function* openone(zx, zy, num) {
         if (cptr.ld1so3(svl, zx.v, 756, zy.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)
             cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), zx.v, 756), zy.v, 36));
         if (((cptr.ldI32o3(svl, zx.v, 756, zy.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-            if (distu(zx.v, zy.v) < 3)
+            if (dist2((zx.v), (zy.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 3)
                 (yield* b_trapped(__sl104, NHC.NO_PART));
             else
-                (yield* Norep(__sl105, cansee(zx.v, zy.v) ? __sl106 : (!Deaf() ? __sl107 : __sl108)));
+                (yield* Norep(__sl105, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), zy.v, 8), zx.v) & NHM.IN_SIGHT) != 0) ? __sl106 : (!Deaf() ? __sl107 : __sl108)));
             (yield* wake_nearto(zx.v, zy.v, 121));
             cptr.stI32o3(svl, zx.v, 756, zy.v, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
         } else
@@ -1570,7 +1570,7 @@ function* openone(zx, zy, num) {
             (yield* newsym(zx.v, zy.v));
             (cptr.stI32(num_p, cptr.ldI32(num_p) + 1)) - (1);
         }
-        mon = u_at(zx.v, zy.v) ? cptr.add(gy, $instance_globals_y_youmonst) : (cptr.ldPtro3(svl, zx.v, 168, zy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+        mon = ((zx.v) == cptr.ldI16(u) && (zy.v) == cptr.ldI16o(u, $you_uy)) ? cptr.add(gy, $instance_globals_y_youmonst) : (cptr.ldPtro3(svl, zx.v, 168, zy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         if ((yield* openholdingtrap(mon, dummy)) || (yield* openfallingtrap(mon, 1, dummy)))
             (cptr.stI32(num_p, cptr.ldI32(num_p) + 1)) - (1);
     } else if (find_drawbridge(zx, zy)) {
@@ -1673,7 +1673,7 @@ export function* find_trap(trap) {
     cptr.stI32o(trap, $trap_tseen, 1);
     (yield* exercise(NHC.A_WIS, 1));
     (yield* feel_newsym(cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty)));
-    if (Hallucination() || cptr.ldI32o3(svl, cptr.ldI16o(trap, $trap_tx), 756, cptr.ldI16o(trap, $trap_ty), 36, $instance_globals_saved_l_level) != (((trap_to_defsym(trap)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(trap)) <= NHC.S_trwall) ? (((((trap_to_defsym(trap)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(trap)) < NHC.S_altar) ? (((((trap_to_defsym(trap)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(trap)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(trap)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(trap)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(trap)) <= NHC.S_goodpos) ? (((((trap_to_defsym(trap)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))) {
+    if (Hallucination() || cptr.ldI32o3(svl, cptr.ldI16o(trap, $trap_tx), 756, cptr.ldI16o(trap, $trap_ty), 36, $instance_globals_saved_l_level) != (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))) {
         (yield* cls());
         (yield* map_trap(trap, 1));
         (yield* show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && mon_visible(cptr.ldPtro(u, $you_usteed))) ? (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0)))))));
@@ -1694,12 +1694,12 @@ function* mfind0(mtmp, via_warning) {
     let found_something = 0;
     if (via_warning && !warning_of(mtmp))
         return -1;
-    if (M_AP_TYPE(mtmp)) {
+    if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
         (yield* seemimic(mtmp));
         found_something = 1;
     } else {
         found_something = schar((!canspotmon(mtmp)));
-        if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (is_hider(cptr.ldPtro(mtmp, $monst_data)) || hides_under(cptr.ldPtro(mtmp, $monst_data)) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
+        if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
             if (via_warning && found_something) {
                 set_msg_xy(x, y);
                 (yield* Your(__sl133, Blind() ? __sl134 : __sl135));
@@ -1746,7 +1746,7 @@ export function* dosearch0(aflag) {
             for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y < ((cptr.ldI16o(u, $you_uy) + 2) | 0); y++) {
                 if (!isok(x, y))
                     continue;
-                if (u_at(x, y))
+                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                     continue;
                 if (!aflag && (Blind() || visible_region_at(x, y)))
                     (yield* feel_location(x, y));
@@ -1810,7 +1810,7 @@ export function* warnreveal() {
     let mtmp;
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
         for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++) {
-            if (!isok(x, y) || u_at(x, y))
+            if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
             if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && warning_of(mtmp) && (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
                 void (yield* mfind0(mtmp, 1));
@@ -1859,7 +1859,7 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
     let keep_objs = schar((((which_subset & NHM.TER_OBJ) >>> 0) != 0));
     let keep_mons = schar((((which_subset & NHM.TER_MON) >>> 0) != 0));
     let full = schar((((which_subset & NHM.TER_FULL) >>> 0) != 0));
-    seenv = uchar(((full || (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0) ? cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv) : (cansee(x, y) ? 255 : 0)));
+    seenv = uchar(((full || (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0) ? cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) ? 255 : 0)));
     if (full) {
         cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
         glyph = (yield* back_to_glyph(x, y));
@@ -1870,26 +1870,26 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
         let was_mon = 0;
         levl_glyph = (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 ? cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) : (seenv ? (yield* back_to_glyph(x, y)) : default_glyph);
         glyph = !swallowed ? glyph_at(x, y) : levl_glyph;
-        if (keep_mons && u_at(x, y) && swallowed) {
-            glyph = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : monsndx(cptr.ldPtro(u, $you_ustuck))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
+        if (keep_mons && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && swallowed) {
+            glyph = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
         } else if ((!keep_mons && (((glyph_is_normal_male_monster(glyph) || glyph_is_normal_female_monster(glyph)) || (glyph_is_male_pet(glyph) || glyph_is_female_pet(glyph)) || (glyph_is_ridden_male_monster(glyph) || glyph_is_ridden_female_monster(glyph)) || (glyph_is_detected_male_monster(glyph) || glyph_is_detected_female_monster(glyph))) || glyph_is_warning(glyph))) || glyph_is_swallow(glyph)) {
             glyph = levl_glyph;
             was_mon = 1;
         }
-        if (((!keep_objs && (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) || glyph_is_invisible(glyph)) && keep_traps && !((is_pool(x, y) && !Underwater()) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL))) {
+        if (((!keep_objs && (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) || ((glyph) == NHC.GLYPH_INVIS_OFF)) && keep_traps && !((is_pool(x, y) && !Underwater()) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL) || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL))) {
             if ((t = t_at(x, y)) !== null && (cptr.ldI32o(t, $trap_tseen) & 1) | 0)
-                glyph = (((trap_to_defsym(t)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(t)) <= NHC.S_trwall) ? (((((trap_to_defsym(t)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(t)) < NHC.S_altar) ? (((((trap_to_defsym(t)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(t)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(t)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(t)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(t)) <= NHC.S_goodpos) ? (((((trap_to_defsym(t)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+                glyph = (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
         }
-        if ((!keep_objs && (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) || (!keep_traps && (glyph_is_trap(glyph) || (reg && (glyph_is_cmap(glyph) && ((cmaptmp = glyph_to_cmap(glyph)) == NHC.S_cloud || cmaptmp == NHC.S_poisoncloud))))) || (reg && was_mon) || glyph_is_invisible(glyph)) {
+        if ((!keep_objs && (((glyph) == NHC.GLYPH_OBJ_OFF || ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || glyph_is_normal_piletop_obj(glyph)) || (glyph_is_normal_generic_obj(glyph) || glyph_is_piletop_generic_obj(glyph)) || (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || ((((glyph) >= NHC.GLYPH_BODY_OFF) && ((glyph) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || glyph_is_body_piletop(glyph)))) || (!keep_traps && (glyph_is_trap(glyph) || (reg && (glyph_is_cmap(glyph) && ((cmaptmp = glyph_to_cmap(glyph)) == NHC.S_cloud || cmaptmp == NHC.S_poisoncloud))))) || (reg && was_mon) || ((glyph) == NHC.GLYPH_INVIS_OFF)) {
             if (!seenv) {
                 glyph = !reg ? default_glyph : NHC.GLYPH_UNEXPLORED_OFF;
             } else if (keep_traps && reg && ((glyph_is_cmap(glyph) && ((cmaptmp = glyph_to_cmap(glyph)) == NHC.S_cloud || cmaptmp == NHC.S_poisoncloud)) || was_mon)) {
                 t = t_at(x, y);
-                glyph = (t && (cptr.ldI32o(t, $trap_tseen) & 1) | 0) ? (((trap_to_defsym(t)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((trap_to_defsym(t)) <= NHC.S_trwall) ? (((((trap_to_defsym(t)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((trap_to_defsym(t)) < NHC.S_altar) ? (((((trap_to_defsym(t)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((trap_to_defsym(t)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((trap_to_defsym(t)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((trap_to_defsym(t)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((trap_to_defsym(t)) <= NHC.S_goodpos) ? (((((trap_to_defsym(t)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : cptr.ldI32o(reg, $NhRegion_glyph);
+                glyph = (t && (cptr.ldI32o(t, $trap_tseen) & 1) | 0) ? (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : cptr.ldI32o(reg, $NhRegion_glyph);
             } else if (cptr.ld1so3(svl, x, 21, y, 1, 0) == cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) {
                 glyph = (yield* back_to_glyph(x, y));
             } else {
-                if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE) {
+                if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE) {
                     glyph = (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(mtmp, $monst_mappearance)) <= NHC.S_trwall) ? (((((cptr.ldI32o(mtmp, $monst_mappearance)) - NHC.S_vwall) >>> 0) + ((In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF)))) >>> 0)) >>> 0) : (((cptr.ldI32o(mtmp, $monst_mappearance)) < NHC.S_altar) ? (((((cptr.ldI32o(mtmp, $monst_mappearance)) - NHC.S_ndoor) >>> 0) + NHC.GLYPH_CMAP_A_OFF) >>> 0) : (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_altar) ? ((((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)) >>> 0) : (((cptr.ldI32o(mtmp, $monst_mappearance)) < (((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) >>> 0)) ? (((((cptr.ldI32o(mtmp, $monst_mappearance)) - NHC.S_grave) >>> 0) + NHC.GLYPH_CMAP_B_OFF) >>> 0) : (((cptr.ldI32o(mtmp, $monst_mappearance)) <= NHC.S_goodpos) ? (((((cptr.ldI32o(mtmp, $monst_mappearance)) - NHC.S_digbeam) >>> 0) + NHC.GLYPH_CMAP_C_OFF) >>> 0) : NHC.MAX_GLYPH)))))) | 0;
                 } else {
                     let save_spot = cptr.alloc(36);
@@ -1928,7 +1928,7 @@ export function* reveal_terrain(which_subset) {
         let default_sym = uchar(((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 ? NHC.S_tree : NHC.S_stone));
         if (unconstrain_map())
             (yield* docrt());
-        default_glyph = (((default_sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((default_sym) <= NHC.S_trwall) ? (((((default_sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((default_sym) < NHC.S_altar) ? cmap_a_to_glyph(default_sym) : (((default_sym) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((default_sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(default_sym) : (((default_sym) <= NHC.S_goodpos) ? cmap_c_to_glyph(default_sym) : NHC.MAX_GLYPH))))));
+        default_glyph = (((default_sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((default_sym) <= NHC.S_trwall) ? (((((default_sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((default_sym) < NHC.S_altar) ? (((((default_sym) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((default_sym) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((default_sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((default_sym) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((default_sym) <= NHC.S_goodpos) ? (((((default_sym) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++) {
                 glyph = (yield* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset));

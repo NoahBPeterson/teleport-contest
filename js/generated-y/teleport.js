@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, In_endgame, MON_AT, amorphous, can_teleport, canspotmon, carried, control_teleport, couldsee, distu, dunlev_reached, engulfing_u, haseyes, is_covetous, is_demon, is_hole, is_lord, is_pit, is_prince, is_rider, is_silent, is_swimmer, is_xport, likes_lava, m_next2u, max, min, mon_offmap, passes_walls, throws_rocks, u_at, unique_corpstat } from './nhmacrofn.js';
+import { canspotmon, is_dlord, is_dprince, is_hole, is_pit, is_rider, is_xport, likes_lava, m_next2u, max, min } from './nhmacrofn.js';
 import { Amphibious, Antimagic, Blind, Blinded, ETeleportation, Fire_resistance, Flying, HConfusion, HStun, HTeleportation, Hallucination, Levitation, Passes_walls, Punished, Swimming, Teleport_control, Teleportation, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, sokoban_dnum, start_menu, tutorial_dnum, wizard } from './nhprop.js';
 import { In_W_tower, In_hell, In_mines, In_quest, Is_botlevel, On_W_tower_level, assign_level, depth, dunlevs_in_dungeon, find_hell, get_level, ledger_no, lev_by_name, on_level, print_dungeon, single_level_branch, surface, u_on_newpos } from './dungeon.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gc, gi, go, gs, gu, gv, gy, iflags, svd, svk, svl, svm, svn, svu, u, uarmf, uball, uchain, ynchars, ynqchars } from './decl.js';
@@ -289,17 +289,17 @@ const __sl139 = cptr.lit("u_teleport_mon");
 
 /** C ref: teleport.c:21 — @param {CPtr} mtmp @returns {CInt} */
 function m_blocks_teleporting(mtmp) {
-    if ((is_demon(cptr.ldPtro(mtmp, $monst_data)) && is_lord(cptr.ldPtro(mtmp, $monst_data))) || (is_demon(cptr.ldPtro(mtmp, $monst_data)) && is_prince(cptr.ldPtro(mtmp, $monst_data))))
+    if (is_dlord(cptr.ldPtro(mtmp, $monst_data)) || is_dprince(cptr.ldPtro(mtmp, $monst_data)))
         return 1;
     return 0;
 }
 
 /** C ref: teleport.c:30 — @param {CPtr} mon @returns {CInt} */
 export function* noteleport_level(mon) {
-    if (In_hell(cptr.add(u, $you_uz)) && !((is_demon(cptr.ldPtro(mon, $monst_data)) && is_lord(cptr.ldPtro(mon, $monst_data))) || (is_demon(cptr.ldPtro(mon, $monst_data)) && is_prince(cptr.ldPtro(mon, $monst_data)))))
+    if (In_hell(cptr.add(u, $you_uz)) && !(is_dlord(cptr.ldPtro(mon, $monst_data)) || is_dprince(cptr.ldPtro(mon, $monst_data))))
         if ((yield* get_iter_mons(m_blocks_teleporting)))
             return 1;
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) | 0 && !is_covetous(cptr.ldPtro(mon, $monst_data)))
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) | 0 && !((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)))
         return 1;
     if (cptr.ldI64o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until) >= cptr.ldI64o(svm, $instance_globals_saved_m_moves))
         return 1;
@@ -308,15 +308,15 @@ export function* noteleport_level(mon) {
 
 /** C ref: teleport.c:53 — @param {CInt} x @param {CInt} y @param {CPtr} mptr @returns {CInt} */
 function* goodpos_onscary(x, y, mptr) {
-    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_HUMAN || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL || is_rider(mptr) || unique_corpstat(mptr))
+    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_HUMAN || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL || is_rider(mptr) || ((cptr.ldU16o((mptr), $permonst_geno) & NHM.G_UNIQ) != 0))
         return 0;
     if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE)
         return 1;
     if (sobj_at(NHC.SCR_SCARE_MONSTER, x, y))
         return 1;
-    if (In_hell(cptr.add(u, $you_uz)) || In_endgame(cptr.add(u, $you_uz)))
+    if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return 0;
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_MINOTAUR, 96)) || !haseyes(mptr))
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_MINOTAUR, 96)) || !((cptr.ldU64o((mptr), $permonst_mflags1) & 4096n) == 0n))
         return 0;
     return schar(((yield* sengr_at(__sl0, x, y, 1)) ? 1 : 0));
 }
@@ -332,10 +332,10 @@ export function* goodpos(x, y, mtmp, gpflags) {
     if (!isok(x, y))
         return 0;
     if (!allow_u) {
-        if (u_at(x, y) && !cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) || !(cptr.ldI32o(u, $you_uswallow) & 1)) && (!cptr.ldPtro(u, $you_usteed) || !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))))
+        if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && !cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) || !(cptr.ldI32o(u, $you_uswallow) & 1)) && (!cptr.ldPtro(u, $you_usteed) || !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))))
             return 0;
     }
-    if (MON_AT(x, y) && avoid_monpos)
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && avoid_monpos)
         return 0;
     if (mtmp) {
         let mtmp2 = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
@@ -346,7 +346,7 @@ export function* goodpos(x, y, mtmp, gpflags) {
             if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
                 return schar((Swimming() || Amphibious() || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && (Levitation() || Flying() || ((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))) ? 1 : 0));
             else
-                return schar((is_swimmer(mdat) || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && m_in_air(mtmp)) ? 1 : 0));
+                return schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 2n) != 0n) || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && m_in_air(mtmp)) ? 1 : 0));
         } else if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 148, __sl2), rn2(13)) : rn2(13)) && !ignorewater) {
             return 0;
         } else if (is_lava(x, y) && !ignorelava) {
@@ -357,9 +357,9 @@ export function* goodpos(x, y, mtmp, gpflags) {
             else
                 return schar((m_in_air(mtmp) || likes_lava(mdat) ? 1 : 0));
         }
-        if (passes_walls(mdat) && may_passwall(x, y))
+        if (((cptr.ldU64o((mdat), $permonst_mflags1) & 8n) != 0n) && may_passwall(x, y))
             return 1;
-        if (amorphous(mdat) && closed_door(x, y))
+        if (((cptr.ldU64o((mdat), $permonst_mflags1) & 4n) != 0n) && closed_door(x, y))
             return 1;
         if (checkscary && (cptr.ldI32o(mtmp, $monst_m_id) ? (yield* onscary(x, y, mtmp)) : (yield* goodpos_onscary(x, y, mdat))))
             return 0;
@@ -368,7 +368,7 @@ export function* goodpos(x, y, mtmp, gpflags) {
         if (!(is_pool(x, y) && ignorewater) && !(is_lava(x, y) && ignorelava))
             return 0;
     }
-    if (sobj_at(NHC.BOULDER, x, y) && (!mdat || !throws_rocks(mdat)))
+    if (sobj_at(NHC.BOULDER, x, y) && (!mdat || !((cptr.ldU64o((mdat), $permonst_mflags2) & 134217728n) != 0n)))
         return 0;
     if (avoid_monpos && is_exclusion_zone(NHC.LR_MONGEN, x, y))
         return 0;
@@ -486,7 +486,7 @@ export function* teleds(nux, nuy, teleds_flags) {
     if (!ball_active || near_capacity() > NHC.SLT_ENCUMBER || distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), nux, nuy) > 1)
         allow_drag = 0;
     if (ball_active) {
-        if (!carried(uball.v) && distmin(nux, nuy, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2)
+        if (!(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && distmin(nux, nuy, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2)
             ball_still_in_range = 1;
         else if (!allow_drag)
             (yield* unplacebc());
@@ -727,7 +727,7 @@ export function* tele_to_rnd_pet() {
         return;
     }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-        if (!DEADMONSTER(mtmp) && cptr.ld1so(mtmp, $monst_mtame) && !mon_offmap(mtmp)) {
+        if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI64o((mtmp), $monst_mstate) != 0n)) {
             cnt++;
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 828, __sl16), rn2(cnt)) : rn2(cnt)))
                 pet = mtmp;
@@ -904,7 +904,7 @@ export function* dotele(break_the_rules) {
     if (!trap && !break_the_rules) {
         let castit = 0;
         let energy = 0;
-        if (!Teleportation() || (cptr.ldI32o(u, $you_ulevel) < ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 8 : 12) && !can_teleport(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+        if (!Teleportation() || (cptr.ldI32o(u, $you_ulevel) < ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 8 : 12) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 33554432n) != 0n))) {
             let knownsp = known_spell(NHC.SPE_TELEPORT_AWAY);
             castit = schar((knownsp >= NHC.spe_Fresh && !HConfusion() ? 1 : 0));
             if (!castit && !break_the_rules) {
@@ -979,7 +979,7 @@ export function* level_tele() {
             (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
             return;
         }
-        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || In_endgame(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())) && !wizard()) {
+        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())) && !wizard()) {
             (yield* You_feel(__sl49));
             return;
         }
@@ -1061,7 +1061,7 @@ export function* level_tele() {
             return;
         cptr.stI16(newlevel, destdnum.v);
         cptr.stI16o(newlevel, $d_level_dlevel, i16(destlev.v));
-        if (In_endgame(newlevel) && !In_endgame(cptr.add(u, $you_uz))) {
+        if ((cptr.ldI16((newlevel)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
             if (!(cptr.ldI32o(u, $you_uhave) & 1) && (amu = (yield* mksobj(NHC.AMULET_OF_YENDOR, 1, 0))) !== null) {
                 amu = (yield* addinv(amu));
                 (yield* prinv(__sl57, amu, 0n));
@@ -1096,7 +1096,7 @@ export function* level_tele() {
         case 24: {
         if ((yield* yn_function(__sl58, cptr.decay(ynqchars), 113, 1)) != 121)
             return;
-        (yield* You(__sl59, is_silent(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl60 : __sl61));
+        (yield* You(__sl59, (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT) ? __sl60 : __sl61));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* You(__sl62));
         if (cptr.ldPtro(gi, $instance_globals_i_invent))
@@ -1138,7 +1138,7 @@ export function* level_tele() {
             (yield* You(__sl14, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
             return;
         }
-        if (In_endgame(cptr.add(u, $you_uz))) {
+        if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
             llimit = dunlevs_in_dungeon(cptr.add(u, $you_uz));
             if (newlev >= 0 || newlev <= -llimit) {
                 (yield* You_cant(cptr.decay(__static_level_tele_get_there_from), __sl69));
@@ -1244,7 +1244,7 @@ export function* domagicportal(ttmp) {
     if (!on_level(cptr.add(u, $you_uz), cptr.add(u, $you_uz0)))
         return;
     (yield* You(__sl84));
-    if (In_endgame(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uhave) & 1)) {
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(cptr.ldI32o(u, $you_uhave) & 1)) {
         (yield* You_feel(__sl85));
         return;
     }
@@ -1267,7 +1267,7 @@ export function* tele_trap(trap) {
     if (__static_tele_trap_in_tele_trap)
         return;
     __static_tele_trap_in_tele_trap = 1;
-    if (In_endgame(cptr.add(u, $you_uz)) || Antimagic() || (yield* noteleport_level(cptr.add(gy, $instance_globals_y_youmonst)))) {
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || Antimagic() || (yield* noteleport_level(cptr.add(gy, $instance_globals_y_youmonst)))) {
         if (Antimagic())
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         (yield* You_feel(__sl89));
@@ -1310,7 +1310,7 @@ export function* level_tele_trap(trap, trflags) {
     if (Antimagic() && !intentional) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     }
-    if ((Antimagic() && !intentional) || In_endgame(cptr.add(u, $you_uz))) {
+    if ((Antimagic() && !intentional) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
         (yield* You_feel(__sl89));
         return;
     }
@@ -1368,7 +1368,7 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
         return;
     if (oldx) {
         if (domsg && canspotmon(mtmp)) {
-            if (couldsee(x, y) || sensemon(mtmp)) {
+            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || sensemon(mtmp)) {
                 telemsg = 1;
             } else {
                 (yield* pline(__sl99, (yield* Monnam(mtmp))));
@@ -1400,7 +1400,7 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
     (yield* newsym(x, y));
     set_apparxy(mtmp);
     if (domsg && (canspotmon(mtmp) || appearmsg || cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
-        let du = distu(x, y);
+        let du = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         let olddu;
         let next = (du <= 2) ? __sl100 : null;
         let nearu = (du <= 64) ? __sl101 : null;
@@ -1408,8 +1408,8 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071562067967n);
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && !((cptr.ldI16o(u, $you_ux0)) == cptr.ldI16(u) && (cptr.ldI16o(u, $you_uy0)) == cptr.ldI16o(u, $you_uy))) {
             (yield* You(__sl102, (yield* mon_nam(mtmp))));
-        } else if (telemsg && (couldsee(x, y) || sensemon(mtmp))) {
-            (yield* pline(__sl103, (yield* Monnam(mtmp)), next ? next : (nearu ? nearu : (((olddu = distu(oldx, oldy)) == du) ? __sl68 : ((du < olddu) ? __sl104 : __sl105)))));
+        } else if (telemsg && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || sensemon(mtmp))) {
+            (yield* pline(__sl103, (yield* Monnam(mtmp)), next ? next : (nearu ? nearu : (((olddu = dist2((oldx), (oldy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) == du) ? __sl68 : ((du < olddu) ? __sl104 : __sl105)))));
         } else {
             (yield* pline(__sl106, appearmsg ? (yield* Amonnam(mtmp)) : (yield* Monnam(mtmp)), appearmsg ? __sl107 : __sl68, !Blind() ? __sl108 : __sl109, next ? next : (nearu ? nearu : __sl68)));
         }
@@ -1498,7 +1498,7 @@ export function* rloc(mtmp, rlocflags) {
                 break __lbl_found_xy;
         }
         cc_flags = 11;
-        if (!passes_walls(cptr.ldPtro(mtmp, $monst_data)))
+        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n))
             cc_flags |= NHM.CC_SKIP_INACCS;
         candycount = (yield* collect_coords(candy, 40, 10, 0, cc_flags, null));
         cptr.stI16(backupcc, cptr.stI16o(backupcc, $nhcoord_y, 0));
@@ -1616,7 +1616,7 @@ export function* mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
                 void clamp_hole_destination(tolevel);
             }
         } else if (tt == NHC.MAGIC_PORTAL) {
-            if (In_endgame(cptr.add(u, $you_uz)) && (mon_has_amulet(mtmp) || is_home_elemental(cptr.ldPtro(mtmp, $monst_data)) || (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2036, __sl124), rn2(7)) : rn2(7)))) {
+            if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && (mon_has_amulet(mtmp) || is_home_elemental(cptr.ldPtro(mtmp, $monst_data)) || (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2036, __sl124), rn2(7)) : rn2(7)))) {
                 if (in_sight && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_ELEMENTAL) {
                     (yield* pline_mon(mtmp, __sl125, (yield* Monnam(mtmp))));
                     (yield* seetrap(trap));
@@ -1628,7 +1628,7 @@ export function* mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
             }
         } else if (tt == NHC.LEVEL_TELEP || tt == NHC.NO_TRAP) {
             let nlev;
-            if (mon_has_amulet(mtmp) || In_endgame(cptr.add(u, $you_uz)) || (tt == NHC.NO_TRAP && (yield* onscary(0, 0, mtmp)))) {
+            if (mon_has_amulet(mtmp) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (tt == NHC.NO_TRAP && (yield* onscary(0, 0, mtmp)))) {
                 if (in_sight)
                     (yield* pline_mon(mtmp, __sl126, (yield* Monnam(mtmp))));
                 return NHC.Trap_Effect_Finished;
@@ -1653,7 +1653,7 @@ export function* mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
             if (trap)
                 (yield* seetrap(trap));
         }
-        if (is_xport(tt) && !control_teleport(cptr.ldPtro(mtmp, $monst_data)))
+        if (is_xport(tt) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 67108864n) != 0n))
             cptr.stI32o(mtmp, $monst_mconf, 1);
         (yield* migrate_to_level(mtmp, ledger_no(tolevel), i16(migrate_typ), null));
         return NHC.Trap_Moved_Mon;
@@ -1720,12 +1720,12 @@ export function random_teleport_level() {
     let max_depth;
     let min_depth;
     let cur_depth = depth(cptr.add(u, $you_uz));
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2196, __sl135), rn2(5)) : rn2(5)) || single_level_branch(cptr.add(u, $you_uz)) || In_endgame(cptr.add(u, $you_uz)))
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 2196, __sl135), rn2(5)) : rn2(5)) || single_level_branch(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return cur_depth;
     if (In_quest(cptr.add(u, $you_uz))) {
         let bottom = dunlevs_in_dungeon(cptr.add(u, $you_uz));
         let qlocate_depth = cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel);
-        if (dunlev_reached(cptr.add(u, $you_uz)) < qlocate_depth)
+        if ((cptr.ldI16o2(svd, cptr.ldI16((cptr.add(u, $you_uz))), 112, $dungeon_dunlev_ureached)) < qlocate_depth)
             bottom = qlocate_depth;
         min_depth = cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start);
         max_depth = (bottom + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start) - 1) | 0)) | 0;
@@ -1765,13 +1765,13 @@ export function* u_teleport_mon(mtmp, give_feedback) {
         if (give_feedback)
             (yield* pline(__sl137, (yield* Monnam(mtmp))));
         return 0;
-    } else if (engulfing_u(mtmp) && (yield* noteleport_level(mtmp))) {
+    } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && (yield* noteleport_level(mtmp))) {
         if (give_feedback)
             (yield* You(__sl138, (yield* mon_nam(mtmp))));
         (yield* unstuck(mtmp));
         if (!(yield* rloc(mtmp, NHM.RLOC_MSG)))
             (yield* m_into_limbo(mtmp));
-    } else if ((is_rider(cptr.ldPtro(mtmp, $monst_data)) || control_teleport(cptr.ldPtro(mtmp, $monst_data))) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2285, __sl139), rn2(13)) : rn2(13)) && (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(mtmp, $monst_data)))) {
+    } else if ((is_rider(cptr.ldPtro(mtmp, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 67108864n) != 0n)) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 2285, __sl139), rn2(13)) : rn2(13)) && (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(mtmp, $monst_data)))) {
         (yield* rloc_to(mtmp, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
     } else {
         if (!(yield* rloc(mtmp, NHM.RLOC_MSG)))

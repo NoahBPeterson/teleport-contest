@@ -7,7 +7,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { release_data, update_file } from './nhmacrofn.js';
 import { u, uleft, uright } from './decl.js';
 import { distmin } from './hacklib.js';
 import { sfi_int, sfi_nhcoord, sfo_int, sfo_nhcoord } from './sfbase.js';
@@ -81,7 +80,7 @@ export function hastrack(x, y) {
 
 /** C ref: track.c:76 — @param {CPtr} nhfp */
 export function save_track(nhfp) {
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         let i;
         sfo_int(nhfp, utcnt, __sl0);
         sfo_int(nhfp, utpnt, __sl1);
@@ -89,7 +88,7 @@ export function save_track(nhfp) {
             sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2);
         }
     }
-    if (release_data(nhfp))
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
         initrack();
 }
 

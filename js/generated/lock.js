@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_DOOR, Is_box, M_AP_TYPE, OBJ_AT, any_quest_artifact, breathless, cansee, canspotmon, carried, distu, greatest_erosion, haseyes, is_blade, is_pick, is_weptool, nohands, u_at, verysmall } from './nhmacrofn.js';
+import { Is_box, canspotmon, greatest_erosion, is_blade, is_door_mappear, is_pick, is_weptool } from './nhmacrofn.js';
 import { BBlinded, Blind, Deaf, HBlinded, HConfusion, HStun, Levitation, Passes_walls, Protection_from_shape_changers, Underwater } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gu, gv, gx, gy, svc, svd, svl, svm, u, uwep, ynchars, ynqchars } from './decl.js';
 import { There, You, You_cant, You_hear, impossible, pline, pline_The, set_msg_xy, verbalize } from './pline.js';
@@ -300,7 +300,7 @@ function picklock() {
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
     }
-    if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         You(__sl7, lock_action());
         exercise(NHC.A_DEX, 1);
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
@@ -406,7 +406,7 @@ export function breakchestlock(box, destroyit) {
 function forcelock() {
     if ((cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_oy) != cptr.ldI16o(u, $you_uy)))
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
-    if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || !uwep.v || nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || !uwep.v || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         You(__sl23);
         if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) >= 50)
             exercise((cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) ? NHC.A_DEX : NHC.A_STR, 1);
@@ -441,7 +441,7 @@ export function reset_pick() {
 
 /** C ref: lock.c:269 — @param {CPtr} container */
 export function maybe_reset_pick(container) {
-    if (container ? (cptr.eq(container, cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box))) : (!cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) || !carried(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box)) ? 1 : 0))
+    if (container ? (cptr.eq(container, cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box))) : (!cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) || !(cptr.ld1so((cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box)), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0))
         reset_pick();
 }
 
@@ -457,7 +457,7 @@ export function autokey(opening) {
     key = (pick = (card = null));
     akey = (apick = (acard = null));
     for (o = cptr.ldPtro(gi, $instance_globals_i_invent); o; o = cptr.ldPtr(o)) {
-        if (any_quest_artifact(o) && !is_quest_artifact(o)) {
+        if ((cptr.ld1so((o), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) && !is_quest_artifact(o)) {
             switch (cptr.ldI16o(o, $obj_otyp)) {
                 case NHC.SKELETON_KEY:
                 if (!akey)
@@ -523,7 +523,7 @@ export function pick_lock(pick, rx, ry, container) {
     }
     picktyp = cptr.ldI16o(pick, $obj_otyp);
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) && picktyp == cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
             let what = (picktyp == NHC.LOCK_PICK) ? __sl29 : __sl30;
             if (picktyp == NHC.CREDIT_CARD)
                 what = __sl31;
@@ -542,7 +542,7 @@ export function pick_lock(pick, rx, ry, container) {
             return 1;
         }
     }
-    if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         You_cant(__sl36, doname(pick));
         return 0;
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -660,7 +660,7 @@ export function pick_lock(pick, rx, ry, container) {
         }
         door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), 756), cptr.ldI16o(cc, $nhcoord_y), 36);
         mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-        if (mtmp && canseemon(mtmp) && M_AP_TYPE(mtmp) != NHC.M_AP_FURNITURE && M_AP_TYPE(mtmp) != NHC.M_AP_OBJECT) {
+        if (mtmp && canseemon(mtmp) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT) {
             if (picktyp == NHC.CREDIT_CARD && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)))) {
                 ;
                 verbalize(__sl63);
@@ -668,12 +668,12 @@ export function pick_lock(pick, rx, ry, container) {
                 pline(__sl64, mon_nam(mtmp));
             }
             return -1;
-        } else if (mtmp && (M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_vcdoor))) {
+        } else if (mtmp && is_door_mappear(mtmp)) {
             stumble_onto_mimic(mtmp);
             maybe_absorb_item(mtmp, pick, 50, 10);
             return -1;
         }
-        if (!IS_DOOR(cptr.ld1so(door, $rm_typ))) {
+        if (!((cptr.ld1so(door, $rm_typ)) == NHC.DOOR)) {
             let res = 0;
             let oldglyph = cptr.ldI32(door);
             let oldlastseentyp = schar(update_mapseen_for(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
@@ -808,7 +808,7 @@ export function doforce() {
 /** C ref: lock.c:759 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function stumble_on_door_mimic(x, y) {
     let mtmp;
-    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mtmp), $monst_mappearance) == NHC.S_vcdoor)) && !Protection_from_shape_changers()) {
+    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && is_door_mappear(mtmp) && !Protection_from_shape_changers()) {
         stumble_onto_mimic(mtmp);
         return 1;
     }
@@ -827,7 +827,7 @@ export function doopen_indir(x, y) {
     let portcullis;
     let dirprompt;
     let res = NHM.ECMD_OK;
-    if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         You_cant(__sl92);
         return NHM.ECMD_OK;
     }
@@ -859,7 +859,7 @@ export function doopen_indir(x, y) {
         if (cptr.ldI32(door) != oldglyph || cptr.ld1so3(svl, cptr.ldI16(cc), 21, cptr.ldI16o(cc, $nhcoord_y), 1, 0) != oldlastseentyp)
             res = NHM.ECMD_TIME;
     }
-    if (portcullis || !IS_DOOR(cptr.ld1so(door, $rm_typ))) {
+    if (portcullis || !((cptr.ld1so(door, $rm_typ)) == NHC.DOOR)) {
         if (is_db_wall(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_UP)
             There(__sl94);
         else if (portcullis || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_DOWN)
@@ -903,7 +903,7 @@ export function doopen_indir(x, y) {
         }
         return res;
     }
-    if (verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL)) {
         pline(__sl105);
         return res;
     }
@@ -930,8 +930,8 @@ export function doopen_indir(x, y) {
 /** C ref: lock.c:926 — @param {CInt} x @param {CInt} y @param {CInt} quietly @returns {CInt} */
 function obstructed(x, y, quietly) {
     let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-    if (mtmp && M_AP_TYPE(mtmp) != NHC.M_AP_FURNITURE) {
-        if (M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT)
+    if (mtmp && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE) {
+        if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT)
             {
                 if (!quietly)
                     pline(__sl109, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
@@ -947,7 +947,7 @@ function obstructed(x, y, quietly) {
             map_invisible(x, y);
         return 1;
     }
-    if (OBJ_AT(x, y)) {
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
         if (!quietly)
             pline(__sl109, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
         return 1;
@@ -962,7 +962,7 @@ export function doclose() {
     let door;
     let portcullis;
     let res = NHM.ECMD_OK;
-    if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         You_cant(__sl112);
         return NHM.ECMD_OK;
     }
@@ -974,7 +974,7 @@ export function doclose() {
         return NHM.ECMD_CANCEL;
     x = i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0));
     y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0));
-    if (u_at(x, y) && !Passes_walls()) {
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && !Passes_walls()) {
         You(__sl113);
         return NHM.ECMD_TIME;
     }
@@ -996,7 +996,7 @@ export function doclose() {
         if (cptr.ldI32(door) != oldglyph || cptr.ld1so3(svl, x, 21, y, 1, 0) != oldlastseentyp)
             res = NHM.ECMD_TIME;
     }
-    if (portcullis || !IS_DOOR(cptr.ld1so(door, $rm_typ))) {
+    if (portcullis || !((cptr.ld1so(door, $rm_typ)) == NHC.DOOR)) {
         if (is_db_wall(x, y) || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_UP)
             pline_The(__sl114);
         else if (portcullis || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_DOWN)
@@ -1019,7 +1019,7 @@ export function doclose() {
         return res;
     }
     if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) == NHM.D_ISOPEN) {
-        if (verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !cptr.ldPtro(u, $you_usteed)) {
+        if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !cptr.ldPtro(u, $you_usteed)) {
             pline(__sl117);
             return res;
         }
@@ -1095,7 +1095,7 @@ export function doorlock(otmp, x, y) {
             cptr.st1o(door, $rm_typ, NHC.DOOR);
             cptr.stI32o(door, $rm_flags, (NHM.D_CLOSED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0);
             newsym(x, y);
-            if (cansee(x, y))
+            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                 pline(__sl124);
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_OPENING || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_KNOCK)
                 return 1;
@@ -1110,7 +1110,7 @@ export function doorlock(otmp, x, y) {
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
-            let vis = schar(cansee(x, y));
+            let vis = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0));
             if (vis) {
                 pline(__sl125, dustcloud);
             } else {
@@ -1171,11 +1171,11 @@ export function doorlock(otmp, x, y) {
             let seeit;
             if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
                 let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-                sawit = schar((mtmp ? canseemon(mtmp) : cansee(x, y)));
+                sawit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)));
                 cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
                 unblock_point(x, y);
                 newsym(x, y);
-                seeit = schar((mtmp ? canseemon(mtmp) : cansee(x, y)));
+                seeit = schar((mtmp ? canseemon(mtmp) : ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)));
                 if (mtmp) {
                     void mb_trapped(mtmp, schar((sawit || seeit ? 1 : 0)));
                 } else {
@@ -1186,16 +1186,16 @@ export function doorlock(otmp, x, y) {
                             pline(__sl135);
                         } else if (!Deaf()) {
                             ;
-                            You_hear(__sl136, (distu(x, y) > 49) ? __sl137 : __sl138);
+                            You_hear(__sl136, (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 49) ? __sl137 : __sl138);
                         }
                     }
                 }
                 break;
             }
-            sawit = schar(cansee(x, y));
+            sawit = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0));
             cptr.stI32o(door, $rm_flags, NHM.D_BROKEN);
             recalc_block_point(x, y);
-            seeit = schar(cansee(x, y));
+            seeit = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0));
             newsym(x, y);
             if (cptr.ld1so(flags, $flag_verbose)) {
                 if ((sawit || seeit) && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
@@ -1215,7 +1215,7 @@ export function doorlock(otmp, x, y) {
         impossible(__sl141, cptr.ldI16o(otmp, $obj_otyp));
         break;
     }
-    if (msg && cansee(x, y))
+    if (msg && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
         pline(__sl142, msg);
     if (loudness > 0) {
         wake_nearto(x, y, loudness);
@@ -1237,7 +1237,7 @@ function chest_shatter_msg(otmp) {
     let save_BBlinded;
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
         You(__sl143, Blind() ? __sl144 : __sl67, an(bottlename()));
-        if (!breathless(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+        if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
             potionbreathe(otmp);
         return;
     }

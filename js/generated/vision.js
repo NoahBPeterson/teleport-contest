@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_DOOR, IS_OBSTRUCTED, IS_WALL, IS_WATERWALL, M_AP_TYPE, cansee, couldsee, max, min } from './nhmacrofn.js';
+import { IS_WALL, is_lightblocker_mappear, max, min } from './nhmacrofn.js';
 import { Blind, Detect_monsters, See_invisible, Warn_of_mon, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gi, gs, gv, iflags, program_state, svc, svd, svl, svr, u } from './decl.js';
@@ -287,16 +287,16 @@ export function does_block(x, y, lev) {
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 0) {
         cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && debugcore(__sl0, 0)) ? 1 : -1);
     }
-    if (IS_OBSTRUCTED(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.TREE || (IS_DOOR(cptr.ld1so(lev, $rm_typ)) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28)))
+    if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || cptr.ld1so(lev, $rm_typ) == NHC.TREE || (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28)))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
-        if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD || IS_WATERWALL(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL || (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && is_moat(i16(x), i16(y))))
+        if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD || ((cptr.ld1so(lev, $rm_typ)) == NHC.WATER) || cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL || (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && is_moat(i16(x), i16(y))))
             return 1;
     }
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v))
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
             return 1;
-    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && ((M_AP_TYPE(mon) == NHC.M_AP_OBJECT && cptr.ldI32o((mon), $monst_mappearance) == NHC.BOULDER) || (M_AP_TYPE(mon) == NHC.M_AP_FURNITURE && (cptr.ldI32o((mon), $monst_mappearance) == NHC.S_hcdoor || cptr.ldI32o((mon), $monst_mappearance) == NHC.S_vcdoor || cptr.ldI32o((mon), $monst_mappearance) < NHC.S_ndoor || cptr.ldI32o((mon), $monst_mappearance) == NHC.S_tree))))
+    if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && is_lightblocker_mappear(mon))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
         if (visible_region_at(i16(x), i16(y)))
@@ -323,7 +323,7 @@ export function vision_reset() {
         block = 1;
         lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), 1, 756), y, 36);
         for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 36))
-            if (block != (IS_OBSTRUCTED(cptr.ld1so(lev, $rm_typ)) || does_block(x, y, lev) ? 1 : 0)) {
+            if (block != (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || does_block(x, y, lev) ? 1 : 0)) {
                 if (block) {
                     for (i = dig_left; i < x; i++) {
                         cptr.stI16o(cptr.decay(left_ptrs[y]), i, i16(dig_left), 2);
@@ -570,7 +570,7 @@ export function vision_recalc(control) {
                         if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, $rm_seenv))
                             newsym(i16(col), i16(row));
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && ((cptr.ldI32o(lev, $rm_lit) & 1) | 0 || (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT))) {
-                        if ((IS_DOOR(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ))) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
+                        if ((((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ))) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
                             flev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (col + dx) | 0, 756), (row + dy) | 0, 36);
@@ -1698,7 +1698,7 @@ export function do_clear_area(scol, srow, range, func, arg) {
             if ((max_x = ((scol + offset) | 0)) >= NHM.COLNO)
                 max_x = 79;
             for (x = min_x; x <= max_x; x++)
-                if (couldsee(x, y) || override_vision)
+                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || override_vision)
                     (func)(i16(x), i16(y), arg);
         }
     }
@@ -1709,7 +1709,7 @@ export function howmonseen(mon) {
     let useemon = schar(canseemon(mon));
     let xraydist = (cptr.ldI32o(u, $you_xray_range) < 0) ? -1 : (Math.imul(cptr.ldI32o(u, $you_xray_range), cptr.ldI32o(u, $you_xray_range)));
     let how_seen = 0;
-    if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (cansee(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)) && couldsee(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)) ? 1 : 0)) && mon_visible(mon) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
+    if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0) ? 1 : 0)) && mon_visible(mon) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
         how_seen |= NHM.MONSEEN_NORMAL;
     if (useemon && (cptr.ldI32o(mon, $monst_minvis) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;

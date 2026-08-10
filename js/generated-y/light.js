@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, Is_candle, canspotmon, ignitable, release_data, update_file } from './nhmacrofn.js';
+import { Is_candle, canspotmon, ignitable } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
@@ -280,7 +280,7 @@ export function* show_transient_light(obj, x, y) {
     (yield* flush_screen(0));
     radius_squared = Math.imul(cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_range));
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if (DEADMONSTER(mon) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
+        if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <= radius_squared) {
             if (canseemon(mon))
@@ -302,7 +302,7 @@ export function* transient_light_cleanup() {
         (yield* vision_recalc(0));
     mtempcount = 0;
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if (DEADMONSTER(mon))
+        if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
         if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
             cptr.stI32o(mon, $monst_mtemplit, 0);
@@ -333,7 +333,7 @@ export function find_mid(nid, fmflags) {
         return cptr.add(gy, $instance_globals_y_youmonst);
     if ((fmflags & NHM.FM_FMON) >>> 0)
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-            if (!DEADMONSTER(mtmp) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
+            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -375,14 +375,14 @@ export function* save_light_sources(nhfp, range) {
     let curr;
     (yield* discard_flashes());
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         count.v = (yield* maybe_write_ls(nhfp, range, 0));
         (yield* sfo_int(nhfp, count, __sl16));
         actual = (yield* maybe_write_ls(nhfp, range, 1));
         if (actual != count.v)
             (yield* panic(__sl17, count.v, actual, range));
     }
-    if (release_data(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (prev = cptr.add(gl, $instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
             if (!cptr.ldPtro(curr, $light_source_id)) {
                 (yield* impossible(__sl18, range));
@@ -546,7 +546,7 @@ function* write_ls(nhfp, ls) {
                     cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
                     cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
                     if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id), monloc), mtmp)) {
-                        (yield* impossible(__sl31, DEADMONSTER(mtmp) ? __sl32 : __sl33, cptr.ldI32o(ls, $light_source_id)));
+                        (yield* impossible(__sl31, (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? __sl32 : __sl33, cptr.ldI32o(ls, $light_source_id)));
                         cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                     }
                 } else {

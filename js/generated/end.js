@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, In_endgame, Is_container, M_AP_TYPE, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min, release_data, type_is_pname, update_file } from './nhmacrofn.js';
+import { Is_container, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min } from './nhmacrofn.js';
 import { Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr, raw_print, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg, gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uchain, urealtime, ynchars, ynqchars } from './decl.js';
 import { dump_close_log, dump_forward_putstr, dump_open_log, windowprocs } from './windows.js';
@@ -415,14 +415,14 @@ export function done_in_by(mtmp, how) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
     let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
     let distorted = schar((Hallucination() && canspotmon(mtmp) ? 1 : 0));
-    let mimicker = schar((M_AP_TYPE(mtmp) == NHC.M_AP_MONSTER));
+    let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
     You((how == NHC.STONING) ? __sl30 : __sl31);
     mark_synch()();
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
     if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !(imitator && !mimicker) && !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
-        if (!type_is_pname(mptr))
+        if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcat(cptr.decay(buf), __sl32);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
@@ -446,7 +446,7 @@ export function done_in_by(mtmp, how) {
         } else if (alt && strstri(realnm, __sl35) && !strcmp(fakenm, __sl36)) {
             fakenm = __sl37;
         }
-        if (alt || type_is_pname(mptr))
+        if (alt || ((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcpy(cptr.decay(shape), fakenm);
         else if (the_unique_pm(mptr))
             void cptr.sprintf(cptr.decay(shape), __sl38, fakenm);
@@ -723,7 +723,7 @@ function get_valuables(list) {
     let obj;
     let i;
     for (obj = list; obj; obj = cptr.ldPtr(obj))
-        if (Has_contents(obj)) {
+        if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
             get_valuables(cptr.ldPtro(obj, $obj_cobj));
         } else if (cptr.ld1so(obj, $obj_oartifact)) {
             continue;
@@ -809,7 +809,7 @@ function artifact_score(list, counting, endwin) {
                 putstr()(endwin, 0, cptr.decay(pbuf));
             }
         }
-        if (Has_contents(otmp))
+        if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
             artifact_score(cptr.ldPtro(otmp, $obj_cobj), counting, endwin);
     }
 }
@@ -1176,7 +1176,7 @@ function really_done(how) {
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
                 where = __sl123;
             void cptr.sprintf(cptr.decay(pbuf), __sl124, cptr.ldPtro(ends, how, 8), where);
-            if (!In_endgame(cptr.add(u, $you_uz)) && !single_level_branch(cptr.add(u, $you_uz)))
+            if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !single_level_branch(cptr.add(u, $you_uz)))
                 void cptr.sprintf(eos(cptr.decay(pbuf)), __sl125, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
         }
         void cptr.sprintf(eos(cptr.decay(pbuf)), __sl126, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __sl44 : __sl118));
@@ -1337,12 +1337,12 @@ export function dealloc_killer(kptr) {
 /** C ref: end.c:1774 — @param {CPtr} nhfp */
 export function save_killers(nhfp) {
     let kptr;
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         for (kptr = svk; kptr; kptr = cptr.ldPtr(kptr)) {
             sfo_kinfo(nhfp, kptr, __sl134);
         }
     }
-    if (release_data(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         while (cptr.ldPtr(svk)) {
             kptr = cptr.ldPtr(cptr.ldPtr(svk));
             cptr.free(cptr.ldPtr(svk));

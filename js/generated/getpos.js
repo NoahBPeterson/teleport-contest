@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { cansee, glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_unexplored, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water, u_at } from './nhmacrofn.js';
+import { glyph_is_body_piletop, glyph_is_cmap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water } from './nhmacrofn.js';
 import { clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
 import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
@@ -490,7 +490,7 @@ function known_vibrating_square_at(x, y) {
 export function gather_locs_interesting(x, y, gloc) {
     let glyph;
     let sym;
-    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW && !cansee(x, y))
+    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
         return 0;
     if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))))
         return 0;
@@ -505,14 +505,14 @@ export function gather_locs_interesting(x, y, gloc) {
         case NHC.GLOC_DOOR:
         return schar((glyph_is_cmap(glyph) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor) ? 1 : 0));
         case NHC.GLOC_EXPLORE:
-        return schar((glyph_is_cmap(glyph) && !glyph_is_nothing(glyph_to_cmap(glyph)) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
         case NHC.GLOC_VALID:
         if (getpos_getvalid)
             return (getpos_getvalid)(x, y);
         // @FallThrough
         ;
         case NHC.GLOC_INTERESTING:
-        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !((glyph_is_cmap(glyph) && (is_cmap_wall(sym) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || is_cmap_lava(sym) || is_cmap_water(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym))) || glyph_is_nothing(glyph) || glyph_is_unexplored(glyph)) || known_vibrating_square_at(x, y) ? 1 : 0));
+        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !((glyph_is_cmap(glyph) && (is_cmap_wall(sym) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || is_cmap_lava(sym) || is_cmap_water(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym))) || ((glyph) == NHC.GLYPH_NOTHING_OFF) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || known_vibrating_square_at(x, y) ? 1 : 0));
     }
     return 0;
 }
@@ -528,7 +528,7 @@ function gather_locs(arr_p, cnt_p, gloc) {
     for (pass = 0; pass < 2; pass++) {
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++) {
-                if (u_at(x, y) || gather_locs_interesting(x, y, gloc)) {
+                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || gather_locs_interesting(x, y, gloc)) {
                     if (!pass) {
                         cptr.stI32(cnt_p, cptr.ldI32(cnt_p) + 1);
                     } else {

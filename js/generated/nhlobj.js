@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, Is_container, has_oname, is_poisonable, timer_is_obj } from './nhmacrofn.js';
+import { Is_container, has_oname, is_poisonable, timer_is_obj } from './nhmacrofn.js';
 import { luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_setfuncs } from './lauxlib.js';
 import { nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error, nhl_get_timertype } from './nhlua.js';
 import { add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight } from './mkobj.js';
@@ -192,7 +192,7 @@ function l_obj_gc(L) {
         if (cptr.ldI32o(obj, $obj_lua_ref_cnt) > 0)
             (cptr.stI32o(obj, $obj_lua_ref_cnt, cptr.ldI32o(obj, $obj_lua_ref_cnt) + -1)) - (-1);
         if (!cptr.ldI32o(obj, $obj_lua_ref_cnt) && (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FREE || cptr.ld1so(obj, $obj_where) == NHM.OBJ_LUAFREE)) {
-            if (Has_contents(obj)) {
+            if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
                 while ((otmp = cptr.ldPtro(obj, $obj_cobj)) !== null) {
                     obj_extract_self(otmp);
                     dealloc_obj(otmp);
@@ -332,7 +332,7 @@ function l_obj_to_table(L) {
         nhl_add_table_entry_int(L, __sl29, 1n);
         return 1;
     }
-    nhl_add_table_entry_int(L, __sl30, BigInt(Has_contents(obj)));
+    nhl_add_table_entry_int(L, __sl30, BigInt((cptr.ldPtro((obj), $obj_cobj) !== null)));
     nhl_add_table_entry_int(L, __sl31, BigInt(Is_container(obj)));
     nhl_add_table_entry_int(L, __sl32, BigInt(cptr.ldI32o(obj, $obj_o_id) >>> 0));
     nhl_add_table_entry_int(L, __sl33, BigInt(cptr.ldI16o(obj, $obj_ox)));

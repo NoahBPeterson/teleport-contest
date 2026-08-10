@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, DIR_180, IS_DOOR, IS_STWALL, In_endgame } from './nhmacrofn.js';
+import { Align2amask } from './nhmacrofn.js';
 import { display_nhwindow, mines_dnum, nh_delay_output, tutorial_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { WIN_MESSAGE, flags, gc, gd, gi, gl, gm, gn, gs, gt, gu, gv, gx, gy, iflags, nhcb_counts, nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir } from './decl.js';
@@ -260,7 +260,7 @@ function good_rm_wall_doorpos(x, y, dir, room) {
 function finddpos_shift(x, y, dir, aroom) {
     let dx;
     let dy;
-    dir = DIR_180(dir);
+    dir = ((((dir) + 4) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
     dx = i16(cptr.ld1so(cptr.decay(xdir), dir, 1));
     dy = i16(cptr.ld1so(cptr.decay(ydir), dir, 1));
     if (good_rm_wall_doorpos(cptr.ldI16(x), cptr.ldI16(y), dir, aroom))
@@ -1322,7 +1322,7 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
         kelp_pool = 10;
     if (kelp_moat < 0)
         kelp_moat = 30;
-    if (!skip_lvl_checks && In_endgame(cptr.add(u, $you_uz)))
+    if (!skip_lvl_checks && (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return;
     for (x = 2; x < 78; x++)
         for (y = 1; y < 20; y++)
@@ -1514,22 +1514,22 @@ function bydoor(x, y) {
     let typ;
     if (isok(i16(((x + 1) | 0)), y)) {
         typ = cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-        if (IS_DOOR(typ) || typ == NHC.SDOOR)
+        if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(i16(((x - 1) | 0)), y)) {
         typ = cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-        if (IS_DOOR(typ) || typ == NHC.SDOOR)
+        if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(x, i16(((y + 1) | 0)))) {
         typ = cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ);
-        if (IS_DOOR(typ) || typ == NHC.SDOOR)
+        if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(x, i16(((y - 1) | 0)))) {
         typ = cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ);
-        if (IS_DOOR(typ) || typ == NHC.SDOOR)
+        if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     return 0;
@@ -2105,7 +2105,7 @@ function mkinvk_check_wall(x, y) {
     (__builtin_expect(BigInt((!(x > 0 && x < NHM.COLNO))), 0n) ? __assert_rtn(__sl66, __sl1, 2609, __sl67) : void 0);
     (__builtin_expect(BigInt((!(y >= 0 && y < NHM.ROWNO))), 0n) ? __assert_rtn(__sl66, __sl1, 2610, __sl68) : void 0);
     ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    return (IS_STWALL(ltyp) || ltyp == NHC.IRONBARS) ? 1 : 0;
+    return (((ltyp) <= NHC.DBWALL) || ltyp == NHC.IRONBARS) ? 1 : 0;
 }
 
 /** C ref: mklev.c:2624 — @param {CInt} x @param {CInt} y */

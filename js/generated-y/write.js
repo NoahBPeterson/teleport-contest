@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { nohands } from './nhmacrofn.js';
 import { Blind, Glib, Hallucination } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
@@ -175,7 +174,7 @@ export function* dowrite(pen) {
     let typeword;
     let spell_knowledge;
     __lbl_found: {
-        if (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
             (yield* You(__sl1));
             return NHM.ECMD_OK;
         } else if (Glib()) {

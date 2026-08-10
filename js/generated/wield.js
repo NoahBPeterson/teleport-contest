@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { bimanual, could_twoweap, has_oname, humanoid, is_ammo, is_boots, is_elven_weapon, is_gloves, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, matching_launcher, nohands, touch_petrifies, u_wield_art, verysmall } from './nhmacrofn.js';
+import { bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_boots, is_elven_weapon, is_gloves, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, matching_launcher, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
@@ -207,7 +207,7 @@ export function setuwep(obj) {
         if (!Blind())
             pline(__sl0, Tobjnam(olduwep, __sl1));
     }
-    if (cptr.eq(uwep.v, obj) && (u_wield_art(NHC.ART_OGRESMASHER) || is_art(olduwep, NHC.ART_OGRESMASHER)))
+    if (cptr.eq(uwep.v, obj) && (is_art(uwep.v, NHC.ART_OGRESMASHER) || is_art(olduwep, NHC.ART_OGRESMASHER)))
         cptr.st1(disp, 1);
     if (obj) {
         cptr.st1o(gu, $instance_globals_u_unweapon, schar(((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? is_launcher(obj) || is_ammo(obj) || is_missile(obj) || (is_pole(obj) && !cptr.ldPtro(u, $you_usteed) && !is_art(obj, NHC.ART_SNICKERSNEE)) ? 1 : 0 : (!is_weptool(obj) && !is_wet_towel(obj) ? 1 : 0))));
@@ -228,7 +228,7 @@ function cant_wield_corpse(obj) {
 
 /** C ref: wield.c:158 @returns {CPtr} */
 export function empty_handed() {
-    return uarmg.v ? __sl4 : (humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl5 : __sl6);
+    return uarmg.v ? __sl4 : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl5 : __sl6);
 }
 
 /** C ref: wield.c:169 — @param {CPtr} wep @returns {CInt} */
@@ -349,7 +349,7 @@ export function dowield() {
     let result;
     __lbl_wielding: {
         cptr.stI64o(gm, $instance_globals_m_multi, 0n);
-        if ((nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+        if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             pline(__sl26);
             return NHM.ECMD_FAIL;
         }
@@ -428,7 +428,7 @@ export function doswapweapon() {
     let oldswap;
     let result = 0;
     cptr.stI64o(gm, $instance_globals_m_multi, 0n);
-    if ((nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+    if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         pline(__sl26);
         return NHM.ECMD_FAIL;
     }
@@ -607,7 +607,7 @@ export function wield_tool(obj, verb) {
         }
         return 0;
     }
-    if ((nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+    if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         You_cant(__sl69, more_than_1 ? __sl35 : __sl34);
         return 0;
     }
@@ -846,7 +846,7 @@ export function chwepon(otmp, amount) {
         if ((cptr.ldI32o(uwep.v, $obj_unpaid) & 1))
             alter_cost(uwep.v, 0n);
     }
-    if (u_wield_art(NHC.ART_MAGICBANE) && cptr.ld1so(uwep.v, $obj_spe) >= 0) {
+    if (is_art(uwep.v, NHC.ART_MAGICBANE) && cptr.ld1so(uwep.v, $obj_spe) >= 0) {
         Your(__sl119, body_part(NHC.HAND), (((amount > 1) && (cptr.ld1so(uwep.v, $obj_spe) > 1)) ? __sl120 : __sl34));
     }
     if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !(rng_log_enabled() ? (rng_log_set_caller(__sl98, 1044, __sl112), rn2(7)) : rn2(7))))

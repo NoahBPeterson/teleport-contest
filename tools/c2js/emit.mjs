@@ -845,11 +845,36 @@ const MFN_STATS = {
   refusedRepeat: 0,      // the argument itself assigns, or steps a value
   refusedImpureArg: 0,   // an argument calls something not provably pure
   refusedConditional: 0, // a non-total argument only ever behind a short circuit
+  refusedSingleUse: 0,   // the body uses every parameter exactly once: a helper only adds a call
 };
 
 // C2JS_MACROFN=0 disables the function-like tier (the A/B baseline).
 const MACRO_FN_TIER = process.env.C2JS_MACROFN !== '0';
+// The admission rule, narrowed after the first A/B measured the wide one at
+// +1.9%..+3.8% of slope: a site takes the helper only when the macro body uses
+// some parameter MORE THAN ONCE.
+//
+// The tier's whole subject is how many times an argument is evaluated. Where
+// the body spells a parameter once, the helper changes one inline expansion
+// into one call and evaluates the argument exactly as often as C did: it buys a
+// name, and pays a call, on the hottest paths in the program. Where the body
+// spells it N>1 times, the helper is the only thing that turns N evaluations
+// into one — and those are the expansions that are unreadable inline
+// (glyph_is_object expands glyph_at twenty times; the glyph_is_* family and the
+// uprops accessors repeat their argument two to seven times).
+//
+// C2JS_MACROFN_REPEAT=0 restores the wide rule (every admissible expansion),
+// which is the tree the first A/B measured.
+const MACRO_FN_REPEAT_ONLY = process.env.C2JS_MACROFN_REPEAT !== '0';
 const MFN_SEEN = new WeakSet();
+// C2JS_MFN_WHY=1: one line per (macro, verdict), so a macro that never gets
+// named can be asked why rather than guessed at. Off, and unallocated, unless
+// asked for.
+const MFN_WHY = process.env.C2JS_MFN_WHY ? new Map() : null;
+if (MFN_WHY) {
+  process.on('exit', () => process.stderr.write(
+    [...MFN_WHY].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => `mfn-why\t${k}\t${v}`).join('\n') + '\n'));
+}
 // every callee a case-(b) hoist relied on being pure — the list the notes must justify
 export const MFN_HOISTED_CALLEES = new Map(); // callee -> Set of macro names
 
@@ -887,7 +912,8 @@ if (process.env.C2JS_READ_STATS) {
     + `${MFN_STATS.refusedAudit} on the back-substitution audit, ${MFN_STATS.refusedMismatch} on a body mismatch, `
     + `${MFN_STATS.refusedLocal} on a shadowing local, ${MFN_STATS.refusedNameClash} on a parameter name clash, `
     + `${MFN_STATS.refusedRepeat} on a side-effecting argument, ${MFN_STATS.refusedImpureArg} on an argument whose callee is not provably pure, `
-    + `${MFN_STATS.refusedConditional} because the argument's every occurrence was behind a short circuit\n`
+    + `${MFN_STATS.refusedConditional} because the argument's every occurrence was behind a short circuit, `
+    + `${MFN_STATS.refusedSingleUse} because the body used every parameter exactly once\n`
     + `case (b) hoists rest on: ${[...MFN_HOISTED_CALLEES].map(([c, m]) => `${c} (${[...m].sort().join(', ')})`).join('; ') || '(none)'}\n`
     + `do{}while(0):  ${DO_FLAT_STATS.seen} seen, ${DO_FLAT_STATS.flattened} flattened; refused `
     + `${DO_FLAT_STATS.refusedJump} for a macro-local break/continue and ${DO_FLAT_STATS.refusedSplicedJump} for one the goto lowering spliced in `
@@ -1878,7 +1904,11 @@ export class Emitter {
     // body, the fallback), so count each expansion where it is first decided
     const fresh = !MFN_SEEN.has(n);
     if (fresh) { MFN_SEEN.add(n); MFN_STATS.seen++; }
-    const tally = (k) => { if (fresh) MFN_STATS[k]++; };
+    const tally = (k) => {
+      if (!fresh) return;
+      MFN_STATS[k]++;
+      if (MFN_WHY) { const key = `${def.name}\t${k}`; MFN_WHY.set(key, (MFN_WHY.get(key) || 0) + 1); }
+    };
     const groups = this.macroFnArgs(n);
     // every parameter must appear, exactly once in the list, or the positional
     // mapping from call-site order to parameter order is not one this can trust
@@ -1965,6 +1995,15 @@ export class Emitter {
     const pureCalls = new Set();
     const free = this.helperFreeVars(probe, { pureCalls });
     if (!free) { tally('refusedBody'); return null; }
+
+    // The narrowing. Everything above is the safety argument and is unchanged;
+    // this is the value argument, and it is checked last so the refusal counts
+    // above still describe the whole population. `repeats` counts arguments the
+    // expansion holds more than one node for, and the audit has already proved
+    // that count is exactly how many times the emitted body spells the
+    // parameter — so a site reaching here with repeats > 0 is one where the
+    // call REPLACES evaluations rather than adding one.
+    if (MACRO_FN_REPEAT_ONLY && !repeats) { tally('refusedSingleUse'); return null; }
 
     let h = MACRO_FN_HELPERS.get(def.name);
     if (h && (h.code !== B.code || h.params.join() !== def.params.join())) { tally('refusedMismatch'); return null; }

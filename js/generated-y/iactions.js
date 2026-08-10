@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, Is_container, bimanual, could_twoweap, has_oname, is_ammo, is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel, matching_launcher, nohands, verysmall } from './nhmacrofn.js';
+import { Is_container, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel, matching_launcher } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
 import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
@@ -598,11 +598,11 @@ export function* itemactions(otmp) {
     }
     if (cptr.ldI64o(otmp, $obj_owornmask) & 127n)
         (yield* ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __sl118));
-    if ((Is_container(otmp) && (Has_contents(otmp) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
+    if ((Is_container(otmp) && ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
         (yield* ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __sl119));
     if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1)) || cptr.ld1so(otmp, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_unique) & 1) | 0 || cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
         (yield* ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __sl120));
-    if (cptr.eq(otmp, uwep.v) || (nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+    if (cptr.eq(otmp, uwep.v) || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         ;
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp) || is_wet_towel(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.HEAVY_IRON_BALL) {
         void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28);

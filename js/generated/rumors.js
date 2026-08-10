@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { release_data, update_file } from './nhmacrofn.js';
 import { Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard } from './nhprop.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
@@ -492,7 +491,7 @@ function init_oracles(fp) {
 /** C ref: rumors.c:598 — @param {CPtr} nhfp */
 export function save_oracles(nhfp) {
     let i;
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         sfo_unsigned(nhfp, svo, __sl44);
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
@@ -501,7 +500,7 @@ export function save_oracles(nhfp) {
             }
         }
     }
-    if (release_data(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         if (cptr.ldI32(svo)) {
             cptr.stI32(svo, 0), cptr.stI32o(go, $instance_globals_o_oracle_flg, 0);
         }

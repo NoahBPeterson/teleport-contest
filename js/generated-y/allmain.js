@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { In_endgame, MON_AT, ismnum } from './nhmacrofn.js';
+import { ismnum } from './nhmacrofn.js';
 import { BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast, Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy, Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning, cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
 import { crashreport_init } from './report.js';
@@ -482,7 +482,7 @@ export function* moveloop_core() {
         if (cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             status_eval_next_unhilite();
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_seer_turn)) {
-            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !In_endgame(cptr.add(u, $you_uz)) && !BClairvoyant())
+            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !BClairvoyant())
                 (yield* do_vicinity_map(null));
             cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 415, __sl8), rn2(31)) : rn2(31)) + 15) | 0))));
         }
@@ -725,7 +725,7 @@ export function* newgame() {
     (yield* u_on_upstairs());
     (yield* vision_reset());
     (yield* check_special_room(0));
-    if (MON_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+    if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
         (yield* mnexto((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG));
     void (yield* makedog());
     (yield* u_init_inventory_attrs());

@@ -12,7 +12,7 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
-import { glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_a, glyph_is_cmap_altar, glyph_is_cmap_b, glyph_is_cmap_c, glyph_is_cmap_gehennom, glyph_is_cmap_knox, glyph_is_cmap_main, glyph_is_cmap_mines, glyph_is_cmap_sokoban, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_explosion, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_nothing, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_unexplored, glyph_is_warning } from './nhmacrofn.js';
+import { glyph_is_body_piletop, glyph_is_cmap, glyph_is_cmap_a, glyph_is_cmap_altar, glyph_is_cmap_b, glyph_is_cmap_c, glyph_is_cmap_gehennom, glyph_is_cmap_knox, glyph_is_cmap_main, glyph_is_cmap_mines, glyph_is_cmap_sokoban, glyph_is_cmap_zap, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_explosion, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_generic_obj, glyph_is_normal_male_monster, glyph_is_normal_piletop_obj, glyph_is_piletop_generic_obj, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, glyph_is_swallow, glyph_is_warning } from './nhmacrofn.js';
 import { gc, gs, iflags } from './decl.js';
 import { add_custom_urep_entry, set_map_u, unicode_val } from './utf8map.js';
 import { nh_snprintf, strncmpi, unicodeval_to_utf8str } from './hacklib.js';
@@ -980,11 +980,11 @@ function* parse_id(id, findwhat) {
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                     void cptr.strcat(cptr.decay(buf[0]), buf4);
-                } else if (glyph_is_invisible(glyph)) {
+                } else if (((glyph) == NHC.GLYPH_INVIS_OFF)) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl50);
-                } else if (glyph_is_nothing(glyph)) {
+                } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl51);
-                } else if (glyph_is_unexplored(glyph)) {
+                } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
                     void cptr.strcpy(cptr.decay(buf[0]), __sl52);
                 } else if (glyph_is_warning(glyph)) {
                     j = (glyph - NHC.GLYPH_WARNING_OFF) | 0;

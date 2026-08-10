@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { In_endgame, bimanual, humanoid, is_sword, is_weptool } from './nhmacrofn.js';
+import { bimanual, is_sword, is_weptool } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, Glib, HConfusion, HStun, Hallucination, Levitation, Role_switch, Sick, Slimed, Stoned, Strangled, Ugender, Underwater, Upolyd, Wounded_legs, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed, putstr, start_menu, status_enablefield, status_update, tutorial_dnum } from './nhprop.js';
 import { acurr } from './attrib.js';
 import { WIN_STATUS, cg, disp, flags, gb, gc, gi, gm, gn, gs, gu, gv, gy, iflags, svc, svd, svl, svm, svp, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uleft, uright, uswapwep, uwep } from './decl.js';
@@ -879,7 +879,7 @@ export function describe_level(buf, dflgs) {
         addbranch = 0;
     } else if (In_quest(cptr.add(u, $you_uz))) {
         void cptr.sprintf(buf, __sl46, dunlev(cptr.add(u, $you_uz)));
-    } else if (In_endgame(cptr.add(u, $you_uz))) {
+    } else if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
         void endgamelevelname(buf, depth(cptr.add(u, $you_uz)));
         if (!addbranch)
             void strsubst(buf, __sl47, __sl0);
@@ -905,7 +905,7 @@ export function* weapon_status(outbuf) {
     let res = null;
     cptr.st1(outbuf, 0);
     if (!uwep.v) {
-        res = uarmg.v ? __sl55 : (humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl56 : __sl57);
+        res = uarmg.v ? __sl55 : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl56 : __sl57);
     } else if (cptr.ld1so(u, $you_twoweap)) {
         res = __sl58;
         if (cptr.ldPtro(u, $you_usteed) && (weapon_type(uwep.v) == NHC.P_LANCE || weapon_type(uswapwep.v) == NHC.P_LANCE))

@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ACCESSIBLE, IS_AIR, IS_FOUNTAIN, IS_GRAVE, P_SKILL, SURFACE_AT, bimanual, is_animal, is_blade, is_boots, is_clinger, is_demon, is_flyer, is_hider, is_vampire, is_wet_towel, is_whirly, min, nohands, release_data, update_file, verysmall } from './nhmacrofn.js';
+import { IS_AIR, SURFACE_AT, bimanual, cantwield, ceiling_hider, is_blade, is_boots, is_wet_towel, is_whirly, min } from './nhmacrofn.js';
 import { Blind, Deaf, Flying, HConfusion, HStun, Hallucination, Levitation } from './nhprop.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { get_rnd_text, getrumor } from './rumors.js';
@@ -469,9 +469,9 @@ export function can_reach_floor(check_pit) {
     let t;
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_HUGS)) || (Levitation() && !((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))))
         return 0;
-    if (cptr.ldPtro(u, $you_usteed) && P_SKILL(NHC.P_RIDING) < NHC.P_BASIC)
+    if (cptr.ldPtro(u, $you_usteed) && (cptr.ldI16o2(u, NHC.P_RIDING, 6, $you_weapon_skills)) < NHC.P_BASIC)
         return 0;
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && (is_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && ((is_clinger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) != NHC.S_MIMIC) || is_flyer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))))
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ceiling_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         return 0;
     if (Flying() || cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) >= NHM.MZ_HUGE)
         return 1;
@@ -699,7 +699,7 @@ function stylus_ok(obj) {
 function* u_can_engrave() {
     let levtyp = SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        if (is_animal(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
+        if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n)) {
             (yield* pline(__sl61));
             return 0;
         } else if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
@@ -709,17 +709,17 @@ function* u_can_engrave() {
     } else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         (yield* You_cant(__sl62, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
         return 0;
-    } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || IS_FOUNTAIN(levtyp)) {
+    } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || ((levtyp) == NHC.FOUNTAIN)) {
         (yield* You_cant(__sl62, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
         return 0;
     } else if (IS_AIR(levtyp)) {
         (yield* You_cant(__sl63, (levtyp == NHC.CLOUD) ? __sl64 : __sl65));
         return 0;
-    } else if (!ACCESSIBLE(levtyp)) {
+    } else if (!((levtyp) >= NHC.DOOR)) {
         (yield* You_cant(__sl66));
         return 0;
     }
-    if ((nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+    if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         (yield* You_cant(__sl67));
         return 0;
     }
@@ -752,9 +752,9 @@ function doengrave_ctx_init(de) {
     cptr.stPtro(de, $_doengrave_ctx_writer, null);
     if (cptr.ldPtro(de, $_doengrave_ctx_oep))
         cptr.stI32o(de, $_doengrave_ctx_oetype, cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type));
-    if (is_demon(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || is_vampire(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) || (cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE))
         cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGR_BLOOD);
-    cptr.st1o(de, $_doengrave_ctx_jello, schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !(is_animal(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) || is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) ? 1 : 0)));
+    cptr.st1o(de, $_doengrave_ctx_jello, schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !(((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n) || is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) ? 1 : 0)));
     cptr.st1o(de, $_doengrave_ctx_frosted, is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
 }
 
@@ -1424,7 +1424,7 @@ export function* engraving_sanity_check() {
             continue;
         }
         levtyp = SURFACE_AT(x, y);
-        if (is_pool_or_lava(x, y) || IS_AIR(levtyp) || !ACCESSIBLE(levtyp)) {
+        if (is_pool_or_lava(x, y) || IS_AIR(levtyp) || !((levtyp) >= NHC.DOOR)) {
             (yield* impossible(__sl182, levtyp, surface(x, y)));
             continue;
         }
@@ -1440,7 +1440,7 @@ export function* save_engravings(nhfp) {
     let szeach;
     for (ep = head_engr.v; ep; ep = ep2) {
         ep2 = cptr.ldPtr(ep);
-        if (cptr.ldI32o(ep, $engr_engr_alloc) && cptr.ld1so(cptr.ldPtro2(ep, NHC.actual_text, 8, $engr_engr_txt), 0) && update_file(nhfp)) {
+        if (cptr.ldI32o(ep, $engr_engr_alloc) && cptr.ld1so(cptr.ldPtro2(ep, NHC.actual_text, 8, $engr_engr_txt), 0) && (cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
             engr_alloc.v = cptr.ldI32o(ep, $engr_engr_alloc);
             szeach = cptr.ldI32o(ep, $engr_engr_szeach);
             (yield* sfo_unsigned(nhfp, engr_alloc, __sl183));
@@ -1452,13 +1452,13 @@ export function* save_engravings(nhfp) {
             (yield* sfo_char(nhfp, cptr.ldPtro2(ep, NHC.remembered_text, 8, $engr_engr_txt), __sl185, szeach | 0));
             (yield* sfo_char(nhfp, cptr.ldPtro2(ep, NHC.pristine_text, 8, $engr_engr_txt), __sl186, szeach | 0));
         }
-        if (release_data(nhfp))
+        if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
             cptr.free((ep));
     }
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         (yield* sfo_unsigned(nhfp, no_more_engr, __sl183));
     }
-    if (release_data(nhfp))
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
         head_engr.v = null;
 }
 
@@ -1555,7 +1555,7 @@ export function* make_grave(x, y, str) {
 /** C ref: engrave.c:1707 — @param {CInt} x @param {CInt} y */
 export function* disturb_grave(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
-    if (!IS_GRAVE(cptr.ld1so(lev, $rm_typ))) {
+    if (!((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE)) {
         (yield* impossible(__sl190, cptr.ld1so(lev, $rm_typ)));
     } else if ((cptr.ldI32o(lev, $rm_horizontal) & 1)) {
         (yield* impossible(__sl191));

@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { RS_menu_arg, is_female, is_male, is_neuter } from './nhmacrofn.js';
 import { Role_switch, askname, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { rn2, rn2_on_display_rng, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { Strlen_ } from './strutil.js';
@@ -2570,7 +2569,7 @@ export function* role_menu_extra(which, where, preselect) {
         void cptr.sprintf(cptr.decay(buf), __sl328, __sl329, constrainer, forcedvalue);
         (yield* add_menu_str(where, cptr.decay(buf)));
     } else if (what) {
-        cptr.stI32(any, RS_menu_arg(which));
+        cptr.stI32(any, ((-2 - (((which) + 1) | 0)) | 0));
         void cptr.sprintf(cptr.decay(buf), __sl330, (f >= 0) ? __sl331 : __sl329, what);
         (yield* add_menu(where, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(__static_role_menu_extra_RS_menu_let), which, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     } else if (which == NHM.RS_filter) {
@@ -2619,7 +2618,7 @@ export function* role_init() {
         cptr.stU64o(pm, $permonst_mflags2, cptr.ldU64o(pm, $permonst_mflags2) | 2097152n);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | NHM.M3_CLOSE);
         cptr.st1o(pm, $permonst_maligntyp, schar(Math.imul(alignmnt, 3)));
-        cptr.stI32o(svq, $q_score_ldrgend, (is_neuter(pm) ? 2 : (is_female(pm) ? 1 : (is_male(pm) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2039, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_ldrgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2039, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
     }
     if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum) != NHC.NON_PM) {
         pm = cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), 96);
@@ -2633,7 +2632,7 @@ export function* role_init() {
         cptr.stU64o(pm, $permonst_mflags2, cptr.ldU64o(pm, $permonst_mflags2) | 51380224n);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) & -129);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | 80);
-        cptr.stI32o(svq, $q_score_nemgend, (is_neuter(pm) ? 2 : (is_female(pm) ? 1 : (is_male(pm) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2060, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_nemgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2060, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
     }
     if (cptr.ldI32o(flags, $flag_pantheon) == -1) {
         let trycnt = 0;

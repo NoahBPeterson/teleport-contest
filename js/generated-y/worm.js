@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { MCORPSENM, cansee, canspotmon, detected_monnum_to_glyph, distu, max, monnum_to_glyph, petnum_to_glyph, release_data, update_file } from './nhmacrofn.js';
+import { canspotmon, has_mcorpsenm, max } from './nhmacrofn.js';
 import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
@@ -213,7 +213,7 @@ export function* wormgone(worm) {
     (yield* toss_wsegs(cptr.ldPtro(wtails, wnum, 8), 1));
     cptr.stPtro(wheads, wnum, cptr.stPtro(wtails, wnum, null, 8), 8);
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
-    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (cptr.ldPtro((worm), $monst_mextra) && MCORPSENM(worm) != NHC.NON_PM))
+    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && has_mcorpsenm(worm))
         cptr.stI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
 }
 
@@ -222,7 +222,7 @@ export function* wormhitu(worm) {
     let wnum = (cptr.ldI32o(worm, $monst_wormno) & 31) | 0;
     let seg;
     for (seg = cptr.ldPtro(wtails, wnum, 8); !cptr.eq(seg, cptr.ldPtro(wheads, wnum, 8)); seg = cptr.ldPtr(seg))
-        if (distu(cptr.ldI16o(seg, $wseg_wx), cptr.ldI16o(seg, $wseg_wy)) < 3)
+        if (dist2((cptr.ldI16o(seg, $wseg_wx)), (cptr.ldI16o(seg, $wseg_wy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 3)
             if ((yield* mattacku(worm)))
                 return 1;
     return 0;
@@ -311,7 +311,7 @@ export function* detect_wsegs(worm, use_detection_glyph) {
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     let what_tail = (Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : NHC.PM_LONG_WORM_TAIL);
     while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
-        num = use_detection_glyph ? detected_monnum_to_glyph(what_tail, (cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) : (cptr.ld1so(worm, $monst_mtame) ? petnum_to_glyph(what_tail, (cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) : monnum_to_glyph(what_tail, (cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE));
+        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, $monst_mtame) ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
         (yield* show_glyph(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy), num));
         curr = cptr.ldPtr(curr);
     }
@@ -323,7 +323,7 @@ export function* save_worm(nhfp) {
     let count = cptr.box(0);
     let curr;
     let temp;
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             for (count.v = 0, curr = cptr.ldPtro(wtails, i, 8); curr; curr = cptr.ldPtr(curr))
                 count.v++;
@@ -339,7 +339,7 @@ export function* save_worm(nhfp) {
             (yield* sfo_long(nhfp, cptr.add(wgrowtime, i, 8), __sl13));
         ;
     }
-    if (release_data(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (i = 1; i < NHM.MAX_NUM_WORMS; i++) {
             if (!(curr = cptr.ldPtro(wtails, i, 8)))
                 continue;
@@ -538,7 +538,7 @@ function* create_worm_tail(num_segs) {
 export function worm_known(worm) {
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
     while (curr) {
-        if (cansee(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy)))
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(curr, $wseg_wy), 8), cptr.ldI16o(curr, $wseg_wx)) & NHM.IN_SIGHT) != 0))
             return 1;
         curr = cptr.ldPtr(curr);
     }

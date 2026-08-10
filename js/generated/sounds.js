@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, IS_WALL, In_endgame, M_AP_TYPE, ROOM_INDEX, cansee, canspotmon, carnivorous, couldsee, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_invisible, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_emin, haseyes, helpless, herbivorous, humanoid, is_animal, is_dwarf, is_elf, is_flyer, is_gnome, is_lord, is_mercenary, is_minion, is_mplayer, is_prince, is_silent, is_undead, is_vampshifter, is_weptool, likes_magic, perceives } from './nhmacrofn.js';
+import { IS_WALL, canspotmon, glyph_is_detected_female_monster, glyph_is_detected_male_monster, glyph_is_fem_statue_piletop, glyph_is_female_pet, glyph_is_male_pet, glyph_is_male_statue_piletop, glyph_is_normal_female_monster, glyph_is_normal_male_monster, glyph_is_ridden_female_monster, glyph_is_ridden_male_monster, has_emin, helpless, is_lminion, is_mplayer, is_vampshifter, is_weptool } from './nhmacrofn.js';
 import { Blind, Conflict, Deaf, Hallucination, Invis, Race_switch, SYSOPT_SEDUCE, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { c_common_strings, flags, ga, gc, gi, gm, gn, gu, gv, gy, iflags, svc, svd, svl, svm, svq, svr, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uwep } from './decl.js';
 import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -439,7 +439,7 @@ cptr.stPtro(__static_throne_mon_sound_throne_msg, 24, __sl6); /** C ref: sounds.
 
 /** C ref: sounds.c:30 — @param {CPtr} mtmp @returns {CInt} */
 function throne_mon_sound(mtmp) {
-    if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || is_lord(cptr.ldPtro(mtmp, $monst_data)) || is_prince(cptr.ldPtro(mtmp, $monst_data))) && !is_animal(cptr.ldPtro(mtmp, $monst_data)) && mon_in_room(mtmp, NHC.COURT)) {
+    if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2048n) != 0n)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) && mon_in_room(mtmp, NHC.COURT)) {
         let which = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(3)) : rn2(3)) + (Hallucination() ? 1 : 0)) | 0;
         if (which != 2) {
             if (which == 0) {
@@ -458,7 +458,7 @@ function throne_mon_sound(mtmp) {
 
 /** C ref: sounds.c:62 — @param {CPtr} mtmp @returns {CInt} */
 function beehive_mon_sound(mtmp) {
-    if ((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_ANT && is_flyer(cptr.ldPtro(mtmp, $monst_data))) && mon_in_room(mtmp, NHC.BEEHIVE)) {
+    if ((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_ANT && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) && mon_in_room(mtmp, NHC.BEEHIVE)) {
         let hallu = Hallucination() ? 1 : 0;
         switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 68, __sl7), rn2(2)) : rn2(2)) + hallu) | 0) {
             case 0:
@@ -481,7 +481,7 @@ function beehive_mon_sound(mtmp) {
 
 /** C ref: sounds.c:89 — @param {CPtr} mtmp @returns {CInt} */
 function morgue_mon_sound(mtmp) {
-    if ((is_undead(cptr.ldPtro(mtmp, $monst_data)) || is_vampshifter(mtmp)) && mon_in_room(mtmp, NHC.MORGUE)) {
+    if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && mon_in_room(mtmp, NHC.MORGUE)) {
         let hallu = Hallucination() ? 1 : 0;
         let hair = body_part(NHC.HAIR);
         switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 96, __sl13), rn2(2)) : rn2(2)) + hallu) | 0) {
@@ -507,7 +507,7 @@ cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 16, __sl22); /** C ref: sounds.c:120
 
 /** C ref: sounds.c:115 — @param {CPtr} mtmp @returns {CInt} */
 function zoo_mon_sound(mtmp) {
-    if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || is_animal(cptr.ldPtro(mtmp, $monst_data))) && mon_in_room(mtmp, NHC.ZOO)) {
+    if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n)) && mon_in_room(mtmp, NHC.ZOO)) {
         let hallu = Hallucination() ? 1 : 0;
         let selection = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 119, __sl19), rn2(2)) : rn2(2)) + hallu) | 0;
         You_hear(__sl2, cptr.ldPtro(__static_zoo_mon_sound_zoo_msg, selection, 8));
@@ -531,7 +531,7 @@ function temple_priest_sound(mtmp) {
         let ax = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos);
         let ay = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y);
         let speechless = schar((cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL));
-        let in_sight = schar((canseemon(mtmp) || cansee(ax, ay) ? 1 : 0));
+        let in_sight = schar((canseemon(mtmp) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ay, 8), ax) & NHM.IN_SIGHT) != 0) ? 1 : 0));
         do {
             msg = cptr.ldPtro(__static_temple_priest_sound_temple_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 160, __sl23), rn2((((4 - 1) | 0) + hallu) | 0)) : rn2((((4 - 1) | 0) + hallu) | 0)), 8);
             if (cptr.strchr(msg, 42) && speechless)
@@ -630,7 +630,7 @@ export function dosounds() {
                         for (vy = cptr.ldI16o(sroom, $mkroom_ly); vy <= cptr.ldI16o(sroom, $mkroom_hy); vy++)
                             if (g_at(i16(vx), i16(vy)))
                                 gold_in_vault = 1;
-                    if (BigInt(vault_occupied(cptr.add(u, $you_urooms))) != (BigInt.asIntN(64, ROOM_INDEX(sroom) + 3n))) {
+                    if (BigInt(vault_occupied(cptr.add(u, $you_urooms))) != (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))) {
                         if (gold_in_vault) {
                             You_hear(!hallu ? __sl35 : __sl36);
                         } else {
@@ -663,9 +663,9 @@ export function dosounds() {
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 286, __sl34), rn2(200)) : rn2(200))) {
         let count = 0;
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-            if (DEADMONSTER(mtmp))
+            if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
-            if (is_mercenary(cptr.ldPtro(mtmp, $monst_data)) && mon_in_room(mtmp, NHC.BARRACKS) && ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ++count > 5)) {
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n) && mon_in_room(mtmp, NHC.BARRACKS) && ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ++count > 5)) {
                 You_hear(__sl2, cptr.ldPtro(__static_dosounds_barracks_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 304, __sl34), rn2(3)) : rn2(3)) + hallu) | 0, 8));
                 return;
             }
@@ -680,7 +680,7 @@ export function dosounds() {
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 0);
             return;
         }
-        if (tended_shop(sroom) && !cptr.strchr(cptr.add(u, $you_ushops), Number(BigInt.asIntN(32, (BigInt.asIntN(64, ROOM_INDEX(sroom) + 3n)))))) {
+        if (tended_shop(sroom) && !cptr.strchr(cptr.add(u, $you_ushops), Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n)))))) {
             You_hear(__sl2, cptr.ldPtro(__static_dosounds_shop_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8));
             noisy_shop(sroom);
         }
@@ -883,9 +883,9 @@ export function whimper(mtmp) {
 
 /** C ref: sounds.c:519 — @param {CPtr} mtmp */
 export function beg(mtmp) {
-    if (helpless(mtmp) || !(carnivorous(cptr.ldPtro(mtmp, $monst_data)) || herbivorous(cptr.ldPtro(mtmp, $monst_data))))
+    if (helpless(mtmp) || !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) != 0n)))
         return;
-    if (!is_silent(cptr.ldPtro(mtmp, $monst_data)) && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) {
+    if (!(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT) && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL) {
         void domonnoise(mtmp);
     } else if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) >= NHC.MS_HUMANOID) {
         if (!canspotmon(mtmp))
@@ -1033,7 +1033,7 @@ export function domonnoise(mtmp) {
     let gnomeplan = 0;
     if (Deaf())
         return NHM.ECMD_OK;
-    if (is_silent(ptr) && !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
+    if ((cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) && !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
         return NHM.ECMD_OK;
     if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id) && msound > NHC.MS_ANIMAL)
         msound = NHC.MS_LEADER;
@@ -1061,7 +1061,7 @@ export function domonnoise(mtmp) {
         quest_chat(mtmp);
         break;
         case NHC.MS_SELL:
-        if (!Hallucination() || is_silent(ptr) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 734, __sl132), rn2(2)) : rn2(2)))) {
+        if (!Hallucination() || (cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 734, __sl132), rn2(2)) : rn2(2)))) {
             shk_chat(mtmp);
         } else {
             void cptr.sprintf(cptr.decay(verbuf), __sl133, currency(15n));
@@ -1303,7 +1303,7 @@ export function domonnoise(mtmp) {
         ;
         case NHC.MS_HUMANOID:
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            if (In_endgame(cptr.add(u, $you_uz)) && is_mplayer(ptr))
+            if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && is_mplayer(ptr))
                 mplayer_talk(mtmp);
             else
                 pline_msg = __sl200;
@@ -1326,15 +1326,15 @@ export function domonnoise(mtmp) {
             pline_msg = __sl207;
         else if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1) && cptr.ldI64o(svm, $instance_globals_saved_m_moves) > cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime))
             verbl_msg = __sl119;
-        else if (is_elf(ptr))
+        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n))
             pline_msg = __sl208;
-        else if (is_dwarf(ptr))
+        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n))
             pline_msg = __sl209;
-        else if (likes_magic(ptr))
+        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2147483648n) != 0n))
             pline_msg = __sl210;
         else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR)
             pline_msg = __sl211;
-        else if (is_gnome(ptr)) {
+        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 64n) != 0n)) {
             if (Hallucination() && (gnomeplan = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1063, __sl132), rn2(4)) : rn2(4))) % 2) {
                 verbl_msg = (gnomeplan == 1) ? __sl212 : __sl213;
             } else {
@@ -1397,7 +1397,7 @@ export function domonnoise(mtmp) {
         case NHC.MS_CUSS:
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             cuss(mtmp);
-        else if ((is_minion(mtmp) && mon_aligntyp(mtmp) == NHM.A_LAWFUL))
+        else if (is_lminion(mtmp))
             verbl_msg = __sl226;
         else
             verbl_msg = __sl227;
@@ -1491,7 +1491,7 @@ function dochat() {
     let tx;
     let ty;
     let otmp;
-    if (is_silent(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT)) {
         pline(__sl259, an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
         return NHM.ECMD_OK;
     }
@@ -1554,7 +1554,7 @@ function dochat() {
             return NHM.ECMD_OK;
         }
     }
-    if (!mtmp || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE || M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT)
+    if (!mtmp || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT)
         return NHM.ECMD_OK;
     if (helpless(mtmp) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
         if (canspotmon(mtmp))
@@ -1569,7 +1569,7 @@ function dochat() {
         return NHM.ECMD_OK;
     }
     if (Deaf()) {
-        let xresponse = humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl274 : __sl275;
+        let xresponse = ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl274 : __sl275;
         pline(__sl276, canspotmon(mtmp) ? __sl277 : __sl11, canspotmon(mtmp) ? mon_nam(mtmp) : __sl11, xresponse);
         return NHM.ECMD_OK;
     }
@@ -1579,7 +1579,7 @@ function dochat() {
 /** C ref: sounds.c:1413 — @param {CInt} x @param {CInt} y @returns {CPtr} */
 function responsive_mon_at(x, y) {
     let mtmp = isok(i16(x), i16(y)) ? (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) : null;
-    if (mtmp && (helpless(mtmp) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || !haseyes(cptr.ldPtro(mtmp, $monst_data)) || (Invis() && !perceives(cptr.ldPtro(mtmp, $monst_data))) || (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my))))
+    if (mtmp && (helpless(mtmp) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) || (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my))))
         mtmp = null;
     return mtmp;
 }
@@ -1628,18 +1628,18 @@ export function tiphat() {
     x = cptr.ldI16(u), y = cptr.ldI16o(u, $you_uy);
     for (range = 1; range <= 9; ++range) {
         x = (x + cptr.ldI32o(u, $you_dx)) | 0, y = (y + cptr.ldI32o(u, $you_dy)) | 0;
-        if (!isok(i16(x), i16(y)) || (range > 1 && !couldsee(x, y))) {
+        if (!isok(i16(x), i16(y)) || (range > 1 && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0))) {
             x = (x - cptr.ldI32o(u, $you_dx)) | 0, y = (y - cptr.ldI32o(u, $you_dy)) | 0;
             break;
         }
         mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         vismon = (mtmp && canseemon(mtmp) ? 1 : 0);
         glyph = glyph_at(i16(x), i16(y));
-        unseen = glyph_is_invisible(glyph);
+        unseen = ((glyph) == NHC.GLYPH_INVIS_OFF);
         statue = ((((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || glyph_is_male_statue_piletop(glyph)) || ((((glyph) >= NHC.GLYPH_STATUE_FEM_OFF) && ((glyph) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || glyph_is_fem_statue_piletop(glyph))) || (!vismon && !unseen && (otmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null && cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) ? 1 : 0);
-        if (vismon && (M_AP_TYPE(mtmp) == NHC.M_AP_FURNITURE || M_AP_TYPE(mtmp) == NHC.M_AP_OBJECT))
+        if (vismon && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
             vismon = 0, mtmp = null;
-        if (vismon || unseen || (statue && Hallucination()) || (range == 1 && mtmp && responsive_mon_at(x, y) && !is_silent(cptr.ldPtro(mtmp, $monst_data))) || !(accessible(i16(x), i16(y)) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS))
+        if (vismon || unseen || (statue && Hallucination()) || (range == 1 && mtmp && responsive_mon_at(x, y) && !(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT)) || !(accessible(i16(x), i16(y)) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS))
             break;
     }
     if (unseen || (statue && Hallucination())) {
@@ -1654,7 +1654,7 @@ export function tiphat() {
             }
     } else {
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
-        if (vismon && humanoid(cptr.ldPtro(mtmp, $monst_data)) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !Conflict()) {
+        if (vismon && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !Conflict()) {
             if ((otmp = which_armor(mtmp, 4n)) === null) {
                 pline(__sl292, Monnam(mtmp));
             } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
@@ -1663,7 +1663,7 @@ export function tiphat() {
             } else {
                 pline(__sl294, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp));
             }
-        } else if (vismon && humanoid(cptr.ldPtro(mtmp, $monst_data))) {
+        } else if (vismon && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n)) {
             let which = !Deaf() ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(2)) : rn2(2)) + 1) | 0);
             let twice = (Deaf() || which > 0 || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(3)) : rn2(3))) ? 0 : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(2)) : rn2(2)) + 1) | 0);
             pline(__sl296, Monnam(mtmp), cptr.ldPtro(__static_tiphat_reaction, which, 8), twice ? __sl297 : __sl11, twice ? cptr.ldPtro(__static_tiphat_reaction, twice, 8) : __sl11);

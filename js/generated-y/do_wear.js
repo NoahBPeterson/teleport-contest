@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, ABON, ATEMP, amphibious, bimanual, breathless, cantweararm, greatest_erosion, has_head, has_horns, humanoid, is_boots, is_clinger, is_cloak, is_corrodeable, is_crackable, is_flimsy, is_gloves, is_helmet, is_metallic, is_rustprone, is_shield, is_shirt, is_suit, is_swimmer, is_sword, nohands, nolimbs, noncorporeal, slithy, touch_petrifies, verysmall } from './nhmacrofn.js';
+import { WrappingAllowed, bimanual, cant_drown, cantweararm, greatest_erosion, is_boots, is_cloak, is_corrodeable, is_crackable, is_flimsy, is_gloves, is_helmet, is_metallic, is_shield, is_shirt, is_suit, is_sword, touch_petrifies } from './nhmacrofn.js';
 import { BInvis, BLevitation, BStealth, Blind, Blind_telepat, Breathless, Detect_monsters, EInvis, ESleepy, EStealth, Fast, Flying, Glib, HFast, HFumbling, HInvis, HLevitation, HProtection, HSee_invisible, HSleepy, HStealth, Hallucination, Invis, Invisible, Levitation, ParanoidRemove, Protection_from_shape_changers, Punished, See_invisible, Slimed, Stone_resistance, Strangled, Swimming, ULEFTY, URIGHTY, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, ga, gi, gm, gn, gu, gw, gy, iflags, program_state, rightleftchars, svc, svd, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { Tobjnam, Yname2, an, ansimpleoname, boots_simple_name, cloak_simple_name, corpse_xname, doname, erosion_matters, gloves_simple_name, helm_simple_name, killer_xname, makeplural, makesingular, obj_is_pname, otense, safe_typename, shield_simple_name, shirt_simple_name, simpleonames, suit_simple_name, the, thesimpleoname, vtense, xname, yname } from './objnam.js';
@@ -504,7 +504,7 @@ export function* Boots_off() {
         }
         break;
         case NHC.WATER_WALKING_BOOTS:
-        if ((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && !Levitation() && !Flying() && !(is_clinger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && has_ceiling(cptr.add(u, $you_uz))) && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don) && !cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
+        if ((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && !Levitation() && !Flying() && !(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) && has_ceiling(cptr.add(u, $you_uz))) && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don) && !cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
             (yield* discover_object((otyp), 1, 1, 1));
             (yield* spoteffects(1));
         }
@@ -678,7 +678,7 @@ function* Helmet_on() {
         if (Hallucination()) {
             (yield* pline(__sl33));
         } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
-            (yield* You_feel(__sl34, (acurr(NHC.A_INT)) <= ((((ABASE(NHC.A_INT) + ABON(NHC.A_INT)) | 0) + ATEMP(NHC.A_INT)) | 0) ? __sl35 : __sl36));
+            (yield* You_feel(__sl34, (acurr(NHC.A_INT)) <= (((((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon))) | 0) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0) ? __sl35 : __sl36));
         } else {
             (yield* discover_object(NHC.HELM_OF_OPPOSITE_ALIGNMENT, 1, 1, 1));
         }
@@ -1156,7 +1156,7 @@ export function* Amulet_off() {
         (yield* off_msg(amul));
         early_off_msg = 1;
         if (Underwater()) {
-            if (!(is_swimmer(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || amphibious(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || breathless(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) && !Swimming()) {
+            if (!cant_drown(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Swimming()) {
                 (yield* You(__sl63, hliquid(__sl64)));
                 mkn = 1;
                 void (yield* drown());
@@ -1914,13 +1914,13 @@ function* already_wearing2(cc1, cc2) {
 export function* canwearobj(otmp, mask, noisy) {
     let err = 0;
     let which;
-    if (verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         if (noisy)
             (yield* You(__sl112));
         return 0;
     }
     which = is_cloak(otmp) ? cptr.decay(c_cloak) : (is_shirt(otmp) ? cptr.decay(c_shirt) : (is_suit(otmp) ? cptr.decay(c_suit) : null));
-    if (which && cantweararm(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (!cptr.eq(which, cptr.decay(c_cloak)) || ((cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING) ? cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) != NHM.MZ_SMALL : !(humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_SMALL && cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) <= NHM.MZ_HUGE && !noncorporeal(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) != NHC.S_CENTAUR && !cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)) && !cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_MARILITH, 96))))) && (racial_exception(cptr.add(gy, $instance_globals_y_youmonst), otmp) < 1)) {
+    if (which && cantweararm(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (!cptr.eq(which, cptr.decay(c_cloak)) || ((cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING) ? cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) != NHM.MZ_SMALL : !WrappingAllowed(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) && (racial_exception(cptr.add(gy, $instance_globals_y_youmonst), otmp) < 1)) {
         if (noisy)
             (yield* pline_The(__sl113, which));
         return 0;
@@ -1939,7 +1939,7 @@ export function* canwearobj(otmp, mask, noisy) {
             if (noisy)
                 (yield* already_wearing((yield* an(helm_simple_name(uarmh.v)))));
             err++;
-        } else if (Upolyd() && has_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !is_flimsy(otmp)) {
+        } else if (Upolyd() && (num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 0) && !is_flimsy(otmp)) {
             if (noisy)
                 (yield* pline_The(__sl115, helm_simple_name(otmp), (((num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) == 1) ? __sl9 : __sl116)));
             err++;
@@ -1965,7 +1965,7 @@ export function* canwearobj(otmp, mask, noisy) {
             if (noisy)
                 (yield* already_wearing(cptr.decay(c_boots)));
             err++;
-        } else if (Upolyd() && slithy(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        } else if (Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n)) {
             if (noisy)
                 (yield* You(__sl119));
             err++;
@@ -2074,12 +2074,12 @@ function* accessory_or_armor_on(obj) {
             let answer;
             let qbuf = new Uint8Array(128);
             let res = 0;
-            if (nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+            if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
                 (yield* You(__sl132));
                 return NHM.ECMD_OK;
             }
             if (uleft.v && uright.v) {
-                (yield* There(__sl133, humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl134 : __sl9, (yield* fingers_or_gloves(0))));
+                (yield* There(__sl133, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* fingers_or_gloves(0))));
                 return NHM.ECMD_OK;
             }
             if (uleft.v) {
@@ -2088,7 +2088,7 @@ function* accessory_or_armor_on(obj) {
                 mask.v = 131072n;
             } else {
                 do {
-                    void cptr.sprintf(cptr.decay(qbuf), __sl135, humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl134 : __sl9, (yield* body_part(NHC.FINGER)));
+                    void cptr.sprintf(cptr.decay(qbuf), __sl135, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* body_part(NHC.FINGER)));
                     answer = (yield* yn_function(cptr.decay(qbuf), cptr.decay(rightleftchars), 0, 1));
                     switch (answer) {
                         case 0:
@@ -2131,7 +2131,7 @@ function* accessory_or_armor_on(obj) {
                 return NHM.ECMD_OK;
             }
         } else if (eyewear) {
-            if (!has_head(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+            if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 32768n) == 0n)) {
                 (yield* You(__sl140, (yield* ansimpleoname(obj.v))));
                 return NHM.ECMD_OK;
             }
@@ -2212,7 +2212,7 @@ function* accessory_or_armor_on(obj) {
 /** C ref: do_wear.c:2432 @returns {CInt} */
 export function* dowear() {
     let otmp;
-    if (verysmall(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || nohands(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         (yield* pline(__sl150));
         return NHM.ECMD_OK;
     }
@@ -2228,7 +2228,7 @@ export function* dowear() {
 export function* doputon() {
     let otmp;
     if (uleft.v && uright.v && uamul.v && ublindf.v && uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v) {
-        (yield* Your(__sl152, humanoid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl134 : __sl9, (yield* fingers_or_gloves(0)), (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? __sl144 : __sl143));
+        (yield* Your(__sl152, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* fingers_or_gloves(0)), (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? __sl144 : __sl143));
         return NHM.ECMD_OK;
     }
     otmp = (yield* getobj(__sl153, puton_ok, NHM.GETOBJ_NOFLAGS));
@@ -2282,7 +2282,7 @@ export function* glibr() {
     let hand;
     leftfall = schar((uleft.v && !(cptr.ldI32o(uleft.v, $obj_cursed) & 1) && (!uwep.v || !((yield* welded(uwep.v)) && ULEFTY()) || !bimanual(uwep.v)) ? 1 : 0));
     rightfall = schar((uright.v && !(cptr.ldI32o(uright.v, $obj_cursed) & 1) && (!uwep.v || !((yield* welded(uwep.v)) && URIGHTY()) || !bimanual(uwep.v)) ? 1 : 0));
-    if (!uarmg.v && (leftfall || rightfall) && !nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (!uarmg.v && (leftfall || rightfall) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
         (yield* Your(__sl154, (leftfall && rightfall) ? __sl155 : __sl156, (leftfall && rightfall) ? (yield* fingers_or_gloves(0)) : (yield* body_part(NHC.FINGER))));
         xfl++;
         if (leftfall) {
@@ -2372,7 +2372,7 @@ export function* stuck_ring(ring, otyp) {
         return null;
     }
     if (ring && cptr.ldI16o(ring, $obj_otyp) == otyp) {
-        if (nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING && (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0)
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING && (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0)
             return uamul.v;
         if ((yield* welded(uwep.v)) && ((cptr.eq(ring, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v))) || bimanual(uwep.v)))
             return uwep.v;
@@ -2402,7 +2402,7 @@ function* select_off(otmp) {
     cptr.st1(cptr.decay(buf), 0);
     if (cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) {
         let glibdummy = cptr.alloc(216);
-        if (nolimbs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
             (yield* pline_The(__sl170));
             return 0;
         }
@@ -2817,7 +2817,7 @@ export function* disintegrate_arm(atmp) {
 function obj_erode_type(otmp) {
     if (is_flammable(otmp))
         return NHM.ERODE_BURN;
-    else if (is_rustprone(otmp))
+    else if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON))
         return NHM.ERODE_RUST;
     else if (is_crackable(otmp))
         return NHM.ERODE_CRACK;
@@ -2854,7 +2854,7 @@ export function* destroy_arm() {
         return 0;
     for (i = 0; i < hits; i++) {
         otmp = cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__sl14, 3297, __sl211), rn2(idx)) : rn2(idx)), 8);
-        if (erosion_matters(otmp) && (is_rustprone(otmp) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp)) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
+        if (erosion_matters(otmp) && ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) || is_flammable(otmp) || is_rottable(otmp) || is_corrodeable(otmp) || is_crackable(otmp)) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);
             if (erosion != -1) {
                 let r = (yield* erode_obj(otmp, (yield* xname(otmp)), erosion, 10));

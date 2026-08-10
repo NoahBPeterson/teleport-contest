@@ -7,7 +7,7 @@ import { i16, schar, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
-import { In_endgame, MON_AT, has_mgivenname, is_female, is_mplayer, is_spear } from './nhmacrofn.js';
+import { has_mgivenname, is_mplayer, is_spear } from './nhmacrofn.js';
 import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { cg, gu, svd, svl, u } from './decl.js';
 import { mons } from './monst.js';
@@ -191,7 +191,7 @@ function dev_name() {
 
 /** C ref: mplayer.c:72 — @param {CPtr} mtmp @param {CPtr} nam */
 function get_mplname(mtmp, nam) {
-    let fmlkind = schar(is_female(cptr.ldPtro(mtmp, $monst_data)));
+    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 131072n) != 0n));
     let devnam;
     devnam = dev_name();
     if (!devnam)
@@ -231,9 +231,9 @@ export function mk_mplayer(ptr, x, y, special) {
     let nam = new Uint8Array(32);
     if (!is_mplayer(ptr))
         return (null);
-    if (MON_AT(x, y))
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
         void rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), 5);
-    if (!In_endgame(cptr.add(u, $you_uz)))
+    if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         special = 0;
     if ((mtmp = makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n))))) !== null) {
         let weapon;

@@ -9,7 +9,6 @@ import * as cjmp from '../cjmp.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, timer_is_pos } from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd, svl, svm, svn, svs, u } from './decl.js';
 import { impossible, livelog_printf, pline, verbalize } from './pline.js';
@@ -1610,7 +1609,7 @@ function nhl_debug_flags(L) {
             let mtmp2;
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
                 mtmp2 = cptr.ldPtr(mtmp);
-                if (DEADMONSTER(mtmp))
+                if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
                 mongone(mtmp);
             }
@@ -1682,7 +1681,7 @@ function nhl_timer_peek_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (timer_is_pos(timertype) && isok(x.v, y.v))
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v))
         when = spot_time_expires(x.v, y.v, timertype);
     lua_pushinteger(L, when);
     return 1;
@@ -1703,7 +1702,7 @@ function nhl_timer_stop_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (timer_is_pos(timertype) && isok(x.v, y.v))
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v))
         spot_stop_timers(x.v, y.v, timertype);
     return 0;
 }
@@ -1724,7 +1723,7 @@ function nhl_timer_start_at(L) {
     x.v = Number(BigInt.asIntN(16, lx.v));
     y.v = Number(BigInt.asIntN(16, ly.v));
     cvt_to_abscoord(x, y);
-    if (timer_is_pos(timertype) && isok(x.v, y.v)) {
+    if (((timertype) == NHC.MELT_ICE_AWAY) && isok(x.v, y.v)) {
         let where = (BigInt(x.v) << 16n) | BigInt(y.v);
         spot_stop_timers(x.v, y.v, timertype);
         void start_timer(when, NHC.TIMER_LEVEL, NHC.MELT_ICE_AWAY, long_to_any(where));

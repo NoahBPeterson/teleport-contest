@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { DEADMONSTER, DISTANCE_ATTK_TYPE, amorphous, amphibious, cansee, canspotmon, couldsee, flaming, haseyes, hides_under, is_animal, is_demon, is_hider, is_human, is_orc, is_pit, is_pole, is_swimmer, is_undead, is_vampshifter, is_weptool, is_were, is_wet_towel, is_whirly, likes_gold, m_next2u, m_seenres, max, min, nolimbs, perceives, thick_skinned, touch_petrifies, unsolid } from './nhmacrofn.js';
+import { DISTANCE_ATTK_TYPE, canspotmon, flaming, is_pit, is_pole, is_vampshifter, is_weptool, is_wet_towel, is_whirly, m_next2u, max, min, touch_petrifies } from './nhmacrofn.js';
 import { Acid_resistance, Amphibious, Blind, Blinded, Breathless, Cold_resistance, Conflict, Deaf, Detect_monsters, Displaced, EProtection, Fast, Fire_resistance, HConfusion, HHallucination, HProtection, HStun, Half_physical_damage, Hallucination, Invis, Protection_from_shape_changers, Punished, Reflecting, SYSOPT_SEDUCE, See_invisible, Shock_resistance, Sick, Slow_digestion, Stone_resistance, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow } from './nhprop.js';
 import { Amonnam, Mgender, Monnam, Some_Monnam, christen_monst, hliquid, m_monnam, mon_nam, noit_Monnam, noit_mon_nam, pmname } from './do_name.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gb, gh, gi, gm, gn, gs, gu, gv, gy, svd, svk, svl, svm, svp, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, uchain, uleft, uright, uwep, ynchars } from './decl.js';
@@ -449,7 +449,7 @@ export function* hitmsg(mtmp, mattk) {
             verb = __sl7;
             break;
             case NHM.AT_KICK:
-            if (thick_skinned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+            if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2097152n) != 0n))
                 punct = __sl8;
             verb = __sl9;
             break;
@@ -534,7 +534,7 @@ export function* u_slow_down() {
 function* wildmiss(mtmp, mattk) {
     let compat;
     let Monst_name;
-    let unotseen = schar((!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (Invis() && !perceives(cptr.ldPtro(mtmp, $monst_data))) ? 1 : 0));
+    let unotseen = schar((!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) ? 1 : 0));
     let unotthere = schar((Displaced() != 0));
     let usubmerged = schar(((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0) != 0));
     if (!unotseen && !unotthere && !usubmerged) {
@@ -543,13 +543,13 @@ function* wildmiss(mtmp, mattk) {
     }
     if (!cptr.ld1so(flags, $flag_verbose))
         return;
-    if (!cansee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
+    if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
         return;
     compat = ((cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SEDU || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SSEX) ? could_seduce(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk) : 0);
     Monst_name = (yield* Monnam(mtmp));
     set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     if (unotseen) {
-        let swings = (cptr.ld1u(mattk) == NHM.AT_BITE) ? __sl39 : ((cptr.ld1u(mattk) == NHM.AT_KICK) ? __sl9 : ((cptr.ld1u(mattk) == NHM.AT_STNG || cptr.ld1u(mattk) == NHM.AT_BUTT || nolimbs(cptr.ldPtro(mtmp, $monst_data))) ? __sl40 : __sl27));
+        let swings = (cptr.ld1u(mattk) == NHM.AT_BITE) ? __sl39 : ((cptr.ld1u(mattk) == NHM.AT_KICK) ? __sl9 : ((cptr.ld1u(mattk) == NHM.AT_STNG || cptr.ld1u(mattk) == NHM.AT_BUTT || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) ? __sl40 : __sl27));
         if (compat) {
             (yield* pline(__sl41, Monst_name));
         } else {
@@ -731,9 +731,9 @@ export function* mattacku(mtmp) {
     calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit);
     if (!ranged.v)
         nomul(0);
-    if (DEADMONSTER(mtmp))
+    if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return 1;
-    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !is_swimmer(cptr.ldPtro(mtmp, $monst_data)))
+    if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 2n) != 0n))
         return 0;
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
@@ -747,7 +747,7 @@ export function* mattacku(mtmp) {
     } else if (cptr.ldPtro(u, $you_usteed)) {
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
             return 0;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 534, __sl62), rn2(is_orc(cptr.ldPtro(mtmp, $monst_data)) ? 2 : 4)) : rn2(is_orc(cptr.ldPtro(mtmp, $monst_data)) ? 2 : 4)) && m_next2u(mtmp)) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 534, __sl62), rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) ? 2 : 4)) : rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) ? 2 : 4)) && m_next2u(mtmp)) {
             i = (yield* mattackm(mtmp, cptr.ldPtro(u, $you_usteed)));
             if ((i & NHM.M_ATTK_AGR_DIED) != 0)
                 return 1;
@@ -762,7 +762,7 @@ export function* mattacku(mtmp) {
         if (!canspotmon(mtmp))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         cptr.stI32o(u, $you_uundetected, 0);
-        if (is_hider(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER) {
+        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER) {
             let cc = cptr.alloc(4);
             let obj;
             (yield* You(__sl63, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
@@ -840,7 +840,7 @@ export function* mattacku(mtmp) {
         if (!canspotmon(mtmp))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         if (!youseeit.v)
-            (yield* pline(__sl74, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), (likes_gold(cptr.ldPtro(mtmp, $monst_data)) && cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) == NHC.GOLD_PIECE) ? __sl75 : __sl76));
+            (yield* pline(__sl74, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) && cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) == NHC.GOLD_PIECE) ? __sl75 : __sl76));
         else
             (yield* pline(__sl77, (yield* m_monnam(mtmp)), (yield* mimic_obj_name(cptr.add(gy, $instance_globals_y_youmonst))), (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96), Ugender()))), svp));
         if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
@@ -854,17 +854,17 @@ export function* mattacku(mtmp) {
     tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
         tmp = (tmp + 4) | 0;
-    if ((Invis() && !perceives(mdat)) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
+    if ((Invis() && !((cptr.ldU64o((mdat), $permonst_mflags1) & 16777216n) != 0n)) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
         tmp = (tmp - 2) | 0;
     if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
         tmp = (tmp - 2) | 0;
     if (tmp <= 0)
         tmp = 1;
-    if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && cansee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
+    if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
         cptr.stI32o(mtmp, $monst_minvis, 0);
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
-    if (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM && !(cptr.ldI32o(mtmp, $monst_mcan) & 1) && !range2.v && (is_demon(mdat) || is_were(mdat))) {
+    if (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM && !(cptr.ldI32o(mtmp, $monst_mcan) & 1) && !range2.v && (((cptr.ldU64o((mdat), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((mdat), $permonst_mflags2) & 4n) != 0n))) {
         let already_fleeing = schar((((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0) != 0));
         (yield* summonmu(mtmp, youseeit.v));
         if ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 && !already_fleeing)
@@ -891,7 +891,7 @@ export function* mattacku(mtmp) {
     firstfoundyou = foundyou.v;
     for (i = 0; i < NHM.NATTK; i++) {
         cptr.stI32o(sum, i, NHM.M_ATTK_MISS, 4);
-        if (DEADMONSTER(mtmp))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             return 1;
         if (i > 0) {
             calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit);
@@ -917,9 +917,9 @@ export function* mattacku(mtmp) {
             if (!range2.v && (!(cptr.ldPtro((mtmp), $monst_mw)) || (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || Conflict() || !touch_petrifies(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 if (foundyou.v) {
                     if (tmp > (j = (rng_log_enabled() ? (rng_log_set_caller(__sl22, 806, __sl62), rnd((20 + i) | 0)) : rnd((20 + i) | 0)))) {
-                        if (unsolid(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* failed_grab(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk)))
+                        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n) && (yield* failed_grab(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk)))
                             continue;
-                        if (cptr.ld1u(mattk) != NHM.AT_KICK || !thick_skinned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+                        if (cptr.ld1u(mattk) != NHM.AT_KICK || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2097152n) != 0n))
                             cptr.stI32o(sum, i, (yield* hitmu(mtmp, mattk)), 4);
                     } else
                         (yield* missmu(mtmp, schar((tmp == j)), mattk));
@@ -1033,15 +1033,15 @@ export function* mattacku(mtmp) {
 /** C ref: mhitu.c:956 — @param {CPtr} mtmp @param {CInt} youseeit */
 function* summonmu(mtmp, youseeit) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
-    if (is_demon(mdat)) {
+    if (((cptr.ldU64o((mdat), $permonst_mflags2) & 256n) != 0n)) {
         if (!cptr.eq(mdat, cptr.add(mons, NHC.PM_BALROG, 96)) && !cptr.eq(mdat, cptr.add(mons, NHC.PM_AMOROUS_DEMON, 96))) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 968, __sl89), rn2(In_hell(cptr.add(u, $you_uz)) ? 10 : 16)) : rn2(In_hell(cptr.add(u, $you_uz)) ? 10 : 16)))
                 void (yield* msummon(mtmp));
         }
         return;
     }
-    if (is_were(mdat)) {
-        if (is_human(mdat)) {
+    if (((cptr.ldU64o((mdat), $permonst_mflags2) & 4n) != 0n)) {
+        if (((cptr.ldU64o((mdat), $permonst_mflags2) & 8n) != 0n)) {
             if (!Protection_from_shape_changers() && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 979, __sl89), rn2((5 - (Math.imul((yield* night()), 2))) | 0)) : rn2((5 - (Math.imul((yield* night()), 2))) | 0)))
                 (yield* new_were(mtmp));
         } else {
@@ -1171,7 +1171,7 @@ function* hitmu(mtmp, mattk) {
     cptr.st1o(mhm, $mhitm_data_done, 0);
     if (!canspotmon(mtmp))
         (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (hides_under(mdat) || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL)) {
+    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (((cptr.ldU64o((mdat), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL)) {
         cptr.stI32o(mtmp, $monst_mundetected, 0);
         if (!tp_sensemon(mtmp) && !Detect_monsters()) {
             let obj;
@@ -1193,7 +1193,7 @@ function* hitmu(mtmp, mattk) {
         }
     }
     cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1187, __sl110), d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) : d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))));
-    if ((is_undead(mdat) || is_vampshifter(mtmp)) && (yield* midnight()))
+    if ((((cptr.ldU64o((mdat), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && (yield* midnight()))
         cptr.stI32(mhm, (cptr.ldI32(mhm) + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1189, __sl110), d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) : d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))))) | 0);
     (yield* mhitm_adtyping(mtmp, mattk, cptr.add(gy, $instance_globals_y_youmonst), mhm));
     void (yield* mhitm_knockback(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk, cptr.add(mhm, $mhitm_data_hitflags), schar(((cptr.ldPtro((mtmp), $monst_mw)) !== null))));
@@ -1283,7 +1283,7 @@ function* gulpmu(mtmp, mattk) {
         if (cptr.ldPtro(u, $you_usteed)) {
             let buf = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(buf), (yield* mon_nam(cptr.ldPtro(u, $you_usteed))));
-            (yield* urgent_pline(__sl112, (yield* Some_Monnam(mtmp)), is_animal(cptr.ldPtro(mtmp, $monst_data)) ? __sl40 : (is_whirly(cptr.ldPtro(mtmp, $monst_data)) ? __sl113 : (unsolid(cptr.ldPtro(mtmp, $monst_data)) ? __sl114 : (amorphous(cptr.ldPtro(mtmp, $monst_data)) ? __sl115 : __sl116))), cptr.decay(buf)));
+            (yield* urgent_pline(__sl112, (yield* Some_Monnam(mtmp)), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) ? __sl40 : (is_whirly(cptr.ldPtro(mtmp, $monst_data)) ? __sl113 : (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) ? __sl114 : (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) ? __sl115 : __sl116))), cptr.decay(buf)));
             (yield* dismount_steed(NHC.DISMOUNT_ENGULFED));
         } else {
             (yield* urgent_pline(__sl74, (yield* Monnam(mtmp)), (dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl117 : ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __sl118 : __sl119)));
@@ -1307,7 +1307,7 @@ function* gulpmu(mtmp, mattk) {
             if (Punished())
                 (yield* placebc());
             (yield* set_ustuck(null));
-            return (!DEADMONSTER(mtmp)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
+            return (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
         }
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* vision_recalc(2));
@@ -1359,7 +1359,7 @@ function* gulpmu(mtmp, mattk) {
         case NHM.AD_PHYS:
         physical_damage = 1;
         if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FOG_CLOUD, 96))) {
-            (yield* You(__sl131, flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl132 : (Breathless() ? __sl133 : (amphibious(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl134 : __sl135))));
+            (yield* You(__sl131, flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl132 : (Breathless() ? __sl133 : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 512n) != 0n) ? __sl134 : __sl135))));
             if ((Amphibious() || Breathless()) && !flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                 tmp = 0;
         } else {
@@ -1500,7 +1500,7 @@ function* explmu(mtmp, mattk, ufound) {
         case NHM.AD_FIRE:
         case NHM.AD_ELEC:
         (yield* mon_explodes(mtmp, mattk));
-        if (!DEADMONSTER(mtmp))
+        if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
             kill_agr = 0;
         break;
         case NHM.AD_BLND:
@@ -1535,10 +1535,10 @@ function* explmu(mtmp, mattk, ufound) {
         (yield* You(__sl168));
         (yield* ugolemeffects(cptr.ld1uo(mattk, $attack_adtyp), tmp));
     }
-    if (kill_agr && !DEADMONSTER(mtmp))
+    if (kill_agr && !(cptr.ldI32o((mtmp), $monst_mhp) < 1))
         (yield* mondead(mtmp));
     (yield* wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 49));
-    return (!DEADMONSTER(mtmp)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
+    return (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
 }
 
 const __static_gazemu_reactions = cptr.alloc(8 * 8);
@@ -1558,11 +1558,11 @@ export function* gazemu(mtmp, mattk) {
     let reflectable;
     let cancelled = schar((((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0) != 0));
     let already = 0;
-    let mcanseeu = schar((canseemon(mtmp) && couldsee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 ? 1 : 0));
-    if (m_seenres(mtmp, cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp))))
+    let mcanseeu = schar((canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 ? 1 : 0));
+    if ((cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp)))))
         return NHM.M_ATTK_MISS;
     is_medusa = schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, 96))));
-    reflectable = schar((Reflecting() && couldsee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && is_medusa ? 1 : 0));
+    reflectable = schar((Reflecting() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && is_medusa ? 1 : 0));
     if ((Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1698, __sl169), rn2(4)) : rn2(4))) || ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !reflectable))
         cancelled = 1;
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
@@ -1595,11 +1595,11 @@ export function* gazemu(mtmp, mattk) {
                 (yield* pline_mon(mtmp, __sl177, (yield* Monnam(mtmp))));
             cptr.st1o(gs, $instance_globals_s_stoned, 1);
             (yield* killed(mtmp));
-            if (!DEADMONSTER(mtmp))
+            if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 break;
             return NHM.M_ATTK_AGR_DIED;
         }
-        if (canseemon(mtmp) && couldsee(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && !Stone_resistance() && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
+        if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && !Stone_resistance() && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
             (yield* You(__sl178, (yield* s_suffix((yield* mon_nam(mtmp))))));
             (yield* stop_occupation());
             if (poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))
@@ -1738,7 +1738,7 @@ export function could_seduce(magr, mdef, mattk) {
     let genagr;
     let gendef;
     let adtyp;
-    if (is_animal(cptr.ldPtro(magr, $monst_data)))
+    if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 262144n) != 0n))
         return 0;
     if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
         pagr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
@@ -1753,7 +1753,7 @@ export function could_seduce(magr, mdef, mattk) {
         defperc = schar((See_invisible() != 0));
         gendef = i16(poly_gender());
     } else {
-        defperc = schar(perceives(cptr.ldPtro(mdef, $monst_data)));
+        defperc = schar(((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 16777216n) != 0n));
         gendef = i16(gender(mdef));
     }
     adtyp = mattk ? cptr.ld1uo(mattk, $attack_adtyp) : (dmgtype(pagr, NHM.AD_SSEX) ? NHM.AD_SSEX : (dmgtype(pagr, NHM.AD_SEDU) ? NHM.AD_SEDU : NHM.AD_PHYS));
@@ -2049,7 +2049,7 @@ function* assess_dmg(mtmp, tmp) {
     if ((cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - tmp) | 0)) <= 0) {
         (yield* pline_mon(mtmp, __sl269, (yield* Monnam(mtmp))));
         (yield* xkilled(mtmp, NHM.XKILL_NOMSG));
-        if (!DEADMONSTER(mtmp))
+        if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
             return NHM.M_ATTK_HIT;
         return NHM.M_ATTK_AGR_DIED;
     }
@@ -2060,7 +2060,7 @@ function* assess_dmg(mtmp, tmp) {
 export function mon_avoiding_this_attack(mtmp, attkidx) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let typ = -1;
-    if (attkidx >= 0 && (typ = get_atkdam_type(cptr.ld1uo2(ptr, attkidx, 4, $permonst_mattk + $attack_adtyp))) >= 0 && m_seenres(mtmp, cvt_adtyp_to_mseenres(uchar(typ))))
+    if (attkidx >= 0 && (typ = get_atkdam_type(cptr.ld1uo2(ptr, attkidx, 4, $permonst_mattk + $attack_adtyp))) >= 0 && (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(uchar(typ)))))
         return 1;
     return 0;
 }
@@ -2071,7 +2071,7 @@ export function ranged_attk_available(mtmp) {
     let typ = -1;
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     for (i = 0; i < NHM.NATTK; i++) {
-        if (DISTANCE_ATTK_TYPE(cptr.ld1uo2(ptr, i, 4, $permonst_mattk)) && (typ = get_atkdam_type(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp))) >= 0 && m_seenres(mtmp, cvt_adtyp_to_mseenres(uchar(typ))) == 0n)
+        if (DISTANCE_ATTK_TYPE(cptr.ld1uo2(ptr, i, 4, $permonst_mattk)) && (typ = get_atkdam_type(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp))) >= 0 && (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(uchar(typ)))) == 0n)
             return 1;
     }
     return 0;
@@ -2123,7 +2123,7 @@ function* passiveum(olduasmon, mtmp, mattk) {
                 (yield* pline_mon(mtmp, __sl275, (yield* Monnam(mtmp))));
                 cptr.st1o(gs, $instance_globals_s_stoned, 1);
                 (yield* xkilled(mtmp, NHM.XKILL_NOMSG));
-                if (!DEADMONSTER(mtmp))
+                if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     return NHM.M_ATTK_HIT;
                 return NHM.M_ATTK_AGR_DIED;
             }
@@ -2154,7 +2154,7 @@ function* passiveum(olduasmon, mtmp, mattk) {
             if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_FLOATING_EYE) {
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 2537, __sl270), rn2(4)) : rn2(4)))
                     tmp = 127;
-                if ((cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && haseyes(cptr.ldPtro(mtmp, $monst_data)) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 2539, __sl270), rn2(3)) : rn2(3)) && (perceives(cptr.ldPtro(mtmp, $monst_data)) || !Invis())) {
+                if ((cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 2539, __sl270), rn2(3)) : rn2(3)) && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) || !Invis())) {
                     if (Blind()) {
                         (yield* pline(__sl277, pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
                     } else {

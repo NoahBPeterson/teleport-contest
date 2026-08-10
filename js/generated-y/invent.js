@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Has_contents, IS_ALTAR, IS_DOOR, IS_FOUNTAIN, IS_GRAVE, IS_SINK, IS_THRONE, Is_candle, Is_container, Is_pudding, OMID, SURFACE_AT, carried, engulfing_u, greatest_erosion, has_omailcmd, has_omonst, has_oname, hides_under, is_ammo, is_boots, is_gloves, is_mines_prize, is_missile, is_pit, is_plural, is_pole, is_rider, is_soko_prize, is_wet_towel, matching_launcher, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
+import { Is_candle, Is_container, Is_pudding, SURFACE_AT, greatest_erosion, has_omailcmd, has_omid, has_omonst, has_oname, is_ammo, is_boots, is_gloves, is_missile, is_pit, is_plural, is_pole, is_rider, is_wet_towel, matching_launcher, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
 import { Blind, Fumbling, Hallucination, Stone_resistance, ULEFTY, URIGHTY, Underwater, Upolyd, clear_nhwindow, create_nhwindow, ctrl_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, message_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MESSAGE, c_common_strings, cg, disp, flags, gc, gd, gi, gl, go, gp, gs, gt, gu, gy, hands_obj, iflags, program_state, quitchars, svc, svd, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep, ynNaqchars, yn_number, ynaqchars, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -1043,7 +1043,7 @@ export function* merged(potmp, pobj) {
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
                 discovered = 1;
         }
-        if (cptr.ldI64o(obj, $obj_owornmask) && carried(otmp)) {
+        if (cptr.ldI64o(obj, $obj_owornmask) && (cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT)) {
             let wmask = cptr.ldI64o(otmp, $obj_owornmask) | cptr.ldI64o(obj, $obj_owornmask);
             if ((wmask & 256n) != 0n) {
                 wmask = 256n;
@@ -1109,11 +1109,11 @@ export function* addinv_core1(obj) {
         }
         (yield* set_artifact_intrinsic(obj, 1, 4096n));
     }
-    if (is_mines_prize(obj)) {
+    if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo))) {
         (yield* record_achievement(NHC.ACH_MINE_PRIZE));
         cptr.stI32o(svc, $context_info_achieveo, 0);
         cptr.stI32o(obj, $obj_nomerge, 0);
-    } else if (is_soko_prize(obj)) {
+    } else if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid))) {
         (yield* record_achievement(NHC.ACH_SOKO_PRIZE));
         cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
         cptr.stI32o(obj, $obj_nomerge, 0);
@@ -1147,7 +1147,7 @@ function* addinv_core0(obj, other_obj, update_perm_invent) {
         if (((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
             return (null);
         cptr.stI32o(obj.v, $obj_no_charge, 0);
-        if (Has_contents(obj.v))
+        if ((cptr.ldPtro((obj.v), $obj_cobj) !== null))
             picked_container(obj.v);
         obj_was_thrown = schar((((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN));
         cptr.stI32o(obj.v, $obj_how_lost, NHM.LOST_NONE);
@@ -1518,7 +1518,7 @@ export function o_on(id, objchn) {
     while (objchn) {
         if (cptr.ldI32o(objchn, $obj_o_id) == id)
             return objchn;
-        if (Has_contents(objchn) && (temp = o_on(id, cptr.ldPtro(objchn, $obj_cobj))))
+        if ((cptr.ldPtro((objchn), $obj_cobj) !== null) && (temp = o_on(id, cptr.ldPtro(objchn, $obj_cobj))))
             return temp;
         objchn = cptr.ldPtr(objchn);
     }
@@ -2041,7 +2041,7 @@ function* ckvalidcat(otmp) {
 
 /** C ref: invent.c:2143 — @param {CPtr} otmp @returns {CInt} */
 function ckunpaid(otmp) {
-    return ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || (Has_contents(otmp) && count_unpaid(cptr.ldPtro(otmp, $obj_cobj))) ? 1 : 0);
+    return ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || ((cptr.ldPtro((otmp), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, $obj_cobj))) ? 1 : 0);
 }
 
 /** C ref: invent.c:2149 @returns {CInt} */
@@ -2056,7 +2056,7 @@ export function is_worn(otmp) {
 
 /** C ref: invent.c:2167 — @param {CPtr} obj @returns {CInt} */
 export function is_inuse(obj) {
-    return schar((carried(obj) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
+    return schar(((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
 }
 
 /** C ref: invent.c:2173 — struct xprnctx { let, dot } (memory model v0.5) */
@@ -2668,7 +2668,7 @@ function find_unpaid(list, last_found) {
             } else
                 return ((cptr.stPtr(last_found, list)));
         }
-        if (Has_contents(list)) {
+        if ((cptr.ldPtro((list), $obj_cobj) !== null)) {
             if ((obj = find_unpaid(cptr.ldPtro(list, $obj_cobj), last_found)) !== null)
                 return obj;
         }
@@ -3006,7 +3006,7 @@ export function count_unpaid(list) {
     while (list) {
         if ((cptr.ldI32o(list, $obj_unpaid) & 1))
             count++;
-        if (Has_contents(list))
+        if ((cptr.ldPtro((list), $obj_cobj) !== null))
             count = (count + count_unpaid(cptr.ldPtro(list, $obj_cobj))) | 0;
         list = cptr.ldPtr(list);
     }
@@ -3073,7 +3073,7 @@ export function* count_contents(container, nested, quantity, everything, newdrop
             shoppy = (yield* costly_spot(x.v, y.v));
     }
     for (otmp = cptr.ldPtro(container, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp)) {
-        if (nested && Has_contents(otmp))
+        if (nested && (cptr.ldPtro((otmp), $obj_cobj) !== null))
             count += (yield* count_contents(otmp, nested, quantity, everything, newdrop));
         if (everything || (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || (shoppy && !(cptr.ldI32o(otmp, $obj_no_charge) & 1)))
             count += quantity ? cptr.ldI64o(otmp, $obj_quan) : 1n;
@@ -3103,7 +3103,7 @@ function* dounpaid(count, floorcount, buriedcount) {
     if (otmp && !contnr) {
         cost = (yield* unpaid_cost(otmp, NHC.COST_NOCONTENTS));
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
-        (yield* pline(__sl82, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), schar((carried(otmp) ? cptr.ld1so(otmp, $obj_invlet) : 62)), 1, cost, 0n))));
+        (yield* pline(__sl82, (yield* xprname(otmp, (yield* distant_name(otmp, doname)), schar(((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT) ? cptr.ld1so(otmp, $obj_invlet) : 62)), 1, cost, 0n))));
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
         return;
     }
@@ -3135,7 +3135,7 @@ function* dounpaid(count, floorcount, buriedcount) {
         if (cptr.ld1so(flags, $flag_sortpack))
             (yield* Y.icall(putstr()(win, 0, (yield* let_to_name(62, 1, 0)))));
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
-            if (Has_contents(otmp)) {
+            if ((cptr.ldPtro((otmp), $obj_cobj) !== null)) {
                 let contcost = 0n;
                 marker.v = null;
                 while (find_unpaid(cptr.ldPtro(otmp, $obj_cobj), marker)) {
@@ -3399,7 +3399,7 @@ export function* dfeature_at(x, y, buf) {
     let cmap = -1;
     let dfeature = null;
     let stway = stairway_at(x, y);
-    if (IS_DOOR(ltyp)) {
+    if (((ltyp) == NHC.DOOR)) {
         switch ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
             cmap = NHC.S_ndoor;
@@ -3416,9 +3416,9 @@ export function* dfeature_at(x, y, buf) {
         }
         if (is_drawbridge_wall(x, y) >= 0)
             dfeature = __sl175, cmap = -1;
-    } else if (IS_FOUNTAIN(ltyp))
+    } else if (((ltyp) == NHC.FOUNTAIN))
         cmap = NHC.S_fountain;
-    else if (IS_THRONE(ltyp))
+    else if (((ltyp) == NHC.THRONE))
         cmap = NHC.S_throne;
     else if (is_lava(x, y))
         cmap = NHC.S_lava;
@@ -3426,9 +3426,9 @@ export function* dfeature_at(x, y, buf) {
         dfeature = ice_descr(x, y, cptr.decay(__static_dfeature_at_altbuf)), cmap = -1;
     else if (is_pool(x, y))
         dfeature = __sl176;
-    else if (IS_SINK(ltyp))
+    else if (((ltyp) == NHC.SINK))
         cmap = NHC.S_sink;
-    else if (IS_ALTAR(ltyp)) {
+    else if (((ltyp) == NHC.ALTAR)) {
         void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __sl177, (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __sl178 : __sl0, (yield* a_gname()), align_str((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
         dfeature = cptr.decay(__static_dfeature_at_altbuf);
     } else if (stway) {
@@ -3437,7 +3437,7 @@ export function* dfeature_at(x, y, buf) {
         cmap = NHC.S_vodbridge;
     else if (ltyp == NHC.DBWALL)
         cmap = NHC.S_vcdbridge;
-    else if (IS_GRAVE(ltyp))
+    else if (((ltyp) == NHC.GRAVE))
         cmap = NHC.S_grave;
     else if (ltyp == NHC.TREE)
         cmap = NHC.S_tree;
@@ -3665,7 +3665,7 @@ export function* mergable(otmp, obj) {
         return 0;
     if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && !(yield* same_price(obj, otmp)))
         return 0;
-    if (has_omonst(obj) || (cptr.ldPtro((obj), $obj_oextra) && OMID(obj)) || has_omonst(otmp) || (cptr.ldPtro((otmp), $obj_oextra) && OMID(otmp)))
+    if (has_omonst(obj) || has_omid(obj) || has_omonst(otmp) || has_omid(otmp))
         return 0;
     objnamelth = cptr.strlen(safe_oname(obj));
     otmpnamelth = cptr.strlen(safe_oname(otmp));
@@ -3876,7 +3876,7 @@ export function* useupf(obj, numused) {
             void (yield* stolen_value(otmp, cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 0, 0));
     }
     (yield* delobj(otmp));
-    if (at_u && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+    if (at_u && (cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n))
         void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
 }
 
@@ -4266,7 +4266,7 @@ export function* display_minventory(mon, dflags, title) {
     let n;
     let selected = cptr.box(null);
     let do_all = (dflags & NHM.MINV_ALL) != 0;
-    let incl_hero = (do_all && engulfing_u(mon) ? 1 : 0);
+    let incl_hero = (do_all && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon)))) ? 1 : 0);
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);
     let have_any = (have_inv || incl_hero ? 1 : 0);
     let pickings = (dflags & NHM.MINV_PICKMASK);

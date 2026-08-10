@@ -13,7 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { CAN_OVERWRITE_TERRAIN, DEADMONSTER, IS_DOOR, IS_FOUNTAIN, IS_LAVA, IS_SINK, IS_WALL, MON_AT, OBJ_AT, distu, has_mgivenname, is_orc, release_data, u_at, undestroyable_trap, update_file, within_bounded_area } from './nhmacrofn.js';
+import { CAN_OVERWRITE_TERRAIN, IS_LAVA, IS_WALL, has_mgivenname, undestroyable_trap, within_bounded_area } from './nhmacrofn.js';
 import { Deaf, Punished, Swimming, mines_dnum, sokoban_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { flags, gb, ge, gf, gi, gl, gn, gr, gu, gv, gw, gx, gy, iflags, program_state, svb, svd, sve, svi, svl, svn, svr, svu, svx, svy, u, uball } from './decl.js';
@@ -196,7 +196,7 @@ function iswall(x, y) {
     if (!isok(x, y))
         return 0;
     type = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    return (IS_WALL(type) || IS_DOOR(type) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
+    return (IS_WALL(type) || ((type) == NHC.DOOR) || type == NHC.LAVAWALL || type == NHC.WATER || type == NHC.SDOOR || type == NHC.IRONBARS ? 1 : 0);
 }
 
 /** C ref: mkmaze.c:59 — @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -228,7 +228,7 @@ export function* set_levltyp(x, y, newtyp) {
                 (yield* obj_ice_effects(x, y, 1));
                 (yield* spot_stop_timers(x, y, NHC.MELT_ICE_AWAY));
             }
-            if ((IS_FOUNTAIN(oldtyp) != IS_FOUNTAIN(newtyp)) || (IS_SINK(oldtyp) != IS_SINK(newtyp)))
+            if ((((oldtyp) == NHC.FOUNTAIN) != ((newtyp) == NHC.FOUNTAIN)) || (((oldtyp) == NHC.SINK) != ((newtyp) == NHC.SINK)))
                 count_level_features();
             return 1;
         }
@@ -788,9 +788,9 @@ function* stolen_booty() {
         (yield* migrate_orc(mtmp, 1n));
     }
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-        if (DEADMONSTER(mtmp))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if (is_orc(cptr.ldPtro(mtmp, $monst_data)) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
             if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96)))
                 mtmp = (yield* christen_orc(mtmp, upstart(gang), __sl16));
         }
@@ -1356,7 +1356,7 @@ export function* fumaroles() {
             let r = (yield* create_gas_cloud(x, y, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + (sizemin)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + 5) | 0)));
             (cptr.stI32o((r), $NhRegion_player_flags, cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS));
             snd = 1;
-            if (distu(x, y) < 15)
+            if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 15)
                 loud = 1;
         }
     }
@@ -1418,7 +1418,7 @@ export function* movebubbles() {
                             (yield* impossible(__sl39, x, y));
                             continue;
                         }
-                        if (OBJ_AT(x, y)) {
+                        if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
                             let olist = null;
                             let otmp;
                             while ((otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
@@ -1435,7 +1435,7 @@ export function* movebubbles() {
                             cptr.stPtr(cons, cptr.ldPtro(b, $bubble_cons));
                             cptr.stPtro(b, $bubble_cons, cons);
                         }
-                        if (MON_AT(x, y)) {
+                        if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                             let mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
                             cons = (yield* alloc(24));
                             cptr.stI16o(cons, $container_x, x);
@@ -1452,7 +1452,7 @@ export function* movebubbles() {
                             cptr.stI16o(mon, $monst_mx, cptr.stI16o(mon, $monst_my, 0));
                             cptr.stI64o(mon, $monst_mstate, cptr.ldI64o(mon, $monst_mstate) | 16n);
                         }
-                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && u_at(x, y)) {
+                        if (!(cptr.ldI32o(u, $you_uswallow) & 1) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                             cons = (yield* alloc(24));
                             cptr.stI16o(cons, $container_x, x);
                             cptr.stI16o(cons, $container_y, y);
@@ -1540,7 +1540,7 @@ export function* save_waterlevel(nhfp) {
     let b;
     if (!cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles))
         return;
-    if (update_file(nhfp)) {
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         let n = cptr.box(0);
         for (b = cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles); b; b = cptr.ldPtro(b, $bubble_next))
             ++n.v;
@@ -1553,7 +1553,7 @@ export function* save_waterlevel(nhfp) {
             (yield* sfo_bubble(nhfp, b, __sl48));
         }
     }
-    if (release_data(nhfp))
+    if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
         unsetup_waterlevel();
 }
 

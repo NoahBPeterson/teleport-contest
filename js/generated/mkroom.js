@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_DOOR, In_endgame, MON_AT, OBJ_AT, max, min } from './nhmacrofn.js';
+import { max, min } from './nhmacrofn.js';
 import { wizard } from './nhprop.js';
 import { impossible } from './pline.js';
 import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js';
@@ -439,7 +439,7 @@ function morguemon() {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(100)) : rn2(100));
     let hd = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(level_difficulty())) : rn2(level_difficulty()));
     if (hd > 10 && i < 10) {
-        if (In_hell(cptr.add(u, $you_uz)) || In_endgame(cptr.add(u, $you_uz))) {
+        if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
             return mkclass(NHC.S_DEMON, 0);
         } else {
             let ndemon_res = ndemon(-128);
@@ -493,7 +493,7 @@ function mkswamp() {
             for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++) {
                 if (!((cptr.ld1so3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || ((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
                     continue;
-                if (!OBJ_AT(sx, sy) && !MON_AT(sx, sy) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
+                if (!(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !t_at(sx, sy) && !nexttodoor(sx, sy)) {
                     if (((sx + sy) | 0) % 2) {
                         del_engr_at(sx, sy);
                         cptr.st1o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ, NHC.POOL);
@@ -553,7 +553,7 @@ export function nexttodoor(sx, sy) {
             if (!isok(i16(((sx + dx) | 0)), i16(((sy + dy) | 0))))
                 continue;
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (sx + dx) | 0, 756), (sy + dy) | 0, 36);
-            if (IS_DOOR(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
+            if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
                 return 1;
         }
     return 0;

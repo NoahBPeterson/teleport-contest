@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { helpless, is_human, is_were } from './nhmacrofn.js';
+import { helpless } from './nhmacrofn.js';
 import { Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
@@ -69,9 +69,9 @@ const __sl14 = cptr.lit("you_unwere");
 
 /** C ref: were.c:9 — @param {CPtr} mon */
 export function* were_change(mon) {
-    if (!is_were(cptr.ldPtro(mon, $monst_data)))
+    if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) != 0n))
         return;
-    if (is_human(cptr.ldPtro(mon, $monst_data))) {
+    if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n)) {
         if (!Protection_from_shape_changers() && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 17, __sl1), rn2((yield* night()) ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) : rn2((yield* night()) ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30) : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50)))) {
             (yield* new_were(mon));
             (cptr.stI64o(gw, $instance_globals_w_were_changes, cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n)) - (1n);
@@ -149,7 +149,7 @@ export function were_beastie(pm) {
 /** C ref: were.c:96 — @param {CPtr} mon */
 export function* new_were(mon) {
     let pm;
-    if (Protection_from_shape_changers() && is_human(cptr.ldPtro(mon, $monst_data)))
+    if (Protection_from_shape_changers() && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n))
         return;
     pm = counter_were((cptr.ldI32o((cptr.ldPtro(mon, $monst_data)), $permonst_pmidx)));
     if (pm < NHC.LOW_PM) {
@@ -157,7 +157,7 @@ export function* new_were(mon) {
         return;
     }
     if (canseemon(mon) && !Hallucination())
-        (yield* pline(__sl6, (yield* Monnam(mon)), is_human(cptr.add(mons, pm, 96)) ? __sl7 : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4)));
+        (yield* pline(__sl6, (yield* Monnam(mon)), ((cptr.ldU64o((cptr.add(mons, pm, 96)), $permonst_mflags2) & 8n) != 0n) ? __sl7 : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4)));
     set_mon_data(mon, cptr.add(mons, pm, 96));
     if (helpless(mon)) {
         cptr.stI32o(mon, $monst_msleeping, 0);
@@ -241,9 +241,9 @@ export function* you_unwere(purify) {
         (yield* You_feel(__sl12));
         (yield* set_ulycn(NHC.NON_PM));
     }
-    if (!Unchanging() && is_were(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !(yield* monster_nearby()) && (!controllable_poly || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __sl13))))
+    if (!Unchanging() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !(yield* monster_nearby()) && (!controllable_poly || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __sl13))))
         (yield* rehumanize());
-    else if (is_were(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !cptr.ldI32o(u, $you_mtimedone))
+    else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !cptr.ldI32o(u, $you_mtimedone))
         cptr.stI32o(u, $you_mtimedone, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 227, __sl14), rn2(200)) : rn2(200)) + 200) | 0));
 }
 

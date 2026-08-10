@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ABASE, AMAX, In_endgame, P_SKILL, has_mgivenname, haseyes, hides_under, is_ammo, is_animal, is_clinger, is_female, is_male, is_metallic, is_neuter, is_rider, is_wet_towel, ismnum, lays_eggs, spellid, type_is_pname, u_wield_art, vampshifted } from './nhmacrofn.js';
+import { has_mgivenname, is_ammo, is_metallic, is_rider, is_wet_towel, ismnum, vampshifted } from './nhmacrofn.js';
 import { Acid_resistance, Adornment, Aggravate_monster, Amphibious, Antimagic, BBlinded, BClairvoyant, BFlying, BInvis, BLevitation, BStealth, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only, Blnd_resist, Breathless, Clairvoyant, Cold_resistance, Conflict, Deaf, Detect_monsters, Disint_resistance, Displaced, Drain_resistance, EBlinded, EClairvoyant, EInvis, EStealth, EWounded_legs, Fast, Fire_resistance, Fixed_abil, Flying, Free_action, Fumbling, Glib, HBlinded, HClairvoyant, HConfusion, HDetect_monsters, HInvis, HProtection, HSleepy, HStealth, HStun, Half_gas_damage, Half_physical_damage, Half_spell_damage, Halluc_resistance, Hallucination, Hunger, Infravision, Invis, Invisible, Invulnerable, Jumping, Lev_at_will, Levitation, Lifesaved, Luck, Passes_walls, PermaBlind, Poison_resistance, Polymorph, Polymorph_control, Protection, Protection_from_shape_changers, Punished, Reflecting, Regeneration, Role_switch, Searching, See_invisible, Shock_resistance, Sick, Sleep_resistance, Sleepy, Slimed, Slow_digestion, Stealth, Stone_resistance, Stoned, Strangled, Swimming, Teleport_control, Teleportation, URIGHTY, U_AP_TYPE, Unchanging, Undead_warning, Underwater, Upolyd, Very_fast, Vomiting, Warn_of_mon, Warning, Wounded_legs, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putstr, start_menu, wizard } from './nhprop.js';
 import { c_common_strings, cg, flags, ga, gb, ge, gf, gg, gi, gu, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, svs, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, urealtime, uright, uswapwep, uwep, ynaqchars, ynqchars } from './decl.js';
 import { add_menu, add_menu_str, select_menu, windowprocs } from './windows.js';
@@ -1254,7 +1254,7 @@ function background_enlightenment(unused_mode, final) {
         let uasmon = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
         let altphrasing = schar(vampshifted(cptr.add(gy, $instance_globals_y_youmonst)));
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
-        if (!is_male(uasmon) && !is_female(uasmon) && !is_neuter(uasmon))
+        if (!((cptr.ldU64o((uasmon), $permonst_mflags2) & 65536n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 131072n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 262144n) != 0n))
             void cptr.sprintf(cptr.decay(tmpbuf), __sl95, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48));
         if (altphrasing)
             void cptr.sprintf(eos(cptr.decay(tmpbuf)), __sl96, pmname(cptr.add(mons, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham), 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
@@ -1298,7 +1298,7 @@ function background_enlightenment(unused_mode, final) {
     void cptr.sprintf(cptr.decay(buf), __sl117, !strcmp(body_part(NHC.HANDED), __sl118) ? __sl0 : __sl119, URIGHTY() ? __sl120 : __sl121);
     enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl0)));
     cptr.st1(cptr.decay(buf), cptr.st1(cptr.decay(tmpbuf), 0));
-    if (In_endgame(cptr.add(u, $you_uz))) {
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
         let egdepth = observable_depth(cptr.add(u, $you_uz));
         void endgamelevelname(cptr.decay(tmpbuf), egdepth);
         nh_snprintf(__sl97, 609, cptr.decay(buf), 256n, __sl122, !cptr.strncmp(cptr.decay(tmpbuf), __sl123, 5n) ? __sl124 : __sl0, cptr.decay(tmpbuf));
@@ -1465,7 +1465,7 @@ function one_characteristic(mode, final, attrindx) {
         case NHC.A_DEX:
         break;
         case NHC.A_CON:
-        if (u_wield_art(NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
+        if (is_art(uwep.v, NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
             hide_innate_value = 1;
         break;
         case NHC.A_INT:
@@ -1488,8 +1488,8 @@ function one_characteristic(mode, final, attrindx) {
     void attrval(attrindx, acurrent, cptr.decay(valubuf));
     void cptr.sprintf(cptr.decay(subjbuf), __sl191, cptr.ldPtro(attrname, attrindx, 8));
     if (!hide_innate_value) {
-        abase = ABASE(attrindx);
-        apeak = AMAX(attrindx);
+        abase = (cptr.ld1so2(u, attrindx, 1, $you_acurr));
+        apeak = (cptr.ld1so2(u, attrindx, 1, $you_amax));
         alimit = ((attrindx == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, attrindx, 2, $instance_globals_u_urace + $Race_attrmax));
         interesting_alimit = schar((final ? 1 : (alimit != (attrindx != NHC.A_STR ? 18 : 118))));
         paren_pfx = final ? __sl192 : __sl193;
@@ -1600,7 +1600,7 @@ function status_enlightenment(mode, final) {
         void cptr.sprintf(cptr.decay(buf), __sl234, (HBlinded() & 67108864n) != 0n ? __sl235 : ((HBlinded() & 268435456n) ? __sl236 : (Blindfolded_only() ? __sl237 : __sl238)));
         if (wizard() && (HBlinded() == BlindedTimeout() && !EBlinded()))
             void cptr.sprintf(eos(cptr.decay(buf)), __sl224, BlindedTimeout());
-        enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((!haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl0 : from_what(NHC.BLINDED))));
+        enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? __sl0 : from_what(NHC.BLINDED))));
     }
     if (Deaf())
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__sl239)), ((from_what(NHC.DEAF))));
@@ -1783,7 +1783,7 @@ function weapon_insight(final) {
     }
     if ((wtype = weapon_type(uwep.v)) != NHC.P_NONE && (!uwep.v || !is_ammo(uwep.v))) {
         let sklvlbuf = new Uint8Array(20);
-        let sklvl = P_SKILL(wtype);
+        let sklvl = (cptr.ldI16o2(u, wtype, 6, $you_weapon_skills));
         let hav = schar((sklvl != NHC.P_UNSKILLED && sklvl != NHC.P_SKILLED ? 1 : 0));
         if (sklvl == NHC.P_ISRESTRICTED)
             void cptr.strcpy(cptr.decay(sklvlbuf), __sl43);
@@ -1809,8 +1809,8 @@ function weapon_insight(final) {
             let verb_present;
             let verb_past;
             let wtype2 = weapon_type(uswapwep.v);
-            let sklvl2 = P_SKILL(wtype2);
-            let twoskl = P_SKILL(NHC.P_TWO_WEAPON_COMBAT);
+            let sklvl2 = (cptr.ldI16o2(u, wtype2, 6, $you_weapon_skills));
+            let twoskl = (cptr.ldI16o2(u, NHC.P_TWO_WEAPON_COMBAT, 6, $you_weapon_skills));
             let a1;
             let a2;
             let ab;
@@ -2079,7 +2079,7 @@ function attributes_enlightenment(unused_mode, final) {
         }
         cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked, save_BFly);
     }
-    if (is_clinger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
         if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
             enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__sl422)), ((__sl0)));
@@ -2135,7 +2135,7 @@ function attributes_enlightenment(unused_mode, final) {
         enlght_halfdmg(NHC.HALF_SPDAM, final);
     if (Half_gas_damage())
         enlght_line(cptr.decay((You_)), final ? (__sl56) : (__sl57), (__sl442), (__sl0));
-    if (spellid(0) > NHM.NO_SPELL) {
+    if (cptr.ldI16o(svs, 0, 8) > NHM.NO_SPELL) {
         let cast_adj = new Uint8Array(128);
         let suit = schar((uarm.v && is_metallic(uarm.v) ? 1 : 0));
         let robe = schar((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE ? 1 : 0));
@@ -2175,7 +2175,7 @@ function attributes_enlightenment(unused_mode, final) {
             void cptr.sprintf(eos(cptr.decay(buf)), __sl459, cptr.ldI32o(u, $you_mtimedone));
         enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__sl0)));
     }
-    if (lays_eggs(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ld1so(flags, $flag_female))
+    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female))
         enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__sl460)), ((__sl0)));
     if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
         void cptr.strcpy(cptr.decay(buf), an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ulycn), 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
@@ -2301,11 +2301,11 @@ export function youhiding(via_enlghtmt, msgflag) {
         if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL) {
             if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
                 void cptr.sprintf(bp, __sl508, waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        } else if (hides_under(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
             let o = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
             if (o)
                 void cptr.sprintf(bp, __sl509, ansimpleoname(o));
-        } else if (is_clinger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || Flying()) {
+        } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || Flying()) {
             void cptr.sprintf(bp, __sl510, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         } else {
             if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
@@ -2896,7 +2896,7 @@ export function list_vanquished(defquery, ask) {
                     prev_mlet = mlet;
                 }
                 if (((cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC)) {
-                    void cptr.sprintf(cptr.decay(buf), __sl631, !type_is_pname(cptr.add(mons, i, 96)) ? __sl632 : __sl0, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+                    void cptr.sprintf(cptr.decay(buf), __sl631, !((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl632 : __sl0, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
                     if (nkilled > 1)
                         void cptr.sprintf(eos(cptr.decay(buf)), __sl633, N_times(BigInt(nkilled), cptr.decay(buftoo)));
                     was_uniq = 1;
@@ -3223,7 +3223,7 @@ export function mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __sl696);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         let pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
-        void cptr.strcat(cptr.decay(info), (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl697 : ((is_animal(pm) && !(dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null)) ? __sl698 : __sl699)) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl700 : __sl701));
+        void cptr.strcat(cptr.decay(info), (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl697 : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) && !(dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null)) ? __sl698 : __sl699)) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl700 : __sl701));
     }
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
         void cptr.strcat(cptr.decay(info), __sl702);
@@ -3270,7 +3270,7 @@ export function ustatusline() {
     if (Blind()) {
         void cptr.strcat(cptr.decay(info), __sl686);
         if (cptr.ldI32o(u, $you_ucreamed)) {
-            if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() || EBlinded() || !haseyes(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+            if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() || EBlinded() || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
                 void cptr.strcat(cptr.decay(info), __sl713);
             void cptr.strcat(cptr.decay(info), __sl714);
         }

@@ -8,7 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { C, M, SET__IS_VALUE_VALID } from './nhmacrofn.js';
+import { SET__IS_VALUE_VALID } from './nhmacrofn.js';
 import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
@@ -10887,23 +10887,23 @@ export function txt2key(txt) {
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
         if (!cptr.ld1so(txt, 1))
-            return uchar(M(uchar(cptr.ld1s(txt))));
+            return uchar((((uchar(cptr.ld1s(txt))) - 128) | 0));
         makemeta = 1;
     }
     if (cptr.ld1s(txt) == 94 || highc(cptr.ld1s(txt)) == 67) {
         uc = uchar(cptr.ld1s(txt));
         if (!cptr.ld1so(txt, 1))
-            return uchar((makemeta ? M(uc) : uc));
+            return uchar((makemeta ? (((uc) - 128) | 0) : uc));
         txt = cptr.add(txt, 1);
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
         if (cptr.ld1s(txt) == 63)
             return uchar((makemeta ? 4294967295 : 127));
-        uc = uchar(C(uchar(cptr.ld1s(txt))));
-        return uchar((makemeta ? M(uc) : uc));
+        uc = uchar((31 & (uchar(cptr.ld1s(txt)))));
+        return uchar((makemeta ? (((uc) - 128) | 0) : uc));
     }
     if (makemeta && cptr.ld1s(txt))
-        return uchar(M(uchar(cptr.ld1s(txt))));
+        return uchar((((uchar(cptr.ld1s(txt))) - 128) | 0));
     if (cptr.ld1s(txt) >= 48 && cptr.ld1s(txt) <= 57) {
         let key = 0;
         let i;

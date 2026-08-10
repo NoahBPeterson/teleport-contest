@@ -12,7 +12,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, P_SKILL, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
+import { Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
 import { Race_switch, Role_switch, discover } from './nhprop.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
@@ -1880,7 +1880,7 @@ function* pauper_reinit() {
     if (!cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         return;
     for (skill = 0; skill < NHC.P_NUM_SKILLS; skill++)
-        if (P_SKILL(skill) > NHC.P_UNSKILLED) {
+        if ((cptr.ldI16o2(u, skill, 6, $you_weapon_skills)) > NHC.P_UNSKILLED) {
             cptr.stI16o2(u, skill, 6, $you_weapon_skills, NHC.P_UNSKILLED);
             cptr.stI16o2(u, skill, 6, $you_weapon_skills + $skills_advance, 0);
         }
