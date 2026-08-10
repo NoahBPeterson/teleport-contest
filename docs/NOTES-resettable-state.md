@@ -223,7 +223,10 @@ in 4.7 s, against 11.5 s for the reference to run seed0030 alone.
 
 ---
 
-## 6. Gates
+## 6. Gates, leg 1
+
+These are the leg-1 numbers: the reset emitted, proven exact, and *not yet
+called by anything*. §8 is the leg-2 set, run against the switched paths.
 
 - `tools/reset-diff.mjs` — **12/12** pairs byte-identical to a fresh realm;
   **0/12** with `--force-noop`, as required.
@@ -252,52 +255,319 @@ through. The sibling's `nethack-c/recorder/src` was verified against the
 
 ---
 
-## 7. What this does not do yet (leg 2)
+## 7. Leg 2 — the switch
 
-Nothing on the scoring path calls any of it. `js/jsmain.js:runSegment` still
-forks per segment, and `js/boot/reset-realm.mjs`'s only consumer is the
-differential. That is deliberate: leg 1 was to make the reset exist and prove it
-exact.
+Leg 1 built the reset and proved it exact against a fork. Nothing called it.
+Leg 2 puts it on the two paths that were paying for forks: the scored replay,
+and the interactive rung a sandboxed Node lands on.
 
-Leg 2 is the switch, and these are the pieces it has to handle:
+### 7.1 `runSegment` — one graph for the whole process
 
-1. **`runSegment`.** Replace `import(segmentSpecifier(HARNESS_URL, n, isolated))`
-   with a process-wide resettable realm. Watch `segmentCount` (`jsmain.js:66`) —
-   it currently selects the fork tag *and* gates the browser pristine-realm
-   branch (`pristine && n === 1`), so it cannot simply be retired.
-2. **A fallback that is not a lie.** `acquire()` throws when the graph cannot be
-   forked, and `reset()` returns false on a build without `C2JS_RESET=1`.
-   `runSegment` must keep the fork path for those cases rather than silently
-   running a second game in a spent realm — the failure mode isolation.mjs
-   already warns about.
-3. **The browser.** `reset-realm.mjs` needs `module.registerHooks` to own a
-   graph. A page has no such thing, so segment 1 would use the page's own
-   (pristine) graph and reset it for segments 2..N, retiring the per-segment
-   `frame.mjs` Worker. `globalThis.__c2jsEngineRealmUsed` (`jsmain.js:293`) has
-   to be reconsidered at the same time: it deliberately survives re-import, and
-   leaving it set forces every later segment into a Worker realm.
-4. **The interactive/yield rung.** `js/boot/main-thread-engine.mjs` has its own
-   `forkSeq`, `claimed` and `graph` memo, and `releaseForkedGraph()` already
-   does a partial teardown that misses `__nextBufId`, `__bufIds`, `__nextFd` and
-   `__fdHooks`. It should call the reset instead of its own subset. The yield
-   build (`js/generated-y/`) needs `resetify.mjs` run over it too — the pass is
-   directory-agnostic but is only wired to `js/generated/` today.
-5. **`__segCounter`** (`harness.mjs:54`) is dead but incrementing. If anything
-   ever reads it, it needs resetting.
+`js/jsmain.js`'s Node branch acquires **one** resettable realm, lazily, and runs
+every segment in it. `Realm.run()` resets first when the graph already ran a
+game, so the reset happens between segments of one session as well as between
+sessions.
 
-### Composition with the unmerged `lua-port` branch
+`segmentCount` was not retired. It never was about forking alone: it still tags
+the fallback's URLs, and `n === 1` is half of the browser's pristine test
+(`pristine && n === 1`). It costs one increment and it stays honest.
 
-`lua-port` introduces a `PORTS` state that this pass has never seen. Two things
-it will need:
+**The fallback is the fork path, unchanged.** Two things can deny a realm, and
+neither is answered by running a second game in a spent one:
 
-- **It must be in the census.** If `PORTS` is a module-level `const` bound to a
-  Map, a class instance, or anything that is not a typed array / CPtr / box /
-  Array, `S()` **throws by design** rather than silently leaving the previous
-  game's object in place. That is the intended failure: add the classification
-  to `reset-census.mjs`, and `resetify.mjs` picks it up. Run
-  `node tools/c2js/reset-census.mjs --unknown` first on that branch.
-- **If it holds identities, it must be in §3.** Anything on that branch that
-  allocates ids, or that a Lua table iterates, joins `__bufIds` and
-  `__ptrRegistry` as parity-observable. The differential will catch it — the
-  ten-segment acid test exercises level generation heavily — but only if the
-  pair set includes a session that reaches the new code.
+| | what runSegment does |
+|---|---|
+| no `module.registerHooks` | `acquire()` refuses to take the shared graph, so it throws; the fork path runs, and `enableSegmentIsolation()`'s **non-quiet** degradation notice still reaches whoever needed it |
+| no `C2JS_RESET=1` barrel | the realm comes back `resettable === false` — but it is still a private forked graph that has never run anything, so **segment 1 runs in it** and segments 2..N fork as before. Nothing is wasted and nothing is reused |
+
+Exercised, not assumed: the whole corpus was run once with
+`js/generated/__reset.js` moved out of the tree — **69/69, 940+0.75/turn, 2:02**
+against **69/69, 900+0.53/turn, 1:45** with the reset.
+
+### 7.2 The bug a shared graph introduces, which forking hid
+
+`runBootGame` returns `rngLog` as `rnd.getRngLog()` — `js/generated/rnd.js`'s own
+`__rngLog` **array**, not a copy. Under the fork path that was harmless: segment
+N's `rnd.js` is a module nothing else will ever run in. Under reset it is the
+same array the next game logs into, and the restore refills it **in place**
+(that is the whole point of the by-value snapshot — a binding another module
+captured has to land on the same object). A judge holding segment 1's game
+object, running segment 2, and only then calling `getRngLog()` would have read
+an empty array: a scoring failure with no visible cause, in the observable that
+counts most.
+
+`Realm.run()` slices it. The other four fields are built by `harness.mjs` out of
+its own locals and alias nothing in the graph — checked at the one place a
+result is constructed, not assumed.
+
+This is exactly the class of bug `--via runsegment` below exists to catch, and
+it is worth noticing that the leg-1 differential could not have: it slices every
+field into its own observation before comparing.
+
+### 7.3 The interactive rung — the number this was all for
+
+`js/boot/main-thread-engine.mjs` asked `forkGraph()` for a private graph per
+game. That worked and it had a wall in it, measured in
+`docs/NOTES-async-engine.md`: a forked graph can never be unloaded, so by
+session 20 the heap was 1.6 GB and *boot* had gone from 580 ms to 1600 ms;
+session 21 spent 94 s in boot, session 22 spent 354 s and the run did not
+finish. **"The full 44-session sandboxed aggregate is therefore not a number
+this branch can report"** is what that file had to say.
+
+It is now:
+
+```
+node --permission --allow-fs-read="$PWD/*" frozen/playability_runner.mjs
+
+  44 sessions, 0 failures, 9096 moves, 28.0 s
+  3.03 – 3.08 ms/move aggregate  (three runs: 3.084, 3.030, 3.049)
+```
+
+Against the fork path's own aggregates on the same corpus and the same machine:
+6.61 ms/move for the first ten sessions, 10.18 for the first twenty, and no
+number at all for forty-four.
+
+`acquireGraph()` composes the two rungs — reset first, fork second — and
+`_finish()` hands the graph back through whichever one it got: `releaseForkedGraph()`
+for a fork (which could only ever give back the pointer table and the RNG log,
+because a fork's 176 modules are unloadable) or `resetResidentGraph()` for a
+realm, which gives back **everything**. The reset is done at game *end* rather
+than before the next game, which is the opposite of `Realm.run()`'s own default
+and is deliberate: the driver measures the heap *between* sessions, and a reset
+deferred to the next boot would make the curve look like the fork's while being
+nothing like it. Parity is unaffected either way — the reset happens between the
+two games, which is all the differential ever claimed.
+
+**Boot collapses to `newgame()` after game 1**, which is most of where the time
+went. Same sandbox, three games in one process:
+
+```
+game 0   mode=main  warmed=false  graphMs=384  bootMs=77
+game 1   mode=main  warmed=true   graphMs=0    bootMs=41
+game 2   mode=main  warmed=true   graphMs=0    bootMs=39
+```
+
+`graphMs=0` is the whole switch in one number: game 2 pays nothing to get a
+graph. (`warmed` is now true for a realm past its first game — it means what it
+means on every other rung, "the graph was in this realm's hand before the game
+asked for it".)
+
+**And the memory is flat.** RSS over the 44-session run sawtooths between ~490
+and ~1163 MB with no ramp, which is GC latency rather than accumulation — and
+the proof of that is the same run completing under a hard cap:
+
+```
+node --max-old-space-size=512 --permission --allow-fs-read="$PWD/*" \
+     frozen/playability_runner.mjs
+  → 44 sessions, 0 failures, 3.05 ms/move, 28.0 s
+```
+
+512 MB. The fork path's own `roomForAnotherGraph()` reserves 400 MB *per fork*
+and would have refused the second game outright.
+
+`roomForAnotherGraph()`, `RealmExhausted` and the refusal it throws are all
+still there. They now guard a rung that is only reached when there is no reset,
+which is the correct place for them.
+
+### 7.4 Both builds, and how the two passes compose
+
+`js/generated-y/` — `yieldify.mjs`'s whole-program rewrite — needed the same
+treatment, and it could not inherit it. `resetify.mjs` grew `--dir`, and
+`build.mjs` runs it once per directory (**after** `maybeYield`, which rewrites
+that directory from scratch).
+
+It could not inherit it because of what the rewrite would do to the block:
+
+```js
+// yieldify over a js/generated/ that already has reset blocks:
+export function* __captureState(S) { __c2js_rs = [(yield* Y.icall(S(enc_stat))), ...
+```
+
+`S` is a parameter, so every `S(x)` is a call through a function pointer, so the
+colouring wraps it and `__captureState` becomes a **generator** — which the
+barrel calls directly. The yieldable build's reset would have thrown on first
+use. So `callgraph.mjs` strips the delimited block (and skips `__reset.js`)
+before scanning, which has a second, better consequence: **`js/generated-y/` is
+byte-identical whether or not the sync build was built with `C2JS_RESET=1`.**
+Verified — a `yieldify.mjs` run after the strip reproduced the committed
+directory to the byte, and the fn-ptr wrap count dropped 4,501 → 1,711, which is
+precisely the reset blocks that should never have been in the analysis.
+
+Both directories report the same census: **146/167 live modules, 1,395
+bindings.** They should, and now it is a fact rather than a hope: yieldify emits
+no top-level coloured call (its pre-flight asserts it), so the top-level
+declarations the census reads are the same ones in both.
+
+### 7.5 `__segCounter`
+
+Still dead — assigned at `harness.mjs:104`, read nowhere (checked across `js/`,
+`tools/` and `frozen/`). It behaves *differently* now and that is worth writing
+down: the fork path gave every segment its own `harness.mjs`, so `segId` was
+always 1; one realm makes it count 1, 2, 3. Nothing observes either. It stays in
+`reset-census.mjs`'s `RUNTIME_STATE` table, which is where the note lives that
+it cannot be made live without a reset — `harness.mjs` is hand-written and not
+in the barrel, so making it live would mean resetting it by hand.
+
+### 7.6 The browser — deferred to leg 3, and why
+
+Not switched. `reset-realm.mjs`'s `acquire({fork: false})` would work in a page
+(segment 1 in the page's own pristine graph, reset for 2..N, retiring the
+per-segment `frame.mjs` Worker), and the yield build's barrel would do the same
+for `main-thread-engine.mjs`'s one-game-per-page limit.
+
+The reason not to is not difficulty, it is evidence. **The only reason to
+believe a reset is the differential**, and `tools/reset-diff.mjs` is a Node tool:
+it needs `module.registerHooks` to build the *reference* — a forked graph per
+segment — and a page has none. Switching the browser now would mean shipping the
+one part of this design that rests on measurement, without the measurement.
+
+What the browser would gain is also small and lands in the wrong place. Scored
+replay is Node; the browser scored path exists for the judge's *browser check*,
+which is single-session, and it already works. The interactive gain is confined
+to a browser with neither SharedArrayBuffer nor a service worker playing a
+*second* game in one page load — where the answer today is a refusal in words
+and a reload. Against that: the page is where console silence and the mirror's
+play-page contract are gated, and both are things this tree has been bitten by.
+
+Leg 3's prerequisite is therefore a **browser-side reference**, and it already
+half exists: `tools/judge-sim/run.mjs` runs a session in real headless Chrome
+and diffs its per-segment digests byte-for-byte against a Node reference. A
+page-side `A, reset, B` driven through `driver.html` and compared to a
+per-segment-Worker reference is the same shape, in the place it has to be.
+
+---
+
+## 8. Gates, leg 2
+
+Everything in §6 still holds and is not repeated. What leg 2 had to show:
+
+| gate | result |
+|---|---|
+| `reset-diff --via runsegment` — 12 pairs **through `js/jsmain.js:runSegment`**, incl. both acid tests | **12/12** byte-identical to a fresh realm (48 s) |
+| ...and the same with `--force-noop` | **0/12** — every pair fails, as it must |
+| `reset-diff --build yield` — the same 12 pairs on `js/generated-y/` | **12/12** (see §8.1) |
+| ...and `--force-noop` on two of them | **0/2** |
+| `ps_test_runner sessions/ sessions-extra/` through the switched path, twice | **69/69** and **69/69** (935+0.53/turn, 900+0.53/turn) |
+| ...once with the reset unavailable (barrel removed ⇒ fork fallback) | **69/69** (940+0.75/turn, 2:02 vs 1:45) |
+| sandboxed `playability_runner.mjs`, all 44 sessions, one process | **completes**: 0 failures, 9096 moves, **3.03–3.08 ms/move**, 28.0 s |
+| ...under `--max-old-space-size=512` | completes, 3.05 ms/move — no accumulation |
+| unsandboxed `playability_runner.mjs` | unchanged: rung is still `sab`, 0 failures, 9096 moves, 4.63 ms/move |
+| `judge-sim/run.mjs` seed8000, seed0013 | **PASS**, 0 segment mismatches, 0 out-of-scope requests |
+| `judge-sim/playability.mjs --their-page` × 3 seeds (4242, 8000, 1337) | 130 moves each, `xhr`, **0 console entries**, 0 out-of-scope |
+| `judge-sim/playability.mjs` production | `xhr`, 243 moves, 2.04 ms/move, 634 ms first frame, **0 console** |
+| `judge-sim/playability.mjs --no-sw` | `replay`, 243 moves, 19.2 ms/move, **1 console** — the pre-existing browser-emitted 404 on the deliberately-missing `js/sw.js`, unchanged |
+| `tools/strict-score.mjs` | 356 files reachable (355 + `js/boot/reset-realm.mjs`), **0 violations**, sandbox parity OK on 3 sessions |
+| `node --test test/*.test.mjs` | 4/4 |
+| **flag off** ⇒ `build.mjs --all` reproduces `js/generated/` | byte-identical to the pre-pass commit `0095ad2` (only `__reset.js`, which is resetify's own artifact, remains) |
+| **flag on** ⇒ `C2JS_YIELD=1 C2JS_RESET=1 build.mjs --all` | reproduces the committed `js/generated/` byte-for-byte **and** `js/generated-y/` + `harness-y.mjs` identically |
+
+The measurement that reads best on its own: `seed0030-ten-diverse-deaths`, ten
+segments in one session, was **8.9–10.8 s** through the fork path and is
+**3.6 s** through the reset.
+
+### 8.1 The yield differential had to be run one pair per process
+
+Eight of the twelve pairs ran in one process and passed. The ninth —
+`seed8000 → seed0030` — did not finish: **380% CPU against a 1.5 GB live set,
+no progress in seven minutes**, and it was still there when it was killed.
+
+Nothing was wrong with the reset. The *reference* side forks a graph per
+segment, and a yieldable graph is ~190 MB of unloadable module map against the
+sync build's ~70 MB. Seventeen of them is the wall in
+`docs/NOTES-async-engine.md`, met in the one place in this design that cannot
+use the cure: a differential's reference has to be a fork, or it is not a
+reference.
+
+One pair per process, and each of the four takes 10–20 s:
+
+```
+seed0030 -> seed0030   PASS   19 resets, 10 reference forks   17 s
+seed8000 -> seed0030   PASS   10 resets, 10 reference forks   13 s
+seed0030 -> seed4500   PASS
+seed0013 -> seed0030   PASS
+```
+
+That is 12/12, and it is also the clearest possible restatement of what leg 2
+bought: the thing under test served twelve pairs — roughly forty games — in one
+realm at 0.6 ms apiece, while the thing it replaced could not get through nine.
+
+---
+
+## 9. Leg 3
+
+### 9.1 The browser
+
+§7.6. The prerequisite is a page-side reference, not a page-side reset.
+
+### 9.2 Composition with the unmerged `lua-port` branch
+
+Scouted, read-only, with `reset-census.mjs --dir` (new) against a `git archive`
+of `lua-port:js/lua-js` — **9 modules, 83 top-level declarations, 19
+unclassified.** The originals of that run are reproducible with:
+
+```
+git archive lua-port js/lua-js | tar -x -C /tmp/luaport
+node tools/c2js/reset-census.mjs --dir /tmp/luaport/js/lua-js --unknown
+```
+
+**A bug in the census had to be fixed before that number meant anything.** The
+first run reported 25 unclassified declarations in `bridge.mjs`, most of them
+things like `const base = lua_gettop(Lp)` — which are *function locals*. One
+line was responsible:
+
+```js
+export const { nhRandom, mathRandom, percent, d, shuffle } = makeNhlib(rn2);
+```
+
+A **destructuring** declaration. The declarator walk breaks on the `{` (it is
+not an identifier), and the scan then resumed *past* it, so the brace counter
+never saw the `{` while its `}` drove the depth to −1 — and every function body
+in the remaining 700 lines looked like module scope. The c2js emitter produces
+no destructuring, which is why nothing had ever met it. Fixed two ways, and both
+were needed: the scan no longer steps over the brace, and a destructuring
+declaration is now reported as **unclassified** rather than skipped — so
+`resetify.mjs` refuses to emit a short block for the module instead of silently
+leaving its bindings out of the reset. `js/generated/` is unaffected to the byte
+(`resetify --check`: up to date, both directories).
+
+What leg 3 then has to do with the 19:
+
+- **Most are immutable and need a classification, not a reset.** `PORTS`,
+  `READBACK`, `LIBRARY` (Maps built once from module constants), the frozen API
+  tables `des` / `selection` / `obj` / `string` / `api` / `uTable` / `nhc`, and
+  the lookup objects `RESULT_FIELDS` / `TYPE_NAMES` / `DES_VALUE_FUNCS` /
+  `tutorial_blacklist_commands`. Each needs to be *shown* immutable, not
+  assumed — the census's job is to make that a list somebody signed off, and
+  `S()` throwing is what keeps an unexamined one from shipping.
+- **Two are genuinely mutable and must be reset.**
+  `registry.mjs`'s `unportedLua = new Map()` accumulates a per-run tally, and
+  `bridge.mjs`'s `cstrCache = new Map()` interns `cptr.lit()` buffers by string.
+  The second is the §3 hazard this page predicted, arriving exactly where it was
+  predicted: those buffers are what `addr()` hands ids to, and those ids are the
+  Lua string-hash seed, `math.random`'s `seed2`, and the hash deciding `next()`
+  iteration order. A second game holding the first game's interned buffers is
+  the "differently generated dungeon, diagnosed a very long way from its cause"
+  case. Clear it.
+- **`interp-state.mjs` is already classified and already right**: `installed`
+  (bool), `portState` (null pointer), `candidates` (array) — a reset puts the
+  interpreter back to "not installed", which is what a fresh realm has.
+  `registry.mjs`'s `armed`, `levelProbed`, `questProbed`, `loads` likewise.
+- **The pair set must reach the new code.** The differential can only catch what
+  a session executes. `seed0030` (ten segments, heavy level generation) does
+  exercise the Lua VM, but leg 3 should add a pair that provably reaches a
+  *ported* script — the branch's own probes (`C2JS_LUA_LEVELPROBE`,
+  `QUEST_PROBE`) name which ones.
+
+### 9.3 Smaller
+
+- `tools/reset-diff.mjs --build yield` has to be driven one pair per process
+  (§8.1). A reference digest cache on disk would fix it properly and make the
+  yield differential a routine gate rather than a shell loop — the observations
+  are already the only thing that needs to survive, and they are small.
+- The census's `--dir` now accepts hand-written `.mjs`, but the analysis behind
+  it was built for the emitter's output. The destructuring bug in §9.2 is the
+  kind of thing that finds: leg 3 should run it over `js/boot/` and `js/libc/`
+  before trusting it on `js/lua-js/`.
+- `strict-score.mjs` walks `js/generated-y/` but not either `__reset.js`: the
+  barrels are reached by a computed URL, by design. They are machine-generated
+  and contain no imports a walk would object to, but nothing checks that.
