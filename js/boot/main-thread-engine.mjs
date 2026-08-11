@@ -381,7 +381,9 @@ function releaseForkedGraph(tag) {
     load('../cptr.js')
         .then((m) => { if (typeof m.__releaseSpentGraph === 'function') m.__releaseSpentGraph(); })
         .catch(() => { /* nothing to give back */ });
-    load('../generated-y/rnd.js')
+    // The whole yieldable tree is one module here (tools/c2js/bundle.mjs), and
+    // it re-exports rnd.js's getRngLog under that one specifier.
+    load('../generated-y/__bundle.js')
         .then((m) => { const log = m.getRngLog && m.getRngLog(); if (log) log.length = 0; })
         .catch(() => { /* nothing to give back */ });
 }

@@ -81,11 +81,18 @@ export function linkRttMs() {
 // The fallback rung's whole graph, in the order it is discovered, so the link
 // elements go out in the order the fetches would have gone out anyway.
 //
-// `../generated-y/__reset.js` is the load-bearing one: it is the reset barrel,
-// which statically imports every module of the yieldable tree, so preloading it
-// preloads all 180 of them. The three ahead of it are the boot chain between
-// the fallback slot and that barrel, each of which is today a separate serial
-// round trip.
+// `../generated-y/__bundle.js` is the load-bearing one: it is the whole
+// yieldable engine, scope-hoisted into one module by tools/c2js/bundle.mjs, so
+// preloading it preloads the engine — four subresources (js/cptr.js,
+// js/cmachine.js, js/yield-rt.js and friends, plus the three nhconst/nhmacro/
+// nhfield namespace leaves) instead of a hundred and eighty modules. The three
+// ahead of it are the boot chain between the fallback slot and the engine, each
+// of which is today a separate serial round trip.
+//
+// This used to be `../generated-y/__reset.js`, the reset barrel, which reached
+// the same 180 modules by statically importing every one of them. Preloading
+// worked; it was the 180 requests behind it that cost 2 s of the mirror's
+// per-request tax (docs/NOTES-startup.md §6.3, §8).
 //
 // tools/c2js/build.mjs asserts, after every build, that each of these exists —
 // a preload link at a path the mirror does not publish is a 404, and a 404 is a
@@ -94,7 +101,7 @@ export const PRELOAD_PATHS = [
     './main-thread-engine.mjs',
     './harness-y.mjs',
     './reset-realm.mjs',
-    '../generated-y/__reset.js',
+    '../generated-y/__bundle.js',
 ];
 
 let armed = false;

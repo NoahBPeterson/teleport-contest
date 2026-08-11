@@ -16,7 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { loadAst, mainFileDecls } from './ir.mjs';
 import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
@@ -1224,10 +1224,64 @@ function assertTreesHygienic() {
   console.log(`\nemit hygiene: ${checked} emitted modules carry no absolute machine path`);
 }
 
+/**
+ * C2JS_BUNDLE — additionally emit the scope-hoisted engine, js/generated-y/__bundle.js.
+ *
+ * LAST, and after assertTreesHygienic(), for three reasons:
+ *   - yieldify `rm -rf`s js/generated-y/ on the way in, so anything written
+ *     there before it runs is deleted; and resetify appends the reset blocks
+ *     the bundle's inlined barrel is made of, so it must run after that too.
+ *   - the four read-back-driven sidecar writers, assertNamespaceExports() and
+ *     the hygiene assert all scan the *tree*. The bundle is an additional
+ *     artifact, never a replacement: everything that reads js/generated-y/**
+ *     — callgraph.mjs, resetify.mjs, reset-census.mjs, the diffs — keeps
+ *     reading it, and the per-module tree stays readable and diffable.
+ *   - it is derived. Emitting it from the finished tree rather than from the
+ *     IR means there is one model of what was emitted, not two.
+ *
+ * ON BY DEFAULT WHEN THERE IS A YIELD BUILD TO BUNDLE, because js/boot/
+ * harness-y.mjs — which yieldify itself writes — imports the bundle and
+ * nothing else. A build that emitted the tree and skipped the bundle would
+ * produce a boot path with a 404 in it, which is a console line, which fails
+ * the judge's browser check. `C2JS_BUNDLE=0` turns it off, and is the A/B
+ * baseline every measurement in §8 is taken against.
+ *
+ * See tools/c2js/bundle.mjs and docs/NOTES-startup.md §8.
+ */
+async function maybeBundle() {
+  if (!process.env.C2JS_YIELD) return;
+  if (process.env.C2JS_BUNDLE === '0') {
+    console.log('\nC2JS_BUNDLE=0 — not emitting the scope-hoisted engine');
+    return;
+  }
+  console.log('\nemitting the scope-hoisted engine (C2JS_BUNDLE=0 to skip)');
+  const { execFileSync } = await import('node:child_process');
+  execFileSync(process.execPath, [path.join(TOOLS_DIR_SELF, 'bundle.mjs'), '--dir', 'js/generated-y'],
+    { stdio: 'inherit' });
+}
+
+/**
+ * Every path js/boot/preload.mjs puts a `<link rel=modulepreload>` at must exist.
+ *
+ * A preload link at a path the mirror does not publish is a 404, a 404 is a
+ * console line, and a console line fails the judge's browser check — and the
+ * list is a constant in a file nothing else imports, so nothing else would
+ * notice a rename. Run last, over what actually shipped.
+ */
+async function assertPreloadPaths() {
+  const { PRELOAD_PATHS } = await import(pathToFileURL(path.join(repoRoot, 'js/boot/preload.mjs')).href);
+  const missing = PRELOAD_PATHS.filter((p) => !fs.existsSync(path.join(repoRoot, 'js/boot', p)));
+  if (missing.length) {
+    throw new Error(`js/boot/preload.mjs would preload ${missing.length} path(s) that do not exist `
+      + `(a 404, i.e. a console line, i.e. a failed browser check): ${missing.join(', ')}`);
+  }
+  console.log(`preload paths: all ${PRELOAD_PATHS.length} exist`);
+}
+
 const TOOLS_DIR_SELF = path.dirname(fileURLToPath(import.meta.url));
 
 // buildAll/buildSingle may or may not return a promise depending on the path
 // taken; normalise before chaining so the hook can never mask a build failure
 // or, worse, invent one after a build that succeeded.
-if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset).then(assertTreesHygienic);
+if (process.argv[2] === '--all') Promise.resolve(buildAll()).then(maybeYield).then(maybeReset).then(assertTreesHygienic).then(maybeBundle).then(assertPreloadPaths);
 else Promise.resolve(buildSingle(process.argv[2])).then(maybeYield);

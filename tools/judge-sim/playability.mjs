@@ -52,6 +52,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import nodeHttp from 'node:http';
+import nodeHttps from 'node:https';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -197,6 +199,22 @@ const cpuThrottle = Number(opt('cpu-throttle', '0')) || 0;
 // later, so the cost of *fetching* a module graph is priced instead of assumed.
 // Loopback answers in microseconds; the mirror does not.
 const latency = opt('latency', '');
+// THE FOUR SWITCHES THAT MAKE THE STAND-IN THE MIRROR, passed straight through
+// to server.mjs. Each one hid a different term until it existed
+// (docs/NOTES-startup.md §6.4): --gzip prices the wire instead of the disk,
+// --h2 stops Chrome's six-connection HTTP/1.1 cap overcharging request count by
+// ~70x, --bw= gives the link a ceiling, --req-cost= models the origin's
+// per-request service time. All default off, so every existing gate drives the
+// server it always drove.
+//
+// The calibration §7.3's A/B is run on, which reproduces the mirror's
+// navigation->first-frame within 4%:
+//   --their-page --gzip --h2 --latency=115 --bw=3200000
+const gzip = args.includes('--gzip');
+const h2 = args.includes('--h2');
+const bw = opt('bw', '');
+const bwLanes = opt('bw-lanes', '');
+const reqCost = opt('req-cost', '');
 const timeoutMs = Number(opt('timeout', '180000'));
 const PORT = Number(opt('port', String(9500 + (process.pid % 400))));
 // DevTools endpoint, kept clear of the range PORT is drawn from.
@@ -208,18 +226,34 @@ const resultFile = path.join(work, 'bench.json');
 const chromeProfile = path.join(work, 'chrome-profile');
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
+// --h2 puts the stand-in behind TLS with a self-signed certificate from
+// .cache/judge-sim/, so every URL below — and Chrome — has to change scheme.
+const SCHEME = h2 ? 'https' : 'http';
 const server = spawn(process.execPath, [path.join(HERE, 'server.mjs'),
     '--port', String(PORT), '--log', logFile, '--result', resultFile,
     ...(coi ? ['--coi'] : []), ...(noSw ? ['--no-sw'] : []), ...(inertSw ? ['--inert-sw'] : []),
     ...(denyDedicated ? ['--sw-deny-dedicated'] : []), ...(hangSw ? ['--hang-sw'] : []),
     ...(judgeStub ? ['--judge-stub'] : []), ...(theirPage ? ['--their-page'] : []),
-    ...(latency ? ['--latency=' + latency] : [])],
+    ...(latency ? ['--latency=' + latency] : []),
+    ...(gzip ? ['--gzip'] : []), ...(h2 ? ['--h2'] : []),
+    ...(bw ? ['--bw=' + bw] : []), ...(bwLanes ? ['--bw-lanes=' + bwLanes] : []),
+    ...(reqCost ? ['--req-cost=' + reqCost] : [])],
     { stdio: ['ignore', 'inherit', 'inherit'] });
+
+const probe = (port) => new Promise((resolve, reject) => {
+    const mod = h2 ? nodeHttps : nodeHttp;
+    const req = mod.request({ host: '127.0.0.1', port, path: '/', method: 'HEAD',
+        rejectUnauthorized: false }, (res) => { res.resume(); resolve(res.statusCode); });
+    req.on('error', reject);
+    req.end();
+});
 
 let up = false;
 for (let i = 0; i < 100 && !up; i++) {
     await sleep(50);
-    try { await fetch(`http://127.0.0.1:${PORT}/`); up = true; } catch { /* not yet */ }
+    // Not `fetch`: under --h2 the certificate is self-signed, and the readiness
+    // probe must not be the thing that decides the server is down.
+    try { await probe(PORT); up = true; } catch { /* not yet */ }
 }
 if (!up) { server.kill(); throw new Error('server never came up'); }
 
@@ -264,18 +298,18 @@ const viewer = args.includes('--viewer') || !!opt('viewer', '');
 // realm — the game-2 contract in js/boot/main-thread-engine.mjs.
 const multigame = args.includes('--multigame') || !!opt('multigame', '');
 const url = theirPage
-    ? `http://127.0.0.1:${PORT}/`
+    ? `${SCHEME}://127.0.0.1:${PORT}/`
     : viewer
-    ? `http://127.0.0.1:${PORT}/__sim/viewer-repro.html?sessions=${encodeURIComponent(opt('viewer',
+    ? `${SCHEME}://127.0.0.1:${PORT}/__sim/viewer-repro.html?sessions=${encodeURIComponent(opt('viewer',
         'seed0002-healer-reflection-drummer.session.json,seed0004-feeding-pony.session.json,'
         + 'seed0013-friday13-save-then-fullmoon-restore.session.json'))}`
     : multigame
-        ? `http://127.0.0.1:${PORT}/__sim/multigame-repro.html?games=${opt('multigame', '2') || '2'}`
+        ? `${SCHEME}://127.0.0.1:${PORT}/__sim/multigame-repro.html?games=${opt('multigame', '2') || '2'}`
             + `&seed=${opt('seed', '8000')}&seed2=${opt('seed2', '4500')}&datetime=${opt('datetime', '20240101120000')}`
             + (keys ? `&keys=${encodeURIComponent(keys)}` : '')
             + (transport ? `&transport=${transport}` : '')
             + (args.includes('--workerless') ? '&workerless=1' : '')
-        : `http://127.0.0.1:${PORT}/?${q}`;
+        : `${SCHEME}://127.0.0.1:${PORT}/?${q}`;
 
 process.stderr.write(`\n=== Headless Chrome: ${url} (COI ${coi ? 'on' : 'off'}) ===\n`);
 // Start on about:blank and navigate over CDP instead of passing the URL on the
@@ -290,6 +324,10 @@ const chrome = spawn(CHROME, [
     `--user-data-dir=${chromeProfile}`,
     '--enable-logging=stderr',
     '--v=0',
+    // The --h2 stand-in's certificate is self-signed and generated into
+    // .cache/; without this Chrome refuses the origin outright. Harmless when
+    // --h2 is off, but only passed then so the default run is untouched.
+    ...(h2 ? ['--ignore-certificate-errors'] : []),
     `--remote-debugging-port=${DPORT}`,
     'about:blank',
 ], { stdio: ['ignore', 'pipe', 'pipe'] });

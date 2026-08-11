@@ -72,9 +72,16 @@ const IS_BROWSER = typeof globalThis.window !== 'undefined'
  * tag would share the pointer registry and the fd table. Same reasoning, and
  * the same `y`, as js/boot/main-thread-engine.mjs's own fork tags.
  */
+// The yield build's barrel is inside tools/c2js/bundle.mjs's scope-hoisted
+// artifact rather than beside the tree: `__bundle.js` carries the same
+// captureAll/resetAll over the same 146 modules — the S/P helpers are lifted
+// verbatim out of `__reset.js`, so the two cannot drift — and it is one request
+// where the barrel plus its tree is a hundred and eighty. See §8. The sync
+// build keeps the barrel: it is the scored path, its consumers include
+// js/lua-js/*'s 19 static imports, and it is not on the first-frame clock.
 const BUILDS = {
     sync: { harness: './harness.mjs', barrel: '../generated/__reset.js', tag: '' },
-    yield: { harness: './harness-y.mjs', barrel: '../generated-y/__reset.js', tag: 'y' },
+    yield: { harness: './harness-y.mjs', barrel: '../generated-y/__bundle.js', tag: 'y' },
 };
 
 // Fork tags are per *process*: two resettable realms in one process must not
