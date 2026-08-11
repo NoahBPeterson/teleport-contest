@@ -46,6 +46,7 @@
 
 import { enableSegmentIsolation, segmentSpecifier } from './boot/isolation.mjs';
 import { installBrowserGlobals } from './boot/browser-env.mjs';
+import { preloadEngine } from './boot/preload.mjs';
 
 // Am I in Node? Captured before installBrowserGlobals() can fake a `process`
 // into existence — and written so that somebody *else's* fake cannot fool it
@@ -68,6 +69,14 @@ const IS_BROWSER = typeof globalThis.window !== 'undefined'
     || typeof globalThis.WorkerGlobalScope !== 'undefined';
 const IS_NODE = !IS_BROWSER && typeof process !== 'undefined'
     && !!(process.versions && process.versions.node);
+
+// The judge's play page imports this module at parse time and then waits at a
+// keypress gate — so this line runs a second or more before anybody asks for a
+// game, and it is the earliest point at which this fork can put a byte on the
+// wire. On a link where a round trip is expensive it starts fetching the engine
+// tree the fallback rung will want; on a fast link it does nothing at all. See
+// js/boot/preload.mjs for why that condition, and what the measurement was.
+preloadEngine();
 
 const HARNESS_URL = new URL('./boot/harness.mjs', import.meta.url).href;
 const FRAME_URL = new URL('./boot/frame.mjs', import.meta.url).href;

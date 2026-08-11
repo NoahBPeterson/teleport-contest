@@ -21,8 +21,11 @@
 // Usage: node tools/judge-sim/server.mjs [--port 8917] [--log requests.jsonl]
 
 import http from 'node:http';
+import http2 from 'node:http2';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -237,17 +240,42 @@ function classify(pathname) {
     return SERVED_ROOTS.includes(seg) ? 'IN-SCOPE' : 'BLOCKED';
 }
 
-function send(res, status, body, type, extra = {}) {
-    res.writeHead(status, {
+// --gzip: answer compressible bodies with `content-encoding: gzip`, the way the
+// real mirror does. Off by default so the existing gates see byte-for-byte the
+// responses they always saw; on for the network measurements, where it is the
+// difference between pricing the generated tree at 16 MB and pricing it at the
+// ~2.7 MB the mirror actually puts on the wire. The cache is per-path because
+// one run fetches the same 180 modules from several realms.
+const GZIP = args.includes('--gzip');
+const gzCache = new Map();
+function gzipFor(key, body) {
+    let hit = gzCache.get(key);
+    if (!hit) { hit = zlib.gzipSync(body, { level: 6 }); gzCache.set(key, hit); }
+    return hit;
+}
+
+function send(res, status, body, type, extra = {}, gzKey = null) {
+    let payload = body;
+    const enc = {};
+    if (GZIP && gzKey && /text|json|javascript/.test(type) && Buffer.byteLength(body) > 512) {
+        payload = gzipFor(gzKey, body);
+        enc['content-encoding'] = 'gzip';
+        enc.vary = 'accept-encoding';
+    }
+    const head = () => res.writeHead(status, {
         'content-type': type,
-        'content-length': Buffer.byteLength(body),
+        'content-length': Buffer.byteLength(payload),
         // No caching: every reload must re-fetch, so the request log is a true
         // record of what the module graph pulled.
         'cache-control': 'no-store',
         ...COI_HEADERS,
+        ...enc,
         ...extra,
     });
-    res.end(body);
+    const wait = wireDelayFor(Buffer.byteLength(payload));
+    if (!wait) { head(); return res.end(payload); }
+    head();
+    setTimeout(() => res.end(payload), wait);
 }
 
 // /__sim/session/<name> — normalized session segments, computed here with the
@@ -275,7 +303,56 @@ async function serveSession(name) {
 // that latency, and without this switch the harness prices that win at zero.
 const LATENCY_MS = Number((args.find(a => a.startsWith('--latency=')) || '').split('=')[1] || 0) || 0;
 
-const server = http.createServer(async (req, res) => {
+// --bw=<bytes/sec> is the other half of what loopback cannot stage. Latency is
+// paid concurrently — every realm's requests wait out their round trip at the
+// same time — but bandwidth is *shared*: 5 MB of engine tree takes 5 MB / link
+// however many sockets it is spread over, and a change that only moves bytes
+// around cannot be judged on a link with no ceiling. Modelled as `--bw-lanes`
+// (default 8) equal wires: a response takes the earliest-free lane, reserves
+// lanes*bytes/BW of it, and is released when its slot ends. The aggregate is
+// exactly the link rate — a run that fetches half as much finishes in half the
+// time — while one 3 MB response still cannot park 179 small ones behind it,
+// which a single FIFO wire would and a real multiplexed connection does not.
+// Off by default; every existing gate sees the unmetered server it always saw.
+const BW = Number((args.find(a => a.startsWith('--bw=')) || '').split('=')[1] || 0) || 0;
+const BW_LANES = Number((args.find(a => a.startsWith('--bw-lanes=')) || '').split('=')[1] || 0) || 8;
+const laneFreeAt = new Array(BW_LANES).fill(0);
+function wireDelayFor(bytes) {
+    if (!BW) return 0;
+    const now = Date.now();
+    let k = 0;
+    for (let i = 1; i < BW_LANES; i++) if (laneFreeAt[i] < laneFreeAt[k]) k = i;
+    const start = Math.max(now, laneFreeAt[k]);
+    const dur = (bytes / (BW / BW_LANES)) * 1000;
+    laneFreeAt[k] = start + dur;
+    return (start - now) + dur;
+}
+
+// --h2: speak HTTP/2 over TLS, which is what the mirror speaks and what
+// loopback HTTP/1.1 cannot imitate. The difference is not cosmetic: Chrome caps
+// an HTTP/1.1 origin at six concurrent connections, so a 425-request boot pays
+// 425/6 serialized round trips there and none of them on h2. Measuring request
+// *count* against an h1 server prices it at roughly seventy times what the
+// mirror charges, which is how a loopback profile talks itself into the wrong
+// answer. Off by default — the existing gates drive plain http — and the
+// self-signed certificate lives in .cache/, so Chrome needs
+// --ignore-certificate-errors to drive it.
+const H2 = args.includes('--h2');
+function h2Credentials() {
+    const dir = path.join(ROOT, '.cache', 'judge-sim');
+    const key = path.join(dir, 'localhost-key.pem');
+    const crt = path.join(dir, 'localhost-cert.pem');
+    if (!fs.existsSync(key) || !fs.existsSync(crt)) {
+        fs.mkdirSync(dir, { recursive: true });
+        execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes',
+            '-keyout', key, '-out', crt, '-days', '365',
+            '-subj', '/CN=127.0.0.1', '-addext', 'subjectAltName=IP:127.0.0.1,DNS:localhost'],
+            { stdio: 'ignore' });
+    }
+    return { key: fs.readFileSync(key), cert: fs.readFileSync(crt), allowHTTP1: true };
+}
+
+const handler = async (req, res) => {
     if (LATENCY_MS) await new Promise((r) => setTimeout(r, LATENCY_MS));
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
@@ -387,11 +464,14 @@ const server = http.createServer(async (req, res) => {
     finish(200);
     const body = fs.readFileSync(file);
     return send(res, 200, (JUDGE_STUB && file.endsWith('.html')) ? withJudgeStub(body) : body,
-        MIME[path.extname(file)] || 'application/octet-stream');
-});
+        MIME[path.extname(file)] || 'application/octet-stream', {},
+        JUDGE_STUB && file.endsWith('.html') ? null : file);
+};
+
+const server = H2 ? http2.createSecureServer(h2Credentials(), handler) : http.createServer(handler);
 
 server.listen(PORT, '127.0.0.1', () => {
-    process.stderr.write(`[judge-sim] http://127.0.0.1:${PORT}/  (serving ${SERVED_ROOTS.map(r => '/' + r + '/**').join(' ')} + /__sim/**)\n`);
+    process.stderr.write(`[judge-sim] http${H2 ? 's' : ''}://127.0.0.1:${PORT}/  (serving ${SERVED_ROOTS.map(r => '/' + r + '/**').join(' ')} + /__sim/**)\n`);
 });
 
 // Print a request summary on shutdown so a one-shot run leaves evidence behind.

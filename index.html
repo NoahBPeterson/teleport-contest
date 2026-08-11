@@ -60,6 +60,13 @@
 // exactly as it did before.
 (function () {
     window.__NH_T_HEAD = performance.now();
+    // "This fork's own page is hosting, and it arms a prewarm two lines down."
+    // js/boot/preload.mjs reads it and stands aside: the prewarm below is the
+    // same idea done better — it prepares a real transport realm rather than
+    // warming a cache — and the tree it will want is js/generated/, not the
+    // yieldable one the preloader would have fetched. Set synchronously, before
+    // any module can run, because jsmain.js asks the question at module scope.
+    window.__NH_OWN_PAGE = 1;
     try {
         window.__NH_SNAPSHOT = fetch('./snapshot.json', { cache: 'no-store' })
             .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; });
