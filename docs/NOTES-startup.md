@@ -590,18 +590,53 @@ neither.
 
 ### 7.3 Measured
 
-Judge's play page on the calibrated stand-in, before against after:
+**The stand-in, calibrated** (`--their-page --gzip --h2 --latency=115
+--bw=3200000`), judge's play page, **interleaved ABBA, four runs a side**, the
+two revisions checked in and out under one server:
+
+| | before (`826e136`) | after |
+|---|---|---|
+| gate → first frame | 3899 / 3863 / 3863 ms | **2301 / 2335 / 2317 / 2293 ms** |
+| navigation → first frame | 4791 / 4812 / 4812 ms | **3255 / 3292 / 3260 / 3310 ms** |
+| engine tree's first request at | 3.19 / 3.12 / 3.11 / 3.19 s | **0.94 / 0.94 / 0.92 / 1.00 s** |
+| console entries | 0 | 0 |
+
+Median and minimum agree in sign and magnitude on every line: **−40 % on
+gate→first-frame, −32 % on navigation→first-frame**, and the tree starts
+downloading 2.2 s earlier. The after column's spread is 17 ms across four runs,
+which is what a change that removes a wait rather than a computation looks like.
+
+(One `before` run in the fourth pair painted nothing and logged 19 console
+entries. It is on `826e136`'s code, under a contended box; it is recorded rather
+than dropped, and it is not counted in the medians above.)
+
+**Census** on the same stand-in, all realms attached:
 
 | | before | after |
 |---|---|---|
-| requests (all realms) | 399 | **214** |
+| requests | 399 | **214** |
 | bytes | 6375 KB | **3576 KB** |
-| engine tree's first request at | 3.23 s | **0.92 s** |
-| gate → first frame | 4007 / 4012 / 4051 ms | **2309 / 2340 / 2348 ms** |
-| navigation → first frame | 4954 / 4954 / 5165 ms | **3295 / 3645 / 3847 ms** |
-| console entries | 0 | 0 |
 
-−34 % on navigation→first-frame, and the second engine tree is gone.
+**The live mirror.** The after-state cannot be published — nothing on this
+branch is pushed — so it is measured by serving *only the three files this
+branch touched* (`js/jsmain.js`, `js/boot/interactive.mjs`,
+`js/boot/preload.mjs`) from disk through CDP request interception, with the
+engine tree, the CDN, the round trips and the edge's per-request cost all still
+the mirror's. Interception is switched off the moment the third file is served,
+so it is not on the clock of the thing being timed.
+
+The link was badly degraded during this window — the `before` arm, which had
+measured 5176–5313 ms of navigation→first-frame earlier the same day, measured
+11.7–32.8 s — so the absolute numbers are not comparable to §6.1. The paired
+comparison is, and the term this branch attacks is visible in it directly:
+
+| run | engine tree's first request at |
+|---|---|
+| before | 15.23 s / 12.14 s / 9.33 s |
+| after | **2.59 s / 6.26 s / 1.35 s** |
+
+The tree starts downloading between 3 s and 12 s earlier on every pair, which is
+the same effect the stand-in measures at 2.2 s under a link that is behaving.
 
 ## 8. Bundling — the verdict, corrected, and the design it implies
 

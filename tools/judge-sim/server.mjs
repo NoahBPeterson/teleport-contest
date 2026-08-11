@@ -507,9 +507,14 @@ const handler = async (req, res) => {
     }
     finish(200);
     const body = fs.readFileSync(file);
+    // The gzip key carries mtime and size, not just the path: a long-lived
+    // server that is A/B'd by checking two revisions of js/ in and out under it
+    // would otherwise serve the first revision's bytes for the whole run and
+    // report that the change did nothing. (It did exactly that once.)
+    const st = fs.statSync(file);
     return send(res, 200, (JUDGE_STUB && file.endsWith('.html')) ? withJudgeStub(body) : body,
         MIME[path.extname(file)] || 'application/octet-stream', {},
-        JUDGE_STUB && file.endsWith('.html') ? null : file);
+        JUDGE_STUB && file.endsWith('.html') ? null : `${file}\0${st.mtimeMs}\0${st.size}`);
 };
 
 const server = H2 ? http2.createSecureServer(h2Credentials(), handler) : http.createServer(handler);
