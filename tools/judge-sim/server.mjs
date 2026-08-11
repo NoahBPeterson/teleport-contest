@@ -320,12 +320,53 @@ const laneFreeAt = new Array(BW_LANES).fill(0);
 function wireDelayFor(bytes) {
     if (!BW) return 0;
     const now = Date.now();
+    // A response claims every share that is idle when it arrives, so one 2.7 MB
+    // bundle arriving alone gets the whole link and 170 modules arriving
+    // together split it. Fixed 1/LANES shares would price a lone bundle at
+    // eight times its real cost and argue for splitting it up on nothing but a
+    // modelling artefact; that difference is the whole granularity question.
+    const idle = [];
+    for (let i = 0; i < BW_LANES; i++) if (laneFreeAt[i] <= now) idle.push(i);
+    if (idle.length) {
+        const dur = (bytes / (BW * idle.length / BW_LANES)) * 1000;
+        for (const i of idle) laneFreeAt[i] = now + dur;
+        return dur;
+    }
     let k = 0;
     for (let i = 1; i < BW_LANES; i++) if (laneFreeAt[i] < laneFreeAt[k]) k = i;
-    const start = Math.max(now, laneFreeAt[k]);
+    const start = laneFreeAt[k];
     const dur = (bytes / (BW / BW_LANES)) * 1000;
     laneFreeAt[k] = start + dur;
     return (start - now) + dur;
+}
+
+// --req-cost=<ms> is the term that decides bundling, and the one every loopback
+// measurement in this repo has priced at zero.
+//
+// Measured on the live mirror with headless Chrome: fetching 180 cache-busted
+// copies of a 1.9 KB file — 50 KB on the wire, nothing to download — takes
+// 2.1, 2.4 and 2.9 s on three warm runs. Fetching the 180 real modules of the
+// engine tree, 2.7 MB on the wire, takes 3.6 s on the same link. The edge
+// charges ~12-16 ms of serialized work per request however small it is, so a
+// 180-module tree pays two seconds of it before a byte of engine is counted.
+// Latency does not model that (180 round trips are waited out concurrently) and
+// bandwidth does not model it (there are no bytes); a local server answering in
+// microseconds models neither, which is how a loopback profile talks itself
+// into believing request count is free.
+//
+// Modelled as one FIFO origin: each request occupies it for this long, so N
+// requests cost N * cost however parallel the client is. It queues the page's
+// own load behind the engine's, which the mirror's many-core edge does not, so
+// treat it as an upper bound on the request-count term rather than a
+// calibration. Off by default.
+const REQ_COST_MS = Number((args.find(a => a.startsWith('--req-cost=')) || '').split('=')[1] || 0) || 0;
+let reqFreeAt = 0;
+function reqQueueDelay() {
+    if (!REQ_COST_MS) return 0;
+    const now = Date.now();
+    const start = Math.max(now, reqFreeAt);
+    reqFreeAt = start + REQ_COST_MS;
+    return (start - now) + REQ_COST_MS;
 }
 
 // --h2: speak HTTP/2 over TLS, which is what the mirror speaks and what
@@ -353,7 +394,10 @@ function h2Credentials() {
 }
 
 const handler = async (req, res) => {
-    if (LATENCY_MS) await new Promise((r) => setTimeout(r, LATENCY_MS));
+    // Latency is waited out concurrently (it is the wire); the per-request
+    // service cost is queued (it is the origin). Both before anything is read.
+    const hold = Math.max(LATENCY_MS, reqQueueDelay());
+    if (hold) await new Promise((r) => setTimeout(r, hold));
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);
     const kind = classify(pathname);

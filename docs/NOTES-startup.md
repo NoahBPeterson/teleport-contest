@@ -420,3 +420,257 @@ rather than a property of the corpus.
    rather than on principle. If the compile term in (1) is ever attacked and the
    remaining per-module ~50 ms becomes the largest thing left, the table in §2.4
    says where to start: ~44 groups along evaluation order, not one file.
+
+---
+
+# Part two — the network (branch `net-startup`, from `main@826e136`)
+
+Everything above measures **parse** and **instantiation**, on **loopback**. It
+is all correct and none of it is the reason a player waits. On the real mirror
+the module graph's cost is not what V8 does with it; it is what the *edge*
+charges for handing it over, and that term does not appear in a single
+measurement in Part one.
+
+§2.5 refused bundling on a 61 ms parse argument. That refusal is now overturned
+by a measurement it never took — but not for any of the reasons §2.5 weighed,
+and the corrected number is thirty times larger.
+
+Every figure below is from headless Chrome driven over CDP against
+**`https://mazesofmenace.ai/play/NoahBPeterson/` — the judge's own play page on
+the live mirror**, or against `tools/judge-sim/server.mjs` calibrated to it. The
+judge's page is the one that matters: our `index.html` is not what the mirror
+serves at `/play/<owner>/`, and the two pages take different rungs.
+
+## 6. What the mirror actually does
+
+### 6.1 The shape of a judged page load
+
+Three runs, cold profile, page target, median (min–max):
+
+| | before this branch |
+|---|---|
+| navigation → "press any key" painted | 1490 ms (1476–1533) |
+| gate key → first game frame | **3734 ms** (3663–6074) |
+| navigation → first game frame | **5313 ms** (5176–8322) |
+
+The judge's playability report has been coming back at ~3.1–3.2 s total with
+**0 moves, every crawl**. 5.3 s against ~3.2 s of patience is not a slow page;
+it is a page that never gets to play.
+
+### 6.2 Where the 3.7 s goes: a dead window, and a second engine
+
+Two things, and neither is compute.
+
+**(a) Nothing downloads for the first 1.5–3.2 s after the gate key.** The first
+byte of `js/generated-y/**` is asked for at 3.0–3.2 s of a run whose gate was at
+1.5 s. In between, the page is walking a chain of round trips at ~320 ms each —
+`navigator.serviceWorker.register()`, a dedicated worker realm's own three
+modules, a `SharedWorker` realm's, one synchronous interception probe per realm
+— and then sitting out `FALLBACK_HEAD_START_MS`, a 700 ms constant measured on
+loopback where those same round trips cost about five milliseconds in total.
+
+**(b) Both engine trees are fetched.** A page-target census counts 202 requests;
+a census that attaches to *every* target — a dedicated worker is its own target
+and its requests never appear on the page's Network domain, which is why this
+was invisible for so long — counts:
+
+```
+399 requests, 6375 KB
+  js/generated-y/   170 files   2734 KB     (the main-thread fallback rung)
+  js/generated/     169 files   2668 KB     (the transport rung, in its worker)
+  js/data-nethackdir/ 12 files   690 KB
+  js/ (other)        31 files   147 KB
+  js/lua-js/          9 files    29 KB
+```
+
+The fallback wins the race and paints from `js/generated-y/`; the transport
+comes up a second later and pulls `js/generated/` **concurrently with it**, onto
+the same link, for a game it is not going to paint. The page needs one tree and
+downloads two.
+
+### 6.3 The measurement that overturns §2.5: request count is not free
+
+§2.4 priced a module at ~0.11 ms of Node loader work and 0 ms of compile, and
+concluded that 169 modules cost about the same as one. On loopback that is true.
+On the mirror it is not remotely true, and the control is trivial to run: fetch
+**180 cache-busted copies of a 1.9 KB file** — 50 KB on the wire, nothing to
+download — and time it against fetching the 180 real modules.
+
+`fetch()` only, no parse, no execute, warm (the first fetch of anything on this
+mirror is a CDN miss and is not comparable):
+
+| what | requests | wire | ms |
+|---|---|---|---|
+| 40 × a 1.9 KB file, cache-busted | 40 | ~11 KB | 399 |
+| 180 × a 1.9 KB file, cache-busted | 180 | ~50 KB | **2889 / 2099 / 2445** |
+| 180 × the real `js/generated-y/**` | 180 | 2.7 MB | 6952 / 3637 / 9606 |
+| 5 × `js/data-nethackdir/chunk-*` | 5 | ~690 KB | 1866 |
+
+**The edge charges ~12–16 ms of serialized work per request, whatever the
+request is.** 180 requests is a **2.1–2.9 second floor** before one byte of
+engine has been counted, and it scales linearly (40 requests → 399 ms).
+
+That is the number §2.5 should have been weighed against. It is not 61 ms of
+V8; it is two seconds of somebody else's CDN, on the one budget the judge
+measures — and unlike the parse term it does not shrink when the machine is
+fast, because it is not our machine.
+
+**So: §2.5's verdict is wrong, and §2.4's table is not the table to read.** It
+measured the right thing (parse, instantiation) on the wrong link (loopback) and
+therefore answered a question nobody was asking. Bundling is worth roughly two
+seconds on the judged path, which is most of the gap between 5.3 s and 3.2 s.
+
+### 6.4 Why no loopback profile could have found this
+
+`tools/judge-sim/server.mjs` was, until this branch, a plain `node:http` server
+answering out of the page cache in microseconds. Three of its properties are the
+mirror's opposites, and each one hides a different term:
+
+| | the stand-in | the mirror | what it hid |
+|---|---|---|---|
+| compression | none | gzip | the tree priced at 16 MB, not the 2.7 MB on the wire |
+| protocol | HTTP/1.1 | HTTP/2 | Chrome caps an h1 origin at six connections, so an h1 stand-in **over**charges request count ~70× — wrong in the other direction, and just as useless |
+| per-request cost | ~0 | 12–16 ms | §6.3 entirely |
+| link rate | ∞ | ~1–3 MB/s | every byte-count argument |
+
+It now has all four as opt-in switches — `--gzip`, `--h2`, `--bw=`/`--bw-lanes=`,
+`--req-cost=` — all defaulting off so every existing gate sees the server it
+always saw. With `--their-page --gzip --h2 --latency=115 --bw=3200000` the
+stand-in reproduces the mirror's before-numbers to within 4 % on
+navigation→first-frame (4954–5165 ms against the mirror's 5176–5313 ms) and
+lands the engine tree's first request within 0.2 s of where the mirror lands it.
+That calibration is what the A/B below is run on.
+
+`--req-cost` is deliberately *not* in that calibration. It models the origin as
+one FIFO server, which queues the page's own load behind the engine's in a way
+the mirror's many-core edge does not; it is an upper bound on the request-count
+term, not a calibration of it. The number that matters — §6.3 — was measured on
+the mirror directly and needs no model at all.
+
+## 7. What this branch changed
+
+### 7.1 Spend the gate window (`js/boot/preload.mjs`)
+
+The judge's page imports `js/jsmain.js` at parse time and then waits at
+`await display.readKey()`. That is a second or more of link with nothing on it,
+and `preloadEngine()`, called at `jsmain.js` module scope, spends it: four
+`<link rel="modulepreload">` elements covering the fallback rung's boot chain
+and the reset barrel, which statically imports all 180 modules of the tree.
+
+`modulepreload` and not `import()`, deliberately. A preload fetches and compiles
+without *evaluating*, so it does not spend the one page realm the main-thread
+rung is allowed to own on a game nobody has asked for; whoever imports the tree
+later gets a module-map hit and pays no network. If nobody ever does, nothing
+was spent but bandwidth.
+
+It is armed only when a round trip is expensive — `SLOW_LINK_RTT_MS = 25`, asked
+of the document's own navigation timing — and never on our own `index.html`,
+which arms a real prewarm in its `<head>` and will want the *other* tree.
+
+### 7.2 Stop fetching the second tree (`js/boot/interactive.mjs`)
+
+Two rules, both conditioned on the same signal, both no-ops on a fast link and
+on a page that armed a prewarm before the race began:
+
+- **`fallbackHeadStartMs()`** returns 0 instead of 700 when a round trip is
+  expensive. The head start exists to keep two boots off the same CPU; on a
+  slow link the contended resource is the link, the transport is four round
+  trips behind before it starts, and the 700 ms is time in which nothing at all
+  is downloading.
+- **The transport yields its boot to the fallback's first frame.** `_boot()` is
+  what makes the transport's realm pull `js/generated/**`. A transport that
+  cannot paint first now waits for the fallback to paint, then boots and
+  upgrades through the swap that was already there. The player gets the fast
+  first frame *and* the fast engine, in that order, instead of both of them
+  late.
+
+Neither rule can strand a game: the wait ends on the fallback painting **or**
+failing, and is capped at `TRANSPORT_YIELD_CAP_MS` for a fallback that does
+neither.
+
+### 7.3 Measured
+
+Judge's play page on the calibrated stand-in, before against after:
+
+| | before | after |
+|---|---|---|
+| requests (all realms) | 399 | **214** |
+| bytes | 6375 KB | **3576 KB** |
+| engine tree's first request at | 3.23 s | **0.92 s** |
+| gate → first frame | 4007 / 4012 / 4051 ms | **2309 / 2340 / 2348 ms** |
+| navigation → first frame | 4954 / 4954 / 5165 ms | **3295 / 3645 / 3847 ms** |
+| console entries | 0 | 0 |
+
+−34 % on navigation→first-frame, and the second engine tree is gone.
+
+## 8. Bundling — the verdict, corrected, and the design it implies
+
+§2.5 said "do not bundle, 169 modules, unchanged", and §5 item 3 said the prize
+was ~50 ms. On the network the prize is **~2 s** (§6.3), and the reasoning that
+refused it — 39,901 declarations to alpha-rename, a call graph keyed on
+`<module>#<function>`, per-module reset barrels, 19 external import sites — is
+a list of costs, not a counter-measurement. Weighed against 61 ms those costs
+win. Weighed against two seconds on a budget we are currently missing by two
+seconds, they do not.
+
+**This branch does not land it.** What it lands is the measurement that says it
+must be landed, the two changes that were separable from it, and the simulator
+that can now price it. The design the measurement implies, so the next leg does
+not have to re-derive it:
+
+1. **Scope: `js/generated-y/` first, and it is self-contained.** The only
+   consumers outside the tree are `js/boot/harness-y.mjs` (`unixmain.js`,
+   `rnd.js`), `js/boot/reset-realm.mjs` (`__reset.js`) and
+   `js/boot/main-thread-engine.mjs` (`rnd.js`) — four call sites. In
+   particular **`js/lua-js/**` does not touch it**: all 19 of its static imports
+   name `../generated/`, the *sync* tree, even in the yieldable build. The
+   hazard §2.5 listed as fifth on its list does not exist on this half.
+2. **A build-time pass, not a text stitcher** — `tools/c2js/bundle.mjs`, run
+   from `build.mjs` after `assertTreesHygienic` so the four read-back-driven
+   sidecar writers, `assertNamespaceExports` and the hygiene assert all still
+   scan the unbundled tree, and gated on `C2JS_BUNDLE` in the shape of
+   `maybeYield`/`maybeReset`. Never written into `js/generated-y/` before
+   `yieldify.mjs` runs: that pass `rm -rf`s the directory.
+3. **An additional artifact, not a replacement.** The per-module tree stays
+   exactly as it is — readable, diffable, and what `callgraph.mjs`,
+   `resetify.mjs`, `reset-census.mjs` and `yieldify.mjs` read. The bundle is a
+   derived deployment artifact the browser's fallback rung loads instead.
+4. **Order is the load-bearing part.** Concatenate in ESM evaluation order —
+   DFS post-order from `unixmain.js`, then the barrel's remainder — because
+   that order fixes every `cptr` pointer id and therefore RNG parity, which is
+   the same reason `resetify.mjs:189-194` imports the entry bare and first.
+5. **Keep `nhconst.js`, `nhmacro.js`, `nhfield.js` outside it.** They are
+   import-free leaves read only as `NHC.x` / `NHM.x` / `FLD.x` namespaces, so
+   leaving them as three real modules preserves that idiom byte-for-byte and
+   costs three requests. `nhprop.js` and `nhmacrofn.js` must go *inside* — they
+   import `decl.js`, `sys.js`, `artifact.js` and `cmd.js` and are part of the
+   cycle. `js/cptr.js` stays outside and shared, as the reset registry requires.
+6. **Renaming, cheapest first.** Of 40,094 top-level declarations, 24,163 are
+   per-file `__slN` string-table consts and 13,412 are `$field` fold consts.
+   The `$field` consts are `const $x = FLD.x` — *identical in every module* — so
+   they collapse to one deduplicated block at bundle scope and 13,412
+   declarations and their 1,719 duplicate names disappear. `__slN` names carry
+   an unshadowable prefix and are renamed mechanically. That leaves ~2,500 real
+   C symbols with ~247 collisions, of which 213 are on exported names — a small
+   enough set to rename by an auditable rule (earliest in evaluation order keeps
+   the bare name) with a build-time assertion that the new name occurs nowhere
+   else in the module.
+7. **Granularity: few, not one, and measure.** §2.4's answer (44 groups) was
+   about parse and does not apply. The network answer is that per-request cost
+   is ~12–16 ms and falls to nothing by ~8 files, while a single 2.7 MB response
+   is the one shape whose throughput depends on a stream ramping up. Four to
+   eight chunks along evaluation order captures essentially all of the ~2 s and
+   keeps several streams in flight; `--bw-lanes` exists in the stand-in
+   specifically so that question can be asked without a modelling artefact
+   answering it. Measure 1 / 4 / 8 / 16 and take the knee.
+
+## 9. What is left, in order (superseding §5)
+
+1. **Bundle `js/generated-y/`** per §8. ~2 s on the judged path; the largest
+   single item on the page by a factor of ten.
+2. **Bundle `js/generated/`** the same way, once the first is gated. It is not
+   on the first-frame path any more (§7.2 moved it behind the frame) but it is
+   on the *upgrade* path and on our own page's.
+3. §5's items 1 and 2 — the compile term and `fill_glyphid_cache` — are
+   unchanged and remain what they were: real, local, and an order of magnitude
+   smaller than anything in Part two.
