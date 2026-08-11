@@ -45,20 +45,42 @@
 //   `./nhprop.js` and `./nhmacrofn.js` go INSIDE: they import decl.js, sys.js,
 //   artifact.js and cmd.js and are part of the cycle.
 //
-// RENAMING, CHEAPEST FIRST. 53,096 top-level declarations land in one scope.
-//   - 13,412 `$field` fold consts are `const $x = FLD.x`, character-identical in
+// RENAMING, CHEAPEST FIRST. 46,415 top-level declarations land in one scope.
+//   - 13,455 `$field` fold consts are `const $x = FLD.x`, character-identical in
 //     every module that has them and never exported or imported. They collapse
-//     to one deduplicated block at bundle scope, taking 1,719 duplicate names
-//     with them. Verified rather than assumed: a declarator is only dropped when
-//     its name is `$X` and its initialiser is exactly `FLD.X`.
+//     to 2,718 shared consts at bundle scope, taking 1,719 duplicate names with
+//     them. Verified rather than assumed: a declarator is only dropped when its
+//     name is `$X` and its initialiser is exactly `FLD.X`, and a statement that
+//     mixes anything else in is left alone and renamed normally.
 //   - 24,129 `__slN` string-table consts restart their numbering in every file.
-//     They rename mechanically.
-//   - the rest are real C symbols with ~224 collisions (panic ×3, main ×3, …),
-//     220 of them on exported names.
+//     They rename mechanically, as do the 146 reset blocks resetify.mjs appends.
+//   - **16** are real C symbols. §2.5's "247 collisions, 211 exported" counted
+//     collisions with nhconst/nhmacro/nhfield, which stay outside as namespaces
+//     and therefore collide with nothing.
 // One rule covers all three: **earliest in evaluation order keeps the bare
 // name**; every later claimant gets `name$<module>`. It is deterministic, it is
-// auditable from the output, and it is asserted — a new name that already
-// occurs anywhere in the corpus is refused rather than shadowed.
+// auditable from `--stats`, and it is asserted.
+//
+// THE TRAP THAT IS NOT ABOUT DECLARATIONS. The tree calls its libc/tty shim
+// through UNDECLARED GLOBALS — `getenv`, `open`, `fopen`, `raw_printf` and ~200
+// others that js/boot/harness.mjs installs on globalThis. Across 167 module
+// scopes that is unambiguous. In one scope it stops being so the moment a module
+// declares a top-level binding of the same name, and six do (rnd.js has
+// file-static getenv/fopen/fprintf/fputc; unixtty.js has `error`; pline.js has
+// `raw_printf`). The first working build of this pass did exactly that and
+// booted to "Unable to open SYSCF_FILE" with nothing thrown — no exception, no
+// missing export, just a different game. So every identifier that is free in any
+// module is collected and reserved BEFORE any bundle name is handed out: the
+// module that declares the clashing name renames, and free references keep
+// resolving to the global they always resolved to. See buildBundle().
+//
+// GRANULARITY: ONE CHUNK, and that is a measurement, not a default. The design
+// asked for four to eight so fetches could overlap. Asked of the mirror
+// (tools/judge-sim/wire-probe.mjs), transfer rate with the round trip removed is
+// 3.92 MB/s on one stream and 2.7-2.9 on four, eight, sixteen and a hundred and
+// eighty: a single stream already has the whole link, and every chunk past the
+// first costs a request and a worse compression window for nothing.
+// docs/NOTES-startup.md §8.3.
 //
 // WHY A LEXER AND NOT A PARSER. The same argument jslex.mjs makes: c2js output
 // is regular by construction, and the three facts a scope hoist needs — where
@@ -73,6 +95,8 @@
 //   node tools/c2js/bundle.mjs --dir js/generated
 //   node tools/c2js/bundle.mjs --check                # exit 1 if it would change
 //   node tools/c2js/bundle.mjs --stats
+//   node tools/c2js/bundle.mjs --verify-order  # tree and bundle agree on every
+//                                              # cptr pointer id (see below)
 //
 // Run from build.mjs after assertTreesHygienic(), gated on C2JS_BUNDLE, in the
 // shape of maybeYield/maybeReset — so the four read-back-driven sidecar
@@ -81,7 +105,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tokenize } from './jslex.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -788,13 +812,15 @@ export function buildBundle(dirRel) {
 
     const text = L.join('\n');
     const declCount = modules.reduce((a, f) => a + scans.get(f).topDecls.length, 0);
+    const foldDecls = modules.reduce((a, f) => a + scans.get(f).fieldConsts.length, 0);
     return {
         text,
         stats: {
             modules: modules.length,
-            declarations: declCount,
+            declarations: declCount + foldDecls,
             fieldFolds: fieldAll.size,
-            hoisted: declCount - fieldAll.size,
+            foldDecls,
+            hoisted: declCount,
             renamed: collisions.length,
             realCollisions: collisions.filter((c) => !/^__sl\d+$/.test(c.from)
                 && !/^__(c2js_rs|captureState|resetState)$/.test(c.from)).length,
@@ -803,6 +829,59 @@ export function buildBundle(dirRel) {
             collisions,
         },
     };
+}
+
+// ---------------------------------------------------------------------------
+// --verify-order: the proof, not the argument
+// ---------------------------------------------------------------------------
+//
+// Everything in this file rests on one claim: the bundle's module bodies run in
+// the same order the per-module tree's do. The argument is that a post-order
+// depth-first walk over static imports IS what the spec's InnerModuleEvaluation
+// performs. The proof is that the two orders produce the same pointer ids.
+//
+// js/cptr.js's registry is append-only and an id is its index, so the id handed
+// out by the FIRST store after the graph has finished evaluating counts every
+// `cptr.lit`/`cptr.alloc` the graph performed, in order. `__nextBufId` is the
+// second such counter. Evaluate the tree in one process and the bundle in
+// another, ask both, and compare: if a single top-level initialiser had moved,
+// the counts would differ — and if none did, they cannot.
+//
+// Why it matters more than it sounds: the Lua VM seeds its string hashes from
+// pointer ids, so a shifted registry is a different hash table, a different
+// iteration order, and a different game. It would not throw. It would just
+// stop matching the recording somewhere in the middle of a level.
+async function verifyOrder(dirRel) {
+    const { execFileSync } = await import('node:child_process');
+    const url = (rel) => pathToFileURL(path.join(repoRoot, rel)).href;
+    const probe = (spec) => `
+        const t0 = Date.now();
+        await import(${JSON.stringify(spec)});
+        const cptr = await import(${JSON.stringify(url('js/cptr.js'))});
+        // One store into a scratch cell: the id it is given is BASE + the
+        // registry's length, i.e. exactly how many pointers the graph stored.
+        const cell = cptr.alloc(8);
+        cptr.stPtr(cell, cell);
+        console.log(JSON.stringify({
+            ptrId: String(cptr.ldU64(cell)),
+            bufId: String(cptr.addr(cptr.alloc(1))),
+            ms: Date.now() - t0,
+        }));`;
+    const run = (rel) => JSON.parse(execFileSync(process.execPath,
+        ['--input-type=module', '-e', probe(url(rel))],
+        { cwd: repoRoot, encoding: 'utf8' }).trim());
+    const tree = run(`${dirRel}/${BARREL}`);
+    const bundle = run(`${dirRel}/__bundle.js`);
+    const same = tree.ptrId === bundle.ptrId && tree.bufId === bundle.bufId;
+    console.log(`evaluation order, ${dirRel}:`);
+    console.log(`  per-module tree (${BARREL})  pointer registry -> ${tree.ptrId}, `
+        + `next buffer id ${tree.bufId}   (${tree.ms} ms to evaluate)`);
+    console.log(`  scope-hoisted bundle        pointer registry -> ${bundle.ptrId}, `
+        + `next buffer id ${bundle.bufId}   (${bundle.ms} ms to evaluate)`);
+    console.log(same
+        ? '  IDENTICAL — every top-level initialiser ran in the same place.'
+        : '  DIFFERENT — a top-level initialiser moved; the bundle is not parity-safe.');
+    return same;
 }
 
 // ---------------------------------------------------------------------------
@@ -818,6 +897,11 @@ const argVal = (f) => {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
     const dirs = argVal('--dir') ? [argVal('--dir')] : ['js/generated-y'];
+    if (args.includes('--verify-order')) {
+        let ok = true;
+        for (const dir of dirs) ok = (await verifyOrder(dir)) && ok;
+        process.exit(ok ? 0 : 1);
+    }
     const check = args.includes('--check');
     const stats = args.includes('--stats');
     let changed = 0;
@@ -831,9 +915,10 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
             fs.writeFileSync(out, text);
         }
         console.log(`bundle ${dir}: ${s.modules} modules -> 1 file, `
-            + `${(s.bytes / 1024 / 1024).toFixed(2)} MB, ${s.hoisted} declarations hoisted `
-            + `(${s.fieldFolds} struct-offset folds deduplicated), ${s.renamed} renamed `
-            + `(${s.realCollisions} of them real C symbols), ${s.stateful} stateful modules in the barrel`);
+            + `${(s.bytes / 1024 / 1024).toFixed(2)} MB; ${s.declarations} top-level declarations `
+            + `-> ${s.hoisted} hoisted + ${s.foldDecls} struct-offset folds deduplicated to ${s.fieldFolds}; `
+            + `${s.renamed} renamed (${s.realCollisions} of them real C symbols); `
+            + `${s.stateful} stateful modules in the barrel`);
         if (stats) {
             for (const c of s.collisions.filter((x) => !/^__sl\d+$/.test(x.from)
                 && !/^__(c2js_rs|captureState|resetState)$/.test(x.from))) {

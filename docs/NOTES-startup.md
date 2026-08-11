@@ -638,74 +638,351 @@ comparison is, and the term this branch attacks is visible in it directly:
 The tree starts downloading between 3 s and 12 s earlier on every pair, which is
 the same effect the stand-in measures at 2.2 s under a link that is behaving.
 
-## 8. Bundling — the verdict, corrected, and the design it implies
+# Part three — the bundle (branch `bundle-1`, from `main@e1c47cd`)
+
+## 8. Bundling — the verdict corrected, and what got built
 
 §2.5 said "do not bundle, 169 modules, unchanged", and §5 item 3 said the prize
-was ~50 ms. On the network the prize is **~2 s** (§6.3), and the reasoning that
-refused it — 39,901 declarations to alpha-rename, a call graph keyed on
-`<module>#<function>`, per-module reset barrels, 19 external import sites — is
-a list of costs, not a counter-measurement. Weighed against 61 ms those costs
-win. Weighed against two seconds on a budget we are currently missing by two
-seconds, they do not.
+was ~50 ms. That was parse, on loopback. On the wire the prize is the
+per-request term §6.3 measured, and the reasoning that refused it — 39,901
+declarations to alpha-rename, a call graph keyed on `<module>#<function>`,
+per-module reset barrels, 19 external import sites — was a list of costs with
+no measurement on the other side of the scale. This part puts one there.
 
-**This branch does not land it.** What it lands is the measurement that says it
-must be landed, the two changes that were separable from it, and the simulator
-that can now price it. The design the measurement implies, so the next leg does
-not have to re-derive it:
+**What landed**: `tools/c2js/bundle.mjs` scope-hoists `js/generated-y/` into
+`js/generated-y/__bundle.js`, **one file, 167 modules**, in ESM evaluation
+order. The per-module tree is untouched and is still what `callgraph.mjs`,
+`resetify.mjs`, `reset-census.mjs`, `yieldify.mjs` and every diff read; the
+bundle is an additional artifact that four dynamic-import sites in `js/boot/`
+load instead of the tree. `js/generated/` — the scored tree — is **not**
+bundled, and §9 says why.
 
-1. **Scope: `js/generated-y/` first, and it is self-contained.** The only
-   consumers outside the tree are `js/boot/harness-y.mjs` (`unixmain.js`,
-   `rnd.js`), `js/boot/reset-realm.mjs` (`__reset.js`) and
-   `js/boot/main-thread-engine.mjs` (`rnd.js`) — four call sites. In
-   particular **`js/lua-js/**` does not touch it**: all 19 of its static imports
-   name `../generated/`, the *sync* tree, even in the yieldable build. The
-   hazard §2.5 listed as fifth on its list does not exist on this half.
-2. **A build-time pass, not a text stitcher** — `tools/c2js/bundle.mjs`, run
-   from `build.mjs` after `assertTreesHygienic` so the four read-back-driven
-   sidecar writers, `assertNamespaceExports` and the hygiene assert all still
-   scan the unbundled tree, and gated on `C2JS_BUNDLE` in the shape of
-   `maybeYield`/`maybeReset`. Never written into `js/generated-y/` before
-   `yieldify.mjs` runs: that pass `rm -rf`s the directory.
-3. **An additional artifact, not a replacement.** The per-module tree stays
-   exactly as it is — readable, diffable, and what `callgraph.mjs`,
-   `resetify.mjs`, `reset-census.mjs` and `yieldify.mjs` read. The bundle is a
-   derived deployment artifact the browser's fallback rung loads instead.
-4. **Order is the load-bearing part.** Concatenate in ESM evaluation order —
-   DFS post-order from `unixmain.js`, then the barrel's remainder — because
-   that order fixes every `cptr` pointer id and therefore RNG parity, which is
-   the same reason `resetify.mjs:189-194` imports the entry bare and first.
-5. **Keep `nhconst.js`, `nhmacro.js`, `nhfield.js` outside it.** They are
-   import-free leaves read only as `NHC.x` / `NHM.x` / `FLD.x` namespaces, so
-   leaving them as three real modules preserves that idiom byte-for-byte and
-   costs three requests. `nhprop.js` and `nhmacrofn.js` must go *inside* — they
-   import `decl.js`, `sys.js`, `artifact.js` and `cmd.js` and are part of the
-   cycle. `js/cptr.js` stays outside and shared, as the reset registry requires.
-6. **Renaming, cheapest first.** Of 40,094 top-level declarations, 24,163 are
-   per-file `__slN` string-table consts and 13,412 are `$field` fold consts.
-   The `$field` consts are `const $x = FLD.x` — *identical in every module* — so
-   they collapse to one deduplicated block at bundle scope and 13,412
-   declarations and their 1,719 duplicate names disappear. `__slN` names carry
-   an unshadowable prefix and are renamed mechanically. That leaves ~2,500 real
-   C symbols with ~247 collisions, of which 213 are on exported names — a small
-   enough set to rename by an auditable rule (earliest in evaluation order keeps
-   the bare name) with a build-time assertion that the new name occurs nowhere
-   else in the module.
-7. **Granularity: few, not one, and measure.** §2.4's answer (44 groups) was
-   about parse and does not apply. The network answer is that per-request cost
-   is ~12–16 ms and falls to nothing by ~8 files, while a single 2.7 MB response
-   is the one shape whose throughput depends on a stream ramping up. Four to
-   eight chunks along evaluation order captures essentially all of the ~2 s and
-   keeps several streams in flight; `--bw-lanes` exists in the stand-in
-   specifically so that question can be asked without a modelling artefact
-   answering it. Measure 1 / 4 / 8 / 16 and take the knee.
+### 8.1 The design, and the two places it changed under measurement
+
+Items 1–6 of the design this part inherited (an additional artifact, a
+build-time pass after `assertTreesHygienic`, evaluation order, the namespace
+leaves left outside, the `$field` consts deduplicated, renaming cheapest first)
+survived contact. Two things did not.
+
+**The chunk count was wrong, and the measurement is in §8.3: it is one, not
+four to eight.**
+
+**And the hard part was not renaming.** The design's list of hazards was a list
+of *declarations*. The one that actually broke the first working build was a
+list of *non*-declarations, and §8.2 is about it.
+
+### 8.2 The trap: the tree calls its libc through undeclared globals
+
+The first bundle that parsed, evaluated and exported everything booted to
+
+```
+[trace] open nethack 0
+[trace] chdir /usr/games/lib/nethackdir
+[trace] open sysconf 0
+Unable to open SYSCF_FILE.
+```
+
+against a tree that boots to `getenv NETHACKDIR` / `chdir /tmp/c2js-nethackdir`.
+Nothing threw. Nothing was missing. The graph had simply started reading a
+different `getenv`.
+
+`js/boot/harness.mjs` installs the whole libc/tty shim — `getenv`, `open`,
+`fopen`, `fprintf`, `raw_printf`, ~200 names — on `globalThis`, and the
+generated modules call them as **free identifiers**: neither declared nor
+imported anywhere. Across 167 module scopes that is unambiguous, because a
+module-scope binding in one module is invisible in another. In ONE scope it
+stops being so the moment any module declares a top-level binding with the same
+name — and several do. `rnd.js` has file-static `getenv`, `fopen`, `fprintf`
+and `fputc`; `unixtty.js` has `error`; `pline.js` has `raw_printf`. A naive
+hoist silently redirects every other module's call to the harness's function
+into a file-static one that does something else.
+
+This is the worst failure mode available to a parity port: no exception, no
+missing export, no build error — just a game that plays differently, discovered
+(if at all) as an RNG divergence a hundred thousand draws in.
+
+The fix is the cheap direction. Collect every identifier that is **free in any
+module** — referenced there, but not declared there, not imported there, and not
+bound inside a function there — and reserve all of them before a single bundle
+name is handed out. The module that declares the clashing name is then the thing
+that renames, and every free reference keeps resolving to the global it always
+resolved to. That is six of the sixteen real renames below.
+
+### 8.3 Granularity: **one chunk**, and the measurement that says so
+
+The design's item 7 reasoned that per-request cost falls to nothing by ~8 files
+while "a single 2.7 MB response is the one shape whose throughput depends on a
+stream ramping up", and asked for 1/4/8/16 to be measured. It has been, on the
+mirror, and the hypothesis is false there: **a single stream is the fastest
+shape on offer.**
+
+`tools/judge-sim/wire-probe.mjs` opens one HTTP/2 session to
+`mazesofmenace.ai` — which is what Chrome opens — and issues K concurrent
+streams over it, every URL cache-busted. The payload is K copies of the biggest
+file the mirror publishes, so stream count is varied with bytes-per-stream held
+fixed. Every burst pays one round trip whatever its size, so the round trip
+(measured directly by the 1-request row: **106 ms**) is subtracted before the
+rate is quoted — without that subtraction a bigger payload looks faster purely
+by amortising it, which is the arithmetic that would have argued for chunking.
+
+`--big=js/data-nethackdir/chunk-01.mjs` (220 KB on the wire — enough runway for
+one stream to ramp), 3 rounds, warm, median:
+
+| streams | bytes | ms | transfer rate, round trip removed |
+|---|---|---|---|
+| 1 | 220 KB | 165 | **3.92 MB/s** |
+| 2 | 440 KB | 240 | 3.24 |
+| 4 | 881 KB | 401 | 2.92 |
+| 8 | 1761 KB | 735 | 2.80 |
+| 16 | 3522 KB | 1354 | 2.76 |
+| 180 (the published tree) | 2720 KB | 1095 | 2.69 |
+
+The rate does not rise with stream count; it falls slightly, which is what
+sharing one ceiling plus per-stream overhead looks like. A single response of
+the bundle's size is therefore predicted at `106 ms + 2.2 MB / ~3 MB/s ≈ 0.85 s`
+against the tree's measured 1.09 s — and every chunk added past one costs a
+request and a worse compression window while buying no parallelism.
+
+**A second reading confirms the first from a real renderer.** The same probe
+with `--via=chrome` drives headless Chrome against the same origin and fetches
+the same URLs from a page: the published tree comes down in 1100/1198 ms
+against `node:http2`'s 1093/1103. The two clients agree, which is the point —
+they only agree after the client's own flow-control window is raised. With
+node's default 64 KB window the same probe reported the tree at 0.33 MB/s, a
+factor of eight slow, and would have "measured" a ceiling that was its own. If
+you re-run this, check the two paths against each other before believing either.
+
+**And an honest correction to §6.3.** That section priced the edge at 12–16 ms
+of serialized work per request from a page, and it is the number that overturned
+§2.5. Re-measured on this branch's evenings, from both clients: 180 cache-busted
+copies of a 1.6 KB file cost 269–338 ms (`node:http2`) and 260–380 ms (Chrome),
+of which ~205 ms is one round trip plus the 293 KB itself — leaving **0.3–1.0 ms
+per request, not 12–16**. Both measurements are real; the mirror is simply not
+the same mirror hour to hour, exactly as the live A/B in §7.3 found when its
+`before` arm went from 5.2 s to 11.7–32.8 s on the same code. The right way to
+hold this is that the per-request term is a lottery the page has to buy a ticket
+for 180 times, and bundling stops buying tickets. On a good hour that is worth
+~0.25 s; on §6.3's hour it was worth ~2.4 s; it is never worth less than zero,
+and it does not depend on the player's machine.
+
+### 8.4 What it cost to put 167 modules in one scope
+
+| | |
+|---|---|
+| modules bundled | 167 (of 170 in the tree: three namespace leaves stay out, `__reset.js` is superseded) |
+| top-level declarations in one scope | 46,415 (32,960 hoisted as-is) |
+| `$field` folds deduplicated away | 13,455 declarators → **2,718** shared consts |
+| names renamed | 23,159 |
+| …of which real C symbols | **16** |
+| raw bytes | 14.50 MB (tree: 15.86 MB) |
+| gzip -9 | **2,221 KB** (tree, summed per file: 2,579 KB) — **14% fewer bytes**, from one compression window instead of 167 |
+
+The `$field` consts are `const $x = FLD.x`, character-identical in every module
+that has one, never exported and never imported. They collapse to one block at
+bundle scope — and the collapse is *verified per declarator*, not assumed: a
+declarator is only dropped when its name is `$X` and its initialiser is exactly
+`FLD.X`, and a statement mixing anything else in is left alone and renamed
+normally.
+
+The sixteen, in full, because sixteen is a number a reader can check:
+
+```
+getenv, fopen, fprintf, fputc  (rnd.js)      -> the harness's globals win
+raw_printf                    (pline.js)     -> the harness's global wins
+error                         (lundump.js)   -> unixtty.js declared it first
+panic                         (lauxlib.js, end.js) -> rnd.js declared it first
+sgn                           (hacklib.js)   -> rnd.js
+digit                         (lstrlib.js)   -> hacklib.js
+reverse                       (wintty.js)    -> lapi.js
+impossible                    (pline.js)     -> rnd.js
+sys_random_seed               (unixmain.js)  -> rnd.js
+has_strong_rngseed            (rnd.js)       -> decl.js
+brief_feeling                 (uhitm.js)     -> mhitm.js
+nhl_functions                 (nhlua.js)     -> sp_lev.js
+```
+
+One rule produced all of them: **earliest in evaluation order keeps the bare
+name**, later claimants get `name$<module>`, and the runtime's own imported
+names and every free identifier are claimed before any of them. §2.5's "247
+genuine C-symbol collisions, 211 of them exported" counted collisions *with
+`nhconst.js`/`nhmacro.js`/`nhfield.js`*, which stay outside the bundle as
+namespaces and therefore collide with nothing.
+
+The pass refuses rather than guesses, in four places: a rename target that is
+also bound inside any function (the shadow assertion — a token-level rename
+would be wrong there), a shorthand object property that would need expanding
+rather than replacing, a namespace import of a bundled module, and an external
+name that means two different things in two modules. None fires on this corpus;
+all four are the difference between "it worked" and "it cannot silently not
+work".
+
+### 8.5 Evaluation order: the proof, not the argument
+
+The argument is that a post-order depth-first walk over static imports **is**
+what the spec's InnerModuleEvaluation performs, so concatenating in that order
+runs the module bodies in the order the browser runs them.
+
+The proof is `node tools/c2js/bundle.mjs --verify-order`. `js/cptr.js`'s pointer
+registry is append-only and an id is its index, so the id handed to the first
+store *after* the graph has finished evaluating counts every `cptr.lit` and
+`cptr.alloc` the graph performed, in order; `__nextBufId` is the second such
+counter. Evaluate the tree in one process and the bundle in another, and ask
+both:
+
+```
+per-module tree (__reset.js)   pointer registry -> 1099511637732, next buffer id 67108864
+scope-hoisted bundle           pointer registry -> 1099511637732, next buffer id 67108864
+IDENTICAL — every top-level initialiser ran in the same place.
+```
+
+If a single top-level initialiser had moved, those numbers would differ. This
+matters more than it sounds: the Lua VM seeds its string hashes from pointer
+ids, so a shifted registry is a different hash table, a different iteration
+order, and a different game — and it would not throw, it would stop matching the
+recording somewhere in the middle of a level.
+
+The graph is also **cheaper to instantiate**, which was not the point and is
+worth having anyway: 246/249/265 ms against the tree's 395/405/486 ms in the
+same three process pairs. That is §2.4's ESM bucket, collected in passing.
+
+### 8.6 Measured, end to end
+
+**The stand-in, calibrated** (`playability.mjs --their-page --gzip --h2
+--latency=115 --bw=3200000 --seed=1`, which is now one command — the four
+switches are passed through rather than reconstructed by hand), judge's play
+page, **interleaved ABBA, four runs a side**, the two revisions checked in and
+out under one server:
+
+| | before (`e1c47cd`) | after |
+|---|---|---|
+| gate → first frame | 4250 / 4250 / 4251 / 4247 ms | **2459 / 2464 / 2476 / 2455 ms** |
+| navigation → first frame | 4800 / 4776 / 4780 / 4771 ms | **3021 / 3042 / 3029 / 3016 ms** |
+| requests (server-side, whole run) | 295–302 | **185–198** |
+| console entries | 0 | 0 |
+
+**−42 % on gate→first-frame, −37 % on navigation→first-frame**, medians and
+minima agreeing in sign and magnitude, 21 ms of spread across the four after-runs
+and 4 ms across the four before-runs. (This box's before-numbers are higher than
+§7.3's on the same code and same command; the two columns were taken minutes
+apart under one server, which is the only comparison being claimed.)
+
+**On the wire, live.** The after-state cannot be published — nothing here is
+pushed — so the engine's own transfer is priced from the mirror directly rather
+than staged: the published tree is 180 requests and 2720 KB and comes down in
+1093/1097/1103 ms, and one response of the bundle's size at the same measured
+rate is ~0.85 s. The 500 KB the bundle does not have to send is the part of that
+which is certain; the per-request term is the part that varies by the hour
+(§8.3).
+
+**Requests, in the boot the judge sees.** The fallback rung's engine went from
+**180 requests to 4** — the bundle plus `nhconst.js`, `nhmacro.js` and
+`nhfield.js`, which stay outside it as namespace leaves. `js/boot/preload.mjs`'s
+`modulepreload` list now names the bundle instead of the reset barrel, so the
+warm-up that §7.1 added covers the same engine in four subresources rather than
+a hundred and eighty.
+
+The ~190 requests that remain in a whole run are almost all `js/generated/**`:
+the transport rung still fetches the sync tree after the fallback has painted
+(§7.2 moved it behind the frame, it did not remove it). That is §9's item 1 and
+it is worth another ~120 requests.
+
+### 8.7 The one thing that cannot be checked without publishing
+
+`__bundle.js` is **15.2 MB raw**, 2.2 MB gzipped. The mirror is GitHub Pages
+behind Fastly, which gzips `application/javascript` on the way out — it does so
+today for `js/generated-y/monst.js` at 1.1 MB raw (`content-encoding: gzip`,
+1,098,816 → 91,203 bytes), and GitHub Pages' documented per-file limit is
+100 MB. What is **not** known from here is whether that origin still compresses
+an object fifteen times larger, and nothing on this branch is pushed, so it
+cannot be measured. If it did not, the fallback rung would fetch 15 MB instead
+of 2.2 and this whole part would be a regression.
+
+Two things make that an acceptable risk to carry into a merge rather than a
+blocker. It is **observable in one request** the moment the branch lands
+(`curl -sI -H 'accept-encoding: gzip' …/js/generated-y/__bundle.js | grep
+content-encoding`), and it is **revertible in one build** — `C2JS_BUNDLE=0`
+plus the two-line patch list in `yieldify.mjs` puts the four call sites back on
+the tree, which is still emitted, still committed and still correct.
+
+Comment-stripping was considered as a way to shrink the raw side and rejected on
+measurement: comments are 5.3 % of the file (800 KB of 15.2 MB), which does not
+change which side of any plausible threshold it lands on, and it would trade a
+verified artifact for an unverified one.
+
+### 8.8 What consumes the bundle
+
+Everything that runs the **yieldable** build, and nothing that runs the scored
+one:
+
+- `js/boot/harness-y.mjs` — `import('../generated-y/__bundle.js')` twice, where
+  it used to import `unixmain.js` and `rnd.js`. It is generated by
+  `yieldify.mjs`, so the change is to the patch list there, and
+  `js/boot/harness.mjs` (scored, hand-written) is untouched.
+- `js/boot/reset-realm.mjs` — `BUILDS.yield.barrel`. The bundle carries its own
+  `captureAll`/`resetAll` over the same 146 stateful modules, with the S/P
+  snapshot helpers lifted verbatim out of `__reset.js` so the two cannot drift.
+- `js/boot/main-thread-engine.mjs` — the spent-graph release, which wanted
+  `rnd.js`'s `getRngLog`.
+- `js/boot/preload.mjs` — `PRELOAD_PATHS`, now asserted to exist by
+  `build.mjs` after every build (a preload link at a 404 is a console line, and
+  a console line fails the judge's browser check).
+
+So the bundle is on the browser's fallback rung, on the Node interactive rung
+(`main-thread-engine.mjs`, `frozen/playability_runner.mjs`, `yieldtest/`), and
+on the yield reset realm. The scoring path — `js/generated/`, `js/boot/
+harness.mjs`, `frozen/ps_test_runner.mjs` — does not load it, which is why the
+69/69 corpus is a control here rather than the test. **The test is the yield
+corpus**, which is the same 69 sessions booted through the bundle: 69/69, and
+44/44 on `sessions/` alone.
+
+`C2JS_BUNDLE=0` skips the pass, and is the A/B baseline. It is on by default
+whenever there is a yield build to bundle, because `harness-y.mjs` imports the
+bundle and nothing else: a build that emitted the tree and skipped the bundle
+would ship a boot path with a 404 in it.
+
+### 8.9 Gates
+
+Run on the shipping tree of this branch, after
+`C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs --all --force`.
+
+| gate | result |
+|---|---|
+| full rebuild reproduces the committed trees | **byte-identical** — `git status` clean after `--force`, including `__bundle.js` |
+| `C2JS_FOLD_VERIFY=1`, as its own build | **323,336 folds, 0 mismatched, 0 unevaluable** |
+| no-absolute-path assertion | **360 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` (new) | all 4 `PRELOAD_PATHS` exist |
+| `reset-census` | 179 modules, 45,909 declarations, plan 1,416, **0 unclassified** |
+| `bundle.mjs --verify-order` | tree and bundle agree on the pointer registry and the buffer-id counter — **identical** (§8.5) |
+| corpus (`sessions/` + `sessions-extra/`), twice, reset path, Lua ports live | **69/69** and **69/69** — the scored tree, which the bundle does not touch: the control |
+| **yield corpus, same 69 sessions, booted through the bundle**, twice | **69/69** and **69/69**; 44/44 on `sessions/` alone — **the test** |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `reset-diff --build yield`, one pair per process as its own header instructs | **3/3** pairs byte-identical (`seed0030:seed0030`, `seed8000:seed0030`, `seed0030:seed4500`; 39 resets, median 0.5 ms) — this is the gate on the bundle's own inlined `captureAll`/`resetAll` |
+| `test-rnd` / `test-hacklib` / `test-setjmp` / `test-union` | PASS (3,130 + 2,983 RNG calls; 870 cases, 0 failures; both gates identical) |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/strict-score.mjs` | 344 files reachable from 2 roots (**4** in `js/generated-y/`, was 180), **0 violations** |
+| `judge-sim/run.mjs` seed8000, seed0013 | **PASS**, 0 segment mismatches, 0 out-of-scope requests |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, **0 console entries**, 0 out-of-scope, 0 404s (×4 runs, §8.6) |
+| `playability.mjs` production / `--coi` / `--inert-sw` / `--no-sw` / `--hang-sw` | **0 console entries** in every mode |
+| sandboxed `playability_runner.mjs` (`node --permission`) | 44 sessions, **0 failures**, 9,096 moves, **3.054 ms/move** (documented baseline 3.03–3.15) |
 
 ## 9. What is left, in order (superseding §5)
 
-1. **Bundle `js/generated-y/`** per §8. ~2 s on the judged path; the largest
-   single item on the page by a factor of ten.
-2. **Bundle `js/generated/`** the same way, once the first is gated. It is not
-   on the first-frame path any more (§7.2 moved it behind the frame) but it is
-   on the *upgrade* path and on our own page's.
+1. **Bundle `js/generated/`** — the scored tree — the same way. It is not on
+   the first-frame path any more (§7.2 moved it behind the frame) but the
+   transport rung still pulls all 169 of its modules after the fallback paints,
+   which is most of the ~190 requests a whole run still makes (§8.6), and it is
+   on our own `index.html`'s critical path. Two things make it a leg of its own
+   rather than a repeat: `js/lua-js/{bridge,registry,readback,interp-state}.mjs`
+   hold **19 static imports naming 13 modules of it directly** — which is
+   exactly the hazard `js/generated-y/` did not have (§8, item 1) — and
+   `tools/c2js/test-rnd.mjs` relies on `rnd.js?s=N` giving it a fresh single
+   module per case. Both are solvable (the lua-js sites can import the bundle;
+   test-rnd can keep using the tree, which is still emitted), and neither should
+   be solved in the same commit as a change to the scored path.
+2. **The remaining request tail on the first-frame path**: `js/boot/**` is 18
+   requests and `js/data-nethackdir/**` is 12. The boot chain is serial round
+   trips, not just count, so it is worth more than 30/180 of §8's win suggests.
 3. §5's items 1 and 2 — the compile term and `fill_glyphid_cache` — are
    unchanged and remain what they were: real, local, and an order of magnitude
-   smaller than anything in Part two.
+   smaller than anything in Parts two and three.
