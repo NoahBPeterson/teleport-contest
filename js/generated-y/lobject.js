@@ -25,17 +25,17 @@ const $BuffFS_blen = FLD.BuffFS_blen, $BuffFS_pushed = FLD.BuffFS_pushed, $BuffF
     $lua_State_top = FLD.lua_State_top;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit(".xXnN");
-const __sl1 = cptr.lit("%lld");
-const __sl2 = cptr.lit("%.14g");
-const __sl3 = cptr.lit("-0123456789");
-const __sl4 = cptr.lit("(null)");
-const __sl5 = cptr.lit("%p");
-const __sl6 = cptr.lit("%");
-const __sl7 = cptr.lit("invalid option '%%%c' to 'lua_pushfstring'");
-const __sl8 = cptr.lit("...");
-const __sl9 = cptr.lit("[string \"");
-const __sl10 = cptr.lit("\"]");
+const __s_xxnn = cptr.lit(".xXnN");
+const __s_lld = cptr.lit("%lld");
+const __s_14g = cptr.lit("%.14g");
+const __s_0123456789 = cptr.lit("-0123456789");
+const __s_null = cptr.lit("(null)");
+const __s_pct_p = cptr.lit("%p");
+const __s_pct = cptr.lit("%");
+const __s_invalid_option_c_to_lua_pushfstring = cptr.lit("invalid option '%%%c' to 'lua_pushfstring'");
+const __s_dot3 = cptr.lit("...");
+const __s_string = cptr.lit("[string \"");
+const __s_quot_rbrack = cptr.lit("\"]");
 
 const __static_luaO_ceillog2_log_2 = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]; /** C ref: lobject.c:36 — unsigned char[256] (function-static) */
 
@@ -212,7 +212,7 @@ function l_str2dloc(s, result, mode) {
 /** C ref: lobject.c:251 — @param {CPtr<char>} s @param {CPtr<lua_Number>} result @returns {CPtr<char>} */
 function l_str2d(s, result) {
     let endptr;
-    let pmode = strpbrk(s, __sl0);
+    let pmode = strpbrk(s, __s_xxnn);
     let mode = pmode ? (((uchar(((cptr.ld1s(pmode)))))) | 32) : 0;
     if (mode == 110)
         return null;
@@ -312,10 +312,10 @@ function tostringbuff(obj, buff) {
     let len;
     (void 0);
     if (((cptr.ld1uo(((obj)), $TValue_tt_)) == 3))
-        len = cptr.snprintf((buff), 44n, __sl1, ((cptr.ldI64(((obj))))));
+        len = cptr.snprintf((buff), 44n, __s_lld, ((cptr.ldI64(((obj))))));
     else {
-        len = cptr.snprintf((buff), 44n, __sl2, ((cptr.ldF64(((obj))))));
-        if (cptr.ld1so(buff, strspn(buff, __sl3)) == 0) {
+        len = cptr.snprintf((buff), 44n, __s_14g, ((cptr.ldF64(((obj))))));
+        if (cptr.ld1so(buff, strspn(buff, __s_0123456789)) == 0) {
             cptr.st1o(buff, len++, (cptr.ld1so(cptr.ldPtr(localeconv()), 0)));
             cptr.st1o(buff, len++, 48);
         }
@@ -406,7 +406,7 @@ export function* luaO_pushvfstring(L, fmt, argp) {
             {
                 let s = cptr.vaArg(argp, 'ptr');
                 if (cptr.eq(s, (null)))
-                    s = __sl4;
+                    s = __s_null;
                 (yield* addstr2buff(buff, s, cptr.strlen(s)));
                 break;
             }
@@ -457,7 +457,7 @@ export function* luaO_pushvfstring(L, fmt, argp) {
                 let sz = 32;
                 let bf = (yield* getbuff(buff, sz));
                 let p = cptr.vaArg(argp, 'ptr');
-                let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __sl5, p);
+                let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
                 (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
                 break;
             }
@@ -470,12 +470,12 @@ export function* luaO_pushvfstring(L, fmt, argp) {
             }
             case 37:
             {
-                (yield* addstr2buff(buff, __sl6, 1n));
+                (yield* addstr2buff(buff, __s_pct, 1n));
                 break;
             }
             default:
             {
-                (yield* luaG_runerror(L, __sl7, cptr.ld1s((cptr.add(e, 1)))));
+                (yield* luaG_runerror(L, __s_invalid_option_c_to_lua_pushfstring, cptr.ld1s((cptr.add(e, 1)))));
             }
         }
         fmt = cptr.add(e, 2);
@@ -510,13 +510,13 @@ export function luaO_chunkid(out, source, srclen) {
         if (srclen <= bufflen)
             cptr.memcpy(out, cptr.add(source, 1), BigInt.asUintN(64, srclen * 1n));
         else {
-            (cptr.memcpy(out, __sl8, BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n)))));
+            (cptr.memcpy(out, __s_dot3, BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n)))));
             bufflen -= (BigInt.asUintN(64, 4n / 1n - 1n));
             cptr.memcpy(out, cptr.add(cptr.add(cptr.add(source, 1), srclen), -(bufflen)), BigInt.asUintN(64, bufflen * 1n));
         }
     } else {
         let nl = cptr.strchr(source, 10);
-        (cptr.memcpy(out, __sl9, BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n)))));
+        (cptr.memcpy(out, __s_string, BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n)))));
         bufflen -= BigInt.asUintN(64, (BigInt.asUintN(64, 15n / 1n - 1n)) + 1n);
         if (srclen < bufflen && cptr.eq(nl, (null))) {
             (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));
@@ -526,9 +526,9 @@ export function luaO_chunkid(out, source, srclen) {
             if (srclen > bufflen)
                 srclen = bufflen;
             (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));
-            (cptr.memcpy(out, __sl8, BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n)))));
+            (cptr.memcpy(out, __s_dot3, BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n)))));
         }
-        cptr.memcpy(out, __sl10, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, 3n / 1n - 1n)) + 1n)) * 1n));
+        cptr.memcpy(out, __s_quot_rbrack, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, 3n / 1n - 1n)) + 1n)) * 1n));
     }
 }
 

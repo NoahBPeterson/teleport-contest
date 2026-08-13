@@ -123,72 +123,72 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NhRegion_player_flags = FLD.NhRegion_play
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("mkmaze.c");
-const __sl1 = cptr.lit("set_levltyp_lit");
-const __sl2 = cptr.lit("wall_cleanup: bad bounds (%d,%d) to (%d,%d)");
-const __sl3 = cptr.lit("wall_extends: bad bounds (%d,%d) to (%d,%d)");
-const __sl4 = cptr.lit("mz_move: bad direction %d");
-const __sl5 = cptr.lit("maze0xy");
-const __sl6 = cptr.lit("place_lregion");
-const __sl7 = cptr.lit("Couldn't place lregion type %d!");
-const __sl8 = cptr.lit("fixup_special");
-const __sl9 = cptr.lit("minetn-1");
-const __sl10 = cptr.lit("paddle cactus");
-const __sl11 = cptr.lit("dwarven root");
-const __sl12 = cptr.lit("migrate_orc");
-const __sl13 = cptr.lit("shiny_orc_stuff");
-const __sl14 = cptr.lit("migr_booty_item");
-const __sl15 = cptr.lit("stolen_booty");
-const __sl16 = cptr.lit("");
-const __sl17 = cptr.lit("maze_remove_deadends");
-const __sl18 = cptr.lit("create_maze");
-const __sl19 = cptr.lit("svi.inv_pos: maze is too small! (%d x %d)");
-const __sl20 = cptr.lit("pick_vibrasquare_location");
-const __sl21 = cptr.lit("populate_maze");
-const __sl22 = cptr.lit("makemaz");
-const __sl23 = cptr.lit("%s-%d");
-const __sl24 = cptr.lit("%s%d-%d");
-const __sl25 = cptr.lit("%s%d");
-const __sl26 = cptr.lit("SPLEVTYPE");
-const __sl27 = cptr.lit("%d");
-const __sl28 = cptr.lit(".lua");
-const __sl29 = cptr.lit("Couldn't load \"%s\" - making a maze.");
-const __sl30 = cptr.lit("walkfrom");
-const __sl31 = cptr.lit("mazexy");
-const __sl32 = cptr.lit("mazexy: can't find a place!");
-const __sl33 = cptr.lit("portal on top of portal?");
-const __sl34 = cptr.lit("mkportal: at <%d,%d>, to %s, level %d");
-const __sl35 = cptr.lit("fumaroles");
-const __sl36 = cptr.lit("You hear a %swhoosh!");
-const __sl37 = cptr.lit("loud ");
-const __sl38 = cptr.lit("movebubbles: cons != null");
-const __sl39 = cptr.lit("movebubbles: bad pos (%d,%d)");
-const __sl40 = cptr.lit("movebubbles");
-const __sl41 = cptr.lit("water_friction");
-const __sl42 = cptr.lit("Water turbulence affects your movements.");
-const __sl43 = cptr.lit("waterlevel-bubble_count");
-const __sl44 = cptr.lit("waterlevel-xmin");
-const __sl45 = cptr.lit("waterlevel-ymin");
-const __sl46 = cptr.lit("waterlevel-xmax");
-const __sl47 = cptr.lit("waterlevel-ymax");
-const __sl48 = cptr.lit("waterlevel-bubble");
-const __sl49 = cptr.lit("No %s to restore?");
-const __sl50 = cptr.lit("air bubbles");
-const __sl51 = cptr.lit("clouds");
-const __sl52 = cptr.lit("air bubbles or clouds");
-const __sl53 = cptr.lit("set_wportal(): no portal!");
-const __sl54 = cptr.lit("setup_waterlevel(): [%d:%d] neither 'Water' nor 'Air'");
-const __sl55 = cptr.lit("setup_waterlevel");
-const __sl56 = cptr.lit("n too large (mk_bubble)");
-const __sl57 = cptr.lit("bmask size is larger than MAX_BMASK");
-const __sl58 = cptr.lit("mk_bubble");
-const __sl59 = cptr.lit("maybe_adjust_hero_bubble");
-const __sl60 = cptr.lit("mv_bubble");
-const __sl61 = cptr.lit("bubble xmin: x = %d, xmin = %d");
-const __sl62 = cptr.lit("bubble ymin: y = %d, ymin = %d");
-const __sl63 = cptr.lit("bubble xmax: x = %d, xmax = %d");
-const __sl64 = cptr.lit("bubble ymax: y = %d, ymax = %d");
-const __sl65 = cptr.lit("mv_bubble: unknown bubble contents");
+const __s_mkmaze_c = cptr.lit("mkmaze.c");
+const __s_set_levltyp_lit = cptr.lit("set_levltyp_lit");
+const __s_wall_cleanup_bad_bounds_d_d_to_d_d = cptr.lit("wall_cleanup: bad bounds (%d,%d) to (%d,%d)");
+const __s_wall_extends_bad_bounds_d_d_to_d_d = cptr.lit("wall_extends: bad bounds (%d,%d) to (%d,%d)");
+const __s_mz_move_bad_direction_d = cptr.lit("mz_move: bad direction %d");
+const __s_maze0xy = cptr.lit("maze0xy");
+const __s_place_lregion = cptr.lit("place_lregion");
+const __s_couldn_t_place_lregion_type_d = cptr.lit("Couldn't place lregion type %d!");
+const __s_fixup_special = cptr.lit("fixup_special");
+const __s_minetn_1 = cptr.lit("minetn-1");
+const __s_paddle_cactus = cptr.lit("paddle cactus");
+const __s_dwarven_root = cptr.lit("dwarven root");
+const __s_migrate_orc = cptr.lit("migrate_orc");
+const __s_shiny_orc_stuff = cptr.lit("shiny_orc_stuff");
+const __s_migr_booty_item = cptr.lit("migr_booty_item");
+const __s_stolen_booty = cptr.lit("stolen_booty");
+const __s_empty = cptr.lit("");
+const __s_maze_remove_deadends = cptr.lit("maze_remove_deadends");
+const __s_create_maze = cptr.lit("create_maze");
+const __s_svi_inv_pos_maze_is_too_small_d_x_d = cptr.lit("svi.inv_pos: maze is too small! (%d x %d)");
+const __s_pick_vibrasquare_location = cptr.lit("pick_vibrasquare_location");
+const __s_populate_maze = cptr.lit("populate_maze");
+const __s_makemaz = cptr.lit("makemaz");
+const __s_s_d = cptr.lit("%s-%d");
+const __s_s_d_d = cptr.lit("%s%d-%d");
+const __s_s_d__2 = cptr.lit("%s%d");
+const __s_splevtype = cptr.lit("SPLEVTYPE");
+const __s_pct_d = cptr.lit("%d");
+const __s_lua = cptr.lit(".lua");
+const __s_couldn_t_load_s_making_a_maze = cptr.lit("Couldn't load \"%s\" - making a maze.");
+const __s_walkfrom = cptr.lit("walkfrom");
+const __s_mazexy = cptr.lit("mazexy");
+const __s_mazexy_can_t_find_a_place = cptr.lit("mazexy: can't find a place!");
+const __s_portal_on_top_of_portal = cptr.lit("portal on top of portal?");
+const __s_mkportal_at_d_d_to_s_level_d = cptr.lit("mkportal: at <%d,%d>, to %s, level %d");
+const __s_fumaroles = cptr.lit("fumaroles");
+const __s_you_hear_a_swhoosh = cptr.lit("You hear a %swhoosh!");
+const __s_loud = cptr.lit("loud ");
+const __s_movebubbles_cons_null = cptr.lit("movebubbles: cons != null");
+const __s_movebubbles_bad_pos_d_d = cptr.lit("movebubbles: bad pos (%d,%d)");
+const __s_movebubbles = cptr.lit("movebubbles");
+const __s_water_friction = cptr.lit("water_friction");
+const __s_water_turbulence_affects_your_movements = cptr.lit("Water turbulence affects your movements.");
+const __s_waterlevel_bubble_count = cptr.lit("waterlevel-bubble_count");
+const __s_waterlevel_xmin = cptr.lit("waterlevel-xmin");
+const __s_waterlevel_ymin = cptr.lit("waterlevel-ymin");
+const __s_waterlevel_xmax = cptr.lit("waterlevel-xmax");
+const __s_waterlevel_ymax = cptr.lit("waterlevel-ymax");
+const __s_waterlevel_bubble = cptr.lit("waterlevel-bubble");
+const __s_no_s_to_restore = cptr.lit("No %s to restore?");
+const __s_air_bubbles = cptr.lit("air bubbles");
+const __s_clouds = cptr.lit("clouds");
+const __s_air_bubbles_or_clouds = cptr.lit("air bubbles or clouds");
+const __s_set_wportal_no_portal = cptr.lit("set_wportal(): no portal!");
+const __s_setup_waterlevel_d_d_neither_water_nor = cptr.lit("setup_waterlevel(): [%d:%d] neither 'Water' nor 'Air'");
+const __s_setup_waterlevel = cptr.lit("setup_waterlevel");
+const __s_n_too_large_mk_bubble = cptr.lit("n too large (mk_bubble)");
+const __s_bmask_size_is_larger_than_max_bmask = cptr.lit("bmask size is larger than MAX_BMASK");
+const __s_mk_bubble = cptr.lit("mk_bubble");
+const __s_maybe_adjust_hero_bubble = cptr.lit("maybe_adjust_hero_bubble");
+const __s_mv_bubble = cptr.lit("mv_bubble");
+const __s_bubble_xmin_x_d_xmin_d = cptr.lit("bubble xmin: x = %d, xmin = %d");
+const __s_bubble_ymin_y_d_ymin_d = cptr.lit("bubble ymin: y = %d, ymin = %d");
+const __s_bubble_xmax_x_d_xmax_d = cptr.lit("bubble xmax: x = %d, xmax = %d");
+const __s_bubble_ymax_y_d_ymax_d = cptr.lit("bubble ymax: y = %d, ymax = %d");
+const __s_mv_bubble_unknown_bubble_contents = cptr.lit("mv_bubble: unknown bubble contents");
 
 /** C ref: mkmaze.c:45 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function iswall(x, y) {
@@ -244,7 +244,7 @@ export function* set_levltyp_lit(x, y, typ, lit) {
             if (IS_LAVA(typ))
                 lit = 1;
             else if (lit == -1)
-                lit = schar((rng_log_enabled() ? (rng_log_set_caller(__sl0, 139, __sl1), rn2(2)) : rn2(2)));
+                lit = schar((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 139, __s_set_levltyp_lit), rn2(2)) : rn2(2)));
             cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, lit);
         }
     }
@@ -285,7 +285,7 @@ function* wall_cleanup(x1, y1, x2, y2) {
     let y;
     let lev;
     if (x1 < 0 || x2 >= NHM.COLNO || x1 > x2 || y1 < 0 || y2 >= NHM.ROWNO || y1 > y2)
-        (yield* panic(__sl2, x1, y1, x2, y2));
+        (yield* panic(__s_wall_cleanup_bad_bounds_d_d_to_d_d, x1, y1, x2, y2));
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
             if (((x) >= (cptr.ldI16o(gb, $instance_globals_b_bughack)) && (x) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 4)) && (y) >= (cptr.ldI16o(gb, $instance_globals_b_bughack + 2)) && (y) <= (cptr.ldI16o(gb, $instance_globals_b_bughack + 6))))
@@ -327,7 +327,7 @@ export function* fix_wall_spines(x1, y1, x2, y2) {
     let bits;
     let locale = (function () { const flat = new Uint8Array(3 * 3 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 3 * 4, (r + 1) * 3 * 4)); a.buf = flat; return a; })();
     if (x1 < 0 || x2 >= NHM.COLNO || x1 > x2 || y1 < 0 || y2 >= NHM.ROWNO || y1 > y2)
-        (yield* panic(__sl3, x1, y1, x2, y2));
+        (yield* panic(__s_wall_extends_bad_bounds_d_d_to_d_d, x1, y1, x2, y2));
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
@@ -372,7 +372,7 @@ function* okay(x, y, dir) {
             --(x);
             break;
             default:
-            (yield* panic(__sl4, dir));
+            (yield* panic(__s_mz_move_bad_direction_d, dir));
         }
     }
     {
@@ -390,7 +390,7 @@ function* okay(x, y, dir) {
             --(x);
             break;
             default:
-            (yield* panic(__sl4, dir));
+            (yield* panic(__s_mz_move_bad_direction_d, dir));
         }
     }
     if (x < 3 || y < 3 || x > cptr.ldI32(gx) || y > cptr.ldI32(gy) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE)
@@ -400,8 +400,8 @@ function* okay(x, y, dir) {
 
 /** C ref: mkmaze.c:309 — @param {CPtr<coord>} cc */
 function maze0xy(cc) {
-    cptr.stI16(cc, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl5), rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)))) | 0)));
-    cptr.stI16o(cc, $coord_y, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 312, __sl5), rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)))) | 0)));
+    cptr.stI16(cc, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 311, __s_maze0xy), rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)))) | 0)));
+    cptr.stI16o(cc, $coord_y, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 312, __s_maze0xy), rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)))) | 0)));
     return;
 }
 
@@ -447,8 +447,8 @@ export function* place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
         hy = 20;
     oneshot = schar((lx == hx && ly == hy ? 1 : 0));
     for (trycnt = 0; trycnt < 200; trycnt++) {
-        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 396, __sl6), rn2((((hx - lx) | 0) + 1) | 0)) : rn2((((hx - lx) | 0) + 1) | 0)) + (lx)) | 0));
-        y = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 397, __sl6), rn2((((hy - ly) | 0) + 1) | 0)) : rn2((((hy - ly) | 0) + 1) | 0)) + (ly)) | 0));
+        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 396, __s_place_lregion), rn2((((hx - lx) | 0) + 1) | 0)) : rn2((((hx - lx) | 0) + 1) | 0)) + (lx)) | 0));
+        y = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 397, __s_place_lregion), rn2((((hy - ly) | 0) + 1) | 0)) : rn2((((hy - ly) | 0) + 1) | 0)) + (ly)) | 0));
         if ((yield* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev)))
             return;
     }
@@ -456,7 +456,7 @@ export function* place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
         for (y = ly; y <= hy; y++)
             if ((yield* put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, 1, lev)))
                 return;
-    (yield* impossible(__sl7, rtype));
+    (yield* impossible(__s_couldn_t_place_lregion_type_d, rtype));
 }
 
 /** C ref: mkmaze.c:413 — @param {CInt} x @param {CInt} y @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CInt} oneshot @param {CPtr<d_level>} lev @returns {CInt} */
@@ -636,7 +636,7 @@ export function* fixup_special() {
         let otmp;
         let tryct;
         croom = cptr.add(svr, 0, 224);
-        for (tryct = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 654, __sl8), rnd(4)) : rnd(4)); tryct; tryct--) {
+        for (tryct = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 654, __s_fixup_special), rnd(4)) : rnd(4)); tryct; tryct--) {
             x = somex(croom);
             y = somey(croom);
             if ((yield* goodpos(i16(x), i16(y), null, 0))) {
@@ -647,7 +647,7 @@ export function* fixup_special() {
                 }
             }
         }
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 671, __sl8), rn2(2)) : rn2(2)))
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 671, __s_fixup_special), rn2(2)) : rn2(2)))
             otmp = (yield* mk_tt_object(NHC.STATUE, i16(somex(croom)), i16(somey(croom))));
         else
             otmp = (yield* mkcorpstat(NHC.STATUE, null, null, i16(somex(croom)), i16(somey(croom)), NHM.CORPSTAT_NONE));
@@ -675,13 +675,13 @@ export function* fixup_special() {
 
 /** C ref: mkmaze.c:707 — @param {CPtr<char>} s */
 function check_ransacked(s) {
-    cptr.st1o(gr, $instance_globals_r_ransacked, schar((cptr.ldI16o(u, $you_uz) == mines_dnum() && !strcmp(s, __sl9) ? 1 : 0)));
+    cptr.st1o(gr, $instance_globals_r_ransacked, schar((cptr.ldI16o(u, $you_uz) == mines_dnum() && !strcmp(s, __s_minetn_1) ? 1 : 0)));
 }
 
 /** C ref: mkmaze.c:714 — char *[2] */
 const orcfruit = cptr.alloc(2 * 8);
-cptr.stPtro(orcfruit, 0, __sl10);
-cptr.stPtro(orcfruit, 8, __sl11);
+cptr.stPtro(orcfruit, 0, __s_paddle_cactus);
+cptr.stPtro(orcfruit, 8, __s_dwarven_root);
 
 /** C ref: mkmaze.c:717 — @param {CPtr<struct monst>} mtmp @param {CLongLong} mflags */
 function* migrate_orc(mtmp, mflags) {
@@ -693,11 +693,11 @@ function* migrate_orc(mtmp, mflags) {
     max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start) - 1) | 0)) | 0;
     if (mflags == 1n) {
         nlev = max_depth;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 732, __sl12), rn2(40)) : rn2(40)))
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 732, __s_migrate_orc), rn2(40)) : rn2(40)))
             nlev--;
         cptr.stI64o(mtmp, $monst_migflags, cptr.ldI64o(mtmp, $monst_migflags) | 8192n);
     } else {
-        nlev = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 736, __sl12), rn2((((max_depth - cur_depth) | 0) + 1) | 0)) : rn2((((max_depth - cur_depth) | 0) + 1) | 0)) + cur_depth) | 0;
+        nlev = ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 736, __s_migrate_orc), rn2((((max_depth - cur_depth) | 0) + 1) | 0)) : rn2((((max_depth - cur_depth) | 0) + 1) | 0)) + cur_depth) | 0;
         if (nlev == cur_depth)
             nlev++;
         if (nlev > max_depth)
@@ -717,14 +717,14 @@ function* shiny_orc_stuff(mtmp) {
     let is_captain = schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96))));
     goldprob = is_captain ? 600 : 300;
     gemprob = (goldprob / 4) | 0;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 757, __sl13), rn2(1000)) : rn2(1000)) < goldprob) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 757, __s_shiny_orc_stuff), rn2(1000)) : rn2(1000)) < goldprob) {
         if ((otmp = (yield* mksobj(NHC.GOLD_PIECE, 1, 0))) !== null) {
-            cptr.stI64o(otmp, $obj_quan, BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 759, __sl13), rnd(goldprob)) : rnd(goldprob)))));
+            cptr.stI64o(otmp, $obj_quan, BigInt.asIntN(64, 1n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 759, __s_shiny_orc_stuff), rnd(goldprob)) : rnd(goldprob)))));
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             (yield* add_to_minv(mtmp, otmp));
         }
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 764, __sl13), rn2(1000)) : rn2(1000)) < gemprob) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 764, __s_shiny_orc_stuff), rn2(1000)) : rn2(1000)) < gemprob) {
         if ((otmp = (yield* mkobj(NHC.GEM_CLASS, 0))) !== null) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK)
                 (yield* dealloc_obj(otmp));
@@ -732,7 +732,7 @@ function* shiny_orc_stuff(mtmp) {
                 (yield* add_to_minv(mtmp, otmp));
         }
     }
-    if (is_captain || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 772, __sl13), rn2(8)) : rn2(8))) {
+    if (is_captain || !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 772, __s_shiny_orc_stuff), rn2(8)) : rn2(8))) {
         otyp = (yield* shiny_obj(NHC.RING_CLASS));
         if (otyp != NHC.STRANGE_OBJECT && (otmp = (yield* mksobj(otyp, 1, 0))) !== null)
             (yield* add_to_minv(mtmp, otmp));
@@ -744,12 +744,12 @@ function* migr_booty_item(otyp, gang) {
     let otmp;
     otmp = (yield* mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0));
     if (otmp && gang) {
-        (yield* new_oname(otmp, (((yield* Strlen_(gang, __sl14, 786)) + 1) >>> 0) | 0));
+        (yield* new_oname(otmp, (((yield* Strlen_(gang, __s_migr_booty_item, 786)) + 1) >>> 0) | 0));
         void cptr.strcpy((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), gang);
         if (cptr.ld1so2(objects, otyp, 120, $objclass_oc_class) == NHC.FOOD_CLASS) {
             if (otyp == NHC.SLIME_MOLD)
-                cptr.st1o(otmp, $obj_spe, schar((yield* fruitadd(cptr.ldPtro(orcfruit, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 790, __sl14), rn2(2)) : rn2(2)), 8), null))));
-            cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 792, __sl14), rn2(3)) : rn2(3))));
+                cptr.st1o(otmp, $obj_spe, schar((yield* fruitadd(cptr.ldPtro(orcfruit, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 790, __s_migr_booty_item), rn2(2)) : rn2(2)), 8), null))));
+            cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 792, __s_migr_booty_item), rn2(3)) : rn2(3))));
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
         }
     }
@@ -764,21 +764,21 @@ function* stolen_booty() {
     let i;
     let otyp;
     gang = rndorcname(cptr.decay(gang_name));
-    cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 820, __sl15), rnd(4)) : rnd(4));
+    cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 820, __s_stolen_booty), rnd(4)) : rnd(4));
     for (i = 0; i < cnt; ++i)
-        (yield* migr_booty_item((rng_log_enabled() ? (rng_log_set_caller(__sl0, 822, __sl15), rn2(4)) : rn2(4)) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, gang));
-    cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 823, __sl15), rnd(3)) : rnd(3));
+        (yield* migr_booty_item((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 822, __s_stolen_booty), rn2(4)) : rn2(4)) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, gang));
+    cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 823, __s_stolen_booty), rnd(3)) : rnd(3));
     for (i = 0; i < cnt; ++i)
         (yield* migr_booty_item(NHC.SKELETON_KEY, gang));
-    otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 826, __sl15), rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) : rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) + NHC.LEATHER_GLOVES) | 0);
+    otyp = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 826, __s_stolen_booty), rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) : rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0))) + NHC.LEATHER_GLOVES) | 0);
     (yield* migr_booty_item(otyp, gang));
-    cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 828, __sl15), rnd(10)) : rnd(10));
+    cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 828, __s_stolen_booty), rnd(10)) : rnd(10));
     for (i = 0; i < cnt; ++i) {
-        otyp = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 831, __sl15), rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) : rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) + NHC.TRIPE_RATION) | 0);
+        otyp = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 831, __s_stolen_booty), rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) : rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0))) + NHC.TRIPE_RATION) | 0);
         if (otyp != NHC.LEMBAS_WAFER && (cptr.ldI16o2(objects, otyp, 120, $objclass_oc_prob) != 0 || otyp == NHC.C_RATION || otyp == NHC.K_RATION) && otyp != NHC.CORPSE && otyp != NHC.EGG && otyp != NHC.TIN)
             (yield* migr_booty_item(otyp, gang));
     }
-    (yield* migr_booty_item((rng_log_enabled() ? (rng_log_set_caller(__sl0, 843, __sl15), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : NHC.SILVER_SABER, gang));
+    (yield* migr_booty_item((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 843, __s_stolen_booty), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : NHC.SILVER_SABER, gang));
     mtmp = (yield* makemon(cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96), 0, 0, NHM.MM_NONAME));
     if (mtmp) {
         mtmp = (yield* christen_monst(mtmp, upstart(gang)));
@@ -790,15 +790,15 @@ function* stolen_booty() {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 858, __sl15), rn2(10)) : rn2(10))) {
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) && !has_mgivenname(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 858, __s_stolen_booty), rn2(10)) : rn2(10))) {
             if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORC_CAPTAIN, 96)))
-                mtmp = (yield* christen_orc(mtmp, upstart(gang), __sl16));
+                mtmp = (yield* christen_orc(mtmp, upstart(gang), __s_empty));
         }
     }
-    cnt = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 877, __sl15), rn2(10)) : rn2(10)) + 5) | 0;
+    cnt = ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 877, __s_stolen_booty), rn2(10)) : rn2(10)) + 5) | 0;
     for (i = 0; i < cnt; ++i) {
         let mtyp;
-        mtyp = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 881, __sl15), rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) : rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) + NHC.PM_ORC) | 0;
+        mtyp = ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 881, __s_stolen_booty), rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) : rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0))) + NHC.PM_ORC) | 0;
         mtmp = (yield* makemon(cptr.add(mons, mtyp, 96), 0, 0, NHM.MM_NONAME));
         if (mtmp) {
             (yield* shiny_orc_stuff(mtmp));
@@ -848,7 +848,7 @@ function* maze_remove_deadends(typ) {
                             --(dx);
                             break;
                             default:
-                            (yield* panic(__sl4, dir));
+                            (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     if (!maze_inbounds(dx, dy)) {
@@ -870,7 +870,7 @@ function* maze_remove_deadends(typ) {
                             --(dx2);
                             break;
                             default:
-                            (yield* panic(__sl4, dir));
+                            (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     {
@@ -888,7 +888,7 @@ function* maze_remove_deadends(typ) {
                             --(dx2);
                             break;
                             default:
-                            (yield* panic(__sl4, dir));
+                            (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     if (!maze_inbounds(dx2, dy2)) {
@@ -903,7 +903,7 @@ function* maze_remove_deadends(typ) {
                 if (idx2 >= 3 && idx > 0) {
                     dx = x;
                     dy = y;
-                    dir = i16(cptr.ld1so(cptr.decay(dirok), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 939, __sl17), rn2(idx)) : rn2(idx)), 1));
+                    dir = i16(cptr.ld1so(cptr.decay(dirok), (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 939, __s_maze_remove_deadends), rn2(idx)) : rn2(idx)), 1));
                     {
                         switch (dir) {
                             case 0:
@@ -919,7 +919,7 @@ function* maze_remove_deadends(typ) {
                             --(dx);
                             break;
                             default:
-                            (yield* panic(__sl4, dir));
+                            (yield* panic(__s_mz_move_bad_direction_d, dir));
                         }
                     }
                     cptr.st1o3(svl, dx, 756, dy, 36, $instance_globals_saved_l_level + $rm_typ, schar(typ));
@@ -938,9 +938,9 @@ export function* create_maze(corrwid, wallthick, rmdeadends) {
     let rdy = 0;
     let scale;
     if (corrwid == -1)
-        corrwid = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 961, __sl18), rnd(4)) : rnd(4));
+        corrwid = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 961, __s_create_maze), rnd(4)) : rnd(4));
     if (wallthick == -1)
-        wallthick = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 964, __sl18), rnd(4)) : rnd(4)) - corrwid) | 0;
+        wallthick = ((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 964, __s_create_maze), rnd(4)) : rnd(4)) - corrwid) | 0;
     if (wallthick < 1)
         wallthick = 1;
     else if (wallthick > 5)
@@ -1011,17 +1011,17 @@ export function* pick_vibrasquare_location() {
     let y_range = (((((cptr.ldI32(gy) - 2) | 0) - 6) | 0) - 1) | 0;
     if (x_range <= 4 || y_range <= 3 || (Math.imul(x_range, y_range)) <= 121) {
         {
-            if ((yield* debugcore(__sl0, 1))) {
+            if ((yield* debugcore(__s_mkmaze_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl19, cptr.ldI32(gx), cptr.ldI32(gy)));
+                (yield* pline(__s_svi_inv_pos_maze_is_too_small_d_x_d, cptr.ldI32(gx), cptr.ldI32(gy)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
     }
     cptr.stI16(svi, cptr.stI16o(svi, $nhcoord_y, 0));
     do {
-        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1075, __sl20), rn2(x_range)) : rn2(x_range)) + 7) | 0));
-        y = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1076, __sl20), rn2(y_range)) : rn2(y_range)) + 6) | 0));
+        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1075, __s_pick_vibrasquare_location), rn2(x_range)) : rn2(x_range)) + 7) | 0));
+        y = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1076, __s_pick_vibrasquare_location), rn2(y_range)) : rn2(y_range)) + 6) | 0));
         if (++trycnt > 1000)
             break;
     } while (((stway = stairway_find_dir(1)) !== null) && (x == cptr.ldI16(stway) || y == cptr.ldI16o(stway, $stairway_sy) || Math.abs((x - cptr.ldI16(stway)) | 0) == Math.abs((y - cptr.ldI16o(stway, $stairway_sy)) | 0) || distmin(x, y, cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy)) <= 11 || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) > NHC.DOOR) || occupied(x, y)));
@@ -1033,27 +1033,27 @@ export function* pick_vibrasquare_location() {
 function* populate_maze() {
     let i;
     let mm = cptr.alloc(4);
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1102, __sl21), rn2(8)) : rn2(8)) + 11) | 0); i; i--) {
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1102, __s_populate_maze), rn2(8)) : rn2(8)) + 11) | 0); i; i--) {
         (yield* mazexy(mm));
-        void (yield* mkobj_at(schar(((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1104, __sl21), rn2(2)) : rn2(2)) ? NHC.GEM_CLASS : NHC.RANDOM_CLASS)), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1));
+        void (yield* mkobj_at(schar(((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1104, __s_populate_maze), rn2(2)) : rn2(2)) ? NHC.GEM_CLASS : NHC.RANDOM_CLASS)), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1));
     }
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1106, __sl21), rn2(10)) : rn2(10)) + 2) | 0); i; i--) {
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1106, __s_populate_maze), rn2(10)) : rn2(10)) + 2) | 0); i; i--) {
         (yield* mazexy(mm));
         void (yield* mksobj_at(NHC.BOULDER, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0));
     }
-    for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1110, __sl21), rn2(3)) : rn2(3)); i; i--) {
+    for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1110, __s_populate_maze), rn2(3)) : rn2(3)); i; i--) {
         (yield* mazexy(mm));
         void (yield* makemon(cptr.add(mons, NHC.PM_MINOTAUR, 96), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), NHM.NO_MM_FLAGS));
     }
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1114, __sl21), rn2(5)) : rn2(5)) + 7) | 0); i; i--) {
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1114, __s_populate_maze), rn2(5)) : rn2(5)) + 7) | 0); i; i--) {
         (yield* mazexy(mm));
         void (yield* makemon(null, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), NHM.NO_MM_FLAGS));
     }
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1118, __sl21), rn2(6)) : rn2(6)) + 7) | 0); i; i--) {
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1118, __s_populate_maze), rn2(6)) : rn2(6)) + 7) | 0); i; i--) {
         (yield* mazexy(mm));
         void (yield* mkgold(0n, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y)));
     }
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1122, __sl21), rn2(6)) : rn2(6)) + 7) | 0); i; i--)
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1122, __s_populate_maze), rn2(6)) : rn2(6)) + 7) | 0); i; i--)
         (yield* mktrap(0, NHM.MKTRAP_MAZEFLAG, null, null));
 }
 
@@ -1064,30 +1064,30 @@ export function* makemaz(s) {
     let mm = cptr.alloc(4);
     if (cptr.ld1s(s)) {
         if (sp && cptr.ld1uo(sp, $s_level_rndlevs))
-            nh_snprintf(__sl22, 1136, cptr.decay(protofile), 20n, __sl23, s, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1136, __sl22), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
+            nh_snprintf(__s_makemaz, 1136, cptr.decay(protofile), 20n, __s_s_d, s, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1136, __s_makemaz), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
         else
             void cptr.strcpy(cptr.decay(protofile), s);
     } else if (cptr.ld1s((cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto)))) {
         if (dunlevs_in_dungeon(cptr.add(u, $you_uz)) > 1) {
             if (sp && cptr.ld1uo(sp, $s_level_rndlevs))
-                nh_snprintf(__sl22, 1144, cptr.decay(protofile), 20n, __sl24, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), dunlev(cptr.add(u, $you_uz)), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1144, __sl22), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
+                nh_snprintf(__s_makemaz, 1144, cptr.decay(protofile), 20n, __s_s_d_d, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), dunlev(cptr.add(u, $you_uz)), (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1144, __s_makemaz), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
             else
-                nh_snprintf(__sl22, 1148, cptr.decay(protofile), 20n, __sl25, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), dunlev(cptr.add(u, $you_uz)));
+                nh_snprintf(__s_makemaz, 1148, cptr.decay(protofile), 20n, __s_s_d__2, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), dunlev(cptr.add(u, $you_uz)));
         } else if (sp && cptr.ld1uo(sp, $s_level_rndlevs)) {
-            nh_snprintf(__sl22, 1152, cptr.decay(protofile), 20n, __sl23, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1152, __sl22), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
+            nh_snprintf(__s_makemaz, 1152, cptr.decay(protofile), 20n, __s_s_d, cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto), (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1152, __s_makemaz), rnd(cptr.ld1uo(sp, $s_level_rndlevs))) : rnd(cptr.ld1uo(sp, $s_level_rndlevs))));
         } else
             void cptr.strcpy(cptr.decay(protofile), cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_proto));
     } else
-        void cptr.strcpy(cptr.decay(protofile), __sl16);
+        void cptr.strcpy(cptr.decay(protofile), __s_empty);
     if (wizard() && cptr.ld1s(cptr.decay(protofile)) && sp && cptr.ld1uo(sp, $s_level_rndlevs)) {
-        let ep = getenv(__sl26);
+        let ep = getenv(__s_splevtype);
         if (ep) {
             let len = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(cptr.strrchr(cptr.decay(protofile), 45), cptr.decay(protofile))) + 1n))));
             while (ep && cptr.ld1s(ep)) {
                 if (!cptr.strncmp(ep, cptr.decay(protofile), BigInt.asUintN(64, BigInt(len)))) {
                     let pick = atoi(cptr.add(ep, len));
                     if (pick > 0 && pick <= cptr.ld1uo(sp, $s_level_rndlevs))
-                        void cptr.sprintf(cptr.add(cptr.decay(protofile), len), __sl27, pick);
+                        void cptr.sprintf(cptr.add(cptr.decay(protofile), len), __s_pct_d, pick);
                     break;
                 } else {
                     ep = cptr.strchr(ep, 44);
@@ -1099,18 +1099,18 @@ export function* makemaz(s) {
     }
     if (cptr.ld1s(cptr.decay(protofile))) {
         check_ransacked(cptr.decay(protofile));
-        void cptr.strcat(cptr.decay(protofile), __sl28);
+        void cptr.strcat(cptr.decay(protofile), __s_lua);
         cptr.st1o(gi, $instance_globals_i_in_mk_themerooms, 0);
         if ((yield* load_special(cptr.decay(protofile)))) {
             (yield* dmonsfree());
             return;
         }
-        (yield* impossible(__sl29, cptr.decay(protofile)));
+        (yield* impossible(__s_couldn_t_load_s_making_a_maze, cptr.decay(protofile)));
     }
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev, 1);
-    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze, (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1198, __sl22), rn2(3)) : rn2(3))) >>> 0);
-    if (!Invocation_lev(cptr.add(u, $you_uz)) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1200, __sl22), rn2(2)) : rn2(2))) {
-        (yield* create_maze(-1, -1, schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1201, __sl22), rn2(5)) : rn2(5))))));
+    cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze, (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1198, __s_makemaz), rn2(3)) : rn2(3))) >>> 0);
+    if (!Invocation_lev(cptr.add(u, $you_uz)) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1200, __s_makemaz), rn2(2)) : rn2(2))) {
+        (yield* create_maze(-1, -1, schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1201, __s_makemaz), rn2(5)) : rn2(5))))));
     } else {
         (yield* create_maze(1, 1, 0));
     }
@@ -1152,7 +1152,7 @@ export function* walkfrom(x, y, typ) {
                 cptr.stI32o(dirs, q++, a, 4);
         if (!q)
             return;
-        dir = cptr.ldI32o(dirs, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1304, __sl30), rn2(q)) : rn2(q)), 4);
+        dir = cptr.ldI32o(dirs, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1304, __s_walkfrom), rn2(q)) : rn2(q)), 4);
         {
             switch (dir) {
                 case 0:
@@ -1168,7 +1168,7 @@ export function* walkfrom(x, y, typ) {
                 --(x);
                 break;
                 default:
-                (yield* panic(__sl4, dir));
+                (yield* panic(__s_mz_move_bad_direction_d, dir));
             }
         }
         cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, typ);
@@ -1187,7 +1187,7 @@ export function* walkfrom(x, y, typ) {
                 --(x);
                 break;
                 default:
-                (yield* panic(__sl4, dir));
+                (yield* panic(__s_mz_move_bad_direction_d, dir));
             }
         }
         (yield* walkfrom(x, y, typ));
@@ -1201,8 +1201,8 @@ export function* mazexy(cc) {
     let allowedtyp = ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze) & 1) | 0 ? NHC.CORR : NHC.ROOM);
     let cpt = 0;
     do {
-        x = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1330, __sl31), rnd(cptr.ldI32(gx))) : rnd(cptr.ldI32(gx))));
-        y = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1331, __sl31), rnd(cptr.ldI32(gy))) : rnd(cptr.ldI32(gy))));
+        x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1330, __s_mazexy), rnd(cptr.ldI32(gx))) : rnd(cptr.ldI32(gx))));
+        y = i16((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1331, __s_mazexy), rnd(cptr.ldI32(gy))) : rnd(cptr.ldI32(gy))));
         if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == allowedtyp) {
             cptr.stI16(cc, x);
             cptr.stI16o(cc, $coord_y, y);
@@ -1216,7 +1216,7 @@ export function* mazexy(cc) {
                 cptr.stI16o(cc, $coord_y, y);
                 return;
             }
-    (yield* panic(__sl32));
+    (yield* panic(__s_mazexy_can_t_find_a_place));
     return;
 }
 
@@ -1319,13 +1319,13 @@ export function bound_digging() {
 export function* mkportal(x, y, todnum, todlevel) {
     let ttmp = (yield* maketrap(x, y, NHC.MAGIC_PORTAL));
     if (!ttmp) {
-        (yield* impossible(__sl33));
+        (yield* impossible(__s_portal_on_top_of_portal));
         return;
     }
     {
-        if ((yield* debugcore(__sl0, 1))) {
+        if ((yield* debugcore(__s_mkmaze_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl34, x, y, cptr.add(svd, todnum, 112), todlevel));
+            (yield* pline(__s_mkportal_at_d_d_to_s_level_d, x, y, cptr.add(svd, todnum, 112), todlevel));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -1337,7 +1337,7 @@ export function* mkportal(x, y, todnum, todlevel) {
 /** C ref: mkmaze.c:1484 */
 export function* fumaroles() {
     let n;
-    let nmax = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1486, __sl35), rn2(3)) : rn2(3)));
+    let nmax = i16((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1486, __s_fumaroles), rn2(3)) : rn2(3)));
     let sizemin = 5;
     let snd = 0;
     let loud = 0;
@@ -1350,10 +1350,10 @@ export function* fumaroles() {
         sizemin = (sizemin + 5) | 0;
     }
     for (n = nmax; n; n--) {
-        let x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1500, __sl35), rn2(76)) : rn2(76)) + 3) | 0));
-        let y = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1501, __sl35), rn2(17)) : rn2(17)) + 3) | 0));
+        let x = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1500, __s_fumaroles), rn2(76)) : rn2(76)) + 3) | 0));
+        let y = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1501, __s_fumaroles), rn2(17)) : rn2(17)) + 3) | 0));
         if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL) {
-            let r = (yield* create_gas_cloud(x, y, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + (sizemin)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1504, __sl35), rn2(10)) : rn2(10)) + 5) | 0)));
+            let r = (yield* create_gas_cloud(x, y, (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1504, __s_fumaroles), rn2(10)) : rn2(10)) + (sizemin)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1504, __s_fumaroles), rn2(10)) : rn2(10)) + 5) | 0)));
             (cptr.stI32o((r), $NhRegion_player_flags, cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS));
             snd = 1;
             if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 15)
@@ -1361,7 +1361,7 @@ export function* fumaroles() {
         }
     }
     if (snd && !Deaf())
-        (yield* Norep(__sl36, loud ? __sl37 : __sl16));
+        (yield* Norep(__s_you_hear_a_swhoosh, loud ? __s_loud : __s_empty));
 }
 
 /** C ref: mkmaze.c:1530 — struct bubble * */
@@ -1410,12 +1410,12 @@ export function* movebubbles() {
             bcpin = (yield* unplacebc_and_covet_placebc());
         for (b = __static_movebubbles_up ? cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles) : cptr.ldPtro(ge, $instance_globals_e_ebubbles); b; b = __static_movebubbles_up ? cptr.ldPtro(b, $bubble_next) : cptr.ldPtro(b, $bubble_prev)) {
             if (cptr.ldPtro(b, $bubble_cons))
-                (yield* panic(__sl38));
+                (yield* panic(__s_movebubbles_cons_null));
             for (i = 0, x = cptr.ldI16(b); i < cptr.ld1uo2(b, 0, 1, $bubble_bm); i++, x++)
                 for (j = 0, y = cptr.ldI16o(b, $bubble_y); j < cptr.ld1uo2(b, 1, 1, $bubble_bm); j++, y++)
                     if (cptr.ld1uo2(b, (j + 2) | 0, 1, $bubble_bm) & (1 << i)) {
                         if (!isok(x, y)) {
-                            (yield* impossible(__sl39, x, y));
+                            (yield* impossible(__s_movebubbles_bad_pos_d_d, x, y));
                             continue;
                         }
                         if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
@@ -1485,7 +1485,7 @@ export function* movebubbles() {
                 xedge = schar((x < ((cptr.ldI32(svx) + 1) | 0) || x > ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) ? 1 : 0));
                 yedge = schar((y < ((cptr.ldI32(svy) + 1) | 0) || y > ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) ? 1 : 0));
                 if (xedge || yedge) {
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1660, __sl40), rn2(xedge ? 3 : 5)) : rn2(xedge ? 3 : 5))) {
+                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1660, __s_movebubbles), rn2(xedge ? 3 : 5)) : rn2(xedge ? 3 : 5))) {
                         cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.CLOUD);
                         (yield* block_point(x, y));
                     }
@@ -1494,8 +1494,8 @@ export function* movebubbles() {
     }
     __static_movebubbles_up = schar((!__static_movebubbles_up));
     for (b = __static_movebubbles_up ? cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles) : cptr.ldPtro(ge, $instance_globals_e_ebubbles); b; b = __static_movebubbles_up ? cptr.ldPtro(b, $bubble_next) : cptr.ldPtro(b, $bubble_prev)) {
-        let rx = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1675, __sl40), rn2(3)) : rn2(3));
-        let ry = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1675, __sl40), rn2(3)) : rn2(3));
+        let rx = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1675, __s_movebubbles), rn2(3)) : rn2(3));
+        let ry = (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1675, __s_movebubbles), rn2(3)) : rn2(3));
         (yield* mv_bubble(b, i16(((((cptr.ld1so(b, $bubble_dx) + 1) | 0) - (!cptr.ld1so(b, $bubble_dx) ? rx : (rx ? 1 : 0))) | 0)), i16(((((cptr.ld1so(b, $bubble_dy) + 1) | 0) - (!cptr.ld1so(b, $bubble_dy) ? ry : (ry ? 1 : 0))) | 0)), 0));
     }
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && Punished())
@@ -1510,21 +1510,21 @@ export function* water_friction() {
     let dx;
     let dy;
     let eff = 0;
-    if (Swimming() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1694, __sl41), rn2(4)) : rn2(4)))
+    if (Swimming() && (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1694, __s_water_friction), rn2(4)) : rn2(4)))
         return;
-    if (cptr.ldI32o(u, $you_dx) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1697, __sl41), rn2(!cptr.ldI32o(u, $you_dy) ? 3 : 6)) : rn2(!cptr.ldI32o(u, $you_dy) ? 3 : 6))) {
+    if (cptr.ldI32o(u, $you_dx) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1697, __s_water_friction), rn2(!cptr.ldI32o(u, $you_dy) ? 3 : 6)) : rn2(!cptr.ldI32o(u, $you_dy) ? 3 : 6))) {
         x = cptr.ldI16(u);
         do {
-            dy = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1701, __sl41), rn2(3)) : rn2(3)) - 1) | 0));
+            dy = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1701, __s_water_friction), rn2(3)) : rn2(3)) - 1) | 0));
             y = i16(((cptr.ldI16o(u, $you_uy) + dy) | 0));
         } while (dy && (!isok(x, y) || !is_pool(x, y)));
         cptr.stI32o(u, $you_dx, 0);
         cptr.stI32o(u, $you_dy, dy);
         eff = 1;
-    } else if (cptr.ldI32o(u, $you_dy) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1707, __sl41), rn2(!cptr.ldI32o(u, $you_dx) ? 3 : 5)) : rn2(!cptr.ldI32o(u, $you_dx) ? 3 : 5))) {
+    } else if (cptr.ldI32o(u, $you_dy) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1707, __s_water_friction), rn2(!cptr.ldI32o(u, $you_dx) ? 3 : 5)) : rn2(!cptr.ldI32o(u, $you_dx) ? 3 : 5))) {
         y = cptr.ldI16o(u, $you_uy);
         do {
-            dx = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1711, __sl41), rn2(3)) : rn2(3)) - 1) | 0));
+            dx = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1711, __s_water_friction), rn2(3)) : rn2(3)) - 1) | 0));
             x = i16(((cptr.ldI16(u) + dx) | 0));
         } while (dx && (!isok(x, y) || !is_pool(x, y)));
         cptr.stI32o(u, $you_dy, 0);
@@ -1532,7 +1532,7 @@ export function* water_friction() {
         eff = 1;
     }
     if (eff)
-        (yield* pline(__sl42));
+        (yield* pline(__s_water_turbulence_affects_your_movements));
 }
 
 /** C ref: mkmaze.c:1723 — @param {CPtr<NHFILE>} nhfp */
@@ -1544,13 +1544,13 @@ export function* save_waterlevel(nhfp) {
         let n = cptr.box(0);
         for (b = cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles); b; b = cptr.ldPtro(b, $bubble_next))
             ++n.v;
-        (yield* sfo_int(nhfp, n, __sl43));
-        (yield* sfo_int(nhfp, svx, __sl44));
-        (yield* sfo_int(nhfp, svy, __sl45));
-        (yield* sfo_int(nhfp, cptr.add(svx, $instance_globals_saved_x_xmax), __sl46));
-        (yield* sfo_int(nhfp, cptr.add(svy, $instance_globals_saved_y_ymax), __sl47));
+        (yield* sfo_int(nhfp, n, __s_waterlevel_bubble_count));
+        (yield* sfo_int(nhfp, svx, __s_waterlevel_xmin));
+        (yield* sfo_int(nhfp, svy, __s_waterlevel_ymin));
+        (yield* sfo_int(nhfp, cptr.add(svx, $instance_globals_saved_x_xmax), __s_waterlevel_xmax));
+        (yield* sfo_int(nhfp, cptr.add(svy, $instance_globals_saved_y_ymax), __s_waterlevel_ymax));
         for (b = cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles); b; b = cptr.ldPtro(b, $bubble_next)) {
-            (yield* sfo_bubble(nhfp, b, __sl48));
+            (yield* sfo_bubble(nhfp, b, __s_waterlevel_bubble));
         }
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
@@ -1563,20 +1563,20 @@ export function* restore_waterlevel(nhfp) {
     let btmp;
     let i;
     let n = cptr.box(0);
-    (yield* sfi_int(nhfp, n, __sl43));
+    (yield* sfi_int(nhfp, n, __s_waterlevel_bubble_count));
     ;
-    (yield* sfi_int(nhfp, svx, __sl44));
+    (yield* sfi_int(nhfp, svx, __s_waterlevel_xmin));
     ;
-    (yield* sfi_int(nhfp, svy, __sl45));
+    (yield* sfi_int(nhfp, svy, __s_waterlevel_ymin));
     ;
-    (yield* sfi_int(nhfp, cptr.add(svx, $instance_globals_saved_x_xmax), __sl46));
+    (yield* sfi_int(nhfp, cptr.add(svx, $instance_globals_saved_x_xmax), __s_waterlevel_xmax));
     ;
-    (yield* sfi_int(nhfp, cptr.add(svy, $instance_globals_saved_y_ymax), __sl47));
+    (yield* sfi_int(nhfp, cptr.add(svy, $instance_globals_saved_y_ymax), __s_waterlevel_ymax));
     ;
     for (i = 0; i < n.v; i++) {
         btmp = b;
         b = (yield* alloc(40));
-        (yield* sfi_bubble(nhfp, b, __sl48));
+        (yield* sfi_bubble(nhfp, b, __s_waterlevel_bubble));
         if (btmp) {
             cptr.stPtro(btmp, $bubble_next, b);
             cptr.stPtro(b, $bubble_prev, btmp);
@@ -1591,7 +1591,7 @@ export function* restore_waterlevel(nhfp) {
         cptr.stPtro(b, $bubble_next, null);
     } else {
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
-        (yield* impossible(__sl49, ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? __sl50 : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __sl51 : __sl52)));
+        (yield* impossible(__s_no_s_to_restore, ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? __s_air_bubbles : (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(gu, $instance_globals_u_uz_save), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __s_clouds : __s_air_bubbles_or_clouds)));
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 1);
     }
 }
@@ -1601,7 +1601,7 @@ function* set_wportal() {
     for (cptr.stPtro(gw, $instance_globals_w_wportal, cptr.ldPtr(gf)); cptr.ldPtro(gw, $instance_globals_w_wportal); cptr.stPtro(gw, $instance_globals_w_wportal, cptr.ldPtr(cptr.ldPtro(gw, $instance_globals_w_wportal))))
         if (((cptr.ldI32o(cptr.ldPtro(gw, $instance_globals_w_wportal), $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
             return;
-    (yield* impossible(__sl53));
+    (yield* impossible(__s_set_wportal_no_portal));
 }
 
 /** C ref: mkmaze.c:1812 */
@@ -1613,7 +1613,7 @@ function* setup_waterlevel() {
     let xskip;
     let yskip;
     if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
-        (yield* panic(__sl54, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
+        (yield* panic(__s_setup_waterlevel_d_d_neither_water_nor, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
     cptr.stI32(svx, 3);
     cptr.stI32(svy, 1);
     cptr.stI32o(svx, $instance_globals_saved_x_xmax, 78);
@@ -1629,15 +1629,15 @@ function* setup_waterlevel() {
                 cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, schar(typ));
         }
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
-        xskip = i16(((10 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1847, __sl55), rn2(10)) : rn2(10))) | 0));
-        yskip = i16(((4 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1848, __sl55), rn2(4)) : rn2(4))) | 0));
+        xskip = i16(((10 + (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1847, __s_setup_waterlevel), rn2(10)) : rn2(10))) | 0));
+        yskip = i16(((4 + (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1848, __s_setup_waterlevel), rn2(4)) : rn2(4))) | 0));
     } else {
-        xskip = i16(((6 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1850, __sl55), rn2(4)) : rn2(4))) | 0));
-        yskip = i16(((3 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1851, __sl55), rn2(3)) : rn2(3))) | 0));
+        xskip = i16(((6 + (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1850, __s_setup_waterlevel), rn2(4)) : rn2(4))) | 0));
+        yskip = i16(((3 + (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1851, __s_setup_waterlevel), rn2(3)) : rn2(3))) | 0));
     }
     for (x = i16(((cptr.ldI32(svx) + 1) | 0)); x <= ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0); x = i16(x + xskip))
         for (y = i16(((cptr.ldI32(svy) + 1) | 0)); y <= ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0); y = i16(y + yskip))
-            (yield* mk_bubble(x, y, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1856, __sl55), rn2(7)) : rn2(7))));
+            (yield* mk_bubble(x, y, (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1856, __s_setup_waterlevel), rn2(7)) : rn2(7))));
 }
 
 /** C ref: mkmaze.c:1860 */
@@ -1673,11 +1673,11 @@ function* mk_bubble(x, y, n) {
     if (x >= ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) || y >= ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0))
         return;
     if (n >= 7) {
-        (yield* impossible(__sl56));
+        (yield* impossible(__s_n_too_large_mk_bubble));
         n = (7 - 1) | 0;
     }
     if (cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1) > NHM.MAX_BMASK) {
-        (yield* panic(__sl57));
+        (yield* panic(__s_bmask_size_is_larger_than_max_bmask));
     }
     b = (yield* alloc(40));
     if (((((x + cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 0)) | 0) - 1) | 0) > ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0))
@@ -1686,8 +1686,8 @@ function* mk_bubble(x, y, n) {
         y = i16(((((((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) - cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1)) | 0) + 1) | 0));
     cptr.stI16(b, x);
     cptr.stI16o(b, $bubble_y, y);
-    cptr.st1o(b, $bubble_dx, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1909, __sl58), rn2(3)) : rn2(3))) | 0)));
-    cptr.st1o(b, $bubble_dy, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1910, __sl58), rn2(3)) : rn2(3))) | 0)));
+    cptr.st1o(b, $bubble_dx, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1909, __s_mk_bubble), rn2(3)) : rn2(3))) | 0)));
+    cptr.st1o(b, $bubble_dy, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1910, __s_mk_bubble), rn2(3)) : rn2(3))) | 0)));
     void cptr.memcpy(cptr.add(b, $bubble_bm), cptr.ldPtro(__static_mk_bubble_bmask, n, 8), BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1) + 2) | 0))) * 1n));
     cptr.stPtro(b, $bubble_cons, null);
     if (!cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles))
@@ -1708,7 +1708,7 @@ export function maybe_adjust_hero_bubble() {
         return;
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy))
         return;
-    if (hero_bubble && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1937, __sl59), rn2(2)) : rn2(2))) {
+    if (hero_bubble && !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1937, __s_maybe_adjust_hero_bubble), rn2(2)) : rn2(2))) {
         cptr.st1o(hero_bubble, $bubble_dx, schar(cptr.ldI32o(u, $you_dx)));
         cptr.st1o(hero_bubble, $bubble_dy, schar(cptr.ldI32o(u, $you_dy)));
     }
@@ -1723,7 +1723,7 @@ function* mv_bubble(b, dx, dy, ini) {
     let y;
     let cons;
     let ctemp;
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1959, __sl60), rn2(6)) : rn2(6))) {
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 1959, __s_mv_bubble), rn2(6)) : rn2(6))) {
         if (dx < -1 || dx > 1 || dy < -1 || dy > 1) {
             dx = i16(sgn(dx));
             dy = i16(sgn(dy));
@@ -1737,19 +1737,19 @@ function* mv_bubble(b, dx, dy, ini) {
         if (((((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0) >= ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0))
             colli |= 1;
         if (cptr.ldI16(b) < ((cptr.ldI32(svx) + 1) | 0)) {
-            (yield* pline(__sl61, cptr.ldI16(b), ((cptr.ldI32(svx) + 1) | 0)));
+            (yield* pline(__s_bubble_xmin_x_d_xmin_d, cptr.ldI16(b), ((cptr.ldI32(svx) + 1) | 0)));
             cptr.stI16(b, i16(((cptr.ldI32(svx) + 1) | 0)));
         }
         if (cptr.ldI16o(b, $bubble_y) < ((cptr.ldI32(svy) + 1) | 0)) {
-            (yield* pline(__sl62, cptr.ldI16o(b, $bubble_y), ((cptr.ldI32(svy) + 1) | 0)));
+            (yield* pline(__s_bubble_ymin_y_d_ymin_d, cptr.ldI16o(b, $bubble_y), ((cptr.ldI32(svy) + 1) | 0)));
             cptr.stI16o(b, $bubble_y, i16(((cptr.ldI32(svy) + 1) | 0)));
         }
         if (((((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0) > ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0)) {
-            (yield* pline(__sl63, (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0, ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0)));
+            (yield* pline(__s_bubble_xmax_x_d_xmax_d, (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0, ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0)));
             cptr.stI16(b, i16(((((((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) - cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) + 1) | 0)));
         }
         if (((((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0) > ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0)) {
-            (yield* pline(__sl64, (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0, ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0)));
+            (yield* pline(__s_bubble_ymax_y_d_ymax_d, (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0, ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0)));
             cptr.stI16o(b, $bubble_y, i16(((((((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) - cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) + 1) | 0)));
         }
         if (cptr.ldI16(b) == ((cptr.ldI32(svx) + 1) | 0) && dx < 0)
@@ -1820,7 +1820,7 @@ function* mv_bubble(b, dx, dy, ini) {
                     break;
                 }
                 default:
-                (yield* impossible(__sl65));
+                (yield* impossible(__s_mv_bubble_unknown_bubble_contents));
                 break;
             }
             cptr.free(cons);
@@ -1839,9 +1839,9 @@ function* mv_bubble(b, dx, dy, ini) {
         cptr.st1o(b, $bubble_dx, schar((-cptr.ld1so(b, $bubble_dx))));
         break;
         default:
-        if (!ini && ((cptr.ld1so(b, $bubble_dx) || cptr.ld1so(b, $bubble_dy)) ? !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2102, __sl60), rn2(20)) : rn2(20)) : !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2102, __sl60), rn2(5)) : rn2(5)))) {
-            cptr.st1o(b, $bubble_dx, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2103, __sl60), rn2(3)) : rn2(3))) | 0)));
-            cptr.st1o(b, $bubble_dy, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 2104, __sl60), rn2(3)) : rn2(3))) | 0)));
+        if (!ini && ((cptr.ld1so(b, $bubble_dx) || cptr.ld1so(b, $bubble_dy)) ? !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 2102, __s_mv_bubble), rn2(20)) : rn2(20)) : !(rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 2102, __s_mv_bubble), rn2(5)) : rn2(5)))) {
+            cptr.st1o(b, $bubble_dx, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 2103, __s_mv_bubble), rn2(3)) : rn2(3))) | 0)));
+            cptr.st1o(b, $bubble_dy, schar(((1 - (rng_log_enabled() ? (rng_log_set_caller(__s_mkmaze_c, 2104, __s_mv_bubble), rn2(3)) : rn2(3))) | 0)));
         }
     }
 }

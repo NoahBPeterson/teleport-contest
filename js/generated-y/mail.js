@@ -62,28 +62,28 @@ const $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind, $coord
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("MAIL");
-const __sl1 = cptr.lit("/usr/mail/");
-const __sl2 = cptr.lit("mail.c");
-const __sl3 = cptr.lit("mailbox=%c%s%c");
-const __sl4 = cptr.lit("null");
-const __sl5 = cptr.lit("md_stop");
-const __sl6 = cptr.lit("Gangway!");
-const __sl7 = cptr.lit("Look out!");
-const __sl8 = cptr.lit("Pardon me!");
-const __sl9 = cptr.lit("%s");
-const __sl10 = cptr.lit("md_rush");
-const __sl11 = cptr.lit("Excuse me.");
-const __sl12 = cptr.lit("This place's too crowded.  I'm outta here.");
-const __sl13 = cptr.lit("%s.");
-const __sl14 = cptr.lit("%s, %s!  %s.");
-const __sl15 = cptr.lit("Message:  %s.");
-const __sl16 = cptr.lit("Catch!");
-const __sl17 = cptr.lit("Oops!");
-const __sl18 = cptr.lit("Hark!  \"%s.\"");
-const __sl19 = cptr.lit("I have some mail for you");
-const __sl20 = cptr.lit("MAILREADER");
-const __sl21 = cptr.lit("/usr/bin/mailx");
+const __s_mail = cptr.lit("MAIL");
+const __s_usr_mail = cptr.lit("/usr/mail/");
+const __s_mail_c = cptr.lit("mail.c");
+const __s_mailbox_c_s_c = cptr.lit("mailbox=%c%s%c");
+const __s_null = cptr.lit("null");
+const __s_md_stop = cptr.lit("md_stop");
+const __s_gangway = cptr.lit("Gangway!");
+const __s_look_out = cptr.lit("Look out!");
+const __s_pardon_me = cptr.lit("Pardon me!");
+const __s_pct_s = cptr.lit("%s");
+const __s_md_rush = cptr.lit("md_rush");
+const __s_excuse_me = cptr.lit("Excuse me.");
+const __s_this_place_s_too_crowded_i_m_outta_here = cptr.lit("This place's too crowded.  I'm outta here.");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_s_s_s = cptr.lit("%s, %s!  %s.");
+const __s_message_s = cptr.lit("Message:  %s.");
+const __s_catch = cptr.lit("Catch!");
+const __s_oops = cptr.lit("Oops!");
+const __s_hark_s = cptr.lit("Hark!  \"%s.\"");
+const __s_i_have_some_mail_for_you = cptr.lit("I have some mail for you");
+const __s_mailreader = cptr.lit("MAILREADER");
+const __s_usr_bin_mailx = cptr.lit("/usr/bin/mailx");
 
 /** C ref: mail.c:69 — struct stat */
 let omstat = cptr.alloc(144);
@@ -107,18 +107,18 @@ export function free_maildata() {
 export function* getmailstatus() {
     if (mailbox) {
         ;
-    } else if ((mailbox = nh_getenv(__sl0)) !== null) {
+    } else if ((mailbox = nh_getenv(__s_mail)) !== null) {
         mailbox = (yield* dupstr(mailbox));
     } else {
         let pw_name = cptr.ldPtr(getpwuid(getuid()));
         mailbox = (yield* alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(pw_name) + 11n))))));
-        void cptr.strcpy(mailbox, __sl1);
+        void cptr.strcpy(mailbox, __s_usr_mail);
         void cptr.strcat(mailbox, pw_name);
     }
     {
-        if ((yield* debugcore(__sl2, 1))) {
+        if ((yield* debugcore(__s_mail_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl3, mailbox ? 34 : 60, mailbox ? mailbox : __sl4, mailbox ? 34 : 62));
+            (yield* pline(__s_mailbox_c_s_c, mailbox ? 34 : 60, mailbox ? mailbox : __s_null, mailbox ? 34 : 62));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -200,7 +200,7 @@ function* md_stop(stopp, startp) {
                 continue;
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
-                if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__sl2, 261, __sl5), rn2(2)) : rn2(2)))) {
+                if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__s_mail_c, 261, __s_md_stop), rn2(2)) : rn2(2)))) {
                     cptr.stI16(stopp, x);
                     cptr.stI16o(stopp, $coord_y, y);
                     min_distance = distance;
@@ -214,9 +214,9 @@ function* md_stop(stopp, startp) {
 
 /** C ref: mail.c:277 — char *[3] */
 const mail_text = cptr.alloc(3 * 8);
-cptr.stPtro(mail_text, 0, __sl6);
-cptr.stPtro(mail_text, 8, __sl7);
-cptr.stPtro(mail_text, 16, __sl8);
+cptr.stPtro(mail_text, 0, __s_gangway);
+cptr.stPtro(mail_text, 8, __s_look_out);
+cptr.stPtro(mail_text, 16, __s_pardon_me);
 
 /** C ref: mail.c:288 — @param {CPtr<struct monst>} md @param {CInt} tx @param {CInt} ty @returns {CInt} */
 function* md_rush(md, tx, ty) {
@@ -255,9 +255,9 @@ function* md_rush(md, tx, ty) {
         if (!Deaf()) {
             ;
             if (mon)
-                (yield* verbalize(__sl9, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__sl2, 340, __sl10), rn2(3)) : rn2(3)), 8))));
+                (yield* verbalize(__s_pct_s, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__s_mail_c, 340, __s_md_rush), rn2(3)) : rn2(3)), 8))));
             else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, $you_uy)))
-                (yield* verbalize(__sl11));
+                (yield* verbalize(__s_excuse_me));
         }
         if (mon)
             cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
@@ -280,9 +280,9 @@ function* md_rush(md, tx, ty) {
         (yield* newsym(i16(fx), i16(fy)));
         if (!Deaf()) {
             ;
-            (yield* verbalize(__sl12));
+            (yield* verbalize(__s_this_place_s_too_crowded_i_m_outta_here));
         } else {
-            (yield* pline(__sl13, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
+            (yield* pline(__s_pct_s_dot, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
         }
         cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         if ((cptr.ldI16o(mon, $monst_mx) != fx) || (cptr.ldI16o(mon, $monst_my) != fy))
@@ -316,9 +316,9 @@ function* newmail(info) {
         message_seen = 1;
         if (!Deaf()) {
             ;
-            (yield* verbalize(__sl14, Hello(md), svp, cptr.ldPtro(info, $mail_info_display_txt)));
+            (yield* verbalize(__s_s_s_s, Hello(md), svp, cptr.ldPtro(info, $mail_info_display_txt)));
         } else {
-            (yield* pline(__sl15, cptr.ldPtro(info, $mail_info_display_txt)));
+            (yield* pline(__s_message_s, cptr.ldPtro(info, $mail_info_display_txt)));
         }
         if (cptr.ldI32(info)) {
             let obj = (yield* mksobj(NHC.SCR_MAIL, 0, 0));
@@ -329,13 +329,13 @@ function* newmail(info) {
             if (!m_next2u(md)) {
                 if (!Deaf()) {
                     ;
-                    (yield* verbalize(__sl16));
+                    (yield* verbalize(__s_catch));
                 } else {
                     ;
                 }
             }
             (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
-            obj = (yield* hold_another_object(obj, __sl17, null, null));
+            obj = (yield* hold_another_object(obj, __s_oops, null, null));
             (void (obj));
         }
     }
@@ -344,12 +344,12 @@ function* newmail(info) {
         (yield* mongone(md));
     }
     if (!message_seen && cptr.ldI32(info) == NHM.MSG_OTHER)
-        (yield* pline(__sl18, cptr.ldPtro(info, $mail_info_display_txt)));
+        (yield* pline(__s_hark_s, cptr.ldPtro(info, $mail_info_display_txt)));
 }
 
 let __static_ckmailstatus_deliver = cptr.alloc(32); /** C ref: mail.c:571 — struct mail_info (function-static) */
 cptr.stI32(__static_ckmailstatus_deliver, NHM.MSG_MAIL);
-cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_display_txt, __sl19);
+cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_display_txt, __s_i_have_some_mail_for_you);
 cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_object_nam, null);
 cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_response_cmd, null);
 
@@ -379,8 +379,8 @@ export function* readmail(otmp) {
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         return;
     (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
-    if (!(mr = nh_getenv(__sl20)))
-        mr = __sl21;
+    if (!(mr = nh_getenv(__s_mailreader)))
+        mr = __s_usr_bin_mailx;
     if ((yield* child(1))) {
         void execl(mr, mr, null);
         (yield* nh_terminate(1));

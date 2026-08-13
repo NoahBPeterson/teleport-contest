@@ -83,159 +83,159 @@ const $Role_mnum = FLD.Role_mnum, $c_common_strings_c_Something = FLD.c_common_s
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("unlocking the door");
-const __sl1 = cptr.lit("unlocking the chest");
-const __sl2 = cptr.lit("unlocking the box");
-const __sl3 = cptr.lit("picking the lock");
-const __sl4 = cptr.lit("This doorway has no door.");
-const __sl5 = cptr.lit("cannot lock an open door.");
-const __sl6 = cptr.lit("This door is broken.");
-const __sl7 = cptr.lit("give up your attempt at %s.");
-const __sl8 = cptr.lit("lock.c");
-const __sl9 = cptr.lit("picklock");
-const __sl10 = cptr.lit("find a trap!");
-const __sl11 = cptr.lit("Do you want to try to disarm it?");
-const __sl12 = cptr.lit("door");
-const __sl13 = cptr.lit("chest");
-const __sl14 = cptr.lit("box");
-const __sl15 = cptr.lit("succeed in disarming the trap.  The %s is still %slocked.");
-const __sl16 = cptr.lit("un");
-const __sl17 = cptr.lit("");
-const __sl18 = cptr.lit("stop %s.");
-const __sl19 = cptr.lit("succeed in %s.");
-const __sl20 = cptr.lit("In fact, you've totally destroyed %s.");
-const __sl21 = cptr.lit("breakchestlock");
-const __sl22 = cptr.lit("owe %ld %s for objects destroyed.");
-const __sl23 = cptr.lit("give up your attempt to force the lock.");
-const __sl24 = cptr.lit("forcelock");
-const __sl25 = cptr.lit("%sour %s broke!");
-const __sl26 = cptr.lit("One of y");
-const __sl27 = cptr.lit("Y");
-const __sl28 = cptr.lit("succeed in forcing the lock.");
-const __sl29 = cptr.lit("pick");
-const __sl30 = cptr.lit("key");
-const __sl31 = cptr.lit("card");
-const __sl32 = cptr.lit("hold the");
-const __sl33 = cptr.lit("reach the");
-const __sl34 = cptr.lit("lock");
-const __sl35 = cptr.lit("resume your attempt at %s.");
-const __sl36 = cptr.lit("hold %s -- you have no hands!");
-const __sl37 = cptr.lit("%sunlock %s.");
-const __sl38 = cptr.lit("lock or ");
-const __sl39 = cptr.lit("picking lock with object %d?");
-const __sl40 = cptr.lit("Invalid location!");
-const __sl41 = cptr.lit("isn't any sort of lock up %s.");
-const __sl42 = cptr.lit("here");
-const __sl43 = cptr.lit("there");
-const __sl44 = cptr.lit("Doing that would probably melt %s.");
-const __sl45 = cptr.lit("%s has no lock.");
-const __sl46 = cptr.lit("water");
-const __sl47 = cptr.lit("reach %s from up here.");
-const __sl48 = cptr.lit("fix");
-const __sl49 = cptr.lit("unlock");
-const __sl50 = cptr.lit("Check ");
-const __sl51 = cptr.lit(" for a trap?");
-const __sl52 = cptr.lit("this");
-const __sl53 = cptr.lit("Unlock it with %s?");
-const __sl54 = cptr.lit(" here; %s %s?");
-const __sl55 = cptr.lit("it");
-const __sl56 = cptr.lit("its lock");
-const __sl57 = cptr.lit("There is ");
-const __sl58 = cptr.lit("a box");
-const __sl59 = cptr.lit("fix its broken lock with %s.");
-const __sl60 = cptr.lit("do that with %s.");
-const __sl61 = cptr.lit("doesn't seem to be any sort of lock here.");
-const __sl62 = cptr.lit("reach over the edge of the pit.");
-const __sl63 = cptr.lit("No checks, no credit, no problem.");
-const __sl64 = cptr.lit("I don't think %s would appreciate that.");
-const __sl65 = cptr.lit("%s no lock on the drawbridge.");
-const __sl66 = cptr.lit("feel");
-const __sl67 = cptr.lit("see");
-const __sl68 = cptr.lit("%s no door there.");
-const __sl69 = cptr.lit("Check this door for a trap?");
-const __sl70 = cptr.lit("lock a door with a credit card.");
-const __sl71 = cptr.lit("%s it%s%s?");
-const __sl72 = cptr.lit("Unlock");
-const __sl73 = cptr.lit("Lock");
-const __sl74 = cptr.lit(" with ");
-const __sl75 = cptr.lit("force anything from inside here.");
-const __sl76 = cptr.lit("force anything %s weapon%s.");
-const __sl77 = cptr.lit("when not wielding a");
-const __sl78 = cptr.lit("without proper");
-const __sl79 = cptr.lit("without a proper");
-const __sl80 = cptr.lit("with those");
-const __sl81 = cptr.lit("with that");
-const __sl82 = cptr.lit("s");
-const __sl83 = cptr.lit("resume your attempt to force the lock.");
-const __sl84 = cptr.lit("forcing the lock");
-const __sl85 = cptr.lit("is %s here, but its lock is already %s.");
-const __sl86 = cptr.lit("broken");
-const __sl87 = cptr.lit("unlocked");
-const __sl88 = cptr.lit(" here; force its lock?");
-const __sl89 = cptr.lit("force %s into a crack and pry.");
-const __sl90 = cptr.lit("start bashing it with %s.");
-const __sl91 = cptr.lit("decide not to force the issue.");
-const __sl92 = cptr.lit("open anything -- you have no hands!");
-const __sl93 = cptr.lit("Open where? [.>]");
-const __sl94 = cptr.lit("is no obvious way to open the drawbridge.");
-const __sl95 = cptr.lit("drawbridge is already open.");
-const __sl96 = cptr.lit("%s like something lootable over there.");
-const __sl97 = cptr.lit("Feels");
-const __sl98 = cptr.lit("Seems");
-const __sl99 = cptr.lit(" is broken");
-const __sl100 = cptr.lit("way has no door");
-const __sl101 = cptr.lit(" is already open");
-const __sl102 = cptr.lit(" is locked");
-const __sl103 = cptr.lit("This door%s.");
-const __sl104 = cptr.lit("Kick it?");
-const __sl105 = cptr.lit("You're too small to pull the door open.");
-const __sl106 = cptr.lit("doopen_indir");
-const __sl107 = cptr.lit("door opens.");
-const __sl108 = cptr.lit("door resists!");
-const __sl109 = cptr.lit("%s's in the way.");
-const __sl110 = cptr.lit(" tail");
-const __sl111 = cptr.lit("%s blocks the way!");
-const __sl112 = cptr.lit("close anything -- you have no hands!");
-const __sl113 = cptr.lit("are in the way!");
-const __sl114 = cptr.lit("drawbridge is already closed.");
-const __sl115 = cptr.lit("is no obvious way to close the drawbridge.");
-const __sl116 = cptr.lit("This door is already closed.");
-const __sl117 = cptr.lit("You're too small to push the door closed.");
-const __sl118 = cptr.lit("doclose");
-const __sl119 = cptr.lit("door closes.");
-const __sl120 = cptr.lit("Klunk!");
-const __sl121 = cptr.lit("Klick!");
-const __sl122 = cptr.lit("A cloud of dust");
-const __sl123 = cptr.lit("quickly dissipates");
-const __sl124 = cptr.lit("A door appears in the wall!");
-const __sl125 = cptr.lit("%s springs up in the older, more primitive doorway.");
-const __sl126 = cptr.lit("a swoosh.");
-const __sl127 = cptr.lit("cloud %s.");
-const __sl128 = cptr.lit("doorway vanishes!");
-const __sl129 = cptr.lit("%s springs up in the doorway, but %s.");
-const __sl130 = cptr.lit("The door locks!");
-const __sl131 = cptr.lit("The door swings shut, and locks!");
-const __sl132 = cptr.lit("The broken door reassembles and locks!");
-const __sl133 = cptr.lit("A cloud of dust springs up and assembles itself into a door!");
-const __sl134 = cptr.lit("The door unlocks!");
-const __sl135 = cptr.lit("KABOOM!!  You see a door explode.");
-const __sl136 = cptr.lit("a %s explosion.");
-const __sl137 = cptr.lit("distant");
-const __sl138 = cptr.lit("nearby");
-const __sl139 = cptr.lit("door crashes open!");
-const __sl140 = cptr.lit("a crashing sound.");
-const __sl141 = cptr.lit("magic (%d) attempted on door.");
-const __sl142 = cptr.lit("%s");
-const __sl143 = cptr.lit("%s %s shatter!");
-const __sl144 = cptr.lit("hear");
-const __sl145 = cptr.lit("is torn to shreds");
-const __sl146 = cptr.lit("is crushed");
-const __sl147 = cptr.lit("is pulped");
-const __sl148 = cptr.lit("is mashed");
-const __sl149 = cptr.lit("shatters");
-const __sl150 = cptr.lit("splinters to fragments");
-const __sl151 = cptr.lit("is destroyed");
-const __sl152 = cptr.lit("%s %s!");
+const __s_unlocking_the_door = cptr.lit("unlocking the door");
+const __s_unlocking_the_chest = cptr.lit("unlocking the chest");
+const __s_unlocking_the_box = cptr.lit("unlocking the box");
+const __s_picking_the_lock = cptr.lit("picking the lock");
+const __s_this_doorway_has_no_door = cptr.lit("This doorway has no door.");
+const __s_cannot_lock_an_open_door = cptr.lit("cannot lock an open door.");
+const __s_this_door_is_broken = cptr.lit("This door is broken.");
+const __s_give_up_your_attempt_at_s = cptr.lit("give up your attempt at %s.");
+const __s_lock_c = cptr.lit("lock.c");
+const __s_picklock = cptr.lit("picklock");
+const __s_find_a_trap = cptr.lit("find a trap!");
+const __s_do_you_want_to_try_to_disarm_it = cptr.lit("Do you want to try to disarm it?");
+const __s_door = cptr.lit("door");
+const __s_chest = cptr.lit("chest");
+const __s_box = cptr.lit("box");
+const __s_succeed_in_disarming_the_trap_the_s_is = cptr.lit("succeed in disarming the trap.  The %s is still %slocked.");
+const __s_un = cptr.lit("un");
+const __s_empty = cptr.lit("");
+const __s_stop_s = cptr.lit("stop %s.");
+const __s_succeed_in_s = cptr.lit("succeed in %s.");
+const __s_in_fact_you_ve_totally_destroyed_s = cptr.lit("In fact, you've totally destroyed %s.");
+const __s_breakchestlock = cptr.lit("breakchestlock");
+const __s_owe_ld_s_for_objects_destroyed = cptr.lit("owe %ld %s for objects destroyed.");
+const __s_give_up_your_attempt_to_force_the_lock = cptr.lit("give up your attempt to force the lock.");
+const __s_forcelock = cptr.lit("forcelock");
+const __s_sour_s_broke = cptr.lit("%sour %s broke!");
+const __s_one_of_y = cptr.lit("One of y");
+const __s_y = cptr.lit("Y");
+const __s_succeed_in_forcing_the_lock = cptr.lit("succeed in forcing the lock.");
+const __s_pick = cptr.lit("pick");
+const __s_key = cptr.lit("key");
+const __s_card = cptr.lit("card");
+const __s_hold_the = cptr.lit("hold the");
+const __s_reach_the = cptr.lit("reach the");
+const __s_lock = cptr.lit("lock");
+const __s_resume_your_attempt_at_s = cptr.lit("resume your attempt at %s.");
+const __s_hold_s_you_have_no_hands = cptr.lit("hold %s -- you have no hands!");
+const __s_sunlock_s = cptr.lit("%sunlock %s.");
+const __s_lock_or = cptr.lit("lock or ");
+const __s_picking_lock_with_object_d = cptr.lit("picking lock with object %d?");
+const __s_invalid_location = cptr.lit("Invalid location!");
+const __s_isn_t_any_sort_of_lock_up_s = cptr.lit("isn't any sort of lock up %s.");
+const __s_here = cptr.lit("here");
+const __s_there = cptr.lit("there");
+const __s_doing_that_would_probably_melt_s = cptr.lit("Doing that would probably melt %s.");
+const __s_s_has_no_lock = cptr.lit("%s has no lock.");
+const __s_water = cptr.lit("water");
+const __s_reach_s_from_up_here = cptr.lit("reach %s from up here.");
+const __s_fix = cptr.lit("fix");
+const __s_unlock = cptr.lit("unlock");
+const __s_check = cptr.lit("Check ");
+const __s_for_a_trap = cptr.lit(" for a trap?");
+const __s_this = cptr.lit("this");
+const __s_unlock_it_with_s = cptr.lit("Unlock it with %s?");
+const __s_here_s_s = cptr.lit(" here; %s %s?");
+const __s_it = cptr.lit("it");
+const __s_its_lock = cptr.lit("its lock");
+const __s_there_is = cptr.lit("There is ");
+const __s_a_box = cptr.lit("a box");
+const __s_fix_its_broken_lock_with_s = cptr.lit("fix its broken lock with %s.");
+const __s_do_that_with_s = cptr.lit("do that with %s.");
+const __s_doesn_t_seem_to_be_any_sort_of_lock_here = cptr.lit("doesn't seem to be any sort of lock here.");
+const __s_reach_over_the_edge_of_the_pit = cptr.lit("reach over the edge of the pit.");
+const __s_no_checks_no_credit_no_problem = cptr.lit("No checks, no credit, no problem.");
+const __s_i_don_t_think_s_would_appreciate_that = cptr.lit("I don't think %s would appreciate that.");
+const __s_s_no_lock_on_the_drawbridge = cptr.lit("%s no lock on the drawbridge.");
+const __s_feel = cptr.lit("feel");
+const __s_see = cptr.lit("see");
+const __s_s_no_door_there = cptr.lit("%s no door there.");
+const __s_check_this_door_for_a_trap = cptr.lit("Check this door for a trap?");
+const __s_lock_a_door_with_a_credit_card = cptr.lit("lock a door with a credit card.");
+const __s_s_it_s_s = cptr.lit("%s it%s%s?");
+const __s_unlock__2 = cptr.lit("Unlock");
+const __s_lock__2 = cptr.lit("Lock");
+const __s_with = cptr.lit(" with ");
+const __s_force_anything_from_inside_here = cptr.lit("force anything from inside here.");
+const __s_force_anything_s_weapon_s = cptr.lit("force anything %s weapon%s.");
+const __s_when_not_wielding_a = cptr.lit("when not wielding a");
+const __s_without_proper = cptr.lit("without proper");
+const __s_without_a_proper = cptr.lit("without a proper");
+const __s_with_those = cptr.lit("with those");
+const __s_with_that = cptr.lit("with that");
+const __s_s = cptr.lit("s");
+const __s_resume_your_attempt_to_force_the_lock = cptr.lit("resume your attempt to force the lock.");
+const __s_forcing_the_lock = cptr.lit("forcing the lock");
+const __s_is_s_here_but_its_lock_is_already_s = cptr.lit("is %s here, but its lock is already %s.");
+const __s_broken = cptr.lit("broken");
+const __s_unlocked = cptr.lit("unlocked");
+const __s_here_force_its_lock = cptr.lit(" here; force its lock?");
+const __s_force_s_into_a_crack_and_pry = cptr.lit("force %s into a crack and pry.");
+const __s_start_bashing_it_with_s = cptr.lit("start bashing it with %s.");
+const __s_decide_not_to_force_the_issue = cptr.lit("decide not to force the issue.");
+const __s_open_anything_you_have_no_hands = cptr.lit("open anything -- you have no hands!");
+const __s_open_where = cptr.lit("Open where? [.>]");
+const __s_is_no_obvious_way_to_open_the_drawbridge = cptr.lit("is no obvious way to open the drawbridge.");
+const __s_drawbridge_is_already_open = cptr.lit("drawbridge is already open.");
+const __s_s_like_something_lootable_over_there = cptr.lit("%s like something lootable over there.");
+const __s_feels = cptr.lit("Feels");
+const __s_seems = cptr.lit("Seems");
+const __s_is_broken = cptr.lit(" is broken");
+const __s_way_has_no_door = cptr.lit("way has no door");
+const __s_is_already_open = cptr.lit(" is already open");
+const __s_is_locked = cptr.lit(" is locked");
+const __s_this_door_s = cptr.lit("This door%s.");
+const __s_kick_it = cptr.lit("Kick it?");
+const __s_you_re_too_small_to_pull_the_door_open = cptr.lit("You're too small to pull the door open.");
+const __s_doopen_indir = cptr.lit("doopen_indir");
+const __s_door_opens = cptr.lit("door opens.");
+const __s_door_resists = cptr.lit("door resists!");
+const __s_s_s_in_the_way = cptr.lit("%s's in the way.");
+const __s_tail = cptr.lit(" tail");
+const __s_s_blocks_the_way = cptr.lit("%s blocks the way!");
+const __s_close_anything_you_have_no_hands = cptr.lit("close anything -- you have no hands!");
+const __s_are_in_the_way = cptr.lit("are in the way!");
+const __s_drawbridge_is_already_closed = cptr.lit("drawbridge is already closed.");
+const __s_is_no_obvious_way_to_close_the = cptr.lit("is no obvious way to close the drawbridge.");
+const __s_this_door_is_already_closed = cptr.lit("This door is already closed.");
+const __s_you_re_too_small_to_push_the_door_closed = cptr.lit("You're too small to push the door closed.");
+const __s_doclose = cptr.lit("doclose");
+const __s_door_closes = cptr.lit("door closes.");
+const __s_klunk = cptr.lit("Klunk!");
+const __s_klick = cptr.lit("Klick!");
+const __s_a_cloud_of_dust = cptr.lit("A cloud of dust");
+const __s_quickly_dissipates = cptr.lit("quickly dissipates");
+const __s_a_door_appears_in_the_wall = cptr.lit("A door appears in the wall!");
+const __s_s_springs_up_in_the_older_more = cptr.lit("%s springs up in the older, more primitive doorway.");
+const __s_a_swoosh = cptr.lit("a swoosh.");
+const __s_cloud_s = cptr.lit("cloud %s.");
+const __s_doorway_vanishes = cptr.lit("doorway vanishes!");
+const __s_s_springs_up_in_the_doorway_but_s = cptr.lit("%s springs up in the doorway, but %s.");
+const __s_the_door_locks = cptr.lit("The door locks!");
+const __s_the_door_swings_shut_and_locks = cptr.lit("The door swings shut, and locks!");
+const __s_the_broken_door_reassembles_and_locks = cptr.lit("The broken door reassembles and locks!");
+const __s_a_cloud_of_dust_springs_up_and = cptr.lit("A cloud of dust springs up and assembles itself into a door!");
+const __s_the_door_unlocks = cptr.lit("The door unlocks!");
+const __s_kaboom_you_see_a_door_explode = cptr.lit("KABOOM!!  You see a door explode.");
+const __s_a_s_explosion = cptr.lit("a %s explosion.");
+const __s_distant = cptr.lit("distant");
+const __s_nearby = cptr.lit("nearby");
+const __s_door_crashes_open = cptr.lit("door crashes open!");
+const __s_a_crashing_sound = cptr.lit("a crashing sound.");
+const __s_magic_d_attempted_on_door = cptr.lit("magic (%d) attempted on door.");
+const __s_pct_s = cptr.lit("%s");
+const __s_s_s_shatter = cptr.lit("%s %s shatter!");
+const __s_hear = cptr.lit("hear");
+const __s_is_torn_to_shreds = cptr.lit("is torn to shreds");
+const __s_is_crushed = cptr.lit("is crushed");
+const __s_is_pulped = cptr.lit("is pulped");
+const __s_is_mashed = cptr.lit("is mashed");
+const __s_shatters = cptr.lit("shatters");
+const __s_splinters_to_fragments = cptr.lit("splinters to fragments");
+const __s_is_destroyed = cptr.lit("is destroyed");
+const __s_s_s = cptr.lit("%s %s!");
 
 /** C ref: lock.c:17 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 export function picking_lock(x, y) {
@@ -255,10 +255,10 @@ export function picking_at(x, y) {
 }
 
 const __static_lock_action_actions = cptr.alloc(4 * 8);
-cptr.stPtro(__static_lock_action_actions, 0, __sl0);
-cptr.stPtro(__static_lock_action_actions, 8, __sl1);
-cptr.stPtro(__static_lock_action_actions, 16, __sl2);
-cptr.stPtro(__static_lock_action_actions, 24, __sl3); /** C ref: lock.c:41 — char *[4] (function-static) */
+cptr.stPtro(__static_lock_action_actions, 0, __s_unlocking_the_door);
+cptr.stPtro(__static_lock_action_actions, 8, __s_unlocking_the_chest);
+cptr.stPtro(__static_lock_action_actions, 16, __s_unlocking_the_box);
+cptr.stPtro(__static_lock_action_actions, 24, __s_picking_the_lock); /** C ref: lock.c:41 — char *[4] (function-static) */
 
 /** C ref: lock.c:38 @returns {CPtr<char>} */
 function lock_action() {
@@ -290,55 +290,55 @@ function picklock() {
         }
         switch ((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
-            pline(__sl4);
+            pline(__s_this_doorway_has_no_door);
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
             case NHM.D_ISOPEN:
-            You(__sl5);
+            You(__s_cannot_lock_an_open_door);
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
             case NHM.D_BROKEN:
-            pline(__sl6);
+            pline(__s_this_door_is_broken);
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
     }
     if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You(__sl7, lock_action());
+        You(__s_give_up_your_attempt_at_s, lock_action());
         exercise(NHC.A_DEX, 1);
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 98, __sl9), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 98, __s_picklock), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;
     if ((!cptr.ldPtro(gx, $instance_globals_x_xlock) ? (cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otrapped) & 1) | 0 : (((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) && cptr.ld1so(gx, $instance_globals_x_xlock + $xlock_s_magic_key)) {
         cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_chance, (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance) + 20) | 0);
         if (!cptr.ldPtro(gx, $instance_globals_x_xlock)) {
             if (!(cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown) & 1))
-                You(__sl10);
+                You(__s_find_a_trap);
             cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown, 1);
         }
-        if (yn_function(__sl11, cptr.decay(ynchars), 110, 1) == 121) {
+        if (yn_function(__s_do_you_want_to_try_to_disarm_it, cptr.decay(ynchars), 110, 1) == 121) {
             let what;
             let alreadyunlocked;
             if (cptr.ldPtro(gx, $instance_globals_x_xlock)) {
                 cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags, cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & -17);
-                what = __sl12;
+                what = __s_door;
                 alreadyunlocked = schar((!(((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) & NHM.D_LOCKED)));
             } else {
                 cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otrapped, 0);
                 cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_tknown, 0);
-                what = (cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otyp) == NHC.CHEST) ? __sl13 : __sl14;
+                what = (cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otyp) == NHC.CHEST) ? __s_chest : __s_box;
                 alreadyunlocked = schar((!(cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_olocked) & 1)));
             }
-            You(__sl15, what, alreadyunlocked ? __sl16 : __sl17);
+            You(__s_succeed_in_disarming_the_trap_the_s_is, what, alreadyunlocked ? __s_un : __s_empty);
             exercise(NHC.A_WIS, 1);
         } else {
-            You(__sl18, lock_action());
+            You(__s_stop_s, lock_action());
             exercise(NHC.A_WIS, 0);
         }
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
-    You(__sl19, lock_action());
+    You(__s_succeed_in_s, lock_action());
     if (cptr.ldPtro(gx, $instance_globals_x_xlock)) {
         if (((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-            b_trapped(__sl12, NHC.FINGER);
+            b_trapped(__s_door, NHC.FINGER);
             cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags, NHM.D_NODOOR);
             unblock_point((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0);
             if (cptr.ld1s(in_rooms(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)), NHC.SHOPBASE)))
@@ -374,10 +374,10 @@ export function breakchestlock(box, destroyit) {
         let costly = schar((shkp !== null));
         let peaceful_shk = schar((costly && schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)) ? 1 : 0));
         let loss = 0n;
-        pline(__sl20, the(xname(box)));
+        pline(__s_in_fact_you_ve_totally_destroyed_s, the(xname(box)));
         while ((otmp = cptr.ldPtro(box, $obj_cobj)) !== null) {
             obj_extract_self(otmp);
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl8, 186, __sl21), rn2(3)) : rn2(3)) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 186, __s_breakchestlock), rn2(3)) : rn2(3)) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
                 chest_shatter_msg(otmp);
                 if (costly)
                     loss += stolen_value(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), peaceful_shk, 1);
@@ -397,7 +397,7 @@ export function breakchestlock(box, destroyit) {
         if (costly)
             loss += stolen_value(box, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), peaceful_shk, 1);
         if (loss)
-            You(__sl22, loss, currency(loss));
+            You(__s_owe_ld_s_for_objects_destroyed, loss, currency(loss));
         delobj(box);
     }
 }
@@ -407,26 +407,26 @@ function forcelock() {
     if ((cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_oy) != cptr.ldI16o(u, $you_uy)))
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     if ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1)) - (1) >= 50 || !uwep.v || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You(__sl23);
+        You(__s_give_up_your_attempt_to_force_the_lock);
         if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) >= 50)
             exercise((cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) ? NHC.A_DEX : NHC.A_STR, 1);
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 229, __sl24), rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) : rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
-            pline(__sl25, (cptr.ldI64o(uwep.v, $obj_quan) > 1n) ? __sl26 : __sl27, xname(uwep.v));
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 229, __s_forcelock), rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) : rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
+            pline(__s_sour_s_broke, (cptr.ldI64o(uwep.v, $obj_quan) > 1n) ? __s_one_of_y : __s_y, xname(uwep.v));
             useup(uwep.v);
-            You(__sl23);
+            You(__s_give_up_your_attempt_to_force_the_lock);
             exercise(NHC.A_DEX, 1);
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
     } else
         wake_nearby(0);
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 244, __sl24), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 244, __s_forcelock), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;
-    You(__sl28);
+    You(__s_succeed_in_forcing_the_lock);
     exercise(cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) ? NHC.A_DEX : NHC.A_STR, 1);
-    breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !(rng_log_enabled() ? (rng_log_set_caller(__sl8, 252, __sl24), rn2(3)) : rn2(3)) ? 1 : 0)));
+    breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !(rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 252, __s_forcelock), rn2(3)) : rn2(3)) ? 1 : 0)));
     reset_pick();
     return 0;
 }
@@ -524,40 +524,40 @@ export function pick_lock(pick, rx, ry, container) {
     picktyp = cptr.ldI16o(pick, $obj_otyp);
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) && picktyp == cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-            let what = (picktyp == NHC.LOCK_PICK) ? __sl29 : __sl30;
+            let what = (picktyp == NHC.LOCK_PICK) ? __s_pick : __s_key;
             if (picktyp == NHC.CREDIT_CARD)
-                what = __sl31;
-            pline(cptr.decay(__static_pick_lock_no_longer), __sl32, what);
+                what = __s_card;
+            pline(cptr.decay(__static_pick_lock_no_longer), __s_hold_the, what);
             reset_pick();
             return -1;
         } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) && !can_reach_floor(1))) {
-            pline(cptr.decay(__static_pick_lock_no_longer), __sl33, __sl34);
+            pline(cptr.decay(__static_pick_lock_no_longer), __s_reach_the, __s_lock);
             reset_pick();
             return -1;
         } else {
             let action = lock_action();
-            You(__sl35, action);
+            You(__s_resume_your_attempt_at_s, action);
             cptr.st1o(gx, $instance_globals_x_xlock + $xlock_s_magic_key, is_magic_key(cptr.add(gy, $instance_globals_y_youmonst), pick));
             set_occupation(picklock, action, 0n);
             return 1;
         }
     }
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You_cant(__sl36, doname(pick));
+        You_cant(__s_hold_s_you_have_no_hands, doname(pick));
         return 0;
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        You_cant(__sl37, (picktyp == NHC.CREDIT_CARD) ? __sl17 : __sl38, mon_nam(cptr.ldPtro(u, $you_ustuck)));
+        You_cant(__s_sunlock_s, (picktyp == NHC.CREDIT_CARD) ? __s_empty : __s_lock_or, mon_nam(cptr.ldPtro(u, $you_ustuck)));
         return 0;
     }
     if (!cptr.eq(pick, dummypick) && picktyp != NHC.SKELETON_KEY && picktyp != NHC.LOCK_PICK && picktyp != NHC.CREDIT_CARD) {
-        impossible(__sl39, picktyp);
+        impossible(__s_picking_lock_with_object_d, picktyp);
         return 0;
     }
     ch = 0;
     if (rx != 0) {
         cptr.stI16(cc, rx);
         cptr.stI16o(cc, $nhcoord_y, ry);
-    } else if (!get_adjacent_loc(null, __sl40, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc)) {
+    } else if (!get_adjacent_loc(null, __s_invalid_location, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cc)) {
         return 0;
     }
     if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
@@ -566,13 +566,13 @@ export function pick_lock(pick, rx, ry, container) {
         let it;
         let count;
         if (cptr.ldI32o(u, $you_dz) < 0 && !autounlock) {
-            There(__sl41, Levitation() ? __sl42 : __sl43);
+            There(__s_isn_t_any_sort_of_lock_up_s, Levitation() ? __s_here : __s_there);
             return -1;
         } else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-            pline(__sl44, yname(pick));
+            pline(__s_doing_that_would_probably_melt_s, yname(pick));
             return -1;
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater()) {
-            pline_The(__sl45, hliquid(__sl46));
+            pline_The(__s_s_has_no_lock, hliquid(__s_water));
             return -1;
         }
         count = 0;
@@ -583,19 +583,19 @@ export function pick_lock(pick, rx, ry, container) {
             if (Is_box(otmp)) {
                 ++count;
                 if (!can_reach_floor(1)) {
-                    You_cant(__sl47, the(xname(otmp)));
+                    You_cant(__s_reach_s_from_up_here, the(xname(otmp)));
                     return -1;
                 }
                 it = 0;
                 if ((cptr.ldI32o(otmp, $obj_obroken) & 1))
-                    verb = __sl48;
+                    verb = __s_fix;
                 else if (!(cptr.ldI32o(otmp, $obj_olocked) & 1))
-                    verb = __sl34, it = 1;
+                    verb = __s_lock, it = 1;
                 else if (picktyp != NHC.LOCK_PICK)
-                    verb = __sl49, it = 1;
+                    verb = __s_unlock, it = 1;
                 else
-                    verb = __sl29;
-                if (autounlock && ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 && could_untrap(0, 1) && (c = (cptr.ldI32o(otmp, $obj_tknown) & 1) | 0 ? ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 ? 121 : 110) : yn_function(safe_qbuf(cptr.decay(qbuf), __sl50, __sl51, otmp, yname, ysimple_name, __sl52), cptr.decay(ynqchars), 113, 1)) != 110) {
+                    verb = __s_pick;
+                if (autounlock && ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 && could_untrap(0, 1) && (c = (cptr.ldI32o(otmp, $obj_tknown) & 1) | 0 ? ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 ? 121 : 110) : yn_function(safe_qbuf(cptr.decay(qbuf), __s_check, __s_for_a_trap, otmp, yname, ysimple_name, __s_this), cptr.decay(ynqchars), 113, 1)) != 110) {
                     if (c == 113)
                         return 0;
                     untrap(0, 0, 0, otmp);
@@ -603,14 +603,14 @@ export function pick_lock(pick, rx, ry, container) {
                 } else if (autounlock && ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0) != 0) {
                     c = 113;
                     if (!cptr.eq(pick, dummypick)) {
-                        void cptr.sprintf(cptr.decay(qbuf), __sl53, yname(pick));
+                        void cptr.sprintf(cptr.decay(qbuf), __s_unlock_it_with_s, yname(pick));
                         c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
                     }
                     if (c != 121)
                         return 0;
                 } else {
-                    void cptr.sprintf(cptr.decay(qsfx), __sl54, verb, it ? __sl55 : __sl56);
-                    void safe_qbuf(cptr.decay(qbuf), __sl57, cptr.decay(qsfx), otmp, doname, ansimpleoname, __sl58);
+                    void cptr.sprintf(cptr.decay(qsfx), __s_here_s_s, verb, it ? __s_it : __s_its_lock);
+                    void safe_qbuf(cptr.decay(qbuf), __s_there_is, cptr.decay(qsfx), otmp, doname, ansimpleoname, __s_a_box);
                     cptr.stI32o(otmp, $obj_lknown, 1);
                     c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
                     if (c == 113)
@@ -619,10 +619,10 @@ export function pick_lock(pick, rx, ry, container) {
                         continue;
                 }
                 if ((cptr.ldI32o(otmp, $obj_obroken) & 1)) {
-                    You_cant(__sl59, ansimpleoname(pick));
+                    You_cant(__s_fix_its_broken_lock_with_s, ansimpleoname(pick));
                     return -1;
                 } else if (picktyp == NHC.CREDIT_CARD && !(cptr.ldI32o(otmp, $obj_olocked) & 1)) {
-                    You_cant(__sl60, an(simple_typename(picktyp)));
+                    You_cant(__s_do_that_with_s, an(simple_typename(picktyp)));
                     return -1;
                 } else if (autounlock && !touch_artifact(pick, cptr.add(gy, $instance_globals_y_youmonst))) {
                     return 1;
@@ -649,13 +649,13 @@ export function pick_lock(pick, rx, ry, container) {
         }
         if (c != 121) {
             if (!count)
-                There(__sl61);
+                There(__s_doesn_t_seem_to_be_any_sort_of_lock_here);
             return -1;
         }
     } else {
         let mtmp;
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-            You_cant(__sl62);
+            You_cant(__s_reach_over_the_edge_of_the_pit);
             return 0;
         }
         door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), 756), cptr.ldI16o(cc, $nhcoord_y), 36);
@@ -663,9 +663,9 @@ export function pick_lock(pick, rx, ry, container) {
         if (mtmp && canseemon(mtmp) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT) {
             if (picktyp == NHC.CREDIT_CARD && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)))) {
                 ;
-                verbalize(__sl63);
+                verbalize(__s_no_checks_no_credit_no_problem);
             } else {
-                pline(__sl64, mon_nam(mtmp));
+                pline(__s_i_don_t_think_s_would_appreciate_that, mon_nam(mtmp));
             }
             return -1;
         } else if (mtmp && is_door_mappear(mtmp)) {
@@ -681,33 +681,33 @@ export function pick_lock(pick, rx, ry, container) {
             if (cptr.ldI32(door) != oldglyph || cptr.ld1so3(svl, cptr.ldI16(cc), 21, cptr.ldI16o(cc, $nhcoord_y), 1, 0) != oldlastseentyp)
                 res = -1;
             if (is_drawbridge_wall(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) >= 0)
-                You(__sl65, Blind() ? __sl66 : __sl67);
+                You(__s_s_no_lock_on_the_drawbridge, Blind() ? __s_feel : __s_see);
             else
-                You(__sl68, Blind() ? __sl66 : __sl67);
+                You(__s_s_no_door_there, Blind() ? __s_feel : __s_see);
             return res;
         }
         switch ((cptr.ldI32o(door, $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
-            pline(__sl4);
+            pline(__s_this_doorway_has_no_door);
             return -1;
             case NHM.D_ISOPEN:
-            You(__sl5);
+            You(__s_cannot_lock_an_open_door);
             return -1;
             case NHM.D_BROKEN:
-            pline(__sl6);
+            pline(__s_this_door_is_broken);
             return -1;
             default:
-            if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 && could_untrap(0, 0) && (c = yn_function(__sl69, cptr.decay(ynqchars), 113, 1)) != 110) {
+            if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 && could_untrap(0, 0) && (c = yn_function(__s_check_this_door_for_a_trap, cptr.decay(ynqchars), 113, 1)) != 110) {
                 if (c == 113)
                     return 0;
                 untrap(0, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), null);
                 return 1;
             }
             if (picktyp == NHC.CREDIT_CARD && !(((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED)) {
-                You_cant(__sl70);
+                You_cant(__s_lock_a_door_with_a_credit_card);
                 return -1;
             }
-            void cptr.sprintf(cptr.decay(qbuf), __sl71, (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED) ? __sl72 : __sl73, autounlock ? __sl74 : __sl17, autounlock ? yname(pick) : __sl17);
+            void cptr.sprintf(cptr.decay(qbuf), __s_s_it_s_s, (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED) ? __s_unlock__2 : __s_lock__2, autounlock ? __s_with : __s_empty, autounlock ? yname(pick) : __s_empty);
             c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
             if (c != 121)
                 return 0;
@@ -753,12 +753,12 @@ export function doforce() {
     let picktyp;
     let qbuf = new Uint8Array(128);
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        You_cant(__sl75);
+        You_cant(__s_force_anything_from_inside_here);
         return NHM.ECMD_OK;
     }
     if (!u_have_forceable_weapon()) {
         let use_plural = schar((uwep.v && cptr.ldI64o(uwep.v, $obj_quan) > 1n ? 1 : 0));
-        You_cant(__sl76, !uwep.v ? __sl77 : ((cptr.ld1so(uwep.v, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(uwep.v)) ? (use_plural ? __sl78 : __sl79) : (use_plural ? __sl80 : __sl81)), use_plural ? __sl82 : __sl17);
+        You_cant(__s_force_anything_s_weapon_s, !uwep.v ? __s_when_not_wielding_a : ((cptr.ld1so(uwep.v, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(uwep.v)) ? (use_plural ? __s_without_proper : __s_without_a_proper) : (use_plural ? __s_with_those : __s_with_that)), use_plural ? __s_s : __s_empty);
         return NHM.ECMD_OK;
     }
     if (!can_reach_floor(1)) {
@@ -767,8 +767,8 @@ export function doforce() {
     }
     picktyp = is_blade(uwep.v) && !is_pick(uwep.v) ? 1 : 0;
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) && cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) && picktyp == cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        You(__sl83);
-        set_occupation(forcelock, __sl84, 0n);
+        You(__s_resume_your_attempt_to_force_the_lock);
+        set_occupation(forcelock, __s_forcing_the_lock, 0n);
         return NHM.ECMD_TIME;
     }
     cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, null);
@@ -776,11 +776,11 @@ export function doforce() {
         if (Is_box(otmp)) {
             if ((cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 || !(cptr.ldI32o(otmp, $obj_olocked) & 1)) {
                 cptr.stI32o(otmp, $obj_lknown, 0);
-                There(__sl85, doname(otmp), (cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 ? __sl86 : __sl87);
+                There(__s_is_s_here_but_its_lock_is_already_s, doname(otmp), (cptr.ldI32o(otmp, $obj_obroken) & 1) | 0 ? __s_broken : __s_unlocked);
                 cptr.stI32o(otmp, $obj_lknown, 1);
                 continue;
             }
-            void safe_qbuf(cptr.decay(qbuf), __sl57, __sl88, otmp, doname, ansimpleoname, __sl58);
+            void safe_qbuf(cptr.decay(qbuf), __s_there_is, __s_here_force_its_lock, otmp, doname, ansimpleoname, __s_a_box);
             cptr.stI32o(otmp, $obj_lknown, 1);
             c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
             if (c == 113)
@@ -788,9 +788,9 @@ export function doforce() {
             if (c == 110)
                 continue;
             if (picktyp)
-                You(__sl89, yname(uwep.v));
+                You(__s_force_s_into_a_crack_and_pry, yname(uwep.v));
             else
-                You(__sl90, yname(uwep.v));
+                You(__s_start_bashing_it_with_s, yname(uwep.v));
             cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, otmp);
             cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_chance, Math.imul(cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_wldam), 2));
             cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp, picktyp);
@@ -799,9 +799,9 @@ export function doforce() {
             break;
         }
     if (cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box))
-        set_occupation(forcelock, __sl84, 0n);
+        set_occupation(forcelock, __s_forcing_the_lock, 0n);
     else
-        You(__sl91);
+        You(__s_decide_not_to_force_the_issue);
     return NHM.ECMD_TIME;
 }
 
@@ -828,12 +828,12 @@ export function doopen_indir(x, y) {
     let dirprompt;
     let res = NHM.ECMD_OK;
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You_cant(__sl92);
+        You_cant(__s_open_anything_you_have_no_hands);
         return NHM.ECMD_OK;
     }
     dirprompt = null;
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT && container_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0))
-        dirprompt = __sl93;
+        dirprompt = __s_open_where;
     if (x > 0 && y >= 0) {
         cptr.stI16(cc, x);
         cptr.stI16o(cc, $nhcoord_y, y);
@@ -843,7 +843,7 @@ export function doopen_indir(x, y) {
     if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) && (cptr.ldI32o(u, $you_dz) > 0 || !closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
         return doloot();
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        You_cant(__sl62);
+        You_cant(__s_reach_over_the_edge_of_the_pit);
         return NHM.ECMD_OK;
     }
     if (stumble_on_door_mimic(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
@@ -861,13 +861,13 @@ export function doopen_indir(x, y) {
     }
     if (portcullis || !((cptr.ld1so(door, $rm_typ)) == NHC.DOOR)) {
         if (is_db_wall(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_UP)
-            There(__sl94);
+            There(__s_is_no_obvious_way_to_open_the_drawbridge);
         else if (portcullis || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_DOWN)
-            pline_The(__sl95);
+            pline_The(__s_drawbridge_is_already_open);
         else if (container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1))
-            pline(__sl96, Blind() ? __sl97 : __sl98);
+            pline(__s_s_like_something_lootable_over_there, Blind() ? __s_feels : __s_seems);
         else
-            You(__sl68, Blind() ? __sl66 : __sl67);
+            You(__s_s_no_door_there, Blind() ? __s_feel : __s_see);
         return res;
     }
     if (!(((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_CLOSED)) {
@@ -875,27 +875,27 @@ export function doopen_indir(x, y) {
         let locked = 0;
         switch ((cptr.ldI32o(door, $rm_flags) & 31) | 0) {
             case NHM.D_BROKEN:
-            mesg = __sl99;
+            mesg = __s_is_broken;
             break;
             case NHM.D_NODOOR:
-            mesg = __sl100;
+            mesg = __s_way_has_no_door;
             break;
             case NHM.D_ISOPEN:
-            mesg = __sl101;
+            mesg = __s_is_already_open;
             break;
             default:
-            mesg = __sl102;
+            mesg = __s_is_locked;
             locked = 1;
             break;
         }
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-        pline(__sl103, mesg);
+        pline(__s_this_door_s, mesg);
         if (locked && cptr.ldI32o(flags, $flag_autounlock)) {
             let unlocktool;
             cptr.stI32o(u, $you_dz, 0);
             if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0) != 0 && (unlocktool = autokey(1)) !== null) {
                 res = pick_lock(unlocktool, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), null) ? NHM.ECMD_TIME : NHM.ECMD_OK;
-            } else if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0) != 0 && !cptr.ldPtro(u, $you_usteed) && yn_function(__sl104, cptr.decay(ynqchars), 113, 1) == 121) {
+            } else if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0) != 0 && !cptr.ldPtro(u, $you_usteed) && yn_function(__s_kick_it, cptr.decay(ynqchars), 113, 1) == 121) {
                 cmdq_add_ec(NHC.CQ_CANNED, dokick);
                 cmdq_add_dir(NHC.CQ_CANNED, schar(sgn((cptr.ldI16(cc) - cptr.ldI16(u)) | 0)), schar(sgn((cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0)), 0);
                 res = NHM.ECMD_OK;
@@ -904,14 +904,14 @@ export function doopen_indir(x, y) {
         return res;
     }
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL)) {
-        pline(__sl105);
+        pline(__s_you_re_too_small_to_pull_the_door_open);
         return res;
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl8, 904, __sl106), rnl(20)) : rnl(20)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 904, __s_doopen_indir), rnl(20)) : rnl(20)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-        pline_The(__sl107);
+        pline_The(__s_door_opens);
         if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-            b_trapped(__sl12, NHC.FINGER);
+            b_trapped(__s_door, NHC.FINGER);
             cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
             if (cptr.ld1s(in_rooms(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), NHC.SHOPBASE)))
                 add_damage(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 400n);
@@ -922,7 +922,7 @@ export function doopen_indir(x, y) {
     } else {
         exercise(NHC.A_STR, 1);
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-        pline_The(__sl108);
+        pline_The(__s_door_resists);
     }
     return NHM.ECMD_TIME;
 }
@@ -934,14 +934,14 @@ function obstructed(x, y, quietly) {
         if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT)
             {
                 if (!quietly)
-                    pline(__sl109, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
+                    pline(__s_s_s_in_the_way, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
                 return 1;
             }
         if (!quietly) {
             let Mn = Some_Monnam(mtmp);
             if ((cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y) && canspotmon(mtmp))
-                Mn = cptr.strcat(s_suffix(Mn), __sl110);
-            pline(__sl111, Mn);
+                Mn = cptr.strcat(s_suffix(Mn), __s_tail);
+            pline(__s_s_blocks_the_way, Mn);
         }
         if (!canspotmon(mtmp))
             map_invisible(x, y);
@@ -949,7 +949,7 @@ function obstructed(x, y, quietly) {
     }
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
         if (!quietly)
-            pline(__sl109, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
+            pline(__s_s_s_in_the_way, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
         return 1;
     }
     return 0;
@@ -963,11 +963,11 @@ export function doclose() {
     let portcullis;
     let res = NHM.ECMD_OK;
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        You_cant(__sl112);
+        You_cant(__s_close_anything_you_have_no_hands);
         return NHM.ECMD_OK;
     }
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        You_cant(__sl62);
+        You_cant(__s_reach_over_the_edge_of_the_pit);
         return NHM.ECMD_OK;
     }
     if (!getdir(null))
@@ -975,12 +975,12 @@ export function doclose() {
     x = i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0));
     y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0));
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && !Passes_walls()) {
-        You(__sl113);
+        You(__s_are_in_the_way);
         return NHM.ECMD_TIME;
     }
     if (!isok(x, y))
         {
-            You(__sl68, Blind() ? __sl66 : __sl67);
+            You(__s_s_no_door_there, Blind() ? __s_feel : __s_see);
             return res;
         }
     if (stumble_on_door_mimic(x, y))
@@ -998,39 +998,39 @@ export function doclose() {
     }
     if (portcullis || !((cptr.ld1so(door, $rm_typ)) == NHC.DOOR)) {
         if (is_db_wall(x, y) || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_UP)
-            pline_The(__sl114);
+            pline_The(__s_drawbridge_is_already_closed);
         else if (portcullis || cptr.ld1so(door, $rm_typ) == NHC.DRAWBRIDGE_DOWN)
-            There(__sl115);
+            There(__s_is_no_obvious_way_to_close_the);
         else {
-            You(__sl68, Blind() ? __sl66 : __sl67);
+            You(__s_s_no_door_there, Blind() ? __s_feel : __s_see);
         }
         return res;
     }
     if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
-        pline(__sl4);
+        pline(__s_this_doorway_has_no_door);
         return res;
     } else if (obstructed(x, y, 0)) {
         return res;
     } else if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) == NHM.D_BROKEN) {
-        pline(__sl6);
+        pline(__s_this_door_is_broken);
         return res;
     } else if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & 12) {
-        pline(__sl116);
+        pline(__s_this_door_is_already_closed);
         return res;
     }
     if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) == NHM.D_ISOPEN) {
         if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !cptr.ldPtro(u, $you_usteed)) {
-            pline(__sl117);
+            pline(__s_you_re_too_small_to_push_the_door_closed);
             return res;
         }
-        if (cptr.ldPtro(u, $you_usteed) || (rng_log_enabled() ? (rng_log_set_caller(__sl8, 1039, __sl118), rn2(25)) : rn2(25)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
-            pline_The(__sl119);
+        if (cptr.ldPtro(u, $you_usteed) || (rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 1039, __s_doclose), rn2(25)) : rn2(25)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+            pline_The(__s_door_closes);
             cptr.stI32o(door, $rm_flags, NHM.D_CLOSED);
             feel_newsym(x, y);
             block_point(x, y);
         } else {
             exercise(NHC.A_STR, 1);
-            pline_The(__sl108);
+            pline_The(__s_door_resists);
         }
     }
     return NHM.ECMD_TIME;
@@ -1044,7 +1044,7 @@ export function boxlock(obj, otmp) {
         case NHC.SPE_WIZARD_LOCK:
         if (!(cptr.ldI32o(obj, $obj_olocked) & 1)) {
             ;
-            pline(__sl120);
+            pline(__s_klunk);
             cptr.stI32o(obj, $obj_olocked, 1);
             cptr.stI32o(obj, $obj_obroken, 0);
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
@@ -1058,7 +1058,7 @@ export function boxlock(obj, otmp) {
         case NHC.SPE_KNOCK:
         if ((cptr.ldI32o(obj, $obj_olocked) & 1)) {
             ;
-            pline(__sl121);
+            pline(__s_klick);
             cptr.stI32o(obj, $obj_olocked, 0);
             res = 1;
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
@@ -1083,8 +1083,8 @@ export function doorlock(otmp, x, y) {
     let res = 1;
     let loudness = 0;
     let msg = null;
-    let dustcloud = __sl122;
-    let quickly_dissipates = __sl123;
+    let dustcloud = __s_a_cloud_of_dust;
+    let quickly_dissipates = __s_quickly_dissipates;
     let mysterywand = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS && !(cptr.ldI32o(otmp, $obj_dknown) & 1) ? 1 : 0));
     if (cptr.ld1so(door, $rm_typ) == NHC.SDOOR) {
         switch (cptr.ldI16o(otmp, $obj_otyp)) {
@@ -1096,7 +1096,7 @@ export function doorlock(otmp, x, y) {
             cptr.stI32o(door, $rm_flags, (NHM.D_CLOSED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0);
             newsym(x, y);
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
-                pline(__sl124);
+                pline(__s_a_door_appears_in_the_wall);
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_OPENING || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_KNOCK)
                 return 1;
             break;
@@ -1112,41 +1112,41 @@ export function doorlock(otmp, x, y) {
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             let vis = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0));
             if (vis) {
-                pline(__sl125, dustcloud);
+                pline(__s_s_springs_up_in_the_older_more, dustcloud);
             } else {
                 ;
-                You_hear(__sl126);
+                You_hear(__s_a_swoosh);
             }
             if (obstructed(x, y, mysterywand)) {
                 if (vis)
-                    pline_The(__sl127, quickly_dissipates);
+                    pline_The(__s_cloud_s, quickly_dissipates);
                 return 0;
             }
             block_point(x, y);
             cptr.st1o(door, $rm_typ, NHC.SDOOR), cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
             if (vis)
-                pline_The(__sl128);
+                pline_The(__s_doorway_vanishes);
             newsym(x, y);
             return 1;
         }
         if (obstructed(x, y, mysterywand))
             return 0;
         if (t_at(x, y)) {
-            pline(__sl129, dustcloud, quickly_dissipates);
+            pline(__s_s_springs_up_in_the_doorway_but_s, dustcloud, quickly_dissipates);
             return 0;
         }
         switch (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & -17) {
             case NHM.D_CLOSED:
-            msg = __sl130;
+            msg = __s_the_door_locks;
             break;
             case NHM.D_ISOPEN:
-            msg = __sl131;
+            msg = __s_the_door_swings_shut_and_locks;
             break;
             case NHM.D_BROKEN:
-            msg = __sl132;
+            msg = __s_the_broken_door_reassembles_and_locks;
             break;
             case NHM.D_NODOOR:
-            msg = __sl133;
+            msg = __s_a_cloud_of_dust_springs_up_and;
             break;
             default:
             res = 0;
@@ -1159,7 +1159,7 @@ export function doorlock(otmp, x, y) {
         case NHC.WAN_OPENING:
         case NHC.SPE_KNOCK:
         if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
-            msg = __sl134;
+            msg = __s_the_door_unlocks;
             cptr.stI32o(door, $rm_flags, (NHM.D_CLOSED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0);
         } else
             res = 0;
@@ -1183,10 +1183,10 @@ export function doorlock(otmp, x, y) {
                     if (cptr.ld1so(flags, $flag_verbose)) {
                         ;
                         if ((sawit || seeit) && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
-                            pline(__sl135);
+                            pline(__s_kaboom_you_see_a_door_explode);
                         } else if (!Deaf()) {
                             ;
-                            You_hear(__sl136, (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 49) ? __sl137 : __sl138);
+                            You_hear(__s_a_s_explosion, (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 49) ? __s_distant : __s_nearby);
                         }
                     }
                 }
@@ -1199,10 +1199,10 @@ export function doorlock(otmp, x, y) {
             newsym(x, y);
             if (cptr.ld1so(flags, $flag_verbose)) {
                 if ((sawit || seeit) && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
-                    pline_The(__sl139);
+                    pline_The(__s_door_crashes_open);
                 } else if (!Deaf()) {
                     ;
-                    You_hear(__sl140);
+                    You_hear(__s_a_crashing_sound);
                 }
             }
             if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
@@ -1212,11 +1212,11 @@ export function doorlock(otmp, x, y) {
             res = 0;
         break;
         default:
-        impossible(__sl141, cptr.ldI16o(otmp, $obj_otyp));
+        impossible(__s_magic_d_attempted_on_door, cptr.ldI16o(otmp, $obj_otyp));
         break;
     }
     if (msg && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
-        pline(__sl142, msg);
+        pline(__s_pct_s, msg);
     if (loudness > 0) {
         wake_nearto(x, y, loudness);
         if (cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)))
@@ -1236,7 +1236,7 @@ function chest_shatter_msg(otmp) {
     let save_HBlinded;
     let save_BBlinded;
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
-        You(__sl143, Blind() ? __sl144 : __sl67, an(bottlename()));
+        You(__s_s_s_shatter, Blind() ? __s_hear : __s_see, an(bottlename()));
         if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
             potionbreathe(otmp);
         return;
@@ -1247,28 +1247,28 @@ function chest_shatter_msg(otmp) {
     cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, save_HBlinded), cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked, save_BBlinded);
     switch ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) {
         case NHC.PAPER:
-        disposition = __sl145;
+        disposition = __s_is_torn_to_shreds;
         break;
         case NHC.WAX:
-        disposition = __sl146;
+        disposition = __s_is_crushed;
         break;
         case NHC.VEGGY:
-        disposition = __sl147;
+        disposition = __s_is_pulped;
         break;
         case NHC.FLESH:
-        disposition = __sl148;
+        disposition = __s_is_mashed;
         break;
         case NHC.GLASS:
-        disposition = __sl149;
+        disposition = __s_shatters;
         break;
         case NHC.WOOD:
-        disposition = __sl150;
+        disposition = __s_splinters_to_fragments;
         break;
         default:
-        disposition = __sl151;
+        disposition = __s_is_destroyed;
         break;
     }
-    pline(__sl152, An(thing), disposition);
+    pline(__s_s_s, An(thing), disposition);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

@@ -47,24 +47,24 @@ const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayD
     $window_procs_win_putstr = FLD.window_procs_win_putstr;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Message History");
-const __sl1 = cptr.lit("");
-const __sl2 = cptr.lit("\x1b ");
-const __sl3 = cptr.lit("You die");
-const __sl4 = cptr.lit("  ");
-const __sl5 = cptr.lit("Putsym window MESSAGE nonexistent");
-const __sl6 = cptr.lit("ttyDisplay->curx > 0");
-const __sl7 = cptr.lit("../win/tty/topl.c");
-const __sl8 = cptr.lit("\b \b");
-const __sl9 = cptr.lit(" [%s]");
-const __sl10 = cptr.lit(" (%c)");
-const __sl11 = cptr.lit(" ");
-const __sl12 = cptr.lit("%s");
-const __sl13 = cptr.lit("%s ");
-const __sl14 = cptr.lit("#");
-const __sl15 = cptr.lit("#%ld");
-const __sl16 = cptr.lit("%s%s");
-const __sl17 = cptr.lit("ttyDisplay == NULL || ttyDisplay->toplin != TOPLINE_NEED_MORE");
+const __s_message_history = cptr.lit("Message History");
+const __s_empty = cptr.lit("");
+const __s_esc_sp = cptr.lit("\x1b ");
+const __s_you_die = cptr.lit("You die");
+const __s_sp2 = cptr.lit("  ");
+const __s_putsym_window_message_nonexistent = cptr.lit("Putsym window MESSAGE nonexistent");
+const __s_ttydisplay_curx_0 = cptr.lit("ttyDisplay->curx > 0");
+const __s_win_tty_topl_c = cptr.lit("../win/tty/topl.c");
+const __s_bs_sp_bs = cptr.lit("\b \b");
+const __s_sp_lbrack_pct_s_rbrack = cptr.lit(" [%s]");
+const __s_sp_lparen_pct_c_rparen = cptr.lit(" (%c)");
+const __s_sp = cptr.lit(" ");
+const __s_pct_s = cptr.lit("%s");
+const __s_pct_s_sp = cptr.lit("%s ");
+const __s_hash = cptr.lit("#");
+const __s_ld = cptr.lit("#%ld");
+const __s_s_s = cptr.lit("%s%s");
+const __s_ttydisplay_null_ttydisplay_toplin = cptr.lit("ttyDisplay == NULL || ttyDisplay->toplin != TOPLINE_NEED_MORE");
 
 /** C ref: topl.c:20 @returns {CInt} */
 export function* tty_doprev_message() {
@@ -74,12 +74,12 @@ export function* tty_doprev_message() {
     if ((cptr.ld1so(iflags, $instance_flags_prevmsg_window) != 115) && !cptr.ldI32o(ttyDisplay, $DisplayDesc_inread)) {
         if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 102) {
             prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
-            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __s_message_history)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __s_empty)));
             cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
             i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxcol)));
             do {
-                if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __sl1))
+                if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __s_empty))
                     (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8))));
                 i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows))));
             } while (BigInt(i) != cptr.ldI64o(cw, $WinDesc_maxcol));
@@ -107,12 +107,12 @@ export function* tty_doprev_message() {
                         cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                 } else {
                     prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-                    (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
-                    (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, __s_message_history)));
+                    (yield* Y.icall(putstr()(prevmsg_win, 0, __s_empty)));
                     cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                     i = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxcol)));
                     do {
-                        if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __sl1))
+                        if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8) && strcmp(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), __s_empty))
                             (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8))));
                         i = Number(BigInt.asIntN(32, (BigInt(((i + 1) | 0)) % cptr.ldI64o(cw, $WinDesc_rows))));
                     } while (BigInt(i) != cptr.ldI64o(cw, $WinDesc_maxcol));
@@ -125,8 +125,8 @@ export function* tty_doprev_message() {
         } else {
             morc.v = 0;
             prevmsg_win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl0)));
-            (yield* Y.icall(putstr()(prevmsg_win, 0, __sl1)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __s_message_history)));
+            (yield* Y.icall(putstr()(prevmsg_win, 0, __s_empty)));
             (yield* Y.icall(putstr()(prevmsg_win, 0, cptr.add(gt, $instance_globals_t_toplines))));
             cptr.stI64o(cw, $WinDesc_maxcol, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n));
             if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
@@ -245,7 +245,7 @@ export function* more() {
     (yield* putsyms(cptr.decay(defmorestr)));
     if (cptr.ld1so(flags, $flag_standout))
         standoutend();
-    (yield* xwaitforspace(__sl2));
+    (yield* xwaitforspace(__s_esc_sp));
     if (morc.v == 27) {
         if (!(cptr.ldI32(cw) & NHM.WIN_NOSTOP))
             cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_STOP);
@@ -272,8 +272,8 @@ export function* update_topl(bp) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let skip = schar(((cptr.ldI32(cw) & 5) == NHM.WIN_STOP));
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
-    if ((cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE || skip) && cptr.ldI64o(cw, $WinDesc_cury) == 0n && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, $instance_globals_t_toplines))))) | 0) + 3) | 0) < ((CO() - 8) | 0) && (notdied = cptr.strncmp(bp, __sl3, 7n)) != 0) {
-        void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), __sl4);
+    if ((cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE || skip) && cptr.ldI64o(cw, $WinDesc_cury) == 0n && ((((n0 + Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, $instance_globals_t_toplines))))) | 0) + 3) | 0) < ((CO() - 8) | 0) && (notdied = cptr.strncmp(bp, __s_you_die, 7n)) != 0) {
+        void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), __s_sp2);
         void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), bp);
         cptr.stI64o(cw, $WinDesc_curx, cptr.ldI64o(cw, $WinDesc_curx) + 2n);
         if (!skip)
@@ -313,13 +313,13 @@ export function* update_topl(bp) {
 function* topl_putsym(c) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     if (cw === null)
-        (yield* panic(__sl5));
+        (yield* panic(__s_putsym_window_message_nonexistent));
     switch (c) {
         case 8:
         if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == 0 && cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > 0)
             (yield* tty_curs(BASE_WINDOW, CO(), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) - 1) | 0));
         backsp();
-        void ((!!(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)) || ((yield* nhassert_failed(__sl6, __sl7, 317)), 0) ? 1 : 0);
+        void ((!!(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)) || ((yield* nhassert_failed(__s_ttydisplay_curx_0, __s_win_tty_topl_c, 317)), 0) ? 1 : 0);
         (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
         cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
         return;
@@ -355,7 +355,7 @@ export function* putsyms(str) {
 /** C ref: topl.c:362 — @param {CInt} n */
 function* removetopl(n) {
     while (n-- > 0)
-        (yield* putsyms(__sl8));
+        (yield* putsyms(__s_bs_sp_bs));
 }
 
 /** C ref: topl.c:373 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @returns {CInt} */
@@ -389,14 +389,14 @@ export function* tty_yn_function(query, resp, def) {
                 cptr.st1(rb, 0);
             void __builtin___strncpy_chk(cptr.decay(prompt), query, 127n, __builtin_object_size(cptr.decay(prompt), 1));
             cptr.st1o(cptr.decay(prompt), 127, 0, 1);
-            void cptr.sprintf(eos(cptr.decay(prompt)), __sl9, cptr.decay(respbuf));
+            void cptr.sprintf(eos(cptr.decay(prompt)), __s_sp_lbrack_pct_s_rbrack, cptr.decay(respbuf));
             if (def)
-                void cptr.sprintf(eos(cptr.decay(prompt)), __sl10, def);
-            void cptr.strcat(cptr.decay(prompt), __sl11);
-            (yield* custompline(6, __sl12, cptr.decay(prompt)));
+                void cptr.sprintf(eos(cptr.decay(prompt)), __s_sp_lparen_pct_c_rparen, def);
+            void cptr.strcat(cptr.decay(prompt), __s_sp);
+            (yield* custompline(6, __s_pct_s, cptr.decay(prompt)));
         } else {
-            void cptr.sprintf(cptr.decay(prompt), __sl13, query);
-            (yield* custompline(6, __sl12, cptr.decay(prompt)));
+            void cptr.sprintf(cptr.decay(prompt), __s_pct_s_sp, query);
+            (yield* custompline(6, __s_pct_s, cptr.decay(prompt)));
             q = (yield* readchar());
             break __lbl_clean_up;
         }
@@ -450,7 +450,7 @@ export function* tty_yn_function(query, resp, def) {
                 let digit_string = new Uint8Array(2);
                 let n_len = 0;
                 let value = 0n;
-                (yield* addtopl(__sl14)), n_len++;
+                (yield* addtopl(__s_hash)), n_len++;
                 cptr.st1o(cptr.decay(digit_string), 1, 0, 1);
                 if (q != 35) {
                     cptr.st1o(cptr.decay(digit_string), 0, q, 1);
@@ -499,10 +499,10 @@ export function* tty_yn_function(query, resp, def) {
         } while (!q);
     }
     if (yn_number.v)
-        void cptr.sprintf(cptr.decay(rtmp), __sl15, yn_number.v);
+        void cptr.sprintf(cptr.decay(rtmp), __s_ld, yn_number.v);
     else
         void key2txt(uchar(q), cptr.decay(rtmp));
-    void cptr.sprintf(cptr.add(gt, $instance_globals_t_toplines), __sl16, cptr.decay(prompt), cptr.decay(rtmp));
+    void cptr.sprintf(cptr.add(gt, $instance_globals_t_toplines), __s_s_s, cptr.decay(prompt), cptr.decay(rtmp));
     (yield* dumplogmsg(cptr.add(gt, $instance_globals_t_toplines)));
     (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1)) - (-1);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
@@ -601,7 +601,7 @@ export function* tty_putmsghistory(msg, restoring_msghist) {
         void cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), msg);
         (yield* dumplogmsg(cptr.add(gt, $instance_globals_t_toplines)));
     } else if (snapshot_mesgs) {
-        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_NEED_MORE)) || ((yield* nhassert_failed(__sl17, __sl7, 720)), 0) ? 1 : 0);
+        void ((!!(cptr.eq(ttyDisplay, (null)) || cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_NEED_MORE)) || ((yield* nhassert_failed(__s_ttydisplay_null_ttydisplay_toplin, __s_win_tty_topl_c, 720)), 0) ? 1 : 0);
         for (idx = 0; cptr.ldPtro(snapshot_mesgs, idx, 8); ++idx) {
             (yield* remember_topl());
             void cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), cptr.ldPtro(snapshot_mesgs, idx, 8));

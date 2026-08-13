@@ -47,21 +47,21 @@ const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
     $you_urexp = FLD.you_urexp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("exper.c");
-const __sl1 = cptr.lit("newpw");
-const __sl2 = cptr.lit("#levelchange");
-const __sl3 = cptr.lit("%s level %d.");
-const __sl4 = cptr.lit("lost experience level %d");
-const __sl5 = cptr.lit("lost all experience");
-const __sl6 = cptr.lit("losexp");
-const __sl7 = cptr.lit("u.ulevel >= 0 && u.ulevel < MAXULEV");
-const __sl8 = cptr.lit("more experienced.");
-const __sl9 = cptr.lit("Welcome %sto experience level %d.");
-const __sl10 = cptr.lit("");
-const __sl11 = cptr.lit("back ");
-const __sl12 = cptr.lit("%sgained experience level %d");
-const __sl13 = cptr.lit("re");
-const __sl14 = cptr.lit("rndexp");
+const __s_exper_c = cptr.lit("exper.c");
+const __s_newpw = cptr.lit("newpw");
+const __s_levelchange = cptr.lit("#levelchange");
+const __s_s_level_d = cptr.lit("%s level %d.");
+const __s_lost_experience_level_d = cptr.lit("lost experience level %d");
+const __s_lost_all_experience = cptr.lit("lost all experience");
+const __s_losexp = cptr.lit("losexp");
+const __s_u_ulevel_0_u_ulevel_maxulev = cptr.lit("u.ulevel >= 0 && u.ulevel < MAXULEV");
+const __s_more_experienced = cptr.lit("more experienced.");
+const __s_welcome_sto_experience_level_d = cptr.lit("Welcome %sto experience level %d.");
+const __s_empty = cptr.lit("");
+const __s_back = cptr.lit("back ");
+const __s_sgained_experience_level_d = cptr.lit("%sgained experience level %d");
+const __s_re = cptr.lit("re");
+const __s_rndexp = cptr.lit("rndexp");
 
 /** C ref: exper.c:14 — @param {CInt} lev @returns {CLongLong} */
 export function newuexp(lev) {
@@ -99,9 +99,9 @@ export function newpw() {
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 52, __sl1), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd)))) | 0;
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 52, __s_newpw), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd)))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 54, __sl1), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd)))) | 0;
+            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 54, __s_newpw), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd)))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
@@ -111,7 +111,7 @@ export function newpw() {
             enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd)) | 0)) | 0;
             enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) | 0;
         }
-        en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 64, __sl1), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
+        en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 64, __s_newpw), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
@@ -208,16 +208,16 @@ export function losexp(drainer) {
     let num;
     let uhpmin;
     let olduhpmax;
-    if (drainer && !strcmp(drainer, __sl2))
+    if (drainer && !strcmp(drainer, __s_levelchange))
         drainer = null;
     else if (resists_drli(cptr.add(gy, $instance_globals_y_youmonst)))
         return;
     if (cptr.ldI32o(u, $you_ulevel) > 1 || drainer)
-        pline(__sl3, Goodbye(), cptr.ldI32o(u, $you_ulevel));
+        pline(__s_s_level_d, Goodbye(), cptr.ldI32o(u, $you_ulevel));
     if (cptr.ldI32o(u, $you_ulevel) > 1) {
         cptr.stI32o(u, $you_ulevel, (cptr.ldI32o(u, $you_ulevel) - 1) | 0);
         adjabil((cptr.ldI32o(u, $you_ulevel) + 1) | 0, cptr.ldI32o(u, $you_ulevel));
-        livelog_printf(4096n, __sl4, (cptr.ldI32o(u, $you_ulevel) + 1) | 0);
+        livelog_printf(4096n, __s_lost_experience_level_d, (cptr.ldI32o(u, $you_ulevel) + 1) | 0);
         ;
     } else {
         if (drainer) {
@@ -229,9 +229,9 @@ export function losexp(drainer) {
         if (cptr.ldI32o(u, $you_ulevel) > 1)
             return;
         cptr.stI64o(u, $you_uexp, 0n);
-        livelog_printf(4096n, __sl5);
+        livelog_printf(4096n, __s_lost_all_experience);
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__sl6, __sl0, 247, __sl7) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__s_losexp, __s_exper_c, 247, __s_u_ulevel_0_u_ulevel_maxulev) : void 0);
     olduhpmax = cptr.ldI32o(u, $you_uhpmax);
     uhpmin = minuhpmax(10);
     num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_uhpinc);
@@ -277,7 +277,7 @@ export function pluslvl(incr) {
     let hpinc;
     let eninc;
     if (!incr)
-        You_feel(__sl8);
+        You_feel(__s_more_experienced);
     if (Upolyd()) {
         hpinc = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
         cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + hpinc) | 0);
@@ -303,7 +303,7 @@ export function pluslvl(incr) {
             cptr.stI64o(u, $you_uexp, newuexp(cptr.ldI32o(u, $you_ulevel)));
         }
         cptr.stI32o(u, $you_ulevel, cptr.ldI32o(u, $you_ulevel) + 1);
-        pline(__sl9, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __sl10 : __sl11, cptr.ldI32o(u, $you_ulevel));
+        pline(__s_welcome_sto_experience_level_d, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __s_empty : __s_back, cptr.ldI32o(u, $you_ulevel));
         if (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel))
             cptr.stI32o(u, $you_ulevelmax, cptr.ldI32o(u, $you_ulevel));
         adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel));
@@ -313,7 +313,7 @@ export function pluslvl(incr) {
         if (newrank > oldrank)
             record_achievement(achieve_rank(newrank));
         if (count_achievements() == old_ach_cnt)
-            livelog_printf(4096n, __sl12, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __sl13 : __sl10, cptr.ldI32o(u, $you_ulevel));
+            livelog_printf(4096n, __s_sgained_experience_level_d, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __s_re : __s_empty, cptr.ldI32o(u, $you_ulevel));
         if (cptr.ldI32o(u, $you_ulevel) > cptr.ldI32o(u, $you_ulevelpeak))
             cptr.stI32o(u, $you_ulevelpeak, cptr.ldI32o(u, $you_ulevel));
     }
@@ -332,7 +332,7 @@ export function rndexp(gaining) {
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 388, __sl14), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
+    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 388, __s_rndexp), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
     if (cptr.ldI32o(u, $you_ulevel) == NHM.MAXULEV && gaining) {
         result += (BigInt.asIntN(64, cptr.ldI64o(u, $you_uexp) - minexp));
         if (result < cptr.ldI64o(u, $you_uexp))

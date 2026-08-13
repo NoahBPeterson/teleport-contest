@@ -12,9 +12,9 @@ import { alloc } from './alloc.js';
 const $nhregex_err = FLD.nhregex_err;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("no regexp");
-const __sl1 = cptr.lit("no explanation");
-const __sl2 = cptr.lit("unspecified regexp error");
+const __s_no_regexp = cptr.lit("no regexp");
+const __s_no_explanation = cptr.lit("no explanation");
+const __s_unspecified_regexp_error = cptr.lit("unspecified regexp error");
 
 /** C ref: posixregex.c:52 — char[11] */
 export const regex_id = cptr.bytes("posixregex");
@@ -38,14 +38,14 @@ export function regex_compile(s, re) {
 /** C ref: posixregex.c:76 — @param {CPtr<struct nhregex>} re @param {CPtr<char>} errbuf @returns {CPtr<char>} */
 export function regex_error_desc(re, errbuf) {
     if (!re) {
-        void cptr.strcpy(errbuf, __sl0);
+        void cptr.strcpy(errbuf, __s_no_regexp);
     } else if (!cptr.ldI32o(re, $nhregex_err)) {
-        void cptr.strcpy(errbuf, __sl1);
+        void cptr.strcpy(errbuf, __s_no_explanation);
     } else {
         cptr.st1o(errbuf, 0, 0);
         regerror(cptr.ldI32o(re, $nhregex_err), re, errbuf, 256n);
         if (!cptr.ld1so(errbuf, 0))
-            void cptr.strcpy(errbuf, __sl2);
+            void cptr.strcpy(errbuf, __s_unspecified_regexp_error);
     }
     return errbuf;
 }

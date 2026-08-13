@@ -37,76 +37,76 @@ const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayD
     $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US, $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("TERM");
-const __sl1 = cptr.lit("Can't get TERM.");
-const __sl2 = cptr.lit("5620");
-const __sl3 = cptr.lit("Unknown terminal type: %s.");
-const __sl4 = cptr.lit("pc");
-const __sl5 = cptr.lit("le");
-const __sl6 = cptr.lit("Terminal must backspace.");
-const __sl7 = cptr.lit("ho");
-const __sl8 = cptr.lit("co");
-const __sl9 = cptr.lit("li");
-const __sl10 = cptr.lit("nd");
-const __sl11 = cptr.lit("os");
-const __sl12 = cptr.lit("NetHack can't have OS.");
-const __sl13 = cptr.lit("ul");
-const __sl14 = cptr.lit("ce");
-const __sl15 = cptr.lit("up");
-const __sl16 = cptr.lit("xd");
-const __sl17 = cptr.lit("cm");
-const __sl18 = cptr.lit("NetHack needs CM or UP or HO.");
-const __sl19 = cptr.lit("Playing NetHack on terminals without CM is suspect.");
-const __sl20 = cptr.lit("so");
-const __sl21 = cptr.lit("se");
-const __sl22 = cptr.lit("us");
-const __sl23 = cptr.lit("ue");
-const __sl24 = cptr.lit("ZH");
-const __sl25 = cptr.lit("ZR");
-const __sl26 = cptr.lit("sg");
-const __sl27 = cptr.lit("ti");
-const __sl28 = cptr.lit("te");
-const __sl29 = cptr.lit("eA");
-const __sl30 = cptr.lit("ks");
-const __sl31 = cptr.lit("ke");
-const __sl32 = cptr.lit("mr");
-const __sl33 = cptr.lit("mb");
-const __sl34 = cptr.lit("md");
-const __sl35 = cptr.lit("mh");
-const __sl36 = cptr.lit("me");
-const __sl37 = cptr.lit("vi");
-const __sl38 = cptr.lit("ve");
-const __sl39 = cptr.lit("Ic");
-const __sl40 = cptr.lit("as");
-const __sl41 = cptr.lit("ae");
-const __sl42 = cptr.lit("cd");
-const __sl43 = cptr.lit("cl");
-const __sl44 = cptr.lit("NetHack needs CL.");
-const __sl45 = cptr.lit("TERMCAP entry too big...\n");
-const __sl46 = cptr.lit("\x1b)0");
-const __sl47 = cptr.lit("NOMUX_MARKERS");
-const __sl48 = cptr.lit("\x1b]7777;KIND=%s;SEQ=%d;ANIM=%d;CX=%d;CY=%d;LEN=%zu\x07");
-const __sl49 = cptr.lit("anim");
-const __sl50 = cptr.lit("input");
-const __sl51 = cptr.lit("\x1b[7m");
-const __sl52 = cptr.lit("\x1b[27m");
-const __sl53 = cptr.lit("\x1b[1m");
-const __sl54 = cptr.lit("\x1b[22m");
-const __sl55 = cptr.lit("\x1b[4m");
-const __sl56 = cptr.lit("\x1b[24m");
-const __sl57 = cptr.lit("\x1b[39m");
-const __sl58 = cptr.lit("\x1b[%dm");
-const __sl59 = cptr.lit("\x1b[0m");
-const __sl60 = cptr.lit("NETHACK_NO_DELAY");
-const __sl61 = cptr.lit("WEBHACK_NO_DELAY");
-const __sl62 = cptr.lit("$<50>");
-const __sl63 = cptr.lit("Co");
-const __sl64 = cptr.lit("AF");
-const __sl65 = cptr.lit("Sf");
-const __sl66 = cptr.lit("emit24bit");
-const __sl67 = cptr.lit("\x1b[38;2;%ld;%ld;%ldm");
-const __sl68 = cptr.lit("emit256");
-const __sl69 = cptr.lit("\x1b[38;5;%dm");
+const __s_term = cptr.lit("TERM");
+const __s_can_t_get_term = cptr.lit("Can't get TERM.");
+const __s_5620 = cptr.lit("5620");
+const __s_unknown_terminal_type_s = cptr.lit("Unknown terminal type: %s.");
+const __s_pc = cptr.lit("pc");
+const __s_le = cptr.lit("le");
+const __s_terminal_must_backspace = cptr.lit("Terminal must backspace.");
+const __s_ho = cptr.lit("ho");
+const __s_co = cptr.lit("co");
+const __s_li = cptr.lit("li");
+const __s_nd = cptr.lit("nd");
+const __s_os = cptr.lit("os");
+const __s_nethack_can_t_have_os = cptr.lit("NetHack can't have OS.");
+const __s_ul = cptr.lit("ul");
+const __s_ce = cptr.lit("ce");
+const __s_up = cptr.lit("up");
+const __s_xd = cptr.lit("xd");
+const __s_cm = cptr.lit("cm");
+const __s_nethack_needs_cm_or_up_or_ho = cptr.lit("NetHack needs CM or UP or HO.");
+const __s_playing_nethack_on_terminals_without_cm = cptr.lit("Playing NetHack on terminals without CM is suspect.");
+const __s_so = cptr.lit("so");
+const __s_se = cptr.lit("se");
+const __s_us = cptr.lit("us");
+const __s_ue = cptr.lit("ue");
+const __s_zh = cptr.lit("ZH");
+const __s_zr = cptr.lit("ZR");
+const __s_sg = cptr.lit("sg");
+const __s_ti = cptr.lit("ti");
+const __s_te = cptr.lit("te");
+const __s_ea = cptr.lit("eA");
+const __s_ks = cptr.lit("ks");
+const __s_ke = cptr.lit("ke");
+const __s_mr = cptr.lit("mr");
+const __s_mb = cptr.lit("mb");
+const __s_md = cptr.lit("md");
+const __s_mh = cptr.lit("mh");
+const __s_me = cptr.lit("me");
+const __s_vi = cptr.lit("vi");
+const __s_ve = cptr.lit("ve");
+const __s_ic = cptr.lit("Ic");
+const __s_as = cptr.lit("as");
+const __s_ae = cptr.lit("ae");
+const __s_cd = cptr.lit("cd");
+const __s_cl = cptr.lit("cl");
+const __s_nethack_needs_cl = cptr.lit("NetHack needs CL.");
+const __s_termcap_entry_too_big = cptr.lit("TERMCAP entry too big...\n");
+const __s_esc_rparen_0 = cptr.lit("\x1b)0");
+const __s_nomux_markers = cptr.lit("NOMUX_MARKERS");
+const __s_7777_kind_s_seq_d_anim_d_cx_d_cy_d_len = cptr.lit("\x1b]7777;KIND=%s;SEQ=%d;ANIM=%d;CX=%d;CY=%d;LEN=%zu\x07");
+const __s_anim = cptr.lit("anim");
+const __s_input = cptr.lit("input");
+const __s_7m = cptr.lit("\x1b[7m");
+const __s_27m = cptr.lit("\x1b[27m");
+const __s_1m = cptr.lit("\x1b[1m");
+const __s_22m = cptr.lit("\x1b[22m");
+const __s_4m = cptr.lit("\x1b[4m");
+const __s_24m = cptr.lit("\x1b[24m");
+const __s_39m = cptr.lit("\x1b[39m");
+const __s_dm = cptr.lit("\x1b[%dm");
+const __s_0m = cptr.lit("\x1b[0m");
+const __s_nethack_no_delay = cptr.lit("NETHACK_NO_DELAY");
+const __s_webhack_no_delay = cptr.lit("WEBHACK_NO_DELAY");
+const __s_50 = cptr.lit("$<50>");
+const __s_co__2 = cptr.lit("Co");
+const __s_af = cptr.lit("AF");
+const __s_sf = cptr.lit("Sf");
+const __s_emit24bit = cptr.lit("emit24bit");
+const __s_38_2_ld_ld_ldm = cptr.lit("\x1b[38;2;%ld;%ld;%ldm");
+const __s_emit256 = cptr.lit("emit256");
+const __s_38_5_dm = cptr.lit("\x1b[38;5;%dm");
 
 /** C ref: termcap.c:37 — struct tc_lcl_data */
 export let tc_lcl_data = cptr.alloc(64);
@@ -222,74 +222,74 @@ export function term_startup(wid, hgt) {
     let tbufptr = cptr.box(0);
     let pc;
     let i;
-    term = getenv(__sl0);
+    term = getenv(__s_term);
     if (!term)
-        error(__sl1);
+        error(__s_can_t_get_term);
     tptr = alloc(1024);
     tbufptr.v = cptr.decay(tbuf);
-    if (!cptr.strncmp(term, __sl2, 4n))
+    if (!cptr.strncmp(term, __s_5620, 4n))
         cptr.st1o(flags, $flag_null, 0);
     if (tgetent(tptr, term) < 1) {
         let buf = new Uint8Array(256);
         void __builtin___strncpy_chk(cptr.decay(buf), term, 228n, __builtin_object_size(cptr.decay(buf), 1));
         cptr.st1o(cptr.decay(buf), 255, 0, 1);
-        error(__sl3, term);
+        error(__s_unknown_terminal_type_s, term);
     }
-    if ((pc = (tgetstr((__sl4), tbufptr))) !== null)
+    if ((pc = (tgetstr((__s_pc), tbufptr))) !== null)
         PC = cptr.ld1s(pc);
-    if (!(BC = (tgetstr((__sl5), tbufptr)))) {
-        error(__sl6);
+    if (!(BC = (tgetstr((__s_le), tbufptr)))) {
+        error(__s_terminal_must_backspace);
     }
-    HO = (tgetstr((__sl7), tbufptr));
+    HO = (tgetstr((__s_ho), tbufptr));
     if (!CO())
-        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO, tgetnum((__sl8)));
+        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO, tgetnum((__s_co)));
     if (!LI())
-        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI, tgetnum((__sl9)));
+        cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI, tgetnum((__s_li)));
     if (CO() < NHM.COLNO || LI() < 24)
         setclipped();
-    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_ND, (tgetstr((__sl10), tbufptr)));
-    if (tgetflag((__sl11)))
-        error(__sl12);
-    if (tgetflag((__sl13)))
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_ND, (tgetstr((__s_nd), tbufptr)));
+    if (tgetflag((__s_os)))
+        error(__s_nethack_can_t_have_os);
+    if (tgetflag((__s_ul)))
         cptr.st1o(tc_lcl_data, $tc_lcl_data_tc_ul_hack, 1);
-    CE = (tgetstr((__sl14), tbufptr));
-    UP = (tgetstr((__sl15), tbufptr));
-    XD = (tgetstr((__sl16), tbufptr));
-    if (!(cptr.stPtr(tc_lcl_data, (tgetstr((__sl17), tbufptr))))) {
+    CE = (tgetstr((__s_ce), tbufptr));
+    UP = (tgetstr((__s_up), tbufptr));
+    XD = (tgetstr((__s_xd), tbufptr));
+    if (!(cptr.stPtr(tc_lcl_data, (tgetstr((__s_cm), tbufptr))))) {
         if (!UP && !HO)
-            error(__sl18);
-        tty_raw_print(__sl19);
+            error(__s_nethack_needs_cm_or_up_or_ho);
+        tty_raw_print(__s_playing_nethack_on_terminals_without_cm);
         tty_wait_synch();
     }
-    SO = (tgetstr((__sl20), tbufptr));
-    SE = (tgetstr((__sl21), tbufptr));
-    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, (tgetstr((__sl22), tbufptr)));
-    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, (tgetstr((__sl23), tbufptr)));
-    ZH = (tgetstr((__sl24), tbufptr));
-    ZR = (tgetstr((__sl25), tbufptr));
-    SG = tgetnum((__sl26));
+    SO = (tgetstr((__s_so), tbufptr));
+    SE = (tgetstr((__s_se), tbufptr));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, (tgetstr((__s_us), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, (tgetstr((__s_ue), tbufptr)));
+    ZH = (tgetstr((__s_zh), tbufptr));
+    ZR = (tgetstr((__s_zr), tbufptr));
+    SG = tgetnum((__s_sg));
     if (!SO || !SE || (SG > 0))
         SO = (SE = cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, cptr.decay(nullstr))));
-    TI = (tgetstr((__sl27), tbufptr));
-    TE = (tgetstr((__sl28), tbufptr));
+    TI = (tgetstr((__s_ti), tbufptr));
+    TE = (tgetstr((__s_te), tbufptr));
     VS = (VE = cptr.decay(nullstr));
-    VS = (tgetstr((__sl29), tbufptr));
-    KS = (tgetstr((__sl30), tbufptr));
-    KE = (tgetstr((__sl31), tbufptr));
-    MR = (tgetstr((__sl32), tbufptr));
-    MB = (tgetstr((__sl33), tbufptr));
-    MD = (tgetstr((__sl34), tbufptr));
+    VS = (tgetstr((__s_ea), tbufptr));
+    KS = (tgetstr((__s_ks), tbufptr));
+    KE = (tgetstr((__s_ke), tbufptr));
+    MR = (tgetstr((__s_mr), tbufptr));
+    MB = (tgetstr((__s_mb), tbufptr));
+    MD = (tgetstr((__s_md), tbufptr));
     if (!SO)
         SO = MD;
-    MH = (tgetstr((__sl35), tbufptr));
-    ME = (tgetstr((__sl36), tbufptr));
+    MH = (tgetstr((__s_mh), tbufptr));
+    ME = (tgetstr((__s_me), tbufptr));
     if (!ME)
         ME = SE ? SE : cptr.decay(nullstr);
-    nh_VI = (tgetstr((__sl37), tbufptr));
-    nh_VE = (tgetstr((__sl38), tbufptr));
+    nh_VI = (tgetstr((__s_vi), tbufptr));
+    nh_VE = (tgetstr((__s_ve), tbufptr));
     if (!nh_VI || !nh_VE)
         nh_VI = (nh_VE = null);
-    nh_Ic = (tgetstr((__sl39), tbufptr));
+    nh_Ic = (tgetstr((__s_ic), tbufptr));
     for (i = 0; digit(cptr.ld1so(SO, i)); ++i)
         continue;
     cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, dupstr(cptr.add(SO, i)));
@@ -297,16 +297,16 @@ export function term_startup(wid, hgt) {
         continue;
     cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, dupstr(cptr.add(ME, i)));
     dynamic_HIHE = 1;
-    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, (tgetstr((__sl40), tbufptr)));
-    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, (tgetstr((__sl41), tbufptr)));
-    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, (tgetstr((__sl42), tbufptr)));
+    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, (tgetstr((__s_as), tbufptr)));
+    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, (tgetstr((__s_ae), tbufptr)));
+    cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, (tgetstr((__s_cd), tbufptr)));
     init_hilite();
     cptr.stI32(wid, CO());
     cptr.stI32(hgt, LI());
-    if (!(CL = (tgetstr((__sl43), tbufptr))))
-        error(__sl44);
+    if (!(CL = (tgetstr((__s_cl), tbufptr))))
+        error(__s_nethack_needs_cl);
     if (Number(BigInt.asIntN(32, (cptr.diff(tbufptr.v, cptr.decay(tbuf))))) > 512)
-        error(__sl45);
+        error(__s_termcap_entry_too_big);
     cptr.free(tptr);
     if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) && cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)) < 16n)
         void cptr.strcpy(cptr.decay(tty_standout_on), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI));
@@ -358,7 +358,7 @@ function tty_decgraphics_termcap_fixup() {
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
     if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC)) {
-        xputs(__sl46);
+        xputs(__s_esc_rparen_0);
         xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
     }
     let ae = cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE);
@@ -462,7 +462,7 @@ let __static_nomux_markers_enabled_cached = -1; /** C ref: termcap.c:667 — int
 /** C ref: termcap.c:665 @returns {CInt} */
 function nomux_markers_enabled() {
     if (__static_nomux_markers_enabled_cached < 0) {
-        let ev = getenv(__sl47);
+        let ev = getenv(__s_nomux_markers);
         __static_nomux_markers_enabled_cached = (ev && cptr.ld1s(ev) && cptr.ld1so(ev, 0) != 48) ? 1 : 0;
     }
     return __static_nomux_markers_enabled_cached;
@@ -484,7 +484,7 @@ function nomux_emit_marker(kind) {
         let cy = cptr.box(0);
         let scr_len = scr ? cptr.strlen(scr) : 0n;
         nomux_get_cursor(cx, cy);
-        fprintf(__stdoutp, __sl48, kind, nomux_seq, nomux_anim_id, cx.v, cy.v, scr_len);
+        fprintf(__stdoutp, __s_7777_kind_s_seq_d_anim_d_cx_d_cy_d_len, kind, nomux_seq, nomux_anim_id, cx.v, cy.v, scr_len);
         if (scr_len > 0n)
             fwrite(scr, 1n, scr_len, __stdoutp);
         fflush(__stdoutp);
@@ -494,7 +494,7 @@ function nomux_emit_marker(kind) {
 /** C ref: termcap.c:703 */
 export function nomux_capture_write_screen() {
     nomux_anim_id++;
-    nomux_emit_marker(__sl49);
+    nomux_emit_marker(__s_anim);
 }
 
 /** C ref: termcap.c:713 */
@@ -503,7 +503,7 @@ export function nomux_capture_write_input_boundary() {
         teleport_state_dump();
     }
     nomux_seq++;
-    nomux_emit_marker(__sl50);
+    nomux_emit_marker(__s_input);
 }
 
 /** C ref: termcap.c:728 — nomux_cell[24][80] */
@@ -626,24 +626,24 @@ export function nomux_capture_screen() {
             let at = cptr.ld1uo(c, $nomux_cell_attr);
             if (at != cur_attr) {
                 if ((at & 1) && !(cur_attr & 1))
-                    p = cptr.add(p, cptr.sprintf(p, __sl51));
+                    p = cptr.add(p, cptr.sprintf(p, __s_7m));
                 if (!(at & 1) && (cur_attr & 1))
-                    p = cptr.add(p, cptr.sprintf(p, __sl52));
+                    p = cptr.add(p, cptr.sprintf(p, __s_27m));
                 if ((at & 2) && !(cur_attr & 2))
-                    p = cptr.add(p, cptr.sprintf(p, __sl53));
+                    p = cptr.add(p, cptr.sprintf(p, __s_1m));
                 if (!(at & 2) && (cur_attr & 2))
-                    p = cptr.add(p, cptr.sprintf(p, __sl54));
+                    p = cptr.add(p, cptr.sprintf(p, __s_22m));
                 if ((at & 4) && !(cur_attr & 4))
-                    p = cptr.add(p, cptr.sprintf(p, __sl55));
+                    p = cptr.add(p, cptr.sprintf(p, __s_4m));
                 if (!(at & 4) && (cur_attr & 4))
-                    p = cptr.add(p, cptr.sprintf(p, __sl56));
+                    p = cptr.add(p, cptr.sprintf(p, __s_24m));
                 cur_attr = at;
             }
             if (fg != cur_fg) {
                 if (fg == 7) {
-                    p = cptr.add(p, cptr.sprintf(p, __sl57));
+                    p = cptr.add(p, cptr.sprintf(p, __s_39m));
                 } else {
-                    p = cptr.add(p, cptr.sprintf(p, __sl58, nomux_sgr_fg(fg)));
+                    p = cptr.add(p, cptr.sprintf(p, __s_dm, nomux_sgr_fg(fg)));
                 }
                 cur_fg = fg;
             }
@@ -661,11 +661,11 @@ export function nomux_capture_screen() {
             in_dec = 0;
         }
         if (cur_attr && cur_fg != 7) {
-            p = cptr.add(p, cptr.sprintf(p, __sl59));
+            p = cptr.add(p, cptr.sprintf(p, __s_0m));
         } else if (cur_attr) {
-            p = cptr.add(p, cptr.sprintf(p, __sl59));
+            p = cptr.add(p, cptr.sprintf(p, __s_0m));
         } else if (cur_fg != 7) {
-            p = cptr.add(p, cptr.sprintf(p, __sl57));
+            p = cptr.add(p, cptr.sprintf(p, __s_39m));
             cur_fg = 7;
             cur_attr = 0;
         }
@@ -848,9 +848,9 @@ let __static_tty_delay_output_no_delay = -1; /** C ref: termcap.c:1143 — int (
 export function tty_delay_output() {
     let no_delay_env;
     if (__static_tty_delay_output_no_delay < 0) {
-        no_delay_env = getenv(__sl60);
+        no_delay_env = getenv(__s_nethack_no_delay);
         if (!no_delay_env || !cptr.ld1s(no_delay_env))
-            no_delay_env = getenv(__sl61);
+            no_delay_env = getenv(__s_webhack_no_delay);
         __static_tty_delay_output_no_delay = (no_delay_env && cptr.ld1s(no_delay_env) && cptr.ld1s(no_delay_env) != 48 ? 1 : 0);
     }
     if (__static_tty_delay_output_no_delay || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
@@ -859,7 +859,7 @@ export function tty_delay_output() {
         return;
     }
     if (cptr.ld1so(flags, $flag_null)) {
-        tputs(__sl62, 1, xputc);
+        tputs(__s_50, 1, xputc);
     } else if (ospeed.v > 0 && ospeed.v < 15 && cptr.ldPtr(tc_lcl_data)) {
         let cmlen = Number(BigInt.asIntN(32, cptr.strlen(tgoto(cptr.ldPtr(tc_lcl_data), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx), cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)))));
         let i = (500 + ((cptr.ldI16o(tmspc10, ospeed.v, 2) / 2) | 0)) | 0;
@@ -928,10 +928,10 @@ function init_hilite() {
     let colors;
     let setf;
     let scratch;
-    colors = tgetnum((__sl63));
+    colors = tgetnum((__s_co__2));
     cptr.stI32o(iflags, $instance_flags_colorcount, colors >>> 0);
     let md_len = 0;
-    if (colors < 8 || !MD || !cptr.ld1s(MD) || ((setf = tgetstr((__sl64), null)) === null && (setf = tgetstr((__sl65), null)) === null)) {
+    if (colors < 8 || !MD || !cptr.ld1s(MD) || ((setf = tgetstr((__s_af), null)) === null && (setf = tgetstr((__s_sf), null)) === null)) {
         cptr.stPtro(hilites, NHM.CLR_BLACK, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_RED, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_GREEN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
@@ -1006,7 +1006,7 @@ function kill_hilite() {
         if (!cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(hilites, NHM.CLR_BLUE, 8)))
             cptr.free(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8)), cptr.stPtro(hilites, NHM.CLR_BLACK, null, 8);
     }
-    if (tgetnum((__sl63)) >= 16) {
+    if (tgetnum((__s_co__2)) >= 16) {
         if (cptr.ldPtro(hilites, NHM.CLR_BLUE, 8))
             cptr.free(cptr.ldPtro(hilites, NHM.CLR_BLUE, 8));
         if (cptr.ldPtro(hilites, NHM.CLR_GREEN, 8))
@@ -1176,7 +1176,7 @@ export function term_start_color(color) {
 /** C ref: termcap.c:1872 — @param {CInt} color */
 export function term_start_bgcolor(color) {
     let tmp = new Uint8Array(8);
-    void cptr.sprintf(cptr.decay(tmp), __sl58, (((color % 8) + 40) | 0));
+    void cptr.sprintf(cptr.decay(tmp), __s_dm, (((color % 8) + 40) | 0));
     xputs(cptr.decay(tmp));
 }
 
@@ -1197,7 +1197,7 @@ const __static_emit24bit_tcolorbuf = new Uint8Array(128); /** C ref: termcap.c:1
 
 /** C ref: termcap.c:1949 — @param {CLongLong} mcolor */
 function emit24bit(mcolor) {
-    nh_snprintf(__sl66, 1956, cptr.decay(__static_emit24bit_tcolorbuf), 128n, __sl67, ((mcolor >> 16n) & 255n), ((mcolor >> 8n) & 255n), ((mcolor >> 0n) & 255n));
+    nh_snprintf(__s_emit24bit, 1956, cptr.decay(__static_emit24bit_tcolorbuf), 128n, __s_38_2_ld_ld_ldm, ((mcolor >> 16n) & 255n), ((mcolor >> 8n) & 255n), ((mcolor >> 0n) & 255n));
     xputs(cptr.decay(__static_emit24bit_tcolorbuf));
 }
 
@@ -1205,7 +1205,7 @@ const __static_emit256_tcolorbuf = new Uint8Array(128); /** C ref: termcap.c:196
 
 /** C ref: termcap.c:1960 — @param {CInt} color256idx */
 function emit256(color256idx) {
-    nh_snprintf(__sl68, 1965, cptr.decay(__static_emit256_tcolorbuf), 128n, __sl69, color256idx);
+    nh_snprintf(__s_emit256, 1965, cptr.decay(__static_emit256_tcolorbuf), 128n, __s_38_5_dm, color256idx);
     xputs(cptr.decay(__static_emit256_tcolorbuf));
 }
 
@@ -1220,7 +1220,7 @@ export function term_start_extracolor(customcolor, color256idx) {
 
 /** C ref: termcap.c:1981 */
 export function term_end_extracolor() {
-    xputs(__sl59);
+    xputs(__s_0m);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

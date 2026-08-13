@@ -155,450 +155,450 @@ const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Race_mnum = F
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("I explored the Dungeons of Doom and all I got was this lousy T-shirt!");
-const __sl1 = cptr.lit("Is that Mjollnir in your pocket or are you just happy to see me?");
-const __sl2 = cptr.lit("It's not the size of your sword, it's how #enhance'd you are with it.");
-const __sl3 = cptr.lit("Madame Elvira's House O' Succubi Lifetime Customer");
-const __sl4 = cptr.lit("Madame Elvira's House O' Succubi Employee of the Month");
-const __sl5 = cptr.lit("Ludios Vault Guards Do It In Small, Dark Rooms");
-const __sl6 = cptr.lit("Yendor Military Soldiers Do It In Large Groups");
-const __sl7 = cptr.lit("I survived Yendor Military Boot Camp");
-const __sl8 = cptr.lit("Ludios Accounting School Intra-Mural Lacrosse Team");
-const __sl9 = cptr.lit("Oracle(TM) Fountains 10th Annual Wet T-Shirt Contest");
-const __sl10 = cptr.lit("Hey, black dragon!  Disintegrate THIS!");
-const __sl11 = cptr.lit("I'm With Stupid -->");
-const __sl12 = cptr.lit("Don't blame me, I voted for Izchak!");
-const __sl13 = cptr.lit("Don't Panic");
-const __sl14 = cptr.lit("Furinkan High School Athletic Dept.");
-const __sl15 = cptr.lit("Hel-LOOO, Nurse!");
-const __sl16 = cptr.lit("=^.^=");
-const __sl17 = cptr.lit("100% goblin hair - do not wash");
-const __sl18 = cptr.lit("Aberzombie and Fitch");
-const __sl19 = cptr.lit("cK -- Cockatrice touches the Kop");
-const __sl20 = cptr.lit("Don't ask me, I only adventure here");
-const __sl21 = cptr.lit("Down with pants!");
-const __sl22 = cptr.lit("d, your dog or a killer?");
-const __sl23 = cptr.lit("FREE PUG AND NEWT!");
-const __sl24 = cptr.lit("Go team ant!");
-const __sl25 = cptr.lit("Got newt?");
-const __sl26 = cptr.lit("Hello, my darlings!");
-const __sl27 = cptr.lit("Hey!  Nymphs!  Steal This T-Shirt!");
-const __sl28 = cptr.lit("I <3 Dungeon of Doom");
-const __sl29 = cptr.lit("I <3 Maud");
-const __sl30 = cptr.lit("I am a Valkyrie.  If you see me running, try to keep up.");
-const __sl31 = cptr.lit("I am not a pack rat - I am a collector");
-const __sl32 = cptr.lit("I bounced off a rubber tree");
-const __sl33 = cptr.lit("Plunder Island Brimstone Beach Club");
-const __sl34 = cptr.lit("If you can read this, I can hit you with my polearm");
-const __sl35 = cptr.lit("I'm confused!");
-const __sl36 = cptr.lit("I scored with the princess");
-const __sl37 = cptr.lit("I want to live forever or die in the attempt.");
-const __sl38 = cptr.lit("Lichen Park");
-const __sl39 = cptr.lit("LOST IN THOUGHT - please send search party");
-const __sl40 = cptr.lit("Meat is Mordor");
-const __sl41 = cptr.lit("Minetown Better Business Bureau");
-const __sl42 = cptr.lit("Minetown Watch");
-const __sl43 = cptr.lit("Ms. Palm's House of Negotiable Affection--A Very Reputable House Of Disrepute");
-const __sl44 = cptr.lit("Protection Racketeer");
-const __sl45 = cptr.lit("Real men love Crom");
-const __sl46 = cptr.lit("Somebody stole my Mojo!");
-const __sl47 = cptr.lit("The Hellhound Gang");
-const __sl48 = cptr.lit("The Werewolves");
-const __sl49 = cptr.lit("They Might Be Storm Giants");
-const __sl50 = cptr.lit("Weapons don't kill people, I kill people");
-const __sl51 = cptr.lit("White Zombie");
-const __sl52 = cptr.lit("You're killing me!");
-const __sl53 = cptr.lit("Anhur State University - Home of the Fighting Fire Ants!");
-const __sl54 = cptr.lit("FREE HUGS");
-const __sl55 = cptr.lit("Serial Ascender");
-const __sl56 = cptr.lit("Real men are valkyries");
-const __sl57 = cptr.lit("Young Men's Cavedigging Association");
-const __sl58 = cptr.lit("Occupy Fort Ludios");
-const __sl59 = cptr.lit("I couldn't afford this T-shirt so I stole it!");
-const __sl60 = cptr.lit("Mind flayers suck");
-const __sl61 = cptr.lit("I'm not wearing any pants");
-const __sl62 = cptr.lit("Down with the living!");
-const __sl63 = cptr.lit("Pudding farmer");
-const __sl64 = cptr.lit("Vegetarian");
-const __sl65 = cptr.lit("Hello, I'm War!");
-const __sl66 = cptr.lit("It is better to light a candle than to curse the darkness");
-const __sl67 = cptr.lit("It is easier to curse the darkness than to light a candle");
-const __sl68 = cptr.lit("rock--paper--scissors--lizard--Spock!");
-const __sl69 = cptr.lit("/Valar morghulis/ -- /Valar dohaeris/");
-const __sl70 = cptr.lit("flamingo");
-const __sl71 = cptr.lit("parrot");
-const __sl72 = cptr.lit("toucan");
-const __sl73 = cptr.lit("bird of paradise");
-const __sl74 = cptr.lit("sea turtle");
-const __sl75 = cptr.lit("tropical fish");
-const __sl76 = cptr.lit("jellyfish");
-const __sl77 = cptr.lit("giant eel");
-const __sl78 = cptr.lit("water nymph");
-const __sl79 = cptr.lit("plumeria");
-const __sl80 = cptr.lit("orchid");
-const __sl81 = cptr.lit("hibiscus flower");
-const __sl82 = cptr.lit("palm tree");
-const __sl83 = cptr.lit("hula dancer");
-const __sl84 = cptr.lit("sailboat");
-const __sl85 = cptr.lit("ukulele");
-const __sl86 = cptr.lit("%s on %s background");
-const __sl87 = cptr.lit("purple");
-const __sl88 = cptr.lit("yellow");
-const __sl89 = cptr.lit("red");
-const __sl90 = cptr.lit("blue");
-const __sl91 = cptr.lit("orange");
-const __sl92 = cptr.lit("black");
-const __sl93 = cptr.lit("green");
-const __sl94 = cptr.lit("abstract");
-const __sl95 = cptr.lit("geometric");
-const __sl96 = cptr.lit("patterned");
-const __sl97 = cptr.lit("naturalistic");
-const __sl98 = cptr.lit("Kiss the cook");
-const __sl99 = cptr.lit("I'm making SCIENCE!");
-const __sl100 = cptr.lit("Don't mess with the chef");
-const __sl101 = cptr.lit("Don't make me poison you");
-const __sl102 = cptr.lit("Gehennom's Kitchen");
-const __sl103 = cptr.lit("Rat: The other white meat");
-const __sl104 = cptr.lit("If you can't stand the heat, get out of Gehennom!");
-const __sl105 = cptr.lit("If we weren't meant to eat animals, why are they made out of meat?");
-const __sl106 = cptr.lit("If you don't like the food, I'll stab you");
-const __sl107 = cptr.lit("I am an alchemist; if you see me running, try to catch up...");
-const __sl108 = cptr.lit("");
-const __sl109 = cptr.lit("Apollo");
-const __sl110 = cptr.lit("Moon Crunchy");
-const __sl111 = cptr.lit("Snacky Cake");
-const __sl112 = cptr.lit("Chocolate Nuggie");
-const __sl113 = cptr.lit("The Small Bar");
-const __sl114 = cptr.lit("Crispy Yum Yum");
-const __sl115 = cptr.lit("Nilla Crunchie");
-const __sl116 = cptr.lit("Berry Bar");
-const __sl117 = cptr.lit("Choco Nummer");
-const __sl118 = cptr.lit("Om-nom");
-const __sl119 = cptr.lit("Fruity Oaty");
-const __sl120 = cptr.lit("Wonka Bar");
-const __sl121 = cptr.lit("read.c");
-const __sl122 = cptr.lit("assign_candy_wrapper");
-const __sl123 = cptr.lit("read");
-const __sl124 = cptr.lit("break up the cookie and throw away the pieces.");
-const __sl125 = cptr.lit("became literate by reading a fortune cookie");
-const __sl126 = cptr.lit("%s shirt is obscured by %s%s.");
-const __sl127 = cptr.lit("That");
-const __sl128 = cptr.lit("Your");
-const __sl129 = cptr.lit("%s features %s.");
-const __sl130 = cptr.lit("The design");
-const __sl131 = cptr.lit("It");
-const __sl132 = cptr.lit("became literate by reading %s");
-const __sl133 = cptr.lit("a T-shirt");
-const __sl134 = cptr.lit("an apron");
-const __sl135 = cptr.lit(".!?");
-const __sl136 = cptr.lit(".");
-const __sl137 = cptr.lit("It reads:");
-const __sl138 = cptr.lit("\"%s\"%s");
-const __sl139 = cptr.lit("DUNCE");
-const __sl140 = cptr.lit("WIZZARD");
-const __sl141 = cptr.lit("find anything to read on this %s.");
-const __sl142 = cptr.lit("%s on the %s.  It reads:  %s.");
-const __sl143 = cptr.lit("There is writing");
-const __sl144 = cptr.lit("You feel lettering");
-const __sl145 = cptr.lit("a dunce cap");
-const __sl146 = cptr.lit("a cornuthaum");
-const __sl147 = cptr.lit("feel the embossed numbers:");
-const __sl148 = cptr.lit("\"%s\"");
-const __sl149 = cptr.lit("\"%d0%d %ld%d1 0%d%d0\"%s");
-const __sl150 = cptr.lit("became literate by reading a credit card");
-const __sl151 = cptr.lit("This %s has no label.");
-const __sl152 = cptr.lit("%s");
-const __sl153 = cptr.lit("\"Magic Marker(TM) %s Red Ink Marker Pen.  Water Soluble.\"");
-const __sl154 = cptr.lit("became literate by reading a magic marker");
-const __sl155 = cptr.lit("feel the embossed words:");
-const __sl156 = cptr.lit("read:");
-const __sl157 = cptr.lit("\"1 Zorkmid.  857 GUE.  In Frobs We Trust.\"");
-const __sl158 = cptr.lit("became literate by reading a coin's engravings");
-const __sl159 = cptr.lit("feel the engraved signature:");
-const __sl160 = cptr.lit("It is signed:");
-const __sl161 = cptr.lit("\"Odin.\"");
-const __sl162 = cptr.lit("became literate by reading the divine signature of Odin");
-const __sl163 = cptr.lit("The candy bar's wrapper is blank.");
-const __sl164 = cptr.lit("The wrapper reads: \"%s\".");
-const __sl165 = cptr.lit("became literate by reading a candy bar wrapper");
-const __sl166 = cptr.lit("words");
-const __sl167 = cptr.lit("mystic runes");
-const __sl168 = cptr.lit("formula on the scroll");
-const __sl169 = cptr.lit("Being blind, you cannot read the %s.");
-const __sl170 = cptr.lit("Reading mail will violate \"illiterate\" conduct.  Read anyway?");
-const __sl171 = cptr.lit("a book");
-const __sl172 = cptr.lit("a scroll");
-const __sl173 = cptr.lit("You %s the formula on the scroll.");
-const __sl174 = cptr.lit("As you %s the formula on it, the scroll disappears.");
-const __sl175 = cptr.lit("cogitate");
-const __sl176 = cptr.lit("pronounce");
-const __sl177 = cptr.lit("You read the scroll.");
-const __sl178 = cptr.lit("As you read the scroll, it disappears.");
-const __sl179 = cptr.lit("Being so trippy, you screw up...");
-const __sl180 = cptr.lit("Being confused, you %s the magic words...");
-const __sl181 = cptr.lit("misunderstand");
-const __sl182 = cptr.lit("mispronounce");
-const __sl183 = cptr.lit("Leprechaun Gold Tru$t - Shamrock Card");
-const __sl184 = cptr.lit("Magic Memory Vault Charge Card");
-const __sl185 = cptr.lit("Larn National Bank");
-const __sl186 = cptr.lit("First Bank of Omega");
-const __sl187 = cptr.lit("Bank of Zork - Frobozz Magic Card");
-const __sl188 = cptr.lit("Ankh-Morpork Merchant's Guild Barter Card");
-const __sl189 = cptr.lit("Ankh-Morpork Thieves' Guild Unlimited Transaction Card");
-const __sl190 = cptr.lit("Ransmannsby Moneylenders Association");
-const __sl191 = cptr.lit("Bank of Gehennom - 99% Interest Card");
-const __sl192 = cptr.lit("Yendorian Express - Copper Card");
-const __sl193 = cptr.lit("Yendorian Express - Silver Card");
-const __sl194 = cptr.lit("Yendorian Express - Gold Card");
-const __sl195 = cptr.lit("Yendorian Express - Mithril Card");
-const __sl196 = cptr.lit("Yendorian Express - Platinum Card");
-const __sl197 = cptr.lit("%s briefly.");
-const __sl198 = cptr.lit("vibrate");
-const __sl199 = cptr.lit("glow");
-const __sl200 = cptr.lit("%s%s%s for a moment.");
-const __sl201 = cptr.lit(" ");
-const __sl202 = cptr.lit("%s feebly%s%s for a moment.");
-const __sl203 = cptr.lit("recharge");
-const __sl204 = cptr.lit("%s momentarily, then %s!");
-const __sl205 = cptr.lit("pulsate");
-const __sl206 = cptr.lit("explode");
-const __sl207 = cptr.lit("exploding ring");
-const __sl208 = cptr.lit("%s spins %sclockwise for a moment.");
-const __sl209 = cptr.lit("counter");
-const __sl210 = cptr.lit("marker seems permanently dried out.");
-const __sl211 = cptr.lit("%s out!");
-const __sl212 = cptr.lit("go");
-const __sl213 = cptr.lit("have a feeling of loss.");
-const __sl214 = cptr.lit("forget");
-const __sl215 = cptr.lit("Your skin glows then fades.");
-const __sl216 = cptr.lit("Your skin feels warm for a moment.");
-const __sl217 = cptr.lit("%s warm for a moment.");
-const __sl218 = cptr.lit("feel");
-const __sl219 = cptr.lit("%s covered by a %s %s %s!");
-const __sl220 = cptr.lit("are");
-const __sl221 = cptr.lit("mottled");
-const __sl222 = cptr.lit("shimmering");
-const __sl223 = cptr.lit("layer");
-const __sl224 = cptr.lit("shield");
-const __sl225 = cptr.lit("%s as good as new!");
-const __sl226 = cptr.lit("look");
-const __sl227 = cptr.lit("seffect_enchant_armor");
-const __sl228 = cptr.lit("%s violently %s%s%s for a while, then %s.");
-const __sl229 = cptr.lit("evaporate");
-const __sl230 = cptr.lit("%s merges and hardens!");
-const __sl231 = cptr.lit("%s %s%s%s%s for a %s.");
-const __sl232 = cptr.lit("violently ");
-const __sl233 = cptr.lit("while");
-const __sl234 = cptr.lit("moment");
-const __sl235 = cptr.lit("%s %s.");
-const __sl236 = cptr.lit("suddenly vibrate");
-const __sl237 = cptr.lit("again");
-const __sl238 = cptr.lit("unexpectedly");
-const __sl239 = cptr.lit("disintegrate_cursed_armor");
-const __sl240 = cptr.lit("Your bones itch.");
-const __sl241 = cptr.lit("%s.");
-const __sl242 = cptr.lit("seffect_destroy_armor");
-const __sl243 = cptr.lit("This is %s!");
-const __sl244 = cptr.lit("destroy");
-const __sl245 = cptr.lit("Your skin itches.");
-const __sl246 = cptr.lit("confused.");
-const __sl247 = cptr.lit("seffect_confuse_monster");
-const __sl248 = cptr.lit("%s begin to %s%s.");
-const __sl249 = cptr.lit("tingle");
-const __sl250 = cptr.lit("glow ");
-const __sl251 = cptr.lit("A %s%s surrounds your %s.");
-const __sl252 = cptr.lit("faint buzz");
-const __sl253 = cptr.lit(" glow");
-const __sl254 = cptr.lit("%s tingle%s.");
-const __sl255 = cptr.lit(" even more");
-const __sl256 = cptr.lit("%s begin to glow %s.");
-const __sl257 = cptr.lit("%s glow of your %s intensifies.");
-const __sl258 = cptr.lit("%s tingle %s sharply.");
-const __sl259 = cptr.lit("even more");
-const __sl260 = cptr.lit("very");
-const __sl261 = cptr.lit("%s glow %s brilliant %s.");
-const __sl262 = cptr.lit("an even more");
-const __sl263 = cptr.lit("a");
-const __sl264 = cptr.lit("sad wailing");
-const __sl265 = cptr.lit("maniacal laughter");
-const __sl266 = cptr.lit("in the distance");
-const __sl267 = cptr.lit("close by");
-const __sl268 = cptr.lit("like someone is helping you.");
-const __sl269 = cptr.lit("like you need some help.");
-const __sl270 = cptr.lit("in touch with the Universal Oneness.");
-const __sl271 = cptr.lit("the power of the Force against you!");
-const __sl272 = cptr.lit("scroll disintegrates.");
-const __sl273 = cptr.lit("amber");
-const __sl274 = cptr.lit("clasp on your %s vanishes.");
-const __sl275 = cptr.lit("seffect_create_monster");
-const __sl276 = cptr.lit("weapon feels warm for a moment.");
-const __sl277 = cptr.lit("seffect_enchant_weapon");
-const __sl278 = cptr.lit("Nothing interesting %s.");
-const __sl279 = cptr.lit("happens");
-const __sl280 = cptr.lit("seems to happen");
-const __sl281 = cptr.lit("neighborhood %s %sfriendlier.");
-const __sl282 = cptr.lit("is");
-const __sl283 = cptr.lit("seems");
-const __sl284 = cptr.lit("un");
-const __sl285 = cptr.lit("have found a scroll of genocide!");
-const __sl286 = cptr.lit("Tiny lights sparkle in the air momentarily.");
-const __sl287 = cptr.lit("seffect_light");
-const __sl288 = cptr.lit("Lights appear all around you!");
-const __sl289 = cptr.lit("discharged.");
-const __sl290 = cptr.lit("charged up!");
-const __sl291 = cptr.lit("seffect_charging");
-const __sl292 = cptr.lit("This is a charging scroll.");
-const __sl293 = cptr.lit("charge");
-const __sl294 = cptr.lit("mind releases itself from mundane concerns.");
-const __sl295 = cptr.lit("Maud");
-const __sl296 = cptr.lit("As your mind turns inward on itself, you forget everything else.");
-const __sl297 = cptr.lit("seffect_amnesia");
-const __sl298 = cptr.lit("Who was that Maud person anyway?");
-const __sl299 = cptr.lit("Thinking of Maud you forget everything else.");
-const __sl300 = cptr.lit("seffect_fire");
-const __sl301 = cptr.lit("A little %s around you vaporizes.");
-const __sl302 = cptr.lit("water");
-const __sl303 = cptr.lit("Oh, look, what a pretty fire in your %s.");
-const __sl304 = cptr.lit("a pleasant warmth in your %s.");
-const __sl305 = cptr.lit("scroll catches fire and you burn your %s.");
-const __sl306 = cptr.lit("scroll of fire");
-const __sl307 = cptr.lit("%s around you vaporizes violently!");
-const __sl308 = cptr.lit("This is a scroll of fire!");
-const __sl309 = cptr.lit("Where do you want to center the explosion?");
-const __sl310 = cptr.lit("the desired position");
-const __sl311 = cptr.lit("scroll erupts in a tower of flame!");
-const __sl312 = cptr.lit("rumbling.");
-const __sl313 = cptr.lit("%s rumbles %s you!");
-const __sl314 = cptr.lit("around");
-const __sl315 = cptr.lit("above");
-const __sl316 = cptr.lit("avalanche");
-const __sl317 = cptr.lit("%s of boulders %s %s you!");
-const __sl318 = cptr.lit("materialize");
-const __sl319 = cptr.lit("But nothing else happens.");
-const __sl320 = cptr.lit("guilty.");
-const __sl321 = cptr.lit("have found a scroll of stinking cloud!");
-const __sl322 = cptr.lit("don't remember there being any magic words on this scroll.");
-const __sl323 = cptr.lit("This scroll seems to be blank.");
-const __sl324 = cptr.lit("identify this as an identify scroll.");
-const __sl325 = cptr.lit("This is an identify scroll.");
-const __sl326 = cptr.lit("seffect_identify");
-const __sl327 = cptr.lit("You're not carrying anything%s to be identified.");
-const __sl328 = cptr.lit(" else");
-const __sl329 = cptr.lit("mind is filled with crazy lines!");
-const __sl330 = cptr.lit("Wow!  Modern art.");
-const __sl331 = cptr.lit("%s spins in bewilderment.");
-const __sl332 = cptr.lit("seffect_magic_mapping");
-const __sl333 = cptr.lit("%s spins as %s blocks the spell!");
-const __sl334 = cptr.lit("A map coalesces in your mind!");
-const __sl335 = cptr.lit("mon_notices_blocked<0");
-const __sl336 = cptr.lit("Unfortunately, you can't grasp the details.");
-const __sl337 = cptr.lit("This scroll is marked \"%s\".");
-const __sl338 = cptr.lit("Postage Due");
-const __sl339 = cptr.lit("Return to Sender");
-const __sl340 = cptr.lit("This seems to be %s.");
-const __sl341 = cptr.lit("a chain letter threatening your luck");
-const __sl342 = cptr.lit("junk mail addressed to the finder of the Eye of Larn");
-const __sl343 = cptr.lit("What weird effect is this? (%u)");
-const __sl344 = cptr.lit("drop_boulder_on_player");
-const __sl345 = cptr.lit("are hit by %s!");
-const __sl346 = cptr.lit("Fortunately, you are wearing a hard helmet.");
-const __sl347 = cptr.lit("%s does not protect you.");
-const __sl348 = cptr.lit("fall");
-const __sl349 = cptr.lit("scroll of earth");
-const __sl350 = cptr.lit("drop_boulder_on_monster");
-const __sl351 = cptr.lit("%s is hit by %s!");
-const __sl352 = cptr.lit("something hit %s %s over your %s!");
-const __sl353 = cptr.lit("Fortunately, %s is wearing a hard helmet.");
-const __sl354 = cptr.lit("a clanging sound.");
-const __sl355 = cptr.lit("%s's %s does not protect %s.");
-const __sl356 = cptr.lit("%s is killed.");
-const __sl357 = cptr.lit("suddenly");
-const __sl358 = cptr.lit("vibrates violently and");
-const __sl359 = cptr.lit("wand_explode");
-const __sl360 = cptr.lit("%s %s explodes!");
-const __sl361 = cptr.lit("exploding wand");
-const __sl362 = cptr.lit("ambient light seems dimmer.");
-const __sl363 = cptr.lit("It seems even darker in here than before.");
-const __sl364 = cptr.lit("are surrounded by darkness!");
-const __sl365 = cptr.lit("%s %s is lit.");
-const __sl366 = cptr.lit("%s shines briefly.");
-const __sl367 = cptr.lit("%s glistens.");
-const __sl368 = cptr.lit("A lit field %ssurrounds you!");
-const __sl369 = cptr.lit("briefly ");
-const __sl370 = cptr.lit("litroom");
-const __sl371 = cptr.lit("What class of monsters do you want to genocide?");
-const __sl372 = cptr.lit("do_class_genocide");
-const __sl373 = cptr.lit(" [enter %s]");
-const __sl374 = cptr.lit("the symbol or name representing a class, or '?'");
-const __sl375 = cptr.lit("'?' to see previous genocides");
-const __sl376 = cptr.lit("Type letter (or punctuation) or name used for a class of monsters or 'none'");
-const __sl377 = cptr.lit("No class of monsters specified");
-const __sl378 = cptr.lit("none");
-const __sl379 = cptr.lit("'none'");
-const __sl380 = cptr.lit("nothing");
-const __sl381 = cptr.lit("declined to perform class genocide");
-const __sl382 = cptr.lit("?");
-const __sl383 = cptr.lit("'?'");
-const __sl384 = cptr.lit("All such monsters are already nonexistent.");
-const __sl385 = cptr.lit("aren't permitted to genocide such monsters.");
-const __sl386 = cptr.lit("Eliminated %d monster%s.");
-const __sl387 = cptr.lit("s");
-const __sl388 = cptr.lit("That %s does not represent any monster.");
-const __sl389 = cptr.lit("symbol");
-const __sl390 = cptr.lit("response");
-const __sl391 = cptr.lit("performed %s first genocide (class %c)");
-const __sl392 = cptr.lit("genocided class %c");
-const __sl393 = cptr.lit("Wiped out all %s.");
-const __sl394 = cptr.lit("You die.");
-const __sl395 = cptr.lit("%s inside.");
-const __sl396 = cptr.lit("%s are already nonexistent.");
-const __sl397 = cptr.lit("aren't permitted to genocide %s%s.");
-const __sl398 = cptr.lit("the ");
-const __sl399 = cptr.lit("scroll of genocide");
-const __sl400 = cptr.lit("What type of monster do you want to genocide?");
-const __sl401 = cptr.lit("do_genocide");
-const __sl402 = cptr.lit("the name of a type of monster, or '?'");
-const __sl403 = cptr.lit("Type the name of a type of monster or 'none'");
-const __sl404 = cptr.lit("No type of monster specified");
-const __sl405 = cptr.lit("declined to perform genocide");
-const __sl406 = cptr.lit("Such creatures %s exist in this world.");
-const __sl407 = cptr.lit("do not");
-const __sl408 = cptr.lit("no longer");
-const __sl409 = cptr.lit("A thunderous voice booms through the caverns:");
-const __sl410 = cptr.lit("No, mortal!  That will not be done.");
-const __sl411 = cptr.lit("all ");
-const __sl412 = cptr.lit("performed %s first genocide (%s)");
-const __sl413 = cptr.lit("genocided %s");
-const __sl414 = cptr.lit("Wiped out %s%s.");
-const __sl415 = cptr.lit("genocidal confusion");
-const __sl416 = cptr.lit("imperious order");
-const __sl417 = cptr.lit("Sent in %s%s.");
-const __sl418 = cptr.lit("some ");
-const __sl419 = cptr.lit("are being punished for your misbehavior!");
-const __sl420 = cptr.lit("iron ball gets heavier.");
-const __sl421 = cptr.lit("A ball and chain appears, then falls away.");
-const __sl422 = cptr.lit("Where do you want to center the %scloud?");
-const __sl423 = cptr.lit("stinking ");
-const __sl424 = cptr.lit("Ugh... someone cut the cheese.");
-const __sl425 = cptr.lit("%s a whiff of rotten eggs.");
-const __sl426 = cptr.lit("The scroll crumbles with");
-const __sl427 = cptr.lit("You smell");
-const __sl428 = cptr.lit("saddled ");
-const __sl429 = cptr.lit("sleeping ");
-const __sl430 = cptr.lit("invisible ");
-const __sl431 = cptr.lit("hidden ");
-const __sl432 = cptr.lit("female ");
-const __sl433 = cptr.lit("male ");
-const __sl434 = cptr.lit("tame ");
-const __sl435 = cptr.lit("peaceful ");
-const __sl436 = cptr.lit("hostile ");
-const __sl437 = cptr.lit("*");
-const __sl438 = cptr.lit("random");
-const __sl439 = cptr.lit("Creating %s instead; force %s?");
-const __sl440 = cptr.lit("Create what kind of monster?");
-const __sl441 = cptr.lit("I've never heard of such monsters.");
-const __sl442 = cptr.lit("Try again (type * for random, ESC to cancel).");
-const __sl443 = cptr.lit(" [type name or symbol]");
+const __s_i_explored_the_dungeons_of_doom_and_all = cptr.lit("I explored the Dungeons of Doom and all I got was this lousy T-shirt!");
+const __s_is_that_mjollnir_in_your_pocket_or_are = cptr.lit("Is that Mjollnir in your pocket or are you just happy to see me?");
+const __s_it_s_not_the_size_of_your_sword_it_s = cptr.lit("It's not the size of your sword, it's how #enhance'd you are with it.");
+const __s_madame_elvira_s_house_o_succubi = cptr.lit("Madame Elvira's House O' Succubi Lifetime Customer");
+const __s_madame_elvira_s_house_o_succubi__2 = cptr.lit("Madame Elvira's House O' Succubi Employee of the Month");
+const __s_ludios_vault_guards_do_it_in_small_dark = cptr.lit("Ludios Vault Guards Do It In Small, Dark Rooms");
+const __s_yendor_military_soldiers_do_it_in_large = cptr.lit("Yendor Military Soldiers Do It In Large Groups");
+const __s_i_survived_yendor_military_boot_camp = cptr.lit("I survived Yendor Military Boot Camp");
+const __s_ludios_accounting_school_intra_mural = cptr.lit("Ludios Accounting School Intra-Mural Lacrosse Team");
+const __s_oracle_tm_fountains_10th_annual_wet_t = cptr.lit("Oracle(TM) Fountains 10th Annual Wet T-Shirt Contest");
+const __s_hey_black_dragon_disintegrate_this = cptr.lit("Hey, black dragon!  Disintegrate THIS!");
+const __s_i_m_with_stupid = cptr.lit("I'm With Stupid -->");
+const __s_don_t_blame_me_i_voted_for_izchak = cptr.lit("Don't blame me, I voted for Izchak!");
+const __s_don_t_panic = cptr.lit("Don't Panic");
+const __s_furinkan_high_school_athletic_dept = cptr.lit("Furinkan High School Athletic Dept.");
+const __s_hel_looo_nurse = cptr.lit("Hel-LOOO, Nurse!");
+const __s_eq_caret_dot_caret_eq = cptr.lit("=^.^=");
+const __s_100_goblin_hair_do_not_wash = cptr.lit("100% goblin hair - do not wash");
+const __s_aberzombie_and_fitch = cptr.lit("Aberzombie and Fitch");
+const __s_ck_cockatrice_touches_the_kop = cptr.lit("cK -- Cockatrice touches the Kop");
+const __s_don_t_ask_me_i_only_adventure_here = cptr.lit("Don't ask me, I only adventure here");
+const __s_down_with_pants = cptr.lit("Down with pants!");
+const __s_d_your_dog_or_a_killer = cptr.lit("d, your dog or a killer?");
+const __s_free_pug_and_newt = cptr.lit("FREE PUG AND NEWT!");
+const __s_go_team_ant = cptr.lit("Go team ant!");
+const __s_got_newt = cptr.lit("Got newt?");
+const __s_hello_my_darlings = cptr.lit("Hello, my darlings!");
+const __s_hey_nymphs_steal_this_t_shirt = cptr.lit("Hey!  Nymphs!  Steal This T-Shirt!");
+const __s_i_3_dungeon_of_doom = cptr.lit("I <3 Dungeon of Doom");
+const __s_i_3_maud = cptr.lit("I <3 Maud");
+const __s_i_am_a_valkyrie_if_you_see_me_running = cptr.lit("I am a Valkyrie.  If you see me running, try to keep up.");
+const __s_i_am_not_a_pack_rat_i_am_a_collector = cptr.lit("I am not a pack rat - I am a collector");
+const __s_i_bounced_off_a_rubber_tree = cptr.lit("I bounced off a rubber tree");
+const __s_plunder_island_brimstone_beach_club = cptr.lit("Plunder Island Brimstone Beach Club");
+const __s_if_you_can_read_this_i_can_hit_you_with = cptr.lit("If you can read this, I can hit you with my polearm");
+const __s_i_m_confused = cptr.lit("I'm confused!");
+const __s_i_scored_with_the_princess = cptr.lit("I scored with the princess");
+const __s_i_want_to_live_forever_or_die_in_the = cptr.lit("I want to live forever or die in the attempt.");
+const __s_lichen_park = cptr.lit("Lichen Park");
+const __s_lost_in_thought_please_send_search_party = cptr.lit("LOST IN THOUGHT - please send search party");
+const __s_meat_is_mordor = cptr.lit("Meat is Mordor");
+const __s_minetown_better_business_bureau = cptr.lit("Minetown Better Business Bureau");
+const __s_minetown_watch = cptr.lit("Minetown Watch");
+const __s_ms_palm_s_house_of_negotiable_affection = cptr.lit("Ms. Palm's House of Negotiable Affection--A Very Reputable House Of Disrepute");
+const __s_protection_racketeer = cptr.lit("Protection Racketeer");
+const __s_real_men_love_crom = cptr.lit("Real men love Crom");
+const __s_somebody_stole_my_mojo = cptr.lit("Somebody stole my Mojo!");
+const __s_the_hellhound_gang = cptr.lit("The Hellhound Gang");
+const __s_the_werewolves = cptr.lit("The Werewolves");
+const __s_they_might_be_storm_giants = cptr.lit("They Might Be Storm Giants");
+const __s_weapons_don_t_kill_people_i_kill_people = cptr.lit("Weapons don't kill people, I kill people");
+const __s_white_zombie = cptr.lit("White Zombie");
+const __s_you_re_killing_me = cptr.lit("You're killing me!");
+const __s_anhur_state_university_home_of_the = cptr.lit("Anhur State University - Home of the Fighting Fire Ants!");
+const __s_free_hugs = cptr.lit("FREE HUGS");
+const __s_serial_ascender = cptr.lit("Serial Ascender");
+const __s_real_men_are_valkyries = cptr.lit("Real men are valkyries");
+const __s_young_men_s_cavedigging_association = cptr.lit("Young Men's Cavedigging Association");
+const __s_occupy_fort_ludios = cptr.lit("Occupy Fort Ludios");
+const __s_i_couldn_t_afford_this_t_shirt_so_i = cptr.lit("I couldn't afford this T-shirt so I stole it!");
+const __s_mind_flayers_suck = cptr.lit("Mind flayers suck");
+const __s_i_m_not_wearing_any_pants = cptr.lit("I'm not wearing any pants");
+const __s_down_with_the_living = cptr.lit("Down with the living!");
+const __s_pudding_farmer = cptr.lit("Pudding farmer");
+const __s_vegetarian = cptr.lit("Vegetarian");
+const __s_hello_i_m_war = cptr.lit("Hello, I'm War!");
+const __s_it_is_better_to_light_a_candle_than_to = cptr.lit("It is better to light a candle than to curse the darkness");
+const __s_it_is_easier_to_curse_the_darkness_than = cptr.lit("It is easier to curse the darkness than to light a candle");
+const __s_rock_paper_scissors_lizard_spock = cptr.lit("rock--paper--scissors--lizard--Spock!");
+const __s_valar_morghulis_valar_dohaeris = cptr.lit("/Valar morghulis/ -- /Valar dohaeris/");
+const __s_flamingo = cptr.lit("flamingo");
+const __s_parrot = cptr.lit("parrot");
+const __s_toucan = cptr.lit("toucan");
+const __s_bird_of_paradise = cptr.lit("bird of paradise");
+const __s_sea_turtle = cptr.lit("sea turtle");
+const __s_tropical_fish = cptr.lit("tropical fish");
+const __s_jellyfish = cptr.lit("jellyfish");
+const __s_giant_eel = cptr.lit("giant eel");
+const __s_water_nymph = cptr.lit("water nymph");
+const __s_plumeria = cptr.lit("plumeria");
+const __s_orchid = cptr.lit("orchid");
+const __s_hibiscus_flower = cptr.lit("hibiscus flower");
+const __s_palm_tree = cptr.lit("palm tree");
+const __s_hula_dancer = cptr.lit("hula dancer");
+const __s_sailboat = cptr.lit("sailboat");
+const __s_ukulele = cptr.lit("ukulele");
+const __s_s_on_s_background = cptr.lit("%s on %s background");
+const __s_purple = cptr.lit("purple");
+const __s_yellow = cptr.lit("yellow");
+const __s_red = cptr.lit("red");
+const __s_blue = cptr.lit("blue");
+const __s_orange = cptr.lit("orange");
+const __s_black = cptr.lit("black");
+const __s_green = cptr.lit("green");
+const __s_abstract = cptr.lit("abstract");
+const __s_geometric = cptr.lit("geometric");
+const __s_patterned = cptr.lit("patterned");
+const __s_naturalistic = cptr.lit("naturalistic");
+const __s_kiss_the_cook = cptr.lit("Kiss the cook");
+const __s_i_m_making_science = cptr.lit("I'm making SCIENCE!");
+const __s_don_t_mess_with_the_chef = cptr.lit("Don't mess with the chef");
+const __s_don_t_make_me_poison_you = cptr.lit("Don't make me poison you");
+const __s_gehennom_s_kitchen = cptr.lit("Gehennom's Kitchen");
+const __s_rat_the_other_white_meat = cptr.lit("Rat: The other white meat");
+const __s_if_you_can_t_stand_the_heat_get_out_of = cptr.lit("If you can't stand the heat, get out of Gehennom!");
+const __s_if_we_weren_t_meant_to_eat_animals_why = cptr.lit("If we weren't meant to eat animals, why are they made out of meat?");
+const __s_if_you_don_t_like_the_food_i_ll_stab_you = cptr.lit("If you don't like the food, I'll stab you");
+const __s_i_am_an_alchemist_if_you_see_me_running = cptr.lit("I am an alchemist; if you see me running, try to catch up...");
+const __s_empty = cptr.lit("");
+const __s_apollo = cptr.lit("Apollo");
+const __s_moon_crunchy = cptr.lit("Moon Crunchy");
+const __s_snacky_cake = cptr.lit("Snacky Cake");
+const __s_chocolate_nuggie = cptr.lit("Chocolate Nuggie");
+const __s_the_small_bar = cptr.lit("The Small Bar");
+const __s_crispy_yum_yum = cptr.lit("Crispy Yum Yum");
+const __s_nilla_crunchie = cptr.lit("Nilla Crunchie");
+const __s_berry_bar = cptr.lit("Berry Bar");
+const __s_choco_nummer = cptr.lit("Choco Nummer");
+const __s_om_nom = cptr.lit("Om-nom");
+const __s_fruity_oaty = cptr.lit("Fruity Oaty");
+const __s_wonka_bar = cptr.lit("Wonka Bar");
+const __s_read_c = cptr.lit("read.c");
+const __s_assign_candy_wrapper = cptr.lit("assign_candy_wrapper");
+const __s_read = cptr.lit("read");
+const __s_break_up_the_cookie_and_throw_away_the = cptr.lit("break up the cookie and throw away the pieces.");
+const __s_became_literate_by_reading_a_fortune = cptr.lit("became literate by reading a fortune cookie");
+const __s_s_shirt_is_obscured_by_s_s = cptr.lit("%s shirt is obscured by %s%s.");
+const __s_that = cptr.lit("That");
+const __s_your = cptr.lit("Your");
+const __s_s_features_s = cptr.lit("%s features %s.");
+const __s_the_design = cptr.lit("The design");
+const __s_it = cptr.lit("It");
+const __s_became_literate_by_reading_s = cptr.lit("became literate by reading %s");
+const __s_a_t_shirt = cptr.lit("a T-shirt");
+const __s_an_apron = cptr.lit("an apron");
+const __s_dot_bang_query = cptr.lit(".!?");
+const __s_dot = cptr.lit(".");
+const __s_it_reads = cptr.lit("It reads:");
+const __s_s_s = cptr.lit("\"%s\"%s");
+const __s_dunce = cptr.lit("DUNCE");
+const __s_wizzard = cptr.lit("WIZZARD");
+const __s_find_anything_to_read_on_this_s = cptr.lit("find anything to read on this %s.");
+const __s_s_on_the_s_it_reads_s = cptr.lit("%s on the %s.  It reads:  %s.");
+const __s_there_is_writing = cptr.lit("There is writing");
+const __s_you_feel_lettering = cptr.lit("You feel lettering");
+const __s_a_dunce_cap = cptr.lit("a dunce cap");
+const __s_a_cornuthaum = cptr.lit("a cornuthaum");
+const __s_feel_the_embossed_numbers = cptr.lit("feel the embossed numbers:");
+const __s_quot_pct_s_quot = cptr.lit("\"%s\"");
+const __s_d0_d_ld_d1_0_d_d0_s = cptr.lit("\"%d0%d %ld%d1 0%d%d0\"%s");
+const __s_became_literate_by_reading_a_credit_card = cptr.lit("became literate by reading a credit card");
+const __s_this_s_has_no_label = cptr.lit("This %s has no label.");
+const __s_pct_s = cptr.lit("%s");
+const __s_magic_marker_tm_s_red_ink_marker_pen = cptr.lit("\"Magic Marker(TM) %s Red Ink Marker Pen.  Water Soluble.\"");
+const __s_became_literate_by_reading_a_magic = cptr.lit("became literate by reading a magic marker");
+const __s_feel_the_embossed_words = cptr.lit("feel the embossed words:");
+const __s_read__2 = cptr.lit("read:");
+const __s_1_zorkmid_857_gue_in_frobs_we_trust = cptr.lit("\"1 Zorkmid.  857 GUE.  In Frobs We Trust.\"");
+const __s_became_literate_by_reading_a_coin_s = cptr.lit("became literate by reading a coin's engravings");
+const __s_feel_the_engraved_signature = cptr.lit("feel the engraved signature:");
+const __s_it_is_signed = cptr.lit("It is signed:");
+const __s_odin = cptr.lit("\"Odin.\"");
+const __s_became_literate_by_reading_the_divine = cptr.lit("became literate by reading the divine signature of Odin");
+const __s_the_candy_bar_s_wrapper_is_blank = cptr.lit("The candy bar's wrapper is blank.");
+const __s_the_wrapper_reads_s = cptr.lit("The wrapper reads: \"%s\".");
+const __s_became_literate_by_reading_a_candy_bar = cptr.lit("became literate by reading a candy bar wrapper");
+const __s_words = cptr.lit("words");
+const __s_mystic_runes = cptr.lit("mystic runes");
+const __s_formula_on_the_scroll = cptr.lit("formula on the scroll");
+const __s_being_blind_you_cannot_read_the_s = cptr.lit("Being blind, you cannot read the %s.");
+const __s_reading_mail_will_violate_illiterate = cptr.lit("Reading mail will violate \"illiterate\" conduct.  Read anyway?");
+const __s_a_book = cptr.lit("a book");
+const __s_a_scroll = cptr.lit("a scroll");
+const __s_you_s_the_formula_on_the_scroll = cptr.lit("You %s the formula on the scroll.");
+const __s_as_you_s_the_formula_on_it_the_scroll = cptr.lit("As you %s the formula on it, the scroll disappears.");
+const __s_cogitate = cptr.lit("cogitate");
+const __s_pronounce = cptr.lit("pronounce");
+const __s_you_read_the_scroll = cptr.lit("You read the scroll.");
+const __s_as_you_read_the_scroll_it_disappears = cptr.lit("As you read the scroll, it disappears.");
+const __s_being_so_trippy_you_screw_up = cptr.lit("Being so trippy, you screw up...");
+const __s_being_confused_you_s_the_magic_words = cptr.lit("Being confused, you %s the magic words...");
+const __s_misunderstand = cptr.lit("misunderstand");
+const __s_mispronounce = cptr.lit("mispronounce");
+const __s_leprechaun_gold_tru_t_shamrock_card = cptr.lit("Leprechaun Gold Tru$t - Shamrock Card");
+const __s_magic_memory_vault_charge_card = cptr.lit("Magic Memory Vault Charge Card");
+const __s_larn_national_bank = cptr.lit("Larn National Bank");
+const __s_first_bank_of_omega = cptr.lit("First Bank of Omega");
+const __s_bank_of_zork_frobozz_magic_card = cptr.lit("Bank of Zork - Frobozz Magic Card");
+const __s_ankh_morpork_merchant_s_guild_barter = cptr.lit("Ankh-Morpork Merchant's Guild Barter Card");
+const __s_ankh_morpork_thieves_guild_unlimited = cptr.lit("Ankh-Morpork Thieves' Guild Unlimited Transaction Card");
+const __s_ransmannsby_moneylenders_association = cptr.lit("Ransmannsby Moneylenders Association");
+const __s_bank_of_gehennom_99_interest_card = cptr.lit("Bank of Gehennom - 99% Interest Card");
+const __s_yendorian_express_copper_card = cptr.lit("Yendorian Express - Copper Card");
+const __s_yendorian_express_silver_card = cptr.lit("Yendorian Express - Silver Card");
+const __s_yendorian_express_gold_card = cptr.lit("Yendorian Express - Gold Card");
+const __s_yendorian_express_mithril_card = cptr.lit("Yendorian Express - Mithril Card");
+const __s_yendorian_express_platinum_card = cptr.lit("Yendorian Express - Platinum Card");
+const __s_s_briefly = cptr.lit("%s briefly.");
+const __s_vibrate = cptr.lit("vibrate");
+const __s_glow = cptr.lit("glow");
+const __s_s_s_s_for_a_moment = cptr.lit("%s%s%s for a moment.");
+const __s_sp = cptr.lit(" ");
+const __s_s_feebly_s_s_for_a_moment = cptr.lit("%s feebly%s%s for a moment.");
+const __s_recharge = cptr.lit("recharge");
+const __s_s_momentarily_then_s = cptr.lit("%s momentarily, then %s!");
+const __s_pulsate = cptr.lit("pulsate");
+const __s_explode = cptr.lit("explode");
+const __s_exploding_ring = cptr.lit("exploding ring");
+const __s_s_spins_sclockwise_for_a_moment = cptr.lit("%s spins %sclockwise for a moment.");
+const __s_counter = cptr.lit("counter");
+const __s_marker_seems_permanently_dried_out = cptr.lit("marker seems permanently dried out.");
+const __s_s_out = cptr.lit("%s out!");
+const __s_go = cptr.lit("go");
+const __s_have_a_feeling_of_loss = cptr.lit("have a feeling of loss.");
+const __s_forget = cptr.lit("forget");
+const __s_your_skin_glows_then_fades = cptr.lit("Your skin glows then fades.");
+const __s_your_skin_feels_warm_for_a_moment = cptr.lit("Your skin feels warm for a moment.");
+const __s_s_warm_for_a_moment = cptr.lit("%s warm for a moment.");
+const __s_feel = cptr.lit("feel");
+const __s_s_covered_by_a_s_s_s = cptr.lit("%s covered by a %s %s %s!");
+const __s_are = cptr.lit("are");
+const __s_mottled = cptr.lit("mottled");
+const __s_shimmering = cptr.lit("shimmering");
+const __s_layer = cptr.lit("layer");
+const __s_shield = cptr.lit("shield");
+const __s_s_as_good_as_new = cptr.lit("%s as good as new!");
+const __s_look = cptr.lit("look");
+const __s_seffect_enchant_armor = cptr.lit("seffect_enchant_armor");
+const __s_s_violently_s_s_s_for_a_while_then_s = cptr.lit("%s violently %s%s%s for a while, then %s.");
+const __s_evaporate = cptr.lit("evaporate");
+const __s_s_merges_and_hardens = cptr.lit("%s merges and hardens!");
+const __s_s_s_s_s_s_for_a_s = cptr.lit("%s %s%s%s%s for a %s.");
+const __s_violently = cptr.lit("violently ");
+const __s_while = cptr.lit("while");
+const __s_moment = cptr.lit("moment");
+const __s_s_s__2 = cptr.lit("%s %s.");
+const __s_suddenly_vibrate = cptr.lit("suddenly vibrate");
+const __s_again = cptr.lit("again");
+const __s_unexpectedly = cptr.lit("unexpectedly");
+const __s_disintegrate_cursed_armor = cptr.lit("disintegrate_cursed_armor");
+const __s_your_bones_itch = cptr.lit("Your bones itch.");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_seffect_destroy_armor = cptr.lit("seffect_destroy_armor");
+const __s_this_is_s = cptr.lit("This is %s!");
+const __s_destroy = cptr.lit("destroy");
+const __s_your_skin_itches = cptr.lit("Your skin itches.");
+const __s_confused = cptr.lit("confused.");
+const __s_seffect_confuse_monster = cptr.lit("seffect_confuse_monster");
+const __s_s_begin_to_s_s = cptr.lit("%s begin to %s%s.");
+const __s_tingle = cptr.lit("tingle");
+const __s_glow__2 = cptr.lit("glow ");
+const __s_a_s_s_surrounds_your_s = cptr.lit("A %s%s surrounds your %s.");
+const __s_faint_buzz = cptr.lit("faint buzz");
+const __s_glow__3 = cptr.lit(" glow");
+const __s_s_tingle_s = cptr.lit("%s tingle%s.");
+const __s_even_more = cptr.lit(" even more");
+const __s_s_begin_to_glow_s = cptr.lit("%s begin to glow %s.");
+const __s_s_glow_of_your_s_intensifies = cptr.lit("%s glow of your %s intensifies.");
+const __s_s_tingle_s_sharply = cptr.lit("%s tingle %s sharply.");
+const __s_even_more__2 = cptr.lit("even more");
+const __s_very = cptr.lit("very");
+const __s_s_glow_s_brilliant_s = cptr.lit("%s glow %s brilliant %s.");
+const __s_an_even_more = cptr.lit("an even more");
+const __s_a = cptr.lit("a");
+const __s_sad_wailing = cptr.lit("sad wailing");
+const __s_maniacal_laughter = cptr.lit("maniacal laughter");
+const __s_in_the_distance = cptr.lit("in the distance");
+const __s_close_by = cptr.lit("close by");
+const __s_like_someone_is_helping_you = cptr.lit("like someone is helping you.");
+const __s_like_you_need_some_help = cptr.lit("like you need some help.");
+const __s_in_touch_with_the_universal_oneness = cptr.lit("in touch with the Universal Oneness.");
+const __s_the_power_of_the_force_against_you = cptr.lit("the power of the Force against you!");
+const __s_scroll_disintegrates = cptr.lit("scroll disintegrates.");
+const __s_amber = cptr.lit("amber");
+const __s_clasp_on_your_s_vanishes = cptr.lit("clasp on your %s vanishes.");
+const __s_seffect_create_monster = cptr.lit("seffect_create_monster");
+const __s_weapon_feels_warm_for_a_moment = cptr.lit("weapon feels warm for a moment.");
+const __s_seffect_enchant_weapon = cptr.lit("seffect_enchant_weapon");
+const __s_nothing_interesting_s = cptr.lit("Nothing interesting %s.");
+const __s_happens = cptr.lit("happens");
+const __s_seems_to_happen = cptr.lit("seems to happen");
+const __s_neighborhood_s_sfriendlier = cptr.lit("neighborhood %s %sfriendlier.");
+const __s_is = cptr.lit("is");
+const __s_seems = cptr.lit("seems");
+const __s_un = cptr.lit("un");
+const __s_have_found_a_scroll_of_genocide = cptr.lit("have found a scroll of genocide!");
+const __s_tiny_lights_sparkle_in_the_air = cptr.lit("Tiny lights sparkle in the air momentarily.");
+const __s_seffect_light = cptr.lit("seffect_light");
+const __s_lights_appear_all_around_you = cptr.lit("Lights appear all around you!");
+const __s_discharged = cptr.lit("discharged.");
+const __s_charged_up = cptr.lit("charged up!");
+const __s_seffect_charging = cptr.lit("seffect_charging");
+const __s_this_is_a_charging_scroll = cptr.lit("This is a charging scroll.");
+const __s_charge = cptr.lit("charge");
+const __s_mind_releases_itself_from_mundane = cptr.lit("mind releases itself from mundane concerns.");
+const __s_maud = cptr.lit("Maud");
+const __s_as_your_mind_turns_inward_on_itself_you = cptr.lit("As your mind turns inward on itself, you forget everything else.");
+const __s_seffect_amnesia = cptr.lit("seffect_amnesia");
+const __s_who_was_that_maud_person_anyway = cptr.lit("Who was that Maud person anyway?");
+const __s_thinking_of_maud_you_forget_everything = cptr.lit("Thinking of Maud you forget everything else.");
+const __s_seffect_fire = cptr.lit("seffect_fire");
+const __s_a_little_s_around_you_vaporizes = cptr.lit("A little %s around you vaporizes.");
+const __s_water = cptr.lit("water");
+const __s_oh_look_what_a_pretty_fire_in_your_s = cptr.lit("Oh, look, what a pretty fire in your %s.");
+const __s_a_pleasant_warmth_in_your_s = cptr.lit("a pleasant warmth in your %s.");
+const __s_scroll_catches_fire_and_you_burn_your_s = cptr.lit("scroll catches fire and you burn your %s.");
+const __s_scroll_of_fire = cptr.lit("scroll of fire");
+const __s_s_around_you_vaporizes_violently = cptr.lit("%s around you vaporizes violently!");
+const __s_this_is_a_scroll_of_fire = cptr.lit("This is a scroll of fire!");
+const __s_where_do_you_want_to_center_the = cptr.lit("Where do you want to center the explosion?");
+const __s_the_desired_position = cptr.lit("the desired position");
+const __s_scroll_erupts_in_a_tower_of_flame = cptr.lit("scroll erupts in a tower of flame!");
+const __s_rumbling = cptr.lit("rumbling.");
+const __s_s_rumbles_s_you = cptr.lit("%s rumbles %s you!");
+const __s_around = cptr.lit("around");
+const __s_above = cptr.lit("above");
+const __s_avalanche = cptr.lit("avalanche");
+const __s_s_of_boulders_s_s_you = cptr.lit("%s of boulders %s %s you!");
+const __s_materialize = cptr.lit("materialize");
+const __s_but_nothing_else_happens = cptr.lit("But nothing else happens.");
+const __s_guilty = cptr.lit("guilty.");
+const __s_have_found_a_scroll_of_stinking_cloud = cptr.lit("have found a scroll of stinking cloud!");
+const __s_don_t_remember_there_being_any_magic = cptr.lit("don't remember there being any magic words on this scroll.");
+const __s_this_scroll_seems_to_be_blank = cptr.lit("This scroll seems to be blank.");
+const __s_identify_this_as_an_identify_scroll = cptr.lit("identify this as an identify scroll.");
+const __s_this_is_an_identify_scroll = cptr.lit("This is an identify scroll.");
+const __s_seffect_identify = cptr.lit("seffect_identify");
+const __s_you_re_not_carrying_anything_s_to_be = cptr.lit("You're not carrying anything%s to be identified.");
+const __s_else = cptr.lit(" else");
+const __s_mind_is_filled_with_crazy_lines = cptr.lit("mind is filled with crazy lines!");
+const __s_wow_modern_art = cptr.lit("Wow!  Modern art.");
+const __s_s_spins_in_bewilderment = cptr.lit("%s spins in bewilderment.");
+const __s_seffect_magic_mapping = cptr.lit("seffect_magic_mapping");
+const __s_s_spins_as_s_blocks_the_spell = cptr.lit("%s spins as %s blocks the spell!");
+const __s_a_map_coalesces_in_your_mind = cptr.lit("A map coalesces in your mind!");
+const __s_mon_notices_blocked_0 = cptr.lit("mon_notices_blocked<0");
+const __s_unfortunately_you_can_t_grasp_the = cptr.lit("Unfortunately, you can't grasp the details.");
+const __s_this_scroll_is_marked_s = cptr.lit("This scroll is marked \"%s\".");
+const __s_postage_due = cptr.lit("Postage Due");
+const __s_return_to_sender = cptr.lit("Return to Sender");
+const __s_this_seems_to_be_s = cptr.lit("This seems to be %s.");
+const __s_a_chain_letter_threatening_your_luck = cptr.lit("a chain letter threatening your luck");
+const __s_junk_mail_addressed_to_the_finder_of = cptr.lit("junk mail addressed to the finder of the Eye of Larn");
+const __s_what_weird_effect_is_this_u = cptr.lit("What weird effect is this? (%u)");
+const __s_drop_boulder_on_player = cptr.lit("drop_boulder_on_player");
+const __s_are_hit_by_s = cptr.lit("are hit by %s!");
+const __s_fortunately_you_are_wearing_a_hard = cptr.lit("Fortunately, you are wearing a hard helmet.");
+const __s_s_does_not_protect_you = cptr.lit("%s does not protect you.");
+const __s_fall = cptr.lit("fall");
+const __s_scroll_of_earth = cptr.lit("scroll of earth");
+const __s_drop_boulder_on_monster = cptr.lit("drop_boulder_on_monster");
+const __s_s_is_hit_by_s = cptr.lit("%s is hit by %s!");
+const __s_something_hit_s_s_over_your_s = cptr.lit("something hit %s %s over your %s!");
+const __s_fortunately_s_is_wearing_a_hard_helmet = cptr.lit("Fortunately, %s is wearing a hard helmet.");
+const __s_a_clanging_sound = cptr.lit("a clanging sound.");
+const __s_s_s_s_does_not_protect_s = cptr.lit("%s's %s does not protect %s.");
+const __s_s_is_killed = cptr.lit("%s is killed.");
+const __s_suddenly = cptr.lit("suddenly");
+const __s_vibrates_violently_and = cptr.lit("vibrates violently and");
+const __s_wand_explode = cptr.lit("wand_explode");
+const __s_s_s_explodes = cptr.lit("%s %s explodes!");
+const __s_exploding_wand = cptr.lit("exploding wand");
+const __s_ambient_light_seems_dimmer = cptr.lit("ambient light seems dimmer.");
+const __s_it_seems_even_darker_in_here_than_before = cptr.lit("It seems even darker in here than before.");
+const __s_are_surrounded_by_darkness = cptr.lit("are surrounded by darkness!");
+const __s_s_s_is_lit = cptr.lit("%s %s is lit.");
+const __s_s_shines_briefly = cptr.lit("%s shines briefly.");
+const __s_s_glistens = cptr.lit("%s glistens.");
+const __s_a_lit_field_ssurrounds_you = cptr.lit("A lit field %ssurrounds you!");
+const __s_briefly = cptr.lit("briefly ");
+const __s_litroom = cptr.lit("litroom");
+const __s_what_class_of_monsters_do_you_want_to = cptr.lit("What class of monsters do you want to genocide?");
+const __s_do_class_genocide = cptr.lit("do_class_genocide");
+const __s_enter_s = cptr.lit(" [enter %s]");
+const __s_the_symbol_or_name_representing_a_class = cptr.lit("the symbol or name representing a class, or '?'");
+const __s_to_see_previous_genocides = cptr.lit("'?' to see previous genocides");
+const __s_type_letter_or_punctuation_or_name_used = cptr.lit("Type letter (or punctuation) or name used for a class of monsters or 'none'");
+const __s_no_class_of_monsters_specified = cptr.lit("No class of monsters specified");
+const __s_none = cptr.lit("none");
+const __s_none__2 = cptr.lit("'none'");
+const __s_nothing = cptr.lit("nothing");
+const __s_declined_to_perform_class_genocide = cptr.lit("declined to perform class genocide");
+const __s_query = cptr.lit("?");
+const __s_apos_query_apos = cptr.lit("'?'");
+const __s_all_such_monsters_are_already = cptr.lit("All such monsters are already nonexistent.");
+const __s_aren_t_permitted_to_genocide_such = cptr.lit("aren't permitted to genocide such monsters.");
+const __s_eliminated_d_monster_s = cptr.lit("Eliminated %d monster%s.");
+const __s_s = cptr.lit("s");
+const __s_that_s_does_not_represent_any_monster = cptr.lit("That %s does not represent any monster.");
+const __s_symbol = cptr.lit("symbol");
+const __s_response = cptr.lit("response");
+const __s_performed_s_first_genocide_class_c = cptr.lit("performed %s first genocide (class %c)");
+const __s_genocided_class_c = cptr.lit("genocided class %c");
+const __s_wiped_out_all_s = cptr.lit("Wiped out all %s.");
+const __s_you_die = cptr.lit("You die.");
+const __s_s_inside = cptr.lit("%s inside.");
+const __s_s_are_already_nonexistent = cptr.lit("%s are already nonexistent.");
+const __s_aren_t_permitted_to_genocide_s_s = cptr.lit("aren't permitted to genocide %s%s.");
+const __s_the = cptr.lit("the ");
+const __s_scroll_of_genocide = cptr.lit("scroll of genocide");
+const __s_what_type_of_monster_do_you_want_to = cptr.lit("What type of monster do you want to genocide?");
+const __s_do_genocide = cptr.lit("do_genocide");
+const __s_the_name_of_a_type_of_monster_or = cptr.lit("the name of a type of monster, or '?'");
+const __s_type_the_name_of_a_type_of_monster_or = cptr.lit("Type the name of a type of monster or 'none'");
+const __s_no_type_of_monster_specified = cptr.lit("No type of monster specified");
+const __s_declined_to_perform_genocide = cptr.lit("declined to perform genocide");
+const __s_such_creatures_s_exist_in_this_world = cptr.lit("Such creatures %s exist in this world.");
+const __s_do_not = cptr.lit("do not");
+const __s_no_longer = cptr.lit("no longer");
+const __s_a_thunderous_voice_booms_through_the = cptr.lit("A thunderous voice booms through the caverns:");
+const __s_no_mortal_that_will_not_be_done = cptr.lit("No, mortal!  That will not be done.");
+const __s_all = cptr.lit("all ");
+const __s_performed_s_first_genocide_s = cptr.lit("performed %s first genocide (%s)");
+const __s_genocided_s = cptr.lit("genocided %s");
+const __s_wiped_out_s_s = cptr.lit("Wiped out %s%s.");
+const __s_genocidal_confusion = cptr.lit("genocidal confusion");
+const __s_imperious_order = cptr.lit("imperious order");
+const __s_sent_in_s_s = cptr.lit("Sent in %s%s.");
+const __s_some = cptr.lit("some ");
+const __s_are_being_punished_for_your_misbehavior = cptr.lit("are being punished for your misbehavior!");
+const __s_iron_ball_gets_heavier = cptr.lit("iron ball gets heavier.");
+const __s_a_ball_and_chain_appears_then_falls_away = cptr.lit("A ball and chain appears, then falls away.");
+const __s_where_do_you_want_to_center_the_scloud = cptr.lit("Where do you want to center the %scloud?");
+const __s_stinking = cptr.lit("stinking ");
+const __s_ugh_someone_cut_the_cheese = cptr.lit("Ugh... someone cut the cheese.");
+const __s_s_a_whiff_of_rotten_eggs = cptr.lit("%s a whiff of rotten eggs.");
+const __s_the_scroll_crumbles_with = cptr.lit("The scroll crumbles with");
+const __s_you_smell = cptr.lit("You smell");
+const __s_saddled = cptr.lit("saddled ");
+const __s_sleeping = cptr.lit("sleeping ");
+const __s_invisible = cptr.lit("invisible ");
+const __s_hidden = cptr.lit("hidden ");
+const __s_female = cptr.lit("female ");
+const __s_male = cptr.lit("male ");
+const __s_tame = cptr.lit("tame ");
+const __s_peaceful = cptr.lit("peaceful ");
+const __s_hostile = cptr.lit("hostile ");
+const __s_star = cptr.lit("*");
+const __s_random = cptr.lit("random");
+const __s_creating_s_instead_force_s = cptr.lit("Creating %s instead; force %s?");
+const __s_create_what_kind_of_monster = cptr.lit("Create what kind of monster?");
+const __s_i_ve_never_heard_of_such_monsters = cptr.lit("I've never heard of such monsters.");
+const __s_try_again_type_for_random_esc_to_cancel = cptr.lit("Try again (type * for random, ESC to cancel).");
+const __s_type_name_or_symbol = cptr.lit(" [type name or symbol]");
 
 /** C ref: read.c:58 — @param {CInt} scrolltyp @returns {CInt} */
 function learnscrolltyp(scrolltyp) {
@@ -633,76 +633,76 @@ function erode_obj_text(otmp, buf) {
 }
 
 const __static_tshirt_text_shirt_msgs = cptr.alloc(70 * 8);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 0, __sl0);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 8, __sl1);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 16, __sl2);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 24, __sl3);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 32, __sl4);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 40, __sl5);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 48, __sl6);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 56, __sl7);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 64, __sl8);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 72, __sl9);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 80, __sl10);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 88, __sl11);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 96, __sl12);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 104, __sl13);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 112, __sl14);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 120, __sl15);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 128, __sl16);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 136, __sl17);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 144, __sl18);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 152, __sl19);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 160, __sl20);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 168, __sl21);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 176, __sl22);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 184, __sl23);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 192, __sl24);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 200, __sl25);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 208, __sl26);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 216, __sl27);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 224, __sl28);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 232, __sl29);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 240, __sl30);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 248, __sl31);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 256, __sl32);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 264, __sl33);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 272, __sl34);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 280, __sl35);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 288, __sl36);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 296, __sl37);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 304, __sl38);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 312, __sl39);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 320, __sl40);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 328, __sl41);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 336, __sl42);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 344, (__sl43));
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 352, __sl44);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 360, __sl45);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 368, __sl46);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 376, __sl47);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 384, __sl48);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 392, __sl49);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 400, __sl50);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 408, __sl51);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 416, __sl52);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 424, __sl53);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 432, __sl54);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 440, __sl55);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 448, __sl56);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 456, __sl57);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 464, __sl58);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 472, __sl59);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 480, __sl60);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 488, __sl61);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 496, __sl62);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 504, __sl63);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 512, __sl64);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 520, __sl65);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 528, __sl66);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 536, __sl67);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 544, __sl68);
-cptr.stPtro(__static_tshirt_text_shirt_msgs, 552, __sl69); /** C ref: read.c:102 — char *[70] (function-static) */
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 0, __s_i_explored_the_dungeons_of_doom_and_all);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 8, __s_is_that_mjollnir_in_your_pocket_or_are);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 16, __s_it_s_not_the_size_of_your_sword_it_s);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 24, __s_madame_elvira_s_house_o_succubi);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 32, __s_madame_elvira_s_house_o_succubi__2);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 40, __s_ludios_vault_guards_do_it_in_small_dark);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 48, __s_yendor_military_soldiers_do_it_in_large);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 56, __s_i_survived_yendor_military_boot_camp);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 64, __s_ludios_accounting_school_intra_mural);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 72, __s_oracle_tm_fountains_10th_annual_wet_t);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 80, __s_hey_black_dragon_disintegrate_this);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 88, __s_i_m_with_stupid);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 96, __s_don_t_blame_me_i_voted_for_izchak);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 104, __s_don_t_panic);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 112, __s_furinkan_high_school_athletic_dept);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 120, __s_hel_looo_nurse);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 128, __s_eq_caret_dot_caret_eq);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 136, __s_100_goblin_hair_do_not_wash);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 144, __s_aberzombie_and_fitch);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 152, __s_ck_cockatrice_touches_the_kop);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 160, __s_don_t_ask_me_i_only_adventure_here);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 168, __s_down_with_pants);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 176, __s_d_your_dog_or_a_killer);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 184, __s_free_pug_and_newt);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 192, __s_go_team_ant);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 200, __s_got_newt);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 208, __s_hello_my_darlings);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 216, __s_hey_nymphs_steal_this_t_shirt);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 224, __s_i_3_dungeon_of_doom);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 232, __s_i_3_maud);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 240, __s_i_am_a_valkyrie_if_you_see_me_running);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 248, __s_i_am_not_a_pack_rat_i_am_a_collector);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 256, __s_i_bounced_off_a_rubber_tree);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 264, __s_plunder_island_brimstone_beach_club);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 272, __s_if_you_can_read_this_i_can_hit_you_with);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 280, __s_i_m_confused);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 288, __s_i_scored_with_the_princess);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 296, __s_i_want_to_live_forever_or_die_in_the);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 304, __s_lichen_park);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 312, __s_lost_in_thought_please_send_search_party);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 320, __s_meat_is_mordor);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 328, __s_minetown_better_business_bureau);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 336, __s_minetown_watch);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 344, (__s_ms_palm_s_house_of_negotiable_affection));
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 352, __s_protection_racketeer);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 360, __s_real_men_love_crom);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 368, __s_somebody_stole_my_mojo);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 376, __s_the_hellhound_gang);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 384, __s_the_werewolves);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 392, __s_they_might_be_storm_giants);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 400, __s_weapons_don_t_kill_people_i_kill_people);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 408, __s_white_zombie);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 416, __s_you_re_killing_me);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 424, __s_anhur_state_university_home_of_the);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 432, __s_free_hugs);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 440, __s_serial_ascender);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 448, __s_real_men_are_valkyries);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 456, __s_young_men_s_cavedigging_association);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 464, __s_occupy_fort_ludios);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 472, __s_i_couldn_t_afford_this_t_shirt_so_i);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 480, __s_mind_flayers_suck);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 488, __s_i_m_not_wearing_any_pants);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 496, __s_down_with_the_living);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 504, __s_pudding_farmer);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 512, __s_vegetarian);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 520, __s_hello_i_m_war);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 528, __s_it_is_better_to_light_a_candle_than_to);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 536, __s_it_is_easier_to_curse_the_darkness_than);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 544, __s_rock_paper_scissors_lizard_spock);
+cptr.stPtro(__static_tshirt_text_shirt_msgs, 552, __s_valar_morghulis_valar_dohaeris); /** C ref: read.c:102 — char *[70] (function-static) */
 
 /** C ref: read.c:100 — @param {CPtr<struct obj>} tshirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function tshirt_text(tshirt, buf) {
@@ -711,22 +711,22 @@ export function tshirt_text(tshirt, buf) {
 }
 
 const __static_hawaiian_motif_hawaiian_motifs = cptr.alloc(16 * 8);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 0, __sl70);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 8, __sl71);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 16, __sl72);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 24, __sl73);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 32, __sl74);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 40, __sl75);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 48, __sl76);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 56, __sl77);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 64, __sl78);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 72, __sl79);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 80, __sl80);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 88, __sl81);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 96, __sl82);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 104, __sl83);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 112, __sl84);
-cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 120, __sl85); /** C ref: read.c:192 — char *[16] (function-static) */
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 0, __s_flamingo);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 8, __s_parrot);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 16, __s_toucan);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 24, __s_bird_of_paradise);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 32, __s_sea_turtle);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 40, __s_tropical_fish);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 48, __s_jellyfish);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 56, __s_giant_eel);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 64, __s_water_nymph);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 72, __s_plumeria);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 80, __s_orchid);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 88, __s_hibiscus_flower);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 96, __s_palm_tree);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 104, __s_hula_dancer);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 112, __s_sailboat);
+cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 120, __s_ukulele); /** C ref: read.c:192 — char *[16] (function-static) */
 
 /** C ref: read.c:190 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function hawaiian_motif(shirt, buf) {
@@ -736,36 +736,36 @@ export function hawaiian_motif(shirt, buf) {
 }
 
 const __static_hawaiian_design_hawaiian_bgs = cptr.alloc(11 * 8);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 0, __sl87);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 8, __sl88);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 16, __sl89);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 24, __sl90);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 32, __sl91);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 40, __sl92);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 48, __sl93);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 56, __sl94);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 64, __sl95);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 72, __sl96);
-cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 80, __sl97); /** C ref: read.c:226 — char *[11] (function-static) */
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 0, __s_purple);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 8, __s_yellow);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 16, __s_red);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 24, __s_blue);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 32, __s_orange);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 40, __s_black);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 48, __s_green);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 56, __s_abstract);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 64, __s_geometric);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 72, __s_patterned);
+cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 80, __s_naturalistic); /** C ref: read.c:226 — char *[11] (function-static) */
 
 /** C ref: read.c:224 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 function hawaiian_design(shirt, buf) {
     let bg = (cptr.ldI32o(shirt, $obj_o_id) ^ Number(BigInt.asUintN(32, BigInt.asIntN(64, ~ubirthday.v)))) >>> 0;
-    void cptr.sprintf(buf, __sl86, makeplural(hawaiian_motif(shirt, buf)), an(cptr.ldPtro(__static_hawaiian_design_hawaiian_bgs, u32mod(bg, 11 >>> 0), 8)));
+    void cptr.sprintf(buf, __s_s_on_s_background, makeplural(hawaiian_motif(shirt, buf)), an(cptr.ldPtro(__static_hawaiian_design_hawaiian_bgs, u32mod(bg, 11 >>> 0), 8)));
     return buf;
 }
 
 const __static_apron_text_apron_msgs = cptr.alloc(10 * 8);
-cptr.stPtro(__static_apron_text_apron_msgs, 0, __sl98);
-cptr.stPtro(__static_apron_text_apron_msgs, 8, __sl99);
-cptr.stPtro(__static_apron_text_apron_msgs, 16, __sl100);
-cptr.stPtro(__static_apron_text_apron_msgs, 24, __sl101);
-cptr.stPtro(__static_apron_text_apron_msgs, 32, __sl102);
-cptr.stPtro(__static_apron_text_apron_msgs, 40, __sl103);
-cptr.stPtro(__static_apron_text_apron_msgs, 48, __sl104);
-cptr.stPtro(__static_apron_text_apron_msgs, 56, __sl105);
-cptr.stPtro(__static_apron_text_apron_msgs, 64, __sl106);
-cptr.stPtro(__static_apron_text_apron_msgs, 72, __sl107); /** C ref: read.c:256 — char *[10] (function-static) */
+cptr.stPtro(__static_apron_text_apron_msgs, 0, __s_kiss_the_cook);
+cptr.stPtro(__static_apron_text_apron_msgs, 8, __s_i_m_making_science);
+cptr.stPtro(__static_apron_text_apron_msgs, 16, __s_don_t_mess_with_the_chef);
+cptr.stPtro(__static_apron_text_apron_msgs, 24, __s_don_t_make_me_poison_you);
+cptr.stPtro(__static_apron_text_apron_msgs, 32, __s_gehennom_s_kitchen);
+cptr.stPtro(__static_apron_text_apron_msgs, 40, __s_rat_the_other_white_meat);
+cptr.stPtro(__static_apron_text_apron_msgs, 48, __s_if_you_can_t_stand_the_heat_get_out_of);
+cptr.stPtro(__static_apron_text_apron_msgs, 56, __s_if_we_weren_t_meant_to_eat_animals_why);
+cptr.stPtro(__static_apron_text_apron_msgs, 64, __s_if_you_don_t_like_the_food_i_ll_stab_you);
+cptr.stPtro(__static_apron_text_apron_msgs, 72, __s_i_am_an_alchemist_if_you_see_me_running); /** C ref: read.c:256 — char *[10] (function-static) */
 
 /** C ref: read.c:254 — @param {CPtr<struct obj>} apron @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function apron_text(apron, buf) {
@@ -775,19 +775,19 @@ export function apron_text(apron, buf) {
 
 /** C ref: read.c:283 — char *[13] */
 const candy_wrappers = cptr.alloc(13 * 8);
-cptr.stPtro(candy_wrappers, 0, __sl108);
-cptr.stPtro(candy_wrappers, 8, __sl109);
-cptr.stPtro(candy_wrappers, 16, __sl110);
-cptr.stPtro(candy_wrappers, 24, __sl111);
-cptr.stPtro(candy_wrappers, 32, __sl112);
-cptr.stPtro(candy_wrappers, 40, __sl113);
-cptr.stPtro(candy_wrappers, 48, __sl114);
-cptr.stPtro(candy_wrappers, 56, __sl115);
-cptr.stPtro(candy_wrappers, 64, __sl116);
-cptr.stPtro(candy_wrappers, 72, __sl117);
-cptr.stPtro(candy_wrappers, 80, __sl118);
-cptr.stPtro(candy_wrappers, 88, __sl119);
-cptr.stPtro(candy_wrappers, 96, __sl120);
+cptr.stPtro(candy_wrappers, 0, __s_empty);
+cptr.stPtro(candy_wrappers, 8, __s_apollo);
+cptr.stPtro(candy_wrappers, 16, __s_moon_crunchy);
+cptr.stPtro(candy_wrappers, 24, __s_snacky_cake);
+cptr.stPtro(candy_wrappers, 32, __s_chocolate_nuggie);
+cptr.stPtro(candy_wrappers, 40, __s_the_small_bar);
+cptr.stPtro(candy_wrappers, 48, __s_crispy_yum_yum);
+cptr.stPtro(candy_wrappers, 56, __s_nilla_crunchie);
+cptr.stPtro(candy_wrappers, 64, __s_berry_bar);
+cptr.stPtro(candy_wrappers, 72, __s_choco_nummer);
+cptr.stPtro(candy_wrappers, 80, __s_om_nom);
+cptr.stPtro(candy_wrappers, 88, __s_fruity_oaty);
+cptr.stPtro(candy_wrappers, 96, __s_wonka_bar);
 
 /** C ref: read.c:296 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function candy_wrapper_text(obj) {
@@ -797,7 +797,7 @@ export function candy_wrapper_text(obj) {
 /** C ref: read.c:304 — @param {CPtr<struct obj>} obj */
 export function assign_candy_wrapper(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDY_BAR) {
-        cptr.st1o(obj, $obj_spe, schar(((1 + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 308, __sl122), rn2((13 - 1) | 0)) : rn2((13 - 1) | 0))) | 0)));
+        cptr.st1o(obj, $obj_spe, schar(((1 + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 308, __s_assign_candy_wrapper), rn2((13 - 1) | 0)) : rn2((13 - 1) | 0))) | 0)));
     }
     return;
 }
@@ -813,20 +813,20 @@ function read_ok(obj) {
 
 const __static_doread_find_any_braille = cptr.bytes("feel any Braille writing."); /** C ref: read.c:332 — char[26] (function-static) */
 const __static_doread_card_msgs = cptr.alloc(14 * 8);
-cptr.stPtro(__static_doread_card_msgs, 0, __sl183);
-cptr.stPtro(__static_doread_card_msgs, 8, __sl184);
-cptr.stPtro(__static_doread_card_msgs, 16, __sl185);
-cptr.stPtro(__static_doread_card_msgs, 24, __sl186);
-cptr.stPtro(__static_doread_card_msgs, 32, __sl187);
-cptr.stPtro(__static_doread_card_msgs, 40, __sl188);
-cptr.stPtro(__static_doread_card_msgs, 48, __sl189);
-cptr.stPtro(__static_doread_card_msgs, 56, __sl190);
-cptr.stPtro(__static_doread_card_msgs, 64, __sl191);
-cptr.stPtro(__static_doread_card_msgs, 72, __sl192);
-cptr.stPtro(__static_doread_card_msgs, 80, __sl193);
-cptr.stPtro(__static_doread_card_msgs, 88, __sl194);
-cptr.stPtro(__static_doread_card_msgs, 96, __sl195);
-cptr.stPtro(__static_doread_card_msgs, 104, __sl196); /** C ref: read.c:450 — char *[14] (function-static) */
+cptr.stPtro(__static_doread_card_msgs, 0, __s_leprechaun_gold_tru_t_shamrock_card);
+cptr.stPtro(__static_doread_card_msgs, 8, __s_magic_memory_vault_charge_card);
+cptr.stPtro(__static_doread_card_msgs, 16, __s_larn_national_bank);
+cptr.stPtro(__static_doread_card_msgs, 24, __s_first_bank_of_omega);
+cptr.stPtro(__static_doread_card_msgs, 32, __s_bank_of_zork_frobozz_magic_card);
+cptr.stPtro(__static_doread_card_msgs, 40, __s_ankh_morpork_merchant_s_guild_barter);
+cptr.stPtro(__static_doread_card_msgs, 48, __s_ankh_morpork_thieves_guild_unlimited);
+cptr.stPtro(__static_doread_card_msgs, 56, __s_ransmannsby_moneylenders_association);
+cptr.stPtro(__static_doread_card_msgs, 64, __s_bank_of_gehennom_99_interest_card);
+cptr.stPtro(__static_doread_card_msgs, 72, __s_yendorian_express_copper_card);
+cptr.stPtro(__static_doread_card_msgs, 80, __s_yendorian_express_silver_card);
+cptr.stPtro(__static_doread_card_msgs, 88, __s_yendorian_express_gold_card);
+cptr.stPtro(__static_doread_card_msgs, 96, __s_yendorian_express_mithril_card);
+cptr.stPtro(__static_doread_card_msgs, 104, __s_yendorian_express_platinum_card); /** C ref: read.c:450 — char *[14] (function-static) */
 const __static_doread_red_mons = cptr.alloc(14 * 4);
 cptr.stI32o(__static_doread_red_mons, 0, NHC.PM_FIRE_ANT);
 cptr.stI32o(__static_doread_red_mons, 4, NHC.PM_PYROLISK);
@@ -852,18 +852,18 @@ export function doread() {
     cptr.st1o(gk, $instance_globals_k_known, 0);
     if (check_capacity(null))
         return NHM.ECMD_OK;
-    scroll = getobj(__sl123, read_ok, NHM.GETOBJ_PROMPT);
+    scroll = getobj(__s_read, read_ok, NHM.GETOBJ_PROMPT);
     if (!scroll)
         return NHM.ECMD_CANCEL;
     otyp = cptr.ldI16o(scroll, $obj_otyp);
     cptr.stI32o(scroll, $obj_pickup_prev, 0);
     if (otyp == NHC.FORTUNE_COOKIE) {
         if (cptr.ld1so(flags, $flag_verbose))
-            You(__sl124);
+            You(__s_break_up_the_cookie_and_throw_away_the);
         outrumor(bcsign(scroll), NHM.BY_COOKIE);
         if (!Blind())
             if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-                livelog_printf(32n, __sl125);
+                livelog_printf(32n, __s_became_literate_by_reading_a_fortune);
         useup(scroll);
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.T_SHIRT || otyp == NHC.ALCHEMY_SMOCK || otyp == NHC.HAWAIIAN_SHIRT) {
@@ -875,50 +875,50 @@ export function doread() {
             return NHM.ECMD_OK;
         }
         if ((otyp == NHC.T_SHIRT || otyp == NHC.HAWAIIAN_SHIRT) && uarm.v && cptr.eq(scroll, uarmu.v)) {
-            pline(__sl126, (cptr.ldI32o(scroll, $obj_unpaid) & 1) | 0 ? __sl127 : __sl128, shk_your(cptr.decay(buf), uarm.v), suit_simple_name(uarm.v));
+            pline(__s_s_shirt_is_obscured_by_s_s, (cptr.ldI32o(scroll, $obj_unpaid) & 1) | 0 ? __s_that : __s_your, shk_your(cptr.decay(buf), uarm.v), suit_simple_name(uarm.v));
             return NHM.ECMD_OK;
         }
         if (otyp == NHC.HAWAIIAN_SHIRT) {
-            pline(__sl129, cptr.ld1so(flags, $flag_verbose) ? __sl130 : __sl131, hawaiian_design(scroll, cptr.decay(buf)));
+            pline(__s_s_features_s, cptr.ld1so(flags, $flag_verbose) ? __s_the_design : __s_it, hawaiian_design(scroll, cptr.decay(buf)));
             return NHM.ECMD_TIME;
         }
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl132, (cptr.ldI16o(scroll, $obj_otyp) == NHC.T_SHIRT) ? __sl133 : __sl134);
+            livelog_printf(32n, __s_became_literate_by_reading_s, (cptr.ldI16o(scroll, $obj_otyp) == NHC.T_SHIRT) ? __s_a_t_shirt : __s_an_apron);
         mesg = (otyp == NHC.T_SHIRT) ? tshirt_text(scroll, cptr.decay(buf)) : apron_text(scroll, cptr.decay(buf));
-        endpunct = __sl108;
+        endpunct = __s_empty;
         if (cptr.ld1so(flags, $flag_verbose)) {
             let ln = Number(BigInt.asIntN(32, cptr.strlen(mesg)));
-            if (ln > 0 && !cptr.strchr(__sl135, cptr.ld1so(mesg, (ln - 1) | 0)))
-                endpunct = __sl136;
-            pline(__sl137);
+            if (ln > 0 && !cptr.strchr(__s_dot_bang_query, cptr.ld1so(mesg, (ln - 1) | 0)))
+                endpunct = __s_dot;
+            pline(__s_it_reads);
         }
-        pline(__sl138, mesg, endpunct);
+        pline(__s_s_s, mesg, endpunct);
         return NHM.ECMD_TIME;
     } else if ((otyp == NHC.DUNCE_CAP || otyp == NHC.CORNUTHAUM) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST)) {
-        let cap_text = (otyp == NHC.DUNCE_CAP) ? __sl139 : __sl140;
+        let cap_text = (otyp == NHC.DUNCE_CAP) ? __s_dunce : __s_wizzard;
         if (u32mod(cptr.ldI32o(scroll, $obj_o_id), 3)) {
-            You_cant(__sl141, simpleonames(scroll));
+            You_cant(__s_find_anything_to_read_on_this_s, simpleonames(scroll));
             return NHM.ECMD_OK;
         }
-        pline(__sl142, !Blind() ? __sl143 : __sl144, simpleonames(scroll), cap_text);
+        pline(__s_s_on_the_s_it_reads_s, !Blind() ? __s_there_is_writing : __s_you_feel_lettering, simpleonames(scroll), cap_text);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl132, (otyp == NHC.DUNCE_CAP) ? __sl145 : __sl146);
+            livelog_printf(32n, __s_became_literate_by_reading_s, (otyp == NHC.DUNCE_CAP) ? __s_a_dunce_cap : __s_a_cornuthaum);
         trycall(scroll);
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CREDIT_CARD) {
         if (Blind()) {
-            You(__sl147);
+            You(__s_feel_the_embossed_numbers);
         } else {
             if (cptr.ld1so(flags, $flag_verbose))
-                pline(__sl137);
-            pline(__sl148, cptr.ld1so(scroll, $obj_oartifact) ? cptr.ldPtro(__static_doread_card_msgs, (14 - 1) | 0, 8) : cptr.ldPtro(__static_doread_card_msgs, u32mod(cptr.ldI32o(scroll, $obj_o_id), ((14 - 1) | 0) >>> 0), 8));
+                pline(__s_it_reads);
+            pline(__s_quot_pct_s_quot, cptr.ld1so(scroll, $obj_oartifact) ? cptr.ldPtro(__static_doread_card_msgs, (14 - 1) | 0, 8) : cptr.ldPtro(__static_doread_card_msgs, u32mod(cptr.ldI32o(scroll, $obj_o_id), ((14 - 1) | 0) >>> 0), 8));
         }
-        pline(__sl149, ((((cptr.ldI32o(scroll, $obj_o_id) | 0) % 89) + 10) | 0), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 4), (BigInt.asIntN(64, ((BigInt.asIntN(64, BigInt(cptr.ldI32o(scroll, $obj_o_id) >>> 0) * 499n)) % 899999n) + 100000n)), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 10), (!((cptr.ldI32o(scroll, $obj_o_id) | 0) % 3)), ((Math.imul(cptr.ldI32o(scroll, $obj_o_id) | 0, 7)) % 10), (cptr.ld1so(flags, $flag_verbose) || Blind()) ? __sl136 : __sl108);
+        pline(__s_d0_d_ld_d1_0_d_d0_s, ((((cptr.ldI32o(scroll, $obj_o_id) | 0) % 89) + 10) | 0), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 4), (BigInt.asIntN(64, ((BigInt.asIntN(64, BigInt(cptr.ldI32o(scroll, $obj_o_id) >>> 0) * 499n)) % 899999n) + 100000n)), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 10), (!((cptr.ldI32o(scroll, $obj_o_id) | 0) % 3)), ((Math.imul(cptr.ldI32o(scroll, $obj_o_id) | 0, 7)) % 10), (cptr.ld1so(flags, $flag_verbose) || Blind()) ? __s_dot : __s_empty);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl150);
+            livelog_printf(32n, __s_became_literate_by_reading_a_credit_card);
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CAN_OF_GREASE) {
-        pline(__sl151, singular(scroll, xname));
+        pline(__s_this_s_has_no_label, singular(scroll, xname));
         return NHM.ECMD_OK;
     } else if (otyp == NHC.MAGIC_MARKER) {
         let buf = new Uint8Array(256);
@@ -928,29 +928,29 @@ export function doread() {
             return NHM.ECMD_OK;
         }
         if (cptr.ld1so(flags, $flag_verbose))
-            pline(__sl137);
-        void cptr.sprintf(cptr.decay(buf), __sl152, pmname(pm, NHC.NEUTRAL));
-        pline(__sl153, upwords(cptr.decay(buf)));
+            pline(__s_it_reads);
+        void cptr.sprintf(cptr.decay(buf), __s_pct_s, pmname(pm, NHC.NEUTRAL));
+        pline(__s_magic_marker_tm_s_red_ink_marker_pen, upwords(cptr.decay(buf)));
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl154);
+            livelog_printf(32n, __s_became_literate_by_reading_a_magic);
         return NHM.ECMD_TIME;
     } else if (cptr.ld1so(scroll, $obj_oclass) == NHC.COIN_CLASS) {
         if (Blind())
-            You(__sl155);
+            You(__s_feel_the_embossed_words);
         else if (cptr.ld1so(flags, $flag_verbose))
-            You(__sl156);
-        pline(__sl157);
+            You(__s_read__2);
+        pline(__s_1_zorkmid_857_gue_in_frobs_we_trust);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl158);
+            livelog_printf(32n, __s_became_literate_by_reading_a_coin_s);
         return NHM.ECMD_TIME;
     } else if (is_art(scroll, NHC.ART_ORB_OF_FATE)) {
         if (Blind())
-            You(__sl159);
+            You(__s_feel_the_engraved_signature);
         else
-            pline(__sl160);
-        pline(__sl161);
+            pline(__s_it_is_signed);
+        pline(__s_odin);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl162);
+            livelog_printf(32n, __s_became_literate_by_reading_the_divine);
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CANDY_BAR) {
         let wrapper = candy_wrapper_text(scroll);
@@ -959,26 +959,26 @@ export function doread() {
             return NHM.ECMD_OK;
         }
         if (!cptr.ld1s(wrapper)) {
-            pline(__sl163);
+            pline(__s_the_candy_bar_s_wrapper_is_blank);
             return NHM.ECMD_OK;
         }
-        pline(__sl164, wrapper);
+        pline(__s_the_wrapper_reads_s, wrapper);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl165);
+            livelog_printf(32n, __s_became_literate_by_reading_a_candy_bar);
         return NHM.ECMD_TIME;
     } else if (cptr.ld1so(scroll, $obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(scroll, $obj_oclass) != NHC.SPBOOK_CLASS) {
-        pline(cptr.ldPtro(c_common_strings, $c_common_strings_c_silly_thing_to), __sl123);
+        pline(cptr.ldPtro(c_common_strings, $c_common_strings_c_silly_thing_to), __s_read);
         return NHM.ECMD_OK;
     } else if (Blind() && otyp != NHC.SPE_BOOK_OF_THE_DEAD) {
         let what = null;
         if (otyp == NHC.SPE_NOVEL)
-            what = __sl166;
+            what = __s_words;
         else if (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS)
-            what = __sl167;
+            what = __s_mystic_runes;
         else if (!(cptr.ldI32o(scroll, $obj_dknown) & 1))
-            what = __sl168;
+            what = __s_formula_on_the_scroll;
         if (what) {
-            pline(__sl169, what);
+            pline(__s_being_blind_you_cannot_read_the_s, what);
             return NHM.ECMD_OK;
         }
     }
@@ -986,13 +986,13 @@ export function doread() {
     if (otyp == NHC.SCR_MAIL) {
         confused = 0;
         if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) {
-            if (!cptr.ld1so(scroll, $obj_spe) && yn_function(__sl170, cptr.decay(ynchars), 110, 1) != 121)
+            if (!cptr.ld1so(scroll, $obj_spe) && yn_function(__s_reading_mail_will_violate_illiterate, cptr.decay(ynchars), 110, 1) != 121)
                 return NHM.ECMD_OK;
         }
     }
     if (otyp != NHC.SPE_BOOK_OF_THE_DEAD && otyp != NHC.SPE_NOVEL && otyp != NHC.SPE_BLANK_PAPER && otyp != NHC.SCR_BLANK_PAPER)
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-            livelog_printf(32n, __sl132, (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS) ? __sl171 : ((cptr.ld1so(scroll, $obj_oclass) == NHC.SCROLL_CLASS) ? __sl172 : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
+            livelog_printf(32n, __s_became_literate_by_reading_s, (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS) ? __s_a_book : ((cptr.ld1so(scroll, $obj_oclass) == NHC.SCROLL_CLASS) ? __s_a_scroll : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
     if (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS) {
         return study_book(scroll) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
@@ -1001,14 +1001,14 @@ export function doread() {
         let silently = schar((!can_chant(cptr.add(gy, $instance_globals_y_youmonst))));
         nodisappear = schar((otyp == NHC.SCR_FIRE || (otyp == NHC.SCR_REMOVE_CURSE && (cptr.ldI32o(scroll, $obj_cursed) & 1) | 0) ? 1 : 0));
         if (Blind())
-            pline(nodisappear ? __sl173 : __sl174, silently ? __sl175 : __sl176);
+            pline(nodisappear ? __s_you_s_the_formula_on_the_scroll : __s_as_you_s_the_formula_on_it_the_scroll, silently ? __s_cogitate : __s_pronounce);
         else
-            pline(nodisappear ? __sl177 : __sl178);
+            pline(nodisappear ? __s_you_read_the_scroll : __s_as_you_read_the_scroll_it_disappears);
         if (confused) {
             if (Hallucination())
-                pline(__sl179);
+                pline(__s_being_so_trippy_you_screw_up);
             else
-                pline(__sl180, silently ? __sl181 : __sl182);
+                pline(__s_being_confused_you_s_the_magic_words, silently ? __s_misunderstand : __s_mispronounce);
         }
     }
     if (!seffects(scroll)) {
@@ -1028,9 +1028,9 @@ export function doread() {
 /** C ref: read.c:652 — @param {CPtr<struct obj>} obj */
 function stripspe(obj) {
     if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || cptr.ld1so(obj, $obj_spe) <= 0) {
-        pline(__sl152, cptr.ldPtr(c_common_strings));
+        pline(__s_pct_s, cptr.ldPtr(c_common_strings));
     } else {
-        pline(__sl197, Yobjnam2(obj, __sl198));
+        pline(__s_s_briefly, Yobjnam2(obj, __s_vibrate));
         costly_alteration(obj, NHC.COST_UNCHRG);
         cptr.st1o(obj, $obj_spe, 0);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
@@ -1040,17 +1040,17 @@ function stripspe(obj) {
 
 /** C ref: read.c:667 — @param {CPtr<struct obj>} otmp */
 function p_glow1(otmp) {
-    pline(__sl197, Yobjnam2(otmp, Blind() ? __sl198 : __sl199));
+    pline(__s_s_briefly, Yobjnam2(otmp, Blind() ? __s_vibrate : __s_glow));
 }
 
 /** C ref: read.c:673 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} color */
 function p_glow2(otmp, color) {
-    pline(__sl200, Yobjnam2(otmp, Blind() ? __sl198 : __sl199), Blind() ? __sl108 : __sl201, Blind() ? __sl108 : hcolor(color));
+    pline(__s_s_s_s_for_a_moment, Yobjnam2(otmp, Blind() ? __s_vibrate : __s_glow), Blind() ? __s_empty : __s_sp, Blind() ? __s_empty : hcolor(color));
 }
 
 /** C ref: read.c:680 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} color */
 function p_glow3(otmp, color) {
-    pline(__sl202, Yobjnam2(otmp, Blind() ? __sl198 : __sl199), Blind() ? __sl108 : __sl201, Blind() ? __sl108 : hcolor(color));
+    pline(__s_s_feebly_s_s_for_a_moment, Yobjnam2(otmp, Blind() ? __s_vibrate : __s_glow), Blind() ? __s_empty : __s_sp, Blind() ? __s_empty : hcolor(color));
 }
 
 /** C ref: read.c:689 — @param {CPtr<struct obj>} obj @returns {CInt} */
@@ -1089,17 +1089,17 @@ export function recharge(obj, curse_bless) {
             if (cptr.ld1so(obj, $obj_spe) == -1)
                 cptr.st1o(obj, $obj_spe, 0);
             n = (cptr.ldI32o(obj, $obj_recharged) & 7) | 0;
-            if (n > 0 && (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING || (Math.imul(Math.imul(n, n), n) > (rng_log_enabled() ? (rng_log_set_caller(__sl121, 762, __sl203), rn2(343)) : rn2(343))))) {
-                wand_explode(obj, (rng_log_enabled() ? (rng_log_set_caller(__sl121, 763, __sl203), rnd(lim)) : rnd(lim)));
+            if (n > 0 && (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING || (Math.imul(Math.imul(n, n), n) > (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 762, __s_recharge), rn2(343)) : rn2(343))))) {
+                wand_explode(obj, (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 763, __s_recharge), rnd(lim)) : rnd(lim)));
                 return;
             }
             cptr.stI32o(obj, $obj_recharged, ((n + 1) | 0) >>> 0);
             if (is_cursed) {
                 stripspe(obj);
             } else {
-                n = (lim == 1) ? 1 : (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 773, __sl203), rn2(5)) : rn2(5)) + ((((lim + 1) | 0) - 5) | 0)) | 0);
+                n = (lim == 1) ? 1 : (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 773, __s_recharge), rn2(5)) : rn2(5)) + ((((lim + 1) | 0) - 5) | 0)) | 0);
                 if (!is_blessed)
-                    n = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 775, __sl203), rnd(n)) : rnd(n));
+                    n = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 775, __s_recharge), rnd(n)) : rnd(n));
                 if (cptr.ld1so(obj, $obj_spe) < n)
                     cptr.st1o(obj, $obj_spe, schar(n));
                 else
@@ -1116,18 +1116,18 @@ export function recharge(obj, curse_bless) {
                     p_glow1(obj);
             }
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) | 0) {
-            let s = is_blessed ? (rng_log_enabled() ? (rng_log_set_caller(__sl121, 803, __sl203), rnd(3)) : rnd(3)) : (is_cursed ? -(rng_log_enabled() ? (rng_log_set_caller(__sl121, 803, __sl203), rnd(2)) : rnd(2)) : 1);
+            let s = is_blessed ? (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 803, __s_recharge), rnd(3)) : rnd(3)) : (is_cursed ? -(rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 803, __s_recharge), rnd(2)) : rnd(2)) : 1);
             let is_on = schar((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v) ? 1 : 0));
-            if (cptr.ld1so(obj, $obj_spe) > (rng_log_enabled() ? (rng_log_set_caller(__sl121, 807, __sl203), rn2(7)) : rn2(7)) || cptr.ld1so(obj, $obj_spe) <= -5) {
-                pline(__sl204, Yobjnam2(obj, __sl205), otense(obj, __sl206));
+            if (cptr.ld1so(obj, $obj_spe) > (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 807, __s_recharge), rn2(7)) : rn2(7)) || cptr.ld1so(obj, $obj_spe) <= -5) {
+                pline(__s_s_momentarily_then_s, Yobjnam2(obj, __s_pulsate), otense(obj, __s_explode));
                 if (is_on)
                     Ring_gone(obj);
-                s = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 812, __sl203), rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))) : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));
+                s = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 812, __s_recharge), rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))) : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));
                 useup(obj), obj = null;
-                losehp(((Half_physical_damage()) ? (((((s) + 1) | 0) / 2) | 0) : (s)), __sl207, NHM.KILLED_BY_AN);
+                losehp(((Half_physical_damage()) ? (((((s) + 1) | 0) / 2) | 0) : (s)), __s_exploding_ring, NHM.KILLED_BY_AN);
             } else {
                 let mask = is_on ? (cptr.eq(obj, uleft.v) ? 131072n : 262144n) : 0n;
-                pline(__sl208, Yname2(obj), s < 0 ? __sl209 : __sl108);
+                pline(__s_s_spins_sclockwise_for_a_moment, Yname2(obj), s < 0 ? __s_counter : __s_empty);
                 if (s < 0)
                     costly_alteration(obj, NHC.COST_DECHNT);
                 if (is_on)
@@ -1149,7 +1149,7 @@ export function recharge(obj, curse_bless) {
                 if (is_cursed)
                     stripspe(obj);
                 else if (is_blessed)
-                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 848, __sl203), rnd(3)) : rnd(3)));
+                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 848, __s_recharge), rnd(3)) : rnd(3)));
                 else
                     cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + 1);
                 if (cptr.ld1so(obj, $obj_spe) > 5)
@@ -1163,11 +1163,11 @@ export function recharge(obj, curse_bless) {
                 } else if (rechrg && cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_MARKER) {
                     cptr.stI32o(obj, $obj_recharged, 1);
                     if (cptr.ld1so(obj, $obj_spe) < 3)
-                        Your(__sl210);
+                        Your(__s_marker_seems_permanently_dried_out);
                     else
-                        pline(__sl152, cptr.ldPtr(c_common_strings));
+                        pline(__s_pct_s, cptr.ldPtr(c_common_strings));
                 } else if (is_blessed) {
-                    n = (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 867, __sl203), rn2(16)) : rn2(16)) + 15) | 0);
+                    n = (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 867, __s_recharge), rn2(16)) : rn2(16)) + 15) | 0);
                     if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     else if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 75)
@@ -1181,7 +1181,7 @@ export function recharge(obj, curse_bless) {
                     }
                     p_glow2(obj, cptr.ldPtro(c_color_names, $c_color_names_c_blue));
                 } else {
-                    n = (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 881, __sl203), rn2(11)) : rn2(11)) + 10) | 0);
+                    n = (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 881, __s_recharge), rn2(11)) : rn2(11)) + 10) | 0);
                     if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     else {
@@ -1200,7 +1200,7 @@ export function recharge(obj, curse_bless) {
                     stripspe(obj);
                     if ((cptr.ldI32o(obj, $obj_lamplit) & 1)) {
                         if (!Blind())
-                            pline(__sl211, Tobjnam(obj, __sl212));
+                            pline(__s_s_out, Tobjnam(obj, __s_go));
                         end_burn(obj, 1);
                     }
                 } else if (is_blessed) {
@@ -1223,7 +1223,7 @@ export function recharge(obj, curse_bless) {
                         p_glow2(obj, cptr.ldPtr(c_color_names));
                         curse(obj);
                     } else {
-                        pline(__sl197, Yobjnam2(obj, __sl198));
+                        pline(__s_s_briefly, Yobjnam2(obj, __s_vibrate));
                     }
                     if (cptr.ld1so(obj, $obj_spe) > 0)
                         costly_alteration(obj, NHC.COST_UNCHRG);
@@ -1235,7 +1235,7 @@ export function recharge(obj, curse_bless) {
                         bless(obj);
                 } else {
                     if (cptr.ld1so(obj, $obj_spe) < 7 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
-                        n = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 942, __sl203), rnd(2)) : rnd(2));
+                        n = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 942, __s_recharge), rnd(2)) : rnd(2));
                         cptr.st1o(obj, $obj_spe, schar((((cptr.ld1so(obj, $obj_spe) + n) | 0) < 7 ? ((cptr.ld1so(obj, $obj_spe) + n) | 0) : 7)));
                         if (!(cptr.ldI32o(obj, $obj_cursed) & 1)) {
                             p_glow1(obj);
@@ -1244,7 +1244,7 @@ export function recharge(obj, curse_bless) {
                             uncurse(obj);
                         }
                     } else {
-                        pline(__sl152, cptr.ldPtr(c_common_strings));
+                        pline(__s_pct_s, cptr.ldPtr(c_common_strings));
                     }
                 }
                 break;
@@ -1255,14 +1255,14 @@ export function recharge(obj, curse_bless) {
                     stripspe(obj);
                 } else if (is_blessed) {
                     if (cptr.ld1so(obj, $obj_spe) <= 10)
-                        cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 963, __sl203), rn2(10)) : rn2(10)) + 6) | 0));
+                        cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 963, __s_recharge), rn2(10)) : rn2(10)) + 6) | 0));
                     else
-                        cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 965, __sl203), rn2(5)) : rn2(5)) + 6) | 0));
+                        cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 965, __s_recharge), rn2(5)) : rn2(5)) + 6) | 0));
                     if (cptr.ld1so(obj, $obj_spe) > 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     p_glow2(obj, cptr.ldPtro(c_color_names, $c_color_names_c_blue));
                 } else {
-                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 970, __sl203), rn2(5)) : rn2(5)) + 2) | 0));
+                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 970, __s_recharge), rn2(5)) : rn2(5)) + 2) | 0));
                     if (cptr.ld1so(obj, $obj_spe) > 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     p_glow1(obj);
@@ -1276,12 +1276,12 @@ export function recharge(obj, curse_bless) {
                 if (is_cursed) {
                     stripspe(obj);
                 } else if (is_blessed) {
-                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 984, __sl203), d(2, 4)) : d(2, 4)));
+                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 984, __s_recharge), d(2, 4)) : d(2, 4)));
                     if (cptr.ld1so(obj, $obj_spe) > 20)
                         cptr.st1o(obj, $obj_spe, 20);
                     p_glow2(obj, cptr.ldPtro(c_color_names, $c_color_names_c_blue));
                 } else {
-                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 989, __sl203), rnd(4)) : rnd(4)));
+                    cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 989, __s_recharge), rnd(4)) : rnd(4)));
                     if (cptr.ld1so(obj, $obj_spe) > 20)
                         cptr.st1o(obj, $obj_spe, 20);
                     p_glow1(obj);
@@ -1295,7 +1295,7 @@ export function recharge(obj, curse_bless) {
         }
     }
     if (__go_not_chargable) {
-        You(__sl213);
+        You(__s_have_a_feeling_of_loss);
     }
     cap_spe(obj);
 }
@@ -1307,7 +1307,7 @@ function forget(howmuch) {
         cptr.stI32o(u, $you_bc_felt, 0);
     if (howmuch & NHM.ALL_SPELLS)
         losespells();
-    drain_weapon_skill((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1031, __sl214), rnd(howmuch ? 5 : 3)) : rnd(howmuch ? 5 : 3)));
+    drain_weapon_skill((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1031, __s_forget), rnd(howmuch ? 5 : 3)) : rnd(howmuch ? 5 : 3)));
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
         if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && !cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
             cptr.stI32o(mtmp, $monst_meverseen, 0);
@@ -1382,7 +1382,7 @@ function seffect_enchant_armor(sobjp) {
     let old_erodeproof;
     let new_erodeproof;
     if (!otmp) {
-        strange_feeling(sobj, !Blind() ? __sl215 : __sl216);
+        strange_feeling(sobj, !Blind() ? __s_your_skin_glows_then_fades : __s_your_skin_feels_warm_for_a_moment);
         cptr.stPtr(sobjp, null);
         exercise(NHC.A_CON, schar((!scursed)));
         exercise(NHC.A_STR, schar((!scursed)));
@@ -1394,14 +1394,14 @@ function seffect_enchant_armor(sobjp) {
         cptr.stI32o(otmp, $obj_oerodeproof, 0);
         if (Blind()) {
             cptr.stI32o(otmp, $obj_rknown, 0);
-            pline(__sl217, Yobjnam2(otmp, __sl218));
+            pline(__s_s_warm_for_a_moment, Yobjnam2(otmp, __s_feel));
         } else {
             cptr.stI32o(otmp, $obj_rknown, 1);
-            pline(__sl219, Yobjnam2(otmp, __sl220), scursed ? __sl221 : __sl222, hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_golden)), scursed ? __sl199 : (is_shield(otmp) ? __sl223 : __sl224));
+            pline(__s_s_covered_by_a_s_s_s, Yobjnam2(otmp, __s_are), scursed ? __s_mottled : __s_shimmering, hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_golden)), scursed ? __s_glow : (is_shield(otmp) ? __s_layer : __s_shield));
         }
         if (new_erodeproof && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || (cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0)) {
             cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
-            pline(__sl225, Yobjnam2(otmp, Blind() ? __sl218 : __sl226));
+            pline(__s_s_as_good_as_new, Yobjnam2(otmp, Blind() ? __s_feel : __s_look));
         }
         if (old_erodeproof && !new_erodeproof) {
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
@@ -1418,9 +1418,9 @@ function seffect_enchant_armor(sobjp) {
     if (Blind())
         same_color = 0;
     s = schar((scursed ? -cptr.ld1so(otmp, $obj_spe) : cptr.ld1so(otmp, $obj_spe)));
-    if (s > (special_armor ? 5 : 3) && (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1179, __sl227), rn2(s)) : rn2(s))) {
+    if (s > (special_armor ? 5 : 3) && (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1179, __s_seffect_enchant_armor), rn2(s)) : rn2(s))) {
         cptr.stI32o(otmp, $obj_in_use, 1);
-        pline(__sl228, Yname2(otmp), otense(otmp, Blind() ? __sl198 : __sl199), (!Blind() && !same_color) ? __sl201 : __sl108, (Blind() || same_color) ? __sl108 : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_silver)), otense(otmp, __sl229));
+        pline(__s_s_violently_s_s_s_for_a_while_then_s, Yname2(otmp), otense(otmp, Blind() ? __s_vibrate : __s_glow), (!Blind() && !same_color) ? __s_sp : __s_empty, (Blind() || same_color) ? __s_empty : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_silver)), otense(otmp, __s_evaporate));
         remove_worn_item(otmp, 0);
         useup(otmp);
         return;
@@ -1436,10 +1436,10 @@ function seffect_enchant_armor(sobjp) {
         ++s;
     if (s <= 0) {
         s = 0;
-        if (cptr.ld1so(otmp, $obj_spe) > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl121, 1214, __sl227), rn2(cptr.ld1so(otmp, $obj_spe))) : rn2(cptr.ld1so(otmp, $obj_spe))))
+        if (cptr.ld1so(otmp, $obj_spe) > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1214, __s_seffect_enchant_armor), rn2(cptr.ld1so(otmp, $obj_spe))) : rn2(cptr.ld1so(otmp, $obj_spe))))
             s = 1;
     } else {
-        s = schar((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1217, __sl227), rnd(s)) : rnd(s)));
+        s = schar((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1217, __s_seffect_enchant_armor), rnd(s)) : rnd(s)));
     }
     if (s > 11)
         s = 11;
@@ -1448,7 +1448,7 @@ function seffect_enchant_armor(sobjp) {
     if (s >= 0 && Is_dragon_scales(otmp)) {
         let was_lit = (cptr.ldI32o(otmp, $obj_lamplit) & 1);
         let old_light = artifact_light(otmp) ? arti_light_radius(otmp) : 0;
-        pline(__sl230, Yname2(otmp));
+        pline(__s_s_merges_and_hardens, Yname2(otmp));
         setworn(null, 1n);
         cptr.stI16o(otmp, $obj_otyp, cptr.ldI16o(otmp, $obj_otyp) + ((NHC.GRAY_DRAGON_SCALE_MAIL - NHC.GRAY_DRAGON_SCALES) | 0));
         cptr.stI32o(otmp, $obj_lamplit, 0);
@@ -1468,7 +1468,7 @@ function seffect_enchant_armor(sobjp) {
             maybe_adjust_light(otmp, old_light);
         return;
     }
-    pline(__sl231, Yname2(otmp), (s == 0) ? __sl232 : __sl108, otense(otmp, Blind() ? __sl198 : __sl199), (!Blind() && !same_color) ? __sl201 : __sl108, (Blind() || same_color) ? __sl108 : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_silver)), (Math.imul(s, s) > 1) ? __sl233 : __sl234);
+    pline(__s_s_s_s_s_s_for_a_s, Yname2(otmp), (s == 0) ? __s_violently : __s_empty, otense(otmp, Blind() ? __s_vibrate : __s_glow), (!Blind() && !same_color) ? __s_sp : __s_empty, (Blind() || same_color) ? __s_empty : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_silver)), (Math.imul(s, s) > 1) ? __s_while : __s_moment);
     if (s < 0)
         costly_alteration(otmp, NHC.COST_DECHNT);
     if (scursed && !(cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -1488,8 +1488,8 @@ function seffect_enchant_armor(sobjp) {
         if (s > 0 && (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0)
             alter_cost(otmp, 0n);
     }
-    if ((cptr.ld1so(otmp, $obj_spe) > (special_armor ? 5 : 3)) && (special_armor || !(rng_log_enabled() ? (rng_log_set_caller(__sl121, 1287, __sl227), rn2(7)) : rn2(7))))
-        pline(__sl235, Yobjnam2(otmp, __sl236), Blind() ? __sl237 : __sl238);
+    if ((cptr.ld1so(otmp, $obj_spe) > (special_armor ? 5 : 3)) && (special_armor || !(rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1287, __s_seffect_enchant_armor), rn2(7)) : rn2(7))))
+        pline(__s_s_s__2, Yobjnam2(otmp, __s_suddenly_vibrate), Blind() ? __s_again : __s_unexpectedly);
 }
 
 /** C ref: read.c:1294 @returns {CInt} */
@@ -1513,7 +1513,7 @@ function disintegrate_cursed_armor() {
         cptr.stPtro(armors, idx++, uarmu.v, 8);
     if (!idx)
         return 0;
-    if (disintegrate_arm(cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1317, __sl239), rn2(idx)) : rn2(idx)), 8)))
+    if (disintegrate_arm(cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1317, __s_disintegrate_cursed_armor), rn2(idx)) : rn2(idx)), 8)))
         return 1;
     return 0;
 }
@@ -1528,7 +1528,7 @@ function seffect_destroy_armor(sobjp) {
     let new_erodeproof;
     if (confused) {
         if (!otmp) {
-            strange_feeling(sobj, __sl240);
+            strange_feeling(sobj, __s_your_bones_itch);
             cptr.stPtr(sobjp, null);
             exercise(NHC.A_STR, 0);
             exercise(NHC.A_CON, 0);
@@ -1547,12 +1547,12 @@ function seffect_destroy_armor(sobjp) {
     }
     if (scursed) {
         if (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
-            pline(__sl241, Yobjnam2(otmp, __sl198));
+            pline(__s_pct_s_dot, Yobjnam2(otmp, __s_vibrate));
             if (cptr.ld1so(otmp, $obj_spe) >= -6) {
                 cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + -1);
                 adj_abon(otmp, -1);
             }
-            make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1361, __sl242), rn2(10)) : rn2(10)) + 10) | 0))), 1);
+            make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1361, __s_seffect_destroy_armor), rn2(10)) : rn2(10)) + 10) | 0))), 1);
         } else if (disintegrate_arm(otmp)) {
             cptr.st1o(gk, $instance_globals_k_known, 1);
             return;
@@ -1562,9 +1562,9 @@ function seffect_destroy_armor(sobjp) {
         if (gets_choice) {
             let atmp;
             if (!(cptr.ldI32o2(objects, cptr.ldI16o(sobj, $obj_otyp), 120, $objclass_oc_name_known) & 1))
-                pline(__sl243, an(actualoname(sobj)));
+                pline(__s_this_is_s, an(actualoname(sobj)));
             cptr.st1o(gk, $instance_globals_k_known, 1);
-            atmp = getobj(__sl244, any_worn_armor_ok, NHM.GETOBJ_PROMPT);
+            atmp = getobj(__s_destroy, any_worn_armor_ok, NHM.GETOBJ_PROMPT);
             if (any_worn_armor_ok(atmp) == NHC.GETOBJ_SUGGEST)
                 otmp = atmp;
             if (disintegrate_arm(otmp)) {
@@ -1575,7 +1575,7 @@ function seffect_destroy_armor(sobjp) {
             cptr.st1o(gk, $instance_globals_k_known, 1);
             return;
         } else if (!destroy_arm()) {
-            strange_feeling(sobj, __sl245);
+            strange_feeling(sobj, __s_your_skin_itches);
             cptr.stPtr(sobjp, null);
             exercise(NHC.A_STR, 0);
             exercise(NHC.A_CON, 0);
@@ -1595,32 +1595,32 @@ function seffect_confuse_monster(sobjp) {
     let hands = makeplural(body_part(NHC.HAND));
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_HUMAN || scursed) {
         if (!HConfusion())
-            You_feel(__sl246);
-        make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1411, __sl247), rnd(100)) : rnd(100)))), 0);
+            You_feel(__s_confused);
+        make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1411, __s_seffect_confuse_monster), rnd(100)) : rnd(100)))), 0);
     } else if (confused) {
         if (!sblessed) {
-            Your(__sl248, hands, altfeedback ? __sl249 : __sl250, altfeedback ? __sl108 : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_purple)));
-            make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1417, __sl247), rnd(100)) : rnd(100)))), 0);
+            Your(__s_s_begin_to_s_s, hands, altfeedback ? __s_tingle : __s_glow__2, altfeedback ? __s_empty : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_purple)));
+            make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1417, __s_seffect_confuse_monster), rnd(100)) : rnd(100)))), 0);
         } else {
-            pline(__sl251, altfeedback ? __sl108 : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)), altfeedback ? __sl252 : __sl253, body_part(NHC.HEAD));
+            pline(__s_a_s_s_surrounds_your_s, altfeedback ? __s_empty : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)), altfeedback ? __s_faint_buzz : __s_glow__3, body_part(NHC.HEAD));
             make_confused(0n, 1);
         }
     } else {
         let incr = (cptr.ld1so(sobj, $obj_oclass) == NHC.SCROLL_CLASS) ? 3 : 0;
         if (!sblessed) {
             if (altfeedback)
-                Your(__sl254, hands, cptr.ldI32o(u, $you_umconf) ? __sl255 : __sl108);
+                Your(__s_s_tingle_s, hands, cptr.ldI32o(u, $you_umconf) ? __s_even_more : __s_empty);
             else if (!cptr.ldI32o(u, $you_umconf))
-                Your(__sl256, hands, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)));
+                Your(__s_s_begin_to_glow_s, hands, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)));
             else
-                pline_The(__sl257, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)), hands);
-            incr = (incr + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1436, __sl247), rnd(2)) : rnd(2))) | 0;
+                pline_The(__s_s_glow_of_your_s_intensifies, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)), hands);
+            incr = (incr + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1436, __s_seffect_confuse_monster), rnd(2)) : rnd(2))) | 0;
         } else {
             if (altfeedback)
-                Your(__sl258, hands, cptr.ldI32o(u, $you_umconf) ? __sl259 : __sl260);
+                Your(__s_s_tingle_s_sharply, hands, cptr.ldI32o(u, $you_umconf) ? __s_even_more__2 : __s_very);
             else
-                Your(__sl261, hands, cptr.ldI32o(u, $you_umconf) ? __sl262 : __sl263, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)));
-            incr = (incr + (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1444, __sl247), rn2(8)) : rn2(8)) + 2) | 0)) | 0;
+                Your(__s_s_glow_s_brilliant_s, hands, cptr.ldI32o(u, $you_umconf) ? __s_an_even_more : __s_a, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)));
+            incr = (incr + (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1444, __s_seffect_confuse_monster), rn2(8)) : rn2(8)) + 2) | 0)) | 0;
         }
         if (cptr.ldI32o(u, $you_umconf) >= 40)
             incr = 1;
@@ -1655,7 +1655,7 @@ function seffect_scare_monster(sobjp) {
         } else {
             ;
         }
-        You_hear(__sl235, (confused || scursed) ? __sl264 : __sl265, !ct ? __sl266 : __sl267);
+        You_hear(__s_s_s__2, (confused || scursed) ? __s_sad_wailing : __s_maniacal_laughter, !ct ? __s_in_the_distance : __s_close_by);
     }
 }
 
@@ -1669,9 +1669,9 @@ function seffect_remove_curse(sobjp) {
     let obj;
     let nxto;
     let wornmask;
-    You_feel(!Hallucination() ? (!confused ? __sl268 : __sl269) : (!confused ? __sl270 : __sl271));
+    You_feel(!Hallucination() ? (!confused ? __s_like_someone_is_helping_you : __s_like_you_need_some_help) : (!confused ? __s_in_touch_with_the_universal_oneness : __s_the_power_of_the_force_against_you));
     if (scursed) {
-        pline_The(__sl272);
+        pline_The(__s_scroll_disintegrates);
     } else {
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nxto) {
             nxto = cptr.ldPtr(obj);
@@ -1719,7 +1719,7 @@ function seffect_remove_curse(sobjp) {
             } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                 uncurse(obj);
                 if (!Blind()) {
-                    pline(__sl235, Yobjnam2(obj, __sl199), hcolor(__sl273));
+                    pline(__s_s_s__2, Yobjnam2(obj, __s_glow), hcolor(__s_amber));
                     cptr.stI32o(obj, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);
                 } else {
                     cptr.stI32o(obj, $obj_bknown, 0);
@@ -1731,7 +1731,7 @@ function seffect_remove_curse(sobjp) {
         unpunish();
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
         buried_ball_to_freedom();
-        pline_The(__sl274, body_part(NHC.LEG));
+        pline_The(__s_clasp_on_your_s_vanishes, body_part(NHC.LEG));
     }
     update_inventory();
 }
@@ -1742,7 +1742,7 @@ function seffect_create_monster(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
-    if (create_critters((((1 + ((confused || scursed) ? 12 : 0)) | 0) + ((sblessed || (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1616, __sl275), rn2(73)) : rn2(73))) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1616, __sl275), rnd(4)) : rnd(4)))) | 0, confused ? cptr.add(mons, NHC.PM_ACID_BLOB, 96) : null, 0))
+    if (create_critters((((1 + ((confused || scursed) ? 12 : 0)) | 0) + ((sblessed || (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1616, __s_seffect_create_monster), rn2(73)) : rn2(73))) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1616, __s_seffect_create_monster), rnd(4)) : rnd(4)))) | 0, confused ? cptr.add(mons, NHC.PM_ACID_BLOB, 96) : null, 0))
         cptr.st1o(gk, $instance_globals_k_known, 1);
 }
 
@@ -1761,14 +1761,14 @@ function seffect_enchant_weapon(sobjp) {
         cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
         if (Blind()) {
             cptr.stI32o(uwep.v, $obj_rknown, 0);
-            Your(__sl276);
+            Your(__s_weapon_feels_warm_for_a_moment);
         } else {
             cptr.stI32o(uwep.v, $obj_rknown, 1);
-            pline(__sl219, Yobjnam2(uwep.v, __sl220), scursed ? __sl221 : __sl222, hcolor(scursed ? cptr.ldPtro(c_color_names, $c_color_names_c_purple) : cptr.ldPtro(c_color_names, $c_color_names_c_golden)), scursed ? __sl199 : __sl224);
+            pline(__s_s_covered_by_a_s_s_s, Yobjnam2(uwep.v, __s_are), scursed ? __s_mottled : __s_shimmering, hcolor(scursed ? cptr.ldPtro(c_color_names, $c_color_names_c_purple) : cptr.ldPtro(c_color_names, $c_color_names_c_golden)), scursed ? __s_glow : __s_shield);
         }
         if (new_erodeproof && ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 || (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0)) {
             cptr.stI32o(uwep.v, $obj_oeroded, cptr.stI32o(uwep.v, $obj_oeroded2, 0));
-            pline(__sl225, Yobjnam2(uwep.v, Blind() ? __sl218 : __sl226));
+            pline(__s_s_as_good_as_new, Yobjnam2(uwep.v, Blind() ? __s_feel : __s_look));
         }
         if (old_erodeproof && !new_erodeproof) {
             cptr.stI32o(uwep.v, $obj_oerodeproof, 1);
@@ -1777,7 +1777,7 @@ function seffect_enchant_weapon(sobjp) {
         cptr.stI32o(uwep.v, $obj_oerodeproof, (new_erodeproof ? 1 : 0) >>> 0);
         return;
     }
-    s = scursed ? -1 : (!uwep.v ? 1 : ((cptr.ld1so(uwep.v, $obj_spe) >= 9) ? ((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1669, __sl277), rn2(cptr.ld1so(uwep.v, $obj_spe))) : rn2(cptr.ld1so(uwep.v, $obj_spe))) == 0) : (sblessed ? (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1670, __sl277), rnd((3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0)) : rnd((3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0)) : 1)));
+    s = scursed ? -1 : (!uwep.v ? 1 : ((cptr.ld1so(uwep.v, $obj_spe) >= 9) ? ((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1669, __s_seffect_enchant_weapon), rn2(cptr.ld1so(uwep.v, $obj_spe))) : rn2(cptr.ld1so(uwep.v, $obj_spe))) == 0) : (sblessed ? (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1670, __s_seffect_enchant_weapon), rnd((3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0)) : rnd((3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0)) : 1)));
     if (!chwepon(sobj, s))
         cptr.stPtr(sobjp, null);
     if (uwep.v)
@@ -1815,9 +1815,9 @@ function seffect_taming(sobjp) {
             }
     }
     if (!results) {
-        pline(__sl278, !candidates ? __sl279 : __sl280);
+        pline(__s_nothing_interesting_s, !candidates ? __s_happens : __s_seems_to_happen);
     } else {
-        pline_The(__sl281, vis_results ? __sl282 : __sl283, (results < 0) ? __sl284 : __sl108);
+        pline_The(__s_neighborhood_s_sfriendlier, vis_results ? __s_is : __s_seems, (results < 0) ? __s_un : __s_empty);
         if (vis_results > 0)
             cptr.st1o(gk, $instance_globals_k_known, 1);
     }
@@ -1831,7 +1831,7 @@ function seffect_genocide(sobjp) {
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
     if (!already_known)
-        You(__sl285);
+        You(__s_have_found_a_scroll_of_genocide);
     cptr.st1o(gk, $instance_globals_k_known, 1);
     if (sblessed)
         do_class_genocide();
@@ -1856,12 +1856,12 @@ function seffect_light(sobjp) {
     } else {
         let pm = scursed ? NHC.PM_BLACK_LIGHT : NHC.PM_YELLOW_LIGHT;
         if ((cptr.ld1uo2(svm, pm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
-            pline(__sl286);
+            pline(__s_tiny_lights_sparkle_in_the_air);
         } else {
             let mon;
             let sawlights = 0;
             let i;
-            let numlights = ((((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1765, __sl287), rn2(2)) : rn2(2)) + 3) | 0) + (Math.imul(sblessed, 2))) | 0;
+            let numlights = ((((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1765, __s_seffect_light), rn2(2)) : rn2(2)) + 3) | 0) + (Math.imul(sblessed, 2))) | 0;
             for (i = 0; i < numlights; ++i) {
                 mon = makemon(cptr.add(mons, pm, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 133121);
                 if (mon) {
@@ -1874,7 +1874,7 @@ function seffect_light(sobjp) {
                 }
             }
             if (sawlights) {
-                pline(__sl288);
+                pline(__s_lights_appear_all_around_you);
                 cptr.st1o(gk, $instance_globals_k_known, 1);
             }
         }
@@ -1892,11 +1892,11 @@ function seffect_charging(sobjp) {
     let otmp;
     if (confused) {
         if (scursed) {
-            You_feel(__sl289);
+            You_feel(__s_discharged);
             cptr.stI32o(u, $you_uen, 0);
         } else {
-            You_feel(__sl290);
-            cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 1805, __sl291), d((sblessed ? 6 : 4), 4)) : d((sblessed ? 6 : 4), 4))) | 0);
+            You_feel(__s_charged_up);
+            cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1805, __s_seffect_charging), d((sblessed ? 6 : 4), 4)) : d((sblessed ? 6 : 4), 4))) | 0);
             if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
                 cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uen));
             else
@@ -1906,12 +1906,12 @@ function seffect_charging(sobjp) {
         return;
     }
     if (!already_known) {
-        pline(__sl292);
+        pline(__s_this_is_a_charging_scroll);
         learnscroll(sobj);
     }
     useup(sobj);
     cptr.stPtr(sobjp, null);
-    otmp = getobj(__sl293, charge_ok, 3);
+    otmp = getobj(__s_charge, charge_ok, 3);
     if (otmp)
         recharge(otmp, scursed ? -1 : (sblessed ? 1 : 0));
 }
@@ -1923,13 +1923,13 @@ function seffect_amnesia(sobjp) {
     cptr.st1o(gk, $instance_globals_k_known, 1);
     forget((!sblessed ? NHM.ALL_SPELLS : 0));
     if (Hallucination())
-        Your(__sl294);
-    else if (!strncmpi(svp, __sl295, 4))
-        pline(__sl296);
-    else if ((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1842, __sl297), rn2(2)) : rn2(2)))
-        pline(__sl298);
+        Your(__s_mind_releases_itself_from_mundane);
+    else if (!strncmpi(svp, __s_maud, 4))
+        pline(__s_as_your_mind_turns_inward_on_itself_you);
+    else if ((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1842, __s_seffect_amnesia), rn2(2)) : rn2(2)))
+        pline(__s_who_was_that_maud_person_anyway);
     else
-        pline(__sl299);
+        pline(__s_thinking_of_maud_you_forget_everything);
     exercise(NHC.A_WIS, 0);
 }
 
@@ -1946,45 +1946,45 @@ function seffect_fire(sobjp) {
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     cval = bcsign(sobj);
-    dam = (((Math.imul(2, (((((rng_log_enabled() ? (rng_log_set_caller(__sl121, 1864, __sl300), rn2(3)) : rn2(3)) + 3) | 0) + Math.imul(2, cval)) | 0)) + 1) | 0) / 3) | 0;
+    dam = (((Math.imul(2, (((((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 1864, __s_seffect_fire), rn2(3)) : rn2(3)) + 3) | 0) + Math.imul(2, cval)) | 0)) + 1) | 0) / 3) | 0;
     useup(sobj);
     cptr.stPtr(sobjp, null);
     if (!already_known)
         void learnscrolltyp(NHC.SCR_FIRE);
     if (confused) {
         if (Underwater()) {
-            pline(__sl301, hliquid(__sl302));
+            pline(__s_a_little_s_around_you_vaporizes, hliquid(__s_water));
         } else if (Fire_resistance()) {
             shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             monstseesu(2n);
             if (!Blind())
-                pline(__sl303, makeplural(body_part(NHC.HAND)));
+                pline(__s_oh_look_what_a_pretty_fire_in_your_s, makeplural(body_part(NHC.HAND)));
             else
-                You_feel(__sl304, makeplural(body_part(NHC.HAND)));
+                You_feel(__s_a_pleasant_warmth_in_your_s, makeplural(body_part(NHC.HAND)));
         } else {
             monstunseesu(2n);
-            pline_The(__sl305, makeplural(body_part(NHC.HAND)));
-            losehp(1, __sl306, NHM.KILLED_BY_AN);
+            pline_The(__s_scroll_catches_fire_and_you_burn_your_s, makeplural(body_part(NHC.HAND)));
+            losehp(1, __s_scroll_of_fire, NHM.KILLED_BY_AN);
         }
         return;
     }
     if (Underwater()) {
-        pline_The(__sl307, hliquid(__sl302));
+        pline_The(__s_s_around_you_vaporizes_violently, hliquid(__s_water));
     } else {
         if (sblessed) {
             if (!already_known)
-                pline(__sl308);
+                pline(__s_this_is_a_scroll_of_fire);
             dam = Math.imul(dam, 5);
-            pline(__sl309);
+            pline(__s_where_do_you_want_to_center_the);
             getpos_sethilite(display_stinking_cloud_positions, can_center_cloud);
-            void getpos(cc, 1, __sl310);
+            void getpos(cc, 1, __s_the_desired_position);
             if (!can_center_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
                 cptr.stI16(cc, cptr.ldI16(u));
                 cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
             }
         }
         if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
-            pline_The(__sl311);
+            pline_The(__s_scroll_erupts_in_a_tower_of_flame);
             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_TOWER_OF_FLAME);
             burn_away_slime();
         }
@@ -2003,15 +2003,15 @@ function seffect_earth(sobjp) {
         let y;
         let nboulders = 0;
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-            You_hear(__sl312);
+            You_hear(__s_rumbling);
         } else {
             if (!avoid_ceiling(cptr.add(u, $you_uz))) {
-                pline_The(__sl313, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), sblessed ? __sl314 : __sl315);
+                pline_The(__s_s_rumbles_s_you, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), sblessed ? __s_around : __s_above);
             } else {
                 let matbuf = new Uint8Array(256);
-                let avalanche = __sl316;
-                void cptr.sprintf(cptr.decay(matbuf), __sl152, sblessed ? makeplural(avalanche) : an(avalanche));
-                pline(__sl317, upstart(cptr.decay(matbuf)), vtense(cptr.decay(matbuf), __sl318), sblessed ? __sl314 : __sl315);
+                let avalanche = __s_avalanche;
+                void cptr.sprintf(cptr.decay(matbuf), __s_pct_s, sblessed ? makeplural(avalanche) : an(avalanche));
+                pline(__s_s_of_boulders_s_s_you, upstart(cptr.decay(matbuf)), vtense(cptr.decay(matbuf), __s_materialize), sblessed ? __s_around : __s_above);
             }
         }
         cptr.st1o(gk, $instance_globals_k_known, 1);
@@ -2027,7 +2027,7 @@ function seffect_earth(sobjp) {
         if (!sblessed) {
             drop_boulder_on_player(confused, schar((!scursed)), 1, 0);
         } else if (!nboulders)
-            pline(__sl319);
+            pline(__s_but_nothing_else_happens);
     }
 }
 
@@ -2038,7 +2038,7 @@ function seffect_punishment(sobjp) {
     let confused = schar((HConfusion() != 0n));
     cptr.st1o(gk, $instance_globals_k_known, 1);
     if (confused || sblessed) {
-        You_feel(__sl320);
+        You_feel(__s_guilty);
         return;
     }
     punish(sobj);
@@ -2050,7 +2050,7 @@ function seffect_stinking_cloud(sobjp) {
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
     if (!already_known)
-        You(__sl321);
+        You(__s_have_found_a_scroll_of_stinking_cloud);
     cptr.st1o(gk, $instance_globals_k_known, 1);
     do_stinking_cloud(sobj, already_known);
 }
@@ -2058,9 +2058,9 @@ function seffect_stinking_cloud(sobjp) {
 /** C ref: read.c:2005 — @param {CPtr<struct obj *>} sobjp */
 function seffect_blank_paper(sobjp) {
     if (Blind())
-        You(__sl322);
+        You(__s_don_t_remember_there_being_any_magic);
     else
-        pline(__sl323);
+        pline(__s_this_scroll_seems_to_be_blank);
     cptr.st1o(gk, $instance_globals_k_known, 1);
 }
 
@@ -2106,9 +2106,9 @@ function seffect_identify(sobjp) {
         useup(sobj);
         cptr.stPtr(sobjp, null);
         if (confused || (scursed && !already_known))
-            You(__sl324);
+            You(__s_identify_this_as_an_identify_scroll);
         else if (!already_known)
-            pline(__sl325);
+            pline(__s_this_is_an_identify_scroll);
         if (!already_known)
             void learnscrolltyp(NHC.SCR_IDENTIFY);
         if (confused || (scursed && !already_known))
@@ -2116,14 +2116,14 @@ function seffect_identify(sobjp) {
     }
     if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         let cval = 1;
-        if (sblessed || (!scursed && !(rng_log_enabled() ? (rng_log_set_caller(__sl121, 2086, __sl326), rn2(5)) : rn2(5)))) {
-            cval = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 2087, __sl326), rn2(5)) : rn2(5));
+        if (sblessed || (!scursed && !(rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2086, __s_seffect_identify), rn2(5)) : rn2(5)))) {
+            cval = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2087, __s_seffect_identify), rn2(5)) : rn2(5));
             if (cval == 1 && sblessed && Luck() > 0)
                 ++cval;
         }
         identify_pack(cval, schar((!already_known)));
     } else {
-        pline(__sl327, (is_scroll) ? __sl328 : __sl108);
+        pline(__s_you_re_not_carrying_anything_s_to_be, (is_scroll) ? __s_else : __s_empty);
     }
 }
 
@@ -2137,12 +2137,12 @@ function seffect_magic_mapping(sobjp) {
     let cval;
     if (is_scroll) {
         if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
-            Your(__sl329);
+            Your(__s_mind_is_filled_with_crazy_lines);
             if (Hallucination())
-                pline(__sl330);
+                pline(__s_wow_modern_art);
             else
-                Your(__sl331, body_part(NHC.HEAD));
-            make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl121, 2118, __sl332), rnd(30)) : rnd(30)))), 0);
+                Your(__s_s_spins_in_bewilderment, body_part(NHC.HEAD));
+            make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2118, __s_seffect_magic_mapping), rnd(30)) : rnd(30)))), 0);
             return;
         }
         if (sblessed) {
@@ -2159,11 +2159,11 @@ function seffect_magic_mapping(sobjp) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
     }
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
-        Your(__sl333, body_part(NHC.HEAD), cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
-        make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl121, 2139, __sl332), rnd(30)) : rnd(30)))), 0);
+        Your(__s_s_spins_as_s_blocks_the_spell, body_part(NHC.HEAD), cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+        make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2139, __s_seffect_magic_mapping), rnd(30)) : rnd(30)))), 0);
         return;
     }
-    pline(__sl334);
+    pline(__s_a_map_coalesces_in_your_mind);
     cval = (scursed && !confused ? 1 : 0);
     if (cval)
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, 1n);
@@ -2173,13 +2173,13 @@ function seffect_magic_mapping(sobjp) {
     do_mapping();
     {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
-            impossible(__sl335);
+            impossible(__s_mon_notices_blocked_0);
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
     }
     if (cval) {
         cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, 0n);
-        pline(__sl336);
+        pline(__s_unfortunately_you_can_t_grasp_the);
     }
 }
 
@@ -2190,10 +2190,10 @@ function seffect_mail(sobjp) {
     cptr.st1o(gk, $instance_globals_k_known, 1);
     switch (cptr.ld1so(sobj, $obj_spe)) {
         case 2:
-        pline(__sl337, odd ? __sl338 : __sl339);
+        pline(__s_this_scroll_is_marked_s, odd ? __s_postage_due : __s_return_to_sender);
         break;
         case 1:
-        pline(__sl340, odd ? __sl341 : __sl342);
+        pline(__s_this_seems_to_be_s, odd ? __s_a_chain_letter_threatening_your_luck : __s_junk_mail_addressed_to_the_finder_of);
         break;
         default:
         readmail(sobj);
@@ -2286,7 +2286,7 @@ export function seffects(sobj) {
         seffect_stinking_cloud(sobj);
         break;
         default:
-        impossible(__sl343, otyp);
+        impossible(__s_what_weird_effect_is_this_u, otyp);
     }
     if (!sobj.v)
         update_inventory();
@@ -2304,30 +2304,30 @@ export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswa
     otmp2 = mksobj(confused ? NHC.ROCK : NHC.BOULDER, 0, 0);
     if (!otmp2)
         return;
-    cptr.stI64o(otmp2, $obj_quan, BigInt((confused ? (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 2312, __sl344), rn2(5)) : rn2(5)) + 2) | 0) : 1)));
+    cptr.stI64o(otmp2, $obj_quan, BigInt((confused ? (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2312, __s_drop_boulder_on_player), rn2(5)) : rn2(5)) + 2) | 0) : 1)));
     cptr.stI32o(otmp2, $obj_owt, weight(otmp2) >>> 0);
     if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n) && !Passes_walls() && !(cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
-        You(__sl345, doname(otmp2));
+        You(__s_are_hit_by_s, doname(otmp2));
         dmg = Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt(dmgval(otmp2, cptr.add(gy, $instance_globals_y_youmonst))) * cptr.ldI64o(otmp2, $obj_quan)))));
         if (uarmh.v && helmet_protects) {
             if (hard_helmet(uarmh.v)) {
-                pline(__sl346);
+                pline(__s_fortunately_you_are_wearing_a_hard);
                 if (dmg > 2)
                     dmg = 2;
             } else if (cptr.ld1so(flags, $flag_verbose)) {
-                pline(__sl347, Yname2(uarmh.v));
+                pline(__s_s_does_not_protect_you, Yname2(uarmh.v));
             }
         }
     } else
         dmg = 0;
     wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 16);
-    if (!flooreffects(otmp2, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __sl348)) {
+    if (!flooreffects(otmp2, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_fall)) {
         place_object(otmp2, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         stackobj(otmp2);
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
     if (dmg)
-        losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl349, NHM.KILLED_BY_AN);
+        losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_scroll_of_earth, NHM.KILLED_BY_AN);
 }
 
 /** C ref: read.c:2341 — @param {CInt} x @param {CInt} y @param {CInt} confused @param {CInt} byu @returns {CInt} */
@@ -2337,30 +2337,30 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
     otmp2 = mksobj(confused ? NHC.ROCK : NHC.BOULDER, 0, 0);
     if (!otmp2)
         return 0;
-    cptr.stI64o(otmp2, $obj_quan, BigInt((confused ? (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 2350, __sl350), rn2(5)) : rn2(5)) + 2) | 0) : 1)));
+    cptr.stI64o(otmp2, $obj_quan, BigInt((confused ? (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2350, __s_drop_boulder_on_monster), rn2(5)) : rn2(5)) + 2) | 0) : 1)));
     cptr.stI32o(otmp2, $obj_owt, weight(otmp2) >>> 0);
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n) && !(cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_GHOST) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
         let helmet = which_armor(mtmp, 4n);
         let mdmg;
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
-            pline(__sl351, Monnam(mtmp), doname(otmp2));
+            pline(__s_s_is_hit_by_s, Monnam(mtmp), doname(otmp2));
             if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !canspotmon(mtmp))
                 map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
-            You_hear(__sl352, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH), body_part(NHC.HEAD));
+            You_hear(__s_something_hit_s_s_over_your_s, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH), body_part(NHC.HEAD));
         mdmg = BigInt.asIntN(64, BigInt(dmgval(otmp2, mtmp)) * cptr.ldI64o(otmp2, $obj_quan));
         if (helmet) {
             if (hard_helmet(helmet)) {
                 if (canspotmon(mtmp))
-                    pline(__sl353, mon_nam(mtmp));
+                    pline(__s_fortunately_s_is_wearing_a_hard_helmet, mon_nam(mtmp));
                 else if (!Deaf())
-                    You_hear(__sl354);
+                    You_hear(__s_a_clanging_sound);
                 if (mdmg > 2n)
                     mdmg = 2n;
             } else {
                 if (canspotmon(mtmp))
-                    pline(__sl355, Monnam(mtmp), xname(helmet), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_him)));
+                    pline(__s_s_s_s_does_not_protect_s, Monnam(mtmp), xname(helmet), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_him)));
             }
         }
         cptr.stI32o(mtmp, $monst_mhp, Number(BigInt.asIntN(32, BigInt(cptr.ldI32o(mtmp, $monst_mhp)) - mdmg)));
@@ -2368,7 +2368,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
             if (byu) {
                 killed(mtmp);
             } else {
-                pline(__sl356, Monnam(mtmp));
+                pline(__s_s_is_killed, Monnam(mtmp));
                 mondied(mtmp);
             }
         } else {
@@ -2380,7 +2380,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
         drop_boulder_on_player(confused, 1, 0, 1);
         return 1;
     }
-    if (!flooreffects(otmp2, x, y, __sl348)) {
+    if (!flooreffects(otmp2, x, y, __s_fall)) {
         place_object(otmp2, x, y);
         stackobj(otmp2);
         newsym(x, y);
@@ -2390,7 +2390,7 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
 
 /** C ref: read.c:2414 — @param {CPtr<struct obj>} obj @param {CInt} chg */
 export function wand_explode(obj, chg) {
-    let expl = !chg ? __sl357 : __sl358;
+    let expl = !chg ? __s_suddenly : __s_vibrates_violently_and;
     let dmg;
     let n;
     let k;
@@ -2422,10 +2422,10 @@ export function wand_explode(obj, chg) {
         k = 6;
         break;
     }
-    dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl121, 2450, __sl359), d((n), (k))) : d((n), (k)));
+    dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2450, __s_wand_explode), d((n), (k))) : d((n), (k)));
     cptr.stI32o(obj, $obj_in_use, 1);
-    pline(__sl360, Yname2(obj), expl);
-    losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl361, NHM.KILLED_BY_AN);
+    pline(__s_s_s_explodes, Yname2(obj), expl);
+    losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_exploding_wand, NHM.KILLED_BY_AN);
     useup(obj);
     exercise(NHC.A_STR, 0);
 }
@@ -2475,11 +2475,11 @@ export function litroom(on, obj) {
         }
         if (!Blind()) {
             if (still_lit)
-                pline_The(__sl362);
+                pline_The(__s_ambient_light_seems_dimmer);
             else if ((cptr.ldI32o(u, $you_uswallow) & 1))
-                pline(__sl363);
+                pline(__s_it_seems_even_darker_in_here_than_before);
             else
-                You(__sl364);
+                You(__s_are_surrounded_by_darkness);
         }
     } else {
         if (blessed_effect) {
@@ -2493,13 +2493,13 @@ export function litroom(on, obj) {
             if (Blind())
                 ;
             else if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null))
-                pline(__sl365, s_suffix(Monnam(cptr.ldPtro(u, $you_ustuck))), mbodypart(cptr.ldPtro(u, $you_ustuck), NHC.STOMACH));
+                pline(__s_s_s_is_lit, s_suffix(Monnam(cptr.ldPtro(u, $you_ustuck))), mbodypart(cptr.ldPtro(u, $you_ustuck), NHC.STOMACH));
             else if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))
-                pline(__sl366, Monnam(cptr.ldPtro(u, $you_ustuck)));
+                pline(__s_s_shines_briefly, Monnam(cptr.ldPtro(u, $you_ustuck)));
             else
-                pline(__sl367, Monnam(cptr.ldPtro(u, $you_ustuck)));
+                pline(__s_s_glistens, Monnam(cptr.ldPtro(u, $you_ustuck)));
         } else if (!Blind() && (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) || cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR)) {
-            pline(__sl368, no_op ? __sl369 : __sl108);
+            pline(__s_a_lit_field_ssurrounds_you, no_op ? __s_briefly : __s_empty);
         }
     }
     if (no_op)
@@ -2533,7 +2533,7 @@ export function litroom(on, obj) {
         do {
             gremlin = gremlins;
             gremlins = cptr.ldPtro(gremlin, $litmon_nxt);
-            light_hits_gremlin(cptr.ldPtr(gremlin), (rng_log_enabled() ? (rng_log_set_caller(__sl121, 2630, __sl370), rnd(5)) : rnd(5)));
+            light_hits_gremlin(cptr.ldPtr(gremlin), (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 2630, __s_litroom), rnd(5)) : rnd(5)));
             cptr.free(gremlin);
         } while (gremlins);
     }
@@ -2556,23 +2556,23 @@ function do_class_genocide() {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     for (j = 0; ; j++) {
         if (j >= 5) {
-            pline(__sl152, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
+            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
             return;
         }
-        void cptr.strcpy(cptr.decay(promptbuf), __sl371);
+        void cptr.strcpy(cptr.decay(promptbuf), __s_what_class_of_monsters_do_you_want_to);
         if (j > 0)
-            nh_snprintf(__sl372, 2657, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __sl373, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __sl374 : __sl375);
+            nh_snprintf(__s_do_class_genocide, 2657, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __s_enter_s, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __s_the_symbol_or_name_representing_a_class : __s_to_see_previous_genocides);
         getlin(cptr.decay(promptbuf), cptr.decay(buf));
         void mungspaces(cptr.decay(buf));
         if (!cptr.ld1s(cptr.decay(buf))) {
-            pline(__sl241, (((j + 1) | 0) < 5) ? __sl376 : __sl377);
+            pline(__s_pct_s_dot, (((j + 1) | 0) < 5) ? __s_type_letter_or_punctuation_or_name_used : __s_no_class_of_monsters_specified);
             continue;
         }
-        if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__sl378), -1) || !strncmpi(cptr.decay((buf)), (__sl379), -1) || !strncmpi(cptr.decay((buf)), (__sl380), -1)) {
-            livelog_printf(128n, __sl381);
+        if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__s_none), -1) || !strncmpi(cptr.decay((buf)), (__s_none__2), -1) || !strncmpi(cptr.decay((buf)), (__s_nothing), -1)) {
+            livelog_printf(128n, __s_declined_to_perform_class_genocide);
             return;
         }
-        if (!strcmp(cptr.decay(buf), __sl382) || !strcmp(cptr.decay(buf), __sl383)) {
+        if (!strcmp(cptr.decay(buf), __s_query) || !strcmp(cptr.decay(buf), __s_apos_query_apos)) {
             list_genocided(103, 0);
             --j;
             continue;
@@ -2593,9 +2593,9 @@ function do_class_genocide() {
         }
         if (!goodcnt && class$ != cptr.ld1so2(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), 96, $permonst_mlet) && class$ != cptr.ld1so2(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 96, $permonst_mlet)) {
             if (gonecnt)
-                pline(__sl384);
+                pline(__s_all_such_monsters_are_already);
             else if (immunecnt || class$ == NHC.S_invisible)
-                You(__sl385);
+                You(__s_aren_t_permitted_to_genocide_such);
             else if (wizard() && cptr.ld1so(cptr.decay(buf), 0, 1) == 42) {
                 let mtmp;
                 let mtmp2;
@@ -2607,10 +2607,10 @@ function do_class_genocide() {
                     mongone(mtmp);
                     gonecnt++;
                 }
-                pline(__sl386, gonecnt, (((gonecnt) == 1) ? __sl108 : __sl387));
+                pline(__s_eliminated_d_monster_s, gonecnt, (((gonecnt) == 1) ? __s_empty : __s_s));
                 return;
             } else
-                pline(__sl388, cptr.strlen(cptr.decay(buf)) == 1n ? __sl389 : __sl390);
+                pline(__s_that_s_does_not_represent_any_monster, cptr.strlen(cptr.decay(buf)) == 1n ? __s_symbol : __s_response);
             continue;
         }
         for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++) {
@@ -2620,21 +2620,21 @@ function do_class_genocide() {
                 if (((i) == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)) || ((i) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) || ((cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_GENO) && !(cptr.ld1uo2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))) {
                     if (!ll_done++) {
                         if (!num_genocides())
-                            livelog_printf(160n, __sl391, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), cptr.ld1so(def_monsyms, class$, 24));
+                            livelog_printf(160n, __s_performed_s_first_genocide_class_c, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), cptr.ld1so(def_monsyms, class$, 24));
                         else
-                            livelog_printf(128n, __sl392, cptr.ld1so(def_monsyms, class$, 24));
+                            livelog_printf(128n, __s_genocided_class_c, cptr.ld1so(def_monsyms, class$, 24));
                     }
                     cptr.st1o2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | 18);
                     kill_genocided_monsters();
                     update_inventory();
-                    pline(__sl393, cptr.decay(nam));
+                    pline(__s_wiped_out_all_s, cptr.decay(nam));
                     if (Upolyd() && vampshifted(cptr.add(gy, $instance_globals_y_youmonst)) && (i == cptr.ldI32o(u, $you_umonnum) || i == cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)))
                         polyself(NHC.POLY_REVERT);
                     if (Upolyd() && i == cptr.ldI32o(u, $you_umonnum)) {
                         cptr.stI32o(u, $you_mh, -1);
                         if (Unchanging()) {
                             if (!feel_dead++)
-                                urgent_pline(__sl394);
+                                urgent_pline(__s_you_die);
                             gameover = 1;
                         } else
                             rehumanize();
@@ -2643,16 +2643,16 @@ function do_class_genocide() {
                         cptr.stI32o(u, $you_uhp, -1);
                         if (Upolyd()) {
                             if (!feel_dead++)
-                                You_feel(__sl395, udeadinside());
+                                You_feel(__s_s_inside, udeadinside());
                         } else {
                             if (!feel_dead++)
-                                urgent_pline(__sl394);
+                                urgent_pline(__s_you_die);
                             gameover = 1;
                         }
                     }
                 } else if (cptr.ld1uo2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
                     if (!gameover)
-                        pline(__sl396, upstart(cptr.decay(nam)));
+                        pline(__s_s_are_already_nonexistent, upstart(cptr.decay(nam)));
                 } else if (!gameover) {
                     if ((cptr.ld1uo2(mons, i, 96, $permonst_msound) != NHC.MS_LEADER || quest_info(NHC.MS_LEADER) == i) && (cptr.ld1uo2(mons, i, 96, $permonst_msound) != NHC.MS_NEMESIS || quest_info(NHC.MS_NEMESIS) == i) && (cptr.ld1uo2(mons, i, 96, $permonst_msound) != NHC.MS_GUARDIAN || quest_info(NHC.MS_GUARDIAN) == i) && (i != NHC.PM_NINJA || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI))) {
                         let named;
@@ -2661,14 +2661,14 @@ function do_class_genocide() {
                         uniq = schar(((cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_UNIQ) ? 1 : 0));
                         if (i == NHC.PM_HIGH_CLERIC)
                             uniq = 0;
-                        You(__sl397, (uniq && !named) ? __sl398 : __sl108, (uniq || named) ? cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0) : cptr.decay(nam));
+                        You(__s_aren_t_permitted_to_genocide_s_s, (uniq && !named) ? __s_the : __s_empty, (uniq || named) ? cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0) : cptr.decay(nam));
                     }
                 }
             }
         }
         if (gameover || cptr.ldI32o(u, $you_uhp) == -1) {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl399);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_scroll_of_genocide);
             if (gameover)
                 done(NHC.GENOCIDED);
         }
@@ -2697,32 +2697,32 @@ export function do_genocide(how) {
             if (i >= 5) {
                 if (!(how & 1) && (ptr = rndmonst()) !== null)
                     break;
-                pline(__sl152, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
+                pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
                 return;
             }
-            void cptr.strcpy(cptr.decay(promptbuf), __sl400);
+            void cptr.strcpy(cptr.decay(promptbuf), __s_what_type_of_monster_do_you_want_to);
             if (i > 0)
-                nh_snprintf(__sl401, 2861, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __sl373, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __sl402 : __sl375);
+                nh_snprintf(__s_do_genocide, 2861, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __s_enter_s, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __s_the_name_of_a_type_of_monster_or : __s_to_see_previous_genocides);
             getlin(cptr.decay(promptbuf), cptr.decay(buf));
             void mungspaces(cptr.decay(buf));
             if (!cptr.ld1s(cptr.decay(buf))) {
-                pline(__sl241, (((i + 1) | 0) < 5) ? __sl403 : __sl404);
+                pline(__s_pct_s_dot, (((i + 1) | 0) < 5) ? __s_type_the_name_of_a_type_of_monster_or : __s_no_type_of_monster_specified);
                 continue;
             }
-            if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__sl378), -1) || !strncmpi(cptr.decay((buf)), (__sl379), -1) || !strncmpi(cptr.decay((buf)), (__sl380), -1)) {
+            if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__s_none), -1) || !strncmpi(cptr.decay((buf)), (__s_none__2), -1) || !strncmpi(cptr.decay((buf)), (__s_nothing), -1)) {
                 if (!(how & 1) && (ptr = rndmonst()) !== null)
                     break;
-                livelog_printf(128n, __sl405);
+                livelog_printf(128n, __s_declined_to_perform_genocide);
                 return;
             }
-            if (!strcmp(cptr.decay(buf), __sl382) || !strcmp(cptr.decay(buf), __sl383)) {
+            if (!strcmp(cptr.decay(buf), __s_query) || !strcmp(cptr.decay(buf), __s_apos_query_apos)) {
                 list_genocided(103, 0);
                 --i;
                 continue;
             }
             mndx = name_to_mon(cptr.decay(buf), null);
             if (mndx == NHC.NON_PM || (cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)) {
-                pline(__sl406, (mndx == NHC.NON_PM) ? __sl407 : __sl408);
+                pline(__s_such_creatures_s_exist_in_this_world, (mndx == NHC.NON_PM) ? __s_do_not : __s_no_longer);
                 continue;
             }
             ptr = cptr.add(mons, mndx, 96);
@@ -2739,9 +2739,9 @@ export function do_genocide(how) {
             if (!(cptr.ldU16o(ptr, $permonst_geno) & NHM.G_GENO)) {
                 if (!Deaf()) {
                     if (cptr.ld1so(flags, $flag_verbose))
-                        pline(__sl409);
+                        pline(__s_a_thunderous_voice_booms_through_the);
                     ;
-                    verbalize(__sl410);
+                    verbalize(__s_no_mortal_that_will_not_be_done);
                 }
                 continue;
             }
@@ -2751,7 +2751,7 @@ export function do_genocide(how) {
         }
         mndx = (cptr.ldI32o((ptr), $permonst_pmidx));
     }
-    which = __sl411;
+    which = __s_all;
     void cptr.strcpy(cptr.decay(realbuf), cptr.ldPtro(ptr, NHC.NEUTRAL, 8));
     if (Hallucination()) {
         if (Upolyd()) {
@@ -2763,30 +2763,30 @@ export function do_genocide(how) {
     } else {
         void cptr.strcpy(cptr.decay(buf), cptr.decay(realbuf));
         if ((cptr.ldU16o(ptr, $permonst_geno) & NHM.G_UNIQ) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)))
-            which = !((cptr.ldU64o((ptr), $permonst_mflags2) & 524288n) != 0n) ? __sl398 : __sl108;
+            which = !((cptr.ldU64o((ptr), $permonst_mflags2) & 524288n) != 0n) ? __s_the : __s_empty;
     }
     if (how & 1) {
         if (!num_genocides())
-            livelog_printf(160n, __sl412, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), makeplural(cptr.decay(realbuf)));
+            livelog_printf(160n, __s_performed_s_first_genocide_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), makeplural(cptr.decay(realbuf)));
         else
-            livelog_printf(128n, __sl413, makeplural(cptr.decay(realbuf)));
+            livelog_printf(128n, __s_genocided_s, makeplural(cptr.decay(realbuf)));
         cptr.st1o2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | 18);
-        pline(__sl414, which, (cptr.ld1s(which) != 97) ? cptr.decay(buf) : makeplural(cptr.decay(buf)));
+        pline(__s_wiped_out_s_s, which, (cptr.ld1s(which) != 97) ? cptr.decay(buf) : makeplural(cptr.decay(buf)));
         if (killplayer) {
             cptr.stI32o(u, $you_uhp, -1);
             if (how & 2) {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl415);
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_genocidal_confusion);
             } else if (how & 4) {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl416);
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_imperious_order);
             } else {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl399);
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_scroll_of_genocide);
             }
             if (Upolyd() && !cptr.eq(ptr, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                 delayed_killer(NHC.POLYMORPH, cptr.ldI32o(svk, $kinfo_format), cptr.add(svk, $kinfo_name));
-                You_feel(__sl395, udeadinside());
+                You_feel(__s_s_inside, udeadinside());
             } else {
                 done(NHC.GENOCIDED);
             }
@@ -2799,7 +2799,7 @@ export function do_genocide(how) {
         let cnt = 0;
         let census = monster_census(0);
         if (!(cptr.ldU16o2(mons, mndx, 96, $permonst_geno) & NHM.G_UNIQ) && !(cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
-            for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl121, 3000, __sl401), rn2(3)) : rn2(3)) + 4) | 0); i > 0; i--) {
+            for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 3000, __s_do_genocide), rn2(3)) : rn2(3)) + 4) | 0); i > 0; i--) {
                 if (!makemon(ptr, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 131073))
                     break;
                 ++cnt;
@@ -2808,9 +2808,9 @@ export function do_genocide(how) {
             }
         if (cnt) {
             cnt = (monster_census(0) - census) | 0;
-            pline(__sl417, (cnt > 1) ? __sl418 : __sl108, (cnt > 1) ? makeplural(cptr.decay(buf)) : an(cptr.decay(buf)));
+            pline(__s_sent_in_s_s, (cnt > 1) ? __s_some : __s_empty, (cnt > 1) ? makeplural(cptr.decay(buf)) : an(cptr.decay(buf)));
         } else
-            pline(__sl152, cptr.ldPtr(c_common_strings));
+            pline(__s_pct_s, cptr.ldPtr(c_common_strings));
     }
 }
 
@@ -2819,15 +2819,15 @@ export function punish(sobj) {
     let reuse_ball = (sobj && cptr.ldI16o(sobj, $obj_otyp) == NHC.HEAVY_IRON_BALL) ? sobj : null;
     let cursed_levy = (sobj && (cptr.ldI32o(sobj, $obj_cursed) & 1) | 0) ? 1 : 0;
     if (!reuse_ball)
-        You(__sl419);
+        You(__s_are_being_punished_for_your_misbehavior);
     if (Punished()) {
-        Your(__sl420);
+        Your(__s_iron_ball_gets_heavier);
         cptr.stI32o(uball.v, $obj_owt, (cptr.ldI32o(uball.v, $obj_owt) + (Math.imul(NHC.WT_IRON_BALL_INCR, ((1 + cursed_levy) | 0)) >>> 0)) | 0);
         return;
     }
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n) || is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
         if (!reuse_ball) {
-            pline(__sl421);
+            pline(__s_a_ball_and_chain_appears_then_falls_away);
             dropy(mkobj(NHC.BALL_CLASS, 1));
         } else {
             dropy(reuse_ball);
@@ -2858,18 +2858,18 @@ export function unpunish() {
 /** C ref: read.c:3082 — @param {CPtr<struct obj>} sobj @param {CInt} mention_stinking */
 function do_stinking_cloud(sobj, mention_stinking) {
     let cc = cptr.alloc(4);
-    pline(__sl422, mention_stinking ? __sl423 : __sl108);
+    pline(__s_where_do_you_want_to_center_the_scloud, mention_stinking ? __s_stinking : __s_empty);
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     getpos_sethilite(display_stinking_cloud_positions, can_center_cloud);
-    if (getpos(cc, 1, __sl310) < 0) {
-        pline(__sl152, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
+    if (getpos(cc, 1, __s_the_desired_position) < 0) {
+        pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         return;
     } else if (!can_center_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
         if (Hallucination())
-            pline(__sl424);
+            pline(__s_ugh_someone_cut_the_cheese);
         else
-            pline(__sl425, cptr.ld1so(sobj, $obj_oclass) == NHC.SCROLL_CLASS ? __sl426 : __sl427);
+            pline(__s_s_a_whiff_of_rotten_eggs, cptr.ld1so(sobj, $obj_oclass) == NHC.SCROLL_CLASS ? __s_the_scroll_crumbles_with : __s_you_smell);
         return;
     }
     void create_gas_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), (15 + Math.imul(10, bcsign(sobj))) | 0, (8 + Math.imul(4, bcsign(sobj))) | 0);
@@ -2912,42 +2912,42 @@ function create_particular_parse(str, d) {
     }
     if (cptr.ldI32(d) < 1 || cptr.ldI32(d) > 1659)
         cptr.stI32(d, (1659 - monster_census(0)) | 0);
-    if ((tmpp = strstri(bufp, __sl428)) !== null) {
+    if ((tmpp = strstri(bufp, __s_saddled)) !== null) {
         cptr.st1o(d, $_create_particular_data_saddled, 1);
         void __builtin___memset_chk(tmpp, 32, 8n, __builtin_object_size(tmpp, 0));
     }
-    if ((tmpp = strstri(bufp, __sl429)) !== null) {
+    if ((tmpp = strstri(bufp, __s_sleeping)) !== null) {
         cptr.st1o(d, $_create_particular_data_sleeping, 1);
         void __builtin___memset_chk(tmpp, 32, 9n, __builtin_object_size(tmpp, 0));
     }
-    if ((tmpp = strstri(bufp, __sl430)) !== null) {
+    if ((tmpp = strstri(bufp, __s_invisible)) !== null) {
         cptr.st1o(d, $_create_particular_data_invisible, 1);
         void __builtin___memset_chk(tmpp, 32, 10n, __builtin_object_size(tmpp, 0));
     }
-    if ((tmpp = strstri(bufp, __sl431)) !== null) {
+    if ((tmpp = strstri(bufp, __s_hidden)) !== null) {
         cptr.st1o(d, $_create_particular_data_hidden, 1);
         void __builtin___memset_chk(tmpp, 32, 7n, __builtin_object_size(tmpp, 0));
     }
-    if ((tmpp = strstri(bufp, __sl432)) !== null) {
+    if ((tmpp = strstri(bufp, __s_female)) !== null) {
         cptr.stI32o(d, $_create_particular_data_fem, 1);
         void __builtin___memset_chk(tmpp, 32, 7n, __builtin_object_size(tmpp, 0));
     }
-    if ((tmpp = strstri(bufp, __sl433)) !== null) {
+    if ((tmpp = strstri(bufp, __s_male)) !== null) {
         cptr.stI32o(d, $_create_particular_data_fem, 0);
         void __builtin___memset_chk(tmpp, 32, 5n, __builtin_object_size(tmpp, 0));
     }
     bufp = mungspaces(bufp);
-    if (!strncmpi(bufp, __sl434, 5)) {
+    if (!strncmpi(bufp, __s_tame, 5)) {
         bufp = cptr.add(bufp, 5);
         cptr.st1o(d, $_create_particular_data_maketame, 1);
-    } else if (!strncmpi(bufp, __sl435, 9)) {
+    } else if (!strncmpi(bufp, __s_peaceful, 9)) {
         bufp = cptr.add(bufp, 9);
         cptr.st1o(d, $_create_particular_data_makepeaceful, 1);
-    } else if (!strncmpi(bufp, __sl436, 8)) {
+    } else if (!strncmpi(bufp, __s_hostile, 8)) {
         bufp = cptr.add(bufp, 8);
         cptr.st1o(d, $_create_particular_data_makehostile, 1);
     }
-    if (wizard() && (!strcmp(bufp, __sl437) || !strcmp(bufp, __sl438))) {
+    if (wizard() && (!strcmp(bufp, __s_star) || !strcmp(bufp, __s_random))) {
         cptr.st1o(d, $_create_particular_data_randmonst, 1);
         return 1;
     }
@@ -2993,7 +2993,7 @@ function create_particular_creation(d) {
         firstchoice = cptr.ldI32o(d, $_create_particular_data_which);
         if (cant_revive(cptr.add(d, $_create_particular_data_which), 0, null) && firstchoice != NHC.PM_LONG_WORM_TAIL) {
             let buf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(buf), __sl439, cptr.ldPtro3(mons, cptr.ldI32o(d, $_create_particular_data_which), 96, NHC.NEUTRAL, 8, 0), cptr.ldPtro3(mons, firstchoice, 96, NHC.NEUTRAL, 8, 0));
+            void cptr.sprintf(cptr.decay(buf), __s_creating_s_instead_force_s, cptr.ldPtro3(mons, cptr.ldI32o(d, $_create_particular_data_which), 96, NHC.NEUTRAL, 8, 0), cptr.ldPtro3(mons, firstchoice, 96, NHC.NEUTRAL, 8, 0));
             if (yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1) == 121)
                 cptr.stI32o(d, $_create_particular_data_which, firstchoice);
         }
@@ -3053,7 +3053,7 @@ export function create_particular() {
     let tryct = 5;
     let altmsg = 0;
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    void cptr.strcpy(cptr.decay(prompt), __sl440);
+    void cptr.strcpy(cptr.decay(prompt), __s_create_what_kind_of_monster);
     do {
         getlin(cptr.decay(prompt), cptr.decay(buf));
         bufp = mungspaces(cptr.decay(buf));
@@ -3062,16 +3062,16 @@ export function create_particular() {
         if (create_particular_parse(bufp, d))
             break;
         if (cptr.ld1s(bufp) || altmsg || tryct < 2) {
-            pline(__sl441);
+            pline(__s_i_ve_never_heard_of_such_monsters);
         } else {
-            pline(__sl442);
+            pline(__s_try_again_type_for_random_esc_to_cancel);
             ++altmsg;
         }
         if (tryct == 5)
-            void cptr.strcat(cptr.decay(prompt), __sl443);
+            void cptr.strcat(cptr.decay(prompt), __s_type_name_or_symbol);
     } while (--tryct > 0);
     if (!tryct)
-        pline(__sl152, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
+        pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
     else
         return create_particular_creation(d);
     return 0;

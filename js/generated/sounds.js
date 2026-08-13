@@ -114,314 +114,314 @@ const $Gender_his = FLD.Gender_his, $Race_individual = FLD.Race_individual, $Rac
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("sounds.c");
-const __sl1 = cptr.lit("throne_mon_sound");
-const __sl2 = cptr.lit("%s");
-const __sl3 = cptr.lit("the tones of courtly conversation.");
-const __sl4 = cptr.lit("a sceptre pounded in judgment.");
-const __sl5 = cptr.lit("Someone shouts \"Off with %s head!\"");
-const __sl6 = cptr.lit("Queen Beruthiel's cats!");
-const __sl7 = cptr.lit("beehive_mon_sound");
-const __sl8 = cptr.lit("a low buzzing.");
-const __sl9 = cptr.lit("an angry drone.");
-const __sl10 = cptr.lit("bees in your %sbonnet!");
-const __sl11 = cptr.lit("");
-const __sl12 = cptr.lit("(nonexistent) ");
-const __sl13 = cptr.lit("morgue_mon_sound");
-const __sl14 = cptr.lit("suddenly realize it is unnaturally quiet.");
-const __sl15 = cptr.lit("%s on the back of your %s %s up.");
-const __sl16 = cptr.lit("stand");
-const __sl17 = cptr.lit("%s on your %s %s to stand up.");
-const __sl18 = cptr.lit("seem");
-const __sl19 = cptr.lit("zoo_mon_sound");
-const __sl20 = cptr.lit("a sound reminiscent of an elephant stepping on a peanut.");
-const __sl21 = cptr.lit("a sound reminiscent of a seal barking.");
-const __sl22 = cptr.lit("Doctor Dolittle!");
-const __sl23 = cptr.lit("temple_priest_sound");
-const __sl24 = cptr.lit("*someone praising %s.");
-const __sl25 = cptr.lit("*someone beseeching %s.");
-const __sl26 = cptr.lit("#an animal carcass being offered in sacrifice.");
-const __sl27 = cptr.lit("*a strident plea for donations.");
-const __sl28 = cptr.lit("oracle_sound");
-const __sl29 = cptr.lit("a strange wind.");
-const __sl30 = cptr.lit("convulsive ravings.");
-const __sl31 = cptr.lit("snoring snakes.");
-const __sl32 = cptr.lit("someone say \"No more woodchucks!\"");
-const __sl33 = cptr.lit("a loud ZOT!");
-const __sl34 = cptr.lit("dosounds");
-const __sl35 = cptr.lit("someone counting gold coins.");
-const __sl36 = cptr.lit("the quarterback calling the play.");
-const __sl37 = cptr.lit("someone searching.");
-const __sl38 = cptr.lit("the footsteps of a guard on patrol.");
-const __sl39 = cptr.lit("Ebenezer Scrooge!");
-const __sl40 = cptr.lit("bubbling water.");
-const __sl41 = cptr.lit("water falling on coins.");
-const __sl42 = cptr.lit("the splashing of a naiad.");
-const __sl43 = cptr.lit("a soda fountain!");
-const __sl44 = cptr.lit("a slow drip.");
-const __sl45 = cptr.lit("a gurgling noise.");
-const __sl46 = cptr.lit("dishes being washed!");
-const __sl47 = cptr.lit("hear mosquitoes!");
-const __sl48 = cptr.lit("smell marsh gas!");
-const __sl49 = cptr.lit("hear Donald Duck!");
-const __sl50 = cptr.lit("blades being honed.");
-const __sl51 = cptr.lit("loud snoring.");
-const __sl52 = cptr.lit("dice being thrown.");
-const __sl53 = cptr.lit("General MacArthur!");
-const __sl54 = cptr.lit("someone cursing shoplifters.");
-const __sl55 = cptr.lit("the chime of a cash register.");
-const __sl56 = cptr.lit("Neiman and Marcus arguing!");
-const __sl57 = cptr.lit("beep");
-const __sl58 = cptr.lit("boing");
-const __sl59 = cptr.lit("sing");
-const __sl60 = cptr.lit("belche");
-const __sl61 = cptr.lit("creak");
-const __sl62 = cptr.lit("cough");
-const __sl63 = cptr.lit("rattle");
-const __sl64 = cptr.lit("ululate");
-const __sl65 = cptr.lit("pop");
-const __sl66 = cptr.lit("jingle");
-const __sl67 = cptr.lit("sniffle");
-const __sl68 = cptr.lit("tinkle");
-const __sl69 = cptr.lit("eep");
-const __sl70 = cptr.lit("clatter");
-const __sl71 = cptr.lit("hum");
-const __sl72 = cptr.lit("sizzle");
-const __sl73 = cptr.lit("twitter");
-const __sl74 = cptr.lit("wheeze");
-const __sl75 = cptr.lit("rustle");
-const __sl76 = cptr.lit("honk");
-const __sl77 = cptr.lit("lisp");
-const __sl78 = cptr.lit("yodel");
-const __sl79 = cptr.lit("coo");
-const __sl80 = cptr.lit("burp");
-const __sl81 = cptr.lit("moo");
-const __sl82 = cptr.lit("boom");
-const __sl83 = cptr.lit("murmur");
-const __sl84 = cptr.lit("oink");
-const __sl85 = cptr.lit("quack");
-const __sl86 = cptr.lit("rumble");
-const __sl87 = cptr.lit("twang");
-const __sl88 = cptr.lit("toot");
-const __sl89 = cptr.lit("gargle");
-const __sl90 = cptr.lit("hoot");
-const __sl91 = cptr.lit("warble");
-const __sl92 = cptr.lit("hiss");
-const __sl93 = cptr.lit("growl");
-const __sl94 = cptr.lit("roar");
-const __sl95 = cptr.lit("bellow");
-const __sl96 = cptr.lit("buzz");
-const __sl97 = cptr.lit("squeal");
-const __sl98 = cptr.lit("screech");
-const __sl99 = cptr.lit("neigh");
-const __sl100 = cptr.lit("wail");
-const __sl101 = cptr.lit("groan");
-const __sl102 = cptr.lit("low");
-const __sl103 = cptr.lit("commotion");
-const __sl104 = cptr.lit("scream");
-const __sl105 = cptr.lit("%s %s!");
-const __sl106 = cptr.lit("yelp");
-const __sl107 = cptr.lit("yowl");
-const __sl108 = cptr.lit("arch");
-const __sl109 = cptr.lit("recoil");
-const __sl110 = cptr.lit("snarl");
-const __sl111 = cptr.lit("bluff");
-const __sl112 = cptr.lit("quiver");
-const __sl113 = cptr.lit("screak");
-const __sl114 = cptr.lit("thrash");
-const __sl115 = cptr.lit("cringe");
-const __sl116 = cptr.lit("whimper");
-const __sl117 = cptr.lit("whine");
-const __sl118 = cptr.lit("%s %s.");
-const __sl119 = cptr.lit("I'm hungry.");
-const __sl120 = cptr.lit("%s seems famished.");
-const __sl121 = cptr.lit("maybe_gasp");
-const __sl122 = cptr.lit("Gasp!");
-const __sl123 = cptr.lit("Uh-oh.");
-const __sl124 = cptr.lit("Oh my!");
-const __sl125 = cptr.lit("What?");
-const __sl126 = cptr.lit("Why?");
-const __sl127 = cptr.lit("gurgle");
-const __sl128 = cptr.lit("chitter");
-const __sl129 = cptr.lit("chirp");
-const __sl130 = cptr.lit("grunt");
-const __sl131 = cptr.lit("mumble");
-const __sl132 = cptr.lit("domonnoise");
-const __sl133 = cptr.lit("15 minutes could save you 15 %s.");
-const __sl134 = cptr.lit("Good %s to you Master%s");
-const __sl135 = cptr.lit("evening");
-const __sl136 = cptr.lit("day");
-const __sl137 = cptr.lit("!");
-const __sl138 = cptr.lit(".  Why do we not rest?");
-const __sl139 = cptr.lit("%s%s");
-const __sl140 = cptr.lit("Child of the night, ");
-const __sl141 = cptr.lit("I can stand this craving no longer!");
-const __sl142 = cptr.lit("I beg you, help me satisfy this growing craving!");
-const __sl143 = cptr.lit("I find myself growing a little weary.");
-const __sl144 = cptr.lit("Good feeding %s!");
-const __sl145 = cptr.lit("sister");
-const __sl146 = cptr.lit("brother");
-const __sl147 = cptr.lit("How nice to hear you, child of the night!");
-const __sl148 = cptr.lit("I only drink... potions.");
-const __sl149 = cptr.lit("This is my hunting ground that you dare to prowl!");
-const __sl150 = cptr.lit("%s!  Your silver sheen does not frighten me!");
-const __sl151 = cptr.lit("Fool");
-const __sl152 = cptr.lit("Young Fool");
-const __sl153 = cptr.lit("%s throws back %s head and lets out a blood curdling %s!");
-const __sl154 = cptr.lit("shriek");
-const __sl155 = cptr.lit("howl");
-const __sl156 = cptr.lit("whispers inaudibly.  All you can make out is \"moon\".");
-const __sl157 = cptr.lit("howls.");
-const __sl158 = cptr.lit("whines.");
-const __sl159 = cptr.lit("yips.");
-const __sl160 = cptr.lit("barks.");
-const __sl161 = cptr.lit("growls.");
-const __sl162 = cptr.lit("yowls.");
-const __sl163 = cptr.lit("meows.");
-const __sl164 = cptr.lit("purrs.");
-const __sl165 = cptr.lit("mews.");
-const __sl166 = cptr.lit("snarls.");
-const __sl167 = cptr.lit("growls!");
-const __sl168 = cptr.lit("roars!");
-const __sl169 = cptr.lit("squeaks.");
-const __sl170 = cptr.lit("Nevermore!");
-const __sl171 = cptr.lit("squawks.");
-const __sl172 = cptr.lit("hisses!");
-const __sl173 = cptr.lit("drones.");
-const __sl174 = cptr.lit("buzzes angrily.");
-const __sl175 = cptr.lit("grunts.");
-const __sl176 = cptr.lit("neighs.");
-const __sl177 = cptr.lit("whinnies.");
-const __sl178 = cptr.lit("whickers.");
-const __sl179 = cptr.lit("moos.");
-const __sl180 = cptr.lit("bellows!");
-const __sl181 = cptr.lit("chirps.");
-const __sl182 = cptr.lit("wails mournfully.");
-const __sl183 = cptr.lit("groans.");
-const __sl184 = cptr.lit("gurgles.");
-const __sl185 = cptr.lit("burbles.");
-const __sl186 = cptr.lit("trumpets!");
-const __sl187 = cptr.lit("shrieks.");
-const __sl188 = cptr.lit("imitates you.");
-const __sl189 = cptr.lit("%s rattles noisily.");
-const __sl190 = cptr.lit("freeze for a moment.");
-const __sl191 = cptr.lit("scared by rattling");
-const __sl192 = cptr.lit("mumbles incomprehensibly.");
-const __sl193 = cptr.lit("Sorry, I'm all out of wishes.");
-const __sl194 = cptr.lit("I'm free!");
-const __sl195 = cptr.lit("This will teach you not to disturb me!");
-const __sl196 = cptr.lit("Get me out of here.");
-const __sl197 = cptr.lit("%s boasts about %s gem collection.");
-const __sl198 = cptr.lit("complains about a diet of mutton.");
-const __sl199 = cptr.lit("shouts \"Fee Fie Foe Foo!\" and guffaws.");
-const __sl200 = cptr.lit("threatens you.");
-const __sl201 = cptr.lit("wants nothing to do with you.");
-const __sl202 = cptr.lit("moans.");
-const __sl203 = cptr.lit("Huh?");
-const __sl204 = cptr.lit("Eh?");
-const __sl205 = cptr.lit("I can't see!");
-const __sl206 = cptr.lit("I'm trapped!");
-const __sl207 = cptr.lit("asks for a potion of healing.");
-const __sl208 = cptr.lit("curses orcs.");
-const __sl209 = cptr.lit("talks about mining.");
-const __sl210 = cptr.lit("talks about spellcraft.");
-const __sl211 = cptr.lit("discusses hunting.");
-const __sl212 = cptr.lit("Phase one, collect underpants.");
-const __sl213 = cptr.lit("Phase three, profit!");
-const __sl214 = cptr.lit("Many enter the dungeon, and few return to the sunlit lands.");
-const __sl215 = cptr.lit("complains about unpleasant dungeon conditions.");
-const __sl216 = cptr.lit("asks you about the One Ring.");
-const __sl217 = cptr.lit("describes a recent article in \"Spelunker Today\" magazine.");
-const __sl218 = cptr.lit("Aloha.");
-const __sl219 = cptr.lit("discusses dungeon exploration.");
-const __sl220 = cptr.lit("Hello, sailor.");
-const __sl221 = cptr.lit("comes on to you.");
-const __sl222 = cptr.lit("cajoles you.");
-const __sl223 = cptr.lit("Just the facts, %s.");
-const __sl224 = cptr.lit("Ma'am");
-const __sl225 = cptr.lit("Sir");
-const __sl226 = cptr.lit("It's not too late.");
-const __sl227 = cptr.lit("We're all doomed.");
-const __sl228 = cptr.lit("seems to mutter a cantrip.");
-const __sl229 = cptr.lit("I hate this job!");
-const __sl230 = cptr.lit("Put that weapon away before you hurt someone!");
-const __sl231 = cptr.lit("Doc, I can't help you unless you cooperate.");
-const __sl232 = cptr.lit("Please undress so I can examine you.");
-const __sl233 = cptr.lit("Take off your shirt, please.");
-const __sl234 = cptr.lit("Relax, this won't hurt a bit.");
-const __sl235 = cptr.lit("Please drop that gold and follow me.");
-const __sl236 = cptr.lit("Please follow me.");
-const __sl237 = cptr.lit("Ah, so you have a copy of /%s/.");
-const __sl238 = cptr.lit("Snuff");
-const __sl239 = cptr.lit("The Wee Free Men");
-const __sl240 = cptr.lit("  I may have been misquoted there.");
-const __sl241 = cptr.lit("is busy reading a copy of Sandman #8.");
-const __sl242 = cptr.lit("Who do you think you are, War?");
-const __sl243 = cptr.lit("%s %s");
-const __sl244 = cptr.lit("I vant to suck your %s!");
-const __sl245 = cptr.lit("I vill come after %s without regret!");
-const __sl246 = cptr.lit("giggles.");
-const __sl247 = cptr.lit("chuckles.");
-const __sl248 = cptr.lit("snickers.");
-const __sl249 = cptr.lit("laughs.");
-const __sl250 = cptr.lit("Anything you say can be used against you.");
-const __sl251 = cptr.lit("You're under arrest!");
-const __sl252 = cptr.lit("Stop in the name of the Law!");
-const __sl253 = cptr.lit("Resistance is useless!");
-const __sl254 = cptr.lit("You're dog meat!");
-const __sl255 = cptr.lit("Surrender!");
-const __sl256 = cptr.lit("What lousy pay we're getting here!");
-const __sl257 = cptr.lit("The food's not fit for Orcs!");
-const __sl258 = cptr.lit("My feet hurt, I've been on them all day!");
-const __sl259 = cptr.lit("As %s, you cannot speak.");
-const __sl260 = cptr.lit("speak.  You're choking!");
-const __sl261 = cptr.lit("They won't hear you out there.");
-const __sl262 = cptr.lit("speech is unintelligible underwater.");
-const __sl263 = cptr.lit("Talk to whom? (in what direction)");
-const __sl264 = cptr.lit("%s seems not to notice you.");
-const __sl265 = cptr.lit("They won't hear you %s there.");
-const __sl266 = cptr.lit("up");
-const __sl267 = cptr.lit("down");
-const __sl268 = cptr.lit("Talking to yourself is a bad habit for a dungeoneer.");
-const __sl269 = cptr.lit("statue");
-const __sl270 = cptr.lit("It's like talking to a wall.");
-const __sl271 = cptr.lit("dochat");
-const __sl272 = cptr.lit("wall %s");
-const __sl273 = cptr.lit("%s is eating noisily.");
-const __sl274 = cptr.lit("falls on deaf ears");
-const __sl275 = cptr.lit("is inaudible");
-const __sl276 = cptr.lit("Any response%s%s %s.");
-const __sl277 = cptr.lit(" from ");
-const __sl278 = cptr.lit("gripes about its job.");
-const __sl279 = cptr.lit("tells you a funny joke!");
-const __sl280 = cptr.lit("insults your heritage!");
-const __sl281 = cptr.lit("guffaws merrily!");
-const __sl282 = cptr.lit("deprecates your exploration efforts.");
-const __sl283 = cptr.lit("suggests a stint of rehab...");
-const __sl284 = cptr.lit("doesn't seem to be interested.");
-const __sl285 = cptr.lit("At whom? (in what direction)");
-const __sl286 = cptr.lit("briefly doff your %s.");
-const __sl287 = cptr.lit("%s doesn't notice.");
-const __sl288 = cptr.lit("There's no one %s there.");
-const __sl289 = cptr.lit("lout here doesn't acknowledge you...");
-const __sl290 = cptr.lit("That %screature is ignoring you!");
-const __sl291 = cptr.lit("unseen ");
-const __sl292 = cptr.lit("%s waves.");
-const __sl293 = cptr.lit("%s grasps %s %s but can't remove it.");
-const __sl294 = cptr.lit("%s tips %s %s in response.");
-const __sl295 = cptr.lit("tiphat");
-const __sl296 = cptr.lit("%s %s%s%s at you...");
-const __sl297 = cptr.lit(" and ");
-const __sl298 = cptr.lit("%s doesn't respond.");
-const __sl299 = cptr.lit("curses");
-const __sl300 = cptr.lit("gestures rudely");
-const __sl301 = cptr.lit("gestures offensively");
-const __sl302 = cptr.lit("nosound");
-const __sl303 = cptr.lit("activate_chosen_soundlib: invalid soundlib (%d)");
-const __sl304 = cptr.lit("assigning a new sound library");
-const __sl305 = cptr.lit("assign_soundlib: invalid soundlib (%d)");
-const __sl306 = cptr.lit("get_soundlib_name: invalid active_soundlib (%d)");
-const __sl307 = cptr.lit("base_soundname_to_filename");
+const __s_sounds_c = cptr.lit("sounds.c");
+const __s_throne_mon_sound = cptr.lit("throne_mon_sound");
+const __s_pct_s = cptr.lit("%s");
+const __s_the_tones_of_courtly_conversation = cptr.lit("the tones of courtly conversation.");
+const __s_a_sceptre_pounded_in_judgment = cptr.lit("a sceptre pounded in judgment.");
+const __s_someone_shouts_off_with_s_head = cptr.lit("Someone shouts \"Off with %s head!\"");
+const __s_queen_beruthiel_s_cats = cptr.lit("Queen Beruthiel's cats!");
+const __s_beehive_mon_sound = cptr.lit("beehive_mon_sound");
+const __s_a_low_buzzing = cptr.lit("a low buzzing.");
+const __s_an_angry_drone = cptr.lit("an angry drone.");
+const __s_bees_in_your_sbonnet = cptr.lit("bees in your %sbonnet!");
+const __s_empty = cptr.lit("");
+const __s_nonexistent = cptr.lit("(nonexistent) ");
+const __s_morgue_mon_sound = cptr.lit("morgue_mon_sound");
+const __s_suddenly_realize_it_is_unnaturally_quiet = cptr.lit("suddenly realize it is unnaturally quiet.");
+const __s_s_on_the_back_of_your_s_s_up = cptr.lit("%s on the back of your %s %s up.");
+const __s_stand = cptr.lit("stand");
+const __s_s_on_your_s_s_to_stand_up = cptr.lit("%s on your %s %s to stand up.");
+const __s_seem = cptr.lit("seem");
+const __s_zoo_mon_sound = cptr.lit("zoo_mon_sound");
+const __s_a_sound_reminiscent_of_an_elephant = cptr.lit("a sound reminiscent of an elephant stepping on a peanut.");
+const __s_a_sound_reminiscent_of_a_seal_barking = cptr.lit("a sound reminiscent of a seal barking.");
+const __s_doctor_dolittle = cptr.lit("Doctor Dolittle!");
+const __s_temple_priest_sound = cptr.lit("temple_priest_sound");
+const __s_someone_praising_s = cptr.lit("*someone praising %s.");
+const __s_someone_beseeching_s = cptr.lit("*someone beseeching %s.");
+const __s_an_animal_carcass_being_offered_in = cptr.lit("#an animal carcass being offered in sacrifice.");
+const __s_a_strident_plea_for_donations = cptr.lit("*a strident plea for donations.");
+const __s_oracle_sound = cptr.lit("oracle_sound");
+const __s_a_strange_wind = cptr.lit("a strange wind.");
+const __s_convulsive_ravings = cptr.lit("convulsive ravings.");
+const __s_snoring_snakes = cptr.lit("snoring snakes.");
+const __s_someone_say_no_more_woodchucks = cptr.lit("someone say \"No more woodchucks!\"");
+const __s_a_loud_zot = cptr.lit("a loud ZOT!");
+const __s_dosounds = cptr.lit("dosounds");
+const __s_someone_counting_gold_coins = cptr.lit("someone counting gold coins.");
+const __s_the_quarterback_calling_the_play = cptr.lit("the quarterback calling the play.");
+const __s_someone_searching = cptr.lit("someone searching.");
+const __s_the_footsteps_of_a_guard_on_patrol = cptr.lit("the footsteps of a guard on patrol.");
+const __s_ebenezer_scrooge = cptr.lit("Ebenezer Scrooge!");
+const __s_bubbling_water = cptr.lit("bubbling water.");
+const __s_water_falling_on_coins = cptr.lit("water falling on coins.");
+const __s_the_splashing_of_a_naiad = cptr.lit("the splashing of a naiad.");
+const __s_a_soda_fountain = cptr.lit("a soda fountain!");
+const __s_a_slow_drip = cptr.lit("a slow drip.");
+const __s_a_gurgling_noise = cptr.lit("a gurgling noise.");
+const __s_dishes_being_washed = cptr.lit("dishes being washed!");
+const __s_hear_mosquitoes = cptr.lit("hear mosquitoes!");
+const __s_smell_marsh_gas = cptr.lit("smell marsh gas!");
+const __s_hear_donald_duck = cptr.lit("hear Donald Duck!");
+const __s_blades_being_honed = cptr.lit("blades being honed.");
+const __s_loud_snoring = cptr.lit("loud snoring.");
+const __s_dice_being_thrown = cptr.lit("dice being thrown.");
+const __s_general_macarthur = cptr.lit("General MacArthur!");
+const __s_someone_cursing_shoplifters = cptr.lit("someone cursing shoplifters.");
+const __s_the_chime_of_a_cash_register = cptr.lit("the chime of a cash register.");
+const __s_neiman_and_marcus_arguing = cptr.lit("Neiman and Marcus arguing!");
+const __s_beep = cptr.lit("beep");
+const __s_boing = cptr.lit("boing");
+const __s_sing = cptr.lit("sing");
+const __s_belche = cptr.lit("belche");
+const __s_creak = cptr.lit("creak");
+const __s_cough = cptr.lit("cough");
+const __s_rattle = cptr.lit("rattle");
+const __s_ululate = cptr.lit("ululate");
+const __s_pop = cptr.lit("pop");
+const __s_jingle = cptr.lit("jingle");
+const __s_sniffle = cptr.lit("sniffle");
+const __s_tinkle = cptr.lit("tinkle");
+const __s_eep = cptr.lit("eep");
+const __s_clatter = cptr.lit("clatter");
+const __s_hum = cptr.lit("hum");
+const __s_sizzle = cptr.lit("sizzle");
+const __s_twitter = cptr.lit("twitter");
+const __s_wheeze = cptr.lit("wheeze");
+const __s_rustle = cptr.lit("rustle");
+const __s_honk = cptr.lit("honk");
+const __s_lisp = cptr.lit("lisp");
+const __s_yodel = cptr.lit("yodel");
+const __s_coo = cptr.lit("coo");
+const __s_burp = cptr.lit("burp");
+const __s_moo = cptr.lit("moo");
+const __s_boom = cptr.lit("boom");
+const __s_murmur = cptr.lit("murmur");
+const __s_oink = cptr.lit("oink");
+const __s_quack = cptr.lit("quack");
+const __s_rumble = cptr.lit("rumble");
+const __s_twang = cptr.lit("twang");
+const __s_toot = cptr.lit("toot");
+const __s_gargle = cptr.lit("gargle");
+const __s_hoot = cptr.lit("hoot");
+const __s_warble = cptr.lit("warble");
+const __s_hiss = cptr.lit("hiss");
+const __s_growl = cptr.lit("growl");
+const __s_roar = cptr.lit("roar");
+const __s_bellow = cptr.lit("bellow");
+const __s_buzz = cptr.lit("buzz");
+const __s_squeal = cptr.lit("squeal");
+const __s_screech = cptr.lit("screech");
+const __s_neigh = cptr.lit("neigh");
+const __s_wail = cptr.lit("wail");
+const __s_groan = cptr.lit("groan");
+const __s_low = cptr.lit("low");
+const __s_commotion = cptr.lit("commotion");
+const __s_scream = cptr.lit("scream");
+const __s_s_s = cptr.lit("%s %s!");
+const __s_yelp = cptr.lit("yelp");
+const __s_yowl = cptr.lit("yowl");
+const __s_arch = cptr.lit("arch");
+const __s_recoil = cptr.lit("recoil");
+const __s_snarl = cptr.lit("snarl");
+const __s_bluff = cptr.lit("bluff");
+const __s_quiver = cptr.lit("quiver");
+const __s_screak = cptr.lit("screak");
+const __s_thrash = cptr.lit("thrash");
+const __s_cringe = cptr.lit("cringe");
+const __s_whimper = cptr.lit("whimper");
+const __s_whine = cptr.lit("whine");
+const __s_s_s__2 = cptr.lit("%s %s.");
+const __s_i_m_hungry = cptr.lit("I'm hungry.");
+const __s_s_seems_famished = cptr.lit("%s seems famished.");
+const __s_maybe_gasp = cptr.lit("maybe_gasp");
+const __s_gasp = cptr.lit("Gasp!");
+const __s_uh_oh = cptr.lit("Uh-oh.");
+const __s_oh_my = cptr.lit("Oh my!");
+const __s_what = cptr.lit("What?");
+const __s_why = cptr.lit("Why?");
+const __s_gurgle = cptr.lit("gurgle");
+const __s_chitter = cptr.lit("chitter");
+const __s_chirp = cptr.lit("chirp");
+const __s_grunt = cptr.lit("grunt");
+const __s_mumble = cptr.lit("mumble");
+const __s_domonnoise = cptr.lit("domonnoise");
+const __s_15_minutes_could_save_you_15_s = cptr.lit("15 minutes could save you 15 %s.");
+const __s_good_s_to_you_master_s = cptr.lit("Good %s to you Master%s");
+const __s_evening = cptr.lit("evening");
+const __s_day = cptr.lit("day");
+const __s_bang = cptr.lit("!");
+const __s_why_do_we_not_rest = cptr.lit(".  Why do we not rest?");
+const __s_s_s__3 = cptr.lit("%s%s");
+const __s_child_of_the_night = cptr.lit("Child of the night, ");
+const __s_i_can_stand_this_craving_no_longer = cptr.lit("I can stand this craving no longer!");
+const __s_i_beg_you_help_me_satisfy_this_growing = cptr.lit("I beg you, help me satisfy this growing craving!");
+const __s_i_find_myself_growing_a_little_weary = cptr.lit("I find myself growing a little weary.");
+const __s_good_feeding_s = cptr.lit("Good feeding %s!");
+const __s_sister = cptr.lit("sister");
+const __s_brother = cptr.lit("brother");
+const __s_how_nice_to_hear_you_child_of_the_night = cptr.lit("How nice to hear you, child of the night!");
+const __s_i_only_drink_potions = cptr.lit("I only drink... potions.");
+const __s_this_is_my_hunting_ground_that_you_dare = cptr.lit("This is my hunting ground that you dare to prowl!");
+const __s_s_your_silver_sheen_does_not_frighten_me = cptr.lit("%s!  Your silver sheen does not frighten me!");
+const __s_fool = cptr.lit("Fool");
+const __s_young_fool = cptr.lit("Young Fool");
+const __s_s_throws_back_s_head_and_lets_out_a = cptr.lit("%s throws back %s head and lets out a blood curdling %s!");
+const __s_shriek = cptr.lit("shriek");
+const __s_howl = cptr.lit("howl");
+const __s_whispers_inaudibly_all_you_can_make_out = cptr.lit("whispers inaudibly.  All you can make out is \"moon\".");
+const __s_howls = cptr.lit("howls.");
+const __s_whines = cptr.lit("whines.");
+const __s_yips = cptr.lit("yips.");
+const __s_barks = cptr.lit("barks.");
+const __s_growls = cptr.lit("growls.");
+const __s_yowls = cptr.lit("yowls.");
+const __s_meows = cptr.lit("meows.");
+const __s_purrs = cptr.lit("purrs.");
+const __s_mews = cptr.lit("mews.");
+const __s_snarls = cptr.lit("snarls.");
+const __s_growls__2 = cptr.lit("growls!");
+const __s_roars = cptr.lit("roars!");
+const __s_squeaks = cptr.lit("squeaks.");
+const __s_nevermore = cptr.lit("Nevermore!");
+const __s_squawks = cptr.lit("squawks.");
+const __s_hisses = cptr.lit("hisses!");
+const __s_drones = cptr.lit("drones.");
+const __s_buzzes_angrily = cptr.lit("buzzes angrily.");
+const __s_grunts = cptr.lit("grunts.");
+const __s_neighs = cptr.lit("neighs.");
+const __s_whinnies = cptr.lit("whinnies.");
+const __s_whickers = cptr.lit("whickers.");
+const __s_moos = cptr.lit("moos.");
+const __s_bellows = cptr.lit("bellows!");
+const __s_chirps = cptr.lit("chirps.");
+const __s_wails_mournfully = cptr.lit("wails mournfully.");
+const __s_groans = cptr.lit("groans.");
+const __s_gurgles = cptr.lit("gurgles.");
+const __s_burbles = cptr.lit("burbles.");
+const __s_trumpets = cptr.lit("trumpets!");
+const __s_shrieks = cptr.lit("shrieks.");
+const __s_imitates_you = cptr.lit("imitates you.");
+const __s_s_rattles_noisily = cptr.lit("%s rattles noisily.");
+const __s_freeze_for_a_moment = cptr.lit("freeze for a moment.");
+const __s_scared_by_rattling = cptr.lit("scared by rattling");
+const __s_mumbles_incomprehensibly = cptr.lit("mumbles incomprehensibly.");
+const __s_sorry_i_m_all_out_of_wishes = cptr.lit("Sorry, I'm all out of wishes.");
+const __s_i_m_free = cptr.lit("I'm free!");
+const __s_this_will_teach_you_not_to_disturb_me = cptr.lit("This will teach you not to disturb me!");
+const __s_get_me_out_of_here = cptr.lit("Get me out of here.");
+const __s_s_boasts_about_s_gem_collection = cptr.lit("%s boasts about %s gem collection.");
+const __s_complains_about_a_diet_of_mutton = cptr.lit("complains about a diet of mutton.");
+const __s_shouts_fee_fie_foe_foo_and_guffaws = cptr.lit("shouts \"Fee Fie Foe Foo!\" and guffaws.");
+const __s_threatens_you = cptr.lit("threatens you.");
+const __s_wants_nothing_to_do_with_you = cptr.lit("wants nothing to do with you.");
+const __s_moans = cptr.lit("moans.");
+const __s_huh = cptr.lit("Huh?");
+const __s_eh = cptr.lit("Eh?");
+const __s_i_can_t_see = cptr.lit("I can't see!");
+const __s_i_m_trapped = cptr.lit("I'm trapped!");
+const __s_asks_for_a_potion_of_healing = cptr.lit("asks for a potion of healing.");
+const __s_curses_orcs = cptr.lit("curses orcs.");
+const __s_talks_about_mining = cptr.lit("talks about mining.");
+const __s_talks_about_spellcraft = cptr.lit("talks about spellcraft.");
+const __s_discusses_hunting = cptr.lit("discusses hunting.");
+const __s_phase_one_collect_underpants = cptr.lit("Phase one, collect underpants.");
+const __s_phase_three_profit = cptr.lit("Phase three, profit!");
+const __s_many_enter_the_dungeon_and_few_return = cptr.lit("Many enter the dungeon, and few return to the sunlit lands.");
+const __s_complains_about_unpleasant_dungeon = cptr.lit("complains about unpleasant dungeon conditions.");
+const __s_asks_you_about_the_one_ring = cptr.lit("asks you about the One Ring.");
+const __s_describes_a_recent_article_in_spelunker = cptr.lit("describes a recent article in \"Spelunker Today\" magazine.");
+const __s_aloha = cptr.lit("Aloha.");
+const __s_discusses_dungeon_exploration = cptr.lit("discusses dungeon exploration.");
+const __s_hello_sailor = cptr.lit("Hello, sailor.");
+const __s_comes_on_to_you = cptr.lit("comes on to you.");
+const __s_cajoles_you = cptr.lit("cajoles you.");
+const __s_just_the_facts_s = cptr.lit("Just the facts, %s.");
+const __s_ma_am = cptr.lit("Ma'am");
+const __s_sir = cptr.lit("Sir");
+const __s_it_s_not_too_late = cptr.lit("It's not too late.");
+const __s_we_re_all_doomed = cptr.lit("We're all doomed.");
+const __s_seems_to_mutter_a_cantrip = cptr.lit("seems to mutter a cantrip.");
+const __s_i_hate_this_job = cptr.lit("I hate this job!");
+const __s_put_that_weapon_away_before_you_hurt = cptr.lit("Put that weapon away before you hurt someone!");
+const __s_doc_i_can_t_help_you_unless_you = cptr.lit("Doc, I can't help you unless you cooperate.");
+const __s_please_undress_so_i_can_examine_you = cptr.lit("Please undress so I can examine you.");
+const __s_take_off_your_shirt_please = cptr.lit("Take off your shirt, please.");
+const __s_relax_this_won_t_hurt_a_bit = cptr.lit("Relax, this won't hurt a bit.");
+const __s_please_drop_that_gold_and_follow_me = cptr.lit("Please drop that gold and follow me.");
+const __s_please_follow_me = cptr.lit("Please follow me.");
+const __s_ah_so_you_have_a_copy_of_s = cptr.lit("Ah, so you have a copy of /%s/.");
+const __s_snuff = cptr.lit("Snuff");
+const __s_the_wee_free_men = cptr.lit("The Wee Free Men");
+const __s_i_may_have_been_misquoted_there = cptr.lit("  I may have been misquoted there.");
+const __s_is_busy_reading_a_copy_of_sandman_8 = cptr.lit("is busy reading a copy of Sandman #8.");
+const __s_who_do_you_think_you_are_war = cptr.lit("Who do you think you are, War?");
+const __s_s_s__4 = cptr.lit("%s %s");
+const __s_i_vant_to_suck_your_s = cptr.lit("I vant to suck your %s!");
+const __s_i_vill_come_after_s_without_regret = cptr.lit("I vill come after %s without regret!");
+const __s_giggles = cptr.lit("giggles.");
+const __s_chuckles = cptr.lit("chuckles.");
+const __s_snickers = cptr.lit("snickers.");
+const __s_laughs = cptr.lit("laughs.");
+const __s_anything_you_say_can_be_used_against_you = cptr.lit("Anything you say can be used against you.");
+const __s_you_re_under_arrest = cptr.lit("You're under arrest!");
+const __s_stop_in_the_name_of_the_law = cptr.lit("Stop in the name of the Law!");
+const __s_resistance_is_useless = cptr.lit("Resistance is useless!");
+const __s_you_re_dog_meat = cptr.lit("You're dog meat!");
+const __s_surrender = cptr.lit("Surrender!");
+const __s_what_lousy_pay_we_re_getting_here = cptr.lit("What lousy pay we're getting here!");
+const __s_the_food_s_not_fit_for_orcs = cptr.lit("The food's not fit for Orcs!");
+const __s_my_feet_hurt_i_ve_been_on_them_all_day = cptr.lit("My feet hurt, I've been on them all day!");
+const __s_as_s_you_cannot_speak = cptr.lit("As %s, you cannot speak.");
+const __s_speak_you_re_choking = cptr.lit("speak.  You're choking!");
+const __s_they_won_t_hear_you_out_there = cptr.lit("They won't hear you out there.");
+const __s_speech_is_unintelligible_underwater = cptr.lit("speech is unintelligible underwater.");
+const __s_talk_to_whom_in_what_direction = cptr.lit("Talk to whom? (in what direction)");
+const __s_s_seems_not_to_notice_you = cptr.lit("%s seems not to notice you.");
+const __s_they_won_t_hear_you_s_there = cptr.lit("They won't hear you %s there.");
+const __s_up = cptr.lit("up");
+const __s_down = cptr.lit("down");
+const __s_talking_to_yourself_is_a_bad_habit_for = cptr.lit("Talking to yourself is a bad habit for a dungeoneer.");
+const __s_statue = cptr.lit("statue");
+const __s_it_s_like_talking_to_a_wall = cptr.lit("It's like talking to a wall.");
+const __s_dochat = cptr.lit("dochat");
+const __s_wall_s = cptr.lit("wall %s");
+const __s_s_is_eating_noisily = cptr.lit("%s is eating noisily.");
+const __s_falls_on_deaf_ears = cptr.lit("falls on deaf ears");
+const __s_is_inaudible = cptr.lit("is inaudible");
+const __s_any_response_s_s_s = cptr.lit("Any response%s%s %s.");
+const __s_from = cptr.lit(" from ");
+const __s_gripes_about_its_job = cptr.lit("gripes about its job.");
+const __s_tells_you_a_funny_joke = cptr.lit("tells you a funny joke!");
+const __s_insults_your_heritage = cptr.lit("insults your heritage!");
+const __s_guffaws_merrily = cptr.lit("guffaws merrily!");
+const __s_deprecates_your_exploration_efforts = cptr.lit("deprecates your exploration efforts.");
+const __s_suggests_a_stint_of_rehab = cptr.lit("suggests a stint of rehab...");
+const __s_doesn_t_seem_to_be_interested = cptr.lit("doesn't seem to be interested.");
+const __s_at_whom_in_what_direction = cptr.lit("At whom? (in what direction)");
+const __s_briefly_doff_your_s = cptr.lit("briefly doff your %s.");
+const __s_s_doesn_t_notice = cptr.lit("%s doesn't notice.");
+const __s_there_s_no_one_s_there = cptr.lit("There's no one %s there.");
+const __s_lout_here_doesn_t_acknowledge_you = cptr.lit("lout here doesn't acknowledge you...");
+const __s_that_screature_is_ignoring_you = cptr.lit("That %screature is ignoring you!");
+const __s_unseen = cptr.lit("unseen ");
+const __s_s_waves = cptr.lit("%s waves.");
+const __s_s_grasps_s_s_but_can_t_remove_it = cptr.lit("%s grasps %s %s but can't remove it.");
+const __s_s_tips_s_s_in_response = cptr.lit("%s tips %s %s in response.");
+const __s_tiphat = cptr.lit("tiphat");
+const __s_s_s_s_s_at_you = cptr.lit("%s %s%s%s at you...");
+const __s_and = cptr.lit(" and ");
+const __s_s_doesn_t_respond = cptr.lit("%s doesn't respond.");
+const __s_curses = cptr.lit("curses");
+const __s_gestures_rudely = cptr.lit("gestures rudely");
+const __s_gestures_offensively = cptr.lit("gestures offensively");
+const __s_nosound = cptr.lit("nosound");
+const __s_activate_chosen_soundlib_invalid = cptr.lit("activate_chosen_soundlib: invalid soundlib (%d)");
+const __s_assigning_a_new_sound_library = cptr.lit("assigning a new sound library");
+const __s_assign_soundlib_invalid_soundlib_d = cptr.lit("assign_soundlib: invalid soundlib (%d)");
+const __s_get_soundlib_name_invalid_active = cptr.lit("get_soundlib_name: invalid active_soundlib (%d)");
+const __s_base_soundname_to_filename = cptr.lit("base_soundname_to_filename");
 
 /** C ref: sounds.c:20 — @param {CPtr<struct monst>} mon @param {CInt} rmtyp @returns {CInt} */
 function mon_in_room(mon, rmtyp) {
@@ -432,22 +432,22 @@ function mon_in_room(mon, rmtyp) {
 }
 
 const __static_throne_mon_sound_throne_msg = cptr.alloc(4 * 8);
-cptr.stPtro(__static_throne_mon_sound_throne_msg, 0, __sl3);
-cptr.stPtro(__static_throne_mon_sound_throne_msg, 8, __sl4);
-cptr.stPtro(__static_throne_mon_sound_throne_msg, 16, __sl5);
-cptr.stPtro(__static_throne_mon_sound_throne_msg, 24, __sl6); /** C ref: sounds.c:35 — char *[4] (function-static) */
+cptr.stPtro(__static_throne_mon_sound_throne_msg, 0, __s_the_tones_of_courtly_conversation);
+cptr.stPtro(__static_throne_mon_sound_throne_msg, 8, __s_a_sceptre_pounded_in_judgment);
+cptr.stPtro(__static_throne_mon_sound_throne_msg, 16, __s_someone_shouts_off_with_s_head);
+cptr.stPtro(__static_throne_mon_sound_throne_msg, 24, __s_queen_beruthiel_s_cats); /** C ref: sounds.c:35 — char *[4] (function-static) */
 
 /** C ref: sounds.c:30 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function throne_mon_sound(mtmp) {
     if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2048n) != 0n)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) && mon_in_room(mtmp, NHC.COURT)) {
-        let which = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(3)) : rn2(3)) + (Hallucination() ? 1 : 0)) | 0;
+        let which = ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 41, __s_throne_mon_sound), rn2(3)) : rn2(3)) + (Hallucination() ? 1 : 0)) | 0;
         if (which != 2) {
             if (which == 0) {
                 ;
             } else if (which == 1) {
                 ;
             }
-            You_hear(__sl2, cptr.ldPtro(__static_throne_mon_sound_throne_msg, which, 8));
+            You_hear(__s_pct_s, cptr.ldPtro(__static_throne_mon_sound_throne_msg, which, 8));
         } else {
             pline(cptr.ldPtro(__static_throne_mon_sound_throne_msg, 2, 8), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
         }
@@ -460,18 +460,18 @@ function throne_mon_sound(mtmp) {
 function beehive_mon_sound(mtmp) {
     if ((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_ANT && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) && mon_in_room(mtmp, NHC.BEEHIVE)) {
         let hallu = Hallucination() ? 1 : 0;
-        switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 68, __sl7), rn2(2)) : rn2(2)) + hallu) | 0) {
+        switch (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 68, __s_beehive_mon_sound), rn2(2)) : rn2(2)) + hallu) | 0) {
             case 0:
             ;
-            You_hear(__sl8);
+            You_hear(__s_a_low_buzzing);
             break;
             case 1:
             ;
-            You_hear(__sl9);
+            You_hear(__s_an_angry_drone);
             break;
             case 2:
             ;
-            You_hear(__sl10, uarmh.v ? __sl11 : __sl12);
+            You_hear(__s_bees_in_your_sbonnet, uarmh.v ? __s_empty : __s_nonexistent);
             break;
         }
         return 1;
@@ -484,15 +484,15 @@ function morgue_mon_sound(mtmp) {
     if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && mon_in_room(mtmp, NHC.MORGUE)) {
         let hallu = Hallucination() ? 1 : 0;
         let hair = body_part(NHC.HAIR);
-        switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 96, __sl13), rn2(2)) : rn2(2)) + hallu) | 0) {
+        switch (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 96, __s_morgue_mon_sound), rn2(2)) : rn2(2)) + hallu) | 0) {
             case 0:
-            You(__sl14);
+            You(__s_suddenly_realize_it_is_unnaturally_quiet);
             break;
             case 1:
-            pline_The(__sl15, hair, body_part(NHC.NECK), vtense(hair, __sl16));
+            pline_The(__s_s_on_the_back_of_your_s_s_up, hair, body_part(NHC.NECK), vtense(hair, __s_stand));
             break;
             case 2:
-            pline_The(__sl17, hair, body_part(NHC.HEAD), vtense(hair, __sl18));
+            pline_The(__s_s_on_your_s_s_to_stand_up, hair, body_part(NHC.HEAD), vtense(hair, __s_seem));
             break;
         }
         return 1;
@@ -501,26 +501,26 @@ function morgue_mon_sound(mtmp) {
 }
 
 const __static_zoo_mon_sound_zoo_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 0, __sl20);
-cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 8, __sl21);
-cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 16, __sl22); /** C ref: sounds.c:120 — char *[3] (function-static) */
+cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 0, __s_a_sound_reminiscent_of_an_elephant);
+cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 8, __s_a_sound_reminiscent_of_a_seal_barking);
+cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 16, __s_doctor_dolittle); /** C ref: sounds.c:120 — char *[3] (function-static) */
 
 /** C ref: sounds.c:115 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function zoo_mon_sound(mtmp) {
     if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n)) && mon_in_room(mtmp, NHC.ZOO)) {
         let hallu = Hallucination() ? 1 : 0;
-        let selection = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 119, __sl19), rn2(2)) : rn2(2)) + hallu) | 0;
-        You_hear(__sl2, cptr.ldPtro(__static_zoo_mon_sound_zoo_msg, selection, 8));
+        let selection = ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 119, __s_zoo_mon_sound), rn2(2)) : rn2(2)) + hallu) | 0;
+        You_hear(__s_pct_s, cptr.ldPtro(__static_zoo_mon_sound_zoo_msg, selection, 8));
         return 1;
     }
     return 0;
 }
 
 const __static_temple_priest_sound_temple_msg = cptr.alloc(4 * 8);
-cptr.stPtro(__static_temple_priest_sound_temple_msg, 0, __sl24);
-cptr.stPtro(__static_temple_priest_sound_temple_msg, 8, __sl25);
-cptr.stPtro(__static_temple_priest_sound_temple_msg, 16, __sl26);
-cptr.stPtro(__static_temple_priest_sound_temple_msg, 24, __sl27); /** C ref: sounds.c:146 — char *[4] (function-static) */
+cptr.stPtro(__static_temple_priest_sound_temple_msg, 0, __s_someone_praising_s);
+cptr.stPtro(__static_temple_priest_sound_temple_msg, 8, __s_someone_beseeching_s);
+cptr.stPtro(__static_temple_priest_sound_temple_msg, 16, __s_an_animal_carcass_being_offered_in);
+cptr.stPtro(__static_temple_priest_sound_temple_msg, 24, __s_a_strident_plea_for_donations); /** C ref: sounds.c:146 — char *[4] (function-static) */
 
 /** C ref: sounds.c:131 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function temple_priest_sound(mtmp) {
@@ -533,7 +533,7 @@ function temple_priest_sound(mtmp) {
         let speechless = schar((cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) <= NHC.MS_ANIMAL));
         let in_sight = schar((canseemon(mtmp) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ay, 8), ax) & NHM.IN_SIGHT) != 0) ? 1 : 0));
         do {
-            msg = cptr.ldPtro(__static_temple_priest_sound_temple_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 160, __sl23), rn2((((4 - 1) | 0) + hallu) | 0)) : rn2((((4 - 1) | 0) + hallu) | 0)), 8);
+            msg = cptr.ldPtro(__static_temple_priest_sound_temple_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 160, __s_temple_priest_sound), rn2((((4 - 1) | 0) + hallu) | 0)) : rn2((((4 - 1) | 0) + hallu) | 0)), 8);
             if (cptr.strchr(msg, 42) && speechless)
                 continue;
             if (cptr.strchr(msg, 35) && in_sight)
@@ -545,18 +545,18 @@ function temple_priest_sound(mtmp) {
         if (cptr.strchr(msg, 37)) {
             You_hear(msg, halu_gname(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shralign)));
         } else
-            You_hear(__sl2, msg);
+            You_hear(__s_pct_s, msg);
         return 1;
     }
     return 0;
 }
 
 const __static_oracle_sound_ora_msg = cptr.alloc(5 * 8);
-cptr.stPtro(__static_oracle_sound_ora_msg, 0, __sl29);
-cptr.stPtro(__static_oracle_sound_ora_msg, 8, __sl30);
-cptr.stPtro(__static_oracle_sound_ora_msg, 16, __sl31);
-cptr.stPtro(__static_oracle_sound_ora_msg, 24, __sl32);
-cptr.stPtro(__static_oracle_sound_ora_msg, 32, __sl33); /** C ref: sounds.c:189 — char *[5] (function-static) */
+cptr.stPtro(__static_oracle_sound_ora_msg, 0, __s_a_strange_wind);
+cptr.stPtro(__static_oracle_sound_ora_msg, 8, __s_convulsive_ravings);
+cptr.stPtro(__static_oracle_sound_ora_msg, 16, __s_snoring_snakes);
+cptr.stPtro(__static_oracle_sound_ora_msg, 24, __s_someone_say_no_more_woodchucks);
+cptr.stPtro(__static_oracle_sound_ora_msg, 32, __s_a_loud_zot); /** C ref: sounds.c:189 — char *[5] (function-static) */
 
 /** C ref: sounds.c:181 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function oracle_sound(mtmp) {
@@ -564,33 +564,33 @@ function oracle_sound(mtmp) {
         return 0;
     if (Hallucination() || !canseemon(mtmp)) {
         let hallu = Hallucination() ? 1 : 0;
-        You_hear(__sl2, cptr.ldPtro(__static_oracle_sound_ora_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 196, __sl28), rn2(3)) : rn2(3)) + Math.imul(hallu, 2)) | 0, 8));
+        You_hear(__s_pct_s, cptr.ldPtro(__static_oracle_sound_ora_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 196, __s_oracle_sound), rn2(3)) : rn2(3)) + Math.imul(hallu, 2)) | 0, 8));
     }
     return 1;
 }
 
 const __static_dosounds_fountain_msg = cptr.alloc(4 * 8);
-cptr.stPtro(__static_dosounds_fountain_msg, 0, __sl40);
-cptr.stPtro(__static_dosounds_fountain_msg, 8, __sl41);
-cptr.stPtro(__static_dosounds_fountain_msg, 16, __sl42);
-cptr.stPtro(__static_dosounds_fountain_msg, 24, __sl43); /** C ref: sounds.c:214 — char *[4] (function-static) */
+cptr.stPtro(__static_dosounds_fountain_msg, 0, __s_bubbling_water);
+cptr.stPtro(__static_dosounds_fountain_msg, 8, __s_water_falling_on_coins);
+cptr.stPtro(__static_dosounds_fountain_msg, 16, __s_the_splashing_of_a_naiad);
+cptr.stPtro(__static_dosounds_fountain_msg, 24, __s_a_soda_fountain); /** C ref: sounds.c:214 — char *[4] (function-static) */
 const __static_dosounds_sink_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_dosounds_sink_msg, 0, __sl44);
-cptr.stPtro(__static_dosounds_sink_msg, 8, __sl45);
-cptr.stPtro(__static_dosounds_sink_msg, 16, __sl46); /** C ref: sounds.c:221 — char *[3] (function-static) */
+cptr.stPtro(__static_dosounds_sink_msg, 0, __s_a_slow_drip);
+cptr.stPtro(__static_dosounds_sink_msg, 8, __s_a_gurgling_noise);
+cptr.stPtro(__static_dosounds_sink_msg, 16, __s_dishes_being_washed); /** C ref: sounds.c:221 — char *[3] (function-static) */
 const __static_dosounds_swamp_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_dosounds_swamp_msg, 0, __sl47);
-cptr.stPtro(__static_dosounds_swamp_msg, 8, __sl48);
-cptr.stPtro(__static_dosounds_swamp_msg, 16, __sl49); /** C ref: sounds.c:231 — char *[3] (function-static) */
+cptr.stPtro(__static_dosounds_swamp_msg, 0, __s_hear_mosquitoes);
+cptr.stPtro(__static_dosounds_swamp_msg, 8, __s_smell_marsh_gas);
+cptr.stPtro(__static_dosounds_swamp_msg, 16, __s_hear_donald_duck); /** C ref: sounds.c:231 — char *[3] (function-static) */
 const __static_dosounds_barracks_msg = cptr.alloc(4 * 8);
-cptr.stPtro(__static_dosounds_barracks_msg, 0, __sl50);
-cptr.stPtro(__static_dosounds_barracks_msg, 8, __sl51);
-cptr.stPtro(__static_dosounds_barracks_msg, 16, __sl52);
-cptr.stPtro(__static_dosounds_barracks_msg, 24, __sl53); /** C ref: sounds.c:287 — char *[4] (function-static) */
+cptr.stPtro(__static_dosounds_barracks_msg, 0, __s_blades_being_honed);
+cptr.stPtro(__static_dosounds_barracks_msg, 8, __s_loud_snoring);
+cptr.stPtro(__static_dosounds_barracks_msg, 16, __s_dice_being_thrown);
+cptr.stPtro(__static_dosounds_barracks_msg, 24, __s_general_macarthur); /** C ref: sounds.c:287 — char *[4] (function-static) */
 const __static_dosounds_shop_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_dosounds_shop_msg, 0, __sl54);
-cptr.stPtro(__static_dosounds_shop_msg, 8, __sl55);
-cptr.stPtro(__static_dosounds_shop_msg, 16, __sl56); /** C ref: sounds.c:321 — char *[3] (function-static) */
+cptr.stPtro(__static_dosounds_shop_msg, 0, __s_someone_cursing_shoplifters);
+cptr.stPtro(__static_dosounds_shop_msg, 8, __s_the_chime_of_a_cash_register);
+cptr.stPtro(__static_dosounds_shop_msg, 16, __s_neiman_and_marcus_arguing); /** C ref: sounds.c:321 — char *[3] (function-static) */
 
 /** C ref: sounds.c:202 */
 export function dosounds() {
@@ -602,27 +602,27 @@ export function dosounds() {
     if (Deaf() || !cptr.ld1s(flags) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         return;
     hallu = Hallucination() ? 1 : 0;
-    if (cptr.ld1uo(svl, $instance_globals_saved_l_level + $dlevel_t_flags) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 213, __sl34), rn2(400)) : rn2(400))) {
-        You_hear(__sl2, cptr.ldPtro(__static_dosounds_fountain_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 218, __sl34), rn2(3)) : rn2(3)) + hallu) | 0, 8));
+    if (cptr.ld1uo(svl, $instance_globals_saved_l_level + $dlevel_t_flags) && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 213, __s_dosounds), rn2(400)) : rn2(400))) {
+        You_hear(__s_pct_s, cptr.ldPtro(__static_dosounds_fountain_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 218, __s_dosounds), rn2(3)) : rn2(3)) + hallu) | 0, 8));
     }
-    if (cptr.ld1uo(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 220, __sl34), rn2(300)) : rn2(300))) {
-        You_hear(__sl2, cptr.ldPtro(__static_dosounds_sink_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 224, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8));
+    if (cptr.ld1uo(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks) && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 220, __s_dosounds), rn2(300)) : rn2(300))) {
+        You_hear(__s_pct_s, cptr.ldPtro(__static_dosounds_sink_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 224, __s_dosounds), rn2(2)) : rn2(2)) + hallu) | 0, 8));
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 226, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 226, __s_dosounds), rn2(200)) : rn2(200))) {
         if (get_iter_mons(throne_mon_sound))
             return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 230, __sl34), rn2(200)) : rn2(200))) {
-        You(__sl2, cptr.ldPtro(__static_dosounds_swamp_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 235, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8));
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 230, __s_dosounds), rn2(200)) : rn2(200))) {
+        You(__s_pct_s, cptr.ldPtro(__static_dosounds_swamp_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 235, __s_dosounds), rn2(2)) : rn2(2)) + hallu) | 0, 8));
         return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 238, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 238, __s_dosounds), rn2(200)) : rn2(200))) {
         if (!(sroom = search_special(NHC.VAULT))) {
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault, 0);
             return;
         }
         if (gd_sound())
-            switch (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 245, __sl34), rn2(2)) : rn2(2)) + hallu) | 0) {
+            switch (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 245, __s_dosounds), rn2(2)) : rn2(2)) + hallu) | 0) {
                 case 1:
                 {
                     let gold_in_vault = 0;
@@ -632,10 +632,10 @@ export function dosounds() {
                                 gold_in_vault = 1;
                     if (BigInt(vault_occupied(cptr.add(u, $you_urooms))) != (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))) {
                         if (gold_in_vault) {
-                            You_hear(!hallu ? __sl35 : __sl36);
+                            You_hear(!hallu ? __s_someone_counting_gold_coins : __s_the_quarterback_calling_the_play);
                         } else {
                             ;
-                            You_hear(__sl37);
+                            You_hear(__s_someone_searching);
                         }
                         break;
                     }
@@ -644,53 +644,53 @@ export function dosounds() {
                 ;
                 case 0:
                 ;
-                You_hear(__sl38);
+                You_hear(__s_the_footsteps_of_a_guard_on_patrol);
                 break;
                 case 2:
-                You_hear(__sl39);
+                You_hear(__s_ebenezer_scrooge);
                 break;
             }
         return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 278, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 278, __s_dosounds), rn2(200)) : rn2(200))) {
         if (get_iter_mons(beehive_mon_sound))
             return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 282, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 282, __s_dosounds), rn2(200)) : rn2(200))) {
         if (get_iter_mons(morgue_mon_sound))
             return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 286, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 286, __s_dosounds), rn2(200)) : rn2(200))) {
         let count = 0;
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n) && mon_in_room(mtmp, NHC.BARRACKS) && ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ++count > 5)) {
-                You_hear(__sl2, cptr.ldPtro(__static_dosounds_barracks_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 304, __sl34), rn2(3)) : rn2(3)) + hallu) | 0, 8));
+                You_hear(__s_pct_s, cptr.ldPtro(__static_dosounds_barracks_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 304, __s_dosounds), rn2(3)) : rn2(3)) + hallu) | 0, 8));
                 return;
             }
         }
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 309, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 309, __s_dosounds), rn2(200)) : rn2(200))) {
         if (get_iter_mons(zoo_mon_sound))
             return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 313, __sl34), rn2(200)) : rn2(200))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 313, __s_dosounds), rn2(200)) : rn2(200))) {
         if (!(sroom = search_special(-2))) {
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 0);
             return;
         }
         if (tended_shop(sroom) && !cptr.strchr(cptr.add(u, $you_ushops), Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n)))))) {
-            You_hear(__sl2, cptr.ldPtro(__static_dosounds_shop_msg, ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 325, __sl34), rn2(2)) : rn2(2)) + hallu) | 0, 8));
+            You_hear(__s_pct_s, cptr.ldPtro(__static_dosounds_shop_msg, ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 325, __s_dosounds), rn2(2)) : rn2(2)) + hallu) | 0, 8));
             noisy_shop(sroom);
         }
         return;
     }
-    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 330, __sl34), rn2(200)) : rn2(200)) && !((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))))) {
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 330, __s_dosounds), rn2(200)) : rn2(200)) && !((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))))) {
         if (get_iter_mons(temple_priest_sound))
             return;
     }
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 335, __sl34), rn2(400)) : rn2(400))) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 335, __s_dosounds), rn2(400)) : rn2(400))) {
         if (get_iter_mons(oracle_sound))
             return;
     }
@@ -698,41 +698,41 @@ export function dosounds() {
 
 /** C ref: sounds.c:341 — char *[35] */
 const h_sounds = cptr.alloc(35 * 8);
-cptr.stPtro(h_sounds, 0, __sl57);
-cptr.stPtro(h_sounds, 8, __sl58);
-cptr.stPtro(h_sounds, 16, __sl59);
-cptr.stPtro(h_sounds, 24, __sl60);
-cptr.stPtro(h_sounds, 32, __sl61);
-cptr.stPtro(h_sounds, 40, __sl62);
-cptr.stPtro(h_sounds, 48, __sl63);
-cptr.stPtro(h_sounds, 56, __sl64);
-cptr.stPtro(h_sounds, 64, __sl65);
-cptr.stPtro(h_sounds, 72, __sl66);
-cptr.stPtro(h_sounds, 80, __sl67);
-cptr.stPtro(h_sounds, 88, __sl68);
-cptr.stPtro(h_sounds, 96, __sl69);
-cptr.stPtro(h_sounds, 104, __sl70);
-cptr.stPtro(h_sounds, 112, __sl71);
-cptr.stPtro(h_sounds, 120, __sl72);
-cptr.stPtro(h_sounds, 128, __sl73);
-cptr.stPtro(h_sounds, 136, __sl74);
-cptr.stPtro(h_sounds, 144, __sl75);
-cptr.stPtro(h_sounds, 152, __sl76);
-cptr.stPtro(h_sounds, 160, __sl77);
-cptr.stPtro(h_sounds, 168, __sl78);
-cptr.stPtro(h_sounds, 176, __sl79);
-cptr.stPtro(h_sounds, 184, __sl80);
-cptr.stPtro(h_sounds, 192, __sl81);
-cptr.stPtro(h_sounds, 200, __sl82);
-cptr.stPtro(h_sounds, 208, __sl83);
-cptr.stPtro(h_sounds, 216, __sl84);
-cptr.stPtro(h_sounds, 224, __sl85);
-cptr.stPtro(h_sounds, 232, __sl86);
-cptr.stPtro(h_sounds, 240, __sl87);
-cptr.stPtro(h_sounds, 248, __sl88);
-cptr.stPtro(h_sounds, 256, __sl89);
-cptr.stPtro(h_sounds, 264, __sl90);
-cptr.stPtro(h_sounds, 272, __sl91);
+cptr.stPtro(h_sounds, 0, __s_beep);
+cptr.stPtro(h_sounds, 8, __s_boing);
+cptr.stPtro(h_sounds, 16, __s_sing);
+cptr.stPtro(h_sounds, 24, __s_belche);
+cptr.stPtro(h_sounds, 32, __s_creak);
+cptr.stPtro(h_sounds, 40, __s_cough);
+cptr.stPtro(h_sounds, 48, __s_rattle);
+cptr.stPtro(h_sounds, 56, __s_ululate);
+cptr.stPtro(h_sounds, 64, __s_pop);
+cptr.stPtro(h_sounds, 72, __s_jingle);
+cptr.stPtro(h_sounds, 80, __s_sniffle);
+cptr.stPtro(h_sounds, 88, __s_tinkle);
+cptr.stPtro(h_sounds, 96, __s_eep);
+cptr.stPtro(h_sounds, 104, __s_clatter);
+cptr.stPtro(h_sounds, 112, __s_hum);
+cptr.stPtro(h_sounds, 120, __s_sizzle);
+cptr.stPtro(h_sounds, 128, __s_twitter);
+cptr.stPtro(h_sounds, 136, __s_wheeze);
+cptr.stPtro(h_sounds, 144, __s_rustle);
+cptr.stPtro(h_sounds, 152, __s_honk);
+cptr.stPtro(h_sounds, 160, __s_lisp);
+cptr.stPtro(h_sounds, 168, __s_yodel);
+cptr.stPtro(h_sounds, 176, __s_coo);
+cptr.stPtro(h_sounds, 184, __s_burp);
+cptr.stPtro(h_sounds, 192, __s_moo);
+cptr.stPtro(h_sounds, 200, __s_boom);
+cptr.stPtro(h_sounds, 208, __s_murmur);
+cptr.stPtro(h_sounds, 216, __s_oink);
+cptr.stPtro(h_sounds, 224, __s_quack);
+cptr.stPtro(h_sounds, 232, __s_rumble);
+cptr.stPtro(h_sounds, 240, __s_twang);
+cptr.stPtro(h_sounds, 248, __s_toot);
+cptr.stPtro(h_sounds, 256, __s_gargle);
+cptr.stPtro(h_sounds, 264, __s_hoot);
+cptr.stPtro(h_sounds, 272, __s_warble);
 
 /** C ref: sounds.c:351 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function growl_sound(mtmp) {
@@ -740,44 +740,44 @@ export function growl_sound(mtmp) {
     switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_MEW:
         case NHC.MS_HISS:
-        ret = __sl92;
+        ret = __s_hiss;
         break;
         case NHC.MS_BARK:
         case NHC.MS_GROWL:
-        ret = __sl93;
+        ret = __s_growl;
         break;
         case NHC.MS_ROAR:
-        ret = __sl94;
+        ret = __s_roar;
         break;
         case NHC.MS_BELLOW:
-        ret = __sl95;
+        ret = __s_bellow;
         break;
         case NHC.MS_BUZZ:
-        ret = __sl96;
+        ret = __s_buzz;
         break;
         case NHC.MS_SQEEK:
-        ret = __sl97;
+        ret = __s_squeal;
         break;
         case NHC.MS_SQAWK:
-        ret = __sl98;
+        ret = __s_screech;
         break;
         case NHC.MS_NEIGH:
-        ret = __sl99;
+        ret = __s_neigh;
         break;
         case NHC.MS_WAIL:
-        ret = __sl100;
+        ret = __s_wail;
         break;
         case NHC.MS_GROAN:
-        ret = __sl101;
+        ret = __s_groan;
         break;
         case NHC.MS_MOO:
-        ret = __sl102;
+        ret = __s_low;
         break;
         case NHC.MS_SILENT:
-        ret = __sl103;
+        ret = __s_commotion;
         break;
         default:
-        ret = __sl104;
+        ret = __s_scream;
     }
     return ret;
 }
@@ -788,12 +788,12 @@ export function growl(mtmp) {
     if (helpless(mtmp) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_SILENT)
         return;
     if (Hallucination())
-        growl_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 411, __sl93), rn2(35)) : rn2(35)), 8);
+        growl_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 411, __s_growl), rn2(35)) : rn2(35)), 8);
     else
         growl_verb = growl_sound(mtmp);
     if (growl_verb) {
         if (canseemon(mtmp) || !Deaf()) {
-            pline(__sl105, Monnam(mtmp), vtense(null, growl_verb));
+            pline(__s_s_s, Monnam(mtmp), vtense(null, growl_verb));
             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_GROWL);
             if (cptr.ldI32o(svc, $context_info_run))
                 nomul(0);
@@ -809,37 +809,37 @@ export function yelp(mtmp) {
     if (helpless(mtmp) || !cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound))
         return;
     if (Hallucination())
-        yelp_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 437, __sl106), rn2(35)) : rn2(35)), 8);
+        yelp_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 437, __s_yelp), rn2(35)) : rn2(35)), 8);
     else
         switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
             case NHC.MS_MEW:
             se = NHC.se_feline_yelp;
-            yelp_verb = (!Deaf()) ? __sl107 : __sl108;
+            yelp_verb = (!Deaf()) ? __s_yowl : __s_arch;
             break;
             case NHC.MS_BARK:
             case NHC.MS_GROWL:
             se = NHC.se_canine_yelp;
-            yelp_verb = (!Deaf()) ? __sl106 : __sl109;
+            yelp_verb = (!Deaf()) ? __s_yelp : __s_recoil;
             break;
             case NHC.MS_ROAR:
-            yelp_verb = (!Deaf()) ? __sl110 : __sl111;
+            yelp_verb = (!Deaf()) ? __s_snarl : __s_bluff;
             break;
             case NHC.MS_SQEEK:
             se = NHC.se_squeal;
-            yelp_verb = (!Deaf()) ? __sl97 : __sl112;
+            yelp_verb = (!Deaf()) ? __s_squeal : __s_quiver;
             break;
             case NHC.MS_SQAWK:
             se = NHC.se_avian_screak;
-            yelp_verb = (!Deaf()) ? __sl113 : __sl114;
+            yelp_verb = (!Deaf()) ? __s_screak : __s_thrash;
             break;
             case NHC.MS_WAIL:
             se = NHC.se_wail;
-            yelp_verb = (!Deaf()) ? __sl100 : __sl115;
+            yelp_verb = (!Deaf()) ? __s_wail : __s_cringe;
             break;
         }
     if (yelp_verb) {
         ;
-        pline(__sl105, Monnam(mtmp), vtense(null, yelp_verb));
+        pline(__s_s_s, Monnam(mtmp), vtense(null, yelp_verb));
         if (cptr.ldI32o(svc, $context_info_run))
             nomul(0);
         wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), Math.imul(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlevel), 12));
@@ -854,26 +854,26 @@ export function whimper(mtmp) {
     if (helpless(mtmp) || !cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound))
         return;
     if (Hallucination())
-        whimper_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl116), rn2(35)) : rn2(35)), 8);
+        whimper_verb = cptr.ldPtro(h_sounds, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 488, __s_whimper), rn2(35)) : rn2(35)), 8);
     else
         switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
             case NHC.MS_MEW:
             case NHC.MS_GROWL:
-            whimper_verb = __sl116;
+            whimper_verb = __s_whimper;
             break;
             case NHC.MS_BARK:
-            whimper_verb = __sl117;
+            whimper_verb = __s_whine;
             break;
             case NHC.MS_SQEEK:
             se = NHC.se_squeal;
-            whimper_verb = __sl97;
+            whimper_verb = __s_squeal;
             break;
         }
     if (whimper_verb) {
         if (!Hallucination()) {
             ;
         }
-        pline(__sl118, Monnam(mtmp), vtense(null, whimper_verb));
+        pline(__s_s_s__2, Monnam(mtmp), vtense(null, whimper_verb));
         if (cptr.ldI32o(svc, $context_info_run))
             nomul(0);
         wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), Math.imul(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlevel), 6));
@@ -891,19 +891,19 @@ export function beg(mtmp) {
         if (!canspotmon(mtmp))
             map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         ;
-        verbalize(__sl119);
+        verbalize(__s_i_m_hungry);
     } else {
         if (canspotmon(mtmp))
-            pline(__sl120, Monnam(mtmp));
+            pline(__s_s_seems_famished, Monnam(mtmp));
     }
 }
 
 const __static_maybe_gasp_Exclam = cptr.alloc(5 * 8);
-cptr.stPtro(__static_maybe_gasp_Exclam, 0, __sl122);
-cptr.stPtro(__static_maybe_gasp_Exclam, 8, __sl123);
-cptr.stPtro(__static_maybe_gasp_Exclam, 16, __sl124);
-cptr.stPtro(__static_maybe_gasp_Exclam, 24, __sl125);
-cptr.stPtro(__static_maybe_gasp_Exclam, 32, __sl126); /** C ref: sounds.c:548 — char *[5] (function-static) */
+cptr.stPtro(__static_maybe_gasp_Exclam, 0, __s_gasp);
+cptr.stPtro(__static_maybe_gasp_Exclam, 8, __s_uh_oh);
+cptr.stPtro(__static_maybe_gasp_Exclam, 16, __s_oh_my);
+cptr.stPtro(__static_maybe_gasp_Exclam, 24, __s_what);
+cptr.stPtro(__static_maybe_gasp_Exclam, 32, __s_why); /** C ref: sounds.c:548 — char *[5] (function-static) */
 
 /** C ref: sounds.c:546 — @param {CPtr<struct monst>} mon @returns {CPtr<char>} */
 export function maybe_gasp(mon) {
@@ -950,7 +950,7 @@ export function maybe_gasp(mon) {
         break;
     }
     if (dogasp) {
-        return cptr.ldPtro(__static_maybe_gasp_Exclam, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 607, __sl121), rn2(5)) : rn2(5)), 8);
+        return cptr.ldPtro(__static_maybe_gasp_Exclam, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 607, __s_maybe_gasp), rn2(5)) : rn2(5)), 8);
     }
     return null;
 }
@@ -962,29 +962,29 @@ export function cry_sound(mtmp) {
     switch (cptr.ld1uo(ptr, $permonst_msound)) {
         default:
         case NHC.MS_SILENT:
-        ret = (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL) ? __sl127 : __sl128;
+        ret = (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL) ? __s_gurgle : __s_chitter;
         break;
         case NHC.MS_HISS:
-        ret = __sl92;
+        ret = __s_hiss;
         break;
         case NHC.MS_ROAR:
         case NHC.MS_GROWL:
-        ret = __sl93;
+        ret = __s_growl;
         break;
         case NHC.MS_CHIRP:
-        ret = __sl129;
+        ret = __s_chirp;
         break;
         case NHC.MS_BUZZ:
-        ret = __sl96;
+        ret = __s_buzz;
         break;
         case NHC.MS_SQAWK:
-        ret = __sl98;
+        ret = __s_screech;
         break;
         case NHC.MS_GRUNT:
-        ret = __sl130;
+        ret = __s_grunt;
         break;
         case NHC.MS_MUMBLE:
-        ret = __sl131;
+        ret = __s_mumble;
         break;
     }
     return ret;
@@ -1002,25 +1002,25 @@ function mon_is_gecko(mon) {
 }
 
 const __static_domonnoise_vampmsg = cptr.alloc(2 * 8);
-cptr.stPtro(__static_domonnoise_vampmsg, 0, __sl244);
-cptr.stPtro(__static_domonnoise_vampmsg, 8, __sl245); /** C ref: sounds.c:786 — char *[2] (function-static) */
+cptr.stPtro(__static_domonnoise_vampmsg, 0, __s_i_vant_to_suck_your_s);
+cptr.stPtro(__static_domonnoise_vampmsg, 8, __s_i_vill_come_after_s_without_regret); /** C ref: sounds.c:786 — char *[2] (function-static) */
 const __static_domonnoise_laugh_msg = cptr.alloc(4 * 8);
-cptr.stPtro(__static_domonnoise_laugh_msg, 0, __sl246);
-cptr.stPtro(__static_domonnoise_laugh_msg, 8, __sl247);
-cptr.stPtro(__static_domonnoise_laugh_msg, 16, __sl248);
-cptr.stPtro(__static_domonnoise_laugh_msg, 24, __sl249); /** C ref: sounds.c:977 — char *[4] (function-static) */
+cptr.stPtro(__static_domonnoise_laugh_msg, 0, __s_giggles);
+cptr.stPtro(__static_domonnoise_laugh_msg, 8, __s_chuckles);
+cptr.stPtro(__static_domonnoise_laugh_msg, 16, __s_snickers);
+cptr.stPtro(__static_domonnoise_laugh_msg, 24, __s_laughs); /** C ref: sounds.c:977 — char *[4] (function-static) */
 const __static_domonnoise_arrest_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_domonnoise_arrest_msg, 0, __sl250);
-cptr.stPtro(__static_domonnoise_arrest_msg, 8, __sl251);
-cptr.stPtro(__static_domonnoise_arrest_msg, 16, __sl252); /** C ref: sounds.c:1134 — char *[3] (function-static) */
+cptr.stPtro(__static_domonnoise_arrest_msg, 0, __s_anything_you_say_can_be_used_against_you);
+cptr.stPtro(__static_domonnoise_arrest_msg, 8, __s_you_re_under_arrest);
+cptr.stPtro(__static_domonnoise_arrest_msg, 16, __s_stop_in_the_name_of_the_law); /** C ref: sounds.c:1134 — char *[3] (function-static) */
 const __static_domonnoise_soldier_foe_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_domonnoise_soldier_foe_msg, 0, __sl253);
-cptr.stPtro(__static_domonnoise_soldier_foe_msg, 8, __sl254);
-cptr.stPtro(__static_domonnoise_soldier_foe_msg, 16, __sl255); /** C ref: sounds.c:1181 — char *[3] (function-static) */
+cptr.stPtro(__static_domonnoise_soldier_foe_msg, 0, __s_resistance_is_useless);
+cptr.stPtro(__static_domonnoise_soldier_foe_msg, 8, __s_you_re_dog_meat);
+cptr.stPtro(__static_domonnoise_soldier_foe_msg, 16, __s_surrender); /** C ref: sounds.c:1181 — char *[3] (function-static) */
 const __static_domonnoise_soldier_pax_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_domonnoise_soldier_pax_msg, 0, __sl256);
-cptr.stPtro(__static_domonnoise_soldier_pax_msg, 8, __sl257);
-cptr.stPtro(__static_domonnoise_soldier_pax_msg, 16, __sl258); /** C ref: sounds.c:1184 — char *[3] (function-static) */
+cptr.stPtro(__static_domonnoise_soldier_pax_msg, 0, __s_what_lousy_pay_we_re_getting_here);
+cptr.stPtro(__static_domonnoise_soldier_pax_msg, 8, __s_the_food_s_not_fit_for_orcs);
+cptr.stPtro(__static_domonnoise_soldier_pax_msg, 16, __s_my_feet_hurt_i_ve_been_on_them_all_day); /** C ref: sounds.c:1184 — char *[3] (function-static) */
 
 /** C ref: sounds.c:679 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function domonnoise(mtmp) {
@@ -1061,10 +1061,10 @@ export function domonnoise(mtmp) {
         quest_chat(mtmp);
         break;
         case NHC.MS_SELL:
-        if (!Hallucination() || (cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 734, __sl132), rn2(2)) : rn2(2)))) {
+        if (!Hallucination() || (cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 734, __s_domonnoise), rn2(2)) : rn2(2)))) {
             shk_chat(mtmp);
         } else {
-            void cptr.sprintf(cptr.decay(verbuf), __sl133, currency(15n));
+            void cptr.sprintf(cptr.decay(verbuf), __s_15_minutes_could_save_you_15_s, currency(15n));
             verbl_msg = cptr.decay(verbuf);
         }
         break;
@@ -1076,30 +1076,30 @@ export function domonnoise(mtmp) {
             let racenoun = (cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f) : ((cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual) : cptr.ldPtro(gu, $instance_globals_u_urace));
             if (cptr.ld1so(mtmp, $monst_mtame)) {
                 if (kindred) {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl134, isnight ? __sl135 : __sl136, isnight ? __sl137 : __sl138);
+                    void cptr.sprintf(cptr.decay(verbuf), __s_good_s_to_you_master_s, isnight ? __s_evening : __s_day, isnight ? __s_bang : __s_why_do_we_not_rest);
                     verbl_msg = cptr.decay(verbuf);
                 } else {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl139, nightchild ? __sl140 : __sl11, midnight() ? __sl141 : (isnight ? __sl142 : __sl143));
+                    void cptr.sprintf(cptr.decay(verbuf), __s_s_s__3, nightchild ? __s_child_of_the_night : __s_empty, midnight() ? __s_i_can_stand_this_craving_no_longer : (isnight ? __s_i_beg_you_help_me_satisfy_this_growing : __s_i_find_myself_growing_a_little_weary));
                     verbl_msg = cptr.decay(verbuf);
                 }
             } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
                 if (kindred && isnight) {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl144, cptr.ld1so(flags, $flag_female) ? __sl145 : __sl146);
+                    void cptr.sprintf(cptr.decay(verbuf), __s_good_feeding_s, cptr.ld1so(flags, $flag_female) ? __s_sister : __s_brother);
                     verbl_msg = cptr.decay(verbuf);
                 } else if (nightchild && isnight) {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl147);
+                    void cptr.sprintf(cptr.decay(verbuf), __s_how_nice_to_hear_you_child_of_the_night);
                     verbl_msg = cptr.decay(verbuf);
                 } else
-                    verbl_msg = __sl148;
+                    verbl_msg = __s_i_only_drink_potions;
             } else {
                 let vampindex;
                 if (kindred) {
-                    verbl_msg = __sl149;
+                    verbl_msg = __s_this_is_my_hunting_ground_that_you_dare;
                 } else if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, 96)) || cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_BABY_SILVER_DRAGON, 96))) {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl150, (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, 96))) ? __sl151 : __sl152);
+                    void cptr.sprintf(cptr.decay(verbuf), __s_s_your_silver_sheen_does_not_frighten_me, (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, 96))) ? __s_fool : __s_young_fool);
                     verbl_msg = cptr.decay(verbuf);
                 } else {
-                    vampindex = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 807, __sl132), rn2(2)) : rn2(2));
+                    vampindex = (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 807, __s_domonnoise), rn2(2)) : rn2(2));
                     if (vampindex == 0) {
                         void cptr.sprintf(cptr.decay(verbuf), cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8), body_part(NHC.BLOOD));
                         verbl_msg = cptr.decay(verbuf);
@@ -1113,44 +1113,44 @@ export function domonnoise(mtmp) {
             break;
         }
         case NHC.MS_WERE:
-        if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (night() ^ !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 824, __sl132), rn2(13)) : rn2(13)))) {
-            pline(__sl153, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, 96))) ? __sl154 : __sl155);
+        if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (night() ^ !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 824, __s_domonnoise), rn2(13)) : rn2(13)))) {
+            pline(__s_s_throws_back_s_head_and_lets_out_a, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, 96))) ? __s_shriek : __s_howl);
             ;
             wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
         } else {
-            pline_msg = __sl156;
+            pline_msg = __s_whispers_inaudibly_all_you_can_make_out;
         }
         break;
         case NHC.MS_BARK:
         if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && night()) {
-            pline_msg = __sl157;
+            pline_msg = __s_howls;
         } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             if (cptr.ld1so(mtmp, $monst_mtame) && ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 || cptr.ldI64o(svm, $instance_globals_saved_m_moves) > cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime) || cptr.ld1so(mtmp, $monst_mtame) < 5))
-                pline_msg = __sl158;
+                pline_msg = __s_whines;
             else if (cptr.ld1so(mtmp, $monst_mtame) && cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime) > BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n))
-                pline_msg = __sl159;
+                pline_msg = __s_yips;
             else {
                 if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_DINGO, 96)))
-                    pline_msg = __sl160;
+                    pline_msg = __s_barks;
             }
         } else {
-            pline_msg = __sl161;
+            pline_msg = __s_growls;
         }
         break;
         case NHC.MS_MEW:
         if (cptr.ld1so(mtmp, $monst_mtame)) {
             if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame) < 5) {
                 ;
-                pline_msg = __sl162;
+                pline_msg = __s_yowls;
             } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime)) {
                 ;
-                pline_msg = __sl163;
+                pline_msg = __s_meows;
             } else if (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime) > BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n)) {
                 ;
-                pline_msg = __sl164;
+                pline_msg = __s_purrs;
             } else {
                 ;
-                pline_msg = __sl165;
+                pline_msg = __s_mews;
             }
             break;
         }
@@ -1158,142 +1158,142 @@ export function domonnoise(mtmp) {
         ;
         case NHC.MS_GROWL:
         ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __sl166 : __sl167;
+        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_growls__2;
         break;
         case NHC.MS_ROAR:
         ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __sl166 : __sl168;
+        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_roars;
         break;
         case NHC.MS_SQEEK:
         ;
-        pline_msg = __sl169;
+        pline_msg = __s_squeaks;
         break;
         case NHC.MS_SQAWK:
         if (cptr.eq(ptr, cptr.add(mons, NHC.PM_RAVEN, 96)) && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            verbl_msg = __sl170;
+            verbl_msg = __s_nevermore;
         } else {
             ;
-            pline_msg = __sl171;
+            pline_msg = __s_squawks;
         }
         break;
         case NHC.MS_HISS:
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             ;
-            pline_msg = __sl172;
+            pline_msg = __s_hisses;
         } else {
             return NHM.ECMD_OK;
         }
         break;
         case NHC.MS_BUZZ:
         ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __sl173 : __sl174;
+        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_drones : __s_buzzes_angrily;
         break;
         case NHC.MS_GRUNT:
         ;
-        pline_msg = __sl175;
+        pline_msg = __s_grunts;
         break;
         case NHC.MS_NEIGH:
         if (cptr.ld1so(mtmp, $monst_mtame) < 5) {
             ;
-            pline_msg = __sl176;
+            pline_msg = __s_neighs;
         } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime)) {
             ;
-            pline_msg = __sl177;
+            pline_msg = __s_whinnies;
         } else {
             ;
-            pline_msg = __sl178;
+            pline_msg = __s_whickers;
         }
         break;
         case NHC.MS_MOO:
         ;
-        pline_msg = __sl179;
+        pline_msg = __s_moos;
         break;
         case NHC.MS_BELLOW:
         ;
-        pline_msg = __sl180;
+        pline_msg = __s_bellows;
         break;
         case NHC.MS_CHIRP:
         ;
-        pline_msg = __sl181;
+        pline_msg = __s_chirps;
         break;
         case NHC.MS_WAIL:
         ;
-        pline_msg = __sl182;
+        pline_msg = __s_wails_mournfully;
         break;
         case NHC.MS_GROAN:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 942, __sl132), rn2(3)) : rn2(3))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 942, __s_domonnoise), rn2(3)) : rn2(3))) {
             ;
-            pline_msg = __sl183;
+            pline_msg = __s_groans;
         }
         break;
         case NHC.MS_GURGLE:
         ;
-        pline_msg = __sl184;
+        pline_msg = __s_gurgles;
         break;
         case NHC.MS_BURBLE:
         ;
-        pline_msg = __sl185;
+        pline_msg = __s_burbles;
         break;
         case NHC.MS_TRUMPET:
         ;
-        pline_msg = __sl186;
+        pline_msg = __s_trumpets;
         wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
         break;
         case NHC.MS_SHRIEK:
         ;
-        pline_msg = __sl187;
+        pline_msg = __s_shrieks;
         aggravate();
         break;
         case NHC.MS_IMITATE:
-        pline_msg = __sl188;
+        pline_msg = __s_imitates_you;
         break;
         case NHC.MS_BONES:
         ;
-        pline(__sl189, Monnam(mtmp));
-        You(__sl190);
+        pline(__s_s_rattles_noisily, Monnam(mtmp));
+        You(__s_freeze_for_a_moment);
         nomul(-2);
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl191);
+        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_scared_by_rattling);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
         break;
         case NHC.MS_LAUGH:
         {
             ;
-            pline_msg = cptr.ldPtro(__static_domonnoise_laugh_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 981, __sl132), rn2(4)) : rn2(4)), 8);
+            pline_msg = cptr.ldPtro(__static_domonnoise_laugh_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 981, __s_domonnoise), rn2(4)) : rn2(4)), 8);
             break;
         }
         case NHC.MS_MUMBLE:
-        pline_msg = __sl192;
+        pline_msg = __s_mumbles_incomprehensibly;
         break;
         case NHC.MS_ORC:
         ;
-        pline_msg = __sl175;
+        pline_msg = __s_grunts;
         break;
         case NHC.MS_DJINNI:
         if (cptr.ld1so(mtmp, $monst_mtame)) {
-            verbl_msg = __sl193;
+            verbl_msg = __s_sorry_i_m_all_out_of_wishes;
         } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATER_DEMON, 96)))
-                pline_msg = __sl184;
+                pline_msg = __s_gurgles;
             else
-                verbl_msg = __sl194;
+                verbl_msg = __s_i_m_free;
         } else {
             if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_PRISONER, 96)))
-                verbl_msg = __sl195;
+                verbl_msg = __s_this_will_teach_you_not_to_disturb_me;
             else
-                verbl_msg = __sl196;
+                verbl_msg = __s_get_me_out_of_here;
         }
         break;
         case NHC.MS_BOAST:
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1008, __sl132), rn2(4)) : rn2(4))) {
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1008, __s_domonnoise), rn2(4)) : rn2(4))) {
                 case 0:
-                pline(__sl197, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)));
+                pline(__s_s_boasts_about_s_gem_collection, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)));
                 break;
                 case 1:
-                pline_msg = __sl198;
+                pline_msg = __s_complains_about_a_diet_of_mutton;
                 break;
                 default:
-                pline_msg = __sl199;
+                pline_msg = __s_shouts_fee_fie_foe_foo_and_guffaws;
                 wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 49);
                 break;
             }
@@ -1306,53 +1306,53 @@ export function domonnoise(mtmp) {
             if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && is_mplayer(ptr))
                 mplayer_talk(mtmp);
             else
-                pline_msg = __sl200;
+                pline_msg = __s_threatens_you;
             break;
         }
         if ((cptr.ldI32o(mtmp, $monst_mflee) & 1))
-            pline_msg = __sl201;
+            pline_msg = __s_wants_nothing_to_do_with_you;
         else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 4) | 0))
-            pline_msg = __sl202;
+            pline_msg = __s_moans;
         else if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0)
-            verbl_msg = !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1039, __sl132), rn2(3)) : rn2(3)) ? __sl203 : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1039, __sl132), rn2(2)) : rn2(2)) ? __sl125 : __sl204);
+            verbl_msg = !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1039, __s_domonnoise), rn2(3)) : rn2(3)) ? __s_huh : ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1039, __s_domonnoise), rn2(2)) : rn2(2)) ? __s_what : __s_eh);
         else if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
-            verbl_msg = __sl205;
+            verbl_msg = __s_i_can_t_see;
         else if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
             let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             if (t)
                 cptr.stI32o(t, $trap_tseen, 1);
-            verbl_msg = __sl206;
+            verbl_msg = __s_i_m_trapped;
         } else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 2) | 0))
-            pline_msg = __sl207;
+            pline_msg = __s_asks_for_a_potion_of_healing;
         else if (cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1) && cptr.ldI64o(svm, $instance_globals_saved_m_moves) > cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime))
-            verbl_msg = __sl119;
+            verbl_msg = __s_i_m_hungry;
         else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n))
-            pline_msg = __sl208;
+            pline_msg = __s_curses_orcs;
         else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n))
-            pline_msg = __sl209;
+            pline_msg = __s_talks_about_mining;
         else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2147483648n) != 0n))
-            pline_msg = __sl210;
+            pline_msg = __s_talks_about_spellcraft;
         else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR)
-            pline_msg = __sl211;
+            pline_msg = __s_discusses_hunting;
         else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 64n) != 0n)) {
-            if (Hallucination() && (gnomeplan = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1063, __sl132), rn2(4)) : rn2(4))) % 2) {
-                verbl_msg = (gnomeplan == 1) ? __sl212 : __sl213;
+            if (Hallucination() && (gnomeplan = (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1063, __s_domonnoise), rn2(4)) : rn2(4))) % 2) {
+                verbl_msg = (gnomeplan == 1) ? __s_phase_one_collect_underpants : __s_phase_three_profit;
             } else {
-                verbl_msg = __sl214;
+                verbl_msg = __s_many_enter_the_dungeon_and_few_return;
             }
         } else
             switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
                 case NHC.PM_HOBBIT:
-                pline_msg = (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax) && (cptr.ldI32o(mtmp, $monst_mhpmax) <= 10 || cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 10) | 0))) ? __sl215 : __sl216;
+                pline_msg = (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax) && (cptr.ldI32o(mtmp, $monst_mhpmax) <= 10 || cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 10) | 0))) ? __s_complains_about_unpleasant_dungeon : __s_asks_you_about_the_one_ring;
                 break;
                 case NHC.PM_ARCHEOLOGIST:
-                pline_msg = __sl217;
+                pline_msg = __s_describes_a_recent_article_in_spelunker;
                 break;
                 case NHC.PM_TOURIST:
-                verbl_msg = __sl218;
+                verbl_msg = __s_aloha;
                 break;
                 default:
-                pline_msg = __sl219;
+                pline_msg = __s_discusses_dungeon_exploration;
                 break;
             }
         break;
@@ -1364,27 +1364,27 @@ export function domonnoise(mtmp) {
                     void doseduce(mtmp);
                     break;
                 }
-                swval = ((poly_gender() != ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0)) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1115, __sl132), rn2(3)) : rn2(3)) : 0);
+                swval = ((poly_gender() != ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0)) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1115, __s_domonnoise), rn2(3)) : rn2(3)) : 0);
             } else
-                swval = ((poly_gender() == 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1117, __sl132), rn2(3)) : rn2(3)) : 0);
+                swval = ((poly_gender() == 0) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1117, __s_domonnoise), rn2(3)) : rn2(3)) : 0);
             switch (swval) {
                 case 2:
-                verbl_msg = __sl220;
+                verbl_msg = __s_hello_sailor;
                 break;
                 case 1:
-                pline_msg = __sl221;
+                pline_msg = __s_comes_on_to_you;
                 break;
                 default:
-                pline_msg = __sl222;
+                pline_msg = __s_cajoles_you;
             }
         }
         break;
         case NHC.MS_ARREST:
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             ;
-            verbalize(__sl223, cptr.ld1so(flags, $flag_female) ? __sl224 : __sl225);
+            verbalize(__s_just_the_facts_s, cptr.ld1so(flags, $flag_female) ? __s_ma_am : __s_sir);
         } else {
-            verbl_msg = cptr.ldPtro(__static_domonnoise_arrest_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1138, __sl132), rn2(3)) : rn2(3)), 8);
+            verbl_msg = cptr.ldPtro(__static_domonnoise_arrest_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1138, __s_domonnoise), rn2(3)) : rn2(3)), 8);
         }
         break;
         case NHC.MS_BRIBE:
@@ -1398,33 +1398,33 @@ export function domonnoise(mtmp) {
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             cuss(mtmp);
         else if (is_lminion(mtmp))
-            verbl_msg = __sl226;
+            verbl_msg = __s_it_s_not_too_late;
         else
-            verbl_msg = __sl227;
+            verbl_msg = __s_we_re_all_doomed;
         break;
         case NHC.MS_SPELL:
-        pline_msg = __sl228;
+        pline_msg = __s_seems_to_mutter_a_cantrip;
         break;
         case NHC.MS_NURSE:
-        verbl_msg_mcan = __sl229;
+        verbl_msg_mcan = __s_i_hate_this_job;
         if (uwep.v && (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)))
-            verbl_msg = __sl230;
+            verbl_msg = __s_put_that_weapon_away_before_you_hurt;
         else if (uarmc.v || uarm.v || uarmh.v || uarms.v || uarmg.v || uarmf.v)
-            verbl_msg = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) ? __sl231 : __sl232;
+            verbl_msg = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) ? __s_doc_i_can_t_help_you_unless_you : __s_please_undress_so_i_can_examine_you;
         else if (uarmu.v)
-            verbl_msg = __sl233;
+            verbl_msg = __s_take_off_your_shirt_please;
         else
-            verbl_msg = __sl234;
+            verbl_msg = __s_relax_this_won_t_hurt_a_bit;
         break;
         case NHC.MS_GUARD:
         if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)))
-            verbl_msg = __sl235;
+            verbl_msg = __s_please_drop_that_gold_and_follow_me;
         else
-            verbl_msg = __sl236;
+            verbl_msg = __s_please_follow_me;
         break;
         case NHC.MS_SOLDIER:
         {
-            verbl_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? cptr.ldPtro(__static_domonnoise_soldier_pax_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1189, __sl132), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_domonnoise_soldier_foe_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1190, __sl132), rn2(3)) : rn2(3)), 8);
+            verbl_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? cptr.ldPtro(__static_domonnoise_soldier_pax_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1189, __s_domonnoise), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_domonnoise_soldier_foe_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1190, __s_domonnoise), rn2(3)) : rn2(3)), 8);
             break;
         }
         case NHC.MS_RIDER:
@@ -1434,35 +1434,35 @@ export function domonnoise(mtmp) {
             let ms_Death = schar((cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96))));
             if (ms_Death && !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_Deathnotice) & 1) && (book = u_have_novel()) !== null) {
                 if ((tribtitle = noveltitle(cptr.add(book, $obj_corpsenm))) !== null) {
-                    void cptr.sprintf(cptr.decay(verbuf), __sl237, tribtitle);
-                    if (strncmpi((tribtitle), (__sl238), -1) && strncmpi((tribtitle), (__sl239), -1))
-                        void cptr.strcat(cptr.decay(verbuf), __sl240);
+                    void cptr.sprintf(cptr.decay(verbuf), __s_ah_so_you_have_a_copy_of_s, tribtitle);
+                    if (strncmpi((tribtitle), (__s_snuff), -1) && strncmpi((tribtitle), (__s_the_wee_free_men), -1))
+                        void cptr.strcat(cptr.decay(verbuf), __s_i_may_have_been_misquoted_there);
                     verbl_msg = cptr.decay(verbuf);
                 }
                 cptr.stI32o(svc, $context_info_tribute + $tribute_info_Deathnotice, 1);
-            } else if (ms_Death && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1210, __sl132), rn2(3)) : rn2(3)) && Death_quote(cptr.decay(verbuf), 256)) {
+            } else if (ms_Death && (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1210, __s_domonnoise), rn2(3)) : rn2(3)) && Death_quote(cptr.decay(verbuf), 256)) {
                 verbl_msg = cptr.decay(verbuf);
-            } else if (ms_Death && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1214, __sl132), rn2(10)) : rn2(10))) {
-                pline_msg = __sl241;
+            } else if (ms_Death && !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1214, __s_domonnoise), rn2(10)) : rn2(10))) {
+                pline_msg = __s_is_busy_reading_a_copy_of_sandman_8;
             } else
-                verbl_msg = __sl242;
+                verbl_msg = __s_who_do_you_think_you_are_war;
             break;
         }
     }
     if (pline_msg) {
-        pline(__sl243, Monnam(mtmp), pline_msg);
+        pline(__s_s_s__4, Monnam(mtmp), pline_msg);
     } else if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 && verbl_msg_mcan) {
         ;
-        verbalize(__sl2, verbl_msg_mcan);
+        verbalize(__s_pct_s, verbl_msg_mcan);
     } else if (verbl_msg) {
         if (cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96))) {
             let tmpbuf = new Uint8Array(256);
-            pline(__sl2, ucase(cptr.strcpy(cptr.decay(tmpbuf), verbl_msg)));
+            pline(__s_pct_s, ucase(cptr.strcpy(cptr.decay(tmpbuf), verbl_msg)));
             ;
             sound_speak(cptr.decay(tmpbuf));
         } else {
             ;
-            verbalize(__sl2, verbl_msg);
+            verbalize(__s_pct_s, verbl_msg);
         }
     }
     return NHM.ECMD_TIME;
@@ -1476,14 +1476,14 @@ export function dotalk() {
 }
 
 const __static_dochat_walltalk = cptr.alloc(8 * 8);
-cptr.stPtro(__static_dochat_walltalk, 0, __sl278);
-cptr.stPtro(__static_dochat_walltalk, 8, __sl279);
-cptr.stPtro(__static_dochat_walltalk, 16, __sl280);
-cptr.stPtro(__static_dochat_walltalk, 24, __sl247);
-cptr.stPtro(__static_dochat_walltalk, 32, __sl281);
-cptr.stPtro(__static_dochat_walltalk, 40, __sl282);
-cptr.stPtro(__static_dochat_walltalk, 48, __sl283);
-cptr.stPtro(__static_dochat_walltalk, 56, __sl284); /** C ref: sounds.c:1354 — char *[8] (function-static) */
+cptr.stPtro(__static_dochat_walltalk, 0, __s_gripes_about_its_job);
+cptr.stPtro(__static_dochat_walltalk, 8, __s_tells_you_a_funny_joke);
+cptr.stPtro(__static_dochat_walltalk, 16, __s_insults_your_heritage);
+cptr.stPtro(__static_dochat_walltalk, 24, __s_chuckles);
+cptr.stPtro(__static_dochat_walltalk, 32, __s_guffaws_merrily);
+cptr.stPtro(__static_dochat_walltalk, 40, __s_deprecates_your_exploration_efforts);
+cptr.stPtro(__static_dochat_walltalk, 48, __s_suggests_a_stint_of_rehab);
+cptr.stPtro(__static_dochat_walltalk, 56, __s_doesn_t_seem_to_be_interested); /** C ref: sounds.c:1354 — char *[8] (function-static) */
 
 /** C ref: sounds.c:1257 @returns {CInt} */
 function dochat() {
@@ -1492,41 +1492,41 @@ function dochat() {
     let ty;
     let otmp;
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT)) {
-        pline(__sl259, an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
+        pline(__s_as_s_you_cannot_speak, an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
         return NHM.ECMD_OK;
     }
     if (Strangled()) {
-        You_cant(__sl260);
+        You_cant(__s_speak_you_re_choking);
         return NHM.ECMD_OK;
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        pline(__sl261);
+        pline(__s_they_won_t_hear_you_out_there);
         return NHM.ECMD_OK;
     }
     if (Underwater()) {
-        Your(__sl262);
+        Your(__s_speech_is_unintelligible_underwater);
         return NHM.ECMD_OK;
     }
     if (!Deaf() && !Blind() && (otmp = shop_object(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null) {
         price_quote(otmp);
         return NHM.ECMD_TIME;
     }
-    if (!getdir(__sl263)) {
+    if (!getdir(__s_talk_to_whom_in_what_direction)) {
         return NHM.ECMD_CANCEL;
     }
     if (cptr.ldPtro(u, $you_usteed) && cptr.ldI32o(u, $you_dz) > 0) {
         if (helpless(cptr.ldPtro(u, $you_usteed))) {
-            pline(__sl264, Monnam(cptr.ldPtro(u, $you_usteed)));
+            pline(__s_s_seems_not_to_notice_you, Monnam(cptr.ldPtro(u, $you_usteed)));
             return NHM.ECMD_TIME;
         } else
             return domonnoise(cptr.ldPtro(u, $you_usteed));
     }
     if (cptr.ldI32o(u, $you_dz)) {
-        pline(__sl265, cptr.ldI32o(u, $you_dz) < 0 ? __sl266 : __sl267);
+        pline(__s_they_won_t_hear_you_s_there, cptr.ldI32o(u, $you_dz) < 0 ? __s_up : __s_down);
         return NHM.ECMD_OK;
     }
     if (cptr.ldI32o(u, $you_dx) == 0 && cptr.ldI32o(u, $you_dy) == 0) {
-        pline(__sl268);
+        pline(__s_talking_to_yourself_is_a_bad_habit_for);
         return NHM.ECMD_OK;
     }
     tx = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0;
@@ -1537,19 +1537,19 @@ function dochat() {
     if (!mtmp || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0) {
         if ((otmp = (cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null && cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
             if (!Blind())
-                pline_The(__sl264, Hallucination() ? rndmonnam(null) : __sl269);
+                pline_The(__s_s_seems_not_to_notice_you, Hallucination() ? rndmonnam(null) : __s_statue);
             return NHM.ECMD_OK;
         }
         if (!Deaf() && (((cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)) {
             if (Blind() && !IS_WALL(cptr.ld1so3(svl, tx, 21, ty, 1, 0))) {
                 ;
             } else if (!Hallucination()) {
-                pline(__sl270);
+                pline(__s_it_s_like_talking_to_a_wall);
             } else {
-                let idx = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1364, __sl271), rn2(10)) : rn2(10));
+                let idx = (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1364, __s_dochat), rn2(10)) : rn2(10));
                 if (idx >= 8)
                     idx = (8 - 1) | 0;
-                pline_The(__sl272, cptr.ldPtro(__static_dochat_walltalk, idx, 8));
+                pline_The(__s_wall_s, cptr.ldPtro(__static_dochat_walltalk, idx, 8));
             }
             return NHM.ECMD_OK;
         }
@@ -1558,19 +1558,19 @@ function dochat() {
         return NHM.ECMD_OK;
     if (helpless(mtmp) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
         if (canspotmon(mtmp))
-            pline(__sl264, Monnam(mtmp));
+            pline(__s_s_seems_not_to_notice_you, Monnam(mtmp));
         return NHM.ECMD_OK;
     }
     cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
     if (!Deaf() && cptr.ld1so(mtmp, $monst_mtame) && cptr.ldI32o(mtmp, $monst_meating)) {
         if (!canspotmon(mtmp))
             map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        pline(__sl273, Monnam(mtmp));
+        pline(__s_s_is_eating_noisily, Monnam(mtmp));
         return NHM.ECMD_OK;
     }
     if (Deaf()) {
-        let xresponse = ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl274 : __sl275;
-        pline(__sl276, canspotmon(mtmp) ? __sl277 : __sl11, canspotmon(mtmp) ? mon_nam(mtmp) : __sl11, xresponse);
+        let xresponse = ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_falls_on_deaf_ears : __s_is_inaudible;
+        pline(__s_any_response_s_s_s, canspotmon(mtmp) ? __s_from : __s_empty, canspotmon(mtmp) ? mon_nam(mtmp) : __s_empty, xresponse);
         return NHM.ECMD_OK;
     }
     return domonnoise(mtmp);
@@ -1585,9 +1585,9 @@ function responsive_mon_at(x, y) {
 }
 
 const __static_tiphat_reaction = cptr.alloc(3 * 8);
-cptr.stPtro(__static_tiphat_reaction, 0, __sl299);
-cptr.stPtro(__static_tiphat_reaction, 8, __sl300);
-cptr.stPtro(__static_tiphat_reaction, 16, __sl301); /** C ref: sounds.c:1518 — char *[3] (function-static) */
+cptr.stPtro(__static_tiphat_reaction, 0, __s_curses);
+cptr.stPtro(__static_tiphat_reaction, 8, __s_gestures_rudely);
+cptr.stPtro(__static_tiphat_reaction, 16, __s_gestures_offensively); /** C ref: sounds.c:1518 — char *[3] (function-static) */
 
 /** C ref: sounds.c:1427 @returns {CInt} */
 export function tiphat() {
@@ -1606,20 +1606,20 @@ export function tiphat() {
     res = (cptr.ldI32o(uarmh.v, $obj_bknown) & 1) | 0 ? 0 : 1;
     if (cursed(uarmh.v))
         return res;
-    if (!getdir(__sl285))
+    if (!getdir(__s_at_whom_in_what_direction))
         return res;
     res = 1;
-    You(__sl286, helm_simple_name(uarmh.v));
+    You(__s_briefly_doff_your_s, helm_simple_name(uarmh.v));
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy)) {
         if (cptr.ldPtro(u, $you_usteed) && cptr.ldI32o(u, $you_dz) > 0) {
             if (helpless(cptr.ldPtro(u, $you_usteed)))
-                pline(__sl287, Monnam(cptr.ldPtro(u, $you_usteed)));
+                pline(__s_s_doesn_t_notice, Monnam(cptr.ldPtro(u, $you_usteed)));
             else
                 void domonnoise(cptr.ldPtro(u, $you_usteed));
         } else if (cptr.ldI32o(u, $you_dz)) {
-            pline(__sl288, (cptr.ldI32o(u, $you_dz) < 0) ? __sl266 : __sl267);
+            pline(__s_there_s_no_one_s_there, (cptr.ldI32o(u, $you_dz) < 0) ? __s_up : __s_down);
         } else {
-            pline_The(__sl289);
+            pline_The(__s_lout_here_doesn_t_acknowledge_you);
         }
         return res;
     }
@@ -1643,37 +1643,37 @@ export function tiphat() {
             break;
     }
     if (unseen || (statue && Hallucination())) {
-        pline(__sl290, unseen ? __sl291 : __sl11);
+        pline(__s_that_screature_is_ignoring_you, unseen ? __s_unseen : __s_empty);
     } else if (!mtmp || !responsive_mon_at(x, y)) {
         if (vismon)
-            pline(__sl264, Monnam(mtmp));
+            pline(__s_s_seems_not_to_notice_you, Monnam(mtmp));
         else
             {
-                pline(__sl2, cptr.ldPtr(c_common_strings));
+                pline(__s_pct_s, cptr.ldPtr(c_common_strings));
                 return res;
             }
     } else {
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
         if (vismon && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !Conflict()) {
             if ((otmp = which_armor(mtmp, 4n)) === null) {
-                pline(__sl292, Monnam(mtmp));
+                pline(__s_s_waves, Monnam(mtmp));
             } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
-                pline(__sl293, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp));
+                pline(__s_s_grasps_s_s_but_can_t_remove_it, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp));
                 cptr.stI32o(otmp, $obj_bknown, 1);
             } else {
-                pline(__sl294, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp));
+                pline(__s_s_tips_s_s_in_response, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp));
             }
         } else if (vismon && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n)) {
-            let which = !Deaf() ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1521, __sl295), rn2(2)) : rn2(2)) + 1) | 0);
-            let twice = (Deaf() || which > 0 || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(3)) : rn2(3))) ? 0 : (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1522, __sl295), rn2(2)) : rn2(2)) + 1) | 0);
-            pline(__sl296, Monnam(mtmp), cptr.ldPtro(__static_tiphat_reaction, which, 8), twice ? __sl297 : __sl11, twice ? cptr.ldPtro(__static_tiphat_reaction, twice, 8) : __sl11);
+            let which = !Deaf() ? (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1521, __s_tiphat), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1521, __s_tiphat), rn2(2)) : rn2(2)) + 1) | 0);
+            let twice = (Deaf() || which > 0 || (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1522, __s_tiphat), rn2(3)) : rn2(3))) ? 0 : (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1522, __s_tiphat), rn2(2)) : rn2(2)) + 1) | 0);
+            pline(__s_s_s_s_s_at_you, Monnam(mtmp), cptr.ldPtro(__static_tiphat_reaction, which, 8), twice ? __s_and : __s_empty, twice ? cptr.ldPtro(__static_tiphat_reaction, twice, 8) : __s_empty);
         } else if ((dist2(i16(((x))), i16(((y))), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && !Deaf() && domonnoise(mtmp)) {
             if (!vismon)
                 map_invisible(i16(x), i16(y));
         } else if (vismon) {
-            pline(__sl298, Monnam(mtmp));
+            pline(__s_s_doesn_t_respond, Monnam(mtmp));
         } else {
-            pline(__sl2, cptr.ldPtr(c_common_strings));
+            pline(__s_pct_s, cptr.ldPtr(c_common_strings));
         }
     }
     return res;
@@ -1684,7 +1684,7 @@ export let soundprocs = cptr.alloc(88);
 
 /** C ref: sounds.c:1726 — struct sound_procs */
 let nosound_procs = cptr.alloc(88);
-cptr.stPtr(nosound_procs, __sl302);
+cptr.stPtr(nosound_procs, __s_nosound);
 cptr.stI32o(nosound_procs, $sound_procs_soundlib_id, (NHC.soundlib_nosound));
 cptr.stU64o(nosound_procs, $sound_procs_sound_triggers, 0n);
 cptr.stPtro(nosound_procs, $sound_procs_sound_init_nhsound, null);
@@ -1706,10 +1706,10 @@ cptr.stPtro(soundlib_choices, 0, nosound_procs);
 export function activate_chosen_soundlib() {
     let idx = cptr.ldI32o(gc, $instance_globals_c_chosen_soundlib);
     if (!((idx) >= 0 && (idx) < 1))
-        panic(__sl303, idx);
+        panic(__s_activate_chosen_soundlib_invalid, idx);
     if (cptr.ldI32o(ga, $instance_globals_a_active_soundlib) != NHC.soundlib_nosound || idx != NHC.soundlib_nosound) {
         if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
-            (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__sl304);
+            (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_assigning_a_new_sound_library);
     }
     cptr.memcpy(soundprocs, cptr.ldPtro(soundlib_choices, idx, 8), 88);
     if (cptr.ldPtro(soundprocs, $sound_procs_sound_init_nhsound))
@@ -1721,7 +1721,7 @@ export function activate_chosen_soundlib() {
 /** C ref: sounds.c:1798 — @param {CInt} idx */
 export function assign_soundlib(idx) {
     if (!((idx) >= 0 && (idx) < 1))
-        panic(__sl305, idx);
+        panic(__s_assign_soundlib_invalid_soundlib_d, idx);
     cptr.stI32o(gc, $instance_globals_c_chosen_soundlib, cptr.ldI32o(cptr.ldPtro(soundlib_choices, idx, 8), $sound_procs_soundlib_id));
 }
 
@@ -1732,7 +1732,7 @@ export function get_soundlib_name(dest, maxlen) {
     let src;
     idx = cptr.ldI32o(ga, $instance_globals_a_active_soundlib);
     if (!((idx) >= 0 && (idx) < 1))
-        panic(__sl306, idx);
+        panic(__s_get_soundlib_name_invalid_active, idx);
     src = cptr.ldPtr(cptr.ldPtro(soundlib_choices, idx, 8));
     for (count = 1; count < maxlen; count++) {
         if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0)
@@ -1792,9 +1792,9 @@ export function base_soundname_to_filename(basename, buf, bufsz, approach) {
             cptr.st1(cp, 0);
             existinglen++;
         }
-        nh_snprintf(__sl307, 2144, cp, BigInt.asUintN(64, bufsz - (BigInt.asUintN(64, existinglen + 1n))), __sl139, basename, cptr.decay(__static_base_soundname_to_filename_suffix));
+        nh_snprintf(__s_base_soundname_to_filename, 2144, cp, BigInt.asUintN(64, bufsz - (BigInt.asUintN(64, existinglen + 1n))), __s_s_s__3, basename, cptr.decay(__static_base_soundname_to_filename_suffix));
     } else if (approach == NHC.sff_base_only) {
-        nh_snprintf(__sl307, 2146, buf, bufsz, __sl2, basename);
+        nh_snprintf(__s_base_soundname_to_filename, 2146, buf, bufsz, __s_pct_s, basename);
     } else {
         return null;
     }

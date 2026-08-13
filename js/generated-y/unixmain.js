@@ -63,53 +63,53 @@ const $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore, $flag_init
     $window_procs_win_raw_print = FLD.window_procs_win_raw_print, $you_uhp = FLD.you_uhp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/");
-const __sl1 = cptr.lit(".app/Contents/MacOS/");
-const __sl2 = cptr.lit("%s%s%s");
-const __sl3 = cptr.lit("tty");
-const __sl4 = cptr.lit("NETHACKDIR");
-const __sl5 = cptr.lit("HACKDIR");
-const __sl6 = cptr.lit("news");
-const __sl7 = cptr.lit("Restoring save file...");
-const __sl8 = cptr.lit("Do you want to keep the save file?");
-const __sl9 = cptr.lit("command line");
-const __sl10 = cptr.lit("-no-");
-const __sl11 = cptr.lit("-debug");
-const __sl12 = cptr.lit("-DECgraphics");
-const __sl13 = cptr.lit("DECGraphics");
-const __sl14 = cptr.lit("Unknown option: %.60s");
-const __sl15 = cptr.lit("-no-news");
-const __sl16 = cptr.lit("-news");
-const __sl17 = cptr.lit("Character name expected after -u");
-const __sl18 = cptr.lit("-IBMgraphics");
-const __sl19 = cptr.lit("IBMGraphics");
-const __sl20 = cptr.lit("RogueIBM");
-const __sl21 = cptr.lit("-loglua");
-const __sl22 = cptr.lit("MAXPLAYERS are set in sysconf file");
-const __sl23 = cptr.lit("Expected MAXPLAYERS, found \"");
-const __sl24 = cptr.lit("");
-const __sl25 = cptr.lit("\"");
-const __sl26 = cptr.lit("/usr/games/lib/nethackdir");
-const __sl27 = cptr.lit("Cannot chdir to %s.");
-const __sl28 = cptr.lit("USER");
-const __sl29 = cptr.lit("LOGNAME");
-const __sl30 = cptr.lit("Only user%s %s may access debug (wizard) mode.");
-const __sl31 = cptr.lit("s");
-const __sl32 = cptr.lit("cannot access debug (wizard) mode.");
-const __sl33 = cptr.lit("Entering explore/discovery mode instead.");
-const __sl34 = cptr.lit("cannot access explore mode.");
-const __sl35 = cptr.lit("are in non-scoring explore/discovery mode.");
-const __sl36 = cptr.lit("/usr/bin/pbcopy");
-const __sl37 = cptr.lit("w");
-const __sl38 = cptr.lit("Unable to start pbcopy");
-const __sl39 = cptr.lit("Error sending data to pbcopy");
-const __sl40 = cptr.lit("Error finishing pbcopy");
-const __sl41 = cptr.lit("%s: %s (%d)\n");
-const __sl42 = cptr.lit("NETHACK_SEED");
-const __sl43 = cptr.lit("/dev/random");
-const __sl44 = cptr.lit("r");
-const __sl45 = cptr.lit("sys_random_seed");
-const __sl46 = cptr.lit("falling back to weak seed");
+const __s_slash = cptr.lit("/");
+const __s_app_contents_macos = cptr.lit(".app/Contents/MacOS/");
+const __s_s_s_s = cptr.lit("%s%s%s");
+const __s_tty = cptr.lit("tty");
+const __s_nethackdir = cptr.lit("NETHACKDIR");
+const __s_hackdir = cptr.lit("HACKDIR");
+const __s_news = cptr.lit("news");
+const __s_restoring_save_file = cptr.lit("Restoring save file...");
+const __s_do_you_want_to_keep_the_save_file = cptr.lit("Do you want to keep the save file?");
+const __s_command_line = cptr.lit("command line");
+const __s_no = cptr.lit("-no-");
+const __s_debug = cptr.lit("-debug");
+const __s_decgraphics = cptr.lit("-DECgraphics");
+const __s_decgraphics__2 = cptr.lit("DECGraphics");
+const __s_unknown_option_60s = cptr.lit("Unknown option: %.60s");
+const __s_no_news = cptr.lit("-no-news");
+const __s_news__2 = cptr.lit("-news");
+const __s_character_name_expected_after_u = cptr.lit("Character name expected after -u");
+const __s_ibmgraphics = cptr.lit("-IBMgraphics");
+const __s_ibmgraphics__2 = cptr.lit("IBMGraphics");
+const __s_rogueibm = cptr.lit("RogueIBM");
+const __s_loglua = cptr.lit("-loglua");
+const __s_maxplayers_are_set_in_sysconf_file = cptr.lit("MAXPLAYERS are set in sysconf file");
+const __s_expected_maxplayers_found = cptr.lit("Expected MAXPLAYERS, found \"");
+const __s_empty = cptr.lit("");
+const __s_quot = cptr.lit("\"");
+const __s_usr_games_lib_nethackdir = cptr.lit("/usr/games/lib/nethackdir");
+const __s_cannot_chdir_to_s = cptr.lit("Cannot chdir to %s.");
+const __s_user = cptr.lit("USER");
+const __s_logname = cptr.lit("LOGNAME");
+const __s_only_user_s_s_may_access_debug_wizard = cptr.lit("Only user%s %s may access debug (wizard) mode.");
+const __s_s = cptr.lit("s");
+const __s_cannot_access_debug_wizard_mode = cptr.lit("cannot access debug (wizard) mode.");
+const __s_entering_explore_discovery_mode_instead = cptr.lit("Entering explore/discovery mode instead.");
+const __s_cannot_access_explore_mode = cptr.lit("cannot access explore mode.");
+const __s_are_in_non_scoring_explore_discovery = cptr.lit("are in non-scoring explore/discovery mode.");
+const __s_usr_bin_pbcopy = cptr.lit("/usr/bin/pbcopy");
+const __s_w = cptr.lit("w");
+const __s_unable_to_start_pbcopy = cptr.lit("Unable to start pbcopy");
+const __s_error_sending_data_to_pbcopy = cptr.lit("Error sending data to pbcopy");
+const __s_error_finishing_pbcopy = cptr.lit("Error finishing pbcopy");
+const __s_s_s_d = cptr.lit("%s: %s (%d)\n");
+const __s_nethack_seed = cptr.lit("NETHACK_SEED");
+const __s_dev_random = cptr.lit("/dev/random");
+const __s_r = cptr.lit("r");
+const __s_sys_random_seed = cptr.lit("sys_random_seed");
+const __s_falling_back_to_weak_seed = cptr.lit("falling back to weak seed");
 
 /** C ref: unixmain.c:58 — @param {CInt} argc @param {CPtr<char *>} argv @returns {CInt} */
 export function* main(argc, argv) {
@@ -130,15 +130,15 @@ export function* main(argc, argv) {
         let mac_tmp_len;
         let mac_lhs_len = 0;
         getcwd(cptr.decay(mac_cwd), 1024n);
-        if (cptr.ld1so(mac_exe, 0) == 47 && !strcmp(cptr.decay(mac_cwd), __sl0)) {
+        if (cptr.ld1so(mac_exe, 0) == 47 && !strcmp(cptr.decay(mac_cwd), __s_slash)) {
             if ((mac_exe = cptr.strrchr(mac_exe, 47)))
                 mac_exe = cptr.add(mac_exe, 1);
             else
                 mac_exe = cptr.ldPtro(argv.v, 0, 8);
-            mac_tmp_len = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n)) + cptr.strlen(__sl1))));
+            mac_tmp_len = Number(BigInt.asIntN(32, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n)) + cptr.strlen(__s_app_contents_macos))));
             if (mac_tmp_len <= arg0_len) {
                 mac_tmp = cptr.malloc(BigInt.asUintN(64, BigInt(((mac_tmp_len + 1) | 0))));
-                cptr.sprintf(mac_tmp, __sl2, mac_exe, __sl1, mac_exe);
+                cptr.sprintf(mac_tmp, __s_s_s_s, mac_exe, __s_app_contents_macos, mac_exe);
                 if (!strcmp(cptr.add(cptr.ldPtro(argv.v, 0, 8), ((arg0_len - mac_tmp_len) | 0)), mac_tmp)) {
                     mac_lhs_len = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((arg0_len - mac_tmp_len) | 0))) + cptr.strlen(mac_exe)) + 5n)));
                     if (mac_lhs_len > ((mac_tmp_len - 1) | 0))
@@ -154,10 +154,10 @@ export function* main(argc, argv) {
     cptr.stPtr(gh, cptr.ldPtro(argv.v, 0, 8));
     cptr.stI32(svh, getpid());
     void umask(79);
-    (yield* choose_windows(__sl3));
-    dir.v = nh_getenv(__sl4);
+    (yield* choose_windows(__s_tty));
+    dir.v = nh_getenv(__s_nethackdir);
     if (!dir.v)
-        dir.v = nh_getenv(__sl5);
+        dir.v = nh_getenv(__s_hackdir);
     cptr.stI32o(program_state, $sinfo_early_options, 1);
     (yield* early_options(argc, argv, dir));
     cptr.stI32o(program_state, $sinfo_early_options, 0);
@@ -194,19 +194,19 @@ export function* main(argc, argv) {
             void chmod(fq_save, 0);
             void signal(2, done1);
             if (cptr.ld1so(iflags, $instance_flags_news)) {
-                (yield* Y.icall(display_file()(__sl6, 0)));
+                (yield* Y.icall(display_file()(__s_news, 0)));
                 cptr.st1o(iflags, $instance_flags_news, 0);
             }
             if (cptr.ldI32o(ge, $instance_globals_e_early_raw_messages))
-                (yield* Y.icall(raw_print()(__sl7)));
+                (yield* Y.icall(raw_print()(__s_restoring_save_file)));
             else
-                (yield* pline(__sl7));
+                (yield* pline(__s_restoring_save_file));
             (yield* Y.icall(mark_synch()()));
             if ((yield* dorecover(nhfp))) {
                 resuming = 1;
                 (yield* wd_message());
                 if (discover() || wizard()) {
-                    if ((yield* yn_function(__sl8, cptr.decay(ynchars), 110, 1)) == 110) {
+                    if ((yield* yn_function(__s_do_you_want_to_keep_the_save_file, cptr.decay(ynchars), 110, 1)) == 110) {
                         void (yield* delete_savefile());
                     } else {
                         void chmod(fq_save, NHM.FCMASK);
@@ -251,7 +251,7 @@ function* process_options(argc, argv) {
     let origarg;
     let i;
     let l;
-    (yield* config_error_init(0, __sl9, 0));
+    (yield* config_error_init(0, __s_command_line, 0));
     while (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) == 45) {
         argv = cptr.add(argv, 1, 8);
         argc--;
@@ -259,30 +259,30 @@ function* process_options(argc, argv) {
         if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 && cptr.ld1so(arg, 2) != 0 && (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
             arg = cptr.add(arg, 1);
         l = Number(BigInt.asIntN(32, cptr.strlen(arg)));
-        if (l < 6 && !cptr.strncmp(arg, __sl10, 4n))
+        if (l < 6 && !cptr.strncmp(arg, __s_no, 4n))
             l = 6;
         else if (l < 4)
             l = 4;
         switch (cptr.ld1so(arg, 1)) {
             case 68:
             case 100:
-            if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) || !(yield* strncmpi((arg), (__sl11), -1))) {
+            if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) || !(yield* strncmpi((arg), (__s_debug), -1))) {
                 cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
-            } else if (!(yield* strncmpi(arg, __sl12, l))) {
-                (yield* load_symset(__sl13, NHC.PRIMARYSET));
+            } else if (!(yield* strncmpi(arg, __s_decgraphics, l))) {
+                (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
                 (yield* switch_symbols(1));
             } else {
-                (yield* config_error_add(__sl14, origarg));
+                (yield* config_error_add(__s_unknown_option_60s, origarg));
             }
             break;
             case 88:
             cptr.st1o(flags, $flag_explore, 1), cptr.st1o(flags, $flag_debug, 0);
             break;
             case 110:
-            if (!cptr.ld1so(arg, 2) || !strcmp(arg, __sl15)) {
+            if (!cptr.ld1so(arg, 2) || !strcmp(arg, __s_no_news)) {
                 cptr.st1o(iflags, $instance_flags_news, 0);
                 break;
-            } else if (!strcmp(arg, __sl16)) {
+            } else if (!strcmp(arg, __s_news__2)) {
                 cptr.st1o(iflags, $instance_flags_news, 1);
                 break;
             }
@@ -297,24 +297,24 @@ function* process_options(argc, argv) {
                 void __builtin___strncpy_chk(svp, cptr.ldPtro(argv, 0, 8), 31n, __builtin_object_size(svp, 1));
                 cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);
             } else {
-                (yield* config_error_add(__sl17));
+                (yield* config_error_add(__s_character_name_expected_after_u));
             }
             break;
             case 73:
             case 105:
-            if (!(yield* strncmpi(arg, __sl18, l))) {
-                (yield* load_symset(__sl19, NHC.PRIMARYSET));
-                (yield* load_symset(__sl20, NHC.ROGUESET));
+            if (!(yield* strncmpi(arg, __s_ibmgraphics, l))) {
+                (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
+                (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
                 (yield* switch_symbols(1));
             } else {
-                (yield* config_error_add(__sl14, origarg));
+                (yield* config_error_add(__s_unknown_option_60s, origarg));
             }
             break;
             case 108:
-            if (!cptr.strncmp(arg, __sl21, 7n)) {
+            if (!cptr.strncmp(arg, __s_loglua, 7n)) {
                 cptr.stI32o(gl, $instance_globals_l_loglua, 1);
             } else
-                (yield* config_error_add(__sl14, origarg));
+                (yield* config_error_add(__s_unknown_option_60s, origarg));
             break;
             case 112:
             if (cptr.ld1so(arg, 2)) {
@@ -342,7 +342,7 @@ function* process_options(argc, argv) {
             cptr.stI32o(flags, $flag_randomall, 1);
             break;
             case 45:
-            (yield* config_error_add(__sl14, origarg));
+            (yield* config_error_add(__s_unknown_option_60s, origarg));
             break;
             default:
             if ((i = (yield* str2role(cptr.add(cptr.ldPtro(argv, 0, 8), 1)))) >= 0) {
@@ -354,7 +354,7 @@ function* process_options(argc, argv) {
     if (argc > 1) {
         let mxplyrs = atoi(cptr.ldPtro(argv, 1, 8));
         let mx_ok = schar((mxplyrs > 0));
-        (yield* config_error_add(__sl2, mx_ok ? __sl22 : __sl23, mx_ok ? __sl24 : cptr.ldPtro(argv, 1, 8), mx_ok ? __sl24 : __sl25));
+        (yield* config_error_add(__s_s_s_s, mx_ok ? __s_maxplayers_are_set_in_sysconf_file : __s_expected_maxplayers_found, mx_ok ? __s_empty : cptr.ldPtro(argv, 1, 8), mx_ok ? __s_empty : __s_quot));
     }
     if (!cptr.ldI32o(gl, $instance_globals_l_locknum) || (cptr.ldI32o(sysopt, $sysopt_s_maxplayers) && cptr.ldI32o(gl, $instance_globals_l_locknum) > cptr.ldI32o(sysopt, $sysopt_s_maxplayers)))
         cptr.stI32o(gl, $instance_globals_l_locknum, cptr.ldI32o(sysopt, $sysopt_s_maxplayers));
@@ -364,14 +364,14 @@ function* process_options(argc, argv) {
 
 /** C ref: unixmain.c:491 — @param {CPtr<char>} dir @param {CInt} wr */
 export function* chdirx(dir, wr) {
-    if (dir && strcmp(dir, __sl26)) {
+    if (dir && strcmp(dir, __s_usr_games_lib_nethackdir)) {
     } else {
     }
     if (!dir)
-        dir = __sl26;
+        dir = __s_usr_games_lib_nethackdir;
     if (dir && chdir(dir) < 0) {
         perror(dir);
-        (yield* error(__sl27, dir));
+        (yield* error(__s_cannot_chdir_to_s, dir));
     }
     if (wr) {
         (yield* check_recordfile(dir));
@@ -383,9 +383,9 @@ export function* chdirx(dir, wr) {
 export function whoami() {
     if (!cptr.ld1s(svp)) {
         let s;
-        s = nh_getenv(__sl28);
+        s = nh_getenv(__s_user);
         if (!s || !cptr.ld1s(s))
-            s = nh_getenv(__sl29);
+            s = nh_getenv(__s_logname);
         if (!s || !cptr.ld1s(s))
             s = getlogin();
         if (s && cptr.ld1s(s)) {
@@ -431,19 +431,19 @@ function* wd_message() {
     if (cptr.ld1so(iflags, $instance_flags_wiz_error_flag)) {
         if (cptr.ldPtro(sysopt, $sysopt_s_wizards) && cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_wizards), 0)) {
             let tmp = (yield* build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards)));
-            (yield* pline(__sl30, cptr.strchr(cptr.ldPtro(sysopt, $sysopt_s_wizards), 32) ? __sl31 : __sl24, tmp));
+            (yield* pline(__s_only_user_s_s_may_access_debug_wizard, cptr.strchr(cptr.ldPtro(sysopt, $sysopt_s_wizards), 32) ? __s_s : __s_empty, tmp));
             cptr.free(tmp);
         } else {
-            (yield* You(__sl32));
+            (yield* You(__s_cannot_access_debug_wizard_mode));
         }
         cptr.st1o(flags, $flag_debug, 0);
         if (!cptr.ld1so(iflags, $instance_flags_explore_error_flag))
-            (yield* pline(__sl33));
+            (yield* pline(__s_entering_explore_discovery_mode_instead));
     } else if (cptr.ld1so(iflags, $instance_flags_explore_error_flag)) {
-        (yield* You(__sl34));
+        (yield* You(__s_cannot_access_explore_mode));
         cptr.st1o(flags, $flag_explore, cptr.st1o(iflags, $instance_flags_deferred_X, 0));
     } else if (discover())
-        (yield* You(__sl35));
+        (yield* You(__s_are_in_non_scoring_explore_discovery));
 }
 
 /** C ref: unixmain.c:682 — @param {CPtr<char>} name */
@@ -510,7 +510,7 @@ function get_unix_pw() {
             __static_get_unix_pw_pw = null;
     }
     if (__static_get_unix_pw_pw === null) {
-        user = nh_getenv(__sl28);
+        user = nh_getenv(__s_user);
         if (user) {
             __static_get_unix_pw_pw = getpwnam(user);
             if (__static_get_unix_pw_pw && (cptr.ldI32o(__static_get_unix_pw_pw, $passwd_pw_uid) != uid))
@@ -538,31 +538,31 @@ export function get_login_name() {
 export function* port_insert_pastebuf(buf) {
     let errarg;
     let len;
-    let PB = popen(__sl36, __sl37);
+    let PB = popen(__s_usr_bin_pbcopy, __s_w);
     __lbl_error: {
         if (!PB) {
-            errarg = __sl38;
+            errarg = __s_unable_to_start_pbcopy;
             break __lbl_error;
         }
         len = cptr.strlen(buf);
         if (len > 0n && cptr.ld1so(buf, BigInt.asUintN(64, len - 1n)) == 10)
             len--;
         if (len != fwrite(buf, 1n, len, PB)) {
-            errarg = __sl39;
+            errarg = __s_error_sending_data_to_pbcopy;
             break __lbl_error;
         }
         if (pclose(PB) != -1) {
             return;
         }
-        errarg = __sl40;
+        errarg = __s_error_finishing_pbcopy;
     }
-    (yield* raw_printf(__sl41, errarg, strerror(errno), errno));
+    (yield* raw_printf(__s_s_s_d, errarg, strerror(errno), errno));
 }
 
 /** C ref: unixmain.c:814 @returns {CLongLong} */
 export function* sys_random_seed() {
     {
-        let env_seed = getenv(__sl42);
+        let env_seed = getenv(__s_nethack_seed);
         if (env_seed) {
             let seed = cptr.box(strtoul(env_seed, null, 10));
             return seed.v;
@@ -572,14 +572,14 @@ export function* sys_random_seed() {
     let pid = BigInt.asUintN(64, BigInt(getpid()));
     let no_seed = 1;
     let fptr;
-    fptr = fopen(__sl43, __sl44);
+    fptr = fopen(__s_dev_random, __s_r);
     if (fptr) {
         fread(seed, 8n, 1n, fptr);
         has_strong_rngseed.v = 1;
         no_seed = 0;
         void fclose(fptr);
     } else {
-        (yield* paniclog(__sl45, __sl46));
+        (yield* paniclog(__s_sys_random_seed, __s_falling_back_to_weak_seed));
     }
     if (no_seed) {
         seed.v = BigInt.asUintN(64, (yield* getnow()));

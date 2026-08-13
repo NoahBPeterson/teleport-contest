@@ -67,142 +67,142 @@ const $Race_mnum = FLD.Race_mnum, $alt_spl_genderhint = FLD.alt_spl_genderhint,
     $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Resists_Elem(%d), unexpected property type");
-const __sl1 = cptr.lit("'Blnd_resist' but not resists_blnd()?");
-const __sl2 = cptr.lit("visored helmet");
-const __sl3 = cptr.lit("grid bug");
-const __sl4 = cptr.lit("leprechaun");
-const __sl5 = cptr.lit("killer bee");
-const __sl6 = cptr.lit("soldier ant");
-const __sl7 = cptr.lit("a ");
-const __sl8 = cptr.lit("an ");
-const __sl9 = cptr.lit("the ");
-const __sl10 = cptr.lit("vortices");
-const __sl11 = cptr.lit("ex");
-const __sl12 = cptr.lit("ies");
-const __sl13 = cptr.lit("zombies");
-const __sl14 = cptr.lit("y");
-const __sl15 = cptr.lit("ves");
-const __sl16 = cptr.lit("f");
-const __sl17 = cptr.lit("s");
-const __sl18 = cptr.lit("s ");
-const __sl19 = cptr.lit("'");
-const __sl20 = cptr.lit("' ");
-const __sl21 = cptr.lit("'s");
-const __sl22 = cptr.lit("'s ");
-const __sl23 = cptr.lit("es");
-const __sl24 = cptr.lit("es ");
-const __sl25 = cptr.lit("grey dragon");
-const __sl26 = cptr.lit("baby grey dragon");
-const __sl27 = cptr.lit("grey unicorn");
-const __sl28 = cptr.lit("grey ooze");
-const __sl29 = cptr.lit("gray-elf");
-const __sl30 = cptr.lit("mindflayer");
-const __sl31 = cptr.lit("master mindflayer");
-const __sl32 = cptr.lit("aligned priest");
-const __sl33 = cptr.lit("aligned priestess");
-const __sl34 = cptr.lit("high priest");
-const __sl35 = cptr.lit("high priestess");
-const __sl36 = cptr.lit("master of thief");
-const __sl37 = cptr.lit("master thief");
-const __sl38 = cptr.lit("master of assassin");
-const __sl39 = cptr.lit("master-lich");
-const __sl40 = cptr.lit("masterlich");
-const __sl41 = cptr.lit("invisible stalker");
-const __sl42 = cptr.lit("high-elf");
-const __sl43 = cptr.lit("wood-elf");
-const __sl44 = cptr.lit("wood elf");
-const __sl45 = cptr.lit("woodland nymph");
-const __sl46 = cptr.lit("halfling");
-const __sl47 = cptr.lit("genie");
-const __sl48 = cptr.lit("human wererat");
-const __sl49 = cptr.lit("human werejackal");
-const __sl50 = cptr.lit("human werewolf");
-const __sl51 = cptr.lit("rat wererat");
-const __sl52 = cptr.lit("jackal werejackal");
-const __sl53 = cptr.lit("wolf werewolf");
-const __sl54 = cptr.lit("ki rin");
-const __sl55 = cptr.lit("kirin");
-const __sl56 = cptr.lit("uruk hai");
-const __sl57 = cptr.lit("orc captain");
-const __sl58 = cptr.lit("woodland elf");
-const __sl59 = cptr.lit("green elf");
-const __sl60 = cptr.lit("grey elf");
-const __sl61 = cptr.lit("gray elf");
-const __sl62 = cptr.lit("elf lady");
-const __sl63 = cptr.lit("elf lord");
-const __sl64 = cptr.lit("elf noble");
-const __sl65 = cptr.lit("olog hai");
-const __sl66 = cptr.lit("arch lich");
-const __sl67 = cptr.lit("archlich");
-const __sl68 = cptr.lit("incubi");
-const __sl69 = cptr.lit("succubi");
-const __sl70 = cptr.lit("violet fungi");
-const __sl71 = cptr.lit("homunculi");
-const __sl72 = cptr.lit("baluchitheria");
-const __sl73 = cptr.lit("lurkers above");
-const __sl74 = cptr.lit("cavemen");
-const __sl75 = cptr.lit("cavewomen");
-const __sl76 = cptr.lit("watchmen");
-const __sl77 = cptr.lit("djinn");
-const __sl78 = cptr.lit("mumakil");
-const __sl79 = cptr.lit("erinyes");
-const __sl80 = cptr.lit("long");
-const __sl81 = cptr.lit("an");
-const __sl82 = cptr.lit("the");
-const __sl83 = cptr.lit("or");
-const __sl84 = cptr.lit("other");
-const __sl85 = cptr.lit("or other");
-const __sl86 = cptr.lit("long worm");
-const __sl87 = cptr.lit("demon");
-const __sl88 = cptr.lit("devil");
-const __sl89 = cptr.lit("bug");
-const __sl90 = cptr.lit("fish");
-const __sl91 = cptr.lit("mondata.c");
-const __sl92 = cptr.lit("pronoun_gender");
-const __sl93 = cptr.lit("float");
-const __sl94 = cptr.lit("Float");
-const __sl95 = cptr.lit("wobble");
-const __sl96 = cptr.lit("Wobble");
-const __sl97 = cptr.lit("fly");
-const __sl98 = cptr.lit("Fly");
-const __sl99 = cptr.lit("flutter");
-const __sl100 = cptr.lit("Flutter");
-const __sl101 = cptr.lit("stagger");
-const __sl102 = cptr.lit("Stagger");
-const __sl103 = cptr.lit("slither");
-const __sl104 = cptr.lit("Slither");
-const __sl105 = cptr.lit("falter");
-const __sl106 = cptr.lit("Falter");
-const __sl107 = cptr.lit("ooze");
-const __sl108 = cptr.lit("Ooze");
-const __sl109 = cptr.lit("tremble");
-const __sl110 = cptr.lit("Tremble");
-const __sl111 = cptr.lit("wiggle");
-const __sl112 = cptr.lit("Wiggle");
-const __sl113 = cptr.lit("pulsate");
-const __sl114 = cptr.lit("Pulsate");
-const __sl115 = cptr.lit("crawl");
-const __sl116 = cptr.lit("Crawl");
-const __sl117 = cptr.lit("already on fire");
-const __sl118 = cptr.lit("boiling");
-const __sl119 = cptr.lit("melting");
-const __sl120 = cptr.lit("heating up");
-const __sl121 = cptr.lit("being roasted");
-const __sl122 = cptr.lit("on fire");
-const __sl123 = cptr.lit("cloud");
-const __sl124 = cptr.lit("vapor");
-const __sl125 = cptr.lit("steam");
-const __sl126 = cptr.lit("shower");
-const __sl127 = cptr.lit("sparks");
-const __sl128 = cptr.lit("dust");
-const __sl129 = cptr.lit("ball");
-const __sl130 = cptr.lit("flame");
-const __sl131 = cptr.lit("flash");
-const __sl132 = cptr.lit("light");
-const __sl133 = cptr.lit("smoke");
-const __sl134 = cptr.lit("resist_conflict");
-const __sl135 = cptr.lit("get_atkdam_type");
+const __s_resists_elem_d_unexpected_property_type = cptr.lit("Resists_Elem(%d), unexpected property type");
+const __s_blnd_resist_but_not_resists_blnd = cptr.lit("'Blnd_resist' but not resists_blnd()?");
+const __s_visored_helmet = cptr.lit("visored helmet");
+const __s_grid_bug = cptr.lit("grid bug");
+const __s_leprechaun = cptr.lit("leprechaun");
+const __s_killer_bee = cptr.lit("killer bee");
+const __s_soldier_ant = cptr.lit("soldier ant");
+const __s_a_sp = cptr.lit("a ");
+const __s_an = cptr.lit("an ");
+const __s_the = cptr.lit("the ");
+const __s_vortices = cptr.lit("vortices");
+const __s_ex = cptr.lit("ex");
+const __s_ies = cptr.lit("ies");
+const __s_zombies = cptr.lit("zombies");
+const __s_y = cptr.lit("y");
+const __s_ves = cptr.lit("ves");
+const __s_f = cptr.lit("f");
+const __s_s = cptr.lit("s");
+const __s_s_sp = cptr.lit("s ");
+const __s_apos = cptr.lit("'");
+const __s_apos_sp = cptr.lit("' ");
+const __s_apos_s = cptr.lit("'s");
+const __s_apos_s_sp = cptr.lit("'s ");
+const __s_es = cptr.lit("es");
+const __s_es__2 = cptr.lit("es ");
+const __s_grey_dragon = cptr.lit("grey dragon");
+const __s_baby_grey_dragon = cptr.lit("baby grey dragon");
+const __s_grey_unicorn = cptr.lit("grey unicorn");
+const __s_grey_ooze = cptr.lit("grey ooze");
+const __s_gray_elf = cptr.lit("gray-elf");
+const __s_mindflayer = cptr.lit("mindflayer");
+const __s_master_mindflayer = cptr.lit("master mindflayer");
+const __s_aligned_priest = cptr.lit("aligned priest");
+const __s_aligned_priestess = cptr.lit("aligned priestess");
+const __s_high_priest = cptr.lit("high priest");
+const __s_high_priestess = cptr.lit("high priestess");
+const __s_master_of_thief = cptr.lit("master of thief");
+const __s_master_thief = cptr.lit("master thief");
+const __s_master_of_assassin = cptr.lit("master of assassin");
+const __s_master_lich = cptr.lit("master-lich");
+const __s_masterlich = cptr.lit("masterlich");
+const __s_invisible_stalker = cptr.lit("invisible stalker");
+const __s_high_elf = cptr.lit("high-elf");
+const __s_wood_elf = cptr.lit("wood-elf");
+const __s_wood_elf__2 = cptr.lit("wood elf");
+const __s_woodland_nymph = cptr.lit("woodland nymph");
+const __s_halfling = cptr.lit("halfling");
+const __s_genie = cptr.lit("genie");
+const __s_human_wererat = cptr.lit("human wererat");
+const __s_human_werejackal = cptr.lit("human werejackal");
+const __s_human_werewolf = cptr.lit("human werewolf");
+const __s_rat_wererat = cptr.lit("rat wererat");
+const __s_jackal_werejackal = cptr.lit("jackal werejackal");
+const __s_wolf_werewolf = cptr.lit("wolf werewolf");
+const __s_ki_rin = cptr.lit("ki rin");
+const __s_kirin = cptr.lit("kirin");
+const __s_uruk_hai = cptr.lit("uruk hai");
+const __s_orc_captain = cptr.lit("orc captain");
+const __s_woodland_elf = cptr.lit("woodland elf");
+const __s_green_elf = cptr.lit("green elf");
+const __s_grey_elf = cptr.lit("grey elf");
+const __s_gray_elf__2 = cptr.lit("gray elf");
+const __s_elf_lady = cptr.lit("elf lady");
+const __s_elf_lord = cptr.lit("elf lord");
+const __s_elf_noble = cptr.lit("elf noble");
+const __s_olog_hai = cptr.lit("olog hai");
+const __s_arch_lich = cptr.lit("arch lich");
+const __s_archlich = cptr.lit("archlich");
+const __s_incubi = cptr.lit("incubi");
+const __s_succubi = cptr.lit("succubi");
+const __s_violet_fungi = cptr.lit("violet fungi");
+const __s_homunculi = cptr.lit("homunculi");
+const __s_baluchitheria = cptr.lit("baluchitheria");
+const __s_lurkers_above = cptr.lit("lurkers above");
+const __s_cavemen = cptr.lit("cavemen");
+const __s_cavewomen = cptr.lit("cavewomen");
+const __s_watchmen = cptr.lit("watchmen");
+const __s_djinn = cptr.lit("djinn");
+const __s_mumakil = cptr.lit("mumakil");
+const __s_erinyes = cptr.lit("erinyes");
+const __s_long = cptr.lit("long");
+const __s_an__2 = cptr.lit("an");
+const __s_the__2 = cptr.lit("the");
+const __s_or = cptr.lit("or");
+const __s_other = cptr.lit("other");
+const __s_or_other = cptr.lit("or other");
+const __s_long_worm = cptr.lit("long worm");
+const __s_demon = cptr.lit("demon");
+const __s_devil = cptr.lit("devil");
+const __s_bug = cptr.lit("bug");
+const __s_fish = cptr.lit("fish");
+const __s_mondata_c = cptr.lit("mondata.c");
+const __s_pronoun_gender = cptr.lit("pronoun_gender");
+const __s_float = cptr.lit("float");
+const __s_float__2 = cptr.lit("Float");
+const __s_wobble = cptr.lit("wobble");
+const __s_wobble__2 = cptr.lit("Wobble");
+const __s_fly = cptr.lit("fly");
+const __s_fly__2 = cptr.lit("Fly");
+const __s_flutter = cptr.lit("flutter");
+const __s_flutter__2 = cptr.lit("Flutter");
+const __s_stagger = cptr.lit("stagger");
+const __s_stagger__2 = cptr.lit("Stagger");
+const __s_slither = cptr.lit("slither");
+const __s_slither__2 = cptr.lit("Slither");
+const __s_falter = cptr.lit("falter");
+const __s_falter__2 = cptr.lit("Falter");
+const __s_ooze = cptr.lit("ooze");
+const __s_ooze__2 = cptr.lit("Ooze");
+const __s_tremble = cptr.lit("tremble");
+const __s_tremble__2 = cptr.lit("Tremble");
+const __s_wiggle = cptr.lit("wiggle");
+const __s_wiggle__2 = cptr.lit("Wiggle");
+const __s_pulsate = cptr.lit("pulsate");
+const __s_pulsate__2 = cptr.lit("Pulsate");
+const __s_crawl = cptr.lit("crawl");
+const __s_crawl__2 = cptr.lit("Crawl");
+const __s_already_on_fire = cptr.lit("already on fire");
+const __s_boiling = cptr.lit("boiling");
+const __s_melting = cptr.lit("melting");
+const __s_heating_up = cptr.lit("heating up");
+const __s_being_roasted = cptr.lit("being roasted");
+const __s_on_fire = cptr.lit("on fire");
+const __s_cloud = cptr.lit("cloud");
+const __s_vapor = cptr.lit("vapor");
+const __s_steam = cptr.lit("steam");
+const __s_shower = cptr.lit("shower");
+const __s_sparks = cptr.lit("sparks");
+const __s_dust = cptr.lit("dust");
+const __s_ball = cptr.lit("ball");
+const __s_flame = cptr.lit("flame");
+const __s_flash = cptr.lit("flash");
+const __s_light = cptr.lit("light");
+const __s_smoke = cptr.lit("smoke");
+const __s_resist_conflict = cptr.lit("resist_conflict");
+const __s_get_atkdam_type = cptr.lit("get_atkdam_type");
 
 /** C ref: mondata.c:13 — @param {CPtr<struct monst>} mon @param {CPtr<struct permonst>} ptr */
 export function set_mon_data(mon, ptr) {
@@ -305,7 +305,7 @@ export function Resists_Elem(mon, propindx) {
         case NHC.BLND_RES:
         return resists_blnd(mon);
         default:
-        impossible(__sl0, propindx);
+        impossible(__s_resists_elem_d_unexpected_property_type, propindx);
         return 0;
     }
     if (is_you ? u_resist : ((mon_resistancebits(mon) & rsstmask) != 0))
@@ -367,7 +367,7 @@ export function resists_blnd(mon) {
     if (resists_blnd_by_arti(mon))
         return 1;
     if (is_you && Blnd_resist()) {
-        impossible(__sl1);
+        impossible(__s_blnd_resist_but_not_resists_blnd);
         return 1;
     }
     return 0;
@@ -448,7 +448,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
     if (check_visor) {
         o = (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(mdef, $monst_minvent);
         for (; o; o = cptr.ldPtr(o))
-            if ((cptr.ldI64o(o, $obj_owornmask) & 4n) && objdescr_is(o, __sl2))
+            if ((cptr.ldI64o(o, $obj_owornmask) & 4n) && objdescr_is(o, __s_visored_helmet))
                 return 0;
     }
     return 1;
@@ -492,13 +492,13 @@ export function mstrength(ptr) {
         tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp);
         if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_DRST) || (tmp2 == NHM.AD_DRDX) || (tmp2 == NHM.AD_DRCO) || (tmp2 == NHM.AD_WERE))
             n = (n + 2) | 0;
-        else if (strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __sl3))
+        else if (strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_grid_bug))
             n = (n + (tmp2 != NHM.AD_PHYS)) | 0;
         n = (n + ((Math.imul(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damn))) > 23)) | 0;
     }
-    if (!strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __sl4))
+    if (!strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_leprechaun))
         n = (n - 2) | 0;
-    if (!strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __sl5) || !strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __sl6))
+    if (!strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_killer_bee) || !strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_soldier_ant))
         n = (n + 2) | 0;
     if (n == 0)
         tmp = (tmp - 1) | 0;
@@ -783,169 +783,169 @@ export function name_to_mon(in_str, gender_name_var) {
 }
 
 const __static_name_to_monplus_names = cptr.alloc(56 * 16);
-cptr.stPtro(__static_name_to_monplus_names, 0, __sl25);
+cptr.stPtro(__static_name_to_monplus_names, 0, __s_grey_dragon);
 cptr.stI16o(__static_name_to_monplus_names, 0 + $alt_spl_pm_val, NHC.PM_GRAY_DRAGON);
 cptr.stI32o(__static_name_to_monplus_names, 0 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 16, __sl26);
+cptr.stPtro(__static_name_to_monplus_names, 16, __s_baby_grey_dragon);
 cptr.stI16o(__static_name_to_monplus_names, 16 + $alt_spl_pm_val, NHC.PM_BABY_GRAY_DRAGON);
 cptr.stI32o(__static_name_to_monplus_names, 16 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 32, __sl27);
+cptr.stPtro(__static_name_to_monplus_names, 32, __s_grey_unicorn);
 cptr.stI16o(__static_name_to_monplus_names, 32 + $alt_spl_pm_val, NHC.PM_GRAY_UNICORN);
 cptr.stI32o(__static_name_to_monplus_names, 32 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 48, __sl28);
+cptr.stPtro(__static_name_to_monplus_names, 48, __s_grey_ooze);
 cptr.stI16o(__static_name_to_monplus_names, 48 + $alt_spl_pm_val, NHC.PM_GRAY_OOZE);
 cptr.stI32o(__static_name_to_monplus_names, 48 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 64, __sl29);
+cptr.stPtro(__static_name_to_monplus_names, 64, __s_gray_elf);
 cptr.stI16o(__static_name_to_monplus_names, 64 + $alt_spl_pm_val, NHC.PM_GREY_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 64 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 80, __sl30);
+cptr.stPtro(__static_name_to_monplus_names, 80, __s_mindflayer);
 cptr.stI16o(__static_name_to_monplus_names, 80 + $alt_spl_pm_val, NHC.PM_MIND_FLAYER);
 cptr.stI32o(__static_name_to_monplus_names, 80 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 96, __sl31);
+cptr.stPtro(__static_name_to_monplus_names, 96, __s_master_mindflayer);
 cptr.stI16o(__static_name_to_monplus_names, 96 + $alt_spl_pm_val, NHC.PM_MASTER_MIND_FLAYER);
 cptr.stI32o(__static_name_to_monplus_names, 96 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 112, __sl32);
+cptr.stPtro(__static_name_to_monplus_names, 112, __s_aligned_priest);
 cptr.stI16o(__static_name_to_monplus_names, 112 + $alt_spl_pm_val, NHC.PM_ALIGNED_CLERIC);
 cptr.stI32o(__static_name_to_monplus_names, 112 + $alt_spl_genderhint, NHC.MALE);
-cptr.stPtro(__static_name_to_monplus_names, 128, __sl33);
+cptr.stPtro(__static_name_to_monplus_names, 128, __s_aligned_priestess);
 cptr.stI16o(__static_name_to_monplus_names, 128 + $alt_spl_pm_val, NHC.PM_ALIGNED_CLERIC);
 cptr.stI32o(__static_name_to_monplus_names, 128 + $alt_spl_genderhint, NHC.FEMALE);
-cptr.stPtro(__static_name_to_monplus_names, 144, __sl34);
+cptr.stPtro(__static_name_to_monplus_names, 144, __s_high_priest);
 cptr.stI16o(__static_name_to_monplus_names, 144 + $alt_spl_pm_val, NHC.PM_HIGH_CLERIC);
 cptr.stI32o(__static_name_to_monplus_names, 144 + $alt_spl_genderhint, NHC.MALE);
-cptr.stPtro(__static_name_to_monplus_names, 160, __sl35);
+cptr.stPtro(__static_name_to_monplus_names, 160, __s_high_priestess);
 cptr.stI16o(__static_name_to_monplus_names, 160 + $alt_spl_pm_val, NHC.PM_HIGH_CLERIC);
 cptr.stI32o(__static_name_to_monplus_names, 160 + $alt_spl_genderhint, NHC.FEMALE);
-cptr.stPtro(__static_name_to_monplus_names, 176, __sl36);
+cptr.stPtro(__static_name_to_monplus_names, 176, __s_master_of_thief);
 cptr.stI16o(__static_name_to_monplus_names, 176 + $alt_spl_pm_val, NHC.PM_MASTER_OF_THIEVES);
 cptr.stI32o(__static_name_to_monplus_names, 176 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 192, __sl37);
+cptr.stPtro(__static_name_to_monplus_names, 192, __s_master_thief);
 cptr.stI16o(__static_name_to_monplus_names, 192 + $alt_spl_pm_val, NHC.PM_MASTER_OF_THIEVES);
 cptr.stI32o(__static_name_to_monplus_names, 192 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 208, __sl38);
+cptr.stPtro(__static_name_to_monplus_names, 208, __s_master_of_assassin);
 cptr.stI16o(__static_name_to_monplus_names, 208 + $alt_spl_pm_val, NHC.PM_MASTER_ASSASSIN);
 cptr.stI32o(__static_name_to_monplus_names, 208 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 224, __sl39);
+cptr.stPtro(__static_name_to_monplus_names, 224, __s_master_lich);
 cptr.stI16o(__static_name_to_monplus_names, 224 + $alt_spl_pm_val, NHC.PM_MASTER_LICH);
 cptr.stI32o(__static_name_to_monplus_names, 224 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 240, __sl40);
+cptr.stPtro(__static_name_to_monplus_names, 240, __s_masterlich);
 cptr.stI16o(__static_name_to_monplus_names, 240 + $alt_spl_pm_val, NHC.PM_MASTER_LICH);
 cptr.stI32o(__static_name_to_monplus_names, 240 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 256, __sl41);
+cptr.stPtro(__static_name_to_monplus_names, 256, __s_invisible_stalker);
 cptr.stI16o(__static_name_to_monplus_names, 256 + $alt_spl_pm_val, NHC.PM_STALKER);
 cptr.stI32o(__static_name_to_monplus_names, 256 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 272, __sl42);
+cptr.stPtro(__static_name_to_monplus_names, 272, __s_high_elf);
 cptr.stI16o(__static_name_to_monplus_names, 272 + $alt_spl_pm_val, NHC.PM_ELVEN_MONARCH);
 cptr.stI32o(__static_name_to_monplus_names, 272 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 288, __sl43);
+cptr.stPtro(__static_name_to_monplus_names, 288, __s_wood_elf);
 cptr.stI16o(__static_name_to_monplus_names, 288 + $alt_spl_pm_val, NHC.PM_WOODLAND_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 288 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 304, __sl44);
+cptr.stPtro(__static_name_to_monplus_names, 304, __s_wood_elf__2);
 cptr.stI16o(__static_name_to_monplus_names, 304 + $alt_spl_pm_val, NHC.PM_WOODLAND_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 304 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 320, __sl45);
+cptr.stPtro(__static_name_to_monplus_names, 320, __s_woodland_nymph);
 cptr.stI16o(__static_name_to_monplus_names, 320 + $alt_spl_pm_val, NHC.PM_WOOD_NYMPH);
 cptr.stI32o(__static_name_to_monplus_names, 320 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 336, __sl46);
+cptr.stPtro(__static_name_to_monplus_names, 336, __s_halfling);
 cptr.stI16o(__static_name_to_monplus_names, 336 + $alt_spl_pm_val, NHC.PM_HOBBIT);
 cptr.stI32o(__static_name_to_monplus_names, 336 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 352, __sl47);
+cptr.stPtro(__static_name_to_monplus_names, 352, __s_genie);
 cptr.stI16o(__static_name_to_monplus_names, 352 + $alt_spl_pm_val, NHC.PM_DJINNI);
 cptr.stI32o(__static_name_to_monplus_names, 352 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 368, __sl48);
+cptr.stPtro(__static_name_to_monplus_names, 368, __s_human_wererat);
 cptr.stI16o(__static_name_to_monplus_names, 368 + $alt_spl_pm_val, NHC.PM_HUMAN_WERERAT);
 cptr.stI32o(__static_name_to_monplus_names, 368 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 384, __sl49);
+cptr.stPtro(__static_name_to_monplus_names, 384, __s_human_werejackal);
 cptr.stI16o(__static_name_to_monplus_names, 384 + $alt_spl_pm_val, NHC.PM_HUMAN_WEREJACKAL);
 cptr.stI32o(__static_name_to_monplus_names, 384 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 400, __sl50);
+cptr.stPtro(__static_name_to_monplus_names, 400, __s_human_werewolf);
 cptr.stI16o(__static_name_to_monplus_names, 400 + $alt_spl_pm_val, NHC.PM_HUMAN_WEREWOLF);
 cptr.stI32o(__static_name_to_monplus_names, 400 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 416, __sl51);
+cptr.stPtro(__static_name_to_monplus_names, 416, __s_rat_wererat);
 cptr.stI16o(__static_name_to_monplus_names, 416 + $alt_spl_pm_val, NHC.PM_WERERAT);
 cptr.stI32o(__static_name_to_monplus_names, 416 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 432, __sl52);
+cptr.stPtro(__static_name_to_monplus_names, 432, __s_jackal_werejackal);
 cptr.stI16o(__static_name_to_monplus_names, 432 + $alt_spl_pm_val, NHC.PM_WEREJACKAL);
 cptr.stI32o(__static_name_to_monplus_names, 432 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 448, __sl53);
+cptr.stPtro(__static_name_to_monplus_names, 448, __s_wolf_werewolf);
 cptr.stI16o(__static_name_to_monplus_names, 448 + $alt_spl_pm_val, NHC.PM_WEREWOLF);
 cptr.stI32o(__static_name_to_monplus_names, 448 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 464, __sl54);
+cptr.stPtro(__static_name_to_monplus_names, 464, __s_ki_rin);
 cptr.stI16o(__static_name_to_monplus_names, 464 + $alt_spl_pm_val, NHC.PM_KI_RIN);
 cptr.stI32o(__static_name_to_monplus_names, 464 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 480, __sl55);
+cptr.stPtro(__static_name_to_monplus_names, 480, __s_kirin);
 cptr.stI16o(__static_name_to_monplus_names, 480 + $alt_spl_pm_val, NHC.PM_KI_RIN);
 cptr.stI32o(__static_name_to_monplus_names, 480 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 496, __sl56);
+cptr.stPtro(__static_name_to_monplus_names, 496, __s_uruk_hai);
 cptr.stI16o(__static_name_to_monplus_names, 496 + $alt_spl_pm_val, NHC.PM_URUK_HAI);
 cptr.stI32o(__static_name_to_monplus_names, 496 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 512, __sl57);
+cptr.stPtro(__static_name_to_monplus_names, 512, __s_orc_captain);
 cptr.stI16o(__static_name_to_monplus_names, 512 + $alt_spl_pm_val, NHC.PM_ORC_CAPTAIN);
 cptr.stI32o(__static_name_to_monplus_names, 512 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 528, __sl58);
+cptr.stPtro(__static_name_to_monplus_names, 528, __s_woodland_elf);
 cptr.stI16o(__static_name_to_monplus_names, 528 + $alt_spl_pm_val, NHC.PM_WOODLAND_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 528 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 544, __sl59);
+cptr.stPtro(__static_name_to_monplus_names, 544, __s_green_elf);
 cptr.stI16o(__static_name_to_monplus_names, 544 + $alt_spl_pm_val, NHC.PM_GREEN_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 544 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 560, __sl60);
+cptr.stPtro(__static_name_to_monplus_names, 560, __s_grey_elf);
 cptr.stI16o(__static_name_to_monplus_names, 560 + $alt_spl_pm_val, NHC.PM_GREY_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 560 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 576, __sl61);
+cptr.stPtro(__static_name_to_monplus_names, 576, __s_gray_elf__2);
 cptr.stI16o(__static_name_to_monplus_names, 576 + $alt_spl_pm_val, NHC.PM_GREY_ELF);
 cptr.stI32o(__static_name_to_monplus_names, 576 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 592, __sl62);
+cptr.stPtro(__static_name_to_monplus_names, 592, __s_elf_lady);
 cptr.stI16o(__static_name_to_monplus_names, 592 + $alt_spl_pm_val, NHC.PM_ELF_NOBLE);
 cptr.stI32o(__static_name_to_monplus_names, 592 + $alt_spl_genderhint, NHC.FEMALE);
-cptr.stPtro(__static_name_to_monplus_names, 608, __sl63);
+cptr.stPtro(__static_name_to_monplus_names, 608, __s_elf_lord);
 cptr.stI16o(__static_name_to_monplus_names, 608 + $alt_spl_pm_val, NHC.PM_ELF_NOBLE);
 cptr.stI32o(__static_name_to_monplus_names, 608 + $alt_spl_genderhint, NHC.MALE);
-cptr.stPtro(__static_name_to_monplus_names, 624, __sl64);
+cptr.stPtro(__static_name_to_monplus_names, 624, __s_elf_noble);
 cptr.stI16o(__static_name_to_monplus_names, 624 + $alt_spl_pm_val, NHC.PM_ELF_NOBLE);
 cptr.stI32o(__static_name_to_monplus_names, 624 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 640, __sl65);
+cptr.stPtro(__static_name_to_monplus_names, 640, __s_olog_hai);
 cptr.stI16o(__static_name_to_monplus_names, 640 + $alt_spl_pm_val, NHC.PM_OLOG_HAI);
 cptr.stI32o(__static_name_to_monplus_names, 640 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 656, __sl66);
+cptr.stPtro(__static_name_to_monplus_names, 656, __s_arch_lich);
 cptr.stI16o(__static_name_to_monplus_names, 656 + $alt_spl_pm_val, NHC.PM_ARCH_LICH);
 cptr.stI32o(__static_name_to_monplus_names, 656 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 672, __sl67);
+cptr.stPtro(__static_name_to_monplus_names, 672, __s_archlich);
 cptr.stI16o(__static_name_to_monplus_names, 672 + $alt_spl_pm_val, NHC.PM_ARCH_LICH);
 cptr.stI32o(__static_name_to_monplus_names, 672 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 688, __sl68);
+cptr.stPtro(__static_name_to_monplus_names, 688, __s_incubi);
 cptr.stI16o(__static_name_to_monplus_names, 688 + $alt_spl_pm_val, NHC.PM_AMOROUS_DEMON);
 cptr.stI32o(__static_name_to_monplus_names, 688 + $alt_spl_genderhint, NHC.MALE);
-cptr.stPtro(__static_name_to_monplus_names, 704, __sl69);
+cptr.stPtro(__static_name_to_monplus_names, 704, __s_succubi);
 cptr.stI16o(__static_name_to_monplus_names, 704 + $alt_spl_pm_val, NHC.PM_AMOROUS_DEMON);
 cptr.stI32o(__static_name_to_monplus_names, 704 + $alt_spl_genderhint, NHC.FEMALE);
-cptr.stPtro(__static_name_to_monplus_names, 720, __sl70);
+cptr.stPtro(__static_name_to_monplus_names, 720, __s_violet_fungi);
 cptr.stI16o(__static_name_to_monplus_names, 720 + $alt_spl_pm_val, NHC.PM_VIOLET_FUNGUS);
 cptr.stI32o(__static_name_to_monplus_names, 720 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 736, __sl71);
+cptr.stPtro(__static_name_to_monplus_names, 736, __s_homunculi);
 cptr.stI16o(__static_name_to_monplus_names, 736 + $alt_spl_pm_val, NHC.PM_HOMUNCULUS);
 cptr.stI32o(__static_name_to_monplus_names, 736 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 752, __sl72);
+cptr.stPtro(__static_name_to_monplus_names, 752, __s_baluchitheria);
 cptr.stI16o(__static_name_to_monplus_names, 752 + $alt_spl_pm_val, NHC.PM_BALUCHITHERIUM);
 cptr.stI32o(__static_name_to_monplus_names, 752 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 768, __sl73);
+cptr.stPtro(__static_name_to_monplus_names, 768, __s_lurkers_above);
 cptr.stI16o(__static_name_to_monplus_names, 768 + $alt_spl_pm_val, NHC.PM_LURKER_ABOVE);
 cptr.stI32o(__static_name_to_monplus_names, 768 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 784, __sl74);
+cptr.stPtro(__static_name_to_monplus_names, 784, __s_cavemen);
 cptr.stI16o(__static_name_to_monplus_names, 784 + $alt_spl_pm_val, NHC.PM_CAVE_DWELLER);
 cptr.stI32o(__static_name_to_monplus_names, 784 + $alt_spl_genderhint, NHC.MALE);
-cptr.stPtro(__static_name_to_monplus_names, 800, __sl75);
+cptr.stPtro(__static_name_to_monplus_names, 800, __s_cavewomen);
 cptr.stI16o(__static_name_to_monplus_names, 800 + $alt_spl_pm_val, NHC.PM_CAVE_DWELLER);
 cptr.stI32o(__static_name_to_monplus_names, 800 + $alt_spl_genderhint, NHC.FEMALE);
-cptr.stPtro(__static_name_to_monplus_names, 816, __sl76);
+cptr.stPtro(__static_name_to_monplus_names, 816, __s_watchmen);
 cptr.stI16o(__static_name_to_monplus_names, 816 + $alt_spl_pm_val, NHC.PM_WATCHMAN);
 cptr.stI32o(__static_name_to_monplus_names, 816 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 832, __sl77);
+cptr.stPtro(__static_name_to_monplus_names, 832, __s_djinn);
 cptr.stI16o(__static_name_to_monplus_names, 832 + $alt_spl_pm_val, NHC.PM_DJINNI);
 cptr.stI32o(__static_name_to_monplus_names, 832 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 848, __sl78);
+cptr.stPtro(__static_name_to_monplus_names, 848, __s_mumakil);
 cptr.stI16o(__static_name_to_monplus_names, 848 + $alt_spl_pm_val, NHC.PM_MUMAK);
 cptr.stI32o(__static_name_to_monplus_names, 848 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monplus_names, 864, __sl79);
+cptr.stPtro(__static_name_to_monplus_names, 864, __s_erinyes);
 cptr.stI16o(__static_name_to_monplus_names, 864 + $alt_spl_pm_val, NHC.PM_ERINYS);
 cptr.stI32o(__static_name_to_monplus_names, 864 + $alt_spl_genderhint, NHC.NEUTRAL);
 cptr.stPtro(__static_name_to_monplus_names, 880, null);
@@ -968,20 +968,20 @@ export function name_to_monplus(in_str, remainder_p, gender_name_var) {
     if (remainder_p)
         cptr.stPtr(remainder_p, null);
     str = cptr.strcpy(cptr.decay(buf), in_str);
-    if (!cptr.strncmp(str, __sl7, 2n))
+    if (!cptr.strncmp(str, __s_a_sp, 2n))
         str = cptr.add(str, 2);
-    else if (!cptr.strncmp(str, __sl8, 3n))
+    else if (!cptr.strncmp(str, __s_an, 3n))
         str = cptr.add(str, 3);
-    else if (!cptr.strncmp(str, __sl9, 4n))
+    else if (!cptr.strncmp(str, __s_the, 4n))
         str = cptr.add(str, 4);
     slen = cptr.strlen(str);
     term = cptr.add(str, slen);
-    if ((s = strstri(str, __sl10)) !== null)
-        void cptr.strcpy(cptr.add(s, 4), __sl11);
-    else if (slen > 3n && !strncmpi((cptr.add(term, -(3))), (__sl12), -1) && (slen < 7n || strncmpi((cptr.add(term, -(7))), (__sl13), -1)))
-        void cptr.strcpy(cptr.add(term, -(3)), __sl14);
-    else if (slen > 3n && !strncmpi((cptr.add(term, -(3))), (__sl15), -1))
-        void cptr.strcpy(cptr.add(term, -(3)), __sl16);
+    if ((s = strstri(str, __s_vortices)) !== null)
+        void cptr.strcpy(cptr.add(s, 4), __s_ex);
+    else if (slen > 3n && !strncmpi((cptr.add(term, -(3))), (__s_ies), -1) && (slen < 7n || strncmpi((cptr.add(term, -(7))), (__s_zombies), -1)))
+        void cptr.strcpy(cptr.add(term, -(3)), __s_y);
+    else if (slen > 3n && !strncmpi((cptr.add(term, -(3))), (__s_ves), -1))
+        void cptr.strcpy(cptr.add(term, -(3)), __s_f);
     slen = cptr.strlen(str);
     {
         let namep;
@@ -1009,7 +1009,7 @@ export function name_to_monplus(in_str, remainder_p, gender_name_var) {
                     matchgend = mgend;
                     exact_match = 1;
                     break;
-                } else if (slen > m_i_len && (cptr.ld1so(str, m_i_len) == 32 || !strncmpi((cptr.add(str, m_i_len)), (__sl17), -1) || !strncmpi(cptr.add(str, m_i_len), __sl18, 2) || !strncmpi((cptr.add(str, m_i_len)), (__sl19), -1) || !strncmpi(cptr.add(str, m_i_len), __sl20, 2) || !strncmpi((cptr.add(str, m_i_len)), (__sl21), -1) || !strncmpi(cptr.add(str, m_i_len), __sl22, 3) || !strncmpi((cptr.add(str, m_i_len)), (__sl23), -1) || !strncmpi(cptr.add(str, m_i_len), __sl24, 3))) {
+                } else if (slen > m_i_len && (cptr.ld1so(str, m_i_len) == 32 || !strncmpi((cptr.add(str, m_i_len)), (__s_s), -1) || !strncmpi(cptr.add(str, m_i_len), __s_s_sp, 2) || !strncmpi((cptr.add(str, m_i_len)), (__s_apos), -1) || !strncmpi(cptr.add(str, m_i_len), __s_apos_sp, 2) || !strncmpi((cptr.add(str, m_i_len)), (__s_apos_s), -1) || !strncmpi(cptr.add(str, m_i_len), __s_apos_s_sp, 3) || !strncmpi((cptr.add(str, m_i_len)), (__s_es), -1) || !strncmpi(cptr.add(str, m_i_len), __s_es__2, 3))) {
                     mntmp = i;
                     len.v = Number(BigInt.asIntN(32, m_i_len));
                     matchgend = mgend;
@@ -1031,26 +1031,26 @@ export function name_to_monplus(in_str, remainder_p, gender_name_var) {
 }
 
 const __static_name_to_monclass_falsematch = cptr.alloc(6 * 8);
-cptr.stPtro(__static_name_to_monclass_falsematch, 0, __sl81);
-cptr.stPtro(__static_name_to_monclass_falsematch, 8, __sl82);
-cptr.stPtro(__static_name_to_monclass_falsematch, 16, __sl83);
-cptr.stPtro(__static_name_to_monclass_falsematch, 24, __sl84);
-cptr.stPtro(__static_name_to_monclass_falsematch, 32, __sl85);
+cptr.stPtro(__static_name_to_monclass_falsematch, 0, __s_an__2);
+cptr.stPtro(__static_name_to_monclass_falsematch, 8, __s_the__2);
+cptr.stPtro(__static_name_to_monclass_falsematch, 16, __s_or);
+cptr.stPtro(__static_name_to_monclass_falsematch, 24, __s_other);
+cptr.stPtro(__static_name_to_monclass_falsematch, 32, __s_or_other);
 cptr.stPtro(__static_name_to_monclass_falsematch, 40, null); /** C ref: mondata.c:1100 — char *[6] (function-static) */
 const __static_name_to_monclass_truematch = cptr.alloc(6 * 16);
-cptr.stPtro(__static_name_to_monclass_truematch, 0, __sl86);
+cptr.stPtro(__static_name_to_monclass_truematch, 0, __s_long_worm);
 cptr.stI16o(__static_name_to_monclass_truematch, 0 + $alt_spl_pm_val, NHC.PM_LONG_WORM);
 cptr.stI32o(__static_name_to_monclass_truematch, 0 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monclass_truematch, 16, __sl87);
+cptr.stPtro(__static_name_to_monclass_truematch, 16, __s_demon);
 cptr.stI16o(__static_name_to_monclass_truematch, 16 + $alt_spl_pm_val, -56);
 cptr.stI32o(__static_name_to_monclass_truematch, 16 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monclass_truematch, 32, __sl88);
+cptr.stPtro(__static_name_to_monclass_truematch, 32, __s_devil);
 cptr.stI16o(__static_name_to_monclass_truematch, 32 + $alt_spl_pm_val, -56);
 cptr.stI32o(__static_name_to_monclass_truematch, 32 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monclass_truematch, 48, __sl89);
+cptr.stPtro(__static_name_to_monclass_truematch, 48, __s_bug);
 cptr.stI16o(__static_name_to_monclass_truematch, 48 + $alt_spl_pm_val, -24);
 cptr.stI32o(__static_name_to_monclass_truematch, 48 + $alt_spl_genderhint, NHC.NEUTRAL);
-cptr.stPtro(__static_name_to_monclass_truematch, 64, __sl90);
+cptr.stPtro(__static_name_to_monclass_truematch, 64, __s_fish);
 cptr.stI16o(__static_name_to_monclass_truematch, 64 + $alt_spl_pm_val, -57);
 cptr.stI32o(__static_name_to_monclass_truematch, 64 + $alt_spl_genderhint, NHC.NEUTRAL);
 cptr.stPtro(__static_name_to_monclass_truematch, 80, null);
@@ -1079,7 +1079,7 @@ export function name_to_monclass(in_str, mndx_p) {
             i = (cptr.ld1s(in_str) == NHC.DEF_INVISIBLE) ? NHC.S_invisible : 0;
         return i;
     } else {
-        if (!strncmpi((in_str), (__sl80), -1))
+        if (!strncmpi((in_str), (__s_long), -1))
             return 0;
         in_str = makesingular(in_str);
         for (i = 0; cptr.ldPtro(__static_name_to_monclass_falsematch, i, 8); i++)
@@ -1122,7 +1122,7 @@ export function pronoun_gender(mtmp, pg_flags) {
     let override_vis = schar((((pg_flags & NHM.PRONOUN_NO_IT) >>> 0) ? 1 : 0));
     let hallu_rand = schar((((pg_flags & NHM.PRONOUN_HALLU) >>> 0) ? 1 : 0));
     if (hallu_rand && Hallucination())
-        return (rng_log_enabled() ? (rng_log_set_caller(__sl91, 1200, __sl92), rn2(4)) : rn2(4));
+        return (rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1200, __s_pronoun_gender), rn2(4)) : rn2(4));
     if (!override_vis && !canspotmon(mtmp))
         return 2;
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
@@ -1330,52 +1330,52 @@ export function raceptr(mtmp) {
 
 /** C ref: mondata.c:1367 — char *[4] */
 const levitate = cptr.alloc(4 * 8);
-cptr.stPtro(levitate, 0, __sl93);
-cptr.stPtro(levitate, 8, __sl94);
-cptr.stPtro(levitate, 16, __sl95);
-cptr.stPtro(levitate, 24, __sl96);
+cptr.stPtro(levitate, 0, __s_float);
+cptr.stPtro(levitate, 8, __s_float__2);
+cptr.stPtro(levitate, 16, __s_wobble);
+cptr.stPtro(levitate, 24, __s_wobble__2);
 
 /** C ref: mondata.c:1368 — char *[4] */
 const flys = cptr.alloc(4 * 8);
-cptr.stPtro(flys, 0, __sl97);
-cptr.stPtro(flys, 8, __sl98);
-cptr.stPtro(flys, 16, __sl99);
-cptr.stPtro(flys, 24, __sl100);
+cptr.stPtro(flys, 0, __s_fly);
+cptr.stPtro(flys, 8, __s_fly__2);
+cptr.stPtro(flys, 16, __s_flutter);
+cptr.stPtro(flys, 24, __s_flutter__2);
 
 /** C ref: mondata.c:1369 — char *[4] */
 const flyl = cptr.alloc(4 * 8);
-cptr.stPtro(flyl, 0, __sl97);
-cptr.stPtro(flyl, 8, __sl98);
-cptr.stPtro(flyl, 16, __sl101);
-cptr.stPtro(flyl, 24, __sl102);
+cptr.stPtro(flyl, 0, __s_fly);
+cptr.stPtro(flyl, 8, __s_fly__2);
+cptr.stPtro(flyl, 16, __s_stagger);
+cptr.stPtro(flyl, 24, __s_stagger__2);
 
 /** C ref: mondata.c:1370 — char *[4] */
 const slither = cptr.alloc(4 * 8);
-cptr.stPtro(slither, 0, __sl103);
-cptr.stPtro(slither, 8, __sl104);
-cptr.stPtro(slither, 16, __sl105);
-cptr.stPtro(slither, 24, __sl106);
+cptr.stPtro(slither, 0, __s_slither);
+cptr.stPtro(slither, 8, __s_slither__2);
+cptr.stPtro(slither, 16, __s_falter);
+cptr.stPtro(slither, 24, __s_falter__2);
 
 /** C ref: mondata.c:1375 — char *[4] */
 const ooze = cptr.alloc(4 * 8);
-cptr.stPtro(ooze, 0, __sl107);
-cptr.stPtro(ooze, 8, __sl108);
-cptr.stPtro(ooze, 16, __sl109);
-cptr.stPtro(ooze, 24, __sl110);
+cptr.stPtro(ooze, 0, __s_ooze);
+cptr.stPtro(ooze, 8, __s_ooze__2);
+cptr.stPtro(ooze, 16, __s_tremble);
+cptr.stPtro(ooze, 24, __s_tremble__2);
 
 /** C ref: mondata.c:1376 — char *[4] */
 const immobile = cptr.alloc(4 * 8);
-cptr.stPtro(immobile, 0, __sl111);
-cptr.stPtro(immobile, 8, __sl112);
-cptr.stPtro(immobile, 16, __sl113);
-cptr.stPtro(immobile, 24, __sl114);
+cptr.stPtro(immobile, 0, __s_wiggle);
+cptr.stPtro(immobile, 8, __s_wiggle__2);
+cptr.stPtro(immobile, 16, __s_pulsate);
+cptr.stPtro(immobile, 24, __s_pulsate__2);
 
 /** C ref: mondata.c:1377 — char *[4] */
 const crawl = cptr.alloc(4 * 8);
-cptr.stPtro(crawl, 0, __sl115);
-cptr.stPtro(crawl, 8, __sl116);
-cptr.stPtro(crawl, 16, __sl105);
-cptr.stPtro(crawl, 24, __sl106);
+cptr.stPtro(crawl, 0, __s_crawl);
+cptr.stPtro(crawl, 8, __s_crawl__2);
+cptr.stPtro(crawl, 16, __s_falter);
+cptr.stPtro(crawl, 24, __s_falter__2);
 
 /** C ref: mondata.c:1380 — @param {CPtr<struct permonst>} ptr @param {CPtr<char>} def @returns {CPtr<char>} */
 export function locomotion(ptr, def) {
@@ -1397,16 +1397,16 @@ export function on_fire(mptr, mattk) {
         case NHC.PM_FIRE_VORTEX:
         case NHC.PM_FIRE_ELEMENTAL:
         case NHC.PM_SALAMANDER:
-        what = __sl117;
+        what = __s_already_on_fire;
         break;
         case NHC.PM_WATER_ELEMENTAL:
         case NHC.PM_FOG_CLOUD:
         case NHC.PM_STEAM_VORTEX:
-        what = __sl118;
+        what = __s_boiling;
         break;
         case NHC.PM_ICE_VORTEX:
         case NHC.PM_GLASS_GOLEM:
-        what = __sl119;
+        what = __s_melting;
         break;
         case NHC.PM_STONE_GOLEM:
         case NHC.PM_CLAY_GOLEM:
@@ -1415,10 +1415,10 @@ export function on_fire(mptr, mattk) {
         case NHC.PM_EARTH_ELEMENTAL:
         case NHC.PM_DUST_VORTEX:
         case NHC.PM_ENERGY_VORTEX:
-        what = __sl120;
+        what = __s_heating_up;
         break;
         default:
-        what = (cptr.ld1u(mattk) == NHM.AT_HUGS) ? __sl121 : __sl122;
+        what = (cptr.ld1u(mattk) == NHM.AT_HUGS) ? __s_being_roasted : __s_on_fire;
         break;
     }
     return what;
@@ -1428,7 +1428,7 @@ export function on_fire(mptr, mattk) {
 export function msummon_environ(mptr, cloud) {
     let what;
     let mndx = ((cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL) ? NHC.PM_ANGEL : ((cptr.ld1so(mptr, $permonst_mlet) == NHC.S_LIGHT) ? NHC.PM_YELLOW_LIGHT : (cptr.ldI32o((mptr), $permonst_pmidx))));
-    cptr.stPtr(cloud, __sl123);
+    cptr.stPtr(cloud, __s_cloud);
     switch (mndx) {
         case NHC.PM_WATER_DEMON:
         case NHC.PM_AIR_ELEMENTAL:
@@ -1436,33 +1436,33 @@ export function msummon_environ(mptr, cloud) {
         case NHC.PM_FOG_CLOUD:
         case NHC.PM_ICE_VORTEX:
         case NHC.PM_FREEZING_SPHERE:
-        what = __sl124;
+        what = __s_vapor;
         break;
         case NHC.PM_STEAM_VORTEX:
-        what = __sl125;
+        what = __s_steam;
         break;
         case NHC.PM_ENERGY_VORTEX:
         case NHC.PM_SHOCKING_SPHERE:
-        cptr.stPtr(cloud, __sl126);
-        what = __sl127;
+        cptr.stPtr(cloud, __s_shower);
+        what = __s_sparks;
         break;
         case NHC.PM_EARTH_ELEMENTAL:
         case NHC.PM_DUST_VORTEX:
-        what = __sl128;
+        what = __s_dust;
         break;
         case NHC.PM_FIRE_ELEMENTAL:
         case NHC.PM_FIRE_VORTEX:
         case NHC.PM_FLAMING_SPHERE:
-        cptr.stPtr(cloud, __sl129);
-        what = __sl130;
+        cptr.stPtr(cloud, __s_ball);
+        what = __s_flame;
         break;
         case NHC.PM_ANGEL:
         case NHC.PM_YELLOW_LIGHT:
-        cptr.stPtr(cloud, __sl131);
-        what = __sl132;
+        cptr.stPtr(cloud, __s_flash);
+        what = __s_light;
         break;
         default:
-        what = __sl133;
+        what = __s_smoke;
         break;
     }
     return what;
@@ -1558,7 +1558,7 @@ export function give_u_to_m_resistances(mtmp) {
 /** C ref: mondata.c:1607 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function resist_conflict(mtmp) {
     let resist_chance = (19 < ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)) ? 19 : ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)));
-    return schar(((rng_log_enabled() ? (rng_log_set_caller(__sl91, 1612, __sl134), rnd(20)) : rnd(20)) > resist_chance));
+    return schar(((rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1612, __s_resist_conflict), rnd(20)) : rnd(20)) > resist_chance));
 }
 
 /** C ref: mondata.c:1617 — @param {CPtr<struct monst>} mtmp @param {CInt} ttyp @returns {CInt} */
@@ -1611,7 +1611,7 @@ cptr.stI32o(__static_get_atkdam_type_rnd_breath_typ, 28, NHM.AD_ACID); /** C ref
 /** C ref: mondata.c:1660 — @param {CInt} adtyp @returns {CInt} */
 export function get_atkdam_type(adtyp) {
     if (adtyp == NHM.AD_RBRE) {
-        return cptr.ldI32o(__static_get_atkdam_type_rnd_breath_typ, (rng_log_enabled() ? (rng_log_set_caller(__sl91, 1666, __sl135), rn2(8)) : rn2(8)), 4);
+        return cptr.ldI32o(__static_get_atkdam_type_rnd_breath_typ, (rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1666, __s_get_atkdam_type), rn2(8)) : rn2(8)), 4);
     }
     return adtyp;
 }

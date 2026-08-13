@@ -97,90 +97,90 @@ const $Gender_he = FLD.Gender_he, $Gender_his = FLD.Gender_his,
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("corridor disappears.");
-const __sl1 = cptr.lit("are encased in rock.");
-const __sl2 = cptr.lit("escaping vault without guard?");
-const __sl3 = cptr.lit("%s becomes irate.");
-const __sl4 = cptr.lit("Not a single corridor on this level?");
-const __sl5 = cptr.lit("vault.c");
-const __sl6 = cptr.lit("invault");
-const __sl7 = cptr.lit("%s shatter.");
-const __sl8 = cptr.lit("Suddenly one of the Vault's %s enters!");
-const __sl9 = cptr.lit("Someone else has entered the Vault.");
-const __sl10 = cptr.lit("What's going on here?");
-const __sl11 = cptr.lit("other presence vanishes.");
-const __sl12 = cptr.lit("Hey!  Who left that %s in here?");
-const __sl13 = cptr.lit("Puzzled, %s turns around and leaves.");
-const __sl14 = cptr.lit("%s huffs and turns to leave.");
-const __sl15 = cptr.lit("I'll be back when you're ready to speak to me!");
-const __sl16 = cptr.lit("You are required to supply your name. -");
-const __sl17 = cptr.lit("\"Hello stranger, who are you?\" -");
-const __sl18 = cptr.lit("Croesus");
-const __sl19 = cptr.lit("Kroisos");
-const __sl20 = cptr.lit("Creosote");
-const __sl21 = cptr.lit("%s waves goodbye.");
-const __sl22 = cptr.lit("Oh, yes, of course.  Sorry to have disturbed you.");
-const __sl23 = cptr.lit("%s mouths something and looks very angry!");
-const __sl24 = cptr.lit("Back from the dead, are you?  I'll remedy that!");
-const __sl25 = cptr.lit("%s doesn't %srecognize you.");
-const __sl26 = cptr.lit("");
-const __sl27 = cptr.lit("appear to ");
-const __sl28 = cptr.lit("I don't know you.");
-const __sl29 = cptr.lit("%s stomps%s.");
-const __sl30 = cptr.lit(" and beckons");
-const __sl31 = cptr.lit("Please follow me.");
-const __sl32 = cptr.lit("%s glares at you%s.");
-const __sl33 = cptr.lit("r stuff");
-const __sl34 = cptr.lit("You have hidden gold.");
-const __sl35 = cptr.lit("%s holds out %s palm and beckons with %s other hand.");
-const __sl36 = cptr.lit("Most likely all your gold was stolen from this vault.");
-const __sl37 = cptr.lit("Please drop that gold and follow me.");
-const __sl38 = cptr.lit("move_gold");
-const __sl39 = cptr.lit("%s whispers an incantation.");
-const __sl40 = cptr.lit("a distant chant.");
-const __sl41 = cptr.lit("A mysterious force moves the gold into the vault.");
-const __sl42 = cptr.lit("damaged vault's walls are magically restored!");
-const __sl43 = cptr.lit("Out of my way, scum!");
-const __sl44 = cptr.lit("vault guard: no gold at hero's feet?");
-const __sl45 = cptr.lit("%s%s picks up the gold%s.");
-const __sl46 = cptr.lit(" calms down and");
-const __sl47 = cptr.lit(" from beneath you");
-const __sl48 = cptr.lit("gd_move_cleanup: %scleanup%s");
-const __sl49 = cptr.lit("final ");
-const __sl50 = cptr.lit(" attempt");
-const __sl51 = cptr.lit("Suddenly, %s disappears.");
-const __sl52 = cptr.lit("%s.");
-const __sl53 = cptr.lit("the shrill sound of a guard's whistle");
-const __sl54 = cptr.lit("angry shouting");
-const __sl55 = cptr.lit("see %s approaching.");
-const __sl56 = cptr.lit("are confronted by %s.");
-const __sl57 = cptr.lit("angry");
-const __sl58 = cptr.lit("gd_move: %s guard");
-const __sl59 = cptr.lit("peaceful");
-const __sl60 = cptr.lit("hostile");
-const __sl61 = cptr.lit("How dare you %s that gold, scoundrel!");
-const __sl62 = cptr.lit("consume");
-const __sl63 = cptr.lit("destroy");
-const __sl64 = cptr.lit("%sfollow me!");
-const __sl65 = cptr.lit("drop that hidden gold and ");
-const __sl66 = cptr.lit("drop that gold and ");
-const __sl67 = cptr.lit("I repeat, %s");
-const __sl68 = cptr.lit("%s");
-const __sl69 = cptr.lit("You've been warned, knave!");
-const __sl70 = cptr.lit("Well, begone.");
-const __sl71 = cptr.lit("%s, confused, disappears.");
-const __sl72 = cptr.lit("%s holds out %s palm demandingly!");
-const __sl73 = cptr.lit("Drop all your gold, scoundrel!");
-const __sl74 = cptr.lit("%s rubs %s hands with enraged delight!");
-const __sl75 = cptr.lit("So be it, rogue!");
-const __sl76 = cptr.lit("gd_move");
-const __sl77 = cptr.lit("Move along!");
-const __sl78 = cptr.lit("fakecorr overflow");
-const __sl79 = cptr.lit("%s picks up some gold.");
-const __sl80 = cptr.lit("%ld %s goes into the Magic Memory Vault.");
-const __sl81 = cptr.lit("%s remits your gold to the vault.");
-const __sl82 = cptr.lit("paygd");
-const __sl83 = cptr.lit("To Croesus: here's the gold recovered from %s the %s.");
+const __s_corridor_disappears = cptr.lit("corridor disappears.");
+const __s_are_encased_in_rock = cptr.lit("are encased in rock.");
+const __s_escaping_vault_without_guard = cptr.lit("escaping vault without guard?");
+const __s_s_becomes_irate = cptr.lit("%s becomes irate.");
+const __s_not_a_single_corridor_on_this_level = cptr.lit("Not a single corridor on this level?");
+const __s_vault_c = cptr.lit("vault.c");
+const __s_invault = cptr.lit("invault");
+const __s_s_shatter = cptr.lit("%s shatter.");
+const __s_suddenly_one_of_the_vault_s_s_enters = cptr.lit("Suddenly one of the Vault's %s enters!");
+const __s_someone_else_has_entered_the_vault = cptr.lit("Someone else has entered the Vault.");
+const __s_what_s_going_on_here = cptr.lit("What's going on here?");
+const __s_other_presence_vanishes = cptr.lit("other presence vanishes.");
+const __s_hey_who_left_that_s_in_here = cptr.lit("Hey!  Who left that %s in here?");
+const __s_puzzled_s_turns_around_and_leaves = cptr.lit("Puzzled, %s turns around and leaves.");
+const __s_s_huffs_and_turns_to_leave = cptr.lit("%s huffs and turns to leave.");
+const __s_i_ll_be_back_when_you_re_ready_to_speak = cptr.lit("I'll be back when you're ready to speak to me!");
+const __s_you_are_required_to_supply_your_name = cptr.lit("You are required to supply your name. -");
+const __s_hello_stranger_who_are_you = cptr.lit("\"Hello stranger, who are you?\" -");
+const __s_croesus = cptr.lit("Croesus");
+const __s_kroisos = cptr.lit("Kroisos");
+const __s_creosote = cptr.lit("Creosote");
+const __s_s_waves_goodbye = cptr.lit("%s waves goodbye.");
+const __s_oh_yes_of_course_sorry_to_have = cptr.lit("Oh, yes, of course.  Sorry to have disturbed you.");
+const __s_s_mouths_something_and_looks_very_angry = cptr.lit("%s mouths something and looks very angry!");
+const __s_back_from_the_dead_are_you_i_ll_remedy = cptr.lit("Back from the dead, are you?  I'll remedy that!");
+const __s_s_doesn_t_srecognize_you = cptr.lit("%s doesn't %srecognize you.");
+const __s_empty = cptr.lit("");
+const __s_appear_to = cptr.lit("appear to ");
+const __s_i_don_t_know_you = cptr.lit("I don't know you.");
+const __s_s_stomps_s = cptr.lit("%s stomps%s.");
+const __s_and_beckons = cptr.lit(" and beckons");
+const __s_please_follow_me = cptr.lit("Please follow me.");
+const __s_s_glares_at_you_s = cptr.lit("%s glares at you%s.");
+const __s_r_stuff = cptr.lit("r stuff");
+const __s_you_have_hidden_gold = cptr.lit("You have hidden gold.");
+const __s_s_holds_out_s_palm_and_beckons_with_s = cptr.lit("%s holds out %s palm and beckons with %s other hand.");
+const __s_most_likely_all_your_gold_was_stolen = cptr.lit("Most likely all your gold was stolen from this vault.");
+const __s_please_drop_that_gold_and_follow_me = cptr.lit("Please drop that gold and follow me.");
+const __s_move_gold = cptr.lit("move_gold");
+const __s_s_whispers_an_incantation = cptr.lit("%s whispers an incantation.");
+const __s_a_distant_chant = cptr.lit("a distant chant.");
+const __s_a_mysterious_force_moves_the_gold_into = cptr.lit("A mysterious force moves the gold into the vault.");
+const __s_damaged_vault_s_walls_are_magically = cptr.lit("damaged vault's walls are magically restored!");
+const __s_out_of_my_way_scum = cptr.lit("Out of my way, scum!");
+const __s_vault_guard_no_gold_at_hero_s_feet = cptr.lit("vault guard: no gold at hero's feet?");
+const __s_s_s_picks_up_the_gold_s = cptr.lit("%s%s picks up the gold%s.");
+const __s_calms_down_and = cptr.lit(" calms down and");
+const __s_from_beneath_you = cptr.lit(" from beneath you");
+const __s_gd_move_cleanup_scleanup_s = cptr.lit("gd_move_cleanup: %scleanup%s");
+const __s_final = cptr.lit("final ");
+const __s_attempt = cptr.lit(" attempt");
+const __s_suddenly_s_disappears = cptr.lit("Suddenly, %s disappears.");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_the_shrill_sound_of_a_guard_s_whistle = cptr.lit("the shrill sound of a guard's whistle");
+const __s_angry_shouting = cptr.lit("angry shouting");
+const __s_see_s_approaching = cptr.lit("see %s approaching.");
+const __s_are_confronted_by_s = cptr.lit("are confronted by %s.");
+const __s_angry = cptr.lit("angry");
+const __s_gd_move_s_guard = cptr.lit("gd_move: %s guard");
+const __s_peaceful = cptr.lit("peaceful");
+const __s_hostile = cptr.lit("hostile");
+const __s_how_dare_you_s_that_gold_scoundrel = cptr.lit("How dare you %s that gold, scoundrel!");
+const __s_consume = cptr.lit("consume");
+const __s_destroy = cptr.lit("destroy");
+const __s_sfollow_me = cptr.lit("%sfollow me!");
+const __s_drop_that_hidden_gold_and = cptr.lit("drop that hidden gold and ");
+const __s_drop_that_gold_and = cptr.lit("drop that gold and ");
+const __s_i_repeat_s = cptr.lit("I repeat, %s");
+const __s_pct_s = cptr.lit("%s");
+const __s_you_ve_been_warned_knave = cptr.lit("You've been warned, knave!");
+const __s_well_begone = cptr.lit("Well, begone.");
+const __s_s_confused_disappears = cptr.lit("%s, confused, disappears.");
+const __s_s_holds_out_s_palm_demandingly = cptr.lit("%s holds out %s palm demandingly!");
+const __s_drop_all_your_gold_scoundrel = cptr.lit("Drop all your gold, scoundrel!");
+const __s_s_rubs_s_hands_with_enraged_delight = cptr.lit("%s rubs %s hands with enraged delight!");
+const __s_so_be_it_rogue = cptr.lit("So be it, rogue!");
+const __s_gd_move = cptr.lit("gd_move");
+const __s_move_along = cptr.lit("Move along!");
+const __s_fakecorr_overflow = cptr.lit("fakecorr overflow");
+const __s_s_picks_up_some_gold = cptr.lit("%s picks up some gold.");
+const __s_ld_s_goes_into_the_magic_memory_vault = cptr.lit("%ld %s goes into the Magic Memory Vault.");
+const __s_s_remits_your_gold_to_the_vault = cptr.lit("%s remits your gold to the vault.");
+const __s_paygd = cptr.lit("paygd");
+const __s_to_croesus_here_s_the_gold_recovered = cptr.lit("To Croesus: here's the gold recovered from %s the %s.");
 
 /** C ref: vault.c:23 — @param {CPtr<struct monst>} mtmp */
 export function* newegd(mtmp) {
@@ -250,9 +250,9 @@ function* clear_fcorr(grd, forceshow) {
         (cptr.stI32o(egrd, $egd_fcbeg, cptr.ldI32o(egrd, $egd_fcbeg) + 1)) - (1);
     }
     if (sawcorridor && !silently)
-        (yield* pline_The(__sl0));
+        (yield* pline_The(__s_corridor_disappears));
     if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)) > 0 && !silently)
-        (yield* You(__sl1));
+        (yield* You(__s_are_encased_in_rock));
     return 1;
 }
 
@@ -362,13 +362,13 @@ export function vault_occupied(array) {
 /** C ref: vault.c:256 — @param {CPtr<struct monst>} grd */
 export function* uleftvault(grd) {
     if (!grd || !(cptr.ldI32o(grd, $monst_isgd) & 1) || (cptr.ldI32o((grd), $monst_mhp) < 1)) {
-        (yield* impossible(__sl2));
+        (yield* impossible(__s_escaping_vault_without_guard));
         return;
     }
     if ((money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) || hidden_gold(1)) && um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1)) {
         if ((cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
             if (canspotmon(grd))
-                (yield* pline(__sl3, (yield* Monnam(grd))));
+                (yield* pline(__s_s_becomes_irate, (yield* Monnam(grd))));
             cptr.stI32o(grd, $monst_mpeaceful, 0);
         }
         if (!in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
@@ -409,7 +409,7 @@ function* find_guard_dest(guard, rx, ry) {
         }
         ;
     }
-    (yield* impossible(__sl4));
+    (yield* impossible(__s_not_a_single_corridor_on_this_level));
     (yield* tele());
     return 0;
 }
@@ -427,7 +427,7 @@ export function* invault() {
         return;
     }
     vgdeathcount = cptr.ld1uo2(svm, NHC.PM_GUARD, 12, $instance_globals_saved_m_mvitals + $mvitals_died);
-    if (vgdeathcount < 2 || (vgdeathcount < 50 && !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 334, __sl6), rn2(Math.imul(vgdeathcount, vgdeathcount))) : rn2(Math.imul(vgdeathcount, vgdeathcount)))))
+    if (vgdeathcount < 2 || (vgdeathcount < 50 && !(rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 334, __s_invault), rn2(Math.imul(vgdeathcount, vgdeathcount))) : rn2(Math.imul(vgdeathcount, vgdeathcount)))))
         cptr.stI32o(u, $you_uinvault, cptr.ldI32o(u, $you_uinvault) + 1);
     if (cptr.ldI32o(u, $you_uinvault) < NHM.VAULT_GUARD_TIME || (cptr.ldI32o(u, $you_uinvault) % 15) != 0)
         return;
@@ -516,23 +516,23 @@ export function* invault() {
                 otmp = sobj_at(NHC.BOULDER, cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my));
             } while (otmp);
             func = !Blind() ? You_see : You_hear;
-            (yield* Y.icall((func)(__sl7, (bcnt == 1) ? (yield* an(bname)) : (yield* makeplural(bname)))));
+            (yield* Y.icall((func)(__s_s_shatter, (bcnt == 1) ? (yield* an(bname)) : (yield* makeplural(bname)))));
         }
         spotted = schar(canspotmon(guard));
         if (spotted) {
-            (yield* pline(__sl8, (yield* makeplural(pmname(cptr.ldPtro(guard, $monst_data), Mgender(guard))))));
+            (yield* pline(__s_suddenly_one_of_the_vault_s_s_enters, (yield* makeplural(pmname(cptr.ldPtro(guard, $monst_data), Mgender(guard))))));
             (yield* newsym(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my)));
         } else {
-            (yield* pline(__sl9));
+            (yield* pline(__s_someone_else_has_entered_the_vault));
             (yield* map_invisible(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my)));
         }
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (!Deaf()) {
                 ;
-                (yield* verbalize(__sl10));
+                (yield* verbalize(__s_what_s_going_on_here));
             }
             if (!spotted)
-                (yield* pline_The(__sl11));
+                (yield* pline_The(__s_other_presence_vanishes));
             (yield* mongone(guard));
             return;
         }
@@ -540,18 +540,18 @@ export function* invault() {
             if (U_AP_TYPE() == NHC.M_AP_OBJECT && cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) != NHC.GOLD_PIECE)
                 if (!Deaf()) {
                     ;
-                    (yield* verbalize(__sl12, (yield* mimic_obj_name(cptr.add(gy, $instance_globals_y_youmonst)))));
+                    (yield* verbalize(__s_hey_who_left_that_s_in_here, (yield* mimic_obj_name(cptr.add(gy, $instance_globals_y_youmonst)))));
                 }
-            (yield* pline(__sl13, (cptr.ldPtro2(genders, pronoun_gender(guard, NHM.PRONOUN_HALLU), 48, $Gender_he))));
+            (yield* pline(__s_puzzled_s_turns_around_and_leaves, (cptr.ldPtro2(genders, pronoun_gender(guard, NHM.PRONOUN_HALLU), 48, $Gender_he))));
             (yield* mongone(guard));
             return;
         }
         if (Strangled() || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT) || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
             if (Deaf()) {
-                (yield* pline(__sl14, (yield* noit_Monnam(guard))));
+                (yield* pline(__s_s_huffs_and_turns_to_leave, (yield* noit_Monnam(guard))));
             } else {
                 ;
-                (yield* verbalize(__sl15));
+                (yield* verbalize(__s_i_ll_be_back_when_you_re_ready_to_speak));
             }
             (yield* mongone(guard));
             return;
@@ -564,30 +564,30 @@ export function* invault() {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         trycount = 5;
         do {
-            (yield* getlin(Deaf() ? __sl16 : __sl17, cptr.decay(buf)));
+            (yield* getlin(Deaf() ? __s_you_are_required_to_supply_your_name : __s_hello_stranger_who_are_you, cptr.decay(buf)));
             void (yield* mungspaces(cptr.decay(buf)));
         } while (!cptr.ld1so(cptr.decay(buf), 0, 1) && --trycount > 0);
         if (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL && (yield* strncmpi(cptr.decay(buf), svp, Number(BigInt.asIntN(32, cptr.strlen(svp))))) != 0) {
             adjalign(-1);
         }
-        if (!(yield* strncmpi(cptr.decay((buf)), (__sl18), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__sl19), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__sl20), -1))) {
+        if (!(yield* strncmpi(cptr.decay((buf)), (__s_croesus), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__s_kroisos), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__s_creosote), -1))) {
             if (!cptr.ld1uo2(svm, NHC.PM_CROESUS, 12, $instance_globals_saved_m_mvitals + $mvitals_died)) {
                 if (Deaf()) {
                     if (!Blind())
-                        (yield* pline(__sl21, (yield* noit_Monnam(guard))));
+                        (yield* pline(__s_s_waves_goodbye, (yield* noit_Monnam(guard))));
                 } else {
                     ;
-                    (yield* verbalize(__sl22));
+                    (yield* verbalize(__s_oh_yes_of_course_sorry_to_have));
                 }
                 (yield* mongone(guard));
             } else {
                 (yield* setmangry(guard, 0));
                 if (Deaf()) {
                     if (!Blind())
-                        (yield* pline(__sl23, (yield* noit_Monnam(guard))));
+                        (yield* pline(__s_s_mouths_something_and_looks_very_angry, (yield* noit_Monnam(guard))));
                 } else {
                     ;
-                    (yield* verbalize(__sl24));
+                    (yield* verbalize(__s_back_from_the_dead_are_you_i_ll_remedy));
                 }
                 if (!(cptr.ldPtro((guard), $monst_mw))) {
                     cptr.stI16o(guard, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
@@ -597,37 +597,37 @@ export function* invault() {
             return;
         }
         if (Deaf()) {
-            (yield* pline(__sl25, (yield* noit_Monnam(guard)), (Blind()) ? __sl26 : __sl27));
+            (yield* pline(__s_s_doesn_t_srecognize_you, (yield* noit_Monnam(guard)), (Blind()) ? __s_empty : __s_appear_to));
         } else {
             ;
-            (yield* verbalize(__sl28));
+            (yield* verbalize(__s_i_don_t_know_you));
         }
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         if (!umoney && !hidden_gold(1)) {
             if (Deaf()) {
-                (yield* pline(__sl29, (yield* noit_Monnam(guard)), (Blind()) ? __sl26 : __sl30));
+                (yield* pline(__s_s_stomps_s, (yield* noit_Monnam(guard)), (Blind()) ? __s_empty : __s_and_beckons));
             } else {
                 ;
-                (yield* verbalize(__sl31));
+                (yield* verbalize(__s_please_follow_me));
             }
         } else {
             if (!umoney) {
                 if (Deaf()) {
                     if (!Blind())
-                        (yield* pline(__sl32, (yield* noit_Monnam(guard)), cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl33 : __sl26));
+                        (yield* pline(__s_s_glares_at_you_s, (yield* noit_Monnam(guard)), cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_r_stuff : __s_empty));
                 } else {
                     ;
-                    (yield* verbalize(__sl34));
+                    (yield* verbalize(__s_you_have_hidden_gold));
                 }
             }
             if (Deaf()) {
                 if (!Blind())
-                    (yield* pline(__sl35, (yield* noit_Monnam(guard)), (cptr.ldPtro2(genders, pronoun_gender(guard, 3), 48, $Gender_his)), (cptr.ldPtro2(genders, pronoun_gender(guard, 3), 48, $Gender_his))));
+                    (yield* pline(__s_s_holds_out_s_palm_and_beckons_with_s, (yield* noit_Monnam(guard)), (cptr.ldPtro2(genders, pronoun_gender(guard, 3), 48, $Gender_his)), (cptr.ldPtro2(genders, pronoun_gender(guard, 3), 48, $Gender_his))));
             } else {
                 ;
-                (yield* verbalize(__sl36));
+                (yield* verbalize(__s_most_likely_all_your_gold_was_stolen));
                 ;
-                (yield* verbalize(__sl37));
+                (yield* verbalize(__s_please_drop_that_gold_and_follow_me));
             }
             cptr.postinc1(cptr.add((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_dropgoldcnt));
         }
@@ -676,8 +676,8 @@ function* move_gold(gold, vroom) {
     let ny;
     (yield* remove_object(gold));
     (yield* newsym(cptr.ldI16o(gold, $obj_ox), cptr.ldI16o(gold, $obj_oy)));
-    nx = i16(((cptr.ldI16o(svr, vroom, 224) + (rng_log_enabled() ? (rng_log_set_caller(__sl5, 638, __sl38), rn2(2)) : rn2(2))) | 0));
-    ny = i16(((cptr.ldI16o2(svr, vroom, 224, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__sl5, 639, __sl38), rn2(2)) : rn2(2))) | 0));
+    nx = i16(((cptr.ldI16o(svr, vroom, 224) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 638, __s_move_gold), rn2(2)) : rn2(2))) | 0));
+    ny = i16(((cptr.ldI16o2(svr, vroom, 224, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 639, __s_move_gold), rn2(2)) : rn2(2))) | 0));
     (yield* place_object(gold, nx, ny));
     (yield* stackobj(gold));
     (yield* newsym(nx, ny));
@@ -745,13 +745,13 @@ function* wallify_vault(grd) {
         }
     if (movedgold || fixed) {
         if (in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0))
-            (yield* pline(__sl39, (yield* noit_Monnam(grd))));
+            (yield* pline(__s_s_whispers_an_incantation, (yield* noit_Monnam(grd))));
         else
-            (yield* You_hear(__sl40));
+            (yield* You_hear(__s_a_distant_chant));
         if (movedgold)
-            (yield* pline(__sl41));
+            (yield* pline(__s_a_mysterious_force_moves_the_gold_into));
         if (fixed)
-            (yield* pline_The(__sl42));
+            (yield* pline_The(__s_damaged_vault_s_walls_are_magically));
     }
 }
 
@@ -761,7 +761,7 @@ function* gd_mv_monaway(grd, nx, ny) {
     if (mtmp && !cptr.eq(mtmp, grd)) {
         if (!Deaf()) {
             ;
-            (yield* verbalize(__sl43));
+            (yield* verbalize(__s_out_of_my_way_scum));
         }
         if (!(yield* rloc(mtmp, 3)) || (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
             (yield* m_into_limbo(mtmp));
@@ -785,7 +785,7 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
     if (under_u) {
         gold = g_at(i16(goldx), i16(goldy));
         if (!gold) {
-            (yield* impossible(__sl44));
+            (yield* impossible(__s_vault_guard_no_gold_at_hero_s_feet));
             return;
         }
         gdelta = dist2(i16((guardx)), i16((guardy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -823,7 +823,7 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
         (yield* mpickgold(grd));
     }
     if (see_it) {
-        (yield* pline(__sl45, (yield* Some_Monnam(grd)), ((cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_warncnt) > 5) ? __sl46 : __sl26, under_u ? __sl47 : __sl26));
+        (yield* pline(__s_s_s_picks_up_the_gold_s, (yield* Some_Monnam(grd)), ((cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_warncnt) > 5) ? __s_calms_down_and : __s_empty, under_u ? __s_from_beneath_you : __s_empty));
     }
     if (cptr.ldI16o(grd, $monst_mx) != guardx || cptr.ldI16o(grd, $monst_my) != guardy) {
         cptr.stPtro3(svl, cptr.ldI16o(grd, $monst_mx), 168, cptr.ldI16o(grd, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
@@ -845,15 +845,15 @@ function* gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     (yield* wallify_vault(grd));
     (yield* restfakecorr(grd));
     {
-        if ((yield* debugcore(__sl5, 1))) {
+        if ((yield* debugcore(__s_vault_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl48, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __sl26 : __sl49, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __sl50 : __sl26));
+            (yield* pline(__s_gd_move_cleanup_scleanup_s, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __s_empty : __s_final, (cptr.ldI32o(grd, $monst_isgd) & 1) | 0 ? __s_attempt : __s_empty));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
     if (!semi_dead && (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))) {
         if (!disappear_msg_seen && see_guard)
-            (yield* pline(__sl51, (yield* noit_mon_nam(grd))));
+            (yield* pline(__s_suddenly_s_disappears, (yield* noit_mon_nam(grd))));
         return 1;
     }
     return -2;
@@ -862,9 +862,9 @@ function* gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
 /** C ref: vault.c:869 — @param {CPtr<struct monst>} grd */
 function* gd_letknow(grd) {
     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0) || !mon_visible(grd))
-        (yield* You_hear(__sl52, m_carrying(grd, NHC.TIN_WHISTLE) ? __sl53 : __sl54));
+        (yield* You_hear(__s_pct_s_dot, m_carrying(grd, NHC.TIN_WHISTLE) ? __s_the_shrill_sound_of_a_guard_s_whistle : __s_angry_shouting));
     else
-        (yield* You(um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 2) ? __sl55 : __sl56, (yield* x_monnam(grd, NHM.ARTICLE_A, __sl57, 0, 0))));
+        (yield* You(um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 2) ? __s_see_s_approaching : __s_are_confronted_by_s, (yield* x_monnam(grd, NHM.ARTICLE_A, __s_angry, 0, 0))));
 }
 
 /** C ref: vault.c:888 — @param {CPtr<struct monst>} grd @returns {CInt} */
@@ -891,9 +891,9 @@ export function* gd_move(grd) {
             return (yield* gd_move_cleanup(grd, semi_dead, 0));
         }
         {
-            if ((yield* debugcore(__sl5, 1))) {
+            if ((yield* debugcore(__s_vault_c, 1))) {
                 save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl58, (cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 ? __sl59 : __sl60));
+                (yield* pline(__s_gd_move_s_guard, (cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 ? __s_peaceful : __s_hostile));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -919,7 +919,7 @@ export function* gd_move(grd) {
         if ((cptr.ldI32o(egrd, $egd_witness) & 3)) {
             if (!Deaf()) {
                 ;
-                (yield* verbalize(__sl61, (((cptr.ldI32o(egrd, $egd_witness) & 3) | 0) & NHM.GD_EATGOLD) ? __sl62 : __sl63));
+                (yield* verbalize(__s_how_dare_you_s_that_gold_scoundrel, (((cptr.ldI32o(egrd, $egd_witness) & 3) | 0) & NHM.GD_EATGOLD) ? __s_consume : __s_destroy));
             }
             cptr.stI32o(egrd, $egd_witness, 0);
             cptr.stI32o(grd, $monst_mpeaceful, 0);
@@ -931,12 +931,12 @@ export function* gd_move(grd) {
             if (u_in_vault && (u_carry_gold || um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1))) {
                 if (cptr.ld1so(egrd, $egd_warncnt) == 3 && !Deaf()) {
                     buf = new Uint8Array(256);
-                    void cptr.sprintf(cptr.decay(buf), __sl64, u_carry_gold ? (!umoney ? __sl65 : __sl66) : __sl26);
+                    void cptr.sprintf(cptr.decay(buf), __s_sfollow_me, u_carry_gold ? (!umoney ? __s_drop_that_hidden_gold_and : __s_drop_that_gold_and) : __s_empty);
                     ;
                     if (cptr.ld1so(egrd, $egd_dropgoldcnt) || !u_carry_gold)
-                        (yield* verbalize(__sl67, cptr.decay(buf)));
+                        (yield* verbalize(__s_i_repeat_s, cptr.decay(buf)));
                     else
-                        (yield* verbalize(__sl68, upstart(cptr.decay(buf))));
+                        (yield* verbalize(__s_pct_s, upstart(cptr.decay(buf))));
                     if (u_carry_gold)
                         cptr.postinc1(cptr.add(egrd, $egd_dropgoldcnt));
                 }
@@ -945,7 +945,7 @@ export function* gd_move(grd) {
                     n = cptr.ldI16o(grd, $monst_my);
                     if (!Deaf()) {
                         ;
-                        (yield* verbalize(__sl69));
+                        (yield* verbalize(__s_you_ve_been_warned_knave));
                     }
                     cptr.stI32o(grd, $monst_mpeaceful, 0);
                     (yield* mnexto(grd, NHM.RLOC_NOMSG));
@@ -976,7 +976,7 @@ export function* gd_move(grd) {
                 } else {
                     if (!Deaf()) {
                         ;
-                        (yield* verbalize(__sl70));
+                        (yield* verbalize(__s_well_begone));
                     }
                     cptr.stI32o(egrd, $egd_gddone, 1);
                     return (yield* gd_move_cleanup(grd, semi_dead, 0));
@@ -985,7 +985,7 @@ export function* gd_move(grd) {
         }
         if (cptr.ldI32o(egrd, $egd_fcend) > 1) {
             if (cptr.ldI32o(egrd, $egd_fcend) > 2 && in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) && !(cptr.ldI32o(egrd, $egd_gddone) & 1) && !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && (cptr.ld1so3(svl, cptr.ldI16o2(egrd, 0, 6, $egd_fakecorr), 756, cptr.ldI16o2(egrd, 0, 6, $egd_fakecorr + $fakecorridor_fy), 36, $instance_globals_saved_l_level + $rm_typ) == cptr.ld1so2(egrd, 0, 6, $egd_fakecorr + $fakecorridor_ftyp))) {
-                (yield* pline(__sl71, (yield* noit_Monnam(grd))));
+                (yield* pline(__s_s_confused_disappears, (yield* noit_Monnam(grd))));
                 return (yield* gd_move_cleanup(grd, semi_dead, 1));
             }
             if (u_carry_gold && (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (cptr.ldI32o(egrd, $egd_fcend) > 1 && u_in_vault))) {
@@ -997,19 +997,19 @@ export function* gd_move(grd) {
                     cptr.st1o(egrd, $egd_warncnt, 6);
                     if (Deaf()) {
                         if (!Blind())
-                            (yield* pline(__sl72, (yield* noit_Monnam(grd)), (cptr.ldPtro2(genders, pronoun_gender(grd, 3), 48, $Gender_his))));
+                            (yield* pline(__s_s_holds_out_s_palm_demandingly, (yield* noit_Monnam(grd)), (cptr.ldPtro2(genders, pronoun_gender(grd, 3), 48, $Gender_his))));
                     } else {
                         ;
-                        (yield* verbalize(__sl73));
+                        (yield* verbalize(__s_drop_all_your_gold_scoundrel));
                     }
                     return 0;
                 } else {
                     if (Deaf()) {
                         if (!Blind())
-                            (yield* pline(__sl74, (yield* noit_Monnam(grd)), (cptr.ldPtro2(genders, pronoun_gender(grd, 3), 48, $Gender_his))));
+                            (yield* pline(__s_s_rubs_s_hands_with_enraged_delight, (yield* noit_Monnam(grd)), (cptr.ldPtro2(genders, pronoun_gender(grd, 3), 48, $Gender_his))));
                     } else {
                         ;
-                        (yield* verbalize(__sl75));
+                        (yield* verbalize(__s_so_be_it_rogue));
                     }
                     cptr.stI32o(grd, $monst_mpeaceful, 0);
                     return -1;
@@ -1032,9 +1032,9 @@ export function* gd_move(grd) {
             return 0;
         }
         if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) || (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
-            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl5, 1067, __sl76), rn2(10)) : rn2(10)) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1067, __s_gd_move), rn2(10)) : rn2(10)) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 ;
-                (yield* verbalize(__sl77));
+                (yield* verbalize(__s_move_along));
             }
             (yield* restfakecorr(grd));
             return 0;
@@ -1213,7 +1213,7 @@ export function* gd_move(grd) {
         case 37: {
         fcp = cptr.add(cptr.add(egrd, $egd_fakecorr), cptr.ldI32o(egrd, $egd_fcend), 6);
         if ((cptr.stI32o(egrd, $egd_fcend, cptr.ldI32o(egrd, $egd_fcend) + 1)) - (1) == 101)
-            (yield* panic(__sl78));
+            (yield* panic(__s_fakecorr_overflow));
         cptr.stI16(fcp, nx);
         cptr.stI16o(fcp, $fakecorridor_fy, ny);
         cptr.st1o(fcp, $fakecorridor_ftyp, schar(typ));
@@ -1230,7 +1230,7 @@ export function* gd_move(grd) {
         __pc = 43; continue;
         }
         case 42: {
-        (yield* pline(__sl71, (yield* Monnam(grd))));
+        (yield* pline(__s_s_confused_disappears, (yield* Monnam(grd))));
         return (yield* gd_move_cleanup(grd, semi_dead, 1));
         }
         case 43: {
@@ -1259,7 +1259,7 @@ export function* gd_move(grd) {
         if (newspot && g_at(nx, ny)) {
             (yield* mpickgold(grd));
             if (canspotmon(grd))
-                (yield* pline(__sl79, (yield* Monnam(grd))));
+                (yield* pline(__s_s_picks_up_some_gold, (yield* Monnam(grd))));
         } else
             (yield* newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)));
         (yield* restfakecorr(grd));
@@ -1284,7 +1284,7 @@ export function* paygd(silently) {
             return;
         if (cptr.ldI32o(u, $you_uinvault)) {
             if (!silently)
-                (yield* Your(__sl80, umoney, (yield* currency(umoney))));
+                (yield* Your(__s_ld_s_goes_into_the_magic_memory_vault, umoney, (yield* currency(umoney))));
             gdx = cptr.ldI16(u);
             gdy = cptr.ldI16o(u, $you_uy);
         } else {
@@ -1292,10 +1292,10 @@ export function* paygd(silently) {
                 break __lbl_remove_guard;
             (yield* mnexto(grd, NHM.RLOC_NOMSG));
             if (!silently)
-                (yield* pline(__sl81, (yield* Monnam(grd))));
-            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), 224) + (rng_log_enabled() ? (rng_log_set_caller(__sl5, 1229, __sl82), rn2(2)) : rn2(2))) | 0;
-            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), 224, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__sl5, 1230, __sl82), rn2(2)) : rn2(2))) | 0;
-            void cptr.sprintf(cptr.decay(buf), __sl83, svp, pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonster), 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
+                (yield* pline(__s_s_remits_your_gold_to_the_vault, (yield* Monnam(grd))));
+            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), 224) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1229, __s_paygd), rn2(2)) : rn2(2))) | 0;
+            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), 224, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1230, __s_paygd), rn2(2)) : rn2(2))) | 0;
+            void cptr.sprintf(cptr.decay(buf), __s_to_croesus_here_s_the_gold_recovered, svp, pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonster), 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
             (yield* make_grave(i16(gdx), i16(gdy), cptr.decay(buf)));
         }
         for (coins = cptr.ldPtro(gi, $instance_globals_i_invent); coins; coins = nextcoins) {

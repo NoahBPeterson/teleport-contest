@@ -24,7 +24,7 @@ const $TString_contents = FLD.TString_contents, $TString_extra = FLD.TString_ext
     $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("not enough memory");
+const __s_not_enough_memory = cptr.lit("not enough memory");
 
 /** C ref: lstring.c:34 — @param {CPtr<TString>} a @param {CPtr<TString>} b @returns {CInt} */
 export function luaS_eqlngstr(a, b) {
@@ -109,7 +109,7 @@ export function luaS_init(L) {
     cptr.stPtr(tb, ((luaM_malloc_(L, 1024n, 0))));
     tablerehash(cptr.ldPtr(tb), 0, 128);
     cptr.stI32o(tb, $stringtable_size, 128);
-    cptr.stPtro(g, $global_State_memerrmsg, (luaS_newlstr(L, __sl0, BigInt.asUintN(64, (18n / 1n) - 1n))));
+    cptr.stPtro(g, $global_State_memerrmsg, (luaS_newlstr(L, __s_not_enough_memory, BigInt.asUintN(64, (18n / 1n) - 1n))));
     luaC_fix(L, ((((cptr.ldPtro(g, $global_State_memerrmsg))))));
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)

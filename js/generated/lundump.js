@@ -35,23 +35,23 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $LClosure_marked = FLD.LClosure_
     $Upvaldesc_kind = FLD.Upvaldesc_kind, $ZIO_p = FLD.ZIO_p, $lua_State_top = FLD.lua_State_top;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s: bad binary format (%s)");
-const __sl1 = cptr.lit("truncated chunk");
-const __sl2 = cptr.lit("integer overflow");
-const __sl3 = cptr.lit("bad format for constant string");
-const __sl4 = cptr.lit("%s size mismatch");
-const __sl5 = cptr.lit("\x1bLua");
-const __sl6 = cptr.lit("not a binary chunk");
-const __sl7 = cptr.lit("version mismatch");
-const __sl8 = cptr.lit("format mismatch");
-const __sl9 = cptr.lit("\x19\x93\r\n\x1a\n");
-const __sl10 = cptr.lit("corrupted chunk");
-const __sl11 = cptr.lit("Instruction");
-const __sl12 = cptr.lit("lua_Integer");
-const __sl13 = cptr.lit("lua_Number");
-const __sl14 = cptr.lit("integer format mismatch");
-const __sl15 = cptr.lit("float format mismatch");
-const __sl16 = cptr.lit("binary string");
+const __s_s_bad_binary_format_s = cptr.lit("%s: bad binary format (%s)");
+const __s_truncated_chunk = cptr.lit("truncated chunk");
+const __s_integer_overflow = cptr.lit("integer overflow");
+const __s_bad_format_for_constant_string = cptr.lit("bad format for constant string");
+const __s_s_size_mismatch = cptr.lit("%s size mismatch");
+const __s_lua = cptr.lit("\x1bLua");
+const __s_not_a_binary_chunk = cptr.lit("not a binary chunk");
+const __s_version_mismatch = cptr.lit("version mismatch");
+const __s_format_mismatch = cptr.lit("format mismatch");
+const __s_x19_x93_cr_nl_x1a_nl = cptr.lit("\x19\x93\r\n\x1a\n");
+const __s_corrupted_chunk = cptr.lit("corrupted chunk");
+const __s_instruction = cptr.lit("Instruction");
+const __s_lua_integer = cptr.lit("lua_Integer");
+const __s_lua_number = cptr.lit("lua_Number");
+const __s_integer_format_mismatch = cptr.lit("integer format mismatch");
+const __s_float_format_mismatch = cptr.lit("float format mismatch");
+const __s_binary_string = cptr.lit("binary string");
 
 /** C ref: lundump.c:33 — struct undefined {  } (memory model v0.5) */
 
@@ -59,21 +59,21 @@ const __sl16 = cptr.lit("binary string");
 
 /** C ref: lundump.c:40 — @param {CPtr<LoadState>} S @param {CPtr<char>} why */
 function error(S, why) {
-    luaO_pushfstring(cptr.ldPtr(S), __sl0, cptr.ldPtro(S, $LoadState_name), why);
+    luaO_pushfstring(cptr.ldPtr(S), __s_s_bad_binary_format_s, cptr.ldPtro(S, $LoadState_name), why);
     luaD_throw(cptr.ldPtr(S), 3);
 }
 
 /** C ref: lundump.c:52 — @param {CPtr<LoadState>} S @param {CPtr<void>} b @param {CLongLong} size */
 function loadBlock(S, b, size) {
     if (luaZ_read(cptr.ldPtro(S, $LoadState_Z), b, size) != 0n)
-        error(S, __sl1);
+        error(S, __s_truncated_chunk);
 }
 
 /** C ref: lundump.c:61 — @param {CPtr<LoadState>} S @returns {*} */
 function loadByte(S) {
     let b = (((cptr.stU64((cptr.ldPtro(S, $LoadState_Z)), cptr.ldU64((cptr.ldPtro(S, $LoadState_Z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtro(S, $LoadState_Z)));
     if (b == -1)
-        error(S, __sl1);
+        error(S, __s_truncated_chunk);
     return (uchar(((b))));
 }
 
@@ -85,7 +85,7 @@ function loadUnsigned(S, limit) {
     do {
         b = loadByte(S);
         if (x >= limit)
-            error(S, __sl2);
+            error(S, __s_integer_overflow);
         x = (x << 7n) | BigInt.asUintN(64, BigInt((b & 127)));
     } while ((b & 128) == 0);
     return x;
@@ -148,7 +148,7 @@ function loadStringN(S, p) {
 function loadString(S, p) {
     let st = loadStringN(S, p);
     if (cptr.eq(st, (null)))
-        error(S, __sl3);
+        error(S, __s_bad_format_for_constant_string);
     return st;
 }
 
@@ -306,24 +306,24 @@ function checkliteral(S, s, msg) {
 /** C ref: lundump.c:284 — @param {CPtr<LoadState>} S @param {CLongLong} size @param {CPtr<char>} tname */
 function fchecksize(S, size, tname) {
     if (BigInt(loadByte(S) >>> 0) != size)
-        error(S, luaO_pushfstring(cptr.ldPtr(S), __sl4, tname));
+        error(S, luaO_pushfstring(cptr.ldPtr(S), __s_s_size_mismatch, tname));
 }
 
 /** C ref: lundump.c:292 — @param {CPtr<LoadState>} S */
 function checkHeader(S) {
-    checkliteral(S, cptr.add(__sl5, 1, 1), __sl6);
+    checkliteral(S, cptr.add(__s_lua, 1, 1), __s_not_a_binary_chunk);
     if (loadByte(S) != 84)
-        error(S, __sl7);
+        error(S, __s_version_mismatch);
     if (loadByte(S) != 0)
-        error(S, __sl8);
-    checkliteral(S, __sl9, __sl10);
-    fchecksize(S, 4n, __sl11);
-    fchecksize(S, 8n, __sl12);
-    fchecksize(S, 8n, __sl13);
+        error(S, __s_format_mismatch);
+    checkliteral(S, __s_x19_x93_cr_nl_x1a_nl, __s_corrupted_chunk);
+    fchecksize(S, 4n, __s_instruction);
+    fchecksize(S, 8n, __s_lua_integer);
+    fchecksize(S, 8n, __s_lua_number);
     if (loadInteger(S) != 22136n)
-        error(S, __sl14);
+        error(S, __s_integer_format_mismatch);
     if (loadNumber(S) != (((370.5))))
-        error(S, __sl15);
+        error(S, __s_float_format_mismatch);
 }
 
 /** C ref: lundump.c:313 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} Z @param {CPtr<char>} name @returns {CPtr<LClosure>} */
@@ -332,8 +332,8 @@ export function luaU_undump(L, Z, name) {
     let cl;
     if (cptr.ld1s(name) == 64 || cptr.ld1s(name) == 61)
         cptr.stPtro(S, $LoadState_name, cptr.add(name, 1));
-    else if (cptr.ld1s(name) == cptr.ld1so(__sl5, 0, 1))
-        cptr.stPtro(S, $LoadState_name, __sl16);
+    else if (cptr.ld1s(name) == cptr.ld1so(__s_lua, 0, 1))
+        cptr.stPtro(S, $LoadState_name, __s_binary_string);
     else
         cptr.stPtro(S, $LoadState_name, name);
     cptr.stPtr(S, L);

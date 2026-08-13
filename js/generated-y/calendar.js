@@ -21,13 +21,13 @@ const $tm_tm_hour = FLD.tm_tm_hour, $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = F
     $tm_tm_year = FLD.tm_tm_year;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("NETHACK_FIXED_DATETIME");
-const __sl1 = cptr.lit("yyyymmddhhmmss");
-const __sl2 = cptr.lit("%04ld%02d%02d%02d%02d%02d");
+const __s_nethack_fixed_datetime = cptr.lit("NETHACK_FIXED_DATETIME");
+const __s_yyyymmddhhmmss = cptr.lit("yyyymmddhhmmss");
+const __s_04ld_02d_02d_02d_02d_02d = cptr.lit("%04ld%02d%02d%02d%02d%02d");
 
 /** C ref: calendar.c:32 @returns {*} */
 export function* getnow() {
-    let fixed_dt = nh_getenv(__sl0);
+    let fixed_dt = nh_getenv(__s_nethack_fixed_datetime);
     let datetime = cptr.box(0n);
     if (fixed_dt && cptr.ld1s(fixed_dt)) {
         let parsed = (yield* time_from_yyyymmddhhmmss(fixed_dt));
@@ -95,7 +95,7 @@ export function* yyyymmddhhmmss(date) {
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
-    nh_snprintf(__sl1, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __sl2, datenum, (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, $tm_tm_mday), cptr.ldI32o(lt, $tm_tm_hour), cptr.ldI32o(lt, $tm_tm_min), cptr.ldI32(lt));
+    nh_snprintf(__s_yyyymmddhhmmss, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __s_04ld_02d_02d_02d_02d_02d, datenum, (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, $tm_tm_mday), cptr.ldI32o(lt, $tm_tm_hour), cptr.ldI32o(lt, $tm_tm_min), cptr.ldI32(lt));
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
 

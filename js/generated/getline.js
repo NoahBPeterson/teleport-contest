@@ -31,11 +31,11 @@ const $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more, $DisplayDesc_inr
     $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s ");
-const __sl1 = cptr.lit(" ");
-const __sl2 = cptr.lit("\b");
-const __sl3 = cptr.lit("\b \b");
-const __sl4 = cptr.lit("%s%.60s: unknown extended command.");
+const __s_pct_s_sp = cptr.lit("%s ");
+const __s_sp = cptr.lit(" ");
+const __s_bs = cptr.lit("\b");
+const __s_bs_sp_bs = cptr.lit("\b \b");
+const __s_s_60s_unknown_extended_command = cptr.lit("%s%.60s: unknown extended command.");
 
 /** C ref: getline.c:17 — char */
 export let morc = cptr.box(0);
@@ -62,11 +62,11 @@ function hooked_tty_getlin(query, bufp, hook) {
     cptr.stI32(cw, cptr.ldI32(cw) & -2);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
     (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1)) - (1);
-    custompline(6, __sl0, query);
+    custompline(6, __s_pct_s_sp, query);
     cptr.st1(bufp, 0);
     for (; ; ) {
         void fflush(__stdoutp);
-        void cptr.strcat(cptr.strcat(cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), query), __sl1), obufp);
+        void cptr.strcat(cptr.strcat(cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), query), __s_sp), obufp);
         term_curs_set(1);
         c = pgetchar();
         term_curs_set(0);
@@ -79,7 +79,7 @@ function hooked_tty_getlin(query, bufp, hook) {
                 tty_clear_nhwindow(WIN_MESSAGE.v);
                 cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                 addtopl(query);
-                addtopl(__sl1);
+                addtopl(__s_sp);
                 addtopl(obufp);
             } else {
                 cptr.st1o(obufp, 0, 27);
@@ -108,7 +108,7 @@ function hooked_tty_getlin(query, bufp, hook) {
                 tty_clear_nhwindow(WIN_MESSAGE.v);
                 cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
                 addtopl(query);
-                addtopl(__sl1);
+                addtopl(__s_sp);
                 cptr.st1(bufp, 0);
                 addtopl(obufp);
             }
@@ -117,7 +117,7 @@ function hooked_tty_getlin(query, bufp, hook) {
             cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxrow));
             doprev = 0;
             addtopl(query);
-            addtopl(__sl1);
+            addtopl(__s_sp);
             cptr.st1(bufp, 0);
             addtopl(obufp);
         }
@@ -125,11 +125,11 @@ function hooked_tty_getlin(query, bufp, hook) {
             if (!cptr.eq(bufp, obufp)) {
                 let i;
                 bufp = cptr.add(bufp, -1);
-                putsyms(__sl2);
+                putsyms(__s_bs);
                 for (i = bufp; cptr.ld1s(i); i = cptr.add(i, 1))
-                    putsyms(__sl1);
+                    putsyms(__s_sp);
                 for (; cptr.cmp(i, bufp) > 0; i = cptr.add(i, -1))
-                    putsyms(__sl2);
+                    putsyms(__s_bs);
                 cptr.st1(bufp, 0);
             } else
                 tty_nhbell();
@@ -144,19 +144,19 @@ function hooked_tty_getlin(query, bufp, hook) {
             if (hook && (hook)(obufp)) {
                 putsyms(bufp);
                 for (i = bufp; cptr.ld1s(i); i = cptr.add(i, 1))
-                    putsyms(__sl2);
+                    putsyms(__s_bs);
             } else if (cptr.cmp(i, bufp) > 0) {
                 let s = i;
                 for (; cptr.cmp(i, bufp) > 0; i = cptr.add(i, -1))
-                    putsyms(__sl1);
+                    putsyms(__s_sp);
                 for (; cptr.cmp(s, bufp) > 0; s = cptr.add(s, -1))
-                    putsyms(__sl2);
+                    putsyms(__s_bs);
             }
         } else if (c == kill_char || c == 127) {
             for (; cptr.ld1s(bufp); bufp = cptr.add(bufp, 1))
-                putsyms(__sl1);
+                putsyms(__s_sp);
             for (; !cptr.eq(bufp, obufp); bufp = cptr.add(bufp, -1))
-                putsyms(__sl3);
+                putsyms(__s_bs_sp_bs);
             cptr.st1(bufp, 0);
         } else
             tty_nhbell();
@@ -224,7 +224,7 @@ export function tty_get_ext_cmd() {
     nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27) ? -1 : extcmds_match(cptr.decay(buf), 3, ecmatches);
     if (nmatches != 1) {
         if (nmatches != -1)
-            pline(__sl4, visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)), cptr.decay(buf));
+            pline(__s_s_60s_unknown_extended_command, visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)), cptr.decay(buf));
         return -1;
     }
     return cptr.ldI32o(ecmatches.v, 0, 4);

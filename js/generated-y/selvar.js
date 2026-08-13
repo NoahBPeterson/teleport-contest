@@ -36,17 +36,17 @@ const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.N
     $selectionvar_map = FLD.selectionvar_map, $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("selvar.c");
-const __sl1 = cptr.lit("selection_filter_percent");
-const __sl2 = cptr.lit("selection_filter_mapchar");
-const __sl3 = cptr.lit("selection_rndcoord");
-const __sl4 = cptr.lit("Unrecognized gradient type! Defaulting to radial...");
-const __sl5 = cptr.lit("selection_do_gradient");
-const __sl6 = cptr.lit("selection_do_randline");
-const __sl7 = cptr.lit("%s %i by %i");
-const __sl8 = cptr.lit("irregularly shaped");
-const __sl9 = cptr.lit("square");
-const __sl10 = cptr.lit("rectangular");
+const __s_selvar_c = cptr.lit("selvar.c");
+const __s_selection_filter_percent = cptr.lit("selection_filter_percent");
+const __s_selection_filter_mapchar = cptr.lit("selection_filter_mapchar");
+const __s_selection_rndcoord = cptr.lit("selection_rndcoord");
+const __s_unrecognized_gradient_type_defaulting = cptr.lit("Unrecognized gradient type! Defaulting to radial...");
+const __s_selection_do_gradient = cptr.lit("selection_do_gradient");
+const __s_selection_do_randline = cptr.lit("selection_do_randline");
+const __s_s_i_by_i = cptr.lit("%s %i by %i");
+const __s_irregularly_shaped = cptr.lit("irregularly shaped");
+const __s_square = cptr.lit("square");
+const __s_rectangular = cptr.lit("rectangular");
 
 /** C ref: selvar.c:15 @returns {CPtr<struct selectionvar>} */
 export function* selection_new() {
@@ -229,7 +229,7 @@ export function* selection_filter_percent(ov, percent) {
     selection_getbounds(ov, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 241, __sl1), rn2(100)) : rn2(100)) < percent))
+            if (selection_getpoint(i16(x), i16(y), ov) && ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 241, __s_selection_filter_percent), rn2(100)) : rn2(100)) < percent))
                 selection_setpoint(i16(x), i16(y), ret, 1);
     return ret;
 }
@@ -253,7 +253,7 @@ export function* selection_filter_mapchar(ov, typ, lit) {
                     selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                     case -1:
-                    selection_setpoint(i16(x), i16(y), ret, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 271, __sl2), rn2(2)) : rn2(2)));
+                    selection_setpoint(i16(x), i16(y), ret, (rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 271, __s_selection_filter_mapchar), rn2(2)) : rn2(2)));
                     break;
                     case 0:
                     case 1:
@@ -278,7 +278,7 @@ export function selection_rndcoord(ov, x, y, removeit) {
             if (selection_getpoint(i16(dx), i16(dy), ov))
                 idx++;
     if (idx) {
-        c = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 302, __sl3), rn2(idx)) : rn2(idx));
+        c = (rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 302, __s_selection_rndcoord), rn2(idx)) : rn2(idx));
         for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, $nhrect_hx); dx++)
             for (dy = cptr.ldI16o(rect, $nhrect_ly); dy <= cptr.ldI16o(rect, $nhrect_hy); dy++)
                 if (selection_getpoint(i16(dx), i16(dy), ov)) {
@@ -584,7 +584,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
         dofs = 1n;
     switch (gtyp) {
         default:
-        (yield* impossible(__sl4));
+        (yield* impossible(__s_unrecognized_gradient_type_defaulting));
         // @FallThrough
         ;
         case 0n:
@@ -592,7 +592,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
             for (dx = 0n; dx < 80n; dx++)
                 for (dy = 0n; dy < 21n; dy++) {
                     let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 600, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 600, __s_selection_do_gradient), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -607,7 +607,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                     let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
                     let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
                     let d0 = ((d5) < (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))) ? (d5) : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 616, __sl5), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 616, __s_selection_do_gradient), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -685,8 +685,8 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
         my = ((((y1 + y2) | 0) / 2) | 0);
     } else {
         do {
-            dx = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 704, __sl6), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
-            dy = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 705, __sl6), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
+            dx = ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 704, __s_selection_do_randline), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
+            dy = ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 705, __s_selection_do_randline), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
             mx = (((((x1 + x2) | 0) / 2) | 0) + dx) | 0;
             my = (((((y1 + y2) | 0) / 2) | 0) + dy) | 0;
         } while ((mx > 79 || mx < 0 || my < 0 || my > 20));
@@ -736,7 +736,7 @@ export function selection_size_description(sel, buf) {
     selection_getbounds(sel, rect);
     dx = i16(((((cptr.ldI16o(rect, $nhrect_hx) - cptr.ldI16(rect)) | 0) + 1) | 0));
     dy = i16(((((cptr.ldI16o(rect, $nhrect_hy) - cptr.ldI16o(rect, $nhrect_ly)) | 0) + 1) | 0));
-    void cptr.sprintf(buf, __sl7, selection_is_irregular(sel) ? __sl8 : ((dx == dy) ? __sl9 : __sl10), dx, dy);
+    void cptr.sprintf(buf, __s_s_i_by_i, selection_is_irregular(sel) ? __s_irregularly_shaped : ((dx == dy) ? __s_square : __s_rectangular), dx, dy);
     return buf;
 }
 

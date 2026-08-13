@@ -33,10 +33,10 @@ const $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
     $sysopt_s_wizards = FLD.sysopt_s_wizards;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("DEBUGFILES");
-const __sl1 = cptr.lit("config error: PERS_IS_UID must be either 0 or 1");
-const __sl2 = cptr.lit("/usr/bin/gdb");
-const __sl3 = cptr.lit("/bin/grep");
+const __s_debugfiles = cptr.lit("DEBUGFILES");
+const __s_config_error_pers_is_uid_must_be_either = cptr.lit("config error: PERS_IS_UID must be either 0 or 1");
+const __s_usr_bin_gdb = cptr.lit("/usr/bin/gdb");
+const __s_bin_grep = cptr.lit("/bin/grep");
 
 /** C ref: sys.c:18 — struct sysopt_s */
 export let sysopt = cptr.alloc(184);
@@ -47,7 +47,7 @@ export function sys_early_init() {
     cptr.stPtr(sysopt, null);
     cptr.stPtro(sysopt, $sysopt_s_recover, null);
     cptr.stPtro(sysopt, $sysopt_s_wizards, null);
-    if ((p = getenv(__sl0)) !== null) {
+    if ((p = getenv(__s_debugfiles)) !== null) {
         if (cptr.ldPtro(sysopt, $sysopt_s_debugfiles))
             cptr.free(cptr.ldPtro(sysopt, $sysopt_s_debugfiles));
         cptr.stPtro(sysopt, $sysopt_s_debugfiles, dupstr(p));
@@ -69,13 +69,13 @@ export function sys_early_init() {
     cptr.stI32o(sysopt, $sysopt_s_pers_is_uid, 1);
     cptr.stI32o(sysopt, $sysopt_s_tt_oname_maxrank, 10);
     if (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) != 0 && cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) != 1)
-        panic(__sl1);
+        panic(__s_config_error_pers_is_uid_must_be_either);
     if (cptr.ldPtro(sysopt, $sysopt_s_gdbpath))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_gdbpath));
-    cptr.stPtro(sysopt, $sysopt_s_gdbpath, dupstr(__sl2));
+    cptr.stPtro(sysopt, $sysopt_s_gdbpath, dupstr(__s_usr_bin_gdb));
     if (cptr.ldPtro(sysopt, $sysopt_s_greppath))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_greppath));
-    cptr.stPtro(sysopt, $sysopt_s_greppath, dupstr(__sl3));
+    cptr.stPtro(sysopt, $sysopt_s_greppath, dupstr(__s_bin_grep));
     cptr.stI32o(sysopt, $sysopt_s_panictrace_gdb, 0);
     cptr.stI32o(sysopt, $sysopt_s_panictrace_libc, 0);
     cptr.stPtro(sysopt, $sysopt_s_crashreporturl, null);

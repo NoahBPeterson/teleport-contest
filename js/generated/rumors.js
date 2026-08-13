@@ -55,70 +55,70 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
     $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("rumors");
-const __sl1 = cptr.lit("r");
-const __sl2 = cptr.lit("Error reading \"%.80s\".");
-const __sl3 = cptr.lit("rumors.c");
-const __sl4 = cptr.lit("getrumor");
-const __sl5 = cptr.lit("strange truth value for rumor");
-const __sl6 = cptr.lit("Oops...");
-const __sl7 = cptr.lit("Can't find non-cookie rumor?");
-const __sl8 = cptr.lit("[cookie] ");
-const __sl9 = cptr.lit("T start=%06ld (%06lx), end=%06ld (%06lx), size=%06ld (%06lx)");
-const __sl10 = cptr.lit("F start=%06ld (%06lx), end=%06ld (%06lx), size=%06ld (%06lx)");
-const __sl11 = cptr.lit("T %06ld %s");
-const __sl12 = cptr.lit("  %6s %s");
-const __sl13 = cptr.lit("");
-const __sl14 = cptr.lit("F %06ld %s");
-const __sl15 = cptr.lit("rumors not accessible.");
-const __sl16 = cptr.lit("Engravings:");
-const __sl17 = cptr.lit("engrave");
-const __sl18 = cptr.lit("Epitaphs:");
-const __sl19 = cptr.lit("epitaph");
-const __sl20 = cptr.lit("Bogus monsters:");
-const __sl21 = cptr.lit("bogusmon");
-const __sl22 = cptr.lit("can't create temporary window");
-const __sl23 = cptr.lit("error; can't read comment line");
-const __sl24 = cptr.lit("malformed; first line is not a comment line:");
-const __sl25 = cptr.lit("- first line, as is");
-const __sl26 = cptr.lit("- xcrypt of first line");
-const __sl27 = cptr.lit("can't read first non-comment line");
-const __sl28 = cptr.lit("first non-comment line is empty");
-const __sl29 = cptr.lit("(no second entry)");
-const __sl30 = cptr.lit("(only two entries)");
-const __sl31 = cptr.lit(" ...");
-const __sl32 = cptr.lit("filechunksize <= INT_MAX");
-const __sl33 = cptr.lit("What a pity that you cannot read it!");
-const __sl34 = cptr.lit("NetHack rumors file closed for renovation.");
-const __sl35 = cptr.lit("True to her word, the Oracle %ssays: ");
-const __sl36 = cptr.lit("outrumor");
-const __sl37 = cptr.lit("offhandedly ");
-const __sl38 = cptr.lit("casually ");
-const __sl39 = cptr.lit("nonchalantly ");
-const __sl40 = cptr.lit("%s");
-const __sl41 = cptr.lit("It reads:");
-const __sl42 = cptr.lit("%5d\n");
-const __sl43 = cptr.lit("%5lx\n");
-const __sl44 = cptr.lit("oracle-oracle_cnt");
-const __sl45 = cptr.lit("oracle-oracle_loc");
-const __sl46 = cptr.lit("oracles");
-const __sl47 = cptr.lit("outoracle");
-const __sl48 = cptr.lit("The Oracle scornfully takes all your gold and says:");
-const __sl49 = cptr.lit("The Oracle meditates for a moment and then intones:");
-const __sl50 = cptr.lit("The message reads:");
-const __sl51 = cptr.lit("---\n");
-const __sl52 = cptr.lit("is no one here to consult.");
-const __sl53 = cptr.lit("%s is in no mood for consultations.");
-const __sl54 = cptr.lit("have no gold.");
-const __sl55 = cptr.lit("\"Wilt thou settle for a minor consultation?\" (%d %s)");
-const __sl56 = cptr.lit("don't even have enough gold for that!");
-const __sl57 = cptr.lit("\"Then dost thou desire a major one?\" (%d %s)");
-const __sl58 = cptr.lit("Can't open '%s' file.");
-const __sl59 = cptr.lit("CapitalMon");
-const __sl60 = cptr.lit("CapMons != 0");
-const __sl61 = cptr.lit("CapMons");
-const __sl62 = cptr.lit("Capitalized monster type names normally preceded by \"the\":");
-const __sl63 = cptr.lit("  %.77s");
+const __s_rumors = cptr.lit("rumors");
+const __s_r = cptr.lit("r");
+const __s_error_reading_80s = cptr.lit("Error reading \"%.80s\".");
+const __s_rumors_c = cptr.lit("rumors.c");
+const __s_getrumor = cptr.lit("getrumor");
+const __s_strange_truth_value_for_rumor = cptr.lit("strange truth value for rumor");
+const __s_oops = cptr.lit("Oops...");
+const __s_can_t_find_non_cookie_rumor = cptr.lit("Can't find non-cookie rumor?");
+const __s_cookie = cptr.lit("[cookie] ");
+const __s_t_start_06ld_06lx_end_06ld_06lx_size = cptr.lit("T start=%06ld (%06lx), end=%06ld (%06lx), size=%06ld (%06lx)");
+const __s_f_start_06ld_06lx_end_06ld_06lx_size = cptr.lit("F start=%06ld (%06lx), end=%06ld (%06lx), size=%06ld (%06lx)");
+const __s_t_06ld_s = cptr.lit("T %06ld %s");
+const __s_6s_s = cptr.lit("  %6s %s");
+const __s_empty = cptr.lit("");
+const __s_f_06ld_s = cptr.lit("F %06ld %s");
+const __s_rumors_not_accessible = cptr.lit("rumors not accessible.");
+const __s_engravings = cptr.lit("Engravings:");
+const __s_engrave = cptr.lit("engrave");
+const __s_epitaphs = cptr.lit("Epitaphs:");
+const __s_epitaph = cptr.lit("epitaph");
+const __s_bogus_monsters = cptr.lit("Bogus monsters:");
+const __s_bogusmon = cptr.lit("bogusmon");
+const __s_can_t_create_temporary_window = cptr.lit("can't create temporary window");
+const __s_error_can_t_read_comment_line = cptr.lit("error; can't read comment line");
+const __s_malformed_first_line_is_not_a_comment = cptr.lit("malformed; first line is not a comment line:");
+const __s_first_line_as_is = cptr.lit("- first line, as is");
+const __s_xcrypt_of_first_line = cptr.lit("- xcrypt of first line");
+const __s_can_t_read_first_non_comment_line = cptr.lit("can't read first non-comment line");
+const __s_first_non_comment_line_is_empty = cptr.lit("first non-comment line is empty");
+const __s_no_second_entry = cptr.lit("(no second entry)");
+const __s_only_two_entries = cptr.lit("(only two entries)");
+const __s_sp_dot3 = cptr.lit(" ...");
+const __s_filechunksize_int_max = cptr.lit("filechunksize <= INT_MAX");
+const __s_what_a_pity_that_you_cannot_read_it = cptr.lit("What a pity that you cannot read it!");
+const __s_nethack_rumors_file_closed_for = cptr.lit("NetHack rumors file closed for renovation.");
+const __s_true_to_her_word_the_oracle_ssays = cptr.lit("True to her word, the Oracle %ssays: ");
+const __s_outrumor = cptr.lit("outrumor");
+const __s_offhandedly = cptr.lit("offhandedly ");
+const __s_casually = cptr.lit("casually ");
+const __s_nonchalantly = cptr.lit("nonchalantly ");
+const __s_pct_s = cptr.lit("%s");
+const __s_it_reads = cptr.lit("It reads:");
+const __s_5d = cptr.lit("%5d\n");
+const __s_5lx = cptr.lit("%5lx\n");
+const __s_oracle_oracle_cnt = cptr.lit("oracle-oracle_cnt");
+const __s_oracle_oracle_loc = cptr.lit("oracle-oracle_loc");
+const __s_oracles = cptr.lit("oracles");
+const __s_outoracle = cptr.lit("outoracle");
+const __s_the_oracle_scornfully_takes_all_your = cptr.lit("The Oracle scornfully takes all your gold and says:");
+const __s_the_oracle_meditates_for_a_moment_and = cptr.lit("The Oracle meditates for a moment and then intones:");
+const __s_the_message_reads = cptr.lit("The message reads:");
+const __s_dash3_nl = cptr.lit("---\n");
+const __s_is_no_one_here_to_consult = cptr.lit("is no one here to consult.");
+const __s_s_is_in_no_mood_for_consultations = cptr.lit("%s is in no mood for consultations.");
+const __s_have_no_gold = cptr.lit("have no gold.");
+const __s_wilt_thou_settle_for_a_minor = cptr.lit("\"Wilt thou settle for a minor consultation?\" (%d %s)");
+const __s_don_t_even_have_enough_gold_for_that = cptr.lit("don't even have enough gold for that!");
+const __s_then_dost_thou_desire_a_major_one_d_s = cptr.lit("\"Then dost thou desire a major one?\" (%d %s)");
+const __s_can_t_open_s_file = cptr.lit("Can't open '%s' file.");
+const __s_capitalmon = cptr.lit("CapitalMon");
+const __s_capmons_0 = cptr.lit("CapMons != 0");
+const __s_capmons = cptr.lit("CapMons");
+const __s_capitalized_monster_type_names_normally = cptr.lit("Capitalized monster type names normally preceded by \"the\":");
+const __s_77s = cptr.lit("  %.77s");
 
 /** C ref: rumors.c:56 — unsigned int */
 let CapMonstCnt = 0;
@@ -161,7 +161,7 @@ function init_rumors(fp) {
     }
 }
 
-let __static_getrumor_cookie_marker = __sl8; /** C ref: rumors.c:125 — char * (function-static) */
+let __static_getrumor_cookie_marker = __s_cookie; /** C ref: rumors.c:125 — char * (function-static) */
 
 /** C ref: rumors.c:117 — @param {CInt} truth @param {CPtr<char>} rumor_buf @param {CInt} exclude_cookie @returns {CPtr<char>} */
 export function getrumor(truth, rumor_buf, exclude_cookie) {
@@ -173,7 +173,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
     cptr.st1o(rumor_buf, 0, 0);
     if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n)
         return rumor_buf;
-    rumors = fopen(__sl0, __sl1);
+    rumors = fopen(__s_rumors, __s_r);
     if (rumors) {
         let count = 0;
         let adjtruth;
@@ -182,11 +182,11 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
             if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) == 0n) {
                 init_rumors(rumors);
                 if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n) {
-                    void cptr.sprintf(rumor_buf, __sl2, __sl0);
+                    void cptr.sprintf(rumor_buf, __s_error_reading_80s, __s_rumors);
                     return rumor_buf;
                 }
             }
-            switch (adjtruth = (truth + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 151, __sl4), rn2(2)) : rn2(2))) | 0) {
+            switch (adjtruth = (truth + (rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 151, __s_getrumor), rn2(2)) : rn2(2))) | 0) {
                 case 2:
                 case 1:
                 beginning = BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start));
@@ -198,18 +198,18 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
                 ending = cptr.ldI64o(gf, $instance_globals_f_false_rumor_end);
                 break;
                 default:
-                impossible(__sl5);
-                return cptr.strcpy(rumor_buf, __sl6);
+                impossible(__s_strange_truth_value_for_rumor);
+                return cptr.strcpy(rumor_buf, __s_oops);
             }
             void cptr.strcpy(rumor_buf, get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, NHM.MD_PAD_RUMORS));
         } while (count++ < 50 && exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))));
         void fclose(rumors);
         if (count >= 50)
-            impossible(__sl7);
+            impossible(__s_can_t_find_non_cookie_rumor);
         else if (!cptr.ld1so(gi, $instance_globals_i_in_mklev))
             exercise(NHC.A_WIS, schar((adjtruth > 0)));
     } else {
-        couldnt_open_file(__sl0);
+        couldnt_open_file(__s_rumors);
         cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);
     }
     if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
@@ -234,7 +234,7 @@ export function rumor_check() {
         let line = new Uint8Array(256);
         let xbuf = new Uint8Array(256);
         let rumor_buf = new Uint8Array(256);
-        rumors = (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) >= 0n) ? fopen(__sl0, __sl1) : null;
+        rumors = (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) >= 0n) ? fopen(__s_rumors, __s_r) : null;
         if (rumors) {
             let ftell_rumor_start = 0n;
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
@@ -246,9 +246,9 @@ export function rumor_check() {
                 }
             }
             tmpwin.v = create_nhwindow()(NHM.NHW_TEXT);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl9, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, $instance_globals_t_true_rumor_start), cptr.ldI64o(gt, $instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, $instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_t_start_06ld_06lx_end_06ld_06lx_size, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, $instance_globals_t_true_rumor_start), cptr.ldI64o(gt, $instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, $instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl10, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, $instance_globals_f_false_rumor_start), cptr.ldI64o(gf, $instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, $instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_f_start_06ld_06lx_end_06ld_06lx_size, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, $instance_globals_f_false_rumor_start), cptr.ldI64o(gf, $instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, $instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
             void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), 0);
@@ -256,13 +256,13 @@ export function rumor_check() {
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl11, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_t_06ld_s, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, $instance_globals_t_true_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_6s_s, __s_empty, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
             void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), 0);
@@ -270,29 +270,29 @@ export function rumor_check() {
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl14, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_f_06ld_s, ftell_rumor_start, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, $instance_globals_f_false_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __sl12, __sl13, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
+            void cptr.sprintf(cptr.decay(rumor_buf), __s_6s_s, __s_empty, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             putstr()(tmpwin.v, 0, cptr.decay(rumor_buf));
             void fclose(rumors);
         } else if (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) < 0n) {
             __go_no_rumors = true; break __skip_no_rumors;
         } else {
-            couldnt_open_file(__sl0);
+            couldnt_open_file(__s_rumors);
             cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);
         }
     }
     if (__go_no_rumors) {
-        pline(__sl15);
+        pline(__s_rumors_not_accessible);
         display_nhwindow()(WIN_MESSAGE.v, 1);
     }
-    others_check(__sl16, __sl17, tmpwin);
-    others_check(__sl18, __sl19, tmpwin);
-    others_check(__sl20, __sl21, tmpwin);
+    others_check(__s_engravings, __s_engrave, tmpwin);
+    others_check(__s_epitaphs, __s_epitaph, tmpwin);
+    others_check(__s_bogus_monsters, __s_bogusmon, tmpwin);
     if (tmpwin.v != -1) {
         display_nhwindow()(tmpwin.v, 1);
         destroy_nhwindow()(tmpwin.v);
@@ -309,38 +309,38 @@ function others_check(ftype, fname, winptr) {
     let endp;
     let tmpwin = cptr.ldI32(winptr);
     let entrycount = 0;
-    fh = fopen(fname, __sl1);
+    fh = fopen(fname, __s_r);
     if (fh) {
         __lbl_closeit: {
             if (tmpwin == -1) {
                 cptr.stI32(winptr, tmpwin = create_nhwindow()(NHM.NHW_TEXT));
                 if (tmpwin == -1) {
-                    impossible(cptr.decay(__static_others_check_errfmt), fname, __sl22);
+                    impossible(cptr.decay(__static_others_check_errfmt), fname, __s_can_t_create_temporary_window);
                     break __lbl_closeit;
                 }
             }
-            putstr()(tmpwin, 0, __sl13);
+            putstr()(tmpwin, 0, __s_empty);
             putstr()(tmpwin, 0, ftype);
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh)) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl23);
+                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __s_error_can_t_read_comment_line);
                 putstr()(tmpwin, 0, cptr.decay(xbuf));
                 break __lbl_closeit;
             }
             if (cptr.ld1s(cptr.decay(line)) != 35) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __sl24);
+                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __s_malformed_first_line_is_not_a_comment);
                 putstr()(tmpwin, 0, cptr.decay(xbuf));
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
-                putstr()(tmpwin, 0, __sl25);
+                putstr()(tmpwin, 0, __s_first_line_as_is);
                 putstr()(tmpwin, 0, cptr.decay(line));
-                putstr()(tmpwin, 0, __sl26);
+                putstr()(tmpwin, 0, __s_xcrypt_of_first_line);
                 putstr()(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
                 break __lbl_closeit;
             }
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __sl27 : __sl28);
+                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __s_can_t_read_first_non_comment_line : __s_first_non_comment_line_is_empty);
                 putstr()(tmpwin, 0, cptr.decay(xbuf));
                 break __lbl_closeit;
             }
@@ -349,7 +349,7 @@ function others_check(ftype, fname, winptr) {
                 cptr.st1(endp, 0);
             putstr()(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
             if (!fgets(cptr.decay(line), 256, fh)) {
-                putstr()(tmpwin, 0, __sl29);
+                putstr()(tmpwin, 0, __s_no_second_entry);
             } else {
                 ++entrycount;
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
@@ -362,10 +362,10 @@ function others_check(ftype, fname, winptr) {
                     void xcrypt(cptr.decay(line), cptr.decay(xbuf));
                 }
                 if (entrycount == 2) {
-                    putstr()(tmpwin, 0, __sl30);
+                    putstr()(tmpwin, 0, __s_only_two_entries);
                 } else {
                     if (entrycount > 3)
-                        putstr()(tmpwin, 0, __sl31);
+                        putstr()(tmpwin, 0, __s_sp_dot3);
                     putstr()(tmpwin, 0, cptr.decay(xbuf));
                 }
             }
@@ -392,7 +392,7 @@ function get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     filechunksize = BigInt.asIntN(64, endpos - startpos);
     if (filechunksize < 1n)
         return buf;
-    void ((!!(filechunksize <= 2147483647n)) || (nhassert_failed(__sl32, __sl3, 449), 0) ? 1 : 0);
+    void ((!!(filechunksize <= 2147483647n)) || (nhassert_failed(__s_filechunksize_int_max, __s_rumors_c, 449), 0) ? 1 : 0);
     for (trylimit = 10; trylimit > 0; --trylimit) {
         chunkoffset = BigInt((rng)(Number(BigInt.asIntN(32, filechunksize))));
         void fseek(fh, BigInt.asIntN(64, startpos + chunkoffset), 0);
@@ -417,7 +417,7 @@ function get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
 
 /** C ref: rumors.c:499 — @param {CPtr<char>} fname @param {CPtr<char>} buf @param {CPtr} rng @param {CUInt} padlength @returns {CPtr<char>} */
 export function get_rnd_text(fname, buf, rng, padlength) {
-    let fh = fopen(fname, __sl1);
+    let fh = fopen(fname, __s_r);
     cptr.st1o(buf, 0, 0);
     if (fh) {
         let starttxt = 0n;
@@ -446,28 +446,28 @@ export function outrumor(truth, mechanism) {
         } else if (Blind()) {
             if (mechanism == NHM.BY_COOKIE)
                 pline(cptr.decay(__static_outrumor_fortune_msg));
-            pline(__sl33);
+            pline(__s_what_a_pity_that_you_cannot_read_it);
             return;
         }
     }
     line = getrumor(truth, cptr.decay(buf), schar((reading ? 0 : 1)));
     if (!cptr.ld1s(line))
-        line = __sl34;
+        line = __s_nethack_rumors_file_closed_for;
     switch (mechanism) {
         case NHM.BY_ORACLE:
-        pline(__sl35, (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 558, __sl36), rn2(4)) : rn2(4)) ? __sl37 : (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl36), rn2(3)) : rn2(3)) ? __sl38 : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 560, __sl36), rn2(2)) : rn2(2)) ? __sl39 : __sl13))));
+        pline(__s_true_to_her_word_the_oracle_ssays, (!(rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 558, __s_outrumor), rn2(4)) : rn2(4)) ? __s_offhandedly : (!(rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 559, __s_outrumor), rn2(3)) : rn2(3)) ? __s_casually : ((rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 560, __s_outrumor), rn2(2)) : rn2(2)) ? __s_nonchalantly : __s_empty))));
         ;
-        verbalize(__sl40, line);
+        verbalize(__s_pct_s, line);
         return;
         case NHM.BY_COOKIE:
         pline(cptr.decay(__static_outrumor_fortune_msg));
         // @FallThrough
         ;
         case NHM.BY_PAPER:
-        pline(__sl41);
+        pline(__s_it_reads);
         break;
     }
-    pline(__sl40, line);
+    pline(__s_pct_s, line);
 }
 
 /** C ref: rumors.c:577 — @param {CPtr<FILE>} fp */
@@ -477,12 +477,12 @@ function init_oracles(fp) {
     let cnt = cptr.box(0);
     void fgets(cptr.decay(line), 256, fp);
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), __sl42, cnt) == 1 && cnt.v > 0) {
+    if (sscanf(cptr.decay(line), __s_5d, cnt) == 1 && cnt.v > 0) {
         cptr.stI32(svo, cnt.v >>> 0);
         cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)))));
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
-            void sscanf(cptr.decay(line), __sl43, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8));
+            void sscanf(cptr.decay(line), __s_5lx, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8));
         }
     }
     return;
@@ -492,10 +492,10 @@ function init_oracles(fp) {
 export function save_oracles(nhfp) {
     let i;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
-        sfo_unsigned(nhfp, svo, __sl44);
+        sfo_unsigned(nhfp, svo, __s_oracle_oracle_cnt);
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-                sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __sl45);
+                sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __s_oracle_oracle_loc);
                 ;
             }
         }
@@ -514,12 +514,12 @@ export function save_oracles(nhfp) {
 /** C ref: rumors.c:623 — @param {CPtr<NHFILE>} nhfp */
 export function restore_oracles(nhfp) {
     let i;
-    sfi_unsigned(nhfp, svo, __sl44);
+    sfi_unsigned(nhfp, svo, __s_oracle_oracle_cnt);
     ;
     if (cptr.ldI32(svo)) {
         cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)))));
         for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-            sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __sl45);
+            sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __s_oracle_oracle_loc);
             ;
         }
         cptr.stI32o(go, $instance_globals_o_oracle_flg, 1);
@@ -536,7 +536,7 @@ export function outoracle(special, delphi) {
     let xbuf = new Uint8Array(256);
     if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0 || (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
         return;
-    oracles = fopen(__sl46, __sl1);
+    oracles = fopen(__s_oracles, __s_r);
     if (oracles) {
         __lbl_close_oracles: {
             if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) == 0) {
@@ -547,17 +547,17 @@ export function outoracle(special, delphi) {
             }
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;
-            oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__sl3, 665, __sl47), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
+            oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 665, __s_outoracle), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
                 cptr.stU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
             tmpwin = create_nhwindow()(NHM.NHW_TEXT);
             if (delphi)
-                putstr()(tmpwin, 0, special ? __sl48 : __sl49);
+                putstr()(tmpwin, 0, special ? __s_the_oracle_scornfully_takes_all_your : __s_the_oracle_meditates_for_a_moment_and);
             else
-                putstr()(tmpwin, 0, __sl50);
-            putstr()(tmpwin, 0, __sl13);
-            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __sl51)) {
+                putstr()(tmpwin, 0, __s_the_message_reads);
+            putstr()(tmpwin, 0, __s_empty);
+            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __s_dash3_nl)) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
                 putstr()(tmpwin, 0, xcrypt(cptr.decay(line), cptr.decay(xbuf)));
@@ -567,7 +567,7 @@ export function outoracle(special, delphi) {
         }
         void fclose(oracles);
     } else {
-        couldnt_open_file(__sl46);
+        couldnt_open_file(__s_oracles);
         cptr.stI32o(go, $instance_globals_o_oracle_flg, -1);
     }
 }
@@ -583,23 +583,23 @@ export function doconsult(oracl) {
     cptr.stI64o(gm, $instance_globals_m_multi, 0n);
     umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (!oracl) {
-        There(__sl52);
+        There(__s_is_no_one_here_to_consult);
         return NHM.ECMD_OK;
     } else if (!(cptr.ldI32o(oracl, $monst_mpeaceful) & 1)) {
-        pline(__sl53, Monnam(oracl));
+        pline(__s_s_is_in_no_mood_for_consultations, Monnam(oracl));
         return NHM.ECMD_OK;
     } else if (!umoney) {
-        You(__sl54);
+        You(__s_have_no_gold);
         return NHM.ECMD_OK;
     }
-    void cptr.sprintf(cptr.decay(qbuf), __sl55, minor_cost, currency(BigInt(minor_cost)));
+    void cptr.sprintf(cptr.decay(qbuf), __s_wilt_thou_settle_for_a_minor, minor_cost, currency(BigInt(minor_cost)));
     switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
         default:
         case 113:
         return NHM.ECMD_OK;
         case 121:
         if (umoney < BigInt(minor_cost)) {
-            You(__sl56);
+            You(__s_don_t_even_have_enough_gold_for_that);
             return NHM.ECMD_OK;
         }
         u_pay = minor_cost;
@@ -607,7 +607,7 @@ export function doconsult(oracl) {
         case 110:
         if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
             return NHM.ECMD_OK;
-        void cptr.sprintf(cptr.decay(qbuf), __sl57, major_cost, currency(BigInt(major_cost)));
+        void cptr.sprintf(cptr.decay(qbuf), __s_then_dost_thou_desire_a_major_one_d_s, major_cost, currency(BigInt(major_cost)));
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
             return NHM.ECMD_OK;
         u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
@@ -643,7 +643,7 @@ function couldnt_open_file(filename) {
     let save_something = cptr.ldI32o(program_state, $sinfo_something_worth_saving);
     if (!cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
-    impossible(__sl58, filename);
+    impossible(__s_can_t_open_s_file, filename);
     cptr.stI32o(program_state, $sinfo_something_worth_saving, save_something);
 }
 
@@ -657,7 +657,7 @@ export function CapitalMon(word) {
         return 0;
     if (!CapMons)
         init_CapMons();
-    (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__sl59, __sl3, 803, __sl60) : void 0);
+    (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__s_capitalmon, __s_rumors_c, 803, __s_capmons_0) : void 0);
     wln = Number(BigInt.asUintN(32, cptr.strlen(word)));
     for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
         nam = cptr.ldPtro(CapMons, i, 8);
@@ -673,7 +673,7 @@ export function CapitalMon(word) {
 /** C ref: rumors.c:829 */
 function init_CapMons() {
     let pass;
-    let bogonfile = fopen(__sl21, __sl1);
+    let bogonfile = fopen(__s_bogusmon, __s_r);
     if (CapMons)
         free_CapMons();
     for (pass = 1; pass <= 2; ++pass) {
@@ -728,13 +728,13 @@ function init_CapMons() {
                 void fclose(bogonfile), bogonfile = null;
         }
     }
-    if (wizard() && debugcore(__sl61, 0)) {
+    if (wizard() && debugcore(__s_capmons, 0)) {
         let buf = new Uint8Array(256);
         let i;
         let tmpwin = create_nhwindow()(NHM.NHW_TEXT);
-        putstr()(tmpwin, 0, __sl62);
+        putstr()(tmpwin, 0, __s_capitalized_monster_type_names_normally);
         for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
-            void cptr.sprintf(cptr.decay(buf), __sl63, cptr.ldPtro(CapMons, i, 8));
+            void cptr.sprintf(cptr.decay(buf), __s_77s, cptr.ldPtro(CapMons, i, 8));
             putstr()(tmpwin, 0, cptr.decay(buf));
         }
         display_nhwindow()(tmpwin, 1);

@@ -45,12 +45,12 @@ const $dlevel_t_flags = FLD.dlevel_t_flags, $instance_globals_m_max_rx = FLD.ins
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("mkmap.c");
-const __sl1 = cptr.lit("init_fill");
-const __sl2 = cptr.lit("No start/end room loc in join_map.");
-const __sl3 = cptr.lit("join_map");
-const __sl4 = cptr.lit("regular room in joined map");
-const __sl5 = cptr.lit("litstate_rnd");
+const __s_mkmap_c = cptr.lit("mkmap.c");
+const __s_init_fill = cptr.lit("init_fill");
+const __s_no_start_end_room_loc_in_join_map = cptr.lit("No start/end room loc in join_map.");
+const __s_join_map = cptr.lit("join_map");
+const __s_regular_room_in_joined_map = cptr.lit("regular room in joined map");
+const __s_litstate_rnd = cptr.lit("litstate_rnd");
 
 /** C ref: mkmap.c:24 — @param {CInt} bg_typ */
 function init_map(bg_typ) {
@@ -73,8 +73,8 @@ function init_fill(bg_typ, fg_typ) {
     limit = 624n;
     count = 0n;
     while (count < limit) {
-        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 45, __sl1), rn2(77)) : rn2(77)) + 2) | 0));
-        y = i16((rng_log_enabled() ? (rng_log_set_caller(__sl0, 46, __sl1), rnd(19)) : rnd(19)));
+        x = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 45, __s_init_fill), rn2(77)) : rn2(77)) + 2) | 0));
+        y = i16((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 46, __s_init_fill), rnd(19)) : rnd(19)));
         if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == bg_typ) {
             cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, fg_typ);
             count++;
@@ -297,14 +297,14 @@ function* join_map(bg_typ, fg_typ) {
     }
     for (croom = cptr.add(svr, 0, 224), croom2 = cptr.add(croom, 1, 224); cptr.cmp(croom2, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224)) < 0; ) {
         if (!somexy(croom, sm) || !somexy(croom2, em)) {
-            (yield* impossible(__sl2));
+            (yield* impossible(__s_no_start_end_room_loc_in_join_map));
             cptr.stI16(sm, i16(((cptr.ldI16(croom) + ((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) / 2) | 0)) | 0)));
             cptr.stI16o(sm, $nhcoord_y, i16(((cptr.ldI16o(croom, $mkroom_ly) + ((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
             cptr.stI16(em, i16(((cptr.ldI16(croom2) + ((((cptr.ldI16o(croom2, $mkroom_hx) - cptr.ldI16(croom2)) | 0) / 2) | 0)) | 0)));
             cptr.stI16o(em, $nhcoord_y, i16(((cptr.ldI16o(croom2, $mkroom_ly) + ((((cptr.ldI16o(croom2, $mkroom_hy) - cptr.ldI16o(croom2, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
         }
         void (yield* dig_corridor(sm, em, null, 0, fg_typ, bg_typ));
-        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 322, __sl3), rn2(3)) : rn2(3)))) {
+        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 322, __s_join_map), rn2(3)) : rn2(3)))) {
             croom = croom2;
         }
         croom2 = cptr.add(croom2, 1, 224);
@@ -345,7 +345,7 @@ export function* remove_rooms(lx, ly, hx, hy) {
             continue;
         if (cptr.ldI16(croom) < lx || cptr.ldI16o(croom, $mkroom_hx) >= hx || cptr.ldI16o(croom, $mkroom_ly) < ly || cptr.ldI16o(croom, $mkroom_hy) >= hy) {
             if (!cptr.ld1so(croom, $mkroom_irregular))
-                (yield* impossible(__sl4));
+                (yield* impossible(__s_regular_room_in_joined_map));
         } else {
             remove_room(i >>> 0);
         }
@@ -375,7 +375,7 @@ function remove_room(roomno) {
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
 export function litstate_rnd(litstate) {
     if (litstate < 0)
-        return schar((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 446, __sl5), rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 446, __sl5), rn2(77)) : rn2(77))) ? 1 : 0));
+        return schar((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd), rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 && (rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd), rn2(77)) : rn2(77))) ? 1 : 0));
     return schar(litstate);
 }
 

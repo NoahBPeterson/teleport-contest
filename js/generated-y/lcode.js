@@ -38,11 +38,11 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $FuncState_freereg = FLD.FuncSta
     $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t, $expdesc_u = FLD.expdesc_u;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("control structure too long");
-const __sl1 = cptr.lit("lines");
-const __sl2 = cptr.lit("opcodes");
-const __sl3 = cptr.lit("function or expression needs too many registers");
-const __sl4 = cptr.lit("constants");
+const __s_control_structure_too_long = cptr.lit("control structure too long");
+const __s_lines = cptr.lit("lines");
+const __s_opcodes = cptr.lit("opcodes");
+const __s_function_or_expression_needs_too_many = cptr.lit("function or expression needs too many registers");
+const __s_constants = cptr.lit("constants");
 
 /** C ref: lcode.c:47 — @param {CPtr<LexState>} ls @param {CPtr<char>} msg */
 export function* luaK_semerror(ls, msg) {
@@ -171,7 +171,7 @@ function* fixjump(fs, pc, dest) {
     let offset = (dest - ((pc + 1) | 0)) | 0;
     (void 0);
     if (!(-16777215 <= offset && offset <= 16777216))
-        (yield* luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __sl0));
+        (yield* luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __s_control_structure_too_long));
     (void 0);
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) | (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) & (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
 }
@@ -282,13 +282,13 @@ function* savelineinfo(fs, f, line) {
     let linedif = (line - cptr.ldI32o(fs, $FuncState_previousline)) | 0;
     let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
     if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, $FuncState_iwthabs)) >= 128) {
-        (cptr.stPtro(f, $Proto_abslineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), cptr.add(f, $Proto_sizeabslineinfo), 8, 2147483647, __sl1))))));
+        (cptr.stPtro(f, $Proto_abslineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), cptr.add(f, $Proto_sizeabslineinfo), 8, 2147483647, __s_lines))))));
         cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), pc, 8);
         cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + 1)) - (1), 8, $AbsLineInfo_line, line);
         linedif = -128;
         cptr.st1o(fs, $FuncState_iwthabs, 1);
     }
-    (cptr.stPtro(f, $Proto_lineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_lineinfo), pc, cptr.add(f, $Proto_sizelineinfo), 1, 2147483647, __sl2))))));
+    (cptr.stPtro(f, $Proto_lineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_lineinfo), pc, cptr.add(f, $Proto_sizelineinfo), 1, 2147483647, __s_opcodes))))));
     cptr.st1o(cptr.ldPtro(f, $Proto_lineinfo), pc, schar(linedif));
     cptr.stI32o(fs, $FuncState_previousline, line);
 }
@@ -316,7 +316,7 @@ function removelastinstruction(fs) {
 /** C ref: lcode.c:383 — @param {CPtr<FuncState>} fs @param {CUInt} i @returns {CInt} */
 export function* luaK_code(fs, i) {
     let f = cptr.ldPtr(fs);
-    (cptr.stPtro(f, $Proto_code, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_code), cptr.ldI32o(fs, $FuncState_pc), cptr.add(f, $Proto_sizecode), 4, 2147483647, __sl2))))));
+    (cptr.stPtro(f, $Proto_code, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_code), cptr.ldI32o(fs, $FuncState_pc), cptr.add(f, $Proto_sizecode), 4, 2147483647, __s_opcodes))))));
     cptr.stI32o(cptr.ldPtro(f, $Proto_code), (cptr.stI32o(fs, $FuncState_pc, cptr.ldI32o(fs, $FuncState_pc) + 1)) - (1), i, 4);
     (yield* savelineinfo(fs, f, cptr.ldI32o(cptr.ldPtro(fs, $FuncState_ls), $LexState_lastline)));
     return (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
@@ -374,7 +374,7 @@ export function* luaK_checkstack(fs, n) {
     let newstack = (cptr.ld1uo(fs, $FuncState_freereg) + n) | 0;
     if (newstack > cptr.ld1uo(cptr.ldPtr(fs), $Proto_maxstacksize)) {
         if (newstack >= 255)
-            (yield* luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __sl3));
+            (yield* luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __s_function_or_expression_needs_too_many));
         cptr.st1o(cptr.ldPtr(fs), $Proto_maxstacksize, (uchar(((newstack)))));
     }
 }
@@ -439,7 +439,7 @@ function* addk(fs, key, v) {
     }
     ;
     (yield* luaH_finishset(L, cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_h), key, idx, val));
-    (cptr.stPtro(f, $Proto_k, (((yield* luaM_growaux_(L, cptr.ldPtro(f, $Proto_k), k, cptr.add(f, $Proto_sizek), 16, 33554431, __sl4))))));
+    (cptr.stPtro(f, $Proto_k, (((yield* luaM_growaux_(L, cptr.ldPtro(f, $Proto_k), k, cptr.add(f, $Proto_sizek), 16, 33554431, __s_constants))))));
     while (oldsize < cptr.ldI32o(f, $Proto_sizek))
         (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), oldsize++, 16)), $TValue_tt_, 0));
     {

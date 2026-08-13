@@ -36,78 +36,78 @@ const $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
     $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("selection");
-const __sl1 = cptr.lit("Selection error");
-const __sl2 = cptr.lit("Selection setpoint error");
-const __sl3 = cptr.lit("l_selection_getpoint: Incorrect params");
-const __sl4 = cptr.lit("x");
-const __sl5 = cptr.lit("y");
-const __sl6 = cptr.lit("lx");
-const __sl7 = cptr.lit("ly");
-const __sl8 = cptr.lit("hx");
-const __sl9 = cptr.lit("hy");
-const __sl10 = cptr.lit("selection.line: illegal arguments");
-const __sl11 = cptr.lit("selection.rect: illegal arguments");
-const __sl12 = cptr.lit("selection.fillrect: illegal arguments");
-const __sl13 = cptr.lit("all");
-const __sl14 = cptr.lit("random");
-const __sl15 = cptr.lit("north");
-const __sl16 = cptr.lit("west");
-const __sl17 = cptr.lit("east");
-const __sl18 = cptr.lit("south");
-const __sl19 = cptr.lit("Erroneous map char");
-const __sl20 = cptr.lit("wrong parameters");
-const __sl21 = cptr.lit("type");
-const __sl22 = cptr.lit("radial");
-const __sl23 = cptr.lit("x2");
-const __sl24 = cptr.lit("y2");
-const __sl25 = cptr.lit("maxdist");
-const __sl26 = cptr.lit("mindist");
-const __sl27 = cptr.lit("selection.gradient requires table argument");
-const __sl28 = cptr.lit("square");
-const __sl29 = cptr.lit("l_selection_iterate");
-const __sl30 = cptr.lit("new");
-const __sl31 = cptr.lit("clone");
-const __sl32 = cptr.lit("get");
-const __sl33 = cptr.lit("set");
-const __sl34 = cptr.lit("numpoints");
-const __sl35 = cptr.lit("negate");
-const __sl36 = cptr.lit("percentage");
-const __sl37 = cptr.lit("rndcoord");
-const __sl38 = cptr.lit("line");
-const __sl39 = cptr.lit("randline");
-const __sl40 = cptr.lit("rect");
-const __sl41 = cptr.lit("fillrect");
-const __sl42 = cptr.lit("area");
-const __sl43 = cptr.lit("grow");
-const __sl44 = cptr.lit("filter_mapchar");
-const __sl45 = cptr.lit("match");
-const __sl46 = cptr.lit("floodfill");
-const __sl47 = cptr.lit("circle");
-const __sl48 = cptr.lit("ellipse");
-const __sl49 = cptr.lit("gradient");
-const __sl50 = cptr.lit("iterate");
-const __sl51 = cptr.lit("bounds");
-const __sl52 = cptr.lit("room");
-const __sl53 = cptr.lit("describe_size");
-const __sl54 = cptr.lit("__gc");
-const __sl55 = cptr.lit("__unm");
-const __sl56 = cptr.lit("__band");
-const __sl57 = cptr.lit("__bor");
-const __sl58 = cptr.lit("__bxor");
-const __sl59 = cptr.lit("__bnot");
-const __sl60 = cptr.lit("__add");
-const __sl61 = cptr.lit("__sub");
-const __sl62 = cptr.lit("__index");
-const __sl63 = cptr.lit("__metatable");
+const __s_selection = cptr.lit("selection");
+const __s_selection_error = cptr.lit("Selection error");
+const __s_selection_setpoint_error = cptr.lit("Selection setpoint error");
+const __s_l_selection_getpoint_incorrect_params = cptr.lit("l_selection_getpoint: Incorrect params");
+const __s_x = cptr.lit("x");
+const __s_y = cptr.lit("y");
+const __s_lx = cptr.lit("lx");
+const __s_ly = cptr.lit("ly");
+const __s_hx = cptr.lit("hx");
+const __s_hy = cptr.lit("hy");
+const __s_selection_line_illegal_arguments = cptr.lit("selection.line: illegal arguments");
+const __s_selection_rect_illegal_arguments = cptr.lit("selection.rect: illegal arguments");
+const __s_selection_fillrect_illegal_arguments = cptr.lit("selection.fillrect: illegal arguments");
+const __s_all = cptr.lit("all");
+const __s_random = cptr.lit("random");
+const __s_north = cptr.lit("north");
+const __s_west = cptr.lit("west");
+const __s_east = cptr.lit("east");
+const __s_south = cptr.lit("south");
+const __s_erroneous_map_char = cptr.lit("Erroneous map char");
+const __s_wrong_parameters = cptr.lit("wrong parameters");
+const __s_type = cptr.lit("type");
+const __s_radial = cptr.lit("radial");
+const __s_x2 = cptr.lit("x2");
+const __s_y2 = cptr.lit("y2");
+const __s_maxdist = cptr.lit("maxdist");
+const __s_mindist = cptr.lit("mindist");
+const __s_selection_gradient_requires_table = cptr.lit("selection.gradient requires table argument");
+const __s_square = cptr.lit("square");
+const __s_l_selection_iterate = cptr.lit("l_selection_iterate");
+const __s_new = cptr.lit("new");
+const __s_clone = cptr.lit("clone");
+const __s_get = cptr.lit("get");
+const __s_set = cptr.lit("set");
+const __s_numpoints = cptr.lit("numpoints");
+const __s_negate = cptr.lit("negate");
+const __s_percentage = cptr.lit("percentage");
+const __s_rndcoord = cptr.lit("rndcoord");
+const __s_line = cptr.lit("line");
+const __s_randline = cptr.lit("randline");
+const __s_rect = cptr.lit("rect");
+const __s_fillrect = cptr.lit("fillrect");
+const __s_area = cptr.lit("area");
+const __s_grow = cptr.lit("grow");
+const __s_filter_mapchar = cptr.lit("filter_mapchar");
+const __s_match = cptr.lit("match");
+const __s_floodfill = cptr.lit("floodfill");
+const __s_circle = cptr.lit("circle");
+const __s_ellipse = cptr.lit("ellipse");
+const __s_gradient = cptr.lit("gradient");
+const __s_iterate = cptr.lit("iterate");
+const __s_bounds = cptr.lit("bounds");
+const __s_room = cptr.lit("room");
+const __s_describe_size = cptr.lit("describe_size");
+const __s_gc = cptr.lit("__gc");
+const __s_unm = cptr.lit("__unm");
+const __s_band = cptr.lit("__band");
+const __s_bor = cptr.lit("__bor");
+const __s_bxor = cptr.lit("__bxor");
+const __s_bnot = cptr.lit("__bnot");
+const __s_add = cptr.lit("__add");
+const __s_sub = cptr.lit("__sub");
+const __s_index = cptr.lit("__index");
+const __s_metatable = cptr.lit("__metatable");
 
 /** C ref: nhlsel.c:58 — @param {CPtr<lua_State>} L @param {CInt} index @returns {CPtr<struct selectionvar>} */
 export function* l_selection_check(L, index) {
     let sel;
     (yield* luaL_checktype(L, index, 7));
-    sel = (yield* luaL_checkudata(L, index, __sl0));
+    sel = (yield* luaL_checkudata(L, index, __s_selection));
     if (!sel)
-        (yield* nhl_error(L, __sl1));
+        (yield* nhl_error(L, __s_selection_error));
     return sel;
 }
 
@@ -123,7 +123,7 @@ function* l_selection_gc(L) {
 function* l_selection_push_new(L) {
     let tmp = (yield* selection_new());
     let sel = (yield* lua_newuserdatauv(L, 32n, 1));
-    ((yield* lua_getfield(L, -1001000, (__sl0))));
+    ((yield* lua_getfield(L, -1001000, (__s_selection))));
     (yield* lua_setmetatable(L, -2));
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtro(sel, $selectionvar_map, (yield* dupstr(cptr.ldPtro(tmp, $selectionvar_map))));
@@ -134,7 +134,7 @@ function* l_selection_push_new(L) {
 /** C ref: nhlsel.c:112 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar>} tmp */
 export function* l_selection_push_copy(L, tmp) {
     let sel = (yield* lua_newuserdatauv(L, 32n, 1));
-    ((yield* lua_getfield(L, -1001000, (__sl0))));
+    ((yield* lua_getfield(L, -1001000, (__s_selection))));
     (yield* lua_setmetatable(L, -2));
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtro(sel, $selectionvar_map, (yield* dupstr(cptr.ldPtro(tmp, $selectionvar_map))));
@@ -184,7 +184,7 @@ function* l_selection_setpoint(L) {
         val = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 4, 1n))));
     }
     if (!sel || !cptr.ldPtro(sel, $selectionvar_map)) {
-        (yield* nhl_error(L, __sl2));
+        (yield* nhl_error(L, __s_selection_setpoint_error));
         return 0;
     }
     if (x.v == -1 && y.v == -1)
@@ -225,7 +225,7 @@ function* l_selection_getpoint(L) {
     let crd;
     (lua_rotate(L, 1, -1), (yield* lua_settop(L, -2)));
     if (!(yield* nhl_get_xy_params(L, ix, iy))) {
-        (yield* nhl_error(L, __sl3));
+        (yield* nhl_error(L, __s_l_selection_getpoint_incorrect_params));
         return 0;
     }
     x.v = Number(BigInt.asIntN(16, ix.v));
@@ -373,8 +373,8 @@ function* l_selection_rndcoord(L) {
     }
     (yield* lua_settop(L, 0));
     (yield* lua_createtable(L, 0, 0));
-    (yield* nhl_add_table_entry_int(L, __sl4, BigInt(x.v)));
-    (yield* nhl_add_table_entry_int(L, __sl5, BigInt(y.v)));
+    (yield* nhl_add_table_entry_int(L, __s_x, BigInt(x.v)));
+    (yield* nhl_add_table_entry_int(L, __s_y, BigInt(y.v)));
     return 1;
 }
 
@@ -400,10 +400,10 @@ function* l_selection_getbounds(L) {
     selection_getbounds(sel, rect);
     (yield* lua_settop(L, 0));
     (yield* lua_createtable(L, 0, 0));
-    (yield* nhl_add_table_entry_int(L, __sl6, BigInt(cptr.ldI16(rect))));
-    (yield* nhl_add_table_entry_int(L, __sl7, BigInt(cptr.ldI16o(rect, $nhrect_ly))));
-    (yield* nhl_add_table_entry_int(L, __sl8, BigInt(cptr.ldI16o(rect, $nhrect_hx))));
-    (yield* nhl_add_table_entry_int(L, __sl9, BigInt(cptr.ldI16o(rect, $nhrect_hy))));
+    (yield* nhl_add_table_entry_int(L, __s_lx, BigInt(cptr.ldI16(rect))));
+    (yield* nhl_add_table_entry_int(L, __s_ly, BigInt(cptr.ldI16o(rect, $nhrect_ly))));
+    (yield* nhl_add_table_entry_int(L, __s_hx, BigInt(cptr.ldI16o(rect, $nhrect_hx))));
+    (yield* nhl_add_table_entry_int(L, __s_hy, BigInt(cptr.ldI16o(rect, $nhrect_hy))));
     return 1;
 }
 
@@ -442,7 +442,7 @@ function* l_selection_line(L) {
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
-        (yield* nhl_error(L, __sl10));
+        (yield* nhl_error(L, __s_selection_line_illegal_arguments));
     }
     (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
     (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
@@ -460,7 +460,7 @@ function* l_selection_rect(L) {
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
-        (yield* nhl_error(L, __sl11));
+        (yield* nhl_error(L, __s_selection_rect_illegal_arguments));
     }
     (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
     (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
@@ -482,7 +482,7 @@ function* l_selection_fillrect(L) {
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
     if (!(yield* params_sel_2coords(L, sel, x1, y1, x2, y2))) {
-        (yield* nhl_error(L, __sl12));
+        (yield* nhl_error(L, __s_selection_fillrect_illegal_arguments));
     }
     (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
     (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
@@ -534,12 +534,12 @@ function* l_selection_randline(L) {
 }
 
 const __static_l_selection_grow_growdirs = cptr.alloc(7 * 8);
-cptr.stPtro(__static_l_selection_grow_growdirs, 0, __sl13);
-cptr.stPtro(__static_l_selection_grow_growdirs, 8, __sl14);
-cptr.stPtro(__static_l_selection_grow_growdirs, 16, __sl15);
-cptr.stPtro(__static_l_selection_grow_growdirs, 24, __sl16);
-cptr.stPtro(__static_l_selection_grow_growdirs, 32, __sl17);
-cptr.stPtro(__static_l_selection_grow_growdirs, 40, __sl18);
+cptr.stPtro(__static_l_selection_grow_growdirs, 0, __s_all);
+cptr.stPtro(__static_l_selection_grow_growdirs, 8, __s_random);
+cptr.stPtro(__static_l_selection_grow_growdirs, 16, __s_north);
+cptr.stPtro(__static_l_selection_grow_growdirs, 24, __s_west);
+cptr.stPtro(__static_l_selection_grow_growdirs, 32, __s_east);
+cptr.stPtro(__static_l_selection_grow_growdirs, 40, __s_south);
 cptr.stPtro(__static_l_selection_grow_growdirs, 48, null); /** C ref: nhlsel.c:633 — char *[7] (function-static) */
 const __static_l_selection_grow_growdirs2i = cptr.alloc(7 * 4);
 cptr.stI32o(__static_l_selection_grow_growdirs2i, 0, 15);
@@ -556,7 +556,7 @@ function* l_selection_grow(L) {
     let dir;
     let argc = lua_gettop(L);
     void (yield* l_selection_check(L, 1));
-    dir = cptr.ldI32o(__static_l_selection_grow_growdirs2i, (yield* luaL_checkoption(L, 2, __sl13, __static_l_selection_grow_growdirs)), 4);
+    dir = cptr.ldI32o(__static_l_selection_grow_growdirs2i, (yield* luaL_checkoption(L, 2, __s_all, __static_l_selection_grow_growdirs)), 4);
     if (argc == 2)
         (yield* lua_settop(L, -2));
     void (yield* l_selection_clone(L));
@@ -574,7 +574,7 @@ function* l_selection_filter_mapchar(L) {
     let lit = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 3, -2n))));
     let tmp;
     if (typ == NHC.INVALID_TYPE)
-        (yield* nhl_error(L, __sl19));
+        (yield* nhl_error(L, __s_erroneous_map_char));
     tmp = (yield* selection_filter_mapchar(sel, typ, lit));
     (yield* lua_settop(L, (-(argc) - 1) | 0));
     (yield* l_selection_push_copy(L, tmp));
@@ -603,7 +603,7 @@ function* l_selection_match(L) {
             (yield* nhl_error(L, err));
         }
     } else {
-        (yield* nhl_error(L, __sl20));
+        (yield* nhl_error(L, __s_wrong_parameters));
     }
     for (y = 0; y <= cptr.ldI32o(sel, $selectionvar_hei); y++)
         for (x = 1; x < cptr.ldI32(sel); x++)
@@ -629,7 +629,7 @@ function* l_selection_flood(L) {
         void (yield* l_selection_new(L));
         sel = (yield* l_selection_check(L, 1));
     } else {
-        (yield* nhl_error(L, __sl20));
+        (yield* nhl_error(L, __s_wrong_parameters));
     }
     (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
     if (isok(x.v, y.v)) {
@@ -670,7 +670,7 @@ function* l_selection_circle(L) {
         r = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 4))));
         filled = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 5, 0n))));
     } else {
-        (yield* nhl_error(L, __sl20));
+        (yield* nhl_error(L, __s_wrong_parameters));
     }
     (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
     selection_do_ellipse(sel, x.v, y.v, r, r, !filled);
@@ -713,7 +713,7 @@ function* l_selection_ellipse(L) {
         r2 = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 5))));
         filled = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 6, 0n))));
     } else {
-        (yield* nhl_error(L, __sl20));
+        (yield* nhl_error(L, __s_wrong_parameters));
     }
     (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
     selection_do_ellipse(sel, x.v, y.v, r1, r2, !filled);
@@ -722,8 +722,8 @@ function* l_selection_ellipse(L) {
 }
 
 const __static_l_selection_gradient_gradtypes = cptr.alloc(3 * 8);
-cptr.stPtro(__static_l_selection_gradient_gradtypes, 0, __sl22);
-cptr.stPtro(__static_l_selection_gradient_gradtypes, 8, __sl28);
+cptr.stPtro(__static_l_selection_gradient_gradtypes, 0, __s_radial);
+cptr.stPtro(__static_l_selection_gradient_gradtypes, 8, __s_square);
 cptr.stPtro(__static_l_selection_gradient_gradtypes, 16, null); /** C ref: nhlsel.c:874 — char *[3] (function-static) */
 const __static_l_selection_gradient_gradtypes2i = cptr.alloc(3 * 4);
 cptr.stI32o(__static_l_selection_gradient_gradtypes2i, 0, NHM.SEL_GRADIENT_RADIAL);
@@ -743,20 +743,20 @@ function* l_selection_gradient(L) {
     let type = 0n;
     if (argc == 1 && lua_type(L, 1) == 5) {
         (yield* lcheck_param_table(L));
-        type = BigInt(cptr.ldI32o(__static_l_selection_gradient_gradtypes2i, (yield* get_table_option(L, __sl21, __sl22, __static_l_selection_gradient_gradtypes)), 4));
-        x.v = i16((yield* get_table_int(L, __sl4)));
-        y.v = i16((yield* get_table_int(L, __sl5)));
-        x2.v = i16((yield* get_table_int_opt(L, __sl23, -1)));
-        y2.v = i16((yield* get_table_int_opt(L, __sl24, -1)));
+        type = BigInt(cptr.ldI32o(__static_l_selection_gradient_gradtypes2i, (yield* get_table_option(L, __s_type, __s_radial, __static_l_selection_gradient_gradtypes)), 4));
+        x.v = i16((yield* get_table_int(L, __s_x)));
+        y.v = i16((yield* get_table_int(L, __s_y)));
+        x2.v = i16((yield* get_table_int_opt(L, __s_x2, -1)));
+        y2.v = i16((yield* get_table_int_opt(L, __s_y2, -1)));
         cvt_to_abscoord(x, y);
         cvt_to_abscoord(x2, y2);
-        maxdist = i16((yield* get_table_int(L, __sl25)));
-        mindist = i16((yield* get_table_int_opt(L, __sl26, 0)));
+        maxdist = i16((yield* get_table_int(L, __s_maxdist)));
+        mindist = i16((yield* get_table_int_opt(L, __s_mindist, 0)));
         (yield* lua_settop(L, -2));
         void (yield* l_selection_new(L));
         sel = (yield* l_selection_check(L, 1));
     } else {
-        (yield* nhl_error(L, __sl27));
+        (yield* nhl_error(L, __s_selection_gradient_requires_table));
     }
     if (x2.v == -1 && y2.v == -1) {
         x2.v = x.v;
@@ -787,14 +787,14 @@ function* l_selection_iterate(L) {
                         (yield* lua_pushvalue(L, 2));
                         (yield* lua_pushinteger(L, BigInt(tmpx.v)));
                         (yield* lua_pushinteger(L, BigInt(tmpy.v)));
-                        if ((yield* nhl_pcall_handle(L, 2, 0, __sl29, NHC.NHLpa_impossible))) {
+                        if ((yield* nhl_pcall_handle(L, 2, 0, __s_l_selection_iterate, NHC.NHLpa_impossible))) {
                             break __lbl_out;
                         }
                     }
                 (yield* lua_gc(L, 2, 0));
             }
         } else {
-            (yield* nhl_error(L, __sl20));
+            (yield* nhl_error(L, __s_wrong_parameters));
         }
     }
     return 0;
@@ -809,81 +809,81 @@ function* l_selection_size_description(L) {
         (yield* lua_pushstring(L, selection_size_description(sel, cptr.decay(buf))));
         return 1;
     } else {
-        (yield* nhl_error(L, __sl20));
+        (yield* nhl_error(L, __s_wrong_parameters));
     }
     return 0;
 }
 
 /** C ref: nhlsel.c:981 — struct luaL_Reg[25] */
 const l_selection_methods = cptr.alloc(25 * 16);
-cptr.stPtro(l_selection_methods, 0, __sl30);
+cptr.stPtro(l_selection_methods, 0, __s_new);
 cptr.stPtro(l_selection_methods, 0 + $luaL_Reg_func, l_selection_new);
-cptr.stPtro(l_selection_methods, 16, __sl31);
+cptr.stPtro(l_selection_methods, 16, __s_clone);
 cptr.stPtro(l_selection_methods, 16 + $luaL_Reg_func, l_selection_clone);
-cptr.stPtro(l_selection_methods, 32, __sl32);
+cptr.stPtro(l_selection_methods, 32, __s_get);
 cptr.stPtro(l_selection_methods, 32 + $luaL_Reg_func, l_selection_getpoint);
-cptr.stPtro(l_selection_methods, 48, __sl33);
+cptr.stPtro(l_selection_methods, 48, __s_set);
 cptr.stPtro(l_selection_methods, 48 + $luaL_Reg_func, l_selection_setpoint);
-cptr.stPtro(l_selection_methods, 64, __sl34);
+cptr.stPtro(l_selection_methods, 64, __s_numpoints);
 cptr.stPtro(l_selection_methods, 64 + $luaL_Reg_func, l_selection_numpoints);
-cptr.stPtro(l_selection_methods, 80, __sl35);
+cptr.stPtro(l_selection_methods, 80, __s_negate);
 cptr.stPtro(l_selection_methods, 80 + $luaL_Reg_func, l_selection_not);
-cptr.stPtro(l_selection_methods, 96, __sl36);
+cptr.stPtro(l_selection_methods, 96, __s_percentage);
 cptr.stPtro(l_selection_methods, 96 + $luaL_Reg_func, l_selection_filter_percent);
-cptr.stPtro(l_selection_methods, 112, __sl37);
+cptr.stPtro(l_selection_methods, 112, __s_rndcoord);
 cptr.stPtro(l_selection_methods, 112 + $luaL_Reg_func, l_selection_rndcoord);
-cptr.stPtro(l_selection_methods, 128, __sl38);
+cptr.stPtro(l_selection_methods, 128, __s_line);
 cptr.stPtro(l_selection_methods, 128 + $luaL_Reg_func, l_selection_line);
-cptr.stPtro(l_selection_methods, 144, __sl39);
+cptr.stPtro(l_selection_methods, 144, __s_randline);
 cptr.stPtro(l_selection_methods, 144 + $luaL_Reg_func, l_selection_randline);
-cptr.stPtro(l_selection_methods, 160, __sl40);
+cptr.stPtro(l_selection_methods, 160, __s_rect);
 cptr.stPtro(l_selection_methods, 160 + $luaL_Reg_func, l_selection_rect);
-cptr.stPtro(l_selection_methods, 176, __sl41);
+cptr.stPtro(l_selection_methods, 176, __s_fillrect);
 cptr.stPtro(l_selection_methods, 176 + $luaL_Reg_func, l_selection_fillrect);
-cptr.stPtro(l_selection_methods, 192, __sl42);
+cptr.stPtro(l_selection_methods, 192, __s_area);
 cptr.stPtro(l_selection_methods, 192 + $luaL_Reg_func, l_selection_fillrect);
-cptr.stPtro(l_selection_methods, 208, __sl43);
+cptr.stPtro(l_selection_methods, 208, __s_grow);
 cptr.stPtro(l_selection_methods, 208 + $luaL_Reg_func, l_selection_grow);
-cptr.stPtro(l_selection_methods, 224, __sl44);
+cptr.stPtro(l_selection_methods, 224, __s_filter_mapchar);
 cptr.stPtro(l_selection_methods, 224 + $luaL_Reg_func, l_selection_filter_mapchar);
-cptr.stPtro(l_selection_methods, 240, __sl45);
+cptr.stPtro(l_selection_methods, 240, __s_match);
 cptr.stPtro(l_selection_methods, 240 + $luaL_Reg_func, l_selection_match);
-cptr.stPtro(l_selection_methods, 256, __sl46);
+cptr.stPtro(l_selection_methods, 256, __s_floodfill);
 cptr.stPtro(l_selection_methods, 256 + $luaL_Reg_func, l_selection_flood);
-cptr.stPtro(l_selection_methods, 272, __sl47);
+cptr.stPtro(l_selection_methods, 272, __s_circle);
 cptr.stPtro(l_selection_methods, 272 + $luaL_Reg_func, l_selection_circle);
-cptr.stPtro(l_selection_methods, 288, __sl48);
+cptr.stPtro(l_selection_methods, 288, __s_ellipse);
 cptr.stPtro(l_selection_methods, 288 + $luaL_Reg_func, l_selection_ellipse);
-cptr.stPtro(l_selection_methods, 304, __sl49);
+cptr.stPtro(l_selection_methods, 304, __s_gradient);
 cptr.stPtro(l_selection_methods, 304 + $luaL_Reg_func, l_selection_gradient);
-cptr.stPtro(l_selection_methods, 320, __sl50);
+cptr.stPtro(l_selection_methods, 320, __s_iterate);
 cptr.stPtro(l_selection_methods, 320 + $luaL_Reg_func, l_selection_iterate);
-cptr.stPtro(l_selection_methods, 336, __sl51);
+cptr.stPtro(l_selection_methods, 336, __s_bounds);
 cptr.stPtro(l_selection_methods, 336 + $luaL_Reg_func, l_selection_getbounds);
-cptr.stPtro(l_selection_methods, 352, __sl52);
+cptr.stPtro(l_selection_methods, 352, __s_room);
 cptr.stPtro(l_selection_methods, 352 + $luaL_Reg_func, l_selection_room);
-cptr.stPtro(l_selection_methods, 368, __sl53);
+cptr.stPtro(l_selection_methods, 368, __s_describe_size);
 cptr.stPtro(l_selection_methods, 368 + $luaL_Reg_func, l_selection_size_description);
 cptr.stPtro(l_selection_methods, 384, null);
 cptr.stPtro(l_selection_methods, 384 + $luaL_Reg_func, null);
 
 /** C ref: nhlsel.c:1009 — luaL_Reg[9] */
 const l_selection_meta = cptr.alloc(9 * 16);
-cptr.stPtro(l_selection_meta, 0, __sl54);
+cptr.stPtro(l_selection_meta, 0, __s_gc);
 cptr.stPtro(l_selection_meta, 0 + $luaL_Reg_func, l_selection_gc);
-cptr.stPtro(l_selection_meta, 16, __sl55);
+cptr.stPtro(l_selection_meta, 16, __s_unm);
 cptr.stPtro(l_selection_meta, 16 + $luaL_Reg_func, l_selection_not);
-cptr.stPtro(l_selection_meta, 32, __sl56);
+cptr.stPtro(l_selection_meta, 32, __s_band);
 cptr.stPtro(l_selection_meta, 32 + $luaL_Reg_func, l_selection_and);
-cptr.stPtro(l_selection_meta, 48, __sl57);
+cptr.stPtro(l_selection_meta, 48, __s_bor);
 cptr.stPtro(l_selection_meta, 48 + $luaL_Reg_func, l_selection_or);
-cptr.stPtro(l_selection_meta, 64, __sl58);
+cptr.stPtro(l_selection_meta, 64, __s_bxor);
 cptr.stPtro(l_selection_meta, 64 + $luaL_Reg_func, l_selection_xor);
-cptr.stPtro(l_selection_meta, 80, __sl59);
+cptr.stPtro(l_selection_meta, 80, __s_bnot);
 cptr.stPtro(l_selection_meta, 80 + $luaL_Reg_func, l_selection_not);
-cptr.stPtro(l_selection_meta, 96, __sl60);
+cptr.stPtro(l_selection_meta, 96, __s_add);
 cptr.stPtro(l_selection_meta, 96 + $luaL_Reg_func, l_selection_or);
-cptr.stPtro(l_selection_meta, 112, __sl61);
+cptr.stPtro(l_selection_meta, 112, __s_sub);
 cptr.stPtro(l_selection_meta, 112 + $luaL_Reg_func, l_selection_sub);
 cptr.stPtro(l_selection_meta, 128, null);
 cptr.stPtro(l_selection_meta, 128 + $luaL_Reg_func, null);
@@ -891,14 +891,14 @@ cptr.stPtro(l_selection_meta, 128 + $luaL_Reg_func, null);
 /** C ref: nhlsel.c:1025 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* l_selection_register(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_selection_methods, 0)));
-    (yield* luaL_newmetatable(L, __sl0));
+    (yield* luaL_newmetatable(L, __s_selection));
     (yield* luaL_setfuncs(L, l_selection_meta, 0));
     (yield* lua_pushvalue(L, -2));
-    (yield* lua_setfield(L, -2, __sl62));
+    (yield* lua_setfield(L, -2, __s_index));
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_selection_meta, 0)));
-    (yield* lua_setfield(L, -2, __sl63));
+    (yield* lua_setfield(L, -2, __s_metatable));
     (yield* lua_settop(L, -2));
-    (yield* lua_setglobal(L, __sl0));
+    (yield* lua_setglobal(L, __s_selection));
     return 0;
 }
 

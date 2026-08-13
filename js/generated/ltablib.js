@@ -15,26 +15,26 @@ import { rnd } from './rnd.js';
 const $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("__index");
-const __sl1 = cptr.lit("__newindex");
-const __sl2 = cptr.lit("__len");
-const __sl3 = cptr.lit("position out of bounds");
-const __sl4 = cptr.lit("wrong number of arguments to 'insert'");
-const __sl5 = cptr.lit("too many elements to move");
-const __sl6 = cptr.lit("destination wrap around");
-const __sl7 = cptr.lit("invalid value (%s) at index %I in table for 'concat'");
-const __sl8 = cptr.lit("");
-const __sl9 = cptr.lit("n");
-const __sl10 = cptr.lit("too many results to unpack");
-const __sl11 = cptr.lit("invalid order function for sorting");
-const __sl12 = cptr.lit("array too big");
-const __sl13 = cptr.lit("concat");
-const __sl14 = cptr.lit("insert");
-const __sl15 = cptr.lit("pack");
-const __sl16 = cptr.lit("unpack");
-const __sl17 = cptr.lit("remove");
-const __sl18 = cptr.lit("move");
-const __sl19 = cptr.lit("sort");
+const __s_index = cptr.lit("__index");
+const __s_newindex = cptr.lit("__newindex");
+const __s_len = cptr.lit("__len");
+const __s_position_out_of_bounds = cptr.lit("position out of bounds");
+const __s_wrong_number_of_arguments_to_insert = cptr.lit("wrong number of arguments to 'insert'");
+const __s_too_many_elements_to_move = cptr.lit("too many elements to move");
+const __s_destination_wrap_around = cptr.lit("destination wrap around");
+const __s_invalid_value_s_at_index_i_in_table_for = cptr.lit("invalid value (%s) at index %I in table for 'concat'");
+const __s_empty = cptr.lit("");
+const __s_n = cptr.lit("n");
+const __s_too_many_results_to_unpack = cptr.lit("too many results to unpack");
+const __s_invalid_order_function_for_sorting = cptr.lit("invalid order function for sorting");
+const __s_array_too_big = cptr.lit("array too big");
+const __s_concat = cptr.lit("concat");
+const __s_insert = cptr.lit("insert");
+const __s_pack = cptr.lit("pack");
+const __s_unpack = cptr.lit("unpack");
+const __s_remove = cptr.lit("remove");
+const __s_move = cptr.lit("move");
+const __s_sort = cptr.lit("sort");
 
 /** C ref: ltablib.c:36 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} n @returns {CInt} */
 function checkfield(L, key, n) {
@@ -46,7 +46,7 @@ function checkfield(L, key, n) {
 function checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;
-        if (lua_getmetatable(L, arg) && (!(what & 1) || checkfield(L, __sl0, ++n)) && (!(what & 2) || checkfield(L, __sl1, ++n)) && (!(what & 4) || checkfield(L, __sl2, ++n))) {
+        if (lua_getmetatable(L, arg) && (!(what & 1) || checkfield(L, __s_index, ++n)) && (!(what & 2) || checkfield(L, __s_newindex, ++n)) && (!(what & 4) || checkfield(L, __s_len, ++n))) {
             lua_settop(L, (-(n) - 1) | 0);
         } else
             luaL_checktype(L, arg, 5);
@@ -68,7 +68,7 @@ function tinsert(L) {
         {
             let i;
             pos = luaL_checkinteger(L, 2);
-            (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) < BigInt.asUintN(64, e)) != 0)), 1n)) || luaL_argerror(L, 2, (__sl3)) ? 1 : 0));
+            (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) < BigInt.asUintN(64, e)) != 0)), 1n)) || luaL_argerror(L, 2, (__s_position_out_of_bounds)) ? 1 : 0));
             for (i = e; i > pos; i--) {
                 lua_geti(L, 1, BigInt.asIntN(64, i - 1n));
                 lua_seti(L, 1, i);
@@ -77,7 +77,7 @@ function tinsert(L) {
         }
         default:
         {
-            return luaL_error(L, __sl4);
+            return luaL_error(L, __s_wrong_number_of_arguments_to_insert);
         }
     }
     lua_seti(L, 1, pos);
@@ -89,7 +89,7 @@ function tremove(L) {
     let size = (checktab(L, 1, 7), luaL_len(L, 1));
     let pos = luaL_optinteger(L, 2, size);
     if (pos != size)
-        (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <= BigInt.asUintN(64, size)) != 0)), 1n)) || luaL_argerror(L, 2, (__sl3)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <= BigInt.asUintN(64, size)) != 0)), 1n)) || luaL_argerror(L, 2, (__s_position_out_of_bounds)) ? 1 : 0));
     lua_geti(L, 1, pos);
     for (; pos < size; pos++) {
         lua_geti(L, 1, BigInt.asIntN(64, pos + 1n));
@@ -111,9 +111,9 @@ function tmove(L) {
     if (e >= f) {
         let n;
         let i;
-        (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 3, (__sl5)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 3, (__s_too_many_elements_to_move)) ? 1 : 0));
         n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);
-        (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || luaL_argerror(L, 4, (__sl6)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || luaL_argerror(L, 4, (__s_destination_wrap_around)) ? 1 : 0));
         if (t > e || t <= f || (tt != 1 && !lua_compare(L, 1, tt, 0))) {
             for (i = 0n; i < n; i++) {
                 lua_geti(L, 1, BigInt.asIntN(64, f + i));
@@ -134,7 +134,7 @@ function tmove(L) {
 function addfield(L, b, i) {
     lua_geti(L, 1, i);
     if ((__builtin_expect(BigInt(((!lua_isstring(L, -1)) != 0)), 0n)))
-        luaL_error(L, __sl7, lua_typename(L, lua_type(L, -1)), i);
+        luaL_error(L, __s_invalid_value_s_at_index_i_in_table_for, lua_typename(L, lua_type(L, -1)), i);
     luaL_addvalue(b);
 }
 
@@ -143,7 +143,7 @@ function tconcat(L) {
     let b = cptr.alloc(1056);
     let last = (checktab(L, 1, 5), luaL_len(L, 1));
     let lsep = cptr.box(0n);
-    let sep = luaL_optlstring(L, 2, __sl8, lsep);
+    let sep = luaL_optlstring(L, 2, __s_empty, lsep);
     let i = luaL_optinteger(L, 3, 1n);
     last = luaL_optinteger(L, 4, last);
     luaL_buffinit(L, b);
@@ -166,7 +166,7 @@ function tpack(L) {
     for (i = n; i >= 1; i--)
         lua_seti(L, 1, BigInt(i));
     lua_pushinteger(L, BigInt(n));
-    lua_setfield(L, 1, __sl9);
+    lua_setfield(L, 1, __s_n);
     return 1;
 }
 
@@ -179,7 +179,7 @@ function tunpack(L) {
         return 0;
     n = BigInt.asUintN(64, BigInt.asUintN(64, e) - BigInt.asUintN(64, i));
     if ((__builtin_expect(BigInt(((n >= 2147483647n || !lua_checkstack(L, Number(BigInt.asIntN(32, (++n)))) ? 1 : 0) != 0)), 0n)))
-        return luaL_error(L, __sl10);
+        return luaL_error(L, __s_too_many_results_to_unpack);
     for (; i < e; i++) {
         lua_geti(L, 1, i);
     }
@@ -232,12 +232,12 @@ function partition(L, lo, up) {
     for (; ; ) {
         while (void lua_geti(L, 1, BigInt((++i) >>> 0)), sort_comp(L, -1, -2)) {
             if ((__builtin_expect(BigInt(((i == (up - 1) >>> 0) != 0)), 0n)))
-                luaL_error(L, __sl11);
+                luaL_error(L, __s_invalid_order_function_for_sorting);
             lua_settop(L, -2);
         }
         while (void lua_geti(L, 1, BigInt((--j) >>> 0)), sort_comp(L, -3, -1)) {
             if ((__builtin_expect(BigInt(((j < i) != 0)), 0n)))
-                luaL_error(L, __sl11);
+                luaL_error(L, __s_invalid_order_function_for_sorting);
             lua_settop(L, -2);
         }
         if (j < i) {
@@ -311,7 +311,7 @@ function auxsort(L, lo, up, rnd) {
 function sort(L) {
     let n = (checktab(L, 1, 7), luaL_len(L, 1));
     if (n > 1n) {
-        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) || luaL_argerror(L, 1, (__sl12)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) || luaL_argerror(L, 1, (__s_array_too_big)) ? 1 : 0));
         if (!(lua_type(L, 2) <= 0))
             luaL_checktype(L, 2, 6);
         lua_settop(L, 2);
@@ -322,19 +322,19 @@ function sort(L) {
 
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
 const tab_funcs = cptr.alloc(8 * 16);
-cptr.stPtro(tab_funcs, 0, __sl13);
+cptr.stPtro(tab_funcs, 0, __s_concat);
 cptr.stPtro(tab_funcs, 0 + $luaL_Reg_func, tconcat);
-cptr.stPtro(tab_funcs, 16, __sl14);
+cptr.stPtro(tab_funcs, 16, __s_insert);
 cptr.stPtro(tab_funcs, 16 + $luaL_Reg_func, tinsert);
-cptr.stPtro(tab_funcs, 32, __sl15);
+cptr.stPtro(tab_funcs, 32, __s_pack);
 cptr.stPtro(tab_funcs, 32 + $luaL_Reg_func, tpack);
-cptr.stPtro(tab_funcs, 48, __sl16);
+cptr.stPtro(tab_funcs, 48, __s_unpack);
 cptr.stPtro(tab_funcs, 48 + $luaL_Reg_func, tunpack);
-cptr.stPtro(tab_funcs, 64, __sl17);
+cptr.stPtro(tab_funcs, 64, __s_remove);
 cptr.stPtro(tab_funcs, 64 + $luaL_Reg_func, tremove);
-cptr.stPtro(tab_funcs, 80, __sl18);
+cptr.stPtro(tab_funcs, 80, __s_move);
 cptr.stPtro(tab_funcs, 80 + $luaL_Reg_func, tmove);
-cptr.stPtro(tab_funcs, 96, __sl19);
+cptr.stPtro(tab_funcs, 96, __s_sort);
 cptr.stPtro(tab_funcs, 96 + $luaL_Reg_func, sort);
 cptr.stPtro(tab_funcs, 112, null);
 cptr.stPtro(tab_funcs, 112 + $luaL_Reg_func, null);

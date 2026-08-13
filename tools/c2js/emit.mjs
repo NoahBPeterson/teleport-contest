@@ -779,6 +779,94 @@ export const FIELD_PREFIX = '$';
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 
+// ------------------------------------------------ named string literals ----
+//
+// `rng_log_set_caller(__sl0, 146, __sl1)` names nothing.  24,129 interned
+// literals were called `__sl0` … `__sl24128` and referenced 58,151 times, and
+// the number is an artifact of interning order — it moves when an unrelated
+// literal is added upstream, so it is not even stable across a source edit.
+//
+// The name now comes from the literal's own bytes: `__s_unknown_command` for
+// `"Unknown command"`.  Identifier renaming only; the value, the dedup and the
+// order of the string table are exactly what they were.
+//
+// The rule, in order:
+//
+//   1. runs of non-alphanumeric characters collapse to `_`; the result is
+//      lower-cased and stripped of leading/trailing `_`.
+//   2. if that leaves fewer than two alphanumeric characters — `": "`, `"%s"`,
+//      `"."`, `""` — the literal is *transliterated* instead, one name per
+//      character (`colon_sp`, `pct_s`, `dot`), because a punctuation string
+//      collapses to nothing under rule 1 and every such literal would collide
+//      with every other.  An empty literal is `__s_empty`.
+//   3. the slug is capped at STRING_SLUG_MAX characters, cut back to the last
+//      `_` boundary when there is one past the eighth character, so a cap
+//      never lands mid-word.
+//   4. a slug that two distinct literals in one file produce is disambiguated
+//      by a `__2`, `__3`, … suffix on the later ones, in interning order.  A
+//      slug can never contain a doubled underscore (rule 1 collapses runs), so
+//      the suffix is unambiguous.
+//
+// The `__s_` prefix is checked, not assumed: build.mjs asserts that no name
+// this produces collides with anything the module declares (assemble()).
+//
+// C2JS_STRNAMES=0 restores `__slN` (the A/B baseline).
+const STRING_NAMES = process.env.C2JS_STRNAMES !== '0';
+export const STRING_PREFIX = '__s_';
+const STRING_SLUG_MAX = 40;
+const STRING_STATS = { named: 0, collided: 0 };
+
+// one name per non-alphanumeric character, for rule 2
+const STRING_PUNCT = {
+  ' ': 'sp', '\t': 'tab', '\n': 'nl', '\r': 'cr', '\x07': 'bel', '\b': 'bs', '\f': 'ff',
+  '\v': 'vt', '\x1b': 'esc', '\0': 'nul',
+  '!': 'bang', '"': 'quot', '#': 'hash', '$': 'dollar', '%': 'pct', '&': 'amp',
+  "'": 'apos', '(': 'lparen', ')': 'rparen', '*': 'star', '+': 'plus', ',': 'comma',
+  '-': 'dash', '.': 'dot', '/': 'slash', ':': 'colon', ';': 'semi', '<': 'lt',
+  '=': 'eq', '>': 'gt', '?': 'query', '@': 'at', '[': 'lbrack', '\\': 'bslash',
+  ']': 'rbrack', '^': 'caret', '_': 'us', '`': 'tick', '{': 'lbrace', '|': 'bar',
+  '}': 'rbrace', '~': 'tilde',
+};
+
+/** the characters a JS string literal (quotes included) denotes */
+function decodeJsLiteral(raw) {
+  const body = raw.slice(1, -1);
+  let out = '';
+  for (let i = 0; i < body.length; i++) {
+    if (body[i] !== '\\') { out += body[i]; continue; }
+    const c = body[++i];
+    if (c === 'x') { out += String.fromCharCode(parseInt(body.slice(i + 1, i + 3), 16)); i += 2; continue; }
+    if (c === 'u') { out += String.fromCharCode(parseInt(body.slice(i + 1, i + 5), 16)); i += 4; continue; }
+    out += ({ n: '\n', t: '\t', r: '\r', b: '\b', f: '\f', v: '\v', '0': '\0' })[c] ?? c;
+  }
+  return out;
+}
+
+function capSlug(s) {
+  if (s.length <= STRING_SLUG_MAX) return s;
+  const cut = s.slice(0, STRING_SLUG_MAX);
+  const at = cut.lastIndexOf('_');
+  return (at >= 8 ? cut.slice(0, at) : cut).replace(/_+$/, '');
+}
+
+function stringSlug(s) {
+  const words = s.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase();
+  if (words.replace(/_/g, '').length >= 2) return capSlug(words);
+  const parts = [];
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    let run = 1;
+    while (s[i + run] === ch) run++;
+    i += run - 1;
+    const nm = /[A-Za-z0-9]/.test(ch) ? ch.toLowerCase() : (STRING_PUNCT[ch] || 'x' + ch.codePointAt(0).toString(16));
+    // a run of one character is its name and a count — `"          "` is
+    // `sp10`, not `sp_sp_sp_sp_sp_sp_sp_sp_sp_sp`
+    parts.push(run > 1 ? nm + run : nm);
+  }
+  const t = parts.join('_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+  return t ? capSlug(t) : 'empty';
+}
+
 // ------------------------------------------------ recovered pointer types ----
 //
 // `@param {CPtr} mtmp` is true and says nothing.  The AST knows the parameter
@@ -929,6 +1017,7 @@ if (process.env.C2JS_READ_STATS) {
     `bool ctx:      ${BOOL_STATS.elided} logical results emitted bare, ${BOOL_STATS.kept} kept the \`? 1 : 0\`\n`
     + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
     + `pointer jsdoc: ${DOC_STATS.ptrNamed} pointers carry their C pointee, ${DOC_STATS.ptrBare} stayed bare CPtr (fn pointer, anon record, decayed array, or over ${DOC_PTR_MAX} chars)\n`
+    + `string names:  ${STRING_STATS.named} literals named by their content, ${STRING_STATS.collided} needed a collision suffix\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
@@ -1015,8 +1104,10 @@ export class Emitter {
     this.records = new Map(); // struct name -> [{name, q (desugared qualType)}]
     this.layouts = new Map(); // struct name -> { size, align, offsets: {field: off} }
     this.cmachine = new Set(); // cmachine.js helpers used
-    this.strings = new Map(); // raw literal -> __slN (dedup)
+    this.strings = new Map(); // raw literal -> its interned name (dedup)
     this.stringList = [];
+    this.stringNames = [];             // parallel to stringList: the const's name
+    this.stringNamesUsed = new Map();  // name -> collision counter (see stringName)
     this.staticLocals = new Map(); // VarDecl id -> hoisted name (current function)
     this.recordLocals = new Set(); // names of struct/union value locals (current function)
     this.recordGlobals = new Set(recordGlobals || []); // struct/union file-scope vars (byte-packed; seeded corpus-wide from symbols.mjs)
@@ -1198,11 +1289,38 @@ export class Emitter {
   internString(raw) {
     raw = this.cStringToJs(raw);
     if (!this.strings.has(raw)) {
-      const name = `__sl${this.stringList.length}`;
+      const name = STRING_NAMES ? this.stringName(raw) : `__sl${this.stringList.length}`;
       this.strings.set(raw, name);
       this.stringList.push(raw);
+      this.stringNames.push(name);
     }
     return this.strings.get(raw);
+  }
+
+  /**
+   * A file-unique identifier for an interned string literal, derived from the
+   * string's own bytes (see the note above STRING_PREFIX).
+   *
+   * `raw` is the JS literal text, quotes included, as `cStringToJs` produced
+   * it. It is decoded back to characters before slugging so that the escapes
+   * the emitter introduced (`\x1b`, `\x07`, `\\`) name what they *are* rather
+   * than how they are written: `"\033["` is `__s_esc_lbrack`, not
+   * `__s_x1b_lbrack`.
+   */
+  stringName(raw) {
+    const base = STRING_PREFIX + stringSlug(decodeJsLiteral(raw));
+    if (!this.stringNamesUsed.has(base)) { this.stringNamesUsed.set(base, 1); STRING_STATS.named++; return base; }
+    // Collision: two distinct literals in one file slugged the same way (a
+    // case difference, punctuation the slug drops, or the length cap). The
+    // FIRST one keeps the bare name and later ones take `__2`, `__3`, ... —
+    // deterministic because interning order is emission order, and unambiguous
+    // because a slug never contains a doubled underscore (runs collapse).
+    let k = this.stringNamesUsed.get(base) + 1;
+    while (this.stringNamesUsed.has(`${base}__${k}`)) k++;
+    this.stringNamesUsed.set(base, k);
+    this.stringNamesUsed.set(`${base}__${k}`, 1);
+    STRING_STATS.collided++;
+    return `${base}__${k}`;
   }
 
   // ----- type conversions -----
@@ -1713,7 +1831,9 @@ export class Emitter {
    * body is not one a helper may hold (see the note above MACRO_HELPERS).
    */
   helperFreeVars(code, { pureCalls = null } = {}) {
-    if (/__sl|\+\+|--|rng_log/.test(code)) return null;
+    // an interned string literal (either naming scheme) would leave a dangling
+    // per-file const in a module whose output no longer mentions it
+    if (/__sl\d|__s_|\+\+|--|rng_log/.test(code)) return null;
     // A call through a parameter — `(rng)(NUMMONS)` from random_monster(rng) —
     // is parity-safe here by accident (the body names the parameter once, so
     // one call inline and one in the helper) but its callee is a value, not a

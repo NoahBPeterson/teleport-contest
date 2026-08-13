@@ -57,58 +57,58 @@ const $NHFILE_mode = FLD.NHFILE_mode, $const_globals_zeroany = FLD.const_globals
     $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("new_light_source:  illegal range %d");
-const __sl1 = cptr.lit("del_light_source:type=none");
-const __sl2 = cptr.lit("del_light_source: not found type=%d, id=%s");
-const __sl3 = cptr.lit("delete_ls");
-const __sl4 = cptr.lit("light.c");
-const __sl5 = cptr.lit("curr == ls");
-const __sl6 = cptr.lit("delete_ls not found, ls=%s");
-const __sl7 = cptr.lit("show_transient_light");
-const __sl8 = cptr.lit("ls != NULL");
-const __sl9 = cptr.lit("obj != NULL");
-const __sl10 = cptr.lit("transient light %s %s %s not %s?");
-const __sl11 = cptr.lit("lit");
-const __sl12 = cptr.lit("unlit");
-const __sl13 = cptr.lit("are");
-const __sl14 = cptr.lit("a light source");
-const __sl15 = cptr.lit("free");
-const __sl16 = cptr.lit("lightsource-count");
-const __sl17 = cptr.lit("counted %d light sources, wrote %d! [range=%d]");
-const __sl18 = cptr.lit("save_light_sources: no id! [range=%d]");
-const __sl19 = cptr.lit("save_light_sources: bad type (%d) [range=%d]");
-const __sl20 = cptr.lit("lightsource");
-const __sl21 = cptr.lit("relink_light_sources: no id mapping");
-const __sl22 = cptr.lit("relink_light_sources: can't find %c_id %u");
-const __sl23 = cptr.lit("relink_light_sources: bad type (%d)");
-const __sl24 = cptr.lit("maybe_write_ls: no id! [range=%d]");
-const __sl25 = cptr.lit("maybe_write_ls: bad type (%d) [range=%d]");
-const __sl26 = cptr.lit("insane light source: no id!");
-const __sl27 = cptr.lit("insane light source: can't find obj #%u!");
-const __sl28 = cptr.lit("insane light source: can't find mon #%u!");
-const __sl29 = cptr.lit("insane light source: bad ls type %d");
-const __sl30 = cptr.lit("write_ls: can't find obj #%u!");
-const __sl31 = cptr.lit("write_ls: can't find mon%s #%u!");
-const __sl32 = cptr.lit(" because it's dead");
-const __sl33 = cptr.lit("");
-const __sl34 = cptr.lit("write_ls: stashed monst ptr not in any chain");
-const __sl35 = cptr.lit("write_ls: bad type (%d)");
-const __sl36 = cptr.lit("obj_adjust_light_radius: can't find %s");
-const __sl37 = cptr.lit("radiantly");
-const __sl38 = cptr.lit("brilliantly");
-const __sl39 = cptr.lit("brightly");
-const __sl40 = cptr.lit("dimly");
-const __sl41 = cptr.lit("strangely");
-const __sl42 = cptr.lit("Mobile light sources: hero @ (%2d,%2d)");
-const __sl43 = cptr.lit("location range flags  type    id");
-const __sl44 = cptr.lit("-------- ----- ------ ----  -------");
-const __sl45 = cptr.lit("  %2d,%2d   %2d   0x%04x  %s  %s");
-const __sl46 = cptr.lit("obj");
-const __sl47 = cptr.lit("mon");
-const __sl48 = cptr.lit("you");
-const __sl49 = cptr.lit("<m>");
-const __sl50 = cptr.lit("???");
-const __sl51 = cptr.lit("<none>");
+const __s_new_light_source_illegal_range_d = cptr.lit("new_light_source:  illegal range %d");
+const __s_del_light_source_type_none = cptr.lit("del_light_source:type=none");
+const __s_del_light_source_not_found_type_d_id_s = cptr.lit("del_light_source: not found type=%d, id=%s");
+const __s_delete_ls = cptr.lit("delete_ls");
+const __s_light_c = cptr.lit("light.c");
+const __s_curr_ls = cptr.lit("curr == ls");
+const __s_delete_ls_not_found_ls_s = cptr.lit("delete_ls not found, ls=%s");
+const __s_show_transient_light = cptr.lit("show_transient_light");
+const __s_ls_null = cptr.lit("ls != NULL");
+const __s_obj_null = cptr.lit("obj != NULL");
+const __s_transient_light_s_s_s_not_s = cptr.lit("transient light %s %s %s not %s?");
+const __s_lit = cptr.lit("lit");
+const __s_unlit = cptr.lit("unlit");
+const __s_are = cptr.lit("are");
+const __s_a_light_source = cptr.lit("a light source");
+const __s_free = cptr.lit("free");
+const __s_lightsource_count = cptr.lit("lightsource-count");
+const __s_counted_d_light_sources_wrote_d_range_d = cptr.lit("counted %d light sources, wrote %d! [range=%d]");
+const __s_save_light_sources_no_id_range_d = cptr.lit("save_light_sources: no id! [range=%d]");
+const __s_save_light_sources_bad_type_d_range_d = cptr.lit("save_light_sources: bad type (%d) [range=%d]");
+const __s_lightsource = cptr.lit("lightsource");
+const __s_relink_light_sources_no_id_mapping = cptr.lit("relink_light_sources: no id mapping");
+const __s_relink_light_sources_can_t_find_c_id_u = cptr.lit("relink_light_sources: can't find %c_id %u");
+const __s_relink_light_sources_bad_type_d = cptr.lit("relink_light_sources: bad type (%d)");
+const __s_maybe_write_ls_no_id_range_d = cptr.lit("maybe_write_ls: no id! [range=%d]");
+const __s_maybe_write_ls_bad_type_d_range_d = cptr.lit("maybe_write_ls: bad type (%d) [range=%d]");
+const __s_insane_light_source_no_id = cptr.lit("insane light source: no id!");
+const __s_insane_light_source_can_t_find_obj_u = cptr.lit("insane light source: can't find obj #%u!");
+const __s_insane_light_source_can_t_find_mon_u = cptr.lit("insane light source: can't find mon #%u!");
+const __s_insane_light_source_bad_ls_type_d = cptr.lit("insane light source: bad ls type %d");
+const __s_write_ls_can_t_find_obj_u = cptr.lit("write_ls: can't find obj #%u!");
+const __s_write_ls_can_t_find_mon_s_u = cptr.lit("write_ls: can't find mon%s #%u!");
+const __s_because_it_s_dead = cptr.lit(" because it's dead");
+const __s_empty = cptr.lit("");
+const __s_write_ls_stashed_monst_ptr_not_in_any = cptr.lit("write_ls: stashed monst ptr not in any chain");
+const __s_write_ls_bad_type_d = cptr.lit("write_ls: bad type (%d)");
+const __s_obj_adjust_light_radius_can_t_find_s = cptr.lit("obj_adjust_light_radius: can't find %s");
+const __s_radiantly = cptr.lit("radiantly");
+const __s_brilliantly = cptr.lit("brilliantly");
+const __s_brightly = cptr.lit("brightly");
+const __s_dimly = cptr.lit("dimly");
+const __s_strangely = cptr.lit("strangely");
+const __s_mobile_light_sources_hero_2d_2d = cptr.lit("Mobile light sources: hero @ (%2d,%2d)");
+const __s_location_range_flags_type_id = cptr.lit("location range flags  type    id");
+const __s_dash8_sp_dash5_sp_dash6_sp_dash4_sp2 = cptr.lit("-------- ----- ------ ----  -------");
+const __s_2d_2d_2d_0x_04x_s_s = cptr.lit("  %2d,%2d   %2d   0x%04x  %s  %s");
+const __s_obj = cptr.lit("obj");
+const __s_mon = cptr.lit("mon");
+const __s_you = cptr.lit("you");
+const __s_lt_m_gt = cptr.lit("<m>");
+const __s_query3 = cptr.lit("???");
+const __s_none = cptr.lit("<none>");
 
 /** C ref: light.c:62 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id */
 export function* new_light_source(x, y, range, type, id) {
@@ -119,7 +119,7 @@ export function* new_light_source(x, y, range, type, id) {
 function* new_light_core(x, y, range, type, id) {
     let ls;
     if (range > NHM.MAX_RADIUS || range < 0 || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
-        (yield* impossible(__sl0, range));
+        (yield* impossible(__s_new_light_source_illegal_range_d, range));
         return null;
     }
     ls = (yield* alloc(32));
@@ -143,7 +143,7 @@ export function* del_light_source(type, id) {
     cptr.memcpy(tmp_id, cptr.add(cg, $const_globals_zeroany), 8);
     switch (type) {
         case NHC.LS_NONE:
-        (yield* impossible(__sl1));
+        (yield* impossible(__s_del_light_source_type_none));
         cptr.stI32(tmp_id, 0);
         break;
         case NHC.LS_OBJECT:
@@ -165,7 +165,7 @@ export function* del_light_source(type, id) {
     if (curr) {
         (yield* delete_ls(curr));
     } else {
-        (yield* impossible(__sl2, type, fmt_ptr(cptr.ldPtr(id))));
+        (yield* impossible(__s_del_light_source_not_found_type_d_id_s, type, fmt_ptr(cptr.ldPtr(id))));
     }
 }
 
@@ -183,12 +183,12 @@ function* delete_ls(ls) {
         }
     }
     if (curr) {
-        (__builtin_expect(BigInt((!(cptr.eq(curr, ls)))), 0n) ? __assert_rtn(__sl3, __sl4, 157, __sl5) : void 0);
+        (__builtin_expect(BigInt((!(cptr.eq(curr, ls)))), 0n) ? __assert_rtn(__s_delete_ls, __s_light_c, 157, __s_curr_ls) : void 0);
         void __builtin___memset_chk(ls, 0, 32n, __builtin_object_size(ls, 0));
         cptr.free(ls);
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     } else {
-        (yield* impossible(__sl6, fmt_ptr(ls)));
+        (yield* impossible(__s_delete_ls_not_found_ls_s, fmt_ptr(ls)));
     }
     return;
 }
@@ -258,7 +258,7 @@ export function* show_transient_light(obj, x, y) {
             return;
         cptr.memcpy(cameraflash, cptr.add(cg, $const_globals_zeroany), 8);
         ls = (yield* new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash));
-        (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 275, __sl8) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 275, __s_ls_null) : void 0);
     } else {
         for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
             if (cptr.ldI16o(ls, $light_source_type) != NHC.LS_OBJECT)
@@ -266,9 +266,9 @@ export function* show_transient_light(obj, x, y) {
             if (cptr.eq(cptr.ldPtro(ls, $light_source_id), obj))
                 break;
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__sl7, __sl4, 285, __sl9) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 285, __s_obj_null) : void 0);
         if (!ls || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE) {
-            (yield* impossible(__sl10, (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __sl11 : __sl12, (yield* simpleonames(obj)), (yield* otense(obj, __sl13)), !ls ? __sl14 : __sl15));
+            (yield* impossible(__s_transient_light_s_s_s_not_s, (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit, (yield* simpleonames(obj)), (yield* otense(obj, __s_are)), !ls ? __s_a_light_source : __s_free));
             return;
         }
     }
@@ -377,15 +377,15 @@ export function* save_light_sources(nhfp, range) {
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         count.v = (yield* maybe_write_ls(nhfp, range, 0));
-        (yield* sfo_int(nhfp, count, __sl16));
+        (yield* sfo_int(nhfp, count, __s_lightsource_count));
         actual = (yield* maybe_write_ls(nhfp, range, 1));
         if (actual != count.v)
-            (yield* panic(__sl17, count.v, actual, range));
+            (yield* panic(__s_counted_d_light_sources_wrote_d_range_d, count.v, actual, range));
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (prev = cptr.add(gl, $instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
             if (!cptr.ldPtro(curr, $light_source_id)) {
-                (yield* impossible(__sl18, range));
+                (yield* impossible(__s_save_light_sources_no_id_range_d, range));
                 is_global = 0;
             } else
                 switch (cptr.ldI16o(curr, $light_source_type)) {
@@ -397,7 +397,7 @@ export function* save_light_sources(nhfp, range) {
                     break;
                     default:
                     is_global = 0;
-                    (yield* impossible(__sl19, cptr.ldI16o(curr, $light_source_type), range));
+                    (yield* impossible(__s_save_light_sources_bad_type_d_range_d, cptr.ldI16o(curr, $light_source_type), range));
                     break;
                 }
             if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -415,11 +415,11 @@ export function* save_light_sources(nhfp, range) {
 export function* restore_light_sources(nhfp) {
     let count = cptr.box(0);
     let ls;
-    (yield* sfi_int(nhfp, count, __sl16));
+    (yield* sfi_int(nhfp, count, __s_lightsource_count));
     ;
     while (count.v-- > 0) {
         ls = (yield* alloc(32));
-        (yield* sfi_ls_t(nhfp, ls, __sl20));
+        (yield* sfi_ls_t(nhfp, ls, __s_lightsource));
         cptr.stPtr(ls, cptr.ldPtro(gl, $instance_globals_l_light_base));
         cptr.stPtro(gl, $instance_globals_l_light_base, ls);
     }
@@ -446,7 +446,7 @@ export function* relink_light_sources(ghostly) {
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
                 nid.v = cptr.ldI32o(ls, $light_source_id);
                 if (ghostly && !lookup_id_mapping(nid.v, nid))
-                    (yield* panic(__sl21));
+                    (yield* panic(__s_relink_light_sources_no_id_mapping));
                 which = 0;
                 if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
                     if ((cptr.stPtro(ls, $light_source_id, find_oid(nid.v))) === null)
@@ -456,9 +456,9 @@ export function* relink_light_sources(ghostly) {
                         which = 109;
                 }
                 if (which != 0)
-                    (yield* panic(__sl22, which, nid.v));
+                    (yield* panic(__s_relink_light_sources_can_t_find_c_id_u, which, nid.v));
             } else {
-                (yield* panic(__sl23, cptr.ldI16o(ls, $light_source_type)));
+                (yield* panic(__s_relink_light_sources_bad_type_d, cptr.ldI16o(ls, $light_source_type)));
             }
             cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -3);
         }
@@ -472,7 +472,7 @@ function* maybe_write_ls(nhfp, range, write_it) {
     let ls;
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (!cptr.ldPtro(ls, $light_source_id)) {
-            (yield* impossible(__sl24, range));
+            (yield* impossible(__s_maybe_write_ls_no_id_range_d, range));
             continue;
         }
         switch (cptr.ldI16o(ls, $light_source_type)) {
@@ -484,7 +484,7 @@ function* maybe_write_ls(nhfp, range, write_it) {
             break;
             default:
             is_global = 0;
-            (yield* impossible(__sl25, cptr.ldI16o(ls, $light_source_type), range));
+            (yield* impossible(__s_maybe_write_ls_bad_type_d_range_d, cptr.ldI16o(ls, $light_source_type), range));
             break;
         }
         if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -504,19 +504,19 @@ export function* light_sources_sanity_check() {
     let auint;
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (!cptr.ldPtro(ls, $light_source_id))
-            (yield* panic(__sl26));
+            (yield* panic(__s_insane_light_source_no_id));
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
             otmp = cptr.ldPtro(ls, $light_source_id);
             auint = cptr.ldI32o(otmp, $obj_o_id);
             if (!cptr.eq(find_oid(auint), otmp))
-                (yield* panic(__sl27, auint));
+                (yield* panic(__s_insane_light_source_can_t_find_obj_u, auint));
         } else if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
             mtmp = cptr.ldPtro(ls, $light_source_id);
             auint = cptr.ldI32o(mtmp, $monst_m_id);
             if (!cptr.eq(find_mid(auint, 15), mtmp))
-                (yield* panic(__sl28, auint));
+                (yield* panic(__s_insane_light_source_can_t_find_mon_u, auint));
         } else {
-            (yield* panic(__sl29, cptr.ldI16o(ls, $light_source_type)));
+            (yield* panic(__s_insane_light_source_bad_ls_type_d, cptr.ldI16o(ls, $light_source_type)));
         }
     }
 }
@@ -528,7 +528,7 @@ function* write_ls(nhfp, ls) {
     let mtmp;
     if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
-            (yield* sfo_ls_t(nhfp, ls, __sl20));
+            (yield* sfo_ls_t(nhfp, ls, __s_lightsource));
         } else {
             cptr.memcpy(arg_save, cptr.add(ls, $light_source_id), 8);
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
@@ -536,7 +536,7 @@ function* write_ls(nhfp, ls) {
                 cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
                 cptr.stI32o(ls, $light_source_id, cptr.ldI32o(otmp, $obj_o_id));
                 if (!cptr.eq(find_oid(cptr.ldI32o(ls, $light_source_id)), otmp)) {
-                    (yield* impossible(__sl30, cptr.ldI32o(ls, $light_source_id)));
+                    (yield* impossible(__s_write_ls_can_t_find_obj_u, cptr.ldI32o(ls, $light_source_id)));
                     cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                 }
             } else {
@@ -546,24 +546,24 @@ function* write_ls(nhfp, ls) {
                     cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
                     cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
                     if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id), monloc), mtmp)) {
-                        (yield* impossible(__sl31, (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? __sl32 : __sl33, cptr.ldI32o(ls, $light_source_id)));
+                        (yield* impossible(__s_write_ls_can_t_find_mon_s_u, (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? __s_because_it_s_dead : __s_empty, cptr.ldI32o(ls, $light_source_id)));
                         cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                     }
                 } else {
-                    (yield* impossible(__sl34));
+                    (yield* impossible(__s_write_ls_stashed_monst_ptr_not_in_any));
                     cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
                 }
             }
             if (cptr.ldI16o(ls, $light_source_flags) & 4) {
             }
             cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 2);
-            (yield* sfo_ls_t(nhfp, ls, __sl20));
+            (yield* sfo_ls_t(nhfp, ls, __s_lightsource));
             cptr.memcpy(cptr.add(ls, $light_source_id), arg_save, 8);
             cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -3);
             cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -5);
         }
     } else {
-        (yield* impossible(__sl35, cptr.ldI16o(ls, $light_source_type)));
+        (yield* impossible(__s_write_ls_bad_type_d, cptr.ldI16o(ls, $light_source_type)));
     }
 }
 
@@ -651,7 +651,7 @@ export function* obj_adjust_light_radius(obj, new_radius) {
             cptr.stI16o(ls, $light_source_range, i16(new_radius));
             return;
         }
-    (yield* impossible(__sl36, (yield* xname(obj))));
+    (yield* impossible(__s_obj_adjust_light_radius_can_t_find_s, (yield* xname(obj))));
 }
 
 /** C ref: light.c:843 — @param {CPtr<struct obj>} obj @returns {CInt} */
@@ -688,17 +688,17 @@ export function arti_light_radius(obj) {
 export function arti_light_description(obj) {
     switch (arti_light_radius(obj)) {
         case 4:
-        return __sl37;
+        return __s_radiantly;
         case 3:
-        return __sl38;
+        return __s_brilliantly;
         case 2:
-        return __sl39;
+        return __s_brightly;
         case 1:
-        return __sl40;
+        return __s_dimly;
         default:
         break;
     }
-    return __sl41;
+    return __s_strangely;
 }
 
 /** C ref: light.c:935 @returns {CInt} */
@@ -709,18 +709,18 @@ export function* wiz_light_sources() {
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     if (win == -1)
         return NHM.ECMD_OK;
-    void cptr.sprintf(cptr.decay(buf), __sl42, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+    void cptr.sprintf(cptr.decay(buf), __s_mobile_light_sources_hero_2d_2d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-    (yield* Y.icall(putstr()(win, 0, __sl33)));
+    (yield* Y.icall(putstr()(win, 0, __s_empty)));
     if (cptr.ldPtro(gl, $instance_globals_l_light_base)) {
-        (yield* Y.icall(putstr()(win, 0, __sl43)));
-        (yield* Y.icall(putstr()(win, 0, __sl44)));
+        (yield* Y.icall(putstr()(win, 0, __s_location_range_flags_type_id)));
+        (yield* Y.icall(putstr()(win, 0, __s_dash8_sp_dash5_sp_dash6_sp_dash4_sp2)));
         for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
-            void cptr.sprintf(cptr.decay(buf), __sl45, cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y), cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_flags), (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ? __sl46 : (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0) ? __sl47 : ((cptr.eq(cptr.ldPtro(ls, $light_source_id), cptr.add(gy, $instance_globals_y_youmonst))) ? __sl48 : __sl49)) : __sl50)), fmt_ptr(cptr.ldPtro(ls, $light_source_id)));
+            void cptr.sprintf(cptr.decay(buf), __s_2d_2d_2d_0x_04x_s_s, cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y), cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_flags), (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ? __s_obj : (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0) ? __s_mon : ((cptr.eq(cptr.ldPtro(ls, $light_source_id), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you : __s_lt_m_gt)) : __s_query3)), fmt_ptr(cptr.ldPtro(ls, $light_source_id)));
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     } else
-        (yield* Y.icall(putstr()(win, 0, __sl51)));
+        (yield* Y.icall(putstr()(win, 0, __s_none)));
     (yield* Y.icall(display_nhwindow()(win, 0)));
     (yield* Y.icall(destroy_nhwindow()(win)));
     return NHM.ECMD_OK;

@@ -167,88 +167,88 @@ const $DisplayDesc_attrs = FLD.DisplayDesc_attrs, $DisplayDesc_color = FLD.Displ
     $window_procs_wp_id = FLD.window_procs_wp_id, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("tty");
-const __sl1 = cptr.lit("Press a key to continue: ");
-const __sl2 = cptr.lit("");
-const __sl3 = cptr.lit("statuslines");
-const __sl4 = cptr.lit("Until next time then...");
-const __sl5 = cptr.lit("Giving up after 10 tries.\n");
-const __sl6 = cptr.lit("Enter a name for your character...");
-const __sl7 = cptr.lit("\n");
-const __sl8 = cptr.lit("Hit ");
-const __sl9 = cptr.lit("space");
-const __sl10 = cptr.lit("return");
-const __sl11 = cptr.lit(" to continue: ");
-const __sl12 = cptr.lit(" ");
-const __sl13 = cptr.lit("No window slots!");
-const __sl14 = cptr.lit("Tried to create window type %d\n");
-const __sl15 = cptr.lit("tty_clear_nhwindow");
-const __sl16 = cptr.lit("bad menu screen page #%d");
-const __sl17 = cptr.lit("-+#");
-const __sl18 = cptr.lit("0123456789\x1b\n\r");
-const __sl19 = cptr.lit("(%d of %d)");
-const __sl20 = cptr.lit("Search for:");
-const __sl21 = cptr.lit("*%s*");
-const __sl22 = cptr.lit("tty_display_nhwindow");
-const __sl23 = cptr.lit("ttyDisplay->toplin == TOPLINE_EMPTY");
-const __sl24 = cptr.lit("../win/tty/wintty.c");
-const __sl25 = cptr.lit("tty_dismiss_nhwindow");
-const __sl26 = cptr.lit("tty_destroy_nhwindow");
-const __sl27 = cptr.lit("tty_curs");
-const __sl28 = cptr.lit("[unknown type]");
-const __sl29 = cptr.lit("[topl window]");
-const __sl30 = cptr.lit("[status window]");
-const __sl31 = cptr.lit("[map window]");
-const __sl32 = cptr.lit("[corner window]");
-const __sl33 = cptr.lit("[text window]");
-const __sl34 = cptr.lit("[base window]");
-const __sl35 = cptr.lit("tty_curs: bad positioning win %d %s <%d,%d>");
-const __sl36 = cptr.lit("r");
-const __sl37 = cptr.lit("Cannot open \"%s\".");
-const __sl38 = cptr.lit("tty_start_menu");
-const __sl39 = cptr.lit("tty_add_menu");
-const __sl40 = cptr.lit("Menu item too long (%d).");
-const __sl41 = cptr.lit("%c - ");
-const __sl42 = cptr.lit("tty_end_menu");
-const __sl43 = cptr.lit("(%ld of %ld) ");
-const __sl44 = cptr.lit("(end) ");
-const __sl45 = cptr.lit("tty_select_menu");
-const __sl46 = cptr.lit("%s");
-const __sl47 = cptr.lit("--More--");
-const __sl48 = cptr.lit("Burdened");
-const __sl49 = cptr.lit("Stressed");
-const __sl50 = cptr.lit("Strained");
-const __sl51 = cptr.lit("Overtaxed");
-const __sl52 = cptr.lit("Overloaded");
-const __sl53 = cptr.lit("Burden");
-const __sl54 = cptr.lit("Stress");
-const __sl55 = cptr.lit("Strain");
-const __sl56 = cptr.lit("Overtax");
-const __sl57 = cptr.lit("Overload");
-const __sl58 = cptr.lit("Brd");
-const __sl59 = cptr.lit("Strs");
-const __sl60 = cptr.lit("Strn");
-const __sl61 = cptr.lit("Ovtx");
-const __sl62 = cptr.lit("Ovld");
-const __sl63 = cptr.lit("tty_putstatusfield: Invalid WinDesc\n");
-const __sl64 = cptr.lit(" %s");
-const __sl65 = cptr.lit("Dlvl");
-const __sl66 = cptr.lit("Dl");
-const __sl67 = cptr.lit("check_windowdata");
-const __sl68 = cptr.lit(" null status window.");
-const __sl69 = cptr.lit("render_status");
-const __sl70 = cptr.lit("WIN_ERR on status window.");
-const __sl71 = cptr.lit("Unexpected condition placement overflow for \"%s\"");
-const __sl72 = cptr.lit("render_status()");
-const __sl73 = cptr.lit(" unexpected truncation.");
-const __sl74 = cptr.lit("%-30.30s");
-const __sl75 = cptr.lit("[");
-const __sl76 = cptr.lit("]");
-const __sl77 = cptr.lit("/");
+const __s_tty = cptr.lit("tty");
+const __s_press_a_key_to_continue = cptr.lit("Press a key to continue: ");
+const __s_empty = cptr.lit("");
+const __s_statuslines = cptr.lit("statuslines");
+const __s_until_next_time_then = cptr.lit("Until next time then...");
+const __s_giving_up_after_10_tries = cptr.lit("Giving up after 10 tries.\n");
+const __s_enter_a_name_for_your_character = cptr.lit("Enter a name for your character...");
+const __s_nl = cptr.lit("\n");
+const __s_hit = cptr.lit("Hit ");
+const __s_space = cptr.lit("space");
+const __s_return = cptr.lit("return");
+const __s_to_continue = cptr.lit(" to continue: ");
+const __s_sp = cptr.lit(" ");
+const __s_no_window_slots = cptr.lit("No window slots!");
+const __s_tried_to_create_window_type_d = cptr.lit("Tried to create window type %d\n");
+const __s_tty_clear_nhwindow = cptr.lit("tty_clear_nhwindow");
+const __s_bad_menu_screen_page_d = cptr.lit("bad menu screen page #%d");
+const __s_dash_plus_hash = cptr.lit("-+#");
+const __s_0123456789 = cptr.lit("0123456789\x1b\n\r");
+const __s_d_of_d = cptr.lit("(%d of %d)");
+const __s_search_for = cptr.lit("Search for:");
+const __s_star_pct_s_star = cptr.lit("*%s*");
+const __s_tty_display_nhwindow = cptr.lit("tty_display_nhwindow");
+const __s_ttydisplay_toplin_topline_empty = cptr.lit("ttyDisplay->toplin == TOPLINE_EMPTY");
+const __s_win_tty_wintty_c = cptr.lit("../win/tty/wintty.c");
+const __s_tty_dismiss_nhwindow = cptr.lit("tty_dismiss_nhwindow");
+const __s_tty_destroy_nhwindow = cptr.lit("tty_destroy_nhwindow");
+const __s_tty_curs = cptr.lit("tty_curs");
+const __s_unknown_type = cptr.lit("[unknown type]");
+const __s_topl_window = cptr.lit("[topl window]");
+const __s_status_window = cptr.lit("[status window]");
+const __s_map_window = cptr.lit("[map window]");
+const __s_corner_window = cptr.lit("[corner window]");
+const __s_text_window = cptr.lit("[text window]");
+const __s_base_window = cptr.lit("[base window]");
+const __s_tty_curs_bad_positioning_win_d_s_d_d = cptr.lit("tty_curs: bad positioning win %d %s <%d,%d>");
+const __s_r = cptr.lit("r");
+const __s_cannot_open_s = cptr.lit("Cannot open \"%s\".");
+const __s_tty_start_menu = cptr.lit("tty_start_menu");
+const __s_tty_add_menu = cptr.lit("tty_add_menu");
+const __s_menu_item_too_long_d = cptr.lit("Menu item too long (%d).");
+const __s_pct_c_sp_dash_sp = cptr.lit("%c - ");
+const __s_tty_end_menu = cptr.lit("tty_end_menu");
+const __s_ld_of_ld = cptr.lit("(%ld of %ld) ");
+const __s_end = cptr.lit("(end) ");
+const __s_tty_select_menu = cptr.lit("tty_select_menu");
+const __s_pct_s = cptr.lit("%s");
+const __s_more = cptr.lit("--More--");
+const __s_burdened = cptr.lit("Burdened");
+const __s_stressed = cptr.lit("Stressed");
+const __s_strained = cptr.lit("Strained");
+const __s_overtaxed = cptr.lit("Overtaxed");
+const __s_overloaded = cptr.lit("Overloaded");
+const __s_burden = cptr.lit("Burden");
+const __s_stress = cptr.lit("Stress");
+const __s_strain = cptr.lit("Strain");
+const __s_overtax = cptr.lit("Overtax");
+const __s_overload = cptr.lit("Overload");
+const __s_brd = cptr.lit("Brd");
+const __s_strs = cptr.lit("Strs");
+const __s_strn = cptr.lit("Strn");
+const __s_ovtx = cptr.lit("Ovtx");
+const __s_ovld = cptr.lit("Ovld");
+const __s_tty_putstatusfield_invalid_windesc = cptr.lit("tty_putstatusfield: Invalid WinDesc\n");
+const __s_sp_pct_s = cptr.lit(" %s");
+const __s_dlvl = cptr.lit("Dlvl");
+const __s_dl = cptr.lit("Dl");
+const __s_check_windowdata = cptr.lit("check_windowdata");
+const __s_null_status_window = cptr.lit(" null status window.");
+const __s_render_status = cptr.lit("render_status");
+const __s_win_err_on_status_window = cptr.lit("WIN_ERR on status window.");
+const __s_unexpected_condition_placement_overflow = cptr.lit("Unexpected condition placement overflow for \"%s\"");
+const __s_render_status__2 = cptr.lit("render_status()");
+const __s_unexpected_truncation = cptr.lit(" unexpected truncation.");
+const __s_30_30s = cptr.lit("%-30.30s");
+const __s_lbrack = cptr.lit("[");
+const __s_rbrack = cptr.lit("]");
+const __s_slash = cptr.lit("/");
 
 /** C ref: wintty.c:98 — struct window_procs */
 export let tty_procs = cptr.alloc(416);
-cptr.stPtr(tty_procs, __sl0);
+cptr.stPtr(tty_procs, __s_tty);
 cptr.stI32o(tty_procs, $window_procs_wp_id, NHC.wp_tty);
 cptr.stU64o(tty_procs, $window_procs_wincap, 67109123n);
 cptr.stU64o(tty_procs, $window_procs_wincap2, 972280n);
@@ -425,7 +425,7 @@ function resize_tty() {
             if (cptr.ldPtro(wins, i, 8) && cptr.ld1so(cptr.ldPtro(wins, i, 8), $WinDesc_active)) {
                 oldtoplin = NHM.TOPLINE_EMPTY;
                 cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
-                addtopl(__sl1);
+                addtopl(__s_press_a_key_to_continue);
                 resize_mesg++;
                 break;
             }
@@ -499,7 +499,7 @@ export function tty_init_nhwindows(argcp, argv) {
     tty_curs(BASE_WINDOW, 1, 4);
     for (i = 1; i <= 4; ++i)
         tty_putstr(BASE_WINDOW, 0, copyright_banner_line(i));
-    tty_putstr(BASE_WINDOW, 0, __sl2);
+    tty_putstr(BASE_WINDOW, 0, __s_empty);
     tty_display_nhwindow(BASE_WINDOW, 0);
     tty_curs(BASE_WINDOW, 1, 11);
     if ((cptr.ldU64o(tty_procs, $window_procs_wincap2) & 1024n) != 0n)
@@ -508,7 +508,7 @@ export function tty_init_nhwindows(argcp, argv) {
 
 /** C ref: wintty.c:596 — @param {CPtr<char>} pref */
 export function tty_preference_update(pref) {
-    let newstatuslines = schar((!strcmp(pref, __sl3) && cptr.ld1so(iflags, $instance_flags_window_inited) ? 1 : 0));
+    let newstatuslines = schar((!strcmp(pref, __s_statuslines) && cptr.ld1so(iflags, $instance_flags_window_inited) ? 1 : 0));
     if (newstatuslines) {
         new_status_window();
         newclipping(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -534,20 +534,20 @@ export function tty_askname() {
     if (cptr.ld1so(iflags, $instance_flags_wc2_selectsaved) && !cptr.ld1so(iflags, $instance_flags_renameinprogress))
         switch (restore_menu(BASE_WINDOW)) {
             case -1:
-            bail(__sl4);
+            bail(__s_until_next_time_then);
             break;
             case 0:
             break;
             case 1:
             return;
         }
-    tty_putstr(BASE_WINDOW, 0, __sl2);
+    tty_putstr(BASE_WINDOW, 0, __s_empty);
     do {
         if (++tryct > 1) {
             if (tryct > 10)
-                bail(__sl5);
+                bail(__s_giving_up_after_10_tries);
             tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n))));
-            tty_putstr(BASE_WINDOW, 0, __sl6);
+            tty_putstr(BASE_WINDOW, 0, __s_enter_a_name_for_your_character);
             tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury)))), cl_end();
         }
         tty_putstr(BASE_WINDOW, 0, cptr.decay(__static_tty_askname_who_are_you));
@@ -603,15 +603,15 @@ function getret() {
             return;
         }
     }
-    xputs(__sl7);
+    xputs(__s_nl);
     if (cptr.ld1so(flags, $flag_standout))
         standoutbeg();
-    xputs(__sl8);
-    xputs(cptr.ld1so(iflags, $instance_flags_cbreak) ? __sl9 : __sl10);
-    xputs(__sl11);
+    xputs(__s_hit);
+    xputs(cptr.ld1so(iflags, $instance_flags_cbreak) ? __s_space : __s_return);
+    xputs(__s_to_continue);
     if (cptr.ld1so(flags, $flag_standout))
         standoutend();
-    xwaitforspace(__sl12);
+    xwaitforspace(__s_sp);
     cptr.stI32o(iflags, $instance_flags_raw_printed, 0);
 }
 
@@ -620,7 +620,7 @@ export function tty_suspend_nhwindows(str) {
     term_curs_set(1);
     settty(str);
     if (!str)
-        tty_raw_print(__sl2);
+        tty_raw_print(__s_empty);
 }
 
 /** C ref: wintty.c:817 */
@@ -669,7 +669,7 @@ export function tty_create_nhwindow(type) {
         if (cptr.ldPtro(wins, newid, 8) === null)
             break;
     if (newid == NHM.MAXWIN) {
-        panic(__sl13);
+        panic(__s_no_window_slots);
         return -1;
     }
     newwin = alloc(144);
@@ -724,7 +724,7 @@ export function tty_create_nhwindow(type) {
         cptr.stI64o(newwin, $WinDesc_maxrow, cptr.stI64o(newwin, $WinDesc_maxcol, 0n));
         break;
         default:
-        panic(__sl14, type);
+        panic(__s_tried_to_create_window_type_d, type);
         return -1;
     }
     if (cptr.ldI64o(newwin, $WinDesc_maxrow)) {
@@ -822,7 +822,7 @@ export function tty_clear_nhwindow(window) {
         }
     }
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
-        panic(cptr.decay(winpanicstr), window, __sl15);
+        panic(cptr.decay(winpanicstr), window, __s_tty_clear_nhwindow);
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     ;
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
@@ -1110,7 +1110,7 @@ function process_menu_window(window, cw) {
             reset_count = 1;
         if (!page_start) {
             if (curr_page < 0 || (cptr.ldI64o(cw, $WinDesc_npages) > 0n && BigInt(curr_page) >= cptr.ldI64o(cw, $WinDesc_npages)))
-                panic(__sl16, curr_page);
+                panic(__s_bad_menu_screen_page_d, curr_page);
             if (!cptr.ldI16o(cw, $WinDesc_offx)) {
                 if (cptr.ldI16o(cw, $WinDesc_offy)) {
                     tty_curs(window, 1, 0);
@@ -1135,7 +1135,7 @@ function process_menu_window(window, cw) {
                     attr = cptr.ldI32o(curr, $tty_menu_item_attr);
                     color = cptr.ldI32o(curr, $tty_menu_item_color);
                     attr_n = 0;
-                    if (cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 0) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 1) == 32 && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2) && cptr.strchr(__sl17, cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2)) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 3) == 32)
+                    if (cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 0) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 1) == 32 && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2) && cptr.strchr(__s_dash_plus_hash, cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2)) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 3) == 32)
                         attr_n = 4;
                     for (n = 0, cp = cptr.ldPtro(curr, $tty_menu_item_str); cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) < cptr.ldI16o(ttyDisplay, $DisplayDesc_cols); cp = cptr.add(cp, 1), n++) {
                         if (n == attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE))
@@ -1197,12 +1197,12 @@ function process_menu_window(window, cw) {
                 if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                     resp_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(resp))));
             }
-            void cptr.strcat(cptr.decay(resp), __sl12);
-            void cptr.strcat(cptr.decay(resp), __sl18);
+            void cptr.strcat(cptr.decay(resp), __s_sp);
+            void cptr.strcat(cptr.decay(resp), __s_0123456789);
             void cptr.strcat(cptr.decay(resp), cptr.add(gm, $instance_globals_m_mapped_menu_cmds));
             void cptr.strcat(cptr.decay(resp), cptr.decay(default_menu_cmds));
             if (cptr.ldI64o(cw, $WinDesc_npages) > 1n)
-                void cptr.sprintf(cptr.ldPtro(cw, $WinDesc_morestr), __sl19, (curr_page + 1) | 0, Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_npages))));
+                void cptr.sprintf(cptr.ldPtro(cw, $WinDesc_morestr), __s_d_of_d, (curr_page + 1) | 0, Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_npages))));
             else if (msave)
                 void cptr.strcpy(cptr.ldPtro(cw, $WinDesc_morestr), msave);
             else
@@ -1334,10 +1334,10 @@ function process_menu_window(window, cw) {
                 let tmpbuf = [0];
                 let on_curr_page = 0;
                 let lineno = 0;
-                tty_getlin(__sl20, cptr.decay(tmpbuf));
+                tty_getlin(__s_search_for, cptr.decay(tmpbuf));
                 if (!cptr.ld1so(cptr.decay(tmpbuf), 0, 1) || cptr.ld1so(cptr.decay(tmpbuf), 0, 1) == 27)
                     break;
-                void cptr.sprintf(cptr.decay(searchbuf), __sl21, cptr.decay(tmpbuf));
+                void cptr.sprintf(cptr.decay(searchbuf), __s_star_pct_s_star, cptr.decay(tmpbuf));
                 for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
                     if (on_curr_page)
                         lineno++;
@@ -1476,7 +1476,7 @@ export function tty_display_nhwindow(window, blocking) {
         }
     }
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
-        panic(cptr.decay(winpanicstr), window, __sl22);
+        panic(cptr.decay(winpanicstr), window, __s_tty_display_nhwindow);
     if (cptr.ldI32(cw) & NHM.WIN_CANCELLED)
         return;
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
@@ -1488,7 +1488,7 @@ export function tty_display_nhwindow(window, blocking) {
             more();
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
             tty_clear_nhwindow(window);
-            void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 1926), 0) ? 1 : 0);
+            void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 1926), 0) ? 1 : 0);
         } else
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
         cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
@@ -1553,13 +1553,13 @@ export function tty_dismiss_nhwindow(window) {
         }
     }
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
-        panic(cptr.decay(winpanicstr), window, __sl25);
+        panic(cptr.decay(winpanicstr), window, __s_tty_dismiss_nhwindow);
     ;
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
         case NHM.NHW_MESSAGE:
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_EMPTY)
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
-        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 2015), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2015), 0) ? 1 : 0);
         // @FallThrough
         ;
         case NHM.NHW_STATUS:
@@ -1591,7 +1591,7 @@ export function tty_destroy_nhwindow(window) {
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null) {
         if (window == WIN_INVEN.v)
             return;
-        panic(cptr.decay(winpanicstr), window, __sl26);
+        panic(cptr.decay(winpanicstr), window, __s_tty_destroy_nhwindow);
     }
     if (cptr.ld1so(cw, $WinDesc_active))
         tty_dismiss_nhwindow(window);
@@ -1637,36 +1637,36 @@ export function tty_curs(window, x, y) {
         }
     }
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
-        panic(cptr.decay(winpanicstr), window, __sl27);
+        panic(cptr.decay(winpanicstr), window, __s_tty_curs);
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     ;
     if (x < 1 || y < 0 || BigInt(y) >= cptr.ldI64o(cw, $WinDesc_rows) || BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
-        let s = __sl28;
+        let s = __s_unknown_type;
         switch (cptr.ldI16o(cw, $WinDesc_type)) {
             case NHM.NHW_MESSAGE:
-            s = __sl29;
+            s = __s_topl_window;
             break;
             case NHM.NHW_STATUS:
-            s = __sl30;
+            s = __s_status_window;
             break;
             case NHM.NHW_MAP:
-            s = __sl31;
+            s = __s_map_window;
             break;
             case NHM.NHW_MENU:
-            s = __sl32;
+            s = __s_corner_window;
             break;
             case NHM.NHW_TEXT:
-            s = __sl33;
+            s = __s_text_window;
             break;
             case 7:
-            s = __sl34;
+            s = __s_base_window;
             break;
         }
         if (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)
             {
-                if (debugcore(__sl24, 1)) {
+                if (debugcore(__s_win_tty_wintty_c, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    pline(__sl35, window, s, x, y);
+                    pline(__s_tty_curs_bad_positioning_win_d_s_d_d, window, s, x, y);
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
@@ -1860,17 +1860,17 @@ export function tty_display_file(fname, complain) {
         let buf = new Uint8Array(256);
         let cr;
         tty_clear_nhwindow(WIN_MESSAGE.v);
-        f = fopen(fname, __sl36);
+        f = fopen(fname, __s_r);
         if (!f) {
             if (complain) {
                 home();
                 tty_mark_synch();
-                tty_raw_print(__sl2);
+                tty_raw_print(__s_empty);
                 perror(fname);
                 tty_wait_synch();
                 if (cptr.ldI16(u))
                     docrt();
-                pline(__sl37, fname);
+                pline(__s_cannot_open_s, fname);
             }
         } else {
             let datawin = tty_create_nhwindow(NHM.NHW_TEXT);
@@ -1903,7 +1903,7 @@ export function tty_display_file(fname, complain) {
 export function tty_start_menu(window, mbehavior) {
     let cw = null;
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
-        panic(cptr.decay(winpanicstr), window, __sl38);
+        panic(cptr.decay(winpanicstr), window, __s_tty_start_menu);
     (void (mbehavior));
     tty_clear_nhwindow(window);
     return;
@@ -1925,15 +1925,15 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
     if (str === null)
         return;
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
-        panic(cptr.decay(winpanicstr), window, __sl39);
+        panic(cptr.decay(winpanicstr), window, __s_tty_add_menu);
     (cptr.stI64o(cw, $WinDesc_nitems, cptr.ldI64o(cw, $WinDesc_nitems) + 1n)) - (1n);
     if (cptr.ldPtr(identifier)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(str)));
         if (len >= NHM.BUFSZ) {
-            impossible(__sl40, len);
+            impossible(__s_menu_item_too_long_d, len);
             len = 255;
         }
-        void cptr.sprintf(cptr.decay(buf), __sl41, ch ? ch : 63);
+        void cptr.sprintf(cptr.decay(buf), __s_pct_c_sp_dash_sp, ch ? ch : 63);
         void __builtin___strncpy_chk(cptr.add(cptr.decay(buf), 4), str, BigInt.asUintN(64, BigInt(len)), __builtin_object_size(cptr.add(cptr.decay(buf), 4), 1));
         cptr.st1o(cptr.decay(buf), (4 + len) | 0, 0, 1);
         newstr = cptr.decay(buf);
@@ -1984,13 +1984,13 @@ export function tty_end_menu(window, prompt) {
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU) {
         if (window == WIN_INVEN.v && !cw)
             return;
-        panic(cptr.decay(winpanicstr), window, __sl42);
+        panic(cptr.decay(winpanicstr), window, __s_tty_end_menu);
     }
     cptr.stPtro(cw, $WinDesc_mlist, reverse(cptr.ldPtro(cw, $WinDesc_mlist)));
     if (prompt) {
         let any = cptr.alloc(8);
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __sl2, NHM.MENU_ITEMFLAGS_NONE);
+        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_empty, NHM.MENU_ITEMFLAGS_NONE);
         tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o(tty_menu_promptstyle, $color_and_attr_attr), cptr.ldI32(tty_menu_promptstyle), prompt, NHM.MENU_ITEMFLAGS_NONE);
     }
     lmax = (52 < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? 52 : ((cptr.ldI16(ttyDisplay) - 1) | 0));
@@ -2024,11 +2024,11 @@ export function tty_end_menu(window, prompt) {
     cptr.stPtro(cptr.ldPtro(cw, $WinDesc_plist), cptr.ldI64o(cw, $WinDesc_npages), null, 8);
     if (cptr.ldI64o(cw, $WinDesc_npages) > 1n) {
         let buf = new Uint8Array(128);
-        void cptr.sprintf(cptr.decay(buf), __sl43, cptr.ldI64o(cw, $WinDesc_npages), cptr.ldI64o(cw, $WinDesc_npages));
+        void cptr.sprintf(cptr.decay(buf), __s_ld_of_ld, cptr.ldI64o(cw, $WinDesc_npages), cptr.ldI64o(cw, $WinDesc_npages));
         len = Number(BigInt.asIntN(16, cptr.strlen(cptr.decay(buf))));
-        cptr.stPtro(cw, $WinDesc_morestr, dupstr(__sl2));
+        cptr.stPtro(cw, $WinDesc_morestr, dupstr(__s_empty));
     } else {
-        cptr.stPtro(cw, $WinDesc_morestr, dupstr(__sl44));
+        cptr.stPtro(cw, $WinDesc_morestr, dupstr(__s_end));
         len = Number(BigInt.asIntN(16, cptr.strlen(cptr.ldPtro(cw, $WinDesc_morestr))));
     }
     if (len > cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)) {
@@ -2053,7 +2053,7 @@ export function tty_select_menu(window, how, menu_list) {
     let n;
     let cancelled;
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
-        panic(cptr.decay(winpanicstr), window, __sl45);
+        panic(cptr.decay(winpanicstr), window, __s_tty_select_menu);
     if (cptr.ldU64o(cw, $WinDesc_mbehavior) == 1n) {
         return 0;
     }
@@ -2089,7 +2089,7 @@ export function tty_message_menu(let$, how, mesg) {
             return 27;
     }
     if (how == NHM.PICK_NONE) {
-        pline(__sl46, mesg);
+        pline(__s_pct_s, mesg);
         return 0;
     }
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, let$);
@@ -2099,7 +2099,7 @@ export function tty_message_menu(let$, how, mesg) {
         more();
         cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
         tty_clear_nhwindow(WIN_MESSAGE.v);
-        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__sl23, __sl24, 2895), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2895), 0) ? 1 : 0);
     }
     cptr.stI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2);
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
@@ -2154,7 +2154,7 @@ export function tty_wait_synch() {
     } else {
         tty_display_nhwindow(WIN_MAP.v, 0);
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_inmore)) {
-            addtopl(__sl47);
+            addtopl(__s_more);
             void fflush(__stdoutp);
         } else if (cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) > cptr.ldI32(program_state)) {
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
@@ -2415,7 +2415,7 @@ export function tty_raw_print_bold(str) {
     term_start_raw_bold();
     void fputs(str, __stdoutp);
     term_end_raw_bold();
-    puts(__sl2);
+    puts(__s_empty);
     void fflush(__stdoutp);
     nomux_raw_emit(str, 1);
 }
@@ -2516,24 +2516,24 @@ let hpbar_crit_hp = 0;
 
 /** C ref: wintty.c:4342 — char *[3][6] */
 const encvals = (function () { const flat = new Uint8Array(3 * 6 * 8); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 6 * 8, (r + 1) * 6 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(encvals[0]), 0, __sl2);
-cptr.stPtro(cptr.decay(encvals[0]), 8, __sl48);
-cptr.stPtro(cptr.decay(encvals[0]), 16, __sl49);
-cptr.stPtro(cptr.decay(encvals[0]), 24, __sl50);
-cptr.stPtro(cptr.decay(encvals[0]), 32, __sl51);
-cptr.stPtro(cptr.decay(encvals[0]), 40, __sl52);
-cptr.stPtro(cptr.decay(encvals[1]), 0, __sl2);
-cptr.stPtro(cptr.decay(encvals[1]), 8, __sl53);
-cptr.stPtro(cptr.decay(encvals[1]), 16, __sl54);
-cptr.stPtro(cptr.decay(encvals[1]), 24, __sl55);
-cptr.stPtro(cptr.decay(encvals[1]), 32, __sl56);
-cptr.stPtro(cptr.decay(encvals[1]), 40, __sl57);
-cptr.stPtro(cptr.decay(encvals[2]), 0, __sl2);
-cptr.stPtro(cptr.decay(encvals[2]), 8, __sl58);
-cptr.stPtro(cptr.decay(encvals[2]), 16, __sl59);
-cptr.stPtro(cptr.decay(encvals[2]), 24, __sl60);
-cptr.stPtro(cptr.decay(encvals[2]), 32, __sl61);
-cptr.stPtro(cptr.decay(encvals[2]), 40, __sl62);
+cptr.stPtro(cptr.decay(encvals[0]), 0, __s_empty);
+cptr.stPtro(cptr.decay(encvals[0]), 8, __s_burdened);
+cptr.stPtro(cptr.decay(encvals[0]), 16, __s_stressed);
+cptr.stPtro(cptr.decay(encvals[0]), 24, __s_strained);
+cptr.stPtro(cptr.decay(encvals[0]), 32, __s_overtaxed);
+cptr.stPtro(cptr.decay(encvals[0]), 40, __s_overloaded);
+cptr.stPtro(cptr.decay(encvals[1]), 0, __s_empty);
+cptr.stPtro(cptr.decay(encvals[1]), 8, __s_burden);
+cptr.stPtro(cptr.decay(encvals[1]), 16, __s_stress);
+cptr.stPtro(cptr.decay(encvals[1]), 24, __s_strain);
+cptr.stPtro(cptr.decay(encvals[1]), 32, __s_overtax);
+cptr.stPtro(cptr.decay(encvals[1]), 40, __s_overload);
+cptr.stPtro(cptr.decay(encvals[2]), 0, __s_empty);
+cptr.stPtro(cptr.decay(encvals[2]), 8, __s_brd);
+cptr.stPtro(cptr.decay(encvals[2]), 16, __s_strs);
+cptr.stPtro(cptr.decay(encvals[2]), 24, __s_strn);
+cptr.stPtro(cptr.decay(encvals[2]), 32, __s_ovtx);
+cptr.stPtro(cptr.decay(encvals[2]), 40, __s_ovld);
 
 /** C ref: wintty.c:4351 — enum statusfields[3][19] */
 const twolineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
@@ -2747,7 +2747,7 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         attrmask = (color >> 8) & 255;
         fmt = cptr.ldPtro(status_fieldfmt, fldidx, 8);
         if (!fmt)
-            fmt = __sl46;
+            fmt = __s_pct_s;
         if (cptr.ld1s(fmt) == 32 && (fldidx == cptr.ldI32o3(fieldorder, 0, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 1, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 2, 76, 0, 4, 0)))
             fmt = cptr.add(fmt, 1);
         void cptr.sprintf(cptr.ldPtro(status_vals, fldidx, 8), fmt, text);
@@ -2927,7 +2927,7 @@ function tty_putstatusfield(text, x, y) {
     let lth = 0;
     let cw = null;
     if (WIN_STATUS.v == -1 || (cw = cptr.ldPtro(wins, WIN_STATUS.v, 8)) === null)
-        panic(__sl63);
+        panic(__s_tty_putstatusfield_invalid_windesc);
     ncols = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cols)));
     nrows = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
     lth = Number(BigInt.asIntN(32, cptr.strlen(text)));
@@ -2968,7 +2968,7 @@ function set_condition_length() {
 function shrink_enc(lvl) {
     if (lvl <= 2) {
         enc_shrinklvl = lvl;
-        void cptr.sprintf(cptr.ldPtro(status_vals, NHC.BL_CAP, 8), __sl64, cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8));
+        void cptr.sprintf(cptr.ldPtro(status_vals, NHC.BL_CAP, 8), __s_sp_pct_s, cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8));
     }
     cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CAP, 40, $tty_status_fields_lth, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_CAP, 8)));
 }
@@ -2979,7 +2979,7 @@ function shrink_dlvl(lvl) {
     let levval = cptr.strchr(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8), 58);
     if (levval) {
         dlvl_shrinklvl = lvl;
-        void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __sl65 : __sl66);
+        void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __s_dlvl : __s_dl);
         void cptr.strcat(cptr.decay(buf), levval);
         void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8), cptr.decay(buf));
         cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_LEVELDESC, 40, $tty_status_fields_lth, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8)));
@@ -2989,7 +2989,7 @@ function shrink_dlvl(lvl) {
 /** C ref: wintty.c:4967 @returns {CInt} */
 function check_windowdata() {
     if (WIN_STATUS.v == -1 || cptr.ldPtro(wins, WIN_STATUS.v, 8) === null) {
-        paniclog(__sl67, __sl68);
+        paniclog(__s_check_windowdata, __s_null_status_window);
         return 0;
     } else if (!windowdata_init) {
         tty_clear_nhwindow(WIN_STATUS.v);
@@ -3062,7 +3062,7 @@ function render_status() {
     let text;
     let cw = null;
     if (WIN_STATUS.v == -1 || (cw = cptr.ldPtro(wins, WIN_STATUS.v, 8)) === null) {
-        paniclog(__sl69, __sl70);
+        paniclog(__s_render_status, __s_win_err_on_status_window);
         return;
     }
     num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);
@@ -3100,7 +3100,7 @@ function render_status() {
                         if (x < cstart) {
                             do {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
-                                    tty_putstatusfield(__sl12, x, y);
+                                    tty_putstatusfield(__s_sp, x, y);
                             } while (++x < cstart);
                             cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, 40, $tty_status_fields_x, x);
                             tty_curs(WIN_STATUS.v, x, y);
@@ -3111,7 +3111,7 @@ function render_status() {
                         mask = cptr.ldI64o2(conditions, ci, 48, $conditions_t_mask);
                         if (bits & mask) {
                             let condtext;
-                            tty_putstatusfield(__sl12, x++, y);
+                            tty_putstatusfield(__s_sp, x++, y);
                             if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
                                 attrmask = condattr(mask, tty_colormasks);
                                 {
@@ -3136,8 +3136,8 @@ function render_status() {
                             }
                             condtext = cptr.ldPtro3(conditions, ci, 48, cond_shrinklvl, 8, $conditions_t_text);
                             if (BigInt(x) >= cptr.ldI64o(cw, $WinDesc_cols) && !truncation_expected) {
-                                impossible(__sl71, condtext);
-                                condtext = __sl2;
+                                impossible(__s_unexpected_condition_placement_overflow, condtext);
+                                condtext = __s_empty;
                                 bits = 0n;
                             }
                             tty_putstatusfield(condtext, x, y);
@@ -3167,7 +3167,7 @@ function render_status() {
                     }
                     if (BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
                         if (!truncation_expected && !__static_render_status_once_only++)
-                            paniclog(__sl72, __sl73);
+                            paniclog(__s_render_status__2, __s_unexpected_truncation);
                         x = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cols)));
                     }
                 } else if (hitpointbar) {
@@ -3178,7 +3178,7 @@ function render_status() {
                     let savedch = 0;
                     let twoparts = schar((hpbar_percent < 100));
                     if (cptr.strlen(text) != 30n) {
-                        void cptr.sprintf(cptr.decay(bar), __sl74, text);
+                        void cptr.sprintf(cptr.decay(bar), __s_30_30s, text);
                         void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_TITLE, 8), cptr.decay(bar));
                     } else {
                         void cptr.strcpy(cptr.decay(bar), text);
@@ -3197,7 +3197,7 @@ function render_status() {
                         savedch = cptr.ld1s(bar2);
                         cptr.st1(bar2, 0);
                     }
-                    tty_putstatusfield(__sl75, x++, y);
+                    tty_putstatusfield(__s_lbrack, x++, y);
                     if (cptr.ld1s(cptr.decay(bar))) {
                         coloridx = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, $tty_status_fields_color);
                         attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, 40, $tty_status_fields_attr);
@@ -3249,7 +3249,7 @@ function render_status() {
                         if ((attrmask & NHC.HL_BLINK) != 0)
                             term_end_attr(NHM.ATR_BLINK);
                     }
-                    tty_putstatusfield(__sl76, x++, y);
+                    tty_putstatusfield(__s_rbrack, x++, y);
                 } else {
                     if (idx == NHC.BL_VERS && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_FLUSH) {
                         let vstart;
@@ -3263,18 +3263,18 @@ function render_status() {
                         if (x < vstart) {
                             do {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
-                                    tty_putstatusfield(__sl12, x, y);
+                                    tty_putstatusfield(__s_sp, x, y);
                             } while (++x < vstart);
                             cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, 40, $tty_status_fields_x, x);
                         }
                     }
                     if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
                         while (cptr.ld1s(text) == 32) {
-                            tty_putstatusfield(__sl12, x++, y);
+                            tty_putstatusfield(__s_sp, x++, y);
                             text = cptr.add(text, 1);
                         }
                         if (cptr.ld1s(text) == 47 && idx == NHC.BL_EXP) {
-                            tty_putstatusfield(__sl77, x++, y);
+                            tty_putstatusfield(__s_slash, x++, y);
                             text = cptr.add(text, 1);
                         }
                         attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, 40, $tty_status_fields_attr);

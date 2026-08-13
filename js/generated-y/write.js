@@ -46,61 +46,61 @@ const $Role_mnum = FLD.Role_mnum, $instance_globals_saved_b_bases = FLD.instance
     $you_uconduct = FLD.you_uconduct, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("You can't write such a weird scroll!");
-const __sl1 = cptr.lit("need hands to be able to write!");
-const __sl2 = cptr.lit("%s from your %s.");
-const __sl3 = cptr.lit("slip");
-const __sl4 = cptr.lit("write on");
-const __sl5 = cptr.lit("book");
-const __sl6 = cptr.lit("spellbook");
-const __sl7 = cptr.lit("scroll");
-const __sl8 = cptr.lit("don't know whether that %s is blank or not.");
-const __sl9 = cptr.lit("%s can't create braille text.");
-const __sl10 = cptr.lit("That %s is not blank!");
-const __sl11 = cptr.lit("What type of %s do you want to write?");
-const __sl12 = cptr.lit("scroll ");
-const __sl13 = cptr.lit("spellbook ");
-const __sl14 = cptr.lit("of ");
-const __sl15 = cptr.lit(" armour");
-const __sl16 = cptr.lit(" armor ");
-const __sl17 = cptr.lit("write.c");
-const __sl18 = cptr.lit("dowrite");
-const __sl19 = cptr.lit("is no such %s!");
-const __sl20 = cptr.lit("write that!");
-const __sl21 = cptr.lit("It's obscene!");
-const __sl22 = cptr.lit("%s to write the Great Yendorian Novel, but %s inspiration.");
-const __sl23 = cptr.lit("prepare");
-const __sl24 = cptr.lit("try");
-const __sl25 = cptr.lit("lack");
-const __sl26 = cptr.lit("have too much");
-const __sl27 = cptr.lit("%sproduce really %s fan-fiction.");
-const __sl28 = cptr.lit("start to ");
-const __sl29 = cptr.lit("");
-const __sl30 = cptr.lit("lame");
-const __sl31 = cptr.lit("awesome");
-const __sl32 = cptr.lit("give up on the idea.");
-const __sl33 = cptr.lit("tear it up.");
-const __sl34 = cptr.lit("No mere dungeon adventurer could write that.");
-const __sl35 = cptr.lit("Unfortunately you don't have enough information to go on.");
-const __sl36 = cptr.lit("became literate by writing %s");
-const __sl37 = cptr.lit("marker is too dry to write that!");
-const __sl38 = cptr.lit("marker dries out!");
-const __sl39 = cptr.lit("spellbook is left unfinished and your writing fades.");
-const __sl40 = cptr.lit("scroll is now useless and disappears!");
-const __sl41 = cptr.lit("%s to write that.");
-const __sl42 = cptr.lit("fail");
-const __sl43 = cptr.lit("don't know how");
-const __sl44 = cptr.lit("write in your best handwriting:  \"My Diary\", but it quickly fades.");
-const __sl45 = cptr.lit("%s was here!");
-const __sl46 = cptr.lit("write \"%s\" and the scroll disappears.");
-const __sl47 = cptr.lit("fail to write the scroll correctly and it disappears.");
-const __sl48 = cptr.lit("spellbook warps strangely, then turns %s.");
-const __sl49 = cptr.lit("Oops!  %s out of your grasp!");
-const __sl50 = cptr.lit("%s%s");
-const __sl51 = cptr.lit("into ");
-const __sl52 = cptr.lit("parchment");
-const __sl53 = cptr.lit("vellum");
-const __sl54 = cptr.lit("cloth");
+const __s_you_can_t_write_such_a_weird_scroll = cptr.lit("You can't write such a weird scroll!");
+const __s_need_hands_to_be_able_to_write = cptr.lit("need hands to be able to write!");
+const __s_s_from_your_s = cptr.lit("%s from your %s.");
+const __s_slip = cptr.lit("slip");
+const __s_write_on = cptr.lit("write on");
+const __s_book = cptr.lit("book");
+const __s_spellbook = cptr.lit("spellbook");
+const __s_scroll = cptr.lit("scroll");
+const __s_don_t_know_whether_that_s_is_blank_or = cptr.lit("don't know whether that %s is blank or not.");
+const __s_s_can_t_create_braille_text = cptr.lit("%s can't create braille text.");
+const __s_that_s_is_not_blank = cptr.lit("That %s is not blank!");
+const __s_what_type_of_s_do_you_want_to_write = cptr.lit("What type of %s do you want to write?");
+const __s_scroll__2 = cptr.lit("scroll ");
+const __s_spellbook__2 = cptr.lit("spellbook ");
+const __s_of = cptr.lit("of ");
+const __s_armour = cptr.lit(" armour");
+const __s_armor = cptr.lit(" armor ");
+const __s_write_c = cptr.lit("write.c");
+const __s_dowrite = cptr.lit("dowrite");
+const __s_is_no_such_s = cptr.lit("is no such %s!");
+const __s_write_that = cptr.lit("write that!");
+const __s_it_s_obscene = cptr.lit("It's obscene!");
+const __s_s_to_write_the_great_yendorian_novel = cptr.lit("%s to write the Great Yendorian Novel, but %s inspiration.");
+const __s_prepare = cptr.lit("prepare");
+const __s_try = cptr.lit("try");
+const __s_lack = cptr.lit("lack");
+const __s_have_too_much = cptr.lit("have too much");
+const __s_sproduce_really_s_fan_fiction = cptr.lit("%sproduce really %s fan-fiction.");
+const __s_start_to = cptr.lit("start to ");
+const __s_empty = cptr.lit("");
+const __s_lame = cptr.lit("lame");
+const __s_awesome = cptr.lit("awesome");
+const __s_give_up_on_the_idea = cptr.lit("give up on the idea.");
+const __s_tear_it_up = cptr.lit("tear it up.");
+const __s_no_mere_dungeon_adventurer_could_write = cptr.lit("No mere dungeon adventurer could write that.");
+const __s_unfortunately_you_don_t_have_enough = cptr.lit("Unfortunately you don't have enough information to go on.");
+const __s_became_literate_by_writing_s = cptr.lit("became literate by writing %s");
+const __s_marker_is_too_dry_to_write_that = cptr.lit("marker is too dry to write that!");
+const __s_marker_dries_out = cptr.lit("marker dries out!");
+const __s_spellbook_is_left_unfinished_and_your = cptr.lit("spellbook is left unfinished and your writing fades.");
+const __s_scroll_is_now_useless_and_disappears = cptr.lit("scroll is now useless and disappears!");
+const __s_s_to_write_that = cptr.lit("%s to write that.");
+const __s_fail = cptr.lit("fail");
+const __s_don_t_know_how = cptr.lit("don't know how");
+const __s_write_in_your_best_handwriting_my_diary = cptr.lit("write in your best handwriting:  \"My Diary\", but it quickly fades.");
+const __s_s_was_here = cptr.lit("%s was here!");
+const __s_write_s_and_the_scroll_disappears = cptr.lit("write \"%s\" and the scroll disappears.");
+const __s_fail_to_write_the_scroll_correctly_and = cptr.lit("fail to write the scroll correctly and it disappears.");
+const __s_spellbook_warps_strangely_then_turns_s = cptr.lit("spellbook warps strangely, then turns %s.");
+const __s_oops_s_out_of_your_grasp = cptr.lit("Oops!  %s out of your grasp!");
+const __s_s_s = cptr.lit("%s%s");
+const __s_into = cptr.lit("into ");
+const __s_parchment = cptr.lit("parchment");
+const __s_vellum = cptr.lit("vellum");
+const __s_cloth = cptr.lit("cloth");
 
 /** C ref: write.c:14 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* cost(otmp) {
@@ -139,7 +139,7 @@ function* cost(otmp) {
         return 30;
         case NHC.SCR_BLANK_PAPER:
         default:
-        (yield* impossible(__sl0));
+        (yield* impossible(__s_you_can_t_write_such_a_weird_scroll));
     }
     return 1000;
 }
@@ -175,47 +175,47 @@ export function* dowrite(pen) {
     let spell_knowledge;
     __lbl_found: {
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-            (yield* You(__sl1));
+            (yield* You(__s_need_hands_to_be_able_to_write));
             return NHM.ECMD_OK;
         } else if (Glib()) {
-            (yield* pline(__sl2, (yield* Tobjnam(pen, __sl3)), (yield* fingers_or_gloves(0))));
+            (yield* pline(__s_s_from_your_s, (yield* Tobjnam(pen, __s_slip)), (yield* fingers_or_gloves(0))));
             (yield* dropx(pen));
             return NHM.ECMD_TIME;
         }
-        paper = (yield* getobj(__sl4, write_ok, NHM.GETOBJ_NOFLAGS));
+        paper = (yield* getobj(__s_write_on, write_ok, NHM.GETOBJ_NOFLAGS));
         if (!paper)
             return NHM.ECMD_CANCEL;
-        typeword = (cptr.ldI16o(paper, $obj_otyp) == NHC.SPE_NOVEL) ? __sl5 : ((cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) ? __sl6 : __sl7);
+        typeword = (cptr.ldI16o(paper, $obj_otyp) == NHC.SPE_NOVEL) ? __s_book : ((cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) ? __s_spellbook : __s_scroll);
         if (Blind()) {
             if (!(cptr.ldI32o(paper, $obj_dknown) & 1)) {
-                (yield* You(__sl8, typeword));
+                (yield* You(__s_don_t_know_whether_that_s_is_blank_or, typeword));
                 return NHM.ECMD_OK;
             } else if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
-                (yield* pline(__sl9, upstart((yield* ysimple_name(pen)))));
+                (yield* pline(__s_s_can_t_create_braille_text, upstart((yield* ysimple_name(pen)))));
                 return NHM.ECMD_OK;
             }
         }
         (yield* observe_object(paper));
         if (cptr.ldI16o(paper, $obj_otyp) != NHC.SCR_BLANK_PAPER && cptr.ldI16o(paper, $obj_otyp) != NHC.SPE_BLANK_PAPER) {
-            (yield* pline(__sl10, typeword));
+            (yield* pline(__s_that_s_is_not_blank, typeword));
             (yield* exercise(NHC.A_WIS, 0));
             return NHM.ECMD_TIME;
         }
         (yield* discover_object(NHC.SCR_BLANK_PAPER, 1, 1, 1));
-        void cptr.sprintf(cptr.decay(qbuf), __sl11, typeword);
+        void cptr.sprintf(cptr.decay(qbuf), __s_what_type_of_s_do_you_want_to_write, typeword);
         (yield* getlin(cptr.decay(qbuf), cptr.decay(namebuf)));
         void (yield* mungspaces(cptr.decay(namebuf)));
         if (cptr.ld1so(cptr.decay(namebuf), 0, 1) == 27 || !cptr.ld1so(cptr.decay(namebuf), 0, 1))
             return NHM.ECMD_TIME;
         nm = cptr.decay(namebuf);
-        if (!(yield* strncmpi(nm, __sl12, 7)))
+        if (!(yield* strncmpi(nm, __s_scroll__2, 7)))
             nm = cptr.add(nm, 7);
-        else if (!(yield* strncmpi(nm, __sl13, 10)))
+        else if (!(yield* strncmpi(nm, __s_spellbook__2, 10)))
             nm = cptr.add(nm, 10);
-        if (!(yield* strncmpi(nm, __sl14, 3)))
+        if (!(yield* strncmpi(nm, __s_of, 3)))
             nm = cptr.add(nm, 3);
-        if ((bp = (yield* strstri(nm, __sl15))) !== null) {
-            cptr.memcpy(bp, __sl16, 7n);
+        if ((bp = (yield* strstri(nm, __s_armour))) !== null) {
+            cptr.memcpy(bp, __s_armor, 7n);
             void (yield* mungspaces(cptr.add(bp, 1)));
         }
         deferred = (real = 0);
@@ -239,7 +239,7 @@ export function* dowrite(pen) {
             }
         }
         for (i = first; i <= last; i++) {
-            if (cptr.ldPtro2(objects, i, 120, $objclass_oc_uname) && !(yield* strncmpi((cptr.ldPtro2(objects, i, 120, $objclass_oc_uname)), (nm), -1)) && !(real && (cptr.ldI32o2(objects, i, 120, $objclass_oc_name_known) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl17, 193, __sl18), rn2(++deferralchance)) : rn2(++deferralchance))) {
+            if (cptr.ldPtro2(objects, i, 120, $objclass_oc_uname) && !(yield* strncmpi((cptr.ldPtro2(objects, i, 120, $objclass_oc_uname)), (nm), -1)) && !(real && (cptr.ldI32o2(objects, i, 120, $objclass_oc_name_known) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance)) : rn2(++deferralchance))) {
                 deferred = i;
                 by_descr = 1;
             }
@@ -248,57 +248,57 @@ export function* dowrite(pen) {
             i = deferred;
             break __lbl_found;
         }
-        (yield* There(__sl19, typeword));
+        (yield* There(__s_is_no_such_s, typeword));
         return NHM.ECMD_TIME;
     }
     if (i == NHC.SCR_BLANK_PAPER || i == NHC.SPE_BLANK_PAPER) {
-        (yield* You_cant(__sl20));
-        (yield* pline(__sl21));
+        (yield* You_cant(__s_write_that));
+        (yield* pline(__s_it_s_obscene));
         return NHM.ECMD_TIME;
     } else if (i == NHC.SPE_NOVEL) {
-        let fanfic = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
-        let tearup = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl17, 216, __sl18), rn2(3)) : rn2(3))));
+        let fanfic = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 216, __s_dowrite), rn2(3)) : rn2(3))));
+        let tearup = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 216, __s_dowrite), rn2(3)) : rn2(3))));
         if (!fanfic) {
-            (yield* You(__sl22, !tearup ? __sl23 : __sl24, !Hallucination() ? __sl25 : __sl26));
+            (yield* You(__s_s_to_write_the_great_yendorian_novel, !tearup ? __s_prepare : __s_try, !Hallucination() ? __s_lack : __s_have_too_much));
         } else {
-            (yield* You(__sl27, !tearup ? __sl28 : __sl29, !Hallucination() ? __sl30 : __sl31));
+            (yield* You(__s_sproduce_really_s_fan_fiction, !tearup ? __s_start_to : __s_empty, !Hallucination() ? __s_lame : __s_awesome));
         }
         if (!tearup) {
-            (yield* You(__sl32));
+            (yield* You(__s_give_up_on_the_idea));
         } else {
-            (yield* You(__sl33));
+            (yield* You(__s_tear_it_up));
             (yield* useup(paper));
         }
         return NHM.ECMD_TIME;
     } else if (i == NHC.SPE_BOOK_OF_THE_DEAD) {
-        (yield* pline(__sl34));
+        (yield* pline(__s_no_mere_dungeon_adventurer_could_write));
         return NHM.ECMD_TIME;
     } else if (by_descr && cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS && !(cptr.ldI32o2(objects, i, 120, $objclass_oc_name_known) & 1)) {
-        (yield* pline(__sl35));
+        (yield* pline(__s_unfortunately_you_don_t_have_enough));
         return NHM.ECMD_TIME;
     }
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
-        (yield* livelog_printf(32n, __sl36, (yield* an(typeword))));
+        (yield* livelog_printf(32n, __s_became_literate_by_writing_s, (yield* an(typeword))));
     new_obj = (yield* mksobj(i, 0, 0));
     cptr.stI32o(new_obj, $obj_bknown, ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0 ? 1 : 0) >>> 0);
     (yield* check_unpaid(pen));
     basecost = (yield* cost(new_obj));
     if (cptr.ld1so(pen, $obj_spe) < ((basecost / 2) | 0)) {
-        (yield* Your(__sl37));
+        (yield* Your(__s_marker_is_too_dry_to_write_that));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
-    actualcost = (((rng_log_enabled() ? (rng_log_set_caller(__sl17, 265, __sl18), rn2((basecost / 2) | 0)) : rn2((basecost / 2) | 0)) + ((basecost / 2) | 0)) | 0);
+    actualcost = (((rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 265, __s_dowrite), rn2((basecost / 2) | 0)) : rn2((basecost / 2) | 0)) + ((basecost / 2) | 0)) | 0);
     curseval = (bcsign(pen) + bcsign(paper)) | 0;
     (yield* exercise(NHC.A_WIS, 1));
     if (cptr.ld1so(pen, $obj_spe) < actualcost) {
         cptr.st1o(pen, $obj_spe, 0);
-        (yield* Your(__sl38));
+        (yield* Your(__s_marker_dries_out));
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
-            (yield* pline_The(__sl39));
+            (yield* pline_The(__s_spellbook_is_left_unfinished_and_your));
             (yield* update_inventory());
         } else {
-            (yield* pline_The(__sl40));
+            (yield* pline_The(__s_scroll_is_now_useless_and_disappears));
             (yield* useup(paper));
         }
         (yield* obfree(new_obj, null));
@@ -310,32 +310,32 @@ export function* dowrite(pen) {
     } else {
         spell_knowledge = NHC.spe_Unknown;
     }
-    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), 120, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), 120, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 321, __sl18), rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) : rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15))) {
-        (yield* You(__sl41, by_descr ? __sl42 : __sl43));
+    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), 120, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), 120, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && (rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 321, __s_dowrite), rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) : rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15))) {
+        (yield* You(__s_s_to_write_that, by_descr ? __s_fail : __s_don_t_know_how));
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
-            (yield* You(__sl44));
+            (yield* You(__s_write_in_your_best_handwriting_my_diary));
             (yield* update_inventory());
         } else {
             if (by_descr) {
                 void cptr.strcpy(cptr.decay(namebuf), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr)));
                 wipeout_text(cptr.decay(namebuf), (((36 - cptr.ldI32o(u, $you_ulevel)) | 0) / 6) | 0, 0);
             } else
-                void cptr.sprintf(cptr.decay(namebuf), __sl45, svp);
-            (yield* You(__sl46, cptr.decay(namebuf)));
+                void cptr.sprintf(cptr.decay(namebuf), __s_s_was_here, svp);
+            (yield* You(__s_write_s_and_the_scroll_disappears, cptr.decay(namebuf)));
             (yield* useup(paper));
         }
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
-    if (Blind() && (rng_log_enabled() ? (rng_log_set_caller(__sl17, 342, __sl18), rnl(3)) : rnl(3))) {
-        (yield* You(__sl47));
+    if (Blind() && (rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 342, __s_dowrite), rnl(3)) : rnl(3))) {
+        (yield* You(__s_fail_to_write_the_scroll_correctly_and));
         (yield* useup(paper));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
     (yield* useup(paper));
     if (cptr.ld1so(new_obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
-        (yield* pline_The(__sl48, (yield* new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf)))));
+        (yield* pline_The(__s_spellbook_warps_strangely_then_turns_s, (yield* new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf)))));
     }
     cptr.stI32o(new_obj, $obj_blessed, (curseval > 0) >>> 0);
     cptr.stI32o(new_obj, $obj_cursed, (curseval < 0) >>> 0);
@@ -344,15 +344,15 @@ export function* dowrite(pen) {
     cptr.stI32o(new_obj, $obj_dknown, 0);
     if ((cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 || by_descr)
         (yield* observe_object(new_obj));
-    new_obj = (yield* hold_another_object(new_obj, __sl49, (yield* The((yield* aobjnam(new_obj, __sl3)))), null));
+    new_obj = (yield* hold_another_object(new_obj, __s_oops_s_out_of_your_grasp, (yield* The((yield* aobjnam(new_obj, __s_slip)))), null));
     (void (new_obj));
     return NHM.ECMD_TIME;
 }
 
 const __static_new_book_description_compositions = cptr.alloc(4 * 8);
-cptr.stPtro(__static_new_book_description_compositions, 0, __sl52);
-cptr.stPtro(__static_new_book_description_compositions, 8, __sl53);
-cptr.stPtro(__static_new_book_description_compositions, 16, __sl54);
+cptr.stPtro(__static_new_book_description_compositions, 0, __s_parchment);
+cptr.stPtro(__static_new_book_description_compositions, 8, __s_vellum);
+cptr.stPtro(__static_new_book_description_compositions, 16, __s_cloth);
 cptr.stPtro(__static_new_book_description_compositions, 24, null); /** C ref: write.c:399 — char *[4] (function-static) */
 
 /** C ref: write.c:395 — @param {CInt} booktype @param {CPtr<char>} outbuf @returns {CPtr<char>} */
@@ -363,7 +363,7 @@ function* new_book_description(booktype, outbuf) {
     for (comp_p = __static_new_book_description_compositions; cptr.ldPtr(comp_p); comp_p = cptr.add(comp_p, 1, 8))
         if (!(yield* strncmpi((descr), (cptr.ldPtr(comp_p)), -1)))
             break;
-    void cptr.sprintf(outbuf, __sl50, cptr.ldPtr(comp_p) ? __sl51 : __sl29, descr);
+    void cptr.sprintf(outbuf, __s_s_s, cptr.ldPtr(comp_p) ? __s_into : __s_empty, descr);
     return outbuf;
 }
 

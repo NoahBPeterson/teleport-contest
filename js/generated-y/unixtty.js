@@ -30,10 +30,10 @@ const $instance_flags_cbreak = FLD.instance_flags_cbreak, $instance_flags_echo =
     $window_procs_wp_id = FLD.window_procs_wp_id;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("NOMUX_MARKERS");
-const __sl1 = cptr.lit("NetHack (setctty)");
-const __sl2 = cptr.lit("NetHack (gettty)");
-const __sl3 = cptr.lit("NetHack (settty)");
+const __s_nomux_markers = cptr.lit("NOMUX_MARKERS");
+const __s_nethack_setctty = cptr.lit("NetHack (setctty)");
+const __s_nethack_gettty = cptr.lit("NetHack (gettty)");
+const __s_nethack_settty = cptr.lit("NetHack (settty)");
 
 /** C ref: unixtty.c:150 — char */
 export let erase_char = 0;
@@ -95,18 +95,18 @@ function speednum(speed) {
 /** C ref: unixtty.c:199 */
 function setctty() {
     if ((tcsetattr(0, 1, curttyb)) < 0 || 0) {
-        if (!getenv(__sl0))
-            perror(__sl1);
+        if (!getenv(__s_nomux_markers))
+            perror(__s_nethack_setctty);
     }
 }
 
 /** C ref: unixtty.c:214 */
 export function gettty() {
     if ((tcgetattr(0, inittyb)) < 0 || 0) {
-        if (!getenv(__sl0))
-            perror(__sl2);
+        if (!getenv(__s_nomux_markers))
+            perror(__s_nethack_gettty);
     }
-    if (getenv(__sl0)) {
+    if (getenv(__s_nomux_markers)) {
         cptr.st1o2(inittyb, 3, 1, $termios_c_cc, 127);
         cptr.st1o2(inittyb, 5, 1, $termios_c_cc, 21);
         cptr.st1o2(inittyb, 8, 1, $termios_c_cc, 3);
@@ -132,8 +132,8 @@ export function* settty(s) {
     if (s)
         (yield* Y.icall(raw_print()(s)));
     if ((tcsetattr(0, 1, inittyb)) < 0 || 0) {
-        if (!getenv(__sl0))
-            perror(__sl3);
+        if (!getenv(__s_nomux_markers))
+            perror(__s_nethack_settty);
     }
     cptr.st1o(iflags, $instance_flags_echo, schar(((cptr.ldU64o(inittyb, $termios_c_lflag) & 8n) ? NHM.ON : NHM.OFF)));
     cptr.st1o(iflags, $instance_flags_cbreak, schar(((!(cptr.ldU64o(inittyb, $termios_c_lflag) & 256n)) ? NHM.ON : NHM.OFF)));

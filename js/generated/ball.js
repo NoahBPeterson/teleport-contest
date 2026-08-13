@@ -55,57 +55,57 @@ const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_water_level = FLD.dg
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Startled, you drop the iron ball.");
-const __sl1 = cptr.lit("ball.c");
-const __sl2 = cptr.lit("ballfall");
-const __sl3 = cptr.lit("iron ball falls on your %s.");
-const __sl4 = cptr.lit("Fortunately, you are wearing a hard helmet.");
-const __sl5 = cptr.lit("%s does not protect you.");
-const __sl6 = cptr.lit("crunched in the head by an iron ball");
-const __sl7 = cptr.lit("Where are your ball and chain?");
-const __sl8 = cptr.lit("");
-const __sl9 = cptr.lit("bc already placed?");
-const __sl10 = cptr.lit("unplacebc denied, restriction in place");
-const __sl11 = cptr.lit("unplacebc_and_covet_placebc denied, already restricted");
-const __sl12 = cptr.lit("unplacebc_and_covet_placebc");
-const __sl13 = cptr.lit("bc_order:  ball&chain not in same location!");
-const __sl14 = cptr.lit("drag_ball");
-const __sl15 = cptr.lit("bad chain movement");
-const __sl16 = cptr.lit("cannot %sdrag the heavy iron ball.");
-const __sl17 = cptr.lit("carry all that and also ");
-const __sl18 = cptr.lit("a tug from the iron ball.");
-const __sl19 = cptr.lit("are jerked back by the iron ball!");
-const __sl20 = cptr.lit("%s%s!");
-const __sl21 = cptr.lit("pit");
-const __sl22 = cptr.lit("web");
-const __sl23 = cptr.lit("web is destroyed!");
-const __sl24 = cptr.lit("lava");
-const __sl25 = cptr.lit("drop_ball");
-const __sl26 = cptr.lit("bear trap");
-const __sl27 = cptr.lit("%s %s is severely damaged.");
-const __sl28 = cptr.lit("left");
-const __sl29 = cptr.lit("right");
-const __sl30 = cptr.lit("leg damage from being pulled out of a bear trap");
-const __sl31 = cptr.lit("litter");
-const __sl32 = cptr.lit("drop %s and %s %s down the stairs with you.");
-const __sl33 = cptr.lit("it");
-const __sl34 = cptr.lit("they");
-const __sl35 = cptr.lit("fall");
-const __sl36 = cptr.lit("drag_down");
-const __sl37 = cptr.lit("lose your grip on the iron ball.");
-const __sl38 = cptr.lit("iron ball drags you downstairs!");
-const __sl39 = cptr.lit("dragged downstairs by an iron ball");
-const __sl40 = cptr.lit("iron ball smacks into you!");
-const __sl41 = cptr.lit("iron ball collision");
-const __sl42 = cptr.lit("Punished without %s%s%s?");
-const __sl43 = cptr.lit("iron ball");
-const __sl44 = cptr.lit(" and ");
-const __sl45 = cptr.lit("attached chain");
-const __sl46 = cptr.lit("Attached %s%s%s without being Punished?");
-const __sl47 = cptr.lit("chain");
-const __sl48 = cptr.lit("uball: type %d (%s), where %d, wornmask=0x%08lx");
-const __sl49 = cptr.lit("uchain: type %d (%s), where %d, wornmask=0x%08lx");
-const __sl50 = cptr.lit("b&c distance: you@<%d,%d>, chain@<%d,%d>, ball@<%d,%d>");
+const __s_startled_you_drop_the_iron_ball = cptr.lit("Startled, you drop the iron ball.");
+const __s_ball_c = cptr.lit("ball.c");
+const __s_ballfall = cptr.lit("ballfall");
+const __s_iron_ball_falls_on_your_s = cptr.lit("iron ball falls on your %s.");
+const __s_fortunately_you_are_wearing_a_hard = cptr.lit("Fortunately, you are wearing a hard helmet.");
+const __s_s_does_not_protect_you = cptr.lit("%s does not protect you.");
+const __s_crunched_in_the_head_by_an_iron_ball = cptr.lit("crunched in the head by an iron ball");
+const __s_where_are_your_ball_and_chain = cptr.lit("Where are your ball and chain?");
+const __s_empty = cptr.lit("");
+const __s_bc_already_placed = cptr.lit("bc already placed?");
+const __s_unplacebc_denied_restriction_in_place = cptr.lit("unplacebc denied, restriction in place");
+const __s_unplacebc_and_covet_placebc_denied = cptr.lit("unplacebc_and_covet_placebc denied, already restricted");
+const __s_unplacebc_and_covet_placebc = cptr.lit("unplacebc_and_covet_placebc");
+const __s_bc_order_ball_chain_not_in_same_location = cptr.lit("bc_order:  ball&chain not in same location!");
+const __s_drag_ball = cptr.lit("drag_ball");
+const __s_bad_chain_movement = cptr.lit("bad chain movement");
+const __s_cannot_sdrag_the_heavy_iron_ball = cptr.lit("cannot %sdrag the heavy iron ball.");
+const __s_carry_all_that_and_also = cptr.lit("carry all that and also ");
+const __s_a_tug_from_the_iron_ball = cptr.lit("a tug from the iron ball.");
+const __s_are_jerked_back_by_the_iron_ball = cptr.lit("are jerked back by the iron ball!");
+const __s_s_s = cptr.lit("%s%s!");
+const __s_pit = cptr.lit("pit");
+const __s_web = cptr.lit("web");
+const __s_web_is_destroyed = cptr.lit("web is destroyed!");
+const __s_lava = cptr.lit("lava");
+const __s_drop_ball = cptr.lit("drop_ball");
+const __s_bear_trap = cptr.lit("bear trap");
+const __s_s_s_is_severely_damaged = cptr.lit("%s %s is severely damaged.");
+const __s_left = cptr.lit("left");
+const __s_right = cptr.lit("right");
+const __s_leg_damage_from_being_pulled_out_of_a = cptr.lit("leg damage from being pulled out of a bear trap");
+const __s_litter = cptr.lit("litter");
+const __s_drop_s_and_s_s_down_the_stairs_with_you = cptr.lit("drop %s and %s %s down the stairs with you.");
+const __s_it = cptr.lit("it");
+const __s_they = cptr.lit("they");
+const __s_fall = cptr.lit("fall");
+const __s_drag_down = cptr.lit("drag_down");
+const __s_lose_your_grip_on_the_iron_ball = cptr.lit("lose your grip on the iron ball.");
+const __s_iron_ball_drags_you_downstairs = cptr.lit("iron ball drags you downstairs!");
+const __s_dragged_downstairs_by_an_iron_ball = cptr.lit("dragged downstairs by an iron ball");
+const __s_iron_ball_smacks_into_you = cptr.lit("iron ball smacks into you!");
+const __s_iron_ball_collision = cptr.lit("iron ball collision");
+const __s_punished_without_s_s_s = cptr.lit("Punished without %s%s%s?");
+const __s_iron_ball = cptr.lit("iron ball");
+const __s_and = cptr.lit(" and ");
+const __s_attached_chain = cptr.lit("attached chain");
+const __s_attached_s_s_s_without_being_punished = cptr.lit("Attached %s%s%s without being Punished?");
+const __s_chain = cptr.lit("chain");
+const __s_uball_type_d_s_where_d_wornmask_0x_08lx = cptr.lit("uball: type %d (%s), where %d, wornmask=0x%08lx");
+const __s_uchain_type_d_s_where_d_wornmask_0x_08lx = cptr.lit("uchain: type %d (%s), where %d, wornmask=0x%08lx");
+const __s_b_c_distance_you_d_d_chain_d_d_ball_d_d = cptr.lit("b&c distance: you@<%d,%d>, chain@<%d,%d>, ball@<%d,%d>");
 
 /** C ref: ball.c:17 — int */
 let bcrestriction = 0;
@@ -114,7 +114,7 @@ let bcrestriction = 0;
 export function ballrelease(showmsg) {
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !welded(uball.v)) {
         if (showmsg)
-            pline(__sl0);
+            pline(__s_startled_you_drop_the_iron_ball);
         if (cptr.eq(uwep.v, uball.v))
             setuwep(null);
         if (cptr.eq(uswapwep.v, uball.v))
@@ -131,33 +131,33 @@ export function ballfall() {
     let gets_hit;
     if (!uball.v || (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && welded(uball.v)))
         return;
-    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar((rng_log_enabled() ? (rng_log_set_caller(__sl1, 51, __sl2), rn2(5)) : rn2(5)))) ? 1 : 0));
+    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 51, __s_ballfall), rn2(5)) : rn2(5)))) ? 1 : 0));
     ballrelease(1);
     if (gets_hit) {
-        let dmg = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 54, __sl2), rn2(7)) : rn2(7)) + 25) | 0);
-        pline_The(__sl3, body_part(NHC.HEAD));
+        let dmg = (((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 54, __s_ballfall), rn2(7)) : rn2(7)) + 25) | 0);
+        pline_The(__s_iron_ball_falls_on_your_s, body_part(NHC.HEAD));
         if (uarmh.v) {
             if (hard_helmet(uarmh.v)) {
-                pline(__sl4);
+                pline(__s_fortunately_you_are_wearing_a_hard);
                 dmg = 3;
             } else if (cptr.ld1so(flags, $flag_verbose))
-                pline(__sl5, Yname2(uarmh.v));
+                pline(__s_s_does_not_protect_you, Yname2(uarmh.v));
         }
-        losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl6, NHM.NO_KILLER_PREFIX);
+        losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_crunched_in_the_head_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
     }
 }
 
 /** C ref: ball.c:120 */
 function placebc_core() {
     if (!uchain.v || !uball.v) {
-        impossible(__sl7);
+        impossible(__s_where_are_your_ball_and_chain);
         return;
     }
-    void flooreffects(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __sl8);
+    void flooreffects(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_empty);
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
         cptr.stI32o(u, $you_bc_order, 0);
     } else {
-        void flooreffects(uball.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __sl8);
+        void flooreffects(uball.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_empty);
         place_object(uball.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         cptr.stI32o(u, $you_bc_order, 1);
     }
@@ -208,7 +208,7 @@ export function placebc() {
         return;
     }
     if (uchain.v && cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) {
-        impossible(__sl9);
+        impossible(__s_bc_already_placed);
         return;
     }
     placebc_core();
@@ -217,7 +217,7 @@ export function placebc() {
 /** C ref: ball.c:212 */
 export function unplacebc() {
     if (bcrestriction) {
-        impossible(__sl10);
+        impossible(__s_unplacebc_denied_restriction_in_place);
         return;
     }
     unplacebc_core();
@@ -227,9 +227,9 @@ export function unplacebc() {
 export function unplacebc_and_covet_placebc() {
     let restriction = 0;
     if (bcrestriction) {
-        impossible(__sl11);
+        impossible(__s_unplacebc_and_covet_placebc_denied);
     } else {
-        restriction = (bcrestriction = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 229, __sl12), rnd(400)) : rnd(400)));
+        restriction = (bcrestriction = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 229, __s_unplacebc_and_covet_placebc), rnd(400)) : rnd(400)));
         unplacebc_core();
     }
     return restriction;
@@ -241,7 +241,7 @@ export function lift_covet_and_placebc(pin) {
         return;
     }
     if (uchain.v && cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) {
-        impossible(__sl9);
+        impossible(__s_bc_already_placed);
         return;
     }
     placebc_core();
@@ -258,7 +258,7 @@ function bc_order() {
         if (cptr.eq(obj, uball.v))
             return 2;
     }
-    impossible(__sl13);
+    impossible(__s_bc_order_ball_chain_not_in_same_location);
     return 0;
 }
 
@@ -479,7 +479,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
                             break __lbl_drag;
                         }
-                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 706, __sl14), rn2(2)) : rn2(2)))) {
+                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 706, __s_drag_ball), rn2(2)) : rn2(2)))) {
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
                     } else {
@@ -531,28 +531,28 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 cptr.stI16(chainy, y);
                 break;
                 default:
-                impossible(__sl15);
+                impossible(__s_bad_chain_movement);
                 break;
             }
             return 1;
         }
     }
     if (near_capacity() > NHC.SLT_ENCUMBER && dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) {
-        You(__sl16, cptr.ldPtro(gi, $instance_globals_i_invent) ? __sl17 : __sl8);
+        You(__s_cannot_sdrag_the_heavy_iron_ball, cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_carry_all_that_and_also : __s_empty);
         nomul(0);
         return 0;
     }
     if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) && (cptr.ld1so3(svl, cptr.ldI16o(uchain.v, $obj_ox), 756, cptr.ldI16o(uchain.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) || cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), 756, cptr.ldI16o(uball.v, $obj_oy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL)) || ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
         if (Levitation()) {
-            You_feel(__sl18);
+            You_feel(__s_a_tug_from_the_iron_ball);
             if (t)
                 cptr.stI32o(t, $trap_tseen, 1);
         } else {
             let victim;
-            You(__sl19);
+            You(__s_are_jerked_back_by_the_iron_ball);
             if ((victim = (cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
                 let tmp;
-                let dieroll = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 800, __sl14), rnd(20)) : rnd(20));
+                let dieroll = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 800, __s_drag_ball), rnd(20)) : rnd(20));
                 tmp = (((-2 + Luck()) | 0) + find_mac(victim)) | 0;
                 tmp = (tmp + omon_adj(victim, uball.v, 1)) | 0;
                 if (tmp >= dieroll)
@@ -614,24 +614,24 @@ export function drop_ball(x, y) {
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) != NHC.TT_INFLOOR && cptr.ldI32o(u, $you_utraptype) != NHC.TT_BURIEDBALL) {
             switch (cptr.ldI32o(u, $you_utraptype)) {
                 case NHC.TT_PIT:
-                pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl21);
+                pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_pit);
                 break;
                 case NHC.TT_WEB:
-                pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl22);
+                pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_web);
                 ;
-                pline_The(__sl23);
+                pline_The(__s_web_is_destroyed);
                 deltrap(t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                 break;
                 case NHC.TT_LAVA:
-                pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), hliquid(__sl24));
+                pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), hliquid(__s_lava));
                 break;
                 case NHC.TT_BEARTRAP:
-                side = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 912, __sl25), rn2(3)) : rn2(3)) ? 131072n : 262144n;
-                pline(__sl20, cptr.decay(__static_drop_ball_pullmsg), __sl26);
-                set_wounded_legs(side, (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 914, __sl25), rn2(1000)) : rn2(1000)) + 500) | 0));
+                side = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 912, __s_drop_ball), rn2(3)) : rn2(3)) ? 131072n : 262144n;
+                pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_bear_trap);
+                set_wounded_legs(side, (((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 914, __s_drop_ball), rn2(1000)) : rn2(1000)) + 500) | 0));
                 if (!cptr.ldPtro(u, $you_usteed)) {
-                    Your(__sl27, (side == 131072n) ? __sl28 : __sl29, body_part(NHC.LEG));
-                    losehp(((Half_physical_damage()) ? 1 : 2), __sl30, NHM.KILLED_BY);
+                    Your(__s_s_s_is_severely_damaged, (side == 131072n) ? __s_left : __s_right, body_part(NHC.LEG));
+                    losehp(((Half_physical_damage()) ? 1 : 2), __s_leg_damage_from_being_pulled_out_of_a, NHM.KILLED_BY);
                 }
                 break;
             }
@@ -672,9 +672,9 @@ function litter() {
     let capacity = weight_cap();
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
-        if (!cptr.eq(otmp, uball.v) && (rng_log_enabled() ? (rng_log_set_caller(__sl1, 972, __sl31), rnd(capacity)) : rnd(capacity)) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
-            if (canletgo(otmp, __sl8)) {
-                You(__sl32, yname(otmp), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __sl33 : __sl34, otense(otmp, __sl35));
+        if (!cptr.eq(otmp, uball.v) && (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 972, __s_litter), rnd(capacity)) : rnd(capacity)) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
+            if (canletgo(otmp, __s_empty)) {
+                You(__s_drop_s_and_s_s_down_the_stairs_with_you, yname(otmp), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they, otense(otmp, __s_fall));
                 setnotworn(otmp);
                 freeinv(otmp);
                 hitfloor(otmp, 0);
@@ -687,27 +687,27 @@ function litter() {
 export function drag_down() {
     let forward;
     let dragchance = 3;
-    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 999, __sl36), rn2(3)) : rn2(3))) ? 1 : 0));
+    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !(rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 999, __s_drag_down), rn2(3)) : rn2(3))) ? 1 : 0));
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !welded(uball.v))
-        You(__sl37);
+        You(__s_lose_your_grip_on_the_iron_ball);
     cls();
     if (forward) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1008, __sl36), rn2(6)) : rn2(6))) {
-            pline_The(__sl38);
-            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1010, __sl36), rnd(6)) : rnd(6)))), __sl39, NHM.NO_KILLER_PREFIX);
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1008, __s_drag_down), rn2(6)) : rn2(6))) {
+            pline_The(__s_iron_ball_drags_you_downstairs);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1010, __s_drag_down), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1010, __s_drag_down), rnd(6)) : rnd(6)))), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
             litter();
         }
     } else {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1015, __sl36), rn2(2)) : rn2(2))) {
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1015, __s_drag_down), rn2(2)) : rn2(2))) {
             ;
-            pline_The(__sl40);
-            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1018, __sl36), rnd(20)) : rnd(20)))), __sl41, NHM.KILLED_BY_AN);
+            pline_The(__s_iron_ball_smacks_into_you);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1018, __s_drag_down), rnd(20)) : rnd(20))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1018, __s_drag_down), rnd(20)) : rnd(20)))), __s_iron_ball_collision, NHM.KILLED_BY_AN);
             exercise(NHC.A_STR, 0);
             dragchance = uchar(dragchance - 2);
         }
-        if (dragchance >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 1023, __sl36), rnd(6)) : rnd(6))) {
-            pline_The(__sl38);
-            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 1025, __sl36), rnd(3)) : rnd(3)))), __sl39, NHM.NO_KILLER_PREFIX);
+        if (dragchance >= (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1023, __s_drag_down), rnd(6)) : rnd(6))) {
+            pline_The(__s_iron_ball_drags_you_downstairs);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1025, __s_drag_down), rnd(3)) : rnd(3))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1025, __s_drag_down), rnd(3)) : rnd(3)))), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
             exercise(NHC.A_STR, 0);
             litter();
         }
@@ -721,21 +721,21 @@ export function bc_sanity_check() {
     let freechain;
     let onam;
     if (Punished() && (!uball.v || !uchain.v)) {
-        impossible(__sl42, !uball.v ? __sl43 : __sl8, (!uball.v && !uchain.v) ? __sl44 : __sl8, !uchain.v ? __sl45 : __sl8);
+        impossible(__s_punished_without_s_s_s, !uball.v ? __s_iron_ball : __s_empty, (!uball.v && !uchain.v) ? __s_and : __s_empty, !uchain.v ? __s_attached_chain : __s_empty);
     } else if (!Punished() && (uball.v || uchain.v)) {
-        impossible(__sl46, uchain.v ? __sl47 : __sl8, (uchain.v && uball.v) ? __sl44 : __sl8, uball.v ? __sl43 : __sl8);
+        impossible(__s_attached_s_s_s_without_being_punished, uchain.v ? __s_chain : __s_empty, (uchain.v && uball.v) ? __s_and : __s_empty, uball.v ? __s_iron_ball : __s_empty);
     }
     freechain = (!uchain.v || cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE ? 1 : 0);
     freeball = (!uball.v || cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE || (freechain && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_INVENT) ? 1 : 0);
     if (uball.v && (cptr.ldI16o(uball.v, $obj_otyp) != NHC.HEAVY_IRON_BALL || (cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_INVENT && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) || (freeball ^ freechain) || (cptr.ldI64o(uball.v, $obj_owornmask) & 2097152n) == 0n || (cptr.ldI64o(uball.v, $obj_owornmask) & -2098945n) != 0n)) {
         otyp = cptr.ldI16o(uball.v, $obj_otyp);
         onam = safe_typename(otyp);
-        impossible(__sl48, otyp, onam, cptr.ld1so(uball.v, $obj_where), cptr.ldI64o(uball.v, $obj_owornmask));
+        impossible(__s_uball_type_d_s_where_d_wornmask_0x_08lx, otyp, onam, cptr.ld1so(uball.v, $obj_where), cptr.ldI64o(uball.v, $obj_owornmask));
     }
     if (uchain.v && (cptr.ldI16o(uchain.v, $obj_otyp) != NHC.IRON_CHAIN || (cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) || (freechain ^ freeball) || (cptr.ldI64o(uchain.v, $obj_owornmask) & 4194304n) == 0n || (cptr.ldI64o(uchain.v, $obj_owornmask) & -4194305n) != 0n)) {
         otyp = cptr.ldI16o(uchain.v, $obj_otyp);
         onam = safe_typename(otyp);
-        impossible(__sl49, otyp, onam, cptr.ld1so(uchain.v, $obj_where), cptr.ldI64o(uchain.v, $obj_owornmask));
+        impossible(__s_uchain_type_d_s_where_d_wornmask_0x_08lx, otyp, onam, cptr.ld1so(uchain.v, $obj_where), cptr.ldI64o(uchain.v, $obj_owornmask));
     }
     if (uball.v && uchain.v && !(freeball && freechain)) {
         let bx;
@@ -756,7 +756,7 @@ export function bc_sanity_check() {
         bdx = (bx - cx) | 0, bdy = (by - cy) | 0;
         bdx = Math.abs(bdx), bdy = Math.abs(bdy);
         if (cdx > 1 || cdy > 1 || bdx > 1 || bdy > 1)
-            impossible(__sl50, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cx, cy, bx, by);
+            impossible(__s_b_c_distance_you_d_d_chain_d_d_ball_d_d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cx, cy, bx, by);
     }
 }
 

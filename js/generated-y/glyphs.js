@@ -56,100 +56,100 @@ const $custom_nhcolor_nhcolor = FLD.custom_nhcolor_nhcolor, $custom_symbol_val =
     $unicode_representation_utf8str = FLD.unicode_representation_utf8str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("to_custom_symset_entry_callback");
-const __sl1 = cptr.lit("glyphs.c");
-const __sl2 = cptr.lit("idx >= 0 && idx < NUM_GRAPHICS");
-const __sl3 = cptr.lit("Unimplemented customization feature, ignoring for now");
-const __sl4 = cptr.lit("glyphrep_to_custom_map_entries");
-const __sl5 = cptr.lit("%s");
-const __sl6 = cptr.lit("glyphid_cache full");
-const __sl7 = cptr.lit("match_glyph");
-const __sl8 = cptr.lit("");
-const __sl9 = cptr.lit("male_");
-const __sl10 = cptr.lit("female_");
-const __sl11 = cptr.lit("ridden_male_");
-const __sl12 = cptr.lit("ridden_female_");
-const __sl13 = cptr.lit("detected_male_");
-const __sl14 = cptr.lit("detected_female_");
-const __sl15 = cptr.lit("pet_male_");
-const __sl16 = cptr.lit("pet_female_");
-const __sl17 = cptr.lit("G_");
-const __sl18 = cptr.lit("piletop_body_");
-const __sl19 = cptr.lit("body_");
-const __sl20 = cptr.lit("piletop_statue_of_female_");
-const __sl21 = cptr.lit("statue_of_female_");
-const __sl22 = cptr.lit("piletop_statue_of_male_");
-const __sl23 = cptr.lit("statue_of_male_");
-const __sl24 = cptr.lit("wand of ");
-const __sl25 = cptr.lit("spellbook of ");
-const __sl26 = cptr.lit("scroll of ");
-const __sl27 = cptr.lit("flask of n");
-const __sl28 = cptr.lit("potion of ");
-const __sl29 = cptr.lit("ring of ");
-const __sl30 = cptr.lit("unset ");
-const __sl31 = cptr.lit("blank scroll");
-const __sl32 = cptr.lit("blank spellbook");
-const __sl33 = cptr.lit("slime mold");
-const __sl34 = cptr.lit("piletop_");
-const __sl35 = cptr.lit("stone substrate");
-const __sl36 = cptr.lit("_gehennom");
-const __sl37 = cptr.lit("_knox");
-const __sl38 = cptr.lit("_main");
-const __sl39 = cptr.lit("_mines");
-const __sl40 = cptr.lit("_sokoban");
-const __sl41 = cptr.lit("parse_id");
-const __sl42 = cptr.lit("%s_");
-const __sl43 = cptr.lit("altar other");
-const __sl44 = cptr.lit("%s zap %s");
-const __sl45 = cptr.lit("swallow ");
-const __sl46 = cptr.lit(" ");
-const __sl47 = cptr.lit("%s ");
-const __sl48 = cptr.lit("%s%s");
-const __sl49 = cptr.lit("expl_");
-const __sl50 = cptr.lit("G_invisible");
-const __sl51 = cptr.lit("G_nothing");
-const __sl52 = cptr.lit("G_unexplored");
-const __sl53 = cptr.lit("G_%s%d");
-const __sl54 = cptr.lit("warning");
-const __sl55 = cptr.lit("parse_id: buf[0] overflowed");
-const __sl56 = cptr.lit("(%04d) %s\n");
-const __sl57 = cptr.lit("unaligned");
-const __sl58 = cptr.lit("chaotic");
-const __sl59 = cptr.lit("neutral");
-const __sl60 = cptr.lit("lawful");
-const __sl61 = cptr.lit("other");
-const __sl62 = cptr.lit("missile");
-const __sl63 = cptr.lit("fire");
-const __sl64 = cptr.lit("frost");
-const __sl65 = cptr.lit("sleep");
-const __sl66 = cptr.lit("death");
-const __sl67 = cptr.lit("lightning");
-const __sl68 = cptr.lit("poison gas");
-const __sl69 = cptr.lit("acid");
-const __sl70 = cptr.lit("top left");
-const __sl71 = cptr.lit("top center");
-const __sl72 = cptr.lit("top right");
-const __sl73 = cptr.lit("middle left");
-const __sl74 = cptr.lit("middle right");
-const __sl75 = cptr.lit("bottom left");
-const __sl76 = cptr.lit("bottom center");
-const __sl77 = cptr.lit("bottom right");
-const __sl78 = cptr.lit("dark");
-const __sl79 = cptr.lit("noxious");
-const __sl80 = cptr.lit("muddy");
-const __sl81 = cptr.lit("wet");
-const __sl82 = cptr.lit("magical");
-const __sl83 = cptr.lit("fiery");
-const __sl84 = cptr.lit("frosty");
-const __sl85 = cptr.lit("tl");
-const __sl86 = cptr.lit("tc");
-const __sl87 = cptr.lit("tr");
-const __sl88 = cptr.lit("ml");
-const __sl89 = cptr.lit("mc");
-const __sl90 = cptr.lit("mr");
-const __sl91 = cptr.lit("bl");
-const __sl92 = cptr.lit("bc");
-const __sl93 = cptr.lit("br");
+const __s_to_custom_symset_entry_callback = cptr.lit("to_custom_symset_entry_callback");
+const __s_glyphs_c = cptr.lit("glyphs.c");
+const __s_idx_0_idx_num_graphics = cptr.lit("idx >= 0 && idx < NUM_GRAPHICS");
+const __s_unimplemented_customization_feature = cptr.lit("Unimplemented customization feature, ignoring for now");
+const __s_glyphrep_to_custom_map_entries = cptr.lit("glyphrep_to_custom_map_entries");
+const __s_pct_s = cptr.lit("%s");
+const __s_glyphid_cache_full = cptr.lit("glyphid_cache full");
+const __s_match_glyph = cptr.lit("match_glyph");
+const __s_empty = cptr.lit("");
+const __s_male = cptr.lit("male_");
+const __s_female = cptr.lit("female_");
+const __s_ridden_male = cptr.lit("ridden_male_");
+const __s_ridden_female = cptr.lit("ridden_female_");
+const __s_detected_male = cptr.lit("detected_male_");
+const __s_detected_female = cptr.lit("detected_female_");
+const __s_pet_male = cptr.lit("pet_male_");
+const __s_pet_female = cptr.lit("pet_female_");
+const __s_g_us = cptr.lit("G_");
+const __s_piletop_body = cptr.lit("piletop_body_");
+const __s_body = cptr.lit("body_");
+const __s_piletop_statue_of_female = cptr.lit("piletop_statue_of_female_");
+const __s_statue_of_female = cptr.lit("statue_of_female_");
+const __s_piletop_statue_of_male = cptr.lit("piletop_statue_of_male_");
+const __s_statue_of_male = cptr.lit("statue_of_male_");
+const __s_wand_of = cptr.lit("wand of ");
+const __s_spellbook_of = cptr.lit("spellbook of ");
+const __s_scroll_of = cptr.lit("scroll of ");
+const __s_flask_of_n = cptr.lit("flask of n");
+const __s_potion_of = cptr.lit("potion of ");
+const __s_ring_of = cptr.lit("ring of ");
+const __s_unset = cptr.lit("unset ");
+const __s_blank_scroll = cptr.lit("blank scroll");
+const __s_blank_spellbook = cptr.lit("blank spellbook");
+const __s_slime_mold = cptr.lit("slime mold");
+const __s_piletop = cptr.lit("piletop_");
+const __s_stone_substrate = cptr.lit("stone substrate");
+const __s_gehennom = cptr.lit("_gehennom");
+const __s_knox = cptr.lit("_knox");
+const __s_main = cptr.lit("_main");
+const __s_mines = cptr.lit("_mines");
+const __s_sokoban = cptr.lit("_sokoban");
+const __s_parse_id = cptr.lit("parse_id");
+const __s_pct_s_us = cptr.lit("%s_");
+const __s_altar_other = cptr.lit("altar other");
+const __s_s_zap_s = cptr.lit("%s zap %s");
+const __s_swallow = cptr.lit("swallow ");
+const __s_sp = cptr.lit(" ");
+const __s_pct_s_sp = cptr.lit("%s ");
+const __s_s_s = cptr.lit("%s%s");
+const __s_expl = cptr.lit("expl_");
+const __s_g_invisible = cptr.lit("G_invisible");
+const __s_g_nothing = cptr.lit("G_nothing");
+const __s_g_unexplored = cptr.lit("G_unexplored");
+const __s_g_s_d = cptr.lit("G_%s%d");
+const __s_warning = cptr.lit("warning");
+const __s_parse_id_buf_0_overflowed = cptr.lit("parse_id: buf[0] overflowed");
+const __s_04d_s = cptr.lit("(%04d) %s\n");
+const __s_unaligned = cptr.lit("unaligned");
+const __s_chaotic = cptr.lit("chaotic");
+const __s_neutral = cptr.lit("neutral");
+const __s_lawful = cptr.lit("lawful");
+const __s_other = cptr.lit("other");
+const __s_missile = cptr.lit("missile");
+const __s_fire = cptr.lit("fire");
+const __s_frost = cptr.lit("frost");
+const __s_sleep = cptr.lit("sleep");
+const __s_death = cptr.lit("death");
+const __s_lightning = cptr.lit("lightning");
+const __s_poison_gas = cptr.lit("poison gas");
+const __s_acid = cptr.lit("acid");
+const __s_top_left = cptr.lit("top left");
+const __s_top_center = cptr.lit("top center");
+const __s_top_right = cptr.lit("top right");
+const __s_middle_left = cptr.lit("middle left");
+const __s_middle_right = cptr.lit("middle right");
+const __s_bottom_left = cptr.lit("bottom left");
+const __s_bottom_center = cptr.lit("bottom center");
+const __s_bottom_right = cptr.lit("bottom right");
+const __s_dark = cptr.lit("dark");
+const __s_noxious = cptr.lit("noxious");
+const __s_muddy = cptr.lit("muddy");
+const __s_wet = cptr.lit("wet");
+const __s_magical = cptr.lit("magical");
+const __s_fiery = cptr.lit("fiery");
+const __s_frosty = cptr.lit("frosty");
+const __s_tl = cptr.lit("tl");
+const __s_tc = cptr.lit("tc");
+const __s_tr = cptr.lit("tr");
+const __s_ml = cptr.lit("ml");
+const __s_mc = cptr.lit("mc");
+const __s_mr = cptr.lit("mr");
+const __s_bl = cptr.lit("bl");
+const __s_bc = cptr.lit("bc");
+const __s_br = cptr.lit("br");
 
 /** C ref: glyphs.c:14 — enum */
 export const res_nothing = 0;
@@ -199,7 +199,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
     let uval = 0;
     if (cptr.ldPtro(findwhat, $find_struct_extraval))
         cptr.stI32(cptr.ldPtro(findwhat, $find_struct_extraval), glyph);
-    (__builtin_expect(BigInt((!(idx >= 0 && idx < NHC.NUM_GRAPHICS))), 0n) ? __assert_rtn(__sl0, __sl1, 66, __sl2) : void 0);
+    (__builtin_expect(BigInt((!(idx >= 0 && idx < NHC.NUM_GRAPHICS))), 0n) ? __assert_rtn(__s_to_custom_symset_entry_callback, __s_glyphs_c, 66, __s_idx_0_idx_num_graphics) : void 0);
     if (cptr.ldPtro(findwhat, $find_struct_unicode_val))
         uval = (yield* unicode_val(cptr.ldPtro(findwhat, $find_struct_unicode_val)));
     if (uval && (yield* unicodeval_to_utf8str(uval, cptr.decay(utf8str), 6n))) {
@@ -207,7 +207,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
             (yield* add_custom_urep_entry(cptr.ldPtro2(gs, idx, 48, $instance_globals_s_symset + $symsetentry_name), glyph, uval >>> 0, cptr.decay(utf8str), cptr.ldI32o(gs, $instance_globals_s_symset_which_set)));
         } else {
             if (!__static_to_custom_symset_entry_callback_glyphnag++)
-                (yield* config_error_add(__sl3));
+                (yield* config_error_add(__s_unimplemented_customization_feature));
         }
     }
     if (cptr.ldI32o(findwhat, $find_struct_color)) {
@@ -215,7 +215,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
             (yield* add_custom_nhcolor_entry(cptr.ldPtro2(gs, idx, 48, $instance_globals_s_symset + $symsetentry_name), glyph, cptr.ldI32o(findwhat, $find_struct_color), cptr.ldI32o(gs, $instance_globals_s_symset_which_set)));
         } else {
             if (!__static_to_custom_symset_entry_callback_colornag++)
-                (yield* config_error_add(__sl3));
+                (yield* config_error_add(__s_unimplemented_customization_feature));
         }
     }
 }
@@ -235,7 +235,7 @@ export function* glyphrep_to_custom_map_entries(op, glyphptr) {
     if (!glyphid_cache)
         reslt = 1;
     (void (reslt));
-    nh_snprintf(__sl4, 126, cptr.decay(buf), 256n, __sl5, op);
+    nh_snprintf(__s_glyphrep_to_custom_map_entries, 126, cptr.decay(buf), 256n, __s_pct_s, op);
     c_unicode = (c_colorval = null);
     c_glyphid = (cp = cptr.decay(buf));
     while (cptr.ld1s(cp)) {
@@ -437,7 +437,7 @@ function* add_glyph_to_cache(glyphnum, id) {
         }
         i = (BigInt.asUintN(64, i + hash2)) & (BigInt.asUintN(64, glyphid_cache_size - 1n));
     } while (i != hash1);
-    (yield* panic(__sl6));
+    (yield* panic(__s_glyphid_cache_full));
 }
 
 /** C ref: glyphs.c:395 — @param {CPtr<char>} id @returns {CInt} */
@@ -494,7 +494,7 @@ export function glyphid_cache_status() {
 /** C ref: glyphs.c:458 — @param {CPtr<char>} buf @returns {CInt} */
 export function* match_glyph(buf) {
     let workbuf = new Uint8Array(256);
-    nh_snprintf(__sl7, 465, cptr.decay(workbuf), 256n, __sl5, buf);
+    nh_snprintf(__s_match_glyph, 465, cptr.decay(workbuf), 256n, __s_pct_s, buf);
     return (yield* glyphrep(cptr.decay(workbuf)));
 }
 
@@ -723,47 +723,47 @@ export function* wizcustom_glyphids(win) {
 }
 
 const __static_parse_id_altar_text = cptr.alloc(5 * 8);
-cptr.stPtro(__static_parse_id_altar_text, 0, __sl57);
-cptr.stPtro(__static_parse_id_altar_text, 8, __sl58);
-cptr.stPtro(__static_parse_id_altar_text, 16, __sl59);
-cptr.stPtro(__static_parse_id_altar_text, 24, __sl60);
-cptr.stPtro(__static_parse_id_altar_text, 32, __sl61); /** C ref: glyphs.c:1016 — char *[5] (function-static) */
+cptr.stPtro(__static_parse_id_altar_text, 0, __s_unaligned);
+cptr.stPtro(__static_parse_id_altar_text, 8, __s_chaotic);
+cptr.stPtro(__static_parse_id_altar_text, 16, __s_neutral);
+cptr.stPtro(__static_parse_id_altar_text, 24, __s_lawful);
+cptr.stPtro(__static_parse_id_altar_text, 32, __s_other); /** C ref: glyphs.c:1016 — char *[5] (function-static) */
 const __static_parse_id_zap_texts = cptr.alloc(8 * 8);
-cptr.stPtro(__static_parse_id_zap_texts, 0, __sl62);
-cptr.stPtro(__static_parse_id_zap_texts, 8, __sl63);
-cptr.stPtro(__static_parse_id_zap_texts, 16, __sl64);
-cptr.stPtro(__static_parse_id_zap_texts, 24, __sl65);
-cptr.stPtro(__static_parse_id_zap_texts, 32, __sl66);
-cptr.stPtro(__static_parse_id_zap_texts, 40, __sl67);
-cptr.stPtro(__static_parse_id_zap_texts, 48, __sl68);
-cptr.stPtro(__static_parse_id_zap_texts, 56, __sl69); /** C ref: glyphs.c:1034 — char *[8] (function-static) */
+cptr.stPtro(__static_parse_id_zap_texts, 0, __s_missile);
+cptr.stPtro(__static_parse_id_zap_texts, 8, __s_fire);
+cptr.stPtro(__static_parse_id_zap_texts, 16, __s_frost);
+cptr.stPtro(__static_parse_id_zap_texts, 24, __s_sleep);
+cptr.stPtro(__static_parse_id_zap_texts, 32, __s_death);
+cptr.stPtro(__static_parse_id_zap_texts, 40, __s_lightning);
+cptr.stPtro(__static_parse_id_zap_texts, 48, __s_poison_gas);
+cptr.stPtro(__static_parse_id_zap_texts, 56, __s_acid); /** C ref: glyphs.c:1034 — char *[8] (function-static) */
 const __static_parse_id_swallow_texts = cptr.alloc(8 * 8);
-cptr.stPtro(__static_parse_id_swallow_texts, 0, __sl70);
-cptr.stPtro(__static_parse_id_swallow_texts, 8, __sl71);
-cptr.stPtro(__static_parse_id_swallow_texts, 16, __sl72);
-cptr.stPtro(__static_parse_id_swallow_texts, 24, __sl73);
-cptr.stPtro(__static_parse_id_swallow_texts, 32, __sl74);
-cptr.stPtro(__static_parse_id_swallow_texts, 40, __sl75);
-cptr.stPtro(__static_parse_id_swallow_texts, 48, __sl76);
-cptr.stPtro(__static_parse_id_swallow_texts, 56, __sl77); /** C ref: glyphs.c:1051 — char *[8] (function-static) */
+cptr.stPtro(__static_parse_id_swallow_texts, 0, __s_top_left);
+cptr.stPtro(__static_parse_id_swallow_texts, 8, __s_top_center);
+cptr.stPtro(__static_parse_id_swallow_texts, 16, __s_top_right);
+cptr.stPtro(__static_parse_id_swallow_texts, 24, __s_middle_left);
+cptr.stPtro(__static_parse_id_swallow_texts, 32, __s_middle_right);
+cptr.stPtro(__static_parse_id_swallow_texts, 40, __s_bottom_left);
+cptr.stPtro(__static_parse_id_swallow_texts, 48, __s_bottom_center);
+cptr.stPtro(__static_parse_id_swallow_texts, 56, __s_bottom_right); /** C ref: glyphs.c:1051 — char *[8] (function-static) */
 const __static_parse_id_expl_type_texts = cptr.alloc(7 * 8);
-cptr.stPtro(__static_parse_id_expl_type_texts, 0, __sl78);
-cptr.stPtro(__static_parse_id_expl_type_texts, 8, __sl79);
-cptr.stPtro(__static_parse_id_expl_type_texts, 16, __sl80);
-cptr.stPtro(__static_parse_id_expl_type_texts, 24, __sl81);
-cptr.stPtro(__static_parse_id_expl_type_texts, 32, __sl82);
-cptr.stPtro(__static_parse_id_expl_type_texts, 40, __sl83);
-cptr.stPtro(__static_parse_id_expl_type_texts, 48, __sl84); /** C ref: glyphs.c:1067 — char *[7] (function-static) */
+cptr.stPtro(__static_parse_id_expl_type_texts, 0, __s_dark);
+cptr.stPtro(__static_parse_id_expl_type_texts, 8, __s_noxious);
+cptr.stPtro(__static_parse_id_expl_type_texts, 16, __s_muddy);
+cptr.stPtro(__static_parse_id_expl_type_texts, 24, __s_wet);
+cptr.stPtro(__static_parse_id_expl_type_texts, 32, __s_magical);
+cptr.stPtro(__static_parse_id_expl_type_texts, 40, __s_fiery);
+cptr.stPtro(__static_parse_id_expl_type_texts, 48, __s_frosty); /** C ref: glyphs.c:1067 — char *[7] (function-static) */
 const __static_parse_id_expl_texts = cptr.alloc(9 * 8);
-cptr.stPtro(__static_parse_id_expl_texts, 0, __sl85);
-cptr.stPtro(__static_parse_id_expl_texts, 8, __sl86);
-cptr.stPtro(__static_parse_id_expl_texts, 16, __sl87);
-cptr.stPtro(__static_parse_id_expl_texts, 24, __sl88);
-cptr.stPtro(__static_parse_id_expl_texts, 32, __sl89);
-cptr.stPtro(__static_parse_id_expl_texts, 40, __sl90);
-cptr.stPtro(__static_parse_id_expl_texts, 48, __sl91);
-cptr.stPtro(__static_parse_id_expl_texts, 56, __sl92);
-cptr.stPtro(__static_parse_id_expl_texts, 64, __sl93); /** C ref: glyphs.c:1071 — char *[9] (function-static) */
+cptr.stPtro(__static_parse_id_expl_texts, 0, __s_tl);
+cptr.stPtro(__static_parse_id_expl_texts, 8, __s_tc);
+cptr.stPtro(__static_parse_id_expl_texts, 16, __s_tr);
+cptr.stPtro(__static_parse_id_expl_texts, 24, __s_ml);
+cptr.stPtro(__static_parse_id_expl_texts, 32, __s_mc);
+cptr.stPtro(__static_parse_id_expl_texts, 40, __s_mr);
+cptr.stPtro(__static_parse_id_expl_texts, 48, __s_bl);
+cptr.stPtro(__static_parse_id_expl_texts, 56, __s_bc);
+cptr.stPtro(__static_parse_id_expl_texts, 64, __s_br); /** C ref: glyphs.c:1071 — char *[9] (function-static) */
 
 /** C ref: glyphs.c:824 — @param {CPtr<char>} id @param {CPtr<struct find_struct>} findwhat @returns {CInt} */
 function* parse_id(id, findwhat) {
@@ -841,38 +841,38 @@ function* parse_id(id, findwhat) {
                 skip_this_one = 0;
                 cptr.st1o(cptr.decay(buf[0]), 0, cptr.st1o(cptr.decay(buf[1]), 0, cptr.st1o(cptr.decay(buf[2]), 0, cptr.st1o(cptr.decay(buf[3]), 0, 0, 1), 1), 1), 1);
                 if (glyph_is_monster(glyph)) {
-                    buf2 = __sl8;
+                    buf2 = __s_empty;
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_mon(glyph), 16, $enum_dump_nm);
                     if (glyph_is_normal_male_monster(glyph)) {
-                        buf2 = __sl9;
+                        buf2 = __s_male;
                     } else if (glyph_is_normal_female_monster(glyph)) {
-                        buf2 = __sl10;
+                        buf2 = __s_female;
                     } else if (glyph_is_ridden_male_monster(glyph)) {
-                        buf2 = __sl11;
+                        buf2 = __s_ridden_male;
                     } else if (glyph_is_ridden_female_monster(glyph)) {
-                        buf2 = __sl12;
+                        buf2 = __s_ridden_female;
                     } else if (glyph_is_detected_male_monster(glyph)) {
-                        buf2 = __sl13;
+                        buf2 = __s_detected_male;
                     } else if (glyph_is_detected_female_monster(glyph)) {
-                        buf2 = __sl14;
+                        buf2 = __s_detected_female;
                     } else if (glyph_is_male_pet(glyph)) {
-                        buf2 = __sl15;
+                        buf2 = __s_pet_male;
                     } else if (glyph_is_female_pet(glyph)) {
-                        buf2 = __sl16;
+                        buf2 = __s_pet_female;
                     }
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl17);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_body(glyph)) {
-                    buf2 = glyph_is_body_piletop(glyph) ? __sl18 : __sl19;
+                    buf2 = glyph_is_body_piletop(glyph) ? __s_piletop_body : __s_body;
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_body_corpsenm(glyph), 16, $enum_dump_nm);
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl17);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_statue(glyph)) {
-                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __sl20 : (glyph_is_fem_statue(glyph) ? __sl21 : (glyph_is_male_statue_piletop(glyph) ? __sl22 : (glyph_is_male_statue(glyph) ? __sl23 : __sl8)));
+                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __s_piletop_statue_of_female : (glyph_is_fem_statue(glyph) ? __s_statue_of_female : (glyph_is_male_statue_piletop(glyph) ? __s_piletop_statue_of_male : (glyph_is_male_statue(glyph) ? __s_statue_of_male : __s_empty)));
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_statue_corpsenm(glyph), 16, $enum_dump_nm);
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl17);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_object(glyph)) {
@@ -881,60 +881,60 @@ function* parse_id(id, findwhat) {
                         skip_this_one = 1;
                     if (!skip_this_one) {
                         if ((i >= NHC.WAN_LIGHT) && (i <= NHC.WAN_LIGHTNING))
-                            buf2 = __sl24;
+                            buf2 = __s_wand_of;
                         else if ((i >= NHC.SPE_DIG) && (i < NHC.SPE_BLANK_PAPER))
-                            buf2 = __sl25;
+                            buf2 = __s_spellbook_of;
                         else if ((i >= NHC.SCR_ENCHANT_ARMOR) && (i <= NHC.SCR_STINKING_CLOUD))
-                            buf2 = __sl26;
+                            buf2 = __s_scroll_of;
                         else if ((i >= NHC.POT_GAIN_ABILITY) && (i <= NHC.POT_WATER))
-                            buf2 = (i == NHC.POT_WATER) ? __sl27 : __sl28;
+                            buf2 = (i == NHC.POT_WATER) ? __s_flask_of_n : __s_potion_of;
                         else if ((i >= NHC.RIN_ADORNMENT) && (i <= NHC.RIN_PROTECTION_FROM_SHAPE_CHAN))
-                            buf2 = __sl29;
+                            buf2 = __s_ring_of;
                         else if (i == NHC.LAND_MINE)
-                            buf2 = __sl30;
+                            buf2 = __s_unset;
                         else
-                            buf2 = __sl8;
-                        buf3 = (i == NHC.SCR_BLANK_PAPER) ? __sl31 : ((i == NHC.SPE_BLANK_PAPER) ? __sl32 : ((i == NHC.SLIME_MOLD) ? __sl33 : (cptr.ldPtro(obj_descr, i, 16) ? cptr.ldPtro(obj_descr, i, 16) : cptr.ldPtro2(obj_descr, i, 16, $objdescr_oc_descr))));
-                        void cptr.strcpy(cptr.decay(buf[0]), __sl17);
+                            buf2 = __s_empty;
+                        buf3 = (i == NHC.SCR_BLANK_PAPER) ? __s_blank_scroll : ((i == NHC.SPE_BLANK_PAPER) ? __s_blank_spellbook : ((i == NHC.SLIME_MOLD) ? __s_slime_mold : (cptr.ldPtro(obj_descr, i, 16) ? cptr.ldPtro(obj_descr, i, 16) : cptr.ldPtro2(obj_descr, i, 16, $objdescr_oc_descr))));
+                        void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                         if (glyph_is_normal_piletop_obj(glyph))
-                            void cptr.strcat(cptr.decay(buf[0]), __sl34);
+                            void cptr.strcat(cptr.decay(buf[0]), __s_piletop);
                         void cptr.strcat(cptr.decay(buf[0]), buf2);
                         void cptr.strcat(cptr.decay(buf[0]), buf3);
                     }
                 } else if (glyph_is_cmap(glyph) || glyph_is_cmap_zap(glyph) || glyph_is_swallow(glyph) || glyph_is_explosion(glyph)) {
                     let cmap = -1;
-                    buf2 = __sl8;
-                    buf3 = __sl8;
-                    buf4 = __sl8;
+                    buf2 = __s_empty;
+                    buf3 = __s_empty;
+                    buf4 = __s_empty;
                     if (glyph == NHC.GLYPH_CMAP_OFF) {
                         cmap = NHC.S_stone;
-                        buf3 = __sl35;
+                        buf3 = __s_stone_substrate;
                         skip_base = 1;
                     } else if (glyph_is_cmap_gehennom(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_GEH_OFF) | 0) + NHC.S_vwall) | 0;
-                        buf4 = __sl36;
+                        buf4 = __s_gehennom;
                     } else if (glyph_is_cmap_knox(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_KNOX_OFF) | 0) + NHC.S_vwall) | 0;
-                        buf4 = __sl37;
+                        buf4 = __s_knox;
                     } else if (glyph_is_cmap_main(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_MAIN_OFF) | 0) + NHC.S_vwall) | 0;
-                        buf4 = __sl38;
+                        buf4 = __s_main;
                     } else if (glyph_is_cmap_mines(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_MINES_OFF) | 0) + NHC.S_vwall) | 0;
-                        buf4 = __sl39;
+                        buf4 = __s_mines;
                     } else if (glyph_is_cmap_sokoban(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_SOKO_OFF) | 0) + NHC.S_vwall) | 0;
-                        buf4 = __sl40;
+                        buf4 = __s_sokoban;
                     } else if (glyph_is_cmap_a(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_A_OFF) | 0) + NHC.S_ndoor) | 0;
                     } else if (glyph_is_cmap_altar(glyph)) {
                         j = ((glyph - NHC.GLYPH_ALTAR_OFF) | 0);
                         cmap = NHC.S_altar;
                         if (j != NHC.altar_other) {
-                            nh_snprintf(__sl41, 1025, cptr.decay(buf[2]), 128n, __sl42, cptr.ldPtro(__static_parse_id_altar_text, j, 8));
+                            nh_snprintf(__s_parse_id, 1025, cptr.decay(buf[2]), 128n, __s_pct_s_us, cptr.ldPtro(__static_parse_id_altar_text, j, 8));
                             buf2 = cptr.decay(buf[2]);
                         } else {
-                            buf3 = __sl43;
+                            buf3 = __s_altar_other;
                             skip_base = 1;
                         }
                     } else if (glyph_is_cmap_b(glyph)) {
@@ -942,10 +942,10 @@ function* parse_id(id, findwhat) {
                     } else if (glyph_is_cmap_zap(glyph)) {
                         j = ((glyph - NHC.GLYPH_ZAP_OFF) | 0);
                         cmap = ((j % 4) + NHC.S_vbeam) | 0;
-                        nh_snprintf(__sl41, 1042, cptr.decay(buf[2]), 128n, __sl5, cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, 16, $symparse_name), 2));
-                        nh_snprintf(__sl41, 1044, cptr.decay(buf[3]), 128n, __sl44, cptr.ldPtro(__static_parse_id_zap_texts, (j / 4) | 0, 8), fix_glyphname(cptr.decay(buf[2])));
+                        nh_snprintf(__s_parse_id, 1042, cptr.decay(buf[2]), 128n, __s_pct_s, cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, 16, $symparse_name), 2));
+                        nh_snprintf(__s_parse_id, 1044, cptr.decay(buf[3]), 128n, __s_s_zap_s, cptr.ldPtro(__static_parse_id_zap_texts, (j / 4) | 0, 8), fix_glyphname(cptr.decay(buf[2])));
                         buf3 = cptr.decay(buf[3]);
-                        buf2 = __sl8;
+                        buf2 = __s_empty;
                         skip_base = 1;
                     } else if (glyph_is_cmap_c(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
@@ -953,9 +953,9 @@ function* parse_id(id, findwhat) {
                         j = (glyph - NHC.GLYPH_SWALLOW_OFF) | 0;
                         cmap = glyph_to_swallow(glyph);
                         mnum = (j / ((((NHC.S_sw_br - NHC.S_sw_tl) | 0) + 1) | 0)) | 0;
-                        void cptr.strcpy(cptr.decay(buf[3]), __sl45);
+                        void cptr.strcpy(cptr.decay(buf[3]), __s_swallow);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtro2(monsdump, mnum, 16, $enum_dump_nm));
-                        void cptr.strcat(cptr.decay(buf[3]), __sl46);
+                        void cptr.strcat(cptr.decay(buf[3]), __s_sp);
                         void cptr.strcat(cptr.decay(buf[3]), cptr.ldPtro(__static_parse_id_swallow_texts, cmap, 8));
                         buf3 = cptr.decay(buf[3]);
                         skip_base = 1;
@@ -965,9 +965,9 @@ function* parse_id(id, findwhat) {
                         expl = (j / ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) | 0;
                         cmap = (glyph_to_explosion(glyph) + NHC.S_expl_tl) | 0;
                         i = (cmap - NHC.S_expl_tl) | 0;
-                        nh_snprintf(__sl41, 1082, cptr.decay(buf[2]), 128n, __sl47, cptr.ldPtro(__static_parse_id_expl_type_texts, expl, 8));
+                        nh_snprintf(__s_parse_id, 1082, cptr.decay(buf[2]), 128n, __s_pct_s_sp, cptr.ldPtro(__static_parse_id_expl_type_texts, expl, 8));
                         buf2 = cptr.decay(buf[2]);
-                        nh_snprintf(__sl41, 1085, cptr.decay(buf[3]), 128n, __sl48, __sl49, cptr.ldPtro(__static_parse_id_expl_texts, i, 8));
+                        nh_snprintf(__s_parse_id, 1085, cptr.decay(buf[3]), 128n, __s_s_s, __s_expl, cptr.ldPtro(__static_parse_id_expl_texts, i, 8));
                         buf3 = cptr.decay(buf[3]);
                         skip_base = 1;
                     }
@@ -976,26 +976,26 @@ function* parse_id(id, findwhat) {
                             buf3 = cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, 16, $symparse_name), 2);
                         }
                     }
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl17);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                     void cptr.strcat(cptr.decay(buf[0]), buf4);
                 } else if (((glyph) == NHC.GLYPH_INVIS_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl50);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_invisible);
                 } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl51);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_nothing);
                 } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
-                    void cptr.strcpy(cptr.decay(buf[0]), __sl52);
+                    void cptr.strcpy(cptr.decay(buf[0]), __s_g_unexplored);
                 } else if (glyph_is_warning(glyph)) {
                     j = (glyph - NHC.GLYPH_WARNING_OFF) | 0;
-                    nh_snprintf(__sl41, 1106, cptr.decay(buf[0]), 128n, __sl53, __sl54, j);
+                    nh_snprintf(__s_parse_id, 1106, cptr.decay(buf[0]), 128n, __s_g_s_d, __s_warning, j);
                 }
                 if (cptr.eq(memchr(cptr.decay(buf[0]), 0, 128n), (null)))
-                    (yield* panic(__sl55));
+                    (yield* panic(__s_parse_id_buf_0_overflowed));
                 if (!skip_this_one) {
                     fix_glyphname(cptr.add(cptr.decay(buf[0]), 2));
                     if (dump_ids) {
-                        void fprintf(fp, __sl56, glyph, cptr.decay(buf[0]));
+                        void fprintf(fp, __s_04d_s, glyph, cptr.decay(buf[0]));
                     } else if (filling_cache) {
                         (yield* add_glyph_to_cache(glyph, cptr.decay(buf[0])));
                     } else if (id) {

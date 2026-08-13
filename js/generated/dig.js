@@ -127,202 +127,202 @@ const $Gender_his = FLD.Gender_his, $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD
     $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("mkcavepos called with dist %d");
-const __sl1 = cptr.lit("Crash!  The ceiling collapses around you!");
-const __sl2 = cptr.lit("A mysterious force %s cave around you!");
-const __sl3 = cptr.lit("creates a");
-const __sl4 = cptr.lit("extends the");
-const __sl5 = cptr.lit("chop");
-const __sl6 = cptr.lit("dig in");
-const __sl7 = cptr.lit("cannot %s thin air.");
-const __sl8 = cptr.lit("altar is too hard to break apart.");
-const __sl9 = cptr.lit("isn't enough room to %s here.");
-const __sl10 = cptr.lit("ladder resists your effort.");
-const __sl11 = cptr.lit("stairs are too hard to %s.");
-const __sl12 = cptr.lit("throne is too hard to break apart.");
-const __sl13 = cptr.lit("%s here is too hard to %s.");
-const __sl14 = cptr.lit("%s splashes and subsides.");
-const __sl15 = cptr.lit("water");
-const __sl16 = cptr.lit("dig into");
-const __sl17 = cptr.lit("chop through");
-const __sl18 = cptr.lit("This tree seems to be petrified.");
-const __sl19 = cptr.lit("This %s is too hard to %s.");
-const __sl20 = cptr.lit("drawbridge");
-const __sl21 = cptr.lit("wall");
-const __sl22 = cptr.lit("dig.c");
-const __sl23 = cptr.lit("dig");
-const __sl24 = cptr.lit("fumble and drop %s.");
-const __sl25 = cptr.lit("%s and %s %s!");
-const __sl26 = cptr.lit("bounce");
-const __sl27 = cptr.lit("hit");
-const __sl28 = cptr.lit("Ouch!  %s and %s you!");
-const __sl29 = cptr.lit("Bang!  You hit with the broad side of %s!");
-const __sl30 = cptr.lit("swing misses its mark.");
-const __sl31 = cptr.lit("hit yourself in the %s.");
-const __sl32 = cptr.lit("chopping off %s own %s");
-const __sl33 = cptr.lit("destroy the bear trap with %s.");
-const __sl34 = cptr.lit("destroy %s with %s.");
-const __sl35 = cptr.lit("The statue shatters.");
-const __sl36 = cptr.lit("The boulder falls apart.");
-const __sl37 = cptr.lit("You cut down the tree.");
-const __sl38 = cptr.lit("You succeed in cutting away some rock.");
-const __sl39 = cptr.lit("damage");
-const __sl40 = cptr.lit("You make an opening in the wall.");
-const __sl41 = cptr.lit("You break through a secret door!");
-const __sl42 = cptr.lit("You break through the door with your %s.");
-const __sl43 = cptr.lit("break");
-const __sl44 = cptr.lit("%s");
-const __sl45 = cptr.lit("debris from your digging comes to life!");
-const __sl46 = cptr.lit("door");
-const __sl47 = cptr.lit("This %s seems too hard to %s.");
-const __sl48 = cptr.lit("hit the %s with all your might.");
-const __sl49 = cptr.lit("");
-const __sl50 = cptr.lit("rock");
-const __sl51 = cptr.lit("statue");
-const __sl52 = cptr.lit("boulder");
-const __sl53 = cptr.lit("tree");
-const __sl54 = cptr.lit("fillholetyp");
-const __sl55 = cptr.lit("digactualhole: can't dig %s on this level.");
-const __sl56 = cptr.lit("floor");
-const __sl57 = cptr.lit("ground");
-const __sl58 = cptr.lit(" ");
-const __sl59 = cptr.lit("through");
-const __sl60 = cptr.lit("in");
-const __sl61 = cptr.lit("dig an adjacent %s.");
-const __sl62 = cptr.lit("dig %s %s the %s.");
-const __sl63 = cptr.lit("%s digs %s %s the %s.");
-const __sl64 = cptr.lit("%s crumbles into %s.");
-const __sl65 = cptr.lit("%s appears in the %s.");
-const __sl66 = cptr.lit("%s falls into the %s!");
-const __sl67 = cptr.lit("ruin");
-const __sl68 = cptr.lit("digactualhole");
-const __sl69 = cptr.lit("%s %s over the pit.");
-const __sl70 = cptr.lit("flies");
-const __sl71 = cptr.lit("floats");
-const __sl72 = cptr.lit("are jerked back by your pet!");
-const __sl73 = cptr.lit("fall through...");
-const __sl74 = cptr.lit("%s avoids the trap.");
-const __sl75 = cptr.lit("Insane liquid_flow(%d,%d,%s,%s).");
-const __sl76 = cptr.lit("no trap");
-const __sl77 = cptr.lit("no mesg");
-const __sl78 = cptr.lit("lava");
-const __sl79 = cptr.lit("%s %shere is too hard to dig in.");
-const __sl80 = cptr.lit("t");
-const __sl81 = cptr.lit("dighole");
-const __sl82 = cptr.lit("%s sloshes furiously for a moment, then subsides.");
-const __sl83 = cptr.lit("drawbridge seems too hard to dig through.");
-const __sl84 = cptr.lit("boulder settles into the %spit.");
-const __sl85 = cptr.lit("adjacent ");
-const __sl86 = cptr.lit("KADOOM!  The boulder falls in!");
-const __sl87 = cptr.lit("As you dig, the hole fills with %s!");
-const __sl88 = cptr.lit("like a despicable grave-robber!");
-const __sl89 = cptr.lit("disturb the honorable dead!");
-const __sl90 = cptr.lit("have violated the sanctity of this grave!");
-const __sl91 = cptr.lit("dig_up_grave");
-const __sl92 = cptr.lit("unearth a corpse.");
-const __sl93 = cptr.lit("%s!");
-const __sl94 = cptr.lit("Dude!  The living dead");
-const __sl95 = cptr.lit("The grave's owner is very upset");
-const __sl96 = cptr.lit("I want my mummy");
-const __sl97 = cptr.lit("You've disturbed a tomb");
-const __sl98 = cptr.lit("grave is unoccupied.  Strange...");
-const __sl99 = cptr.lit("swing");
-const __sl100 = cptr.lit("%s you can't %s while entangled in a web.");
-const __sl101 = cptr.lit("Unfortunately,");
-const __sl102 = cptr.lit("But");
-const __sl103 = cptr.lit("In what direction do you want to %s? [%s]");
-const __sl104 = cptr.lit("digging");
-const __sl105 = cptr.lit("chopping");
-const __sl106 = cptr.lit("Turbulence torpedoes your %s attempts.");
-const __sl107 = cptr.lit("don't have enough leverage.");
-const __sl108 = cptr.lit("reach the %s.");
-const __sl109 = cptr.lit("use_pick_axe2");
-const __sl110 = cptr.lit("hit yourself with %s.");
-const __sl111 = cptr.lit("%s own %s");
-const __sl112 = cptr.lit("Clash!");
-const __sl113 = cptr.lit("is a spider web there!");
-const __sl114 = cptr.lit("%s entangled in the web.");
-const __sl115 = cptr.lit("become");
-const __sl116 = cptr.lit("stuck in a spider web");
-const __sl117 = cptr.lit("You pull free.");
-const __sl118 = cptr.lit("Clang!");
-const __sl119 = cptr.lit("Splash!");
-const __sl120 = cptr.lit("need an axe to cut down a tree.");
-const __sl121 = cptr.lit("need a pick to dig rock.");
-const __sl122 = cptr.lit("Sparks fly as you whack the %s.%s");
-const __sl123 = cptr.lit("  The axe-handle vibrates violently!");
-const __sl124 = cptr.lit("axing a hard object");
-const __sl125 = cptr.lit("clear some debris from between the pits.");
-const __sl126 = cptr.lit("swing %s, but the rubble has no place to go.");
-const __sl127 = cptr.lit("swing %s through thin air.");
-const __sl128 = cptr.lit("start %s.");
-const __sl129 = cptr.lit("%s %s.");
-const __sl130 = cptr.lit("begin");
-const __sl131 = cptr.lit("continue");
-const __sl132 = cptr.lit("cannot stay under%s long enough.");
-const __sl133 = cptr.lit(" the lava");
-const __sl134 = cptr.lit("%s merely scratches the %s.");
-const __sl135 = cptr.lit("start %s downward.");
-const __sl136 = cptr.lit("continue %s downward.");
-const __sl137 = cptr.lit("swinging");
-const __sl138 = cptr.lit("chipping the statue");
-const __sl139 = cptr.lit("hitting the boulder");
-const __sl140 = cptr.lit("chopping at the door");
-const __sl141 = cptr.lit("cutting the tree");
-const __sl142 = cptr.lit("Halt, vandal!  You're under arrest!");
-const __sl143 = cptr.lit("fountain");
-const __sl144 = cptr.lit("Hey, stop damaging that %s!");
-const __sl145 = cptr.lit("mdig_tunnel");
-const __sl146 = cptr.lit("mdig_tunnel:  %s at (%d,%d) is undiggable");
-const __sl147 = cptr.lit("stone");
-const __sl148 = cptr.lit("crashing rock.");
-const __sl149 = cptr.lit("an unexpected draft.");
-const __sl150 = cptr.lit("like you are %s.");
-const __sl151 = cptr.lit("4-F");
-const __sl152 = cptr.lit("1-A");
-const __sl153 = cptr.lit("a draft.");
-const __sl154 = cptr.lit("draft_message");
-const __sl155 = cptr.lit("like %s.");
-const __sl156 = cptr.lit("enlisting");
-const __sl157 = cptr.lit("marching");
-const __sl158 = cptr.lit("protesting");
-const __sl159 = cptr.lit("fleeing");
-const __sl160 = cptr.lit("pierce %s %s wall!");
-const __sl161 = cptr.lit("beam bounces off the %s and hits the %s.");
-const __sl162 = cptr.lit("ladder");
-const __sl163 = cptr.lit("stairs");
-const __sl164 = cptr.lit("loosen a rock from the %s.");
-const __sl165 = cptr.lit("It falls on your %s!");
-const __sl166 = cptr.lit("zap_dig");
-const __sl167 = cptr.lit("falling rock");
-const __sl168 = cptr.lit("door is razed!");
-const __sl169 = cptr.lit("wall glows then fades.");
-const __sl170 = cptr.lit("tree shudders but is unharmed.");
-const __sl171 = cptr.lit("rock glows then fades.");
-const __sl172 = cptr.lit("destroy");
-const __sl173 = cptr.lit("The foundation is too hard to dig through from this angle.");
-const __sl174 = cptr.lit("The tree's roots glow then fade.");
-const __sl175 = cptr.lit("The rock glows then fades.");
-const __sl176 = cptr.lit("The bars go much deeper than your pit.");
-const __sl177 = cptr.lit("A tangled mass of plumbing remains below the sink.");
-const __sl178 = cptr.lit("The ladder is unaffected.");
-const __sl179 = cptr.lit("throne");
-const __sl180 = cptr.lit("altar");
-const __sl181 = cptr.lit("The %s supporting structures remain intact.");
-const __sl182 = cptr.lit("Suddenly %s flows in from the adjacent pit!");
-const __sl183 = cptr.lit("bury_an_obj: %s");
-const __sl184 = cptr.lit("bury_an_obj");
-const __sl185 = cptr.lit("iron ball gets buried!");
-const __sl186 = cptr.lit("bury_objs: at <%d,%d>");
-const __sl187 = cptr.lit("owe %s %ld %s for burying merchandise.");
-const __sl188 = cptr.lit("unearth_objs: at <%d,%d>");
-const __sl189 = cptr.lit("%s%s %s away%c");
-const __sl190 = cptr.lit("wielded ");
-const __sl191 = cptr.lit("rot");
-const __sl192 = cptr.lit("No objects here or adjacent to bury.");
-const __sl193 = cptr.lit("No objects buried.");
-const __sl194 = cptr.lit("%d object%s buried.");
-const __sl195 = cptr.lit("s");
+const __s_mkcavepos_called_with_dist_d = cptr.lit("mkcavepos called with dist %d");
+const __s_crash_the_ceiling_collapses_around_you = cptr.lit("Crash!  The ceiling collapses around you!");
+const __s_a_mysterious_force_s_cave_around_you = cptr.lit("A mysterious force %s cave around you!");
+const __s_creates_a = cptr.lit("creates a");
+const __s_extends_the = cptr.lit("extends the");
+const __s_chop = cptr.lit("chop");
+const __s_dig_in = cptr.lit("dig in");
+const __s_cannot_s_thin_air = cptr.lit("cannot %s thin air.");
+const __s_altar_is_too_hard_to_break_apart = cptr.lit("altar is too hard to break apart.");
+const __s_isn_t_enough_room_to_s_here = cptr.lit("isn't enough room to %s here.");
+const __s_ladder_resists_your_effort = cptr.lit("ladder resists your effort.");
+const __s_stairs_are_too_hard_to_s = cptr.lit("stairs are too hard to %s.");
+const __s_throne_is_too_hard_to_break_apart = cptr.lit("throne is too hard to break apart.");
+const __s_s_here_is_too_hard_to_s = cptr.lit("%s here is too hard to %s.");
+const __s_s_splashes_and_subsides = cptr.lit("%s splashes and subsides.");
+const __s_water = cptr.lit("water");
+const __s_dig_into = cptr.lit("dig into");
+const __s_chop_through = cptr.lit("chop through");
+const __s_this_tree_seems_to_be_petrified = cptr.lit("This tree seems to be petrified.");
+const __s_this_s_is_too_hard_to_s = cptr.lit("This %s is too hard to %s.");
+const __s_drawbridge = cptr.lit("drawbridge");
+const __s_wall = cptr.lit("wall");
+const __s_dig_c = cptr.lit("dig.c");
+const __s_dig = cptr.lit("dig");
+const __s_fumble_and_drop_s = cptr.lit("fumble and drop %s.");
+const __s_s_and_s_s = cptr.lit("%s and %s %s!");
+const __s_bounce = cptr.lit("bounce");
+const __s_hit = cptr.lit("hit");
+const __s_ouch_s_and_s_you = cptr.lit("Ouch!  %s and %s you!");
+const __s_bang_you_hit_with_the_broad_side_of_s = cptr.lit("Bang!  You hit with the broad side of %s!");
+const __s_swing_misses_its_mark = cptr.lit("swing misses its mark.");
+const __s_hit_yourself_in_the_s = cptr.lit("hit yourself in the %s.");
+const __s_chopping_off_s_own_s = cptr.lit("chopping off %s own %s");
+const __s_destroy_the_bear_trap_with_s = cptr.lit("destroy the bear trap with %s.");
+const __s_destroy_s_with_s = cptr.lit("destroy %s with %s.");
+const __s_the_statue_shatters = cptr.lit("The statue shatters.");
+const __s_the_boulder_falls_apart = cptr.lit("The boulder falls apart.");
+const __s_you_cut_down_the_tree = cptr.lit("You cut down the tree.");
+const __s_you_succeed_in_cutting_away_some_rock = cptr.lit("You succeed in cutting away some rock.");
+const __s_damage = cptr.lit("damage");
+const __s_you_make_an_opening_in_the_wall = cptr.lit("You make an opening in the wall.");
+const __s_you_break_through_a_secret_door = cptr.lit("You break through a secret door!");
+const __s_you_break_through_the_door_with_your_s = cptr.lit("You break through the door with your %s.");
+const __s_break = cptr.lit("break");
+const __s_pct_s = cptr.lit("%s");
+const __s_debris_from_your_digging_comes_to_life = cptr.lit("debris from your digging comes to life!");
+const __s_door = cptr.lit("door");
+const __s_this_s_seems_too_hard_to_s = cptr.lit("This %s seems too hard to %s.");
+const __s_hit_the_s_with_all_your_might = cptr.lit("hit the %s with all your might.");
+const __s_empty = cptr.lit("");
+const __s_rock = cptr.lit("rock");
+const __s_statue = cptr.lit("statue");
+const __s_boulder = cptr.lit("boulder");
+const __s_tree = cptr.lit("tree");
+const __s_fillholetyp = cptr.lit("fillholetyp");
+const __s_digactualhole_can_t_dig_s_on_this_level = cptr.lit("digactualhole: can't dig %s on this level.");
+const __s_floor = cptr.lit("floor");
+const __s_ground = cptr.lit("ground");
+const __s_sp = cptr.lit(" ");
+const __s_through = cptr.lit("through");
+const __s_in = cptr.lit("in");
+const __s_dig_an_adjacent_s = cptr.lit("dig an adjacent %s.");
+const __s_dig_s_s_the_s = cptr.lit("dig %s %s the %s.");
+const __s_s_digs_s_s_the_s = cptr.lit("%s digs %s %s the %s.");
+const __s_s_crumbles_into_s = cptr.lit("%s crumbles into %s.");
+const __s_s_appears_in_the_s = cptr.lit("%s appears in the %s.");
+const __s_s_falls_into_the_s = cptr.lit("%s falls into the %s!");
+const __s_ruin = cptr.lit("ruin");
+const __s_digactualhole = cptr.lit("digactualhole");
+const __s_s_s_over_the_pit = cptr.lit("%s %s over the pit.");
+const __s_flies = cptr.lit("flies");
+const __s_floats = cptr.lit("floats");
+const __s_are_jerked_back_by_your_pet = cptr.lit("are jerked back by your pet!");
+const __s_fall_through = cptr.lit("fall through...");
+const __s_s_avoids_the_trap = cptr.lit("%s avoids the trap.");
+const __s_insane_liquid_flow_d_d_s_s = cptr.lit("Insane liquid_flow(%d,%d,%s,%s).");
+const __s_no_trap = cptr.lit("no trap");
+const __s_no_mesg = cptr.lit("no mesg");
+const __s_lava = cptr.lit("lava");
+const __s_s_shere_is_too_hard_to_dig_in = cptr.lit("%s %shere is too hard to dig in.");
+const __s_t = cptr.lit("t");
+const __s_dighole = cptr.lit("dighole");
+const __s_s_sloshes_furiously_for_a_moment_then = cptr.lit("%s sloshes furiously for a moment, then subsides.");
+const __s_drawbridge_seems_too_hard_to_dig_through = cptr.lit("drawbridge seems too hard to dig through.");
+const __s_boulder_settles_into_the_spit = cptr.lit("boulder settles into the %spit.");
+const __s_adjacent = cptr.lit("adjacent ");
+const __s_kadoom_the_boulder_falls_in = cptr.lit("KADOOM!  The boulder falls in!");
+const __s_as_you_dig_the_hole_fills_with_s = cptr.lit("As you dig, the hole fills with %s!");
+const __s_like_a_despicable_grave_robber = cptr.lit("like a despicable grave-robber!");
+const __s_disturb_the_honorable_dead = cptr.lit("disturb the honorable dead!");
+const __s_have_violated_the_sanctity_of_this_grave = cptr.lit("have violated the sanctity of this grave!");
+const __s_dig_up_grave = cptr.lit("dig_up_grave");
+const __s_unearth_a_corpse = cptr.lit("unearth a corpse.");
+const __s_pct_s_bang = cptr.lit("%s!");
+const __s_dude_the_living_dead = cptr.lit("Dude!  The living dead");
+const __s_the_grave_s_owner_is_very_upset = cptr.lit("The grave's owner is very upset");
+const __s_i_want_my_mummy = cptr.lit("I want my mummy");
+const __s_you_ve_disturbed_a_tomb = cptr.lit("You've disturbed a tomb");
+const __s_grave_is_unoccupied_strange = cptr.lit("grave is unoccupied.  Strange...");
+const __s_swing = cptr.lit("swing");
+const __s_s_you_can_t_s_while_entangled_in_a_web = cptr.lit("%s you can't %s while entangled in a web.");
+const __s_unfortunately = cptr.lit("Unfortunately,");
+const __s_but = cptr.lit("But");
+const __s_in_what_direction_do_you_want_to_s_s = cptr.lit("In what direction do you want to %s? [%s]");
+const __s_digging = cptr.lit("digging");
+const __s_chopping = cptr.lit("chopping");
+const __s_turbulence_torpedoes_your_s_attempts = cptr.lit("Turbulence torpedoes your %s attempts.");
+const __s_don_t_have_enough_leverage = cptr.lit("don't have enough leverage.");
+const __s_reach_the_s = cptr.lit("reach the %s.");
+const __s_use_pick_axe2 = cptr.lit("use_pick_axe2");
+const __s_hit_yourself_with_s = cptr.lit("hit yourself with %s.");
+const __s_s_own_s = cptr.lit("%s own %s");
+const __s_clash = cptr.lit("Clash!");
+const __s_is_a_spider_web_there = cptr.lit("is a spider web there!");
+const __s_s_entangled_in_the_web = cptr.lit("%s entangled in the web.");
+const __s_become = cptr.lit("become");
+const __s_stuck_in_a_spider_web = cptr.lit("stuck in a spider web");
+const __s_you_pull_free = cptr.lit("You pull free.");
+const __s_clang = cptr.lit("Clang!");
+const __s_splash = cptr.lit("Splash!");
+const __s_need_an_axe_to_cut_down_a_tree = cptr.lit("need an axe to cut down a tree.");
+const __s_need_a_pick_to_dig_rock = cptr.lit("need a pick to dig rock.");
+const __s_sparks_fly_as_you_whack_the_s_s = cptr.lit("Sparks fly as you whack the %s.%s");
+const __s_the_axe_handle_vibrates_violently = cptr.lit("  The axe-handle vibrates violently!");
+const __s_axing_a_hard_object = cptr.lit("axing a hard object");
+const __s_clear_some_debris_from_between_the_pits = cptr.lit("clear some debris from between the pits.");
+const __s_swing_s_but_the_rubble_has_no_place_to = cptr.lit("swing %s, but the rubble has no place to go.");
+const __s_swing_s_through_thin_air = cptr.lit("swing %s through thin air.");
+const __s_start_s = cptr.lit("start %s.");
+const __s_s_s = cptr.lit("%s %s.");
+const __s_begin = cptr.lit("begin");
+const __s_continue = cptr.lit("continue");
+const __s_cannot_stay_under_s_long_enough = cptr.lit("cannot stay under%s long enough.");
+const __s_the_lava = cptr.lit(" the lava");
+const __s_s_merely_scratches_the_s = cptr.lit("%s merely scratches the %s.");
+const __s_start_s_downward = cptr.lit("start %s downward.");
+const __s_continue_s_downward = cptr.lit("continue %s downward.");
+const __s_swinging = cptr.lit("swinging");
+const __s_chipping_the_statue = cptr.lit("chipping the statue");
+const __s_hitting_the_boulder = cptr.lit("hitting the boulder");
+const __s_chopping_at_the_door = cptr.lit("chopping at the door");
+const __s_cutting_the_tree = cptr.lit("cutting the tree");
+const __s_halt_vandal_you_re_under_arrest = cptr.lit("Halt, vandal!  You're under arrest!");
+const __s_fountain = cptr.lit("fountain");
+const __s_hey_stop_damaging_that_s = cptr.lit("Hey, stop damaging that %s!");
+const __s_mdig_tunnel = cptr.lit("mdig_tunnel");
+const __s_mdig_tunnel_s_at_d_d_is_undiggable = cptr.lit("mdig_tunnel:  %s at (%d,%d) is undiggable");
+const __s_stone = cptr.lit("stone");
+const __s_crashing_rock = cptr.lit("crashing rock.");
+const __s_an_unexpected_draft = cptr.lit("an unexpected draft.");
+const __s_like_you_are_s = cptr.lit("like you are %s.");
+const __s_4_f = cptr.lit("4-F");
+const __s_1_a = cptr.lit("1-A");
+const __s_a_draft = cptr.lit("a draft.");
+const __s_draft_message = cptr.lit("draft_message");
+const __s_like_s = cptr.lit("like %s.");
+const __s_enlisting = cptr.lit("enlisting");
+const __s_marching = cptr.lit("marching");
+const __s_protesting = cptr.lit("protesting");
+const __s_fleeing = cptr.lit("fleeing");
+const __s_pierce_s_s_wall = cptr.lit("pierce %s %s wall!");
+const __s_beam_bounces_off_the_s_and_hits_the_s = cptr.lit("beam bounces off the %s and hits the %s.");
+const __s_ladder = cptr.lit("ladder");
+const __s_stairs = cptr.lit("stairs");
+const __s_loosen_a_rock_from_the_s = cptr.lit("loosen a rock from the %s.");
+const __s_it_falls_on_your_s = cptr.lit("It falls on your %s!");
+const __s_zap_dig = cptr.lit("zap_dig");
+const __s_falling_rock = cptr.lit("falling rock");
+const __s_door_is_razed = cptr.lit("door is razed!");
+const __s_wall_glows_then_fades = cptr.lit("wall glows then fades.");
+const __s_tree_shudders_but_is_unharmed = cptr.lit("tree shudders but is unharmed.");
+const __s_rock_glows_then_fades = cptr.lit("rock glows then fades.");
+const __s_destroy = cptr.lit("destroy");
+const __s_the_foundation_is_too_hard_to_dig = cptr.lit("The foundation is too hard to dig through from this angle.");
+const __s_the_tree_s_roots_glow_then_fade = cptr.lit("The tree's roots glow then fade.");
+const __s_the_rock_glows_then_fades = cptr.lit("The rock glows then fades.");
+const __s_the_bars_go_much_deeper_than_your_pit = cptr.lit("The bars go much deeper than your pit.");
+const __s_a_tangled_mass_of_plumbing_remains = cptr.lit("A tangled mass of plumbing remains below the sink.");
+const __s_the_ladder_is_unaffected = cptr.lit("The ladder is unaffected.");
+const __s_throne = cptr.lit("throne");
+const __s_altar = cptr.lit("altar");
+const __s_the_s_supporting_structures_remain = cptr.lit("The %s supporting structures remain intact.");
+const __s_suddenly_s_flows_in_from_the_adjacent = cptr.lit("Suddenly %s flows in from the adjacent pit!");
+const __s_bury_an_obj_s = cptr.lit("bury_an_obj: %s");
+const __s_bury_an_obj = cptr.lit("bury_an_obj");
+const __s_iron_ball_gets_buried = cptr.lit("iron ball gets buried!");
+const __s_bury_objs_at_d_d = cptr.lit("bury_objs: at <%d,%d>");
+const __s_owe_s_ld_s_for_burying_merchandise = cptr.lit("owe %s %ld %s for burying merchandise.");
+const __s_unearth_objs_at_d_d = cptr.lit("unearth_objs: at <%d,%d>");
+const __s_s_s_s_away_c = cptr.lit("%s%s %s away%c");
+const __s_wielded = cptr.lit("wielded ");
+const __s_rot = cptr.lit("rot");
+const __s_no_objects_here_or_adjacent_to_bury = cptr.lit("No objects here or adjacent to bury.");
+const __s_no_objects_buried = cptr.lit("No objects buried.");
+const __s_d_object_s_buried = cptr.lit("%d object%s buried.");
+const __s_s = cptr.lit("s");
 
 /** C ref: dig.c:20 — enum */
 export const DIGTYP_UNDIGGABLE = 0;
@@ -373,7 +373,7 @@ function mkcavepos(x, y, dist, waslit, rockit) {
     cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x, uchar(((dist < 3) ? 3 : NHM.COULD_SEE)));
     cptr.st1o(lev, $rm_typ, schar((rockit ? NHC.STONE : NHC.ROOM)));
     if (dist >= 3)
-        impossible(__sl0, dist);
+        impossible(__s_mkcavepos_called_with_dist_d, dist);
     feel_newsym(x, y);
 }
 
@@ -388,9 +388,9 @@ function mkcavearea(rockit) {
     let waslit = rm_waslit();
     if (rockit) {
         ;
-        pline(__sl1);
+        pline(__s_crash_the_ceiling_collapses_around_you);
     } else {
-        pline(__sl2, (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? __sl3 : __sl4);
+        pline(__s_a_mysterious_force_s_cave_around_you, (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? __s_creates_a : __s_extends_the);
     }
     display_nhwindow()(WIN_MESSAGE.v, 1);
     for (dist = 1; dist <= 2; dist++) {
@@ -496,35 +496,35 @@ export function dig_check(madeby, x, y) {
 
 /** C ref: dig.c:255 — @param {*} digresult @param {CPtr<struct monst>} madeby @param {CInt} x @param {CInt} y */
 export function digcheck_fail_message(digresult, madeby, x, y) {
-    let verb = (cptr.eq(madeby, (cptr.add(gy, $instance_globals_y_youmonst))) && uwep.v && is_axe(uwep.v)) ? __sl5 : __sl6;
+    let verb = (cptr.eq(madeby, (cptr.add(gy, $instance_globals_y_youmonst))) && uwep.v && is_axe(uwep.v)) ? __s_chop : __s_dig_in;
     if (digresult < NHC.DIGCHECK_FAILED)
         return;
     switch (digresult) {
         case NHC.DIGCHECK_FAIL_AIRLEVEL:
-        You(__sl7, verb);
+        You(__s_cannot_s_thin_air, verb);
         break;
         case NHC.DIGCHECK_FAIL_ALTAR:
-        pline_The(__sl8);
+        pline_The(__s_altar_is_too_hard_to_break_apart);
         break;
         case NHC.DIGCHECK_FAIL_BOULDER:
-        There(__sl9, verb);
+        There(__s_isn_t_enough_room_to_s_here, verb);
         break;
         case NHC.DIGCHECK_FAIL_ONLADDER:
-        pline_The(__sl10);
+        pline_The(__s_ladder_resists_your_effort);
         break;
         case NHC.DIGCHECK_FAIL_ONSTAIRS:
-        pline_The(__sl11, verb);
+        pline_The(__s_stairs_are_too_hard_to_s, verb);
         break;
         case NHC.DIGCHECK_FAIL_THRONE:
-        pline_The(__sl12);
+        pline_The(__s_throne_is_too_hard_to_break_apart);
         break;
         case NHC.DIGCHECK_FAIL_CANTDIG:
         case NHC.DIGCHECK_FAIL_TOOHARD:
         case NHC.DIGCHECK_FAIL_UNDESTROYABLETRAP:
-        pline_The(__sl13, surface(x, y), verb);
+        pline_The(__s_s_here_is_too_hard_to_s, surface(x, y), verb);
         break;
         case NHC.DIGCHECK_FAIL_WATERLEVEL:
-        pline_The(__sl14, hliquid(__sl15));
+        pline_The(__s_s_splashes_and_subsides, hliquid(__s_water));
         break;
         case NHC.DIGCHECK_FAIL_OBJ_POOL_OR_TRAP:
         case NHC.DIGCHECK_PASSED:
@@ -535,12 +535,12 @@ export function digcheck_fail_message(digresult, madeby, x, y) {
 }
 
 const __static_dig_d_target = cptr.alloc(6 * 8);
-cptr.stPtro(__static_dig_d_target, 0, __sl49);
-cptr.stPtro(__static_dig_d_target, 8, __sl50);
-cptr.stPtro(__static_dig_d_target, 16, __sl51);
-cptr.stPtro(__static_dig_d_target, 24, __sl52);
-cptr.stPtro(__static_dig_d_target, 32, __sl46);
-cptr.stPtro(__static_dig_d_target, 40, __sl53); /** C ref: dig.c:547 — char *[6] (function-static) */
+cptr.stPtro(__static_dig_d_target, 0, __s_empty);
+cptr.stPtro(__static_dig_d_target, 8, __s_rock);
+cptr.stPtro(__static_dig_d_target, 16, __s_statue);
+cptr.stPtro(__static_dig_d_target, 24, __s_boulder);
+cptr.stPtro(__static_dig_d_target, 32, __s_door);
+cptr.stPtro(__static_dig_d_target, 40, __s_tree); /** C ref: dig.c:547 — char *[6] (function-static) */
 
 /** C ref: dig.c:300 @returns {CInt} */
 function dig() {
@@ -548,7 +548,7 @@ function dig() {
     let dpx = cptr.ldI16o(svc, $context_info_digging + $dig_info_pos);
     let dpy = cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y);
     let ispick = schar((uwep.v && is_pick(uwep.v) ? 1 : 0));
-    let verb = (!uwep.v || is_pick(uwep.v)) ? __sl16 : __sl17;
+    let verb = (!uwep.v || is_pick(uwep.v)) ? __s_dig_into : __s_chop_through;
     let dcresult = NHC.DIGCHECK_PASSED;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dpx, 756), dpy, 36);
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || !uwep.v || (!ispick && !is_axe(uwep.v)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)) || ((cptr.ld1so(svc, $context_info_digging + $dig_info_down) ? (dpx != cptr.ldI16(u) || dpy != cptr.ldI16o(u, $you_uy) ? 1 : 0) : !(dist2(((dpx)), ((dpy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))))
@@ -561,40 +561,40 @@ function dig() {
         }
     } else {
         if (IS_TREE(cptr.ld1so(lev, $rm_typ)) && !may_dig(dpx, dpy) && dig_typ(uwep.v, dpx, dpy) == NHC.DIGTYP_TREE) {
-            pline(__sl18);
+            pline(__s_this_tree_seems_to_be_petrified);
             return 0;
         }
         if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) && !may_dig(dpx, dpy) && dig_typ(uwep.v, dpx, dpy) == NHC.DIGTYP_ROCK) {
-            pline(__sl19, is_db_wall(dpx, dpy) ? __sl20 : __sl21, verb);
+            pline(__s_this_s_is_too_hard_to_s, is_db_wall(dpx, dpy) ? __s_drawbridge : __s_wall, verb);
             return 0;
         }
     }
-    if (Fumbling() && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 336, __sl23), rn2(3)) : rn2(3))) {
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__sl22, 337, __sl23), rn2(3)) : rn2(3))) {
+    if (Fumbling() && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 336, __s_dig), rn2(3)) : rn2(3))) {
+        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 337, __s_dig), rn2(3)) : rn2(3))) {
             case 0:
             if (!welded(uwep.v)) {
-                You(__sl24, yname(uwep.v));
+                You(__s_fumble_and_drop_s, yname(uwep.v));
                 dropx(uwep.v);
             } else {
                 if (cptr.ldPtro(u, $you_usteed))
-                    pline(__sl25, Yobjnam2(uwep.v, __sl26), otense(uwep.v, __sl27), mon_nam(cptr.ldPtro(u, $you_usteed)));
+                    pline(__s_s_and_s_s, Yobjnam2(uwep.v, __s_bounce), otense(uwep.v, __s_hit), mon_nam(cptr.ldPtro(u, $you_usteed)));
                 else
-                    pline(__sl28, Yobjnam2(uwep.v, __sl26), otense(uwep.v, __sl27));
-                set_wounded_legs(262144n, (5 + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 349, __sl23), rnd(5)) : rnd(5))) | 0);
+                    pline(__s_ouch_s_and_s_you, Yobjnam2(uwep.v, __s_bounce), otense(uwep.v, __s_hit));
+                set_wounded_legs(262144n, (5 + (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 349, __s_dig), rnd(5)) : rnd(5))) | 0);
             }
             break;
             case 1:
             ;
-            pline(__sl29, the(xname(uwep.v)));
+            pline(__s_bang_you_hit_with_the_broad_side_of_s, the(xname(uwep.v)));
             wake_nearby(0);
             break;
             default:
-            Your(__sl30);
+            Your(__s_swing_misses_its_mark);
             break;
         }
         return 0;
     }
-    cptr.stI32o(svc, $context_info_digging, (cptr.ldI32o(svc, $context_info_digging) + ((((((((((10 + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 366, __sl23), rn2(5)) : rn2(5))) | 0) + abon()) | 0) + cptr.ld1so(uwep.v, $obj_spe)) | 0) - greatest_erosion(uwep.v)) | 0) + cptr.ld1so(u, $you_udaminc)) | 0)) | 0);
+    cptr.stI32o(svc, $context_info_digging, (cptr.ldI32o(svc, $context_info_digging) + ((((((((((10 + (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 366, __s_dig), rn2(5)) : rn2(5))) | 0) + abon()) | 0) + cptr.ld1so(uwep.v, $obj_spe)) | 0) - greatest_erosion(uwep.v)) | 0) + cptr.ld1so(u, $you_udaminc)) | 0)) | 0);
     if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))
         cptr.stI32o(svc, $context_info_digging, Math.imul(cptr.ldI32o(svc, $context_info_digging), 2));
     if (cptr.ld1so(svc, $context_info_digging + $dig_info_down)) {
@@ -611,18 +611,18 @@ function dig() {
             void __builtin___memset_chk(cptr.add(svc, $context_info_digging), 0, 32n, __builtin_object_size(cptr.add(svc, $context_info_digging), 0));
             return 0;
         } else if (ttmp && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP && cptr.ldI32o(u, $you_utrap)) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl22, 393, __sl23), rnl(7)) : rnl(7)) > (Fumbling() ? 1 : 4)) {
+            if ((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 393, __s_dig), rnl(7)) : rnl(7)) > (Fumbling() ? 1 : 4)) {
                 let kbuf = new Uint8Array(256);
                 let dmg = (dmgval(uwep.v, cptr.add(gy, $instance_globals_y_youmonst)) + dbon()) | 0;
                 if (dmg < 1)
                     dmg = 1;
                 else if (uarmf.v)
                     dmg = (((dmg + 1) | 0) / 2) | 0;
-                You(__sl31, body_part(NHC.FOOT));
-                void cptr.sprintf(cptr.decay(kbuf), __sl32, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), body_part(NHC.FOOT));
+                You(__s_hit_yourself_in_the_s, body_part(NHC.FOOT));
+                void cptr.sprintf(cptr.decay(kbuf), __s_chopping_off_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), body_part(NHC.FOOT));
                 losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), cptr.decay(kbuf), NHM.KILLED_BY);
             } else {
-                You(__sl33, yobjnam(uwep.v, null));
+                You(__s_destroy_the_bear_trap_with_s, yobjnam(uwep.v, null));
                 deltrap(ttmp);
                 reset_utrap(1);
             }
@@ -631,7 +631,7 @@ function dig() {
         } else if (ttmp && dcresult == NHC.DIGCHECK_PASSED_DESTROY_TRAP) {
             let ttmpname = trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 0);
             if (ispick)
-                You(__sl34, (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 ? the(ttmpname) : an(ttmpname), yobjnam(uwep.v, null));
+                You(__s_destroy_s_with_s, (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 ? the(ttmpname) : an(ttmpname), yobjnam(uwep.v, null));
             deltrap(ttmp);
             cptr.stI32o(svc, $context_info_digging, 0);
             return 0;
@@ -657,7 +657,7 @@ function dig() {
         __lbl_cleanup: {
             if (digtyp == NHC.DIGTYP_STATUE && (obj = sobj_at(NHC.STATUE, dpx, dpy)) !== null) {
                 if (break_statue(obj))
-                    digtxt = __sl35;
+                    digtxt = __s_the_statue_shatters;
                 else
                     digtxt = null;
             } else if (digtyp == NHC.DIGTYP_BOULDER && (obj = sobj_at(NHC.BOULDER, dpx, dpy)) !== null) {
@@ -666,32 +666,32 @@ function dig() {
                     obj_extract_self(bobj);
                     place_object(bobj, dpx, dpy);
                 }
-                digtxt = __sl36;
+                digtxt = __s_the_boulder_falls_apart;
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.STONE || cptr.ld1so(lev, $rm_typ) == NHC.SCORR || IS_TREE(cptr.ld1so(lev, $rm_typ))) {
                 if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))) {
-                    if ((cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 468, __sl23), rn2(3)) : rn2(3))) {
+                    if ((cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 468, __s_dig), rn2(3)) : rn2(3))) {
                         mkcavearea(0);
                         break __lbl_cleanup;
-                    } else if (((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 471, __sl23), rn2(4)) : rn2(4))) || (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 472, __sl23), rn2(6)) : rn2(6)))) {
+                    } else if (((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 471, __s_dig), rn2(4)) : rn2(4))) || (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 472, __s_dig), rn2(6)) : rn2(6)))) {
                         mkcavearea(1);
                         break __lbl_cleanup;
                     }
                 }
                 if (digtyp == NHC.DIGTYP_TREE) {
-                    digtxt = __sl37;
+                    digtxt = __s_you_cut_down_the_tree;
                     cptr.st1o(lev, $rm_typ, NHC.ROOM), cptr.stI32o(lev, $rm_flags, 0);
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 480, __sl23), rn2(5)) : rn2(5)))
+                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 480, __s_dig), rn2(5)) : rn2(5)))
                         void rnd_treefruit_at(dpx, dpy);
                     if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER))
                         adjalign(-1);
                 } else {
-                    digtxt = __sl38;
+                    digtxt = __s_you_succeed_in_cutting_away_some_rock;
                     cptr.st1o(lev, $rm_typ, NHC.CORR), cptr.stI32o(lev, $rm_flags, 0);
                 }
             } else if (IS_WALL(cptr.ld1so(lev, $rm_typ))) {
                 if (shopedge) {
                     add_damage(dpx, dpy, (BigInt.asIntN(64, 10n * BigInt((acurrstr())))));
-                    dmgtxt = __sl39;
+                    dmgtxt = __s_damage;
                 }
                 if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1)) {
                     cptr.st1o(lev, $rm_typ, NHC.ROOM), cptr.stI32o(lev, $rm_flags, 0);
@@ -700,18 +700,18 @@ function dig() {
                 } else {
                     cptr.st1o(lev, $rm_typ, NHC.DOOR), cptr.stI32o(lev, $rm_flags, NHM.D_NODOOR);
                 }
-                digtxt = __sl40;
+                digtxt = __s_you_make_an_opening_in_the_wall;
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) {
                 cvt_sdoor_to_door(lev);
-                digtxt = __sl41;
+                digtxt = __s_you_break_through_a_secret_door;
                 if (!(((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED))
                     cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
             } else if (closed_door(dpx, dpy)) {
-                void cptr.sprintf(cptr.decay(digbuf), __sl42, simpleonames(uwep.v));
+                void cptr.sprintf(cptr.decay(digbuf), __s_you_break_through_the_door_with_your_s, simpleonames(uwep.v));
                 digtxt = cptr.decay(digbuf);
                 if (shopedge) {
                     add_damage(dpx, dpy, 400n);
-                    dmgtxt = __sl43;
+                    dmgtxt = __s_break;
                 }
                 if (!(((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED))
                     cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
@@ -721,17 +721,17 @@ function dig() {
                 unblock_point(dpx, dpy);
             feel_newsym(dpx, dpy);
             if (digtxt && !cptr.ld1so(svc, $context_info_digging + $dig_info_quiet))
-                pline(__sl44, digtxt);
+                pline(__s_pct_s, digtxt);
             if (dmgtxt)
                 pay_for_damage(dmgtxt, 0);
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 528, __sl23), rn2(3)) : rn2(3))) {
-                let mndx = (rng_log_enabled() ? (rng_log_set_caller(__sl22, 529, __sl23), rn2(2)) : rn2(2)) ? NHC.PM_EARTH_ELEMENTAL : NHC.PM_XORN;
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 528, __s_dig), rn2(3)) : rn2(3))) {
+                let mndx = (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 529, __s_dig), rn2(2)) : rn2(2)) ? NHC.PM_EARTH_ELEMENTAL : NHC.PM_XORN;
                 if (makemon(cptr.add(mons, mndx, 96), dpx, dpy, NHM.MM_NOMSG))
-                    pline_The(__sl45);
+                    pline_The(__s_debris_from_your_digging_comes_to_life);
             }
             if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) {
                 cptr.stI32o(lev, $rm_flags, NHM.D_NODOOR);
-                b_trapped(__sl46, NHC.NO_PART);
+                b_trapped(__s_door, NHC.NO_PART);
                 recalc_block_point(dpx, dpy);
                 newsym(dpx, dpy);
             }
@@ -745,13 +745,13 @@ function dig() {
         let dig_target = dig_typ(uwep.v, dpx, dpy);
         if (IS_WALL(cptr.ld1so(lev, $rm_typ)) || dig_target == NHC.DIGTYP_DOOR) {
             if (cptr.ld1s(in_rooms(dpx, dpy, NHC.SHOPBASE))) {
-                pline(__sl47, ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) ? __sl46 : __sl21, verb);
+                pline(__s_this_s_seems_too_hard_to_s, ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) ? __s_door : __s_wall, verb);
                 return 0;
             }
         } else if (dig_target == NHC.DIGTYP_UNDIGGABLE || (dig_target == NHC.DIGTYP_ROCK && !((cptr.ld1so(lev, $rm_typ)) < NHC.POOL)))
             return 0;
         if (!cptr.ld1so(gd, $instance_globals_d_did_dig_msg)) {
-            You(__sl48, cptr.ldPtro(__static_dig_d_target, dig_target, 8));
+            You(__s_hit_the_s_with_all_your_might, cptr.ldPtro(__static_dig_d_target, dig_target, 8));
             wake_nearby(0);
             cptr.st1o(gd, $instance_globals_d_did_dig_msg, 1);
         }
@@ -808,11 +808,11 @@ export function fillholetyp(x, y, fill_if_any) {
                 lava_cnt++;
     if (!fill_if_any)
         pool_cnt = (pool_cnt / 3) | 0;
-    if ((lava_cnt > ((moat_cnt + pool_cnt) | 0) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 628, __sl54), rn2((lava_cnt + 1) | 0)) : rn2((lava_cnt + 1) | 0))) || (lava_cnt && fill_if_any))
+    if ((lava_cnt > ((moat_cnt + pool_cnt) | 0) && (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 628, __s_fillholetyp), rn2((lava_cnt + 1) | 0)) : rn2((lava_cnt + 1) | 0))) || (lava_cnt && fill_if_any))
         return NHC.LAVAPOOL;
-    else if ((moat_cnt > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 631, __sl54), rn2((moat_cnt + 1) | 0)) : rn2((moat_cnt + 1) | 0))) || (moat_cnt && fill_if_any))
+    else if ((moat_cnt > 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 631, __s_fillholetyp), rn2((moat_cnt + 1) | 0)) : rn2((moat_cnt + 1) | 0))) || (moat_cnt && fill_if_any))
         return NHC.MOAT;
-    else if ((pool_cnt > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 633, __sl54), rn2((pool_cnt + 1) | 0)) : rn2((pool_cnt + 1) | 0))) || (pool_cnt && fill_if_any))
+    else if ((pool_cnt > 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 633, __s_fillholetyp), rn2((pool_cnt + 1) | 0)) : rn2((pool_cnt + 1) | 0))) || (pool_cnt && fill_if_any))
         return NHC.POOL;
     else
         return NHC.ROOM;
@@ -846,17 +846,17 @@ export function digactualhole(x, y, madeby, ttyp) {
     if (furniture_handled(x, y, madeby_u))
         return;
     if (ttyp != NHC.PIT && (!Can_dig_down(cptr.add(u, $you_uz)) && !(cptr.ldI32o(lev, $rm_candig) & 1))) {
-        impossible(__sl55, trapname(ttyp, 1));
+        impossible(__s_digactualhole_can_t_dig_s_on_this_level, trapname(ttyp, 1));
         ttyp = NHC.PIT;
     }
     old_typ = cptr.ld1so(lev, $rm_typ);
     cptr.st1o(cptr.decay(furniture), 0, 0, 1);
     if (IS_FURNITURE(cptr.ld1so(lev, $rm_typ))) {
-        surface_type = (((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) ? __sl56 : __sl57);
+        surface_type = (((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) ? __s_floor : __s_ground);
         if (((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR)) {
             old_aligntyp = (schar(((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
             void cptr.strcpy(cptr.decay(furniture), align_str(schar(old_aligntyp)));
-            void cptr.strcat(cptr.decay(furniture), __sl58);
+            void cptr.strcat(cptr.decay(furniture), __s_sp);
         }
         void cptr.strcat(cptr.decay(furniture), surface(x, y));
     } else {
@@ -875,27 +875,27 @@ export function digactualhole(x, y, madeby, ttyp) {
     else if (madeby_u)
         feeltrap(ttmp);
     tname = trapname(ttyp, 1);
-    in_thru = (ttyp == NHC.HOLE ? __sl59 : __sl60);
+    in_thru = (ttyp == NHC.HOLE ? __s_through : __s_in);
     if (madeby_u) {
         if (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy))
-            You(__sl61, tname);
+            You(__s_dig_an_adjacent_s, tname);
         else
-            You(__sl62, an(tname), in_thru, surface_type);
+            You(__s_dig_s_s_the_s, an(tname), in_thru, surface_type);
     } else if (!madeby_obj && canseemon(madeby)) {
-        pline(__sl63, Monnam(madeby), an(tname), in_thru, surface_type);
+        pline(__s_s_digs_s_s_the_s, Monnam(madeby), an(tname), in_thru, surface_type);
     } else if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && cptr.ld1so(flags, $flag_verbose)) {
         if (((old_typ) <= NHC.DBWALL))
-            pline_The(__sl64, surface_type, an(tname));
+            pline_The(__s_s_crumbles_into_s, surface_type, an(tname));
         else
-            pline(__sl65, An(tname), surface_type);
+            pline(__s_s_appears_in_the_s, An(tname), surface_type);
     }
     if (IS_FURNITURE(old_typ) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
-        pline_The(__sl66, cptr.decay(furniture), tname);
+        pline_The(__s_s_falls_into_the_s, cptr.decay(furniture), tname);
     if (heros_fault && old_typ == NHC.ALTAR)
         desecrate_altar(0, schar(old_aligntyp));
     if (ttyp == NHC.PIT) {
         if (shopdoor && heros_fault)
-            pay_for_damage(__sl67, 0);
+            pay_for_damage(__s_ruin, 0);
         else
             add_damage(x, y, heros_fault ? 100n : 0n);
         if (madeby_u)
@@ -905,7 +905,7 @@ export function digactualhole(x, y, madeby, ttyp) {
             wont_fall = 1;
         if (at_u) {
             if (!wont_fall) {
-                set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl22, 739, __sl68), rn2(4)) : rn2(4)) + 2) | 0) >>> 0, NHC.TT_PIT);
+                set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 739, __s_digactualhole), rn2(4)) : rn2(4)) + 2) | 0) >>> 0, NHC.TT_PIT);
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
             } else
                 reset_utrap(1);
@@ -914,7 +914,7 @@ export function digactualhole(x, y, madeby, ttyp) {
         } else if (mtmp) {
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(mtmp, $monst_data))) {
                 if (canseemon(mtmp))
-                    pline(__sl69, Monnam(mtmp), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) ? __sl70 : __sl71);
+                    pline(__s_s_s_over_the_pit, Monnam(mtmp), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) ? __s_flies : __s_floats);
             } else if (!cptr.eq(mtmp, madeby))
                 void mintrap(mtmp, NHM.NO_TRAP_FLAGS);
         }
@@ -924,7 +924,7 @@ export function digactualhole(x, y, madeby, ttyp) {
             if (Levitation() || Flying())
                 wont_fall = 1;
             if (!cptr.ldPtro(u, $you_ustuck) && !wont_fall && !next_to_u()) {
-                You(__sl72);
+                You(__s_are_jerked_back_by_your_pet);
                 wont_fall = 1;
             }
             if (cptr.ldPtro(u, $you_ustuck) || wont_fall) {
@@ -933,14 +933,14 @@ export function digactualhole(x, y, madeby, ttyp) {
                 if (!cptr.eq(oldobjs, newobjs))
                     void pickup(1);
                 if (shopdoor && heros_fault)
-                    pay_for_damage(__sl67, 0);
+                    pay_for_damage(__s_ruin, 0);
             } else {
                 let newlevel = cptr.alloc(4);
                 if (cptr.ld1so(u, $you_ushops) && heros_fault)
                     shopdig(1);
                 else
-                    pay_for_damage(__sl16, 1);
-                You(__sl73);
+                    pay_for_damage(__s_dig_into, 1);
+                You(__s_fall_through);
                 cptr.stI16(newlevel, cptr.ldI16o(u, $you_uz));
                 cptr.stI16o(newlevel, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0)));
                 goto_level(newlevel, 0, 1, 0);
@@ -948,7 +948,7 @@ export function digactualhole(x, y, madeby, ttyp) {
             }
         } else {
             if (shopdoor && heros_fault)
-                pay_for_damage(__sl67, 0);
+                pay_for_damage(__s_ruin, 0);
             if (newobjs)
                 impact_drop(null, x, y, 0);
             if (mtmp) {
@@ -962,7 +962,7 @@ export function digactualhole(x, y, madeby, ttyp) {
                         assign_level(tolevel, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level));
                     } else if (Is_botlevel(cptr.add(u, $you_uz))) {
                         if (canseemon(mtmp))
-                            pline(__sl74, Monnam(mtmp));
+                            pline(__s_s_avoids_the_trap, Monnam(mtmp));
                         return;
                     } else {
                         get_level(tolevel, (depth(cptr.add(u, $you_uz)) + 1) | 0);
@@ -983,7 +983,7 @@ export function liquid_flow(x, y, typ, ttmp, fillmsg) {
     let u_spot = schar(((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
     if (!is_pool_or_lava(x, y)) {
         if (cptr.ld1so(iflags, $instance_flags_sanity_check)) {
-            impossible(__sl75, x, y, ttmp ? trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1) : __sl76, fillmsg ? fillmsg : __sl77);
+            impossible(__s_insane_liquid_flow_d_d_s_s, x, y, ttmp ? trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1) : __s_no_trap, fillmsg ? fillmsg : __s_no_mesg);
         }
         return;
     }
@@ -992,7 +992,7 @@ export function liquid_flow(x, y, typ, ttmp, fillmsg) {
     obj_ice_effects(x, y, 1);
     unearth_objs(x, y);
     if (fillmsg)
-        pline(fillmsg, hliquid(typ == NHC.LAVAPOOL ? __sl78 : __sl15));
+        pline(fillmsg, hliquid(typ == NHC.LAVAPOOL ? __s_lava : __s_water));
     if ((objchain = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
         if (typ == NHC.LAVAPOOL)
             fire_damage_chain(objchain, 1, 1, x, y);
@@ -1033,17 +1033,17 @@ export function dighole(pit_only, by_magic, cc) {
     nohole = schar((dig_check_result == NHC.DIGCHECK_FAIL_CANTDIG || dig_check_result == NHC.DIGCHECK_FAIL_TOOHARD ? 1 : 0));
     old_typ = cptr.ld1so(lev, $rm_typ);
     if ((ttmp && (undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || nohole)) || (((old_typ) < NHC.POOL) && old_typ != NHC.SDOOR && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0)) {
-        pline_The(__sl79, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __sl80 : __sl49);
+        pline_The(__s_s_shere_is_too_hard_to_dig_in, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __s_t : __s_empty);
     } else if (ttmp && is_magical_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
-        explode(dig_x, dig_y, 0, (20 + (rng_log_enabled() ? (rng_log_set_caller(__sl22, 919, __sl81), d(3, 6)) : d(3, 6))) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL);
+        explode(dig_x, dig_y, 0, (20 + (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 919, __s_dighole), d(3, 6)) : d(3, 6))) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL);
         deltrap(ttmp);
         newsym(dig_x, dig_y);
     } else if (is_pool_or_lava(dig_x, dig_y)) {
-        pline_The(__sl82, hliquid(is_lava(dig_x, dig_y) ? __sl78 : __sl15));
+        pline_The(__s_s_sloshes_furiously_for_a_moment_then, hliquid(is_lava(dig_x, dig_y) ? __s_lava : __s_water));
         wake_nearby(0);
     } else if (old_typ == NHC.DRAWBRIDGE_DOWN || (is_drawbridge_wall(dig_x, dig_y) >= 0)) {
         if (pit_only) {
-            pline_The(__sl83);
+            pline_The(__s_drawbridge_seems_too_hard_to_dig_through);
         } else {
             let x = cptr.box(dig_x);
             let y = cptr.box(dig_y);
@@ -1052,12 +1052,12 @@ export function dighole(pit_only, by_magic, cc) {
             retval = 1;
         }
     } else if ((boulder_here = sobj_at(NHC.BOULDER, dig_x, dig_y)) !== null) {
-        if (ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && (rng_log_enabled() ? (rng_log_set_caller(__sl22, 944, __sl81), rn2(2)) : rn2(2))) {
-            pline_The(__sl84, (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __sl85 : __sl49);
+        if (ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 944, __s_dighole), rn2(2)) : rn2(2))) {
+            pline_The(__s_boulder_settles_into_the_spit, (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __s_adjacent : __s_empty);
             cptr.stI32o(ttmp, $trap_ttyp, NHC.PIT);
         } else {
             ;
-            pline(__sl86);
+            pline(__s_kadoom_the_boulder_falls_in);
             wake_nearby(0);
             void delfloortrap(ttmp);
         }
@@ -1069,24 +1069,24 @@ export function dighole(pit_only, by_magic, cc) {
     } else if (old_typ == NHC.DRAWBRIDGE_UP) {
         typ = fillholetyp(dig_x, dig_y, 0);
         if (typ == NHC.ROOM) {
-            pline_The(__sl79, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __sl80 : __sl49);
+            pline_The(__s_s_shere_is_too_hard_to_dig_in, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __s_t : __s_empty);
         } else {
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) & -29);
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | ((typ == NHC.LAVAPOOL) ? NHM.DB_LAVA : NHM.DB_MOAT));
-            liquid_flow(dig_x, dig_y, typ, ttmp, __sl87);
+            liquid_flow(dig_x, dig_y, typ, ttmp, __s_as_you_dig_the_hole_fills_with_s);
             retval = 1;
         }
     } else if (((old_typ) == NHC.THRONE)) {
-        pline_The(__sl12);
+        pline_The(__s_throne_is_too_hard_to_break_apart);
     } else if (((old_typ) == NHC.ALTAR)) {
-        pline_The(__sl8);
+        pline_The(__s_altar_is_too_hard_to_break_apart);
     } else {
         typ = fillholetyp(dig_x, dig_y, 0);
         cptr.stI32o(lev, $rm_flags, 0);
         if (typ != NHC.ROOM) {
             if (!furniture_handled(i16(dig_x), i16(dig_y), 1)) {
                 cptr.st1o(lev, $rm_typ, typ);
-                liquid_flow(dig_x, dig_y, typ, ttmp, __sl87);
+                liquid_flow(dig_x, dig_y, typ, ttmp, __s_as_you_dig_the_hole_fills_with_s);
             }
             retval = 1;
         } else {
@@ -1123,35 +1123,35 @@ function dig_up_grave(cc) {
     exercise(NHC.A_WIS, 0);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST)) {
         adjalign(Math.imul(-sgn(cptr.ld1so(u, $you_ualign)), 3));
-        You_feel(__sl88);
+        You_feel(__s_like_a_despicable_grave_robber);
     } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) {
         adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
-        You(__sl89);
+        You(__s_disturb_the_honorable_dead);
     } else if (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL) {
         if (cptr.ldI32o(u, $you_ualign + $align_record) > -10)
             adjalign(-1);
-        You(__sl90);
+        You(__s_have_violated_the_sanctity_of_this_grave);
     }
-    what_happens = (cptr.ldI32o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1058, __sl91), rn2(5)) : rn2(5));
+    what_happens = (cptr.ldI32o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1058, __s_dig_up_grave), rn2(5)) : rn2(5));
     switch (what_happens) {
         case 0:
         case 1:
-        You(__sl92);
+        You(__s_unearth_a_corpse);
         if ((otmp = mk_tt_object(NHC.CORPSE, dig_x, dig_y)) !== null)
             cptr.stI64o(otmp, $obj_age, cptr.ldI64o(otmp, $obj_age) - 51n);
         break;
         case 2:
         if (!Blind())
-            pline(__sl93, Hallucination() ? __sl94 : __sl95);
+            pline(__s_pct_s_bang, Hallucination() ? __s_dude_the_living_dead : __s_the_grave_s_owner_is_very_upset);
         void makemon(mkclass(NHC.S_ZOMBIE, 0), dig_x, dig_y, NHM.MM_NOMSG);
         break;
         case 3:
         if (!Blind())
-            pline(__sl93, Hallucination() ? __sl96 : __sl97);
+            pline(__s_pct_s_bang, Hallucination() ? __s_i_want_my_mummy : __s_you_ve_disturbed_a_tomb);
         void makemon(mkclass(NHC.S_MUMMY, 0), dig_x, dig_y, NHM.MM_NOMSG);
         break;
         default:
-        pline_The(__sl98);
+        pline_The(__s_grave_is_unoccupied_strange);
         break;
     }
     cptr.st1o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
@@ -1175,7 +1175,7 @@ export function use_pick_axe(obj) {
     let res = NHM.ECMD_OK;
     let dir;
     if (!cptr.eq(obj, uwep.v)) {
-        if (wield_tool(obj, __sl99)) {
+        if (wield_tool(obj, __s_swing)) {
             cmdq_add_ec(NHC.CQ_CANNED, doapply);
             cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(obj, $obj_invlet));
             return NHM.ECMD_TIME;
@@ -1183,9 +1183,9 @@ export function use_pick_axe(obj) {
         return NHM.ECMD_OK;
     }
     ispick = schar(is_pick(obj));
-    verb = ispick ? __sl23 : __sl5;
+    verb = ispick ? __s_dig : __s_chop;
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
-        pline(__sl100, !res ? __sl101 : __sl102, verb);
+        pline(__s_s_you_can_t_s_while_entangled_in_a_web, !res ? __s_unfortunately : __s_but, verb);
         return res;
     }
     downok = !!can_reach_floor(0);
@@ -1208,19 +1208,19 @@ export function use_pick_axe(obj) {
         cptr.st1(cptr.postinc(() => dsp, (v) => { dsp = v; }), dirch);
     }
     cptr.st1(dsp, 0);
-    void cptr.sprintf(cptr.decay(qbuf), __sl103, verb, cptr.decay(dirsyms));
+    void cptr.sprintf(cptr.decay(qbuf), __s_in_what_direction_do_you_want_to_s_s, verb, cptr.decay(dirsyms));
     if (!getdir(cptr.decay(qbuf)))
         return (res | NHM.ECMD_CANCEL);
     return use_pick_axe2(obj);
 }
 
 const __static_use_pick_axe2_d_action = cptr.alloc(6 * 8);
-cptr.stPtro(__static_use_pick_axe2_d_action, 0, __sl137);
-cptr.stPtro(__static_use_pick_axe2_d_action, 8, __sl104);
-cptr.stPtro(__static_use_pick_axe2_d_action, 16, __sl138);
-cptr.stPtro(__static_use_pick_axe2_d_action, 24, __sl139);
-cptr.stPtro(__static_use_pick_axe2_d_action, 32, __sl140);
-cptr.stPtro(__static_use_pick_axe2_d_action, 40, __sl141); /** C ref: dig.c:1276 — char *[6] (function-static) */
+cptr.stPtro(__static_use_pick_axe2_d_action, 0, __s_swinging);
+cptr.stPtro(__static_use_pick_axe2_d_action, 8, __s_digging);
+cptr.stPtro(__static_use_pick_axe2_d_action, 16, __s_chipping_the_statue);
+cptr.stPtro(__static_use_pick_axe2_d_action, 24, __s_hitting_the_boulder);
+cptr.stPtro(__static_use_pick_axe2_d_action, 32, __s_chopping_at_the_door);
+cptr.stPtro(__static_use_pick_axe2_d_action, 40, __s_cutting_the_tree); /** C ref: dig.c:1276 — char *[6] (function-static) */
 
 /** C ref: dig.c:1162 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function use_pick_axe2(obj) {
@@ -1231,24 +1231,24 @@ export function use_pick_axe2(obj) {
     let trap_with_u;
     let dig_target;
     let ispick = schar(is_pick(obj));
-    let verbing = ispick ? __sl104 : __sl105;
+    let verbing = ispick ? __s_digging : __s_chopping;
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && do_attack(cptr.ldPtro(u, $you_ustuck))) {
         ;
     } else if (Underwater()) {
-        pline(__sl106, verbing);
+        pline(__s_turbulence_torpedoes_your_s_attempts, verbing);
     } else if (cptr.ldI32o(u, $you_dz) < 0) {
         if (Levitation())
-            You(__sl107);
+            You(__s_don_t_have_enough_leverage);
         else
-            You_cant(__sl108, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            You_cant(__s_reach_the_s, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     } else if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
         let buf = new Uint8Array(256);
         let dam;
-        dam = ((((rng_log_enabled() ? (rng_log_set_caller(__sl22, 1184, __sl109), rnd(2)) : rnd(2)) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
+        dam = ((((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1184, __s_use_pick_axe2), rnd(2)) : rnd(2)) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
         if (dam <= 0)
             dam = 1;
-        You(__sl110, yname(uwep.v));
-        void cptr.sprintf(cptr.decay(buf), __sl111, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16)));
+        You(__s_hit_yourself_with_s, yname(uwep.v));
+        void cptr.sprintf(cptr.decay(buf), __s_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16)));
         losehp(((Half_physical_damage()) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), cptr.decay(buf), NHM.KILLED_BY);
         cptr.st1(disp, 1);
         return NHM.ECMD_TIME;
@@ -1258,7 +1258,7 @@ export function use_pick_axe2(obj) {
         ry = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0));
         if (!isok(rx, ry)) {
             ;
-            pline(__sl112);
+            pline(__s_clash);
             return NHM.ECMD_TIME;
         }
         lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), rx, 756), ry, 36);
@@ -1271,34 +1271,34 @@ export function use_pick_axe2(obj) {
             if (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB) {
                 if (!(cptr.ldI32o(trap, $trap_tseen) & 1)) {
                     seetrap(trap);
-                    There(__sl113);
+                    There(__s_is_a_spider_web_there);
                 }
-                pline(__sl114, Yobjnam2(obj, __sl115));
-                nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl22, 1218, __sl109), d(2, 2)) : d(2, 2)));
-                cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl116);
-                cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl117);
+                pline(__s_s_entangled_in_the_web, Yobjnam2(obj, __s_become));
+                nomul(-(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1218, __s_use_pick_axe2), d(2, 2)) : d(2, 2)));
+                cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_stuck_in_a_spider_web);
+                cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_pull_free);
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
-                pline(__sl118);
+                pline(__s_clang);
                 wake_nearby(0);
             } else if (((cptr.ld1so(lev, $rm_typ)) == NHC.WATER)) {
-                pline(__sl119);
+                pline(__s_splash);
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL) {
-                pline(__sl119);
+                pline(__s_splash);
                 void fire_damage(uwep.v, 0, rx, ry);
             } else if (IS_TREE(cptr.ld1so(lev, $rm_typ))) {
-                You(__sl120);
+                You(__s_need_an_axe_to_cut_down_a_tree);
             } else if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL)) {
-                You(__sl121);
+                You(__s_need_a_pick_to_dig_rock);
             } else if ((boulder = sobj_at(NHC.BOULDER, rx, ry)) !== null || sobj_at(NHC.STATUE, rx, ry)) {
-                let what = boulder ? __sl52 : __sl51;
+                let what = boulder ? __s_boulder : __s_statue;
                 if (!ispick) {
-                    let vibrate = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl22, 1240, __sl109), rn2(3)) : rn2(3))));
-                    pline(__sl122, what, vibrate ? __sl123 : __sl49);
+                    let vibrate = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1240, __s_use_pick_axe2), rn2(3)) : rn2(3))));
+                    pline(__s_sparks_fly_as_you_whack_the_s_s, what, vibrate ? __s_the_axe_handle_vibrates_violently : __s_empty);
                     if (vibrate)
-                        losehp(((Half_physical_damage()) ? 1 : 2), __sl124, NHM.KILLED_BY);
+                        losehp(((Half_physical_damage()) ? 1 : 2), __s_axing_a_hard_object, NHM.KILLED_BY);
                     wake_nearby(0);
                 } else {
-                    You_cant(__sl108, what);
+                    You_cant(__s_reach_the_s, what);
                 }
             } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT && trap && (trap_with_u = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && !conjoined_pits(trap, trap_with_u, 0)) {
                 let idx = xytodir(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
@@ -1306,12 +1306,12 @@ export function use_pick_axe2(obj) {
                     let adjidx = ((((idx) + 4) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
                     cptr.st1o(trap_with_u, $trap_vl, cptr.ld1uo(trap_with_u, $trap_vl) | (1 << idx));
                     cptr.st1o(trap, $trap_vl, cptr.ld1uo(trap, $trap_vl) | (1 << adjidx));
-                    You(__sl125);
+                    You(__s_clear_some_debris_from_between_the_pits);
                 }
             } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT && (trap_with_u = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null) {
-                You(__sl126, yobjnam(obj, null));
+                You(__s_swing_s_but_the_rubble_has_no_place_to, yobjnam(obj, null));
             } else {
-                You(__sl127, yobjnam(obj, null));
+                You(__s_swing_s_through_thin_air, yobjnam(obj, null));
             }
         } else {
             cptr.st1o(gd, $instance_globals_d_did_dig_msg, 0);
@@ -1328,25 +1328,25 @@ export function use_pick_axe2(obj) {
                 assign_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz));
                 cptr.stI32o(svc, $context_info_digging, 0);
                 if (!cptr.ld1so(svc, $context_info_digging + $dig_info_quiet))
-                    You(__sl128, cptr.ldPtro(__static_use_pick_axe2_d_action, dig_target, 8));
+                    You(__s_start_s, cptr.ldPtro(__static_use_pick_axe2_d_action, dig_target, 8));
             } else {
-                You(__sl129, cptr.ld1so(svc, $context_info_digging + $dig_info_chew) ? __sl130 : __sl131, cptr.ldPtro(__static_use_pick_axe2_d_action, dig_target, 8));
+                You(__s_s_s, cptr.ld1so(svc, $context_info_digging + $dig_info_chew) ? __s_begin : __s_continue, cptr.ldPtro(__static_use_pick_axe2_d_action, dig_target, 8));
                 cptr.st1o(svc, $context_info_digging + $dig_info_chew, 0);
             }
             set_occupation(dig, verbing, 0n);
         }
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
-        You(__sl127, yobjnam(obj, null));
+        You(__s_swing_s_through_thin_air, yobjnam(obj, null));
     } else if (!can_reach_floor(0)) {
         cant_reach_floor(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 0, 0);
     } else if (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-        You(__sl132, is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __sl15 : __sl133);
+        You(__s_cannot_stay_under_s_long_enough, is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_water : __s_the_lava);
     } else if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && (uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
         dotrap(trap, NHM.FORCEBUNGLE);
         if (!cptr.ldI32o(u, $you_utrap))
             cant_reach_floor(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 1, 0);
     } else if (!ispick && (!trap || (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) != NHC.LANDMINE && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) != NHC.BEAR_TRAP))) {
-        pline(__sl134, Yobjnam2(obj, null), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        pline(__s_s_merely_scratches_the_s, Yobjnam2(obj, null), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         u_wipe_engr(3);
     } else {
         if (cptr.ldI16o(svc, $context_info_digging + $dig_info_pos) != cptr.ldI16(u) || cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y) != cptr.ldI16o(u, $you_uy) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)) || !cptr.ld1so(svc, $context_info_digging + $dig_info_down)) {
@@ -1357,13 +1357,13 @@ export function use_pick_axe2(obj) {
             cptr.stI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
             assign_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz));
             cptr.stI32o(svc, $context_info_digging, 0);
-            You(__sl135, verbing);
+            You(__s_start_s_downward, verbing);
             if (cptr.ld1so(u, $you_ushops)) {
                 shopdig(0);
                 add_damage(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 100n);
             }
         } else
-            You(__sl136, verbing);
+            You(__s_continue_s_downward, verbing);
         cptr.st1o(gd, $instance_globals_d_did_dig_msg, 0);
         set_occupation(dig, verbing, 0n);
     }
@@ -1386,19 +1386,19 @@ export function watch_dig(mtmp, x, y, zap) {
         if (mtmp) {
             ;
             if (zap || cptr.ld1so(svc, $context_info_digging + $dig_info_warned)) {
-                verbalize(__sl142);
+                verbalize(__s_halt_vandal_you_re_under_arrest);
                 void angry_guards(schar((!!Deaf())));
             } else {
                 let str;
                 if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
-                    str = __sl46;
+                    str = __s_door;
                 else if (IS_TREE(cptr.ld1so(lev, $rm_typ)))
-                    str = __sl53;
+                    str = __s_tree;
                 else if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL))
-                    str = __sl21;
+                    str = __s_wall;
                 else
-                    str = __sl143;
-                verbalize(__sl144, str);
+                    str = __s_fountain;
+                verbalize(__s_hey_stop_damaging_that_s, str);
                 cptr.st1o(svc, $context_info_digging + $dig_info_warned, 1);
             }
             if (is_digging())
@@ -1413,7 +1413,7 @@ export function mdig_tunnel(mtmp) {
     let sawit;
     let seeit;
     let trapped;
-    let pile = (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1418, __sl145), rnd(12)) : rnd(12));
+    let pile = (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1418, __s_mdig_tunnel), rnd(12)) : rnd(12));
     here = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(mtmp, $monst_mx), 756), cptr.ldI16o(mtmp, $monst_my), 36);
     if (cptr.ld1so(here, $rm_typ) == NHC.SDOOR)
         cvt_sdoor_to_door(here);
@@ -1433,7 +1433,7 @@ export function mdig_tunnel(mtmp) {
             }
         } else {
             if (cptr.ld1so(flags, $flag_verbose)) {
-                if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 1442, __sl145), rn2(3)) : rn2(3)))
+                if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1442, __s_mdig_tunnel), rn2(3)) : rn2(3)))
                     draft_message(1);
             }
         }
@@ -1448,13 +1448,13 @@ export function mdig_tunnel(mtmp) {
         return 0;
     }
     if ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0) {
-        impossible(__sl146, (IS_WALL(cptr.ld1so(here, $rm_typ)) ? __sl21 : (IS_TREE(cptr.ld1so(here, $rm_typ)) ? __sl53 : __sl147)), cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+        impossible(__s_mdig_tunnel_s_at_d_d_is_undiggable, (IS_WALL(cptr.ld1so(here, $rm_typ)) ? __s_wall : (IS_TREE(cptr.ld1so(here, $rm_typ)) ? __s_tree : __s_stone)), cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         return 0;
     }
     if (IS_WALL(cptr.ld1so(here, $rm_typ))) {
-        if (cptr.ld1so(flags, $flag_verbose) && !(rng_log_enabled() ? (rng_log_set_caller(__sl22, 1468, __sl145), rn2(5)) : rn2(5))) {
+        if (cptr.ld1so(flags, $flag_verbose) && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1468, __s_mdig_tunnel), rn2(5)) : rn2(5))) {
             ;
-            You_hear(__sl148);
+            You_hear(__s_crashing_rock);
         }
         if (cptr.ld1s(in_rooms(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHC.SHOPBASE)))
             add_damage(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 0n);
@@ -1481,27 +1481,27 @@ export function mdig_tunnel(mtmp) {
 }
 
 const __static_draft_message_draft_reaction = cptr.alloc(4 * 8);
-cptr.stPtro(__static_draft_message_draft_reaction, 0, __sl156);
-cptr.stPtro(__static_draft_message_draft_reaction, 8, __sl157);
-cptr.stPtro(__static_draft_message_draft_reaction, 16, __sl158);
-cptr.stPtro(__static_draft_message_draft_reaction, 24, __sl159); /** C ref: dig.c:1531 — char *[4] (function-static) */
+cptr.stPtro(__static_draft_message_draft_reaction, 0, __s_enlisting);
+cptr.stPtro(__static_draft_message_draft_reaction, 8, __s_marching);
+cptr.stPtro(__static_draft_message_draft_reaction, 16, __s_protesting);
+cptr.stPtro(__static_draft_message_draft_reaction, 24, __s_fleeing); /** C ref: dig.c:1531 — char *[4] (function-static) */
 
 /** C ref: dig.c:1504 — @param {CInt} unexpected */
 export function draft_message(unexpected) {
     if (unexpected) {
         if (!Hallucination())
-            You_feel(__sl149);
+            You_feel(__s_an_unexpected_draft);
         else
-            You_feel(__sl150, ((acurr(NHC.A_STR)) < 6 || (acurr(NHC.A_DEX)) < 6 || (acurr(NHC.A_CON)) < 6 || (acurr(NHC.A_CHA)) < 6 || (acurr(NHC.A_INT)) < 6 || (acurr(NHC.A_WIS)) < 6) ? __sl151 : __sl152);
+            You_feel(__s_like_you_are_s, ((acurr(NHC.A_STR)) < 6 || (acurr(NHC.A_DEX)) < 6 || (acurr(NHC.A_CON)) < 6 || (acurr(NHC.A_CHA)) < 6 || (acurr(NHC.A_INT)) < 6 || (acurr(NHC.A_WIS)) < 6) ? __s_4_f : __s_1_a);
     } else {
         if (!Hallucination()) {
-            You_feel(__sl153);
+            You_feel(__s_a_draft);
         } else {
             let dridx;
-            dridx = (((rng_log_enabled() ? (rng_log_set_caller(__sl22, 1537, __sl154), rn2(2)) : rn2(2)) + ((1 - sgn(cptr.ld1so(u, $you_ualign))) | 0)) | 0);
+            dridx = (((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1537, __s_draft_message), rn2(2)) : rn2(2)) + ((1 - sgn(cptr.ld1so(u, $you_ualign))) | 0)) | 0);
             if (cptr.ldI32o(u, $you_ualign + $align_record) < 4)
-                dridx = (dridx + (((rng_log_enabled() ? (rng_log_set_caller(__sl22, 1540, __sl154), rn2(3)) : rn2(3)) + ((sgn(cptr.ld1so(u, $you_ualign)) - 1) | 0)) | 0)) | 0;
-            You_feel(__sl155, cptr.ldPtro(__static_draft_message_draft_reaction, dridx, 8));
+                dridx = (dridx + (((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1540, __s_draft_message), rn2(3)) : rn2(3)) + ((sgn(cptr.ld1so(u, $you_ualign)) - 1) | 0)) | 0)) | 0;
+            You_feel(__s_like_s, cptr.ldPtro(__static_draft_message_draft_reaction, dridx, 8));
         }
     }
 }
@@ -1527,7 +1527,7 @@ export function zap_dig() {
         mtmp = cptr.ldPtro(u, $you_ustuck);
         if (!is_whirly(cptr.ldPtro(mtmp, $monst_data))) {
             if ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null))
-                You(__sl160, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH));
+                You(__s_pierce_s_s_wall, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH));
             if (((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0))
                 cptr.stI32o(mtmp, $monst_mhp, (((cptr.ldI32o(mtmp, $monst_mhp) + 1) | 0) / 2) | 0);
             else
@@ -1542,12 +1542,12 @@ export function zap_dig() {
                 let dmg;
                 if (On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     let stway = stairway_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                    pline_The(__sl161, cptr.ld1so(stway, $stairway_isladder) ? __sl162 : __sl163, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                    pline_The(__s_beam_bounces_off_the_s_and_hits_the_s, cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                 }
-                You(__sl164, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-                pline(__sl165, body_part(NHC.HEAD));
-                dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1596, __sl166), rnd(hard_helmet(uarmh.v) ? 2 : 6)) : rnd(hard_helmet(uarmh.v) ? 2 : 6));
-                losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __sl167, NHM.KILLED_BY_AN);
+                You(__s_loosen_a_rock_from_the_s, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                pline(__s_it_falls_on_your_s, body_part(NHC.HEAD));
+                dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1596, __s_zap_dig), rnd(hard_helmet(uarmh.v) ? 2 : 6)) : rnd(hard_helmet(uarmh.v) ? 2 : 6));
+                losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_falling_rock, NHM.KILLED_BY_AN);
                 otmp = mksobj_at(NHC.ROCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 0);
                 if (otmp) {
                     void xname(otmp);
@@ -1569,7 +1569,7 @@ export function zap_dig() {
         pitdig = 1;
         diridx = xytodir(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
     }
-    digdepth = (((rng_log_enabled() ? (rng_log_set_caller(__sl22, 1622, __sl166), rn2(18)) : rn2(18)) + 8) | 0);
+    digdepth = (((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1622, __s_zap_dig), rn2(18)) : rn2(18)) + 8) | 0);
     tmp_at(-1, (i16(((((((NHC.S_digbeam) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)))));
     while (--digdepth >= 0) {
         if (!isok(zx, zy))
@@ -1589,7 +1589,7 @@ export function zap_dig() {
                     cptr.stI16o(cc, $nhcoord_y, zy);
                     if (!adj_pit_checks(cc, cptr.decay(buf))) {
                         if (cptr.ld1so(cptr.decay(buf), 0, 1))
-                            pline(__sl44, cptr.decay(buf));
+                            pline(__s_pct_s, cptr.decay(buf));
                     } else {
                         dighole(1, 1, cc);
                         adjpit = t_at(zx, zy);
@@ -1618,7 +1618,7 @@ export function zap_dig() {
             if (cptr.ld1so(room, $rm_typ) == NHC.SDOOR)
                 cptr.st1o(room, $rm_typ, NHC.DOOR);
             else if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), zy, 8), zx) & NHM.IN_SIGHT) != 0))
-                pline_The(__sl168);
+                pline_The(__s_door_is_razed);
             watch_dig(null, zx, zy, 1);
             cptr.stI32o(room, $rm_flags, NHM.D_NODOOR);
             recalc_block_point(zx, zy);
@@ -1635,21 +1635,21 @@ export function zap_dig() {
                     cptr.st1o(room, $rm_typ, NHC.ROOM), cptr.stI32o(room, $rm_flags, 0);
                     unblock_point(zx, zy);
                 } else if (!Blind())
-                    pline_The(__sl169);
+                    pline_The(__s_wall_glows_then_fades);
                 break;
             } else if (IS_TREE(cptr.ld1so(room, $rm_typ))) {
                 if (!(((cptr.ldI32o(room, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE)) {
                     cptr.st1o(room, $rm_typ, NHC.ROOM), cptr.stI32o(room, $rm_flags, 0);
                     unblock_point(zx, zy);
                 } else if (!Blind())
-                    pline_The(__sl170);
+                    pline_The(__s_tree_shudders_but_is_unharmed);
                 break;
             } else if (cptr.ld1so(room, $rm_typ) == NHC.STONE || cptr.ld1so(room, $rm_typ) == NHC.SCORR) {
                 if (!(((cptr.ldI32o(room, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE)) {
                     cptr.st1o(room, $rm_typ, NHC.CORR), cptr.stI32o(room, $rm_flags, 0);
                     unblock_point(zx, zy);
                 } else if (!Blind())
-                    pline_The(__sl171);
+                    pline_The(__s_rock_glows_then_fades);
                 break;
             }
         } else if (((cptr.ld1so(room, $rm_typ)) < NHC.POOL)) {
@@ -1689,7 +1689,7 @@ export function zap_dig() {
         }
     }
     if (shopdoor || shopwall)
-        pay_for_damage(shopdoor ? __sl172 : __sl16, 0);
+        pay_for_damage(shopdoor ? __s_destroy : __s_dig_into, 0);
     return;
 }
 
@@ -1697,7 +1697,7 @@ export function zap_dig() {
 function adj_pit_checks(cc, msg) {
     let ltyp;
     let room;
-    let foundation_msg = __sl173;
+    let foundation_msg = __s_the_foundation_is_too_hard_to_dig;
     if (!cc)
         return 0;
     if (!isok(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y)))
@@ -1714,36 +1714,36 @@ function adj_pit_checks(cc, msg) {
         void cptr.strcpy(msg, foundation_msg);
         return 0;
     } else if (IS_TREE(ltyp)) {
-        void cptr.strcpy(msg, __sl174);
+        void cptr.strcpy(msg, __s_the_tree_s_roots_glow_then_fade);
         return 0;
     } else if (ltyp == NHC.STONE || ltyp == NHC.SCORR) {
         if (((cptr.ldI32o(room, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) {
-            void cptr.strcpy(msg, __sl175);
+            void cptr.strcpy(msg, __s_the_rock_glows_then_fades);
             return 0;
         }
     } else if (ltyp == NHC.IRONBARS) {
-        void cptr.strcpy(msg, __sl176);
+        void cptr.strcpy(msg, __s_the_bars_go_much_deeper_than_your_pit);
         return 0;
     } else if (((ltyp) == NHC.SINK)) {
-        void cptr.strcpy(msg, __sl177);
+        void cptr.strcpy(msg, __s_a_tangled_mass_of_plumbing_remains);
         return 0;
     } else if (On_ladder(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y))) {
-        void cptr.strcpy(msg, __sl178);
+        void cptr.strcpy(msg, __s_the_ladder_is_unaffected);
         return 0;
     } else {
         let supporting = null;
         if (((ltyp) == NHC.FOUNTAIN))
-            supporting = __sl143;
+            supporting = __s_fountain;
         else if (((ltyp) == NHC.THRONE))
-            supporting = __sl179;
+            supporting = __s_throne;
         else if (((ltyp) == NHC.ALTAR))
-            supporting = __sl180;
+            supporting = __s_altar;
         else if (On_stairs(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y)))
-            supporting = __sl163;
+            supporting = __s_stairs;
         else if (ltyp == NHC.DRAWBRIDGE_DOWN || ltyp == NHC.DBWALL)
-            supporting = __sl20;
+            supporting = __s_drawbridge;
         if (supporting) {
-            void cptr.sprintf(msg, __sl181, s_suffix(supporting));
+            void cptr.sprintf(msg, __s_the_s_supporting_structures_remain, s_suffix(supporting));
             return 0;
         }
     }
@@ -1757,7 +1757,7 @@ function pit_flow(trap, filltyp) {
         let idx;
         cptr.memcpy(t, trap, 40);
         cptr.st1o3(svl, cptr.ldI16o(t, $trap_tx), 756, cptr.ldI16o(t, $trap_ty), 36, $instance_globals_saved_l_level + $rm_typ, filltyp), cptr.stI32o3(svl, cptr.ldI16o(t, $trap_tx), 756, cptr.ldI16o(t, $trap_ty), 36, $instance_globals_saved_l_level + $rm_flags, 0);
-        liquid_flow(cptr.ldI16o(t, $trap_tx), cptr.ldI16o(t, $trap_ty), filltyp, trap, ((cptr.ldI16o(t, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(t, $trap_ty)) == cptr.ldI16o(u, $you_uy)) ? __sl182 : null);
+        liquid_flow(cptr.ldI16o(t, $trap_tx), cptr.ldI16o(t, $trap_ty), filltyp, trap, ((cptr.ldI16o(t, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(t, $trap_ty)) == cptr.ldI16o(u, $you_uy)) ? __s_suddenly_s_flows_in_from_the_adjacent : null);
         for (idx = 0; idx < ((NHC.N_DIRS_Z - 2) | 0); ++idx) {
             if (cptr.ld1uo(t, $trap_vl) & (1 << idx)) {
                 let x;
@@ -1836,9 +1836,9 @@ export function bury_an_obj(otmp, dealloced) {
     let otmp2;
     let under_ice;
     {
-        if (debugcore(__sl22, 1)) {
+        if (debugcore(__s_dig_c, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            pline(__sl183, xname(otmp));
+            pline(__s_bury_an_obj_s, xname(otmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -1846,8 +1846,8 @@ export function bury_an_obj(otmp, dealloced) {
         cptr.st1(dealloced, 0);
     if (cptr.eq(otmp, uball.v)) {
         unpunish();
-        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl22, 1994, __sl184), rn2(50)) : rn2(50)) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
-        pline_The(__sl185);
+        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1994, __s_bury_an_obj), rn2(50)) : rn2(50)) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
+        pline_The(__s_iron_ball_gets_buried);
     }
     otmp2 = cptr.ldPtro(otmp, $obj_v);
     if (cptr.eq(otmp, uchain.v) || obj_resists(otmp, 0, 0))
@@ -1867,7 +1867,7 @@ export function bury_an_obj(otmp, dealloced) {
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) {
         ;
     } else if ((under_ice ? (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) : (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.WOOD)) && !obj_resists(otmp, 5, 95)) {
-        void start_timer(BigInt.asIntN(64, (under_ice ? 0n : 250n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl22, 2034, __sl184), rnd(250)) : rnd(250)))), NHC.TIMER_OBJECT, NHC.ROT_ORGANIC, obj_to_any(otmp));
+        void start_timer(BigInt.asIntN(64, (under_ice ? 0n : 250n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 2034, __s_bury_an_obj), rnd(250)) : rnd(250)))), NHC.TIMER_OBJECT, NHC.ROT_ORGANIC, obj_to_any(otmp));
     }
     add_to_buried(otmp);
     return otmp2;
@@ -1883,9 +1883,9 @@ export function bury_objs(x, y) {
     costly = schar(((shkp = shop_keeper(cptr.ld1s(in_rooms(i16(x), i16(y), NHC.SHOPBASE)))) && costly_spot(i16(x), i16(y)) ? 1 : 0));
     if (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) {
         {
-            if (debugcore(__sl22, 1)) {
+            if (debugcore(__s_dig_c, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                pline(__sl186, x, y);
+                pline(__s_bury_objs_at_d_d, x, y);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -1902,7 +1902,7 @@ export function bury_objs(x, y) {
     newsym(i16(x), i16(y));
     maybe_unhide_at(i16(x), i16(y));
     if (costly && loss) {
-        You(__sl187, shkname(shkp), loss, currency(loss));
+        You(__s_owe_s_ld_s_for_burying_merchandise, shkname(shkp), loss, currency(loss));
     }
 }
 
@@ -1913,9 +1913,9 @@ export function unearth_objs(x, y) {
     let bball;
     let cc = cptr.alloc(4);
     {
-        if (debugcore(__sl22, 1)) {
+        if (debugcore(__s_dig_c, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            pline(__sl188, x, y);
+            pline(__s_unearth_objs_at_d_d, x, y);
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -1964,7 +1964,7 @@ export function rot_corpse(arg, timeout) {
     } else if (in_invent) {
         if (cptr.ld1so(flags, $flag_verbose)) {
             let cname = corpse_xname(obj, null, NHM.CXN_NO_PFX);
-            Your(__sl189, cptr.eq(obj, uwep.v) ? __sl190 : __sl49, cname, otense(obj, __sl191), cptr.eq(obj, uwep.v) ? 33 : 46);
+            Your(__s_s_s_s_away_c, cptr.eq(obj, uwep.v) ? __s_wielded : __s_empty, cname, otense(obj, __s_rot), cptr.eq(obj, uwep.v) ? 33 : 46);
         }
         if (cptr.ldI64o(obj, $obj_owornmask)) {
             remove_worn_item(obj, 1);
@@ -2008,11 +2008,11 @@ export function wiz_debug_cmd_bury() {
         }
     diff = (before - after) | 0;
     if (before == 0)
-        pline(__sl192);
+        pline(__s_no_objects_here_or_adjacent_to_bury);
     else if (diff == 0)
-        pline(__sl193);
+        pline(__s_no_objects_buried);
     else
-        pline(__sl194, diff, (((diff) == 1) ? __sl49 : __sl195));
+        pline(__s_d_object_s_buried, diff, (((diff) == 1) ? __s_empty : __s_s));
     return NHM.ECMD_OK;
 }
 

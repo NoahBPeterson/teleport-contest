@@ -26,10 +26,10 @@ const $GCObject_marked = FLD.GCObject_marked, $NodeKey_key_tt = FLD.NodeKey_key_
     $Table_metatable = FLD.Table_metatable, $Table_node = FLD.Table_node;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("invalid key to 'next'");
-const __sl1 = cptr.lit("table overflow");
-const __sl2 = cptr.lit("table index is nil");
-const __sl3 = cptr.lit("table index is NaN");
+const __s_invalid_key_to_next = cptr.lit("invalid key to 'next'");
+const __s_table_overflow = cptr.lit("table overflow");
+const __s_table_index_is_nil = cptr.lit("table index is nil");
+const __s_table_index_is_nan = cptr.lit("table index is NaN");
 
 /** C ref: ltable.c:93 — union Node */
 let dummynode_ = cptr.box(cptr.alloc(24));
@@ -213,7 +213,7 @@ function findindex(L, t, key, asize) {
     else {
         let n = getgeneric(t, key, 1);
         if ((__builtin_expect(BigInt(((((cptr.ld1uo(((n)), $TValue_tt_)) == 32)) != 0)), 0n)))
-            luaG_runerror(L, __sl0);
+            luaG_runerror(L, __s_invalid_key_to_next);
         i = (Number(BigInt.asIntN(32, ((cptr.diff((((n))), (cptr.add(cptr.ldPtro((t), $Table_node), 0, 24))) / 24n))))) >>> 0;
         return (((i + 1) >>> 0) + asize) >>> 0;
     }
@@ -356,7 +356,7 @@ function setnodevector(L, t, size) {
         let i;
         let lsize = luaO_ceillog2(size);
         if (lsize > 30 || ((1 << lsize) >>> 0) > 1073741824)
-            luaG_runerror(L, __sl1);
+            luaG_runerror(L, __s_table_overflow);
         size = (1 << (lsize)) >>> 0;
         cptr.stPtro(t, $Table_node, ((luaM_malloc_(L, BigInt.asUintN(64, BigInt((size) >>> 0) * 24n), 0))));
         for (i = 0; i < (((size)) | 0); i++) {
@@ -497,7 +497,7 @@ function luaH_newkey(L, t, key, value) {
     let mp;
     let aux = cptr.alloc(16);
     if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((key)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
-        luaG_runerror(L, __sl2);
+        luaG_runerror(L, __s_table_index_is_nil);
     else if (((cptr.ld1uo(((key)), $TValue_tt_)) == 19)) {
         let f = (cptr.ldF64(((key))));
         let k = cptr.box(0n);
@@ -510,7 +510,7 @@ function luaH_newkey(L, t, key, value) {
             ;
             key = aux;
         } else if ((__builtin_expect(BigInt((((!(((f)) == ((f))))) != 0)), 0n)))
-            luaG_runerror(L, __sl3);
+            luaG_runerror(L, __s_table_index_is_nan);
     }
     if ((((((cptr.ld1uo(((value)), $TValue_tt_))) & 15)) == 0))
         return;

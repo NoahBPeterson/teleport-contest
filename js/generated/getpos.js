@@ -66,115 +66,115 @@ const $_cmd_queue_dirx = FLD._cmd_queue_dirx, $_cmd_queue_diry = FLD._cmd_queue_
     $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("any monsters");
-const __sl1 = cptr.lit("monster");
-const __sl2 = cptr.lit("next/previous monster");
-const __sl3 = cptr.lit("monsters");
-const __sl4 = cptr.lit("any items");
-const __sl5 = cptr.lit("item");
-const __sl6 = cptr.lit("next/previous object");
-const __sl7 = cptr.lit("objects");
-const __sl8 = cptr.lit("any doors");
-const __sl9 = cptr.lit("door");
-const __sl10 = cptr.lit("next/previous door or doorway");
-const __sl11 = cptr.lit("doors or doorways");
-const __sl12 = cptr.lit("any unexplored areas");
-const __sl13 = cptr.lit("unexplored area");
-const __sl14 = cptr.lit("unexplored location");
-const __sl15 = cptr.lit("locations next to unexplored locations");
-const __sl16 = cptr.lit("anything interesting");
-const __sl17 = cptr.lit("interesting thing");
-const __sl18 = cptr.lit("any valid locations");
-const __sl19 = cptr.lit("valid location");
-const __sl20 = cptr.lit("valid locations");
-const __sl21 = cptr.lit("");
-const __sl22 = cptr.lit(" in view");
-const __sl23 = cptr.lit(" in this area");
-const __sl24 = cptr.lit("move the cursor to ");
-const __sl25 = cptr.lit("move the cursor next to an ");
-const __sl26 = cptr.lit("this area");
-const __sl27 = cptr.lit("area");
-const __sl28 = cptr.lit("Use '%s'/'%s' to %s%s%s.");
-const __sl29 = cptr.lit("get a menu of ");
-const __sl30 = cptr.lit("Use '%s', '%s', '%s', '%s' to move the cursor to %s.");
-const __sl31 = cptr.lit("Use '%s', '%s', '%s', '%s' to fast-move the cursor, %s.");
-const __sl32 = cptr.lit("(or prefix normal move with '%s' or '%s' to fast-move)");
-const __sl33 = cptr.lit("Or enter a background symbol (ex. '<').");
-const __sl34 = cptr.lit("Use '%s' to move the cursor on yourself.");
-const __sl35 = cptr.lit("a monster");
-const __sl36 = cptr.lit("Use '%s' to change fast-move mode to %s.");
-const __sl37 = cptr.lit("Use '%s' to toggle menu listing for possible targets.");
-const __sl38 = cptr.lit("Use '%s' to change the mode of limiting possible targets.");
-const __sl39 = cptr.lit("Use '%s' or '%s' to move to valid locations.");
-const __sl40 = cptr.lit("Use '%s' to toggle marking of valid locations.");
-const __sl41 = cptr.lit("Use '%s' to toggle automatic description.");
-const __sl42 = cptr.lit("(Set 'whatis_coord' option to include coordinates with '%s' text.)");
-const __sl43 = cptr.lit("(Reset 'whatis_coord' option to omit coordinates from '%s' text.)");
-const __sl44 = cptr.lit("'%s' or '%s' or '%s' or '%s'");
-const __sl45 = cptr.lit("'%s'");
-const __sl46 = cptr.lit("getpos_help");
-const __sl47 = cptr.lit("Type a %s when you are at the right place.");
-const __sl48 = cptr.lit("  '%s' describe current spot, show 'more info', move to another spot.");
-const __sl49 = cptr.lit("  '%s' describe current spot,%s move to another spot;");
-const __sl50 = cptr.lit(" prompt if 'more info',");
-const __sl51 = cptr.lit("  '%s' describe current spot, move to another spot;");
-const __sl52 = cptr.lit("  '%s' describe current spot, stop looking at things;");
-const __sl53 = cptr.lit("Type Space or Escape when you're done.");
-const __sl54 = cptr.lit("8 units at a time");
-const __sl55 = cptr.lit("skipping same glyphs");
-const __sl56 = cptr.lit("here");
-const __sl57 = cptr.lit("%s");
-const __sl58 = cptr.lit("%d%s%s");
-const __sl59 = cptr.lit(",");
-const __sl60 = cptr.lit("%d%s");
-const __sl61 = cptr.lit("n");
-const __sl62 = cptr.lit("north");
-const __sl63 = cptr.lit("s");
-const __sl64 = cptr.lit("south");
-const __sl65 = cptr.lit("w");
-const __sl66 = cptr.lit("west");
-const __sl67 = cptr.lit("e");
-const __sl68 = cptr.lit("east");
-const __sl69 = cptr.lit("(%s)");
-const __sl70 = cptr.lit("<%d,%d>");
-const __sl71 = cptr.lit("[%%%sd,%%%sd]");
-const __sl72 = cptr.lit("02");
-const __sl73 = cptr.lit("03");
-const __sl74 = cptr.lit("unknown");
-const __sl75 = cptr.lit("%s%s%s%s%s");
-const __sl76 = cptr.lit(" ");
-const __sl77 = cptr.lit(" (invalid target)");
-const __sl78 = cptr.lit(" (no travel path)");
-const __sl79 = cptr.lit("cannot %s %s.");
-const __sl80 = cptr.lit("see");
-const __sl81 = cptr.lit("detect");
-const __sl82 = cptr.lit("getpos_menu");
-const __sl83 = cptr.lit("%s%s%s");
-const __sl84 = cptr.lit("Pick %s%s%s");
-const __sl85 = cptr.lit(" for travel destination");
-const __sl86 = cptr.lit("desired location");
-const __sl87 = cptr.lit("(For instructions type a '%s')");
-const __sl88 = cptr.lit("Move cursor to %s:");
-const __sl89 = cptr.lit("Automatic description %sis %s.");
-const __sl90 = cptr.lit("of features under cursor ");
-const __sl91 = cptr.lit("on");
-const __sl92 = cptr.lit("off");
-const __sl93 = cptr.lit("%s.");
-const __sl94 = cptr.lit("%s a menu to show possible targets%s.");
-const __sl95 = cptr.lit("Using");
-const __sl96 = cptr.lit("Not using");
-const __sl97 = cptr.lit(" for 'm|M', 'o|O', 'd|D', and 'x|X'");
-const __sl98 = cptr.lit("%skipping over similar terrain when fastmoving the cursor.");
-const __sl99 = cptr.lit("S");
-const __sl100 = cptr.lit("Not s");
-const __sl101 = cptr.lit("Can't find dungeon feature '%c'.");
-const __sl102 = cptr.lit("aborted");
-const __sl103 = cptr.lit("use '%s', '%s', '%s', '%s' or '%s'");
-const __sl104 = cptr.lit("Unknown direction: '%s' (%s).");
-const __sl105 = cptr.lit("Done.");
-const __sl106 = cptr.lit("Not limiting targets");
-const __sl107 = cptr.lit("Limiting targets to those in sight");
-const __sl108 = cptr.lit("Limiting targets to those in same area");
+const __s_any_monsters = cptr.lit("any monsters");
+const __s_monster = cptr.lit("monster");
+const __s_next_previous_monster = cptr.lit("next/previous monster");
+const __s_monsters = cptr.lit("monsters");
+const __s_any_items = cptr.lit("any items");
+const __s_item = cptr.lit("item");
+const __s_next_previous_object = cptr.lit("next/previous object");
+const __s_objects = cptr.lit("objects");
+const __s_any_doors = cptr.lit("any doors");
+const __s_door = cptr.lit("door");
+const __s_next_previous_door_or_doorway = cptr.lit("next/previous door or doorway");
+const __s_doors_or_doorways = cptr.lit("doors or doorways");
+const __s_any_unexplored_areas = cptr.lit("any unexplored areas");
+const __s_unexplored_area = cptr.lit("unexplored area");
+const __s_unexplored_location = cptr.lit("unexplored location");
+const __s_locations_next_to_unexplored_locations = cptr.lit("locations next to unexplored locations");
+const __s_anything_interesting = cptr.lit("anything interesting");
+const __s_interesting_thing = cptr.lit("interesting thing");
+const __s_any_valid_locations = cptr.lit("any valid locations");
+const __s_valid_location = cptr.lit("valid location");
+const __s_valid_locations = cptr.lit("valid locations");
+const __s_empty = cptr.lit("");
+const __s_in_view = cptr.lit(" in view");
+const __s_in_this_area = cptr.lit(" in this area");
+const __s_move_the_cursor_to = cptr.lit("move the cursor to ");
+const __s_move_the_cursor_next_to_an = cptr.lit("move the cursor next to an ");
+const __s_this_area = cptr.lit("this area");
+const __s_area = cptr.lit("area");
+const __s_use_s_s_to_s_s_s = cptr.lit("Use '%s'/'%s' to %s%s%s.");
+const __s_get_a_menu_of = cptr.lit("get a menu of ");
+const __s_use_s_s_s_s_to_move_the_cursor_to_s = cptr.lit("Use '%s', '%s', '%s', '%s' to move the cursor to %s.");
+const __s_use_s_s_s_s_to_fast_move_the_cursor_s = cptr.lit("Use '%s', '%s', '%s', '%s' to fast-move the cursor, %s.");
+const __s_or_prefix_normal_move_with_s_or_s_to = cptr.lit("(or prefix normal move with '%s' or '%s' to fast-move)");
+const __s_or_enter_a_background_symbol_ex = cptr.lit("Or enter a background symbol (ex. '<').");
+const __s_use_s_to_move_the_cursor_on_yourself = cptr.lit("Use '%s' to move the cursor on yourself.");
+const __s_a_monster = cptr.lit("a monster");
+const __s_use_s_to_change_fast_move_mode_to_s = cptr.lit("Use '%s' to change fast-move mode to %s.");
+const __s_use_s_to_toggle_menu_listing_for = cptr.lit("Use '%s' to toggle menu listing for possible targets.");
+const __s_use_s_to_change_the_mode_of_limiting = cptr.lit("Use '%s' to change the mode of limiting possible targets.");
+const __s_use_s_or_s_to_move_to_valid_locations = cptr.lit("Use '%s' or '%s' to move to valid locations.");
+const __s_use_s_to_toggle_marking_of_valid = cptr.lit("Use '%s' to toggle marking of valid locations.");
+const __s_use_s_to_toggle_automatic_description = cptr.lit("Use '%s' to toggle automatic description.");
+const __s_set_whatis_coord_option_to_include = cptr.lit("(Set 'whatis_coord' option to include coordinates with '%s' text.)");
+const __s_reset_whatis_coord_option_to_omit = cptr.lit("(Reset 'whatis_coord' option to omit coordinates from '%s' text.)");
+const __s_s_or_s_or_s_or_s = cptr.lit("'%s' or '%s' or '%s' or '%s'");
+const __s_apos_pct_s_apos = cptr.lit("'%s'");
+const __s_getpos_help = cptr.lit("getpos_help");
+const __s_type_a_s_when_you_are_at_the_right_place = cptr.lit("Type a %s when you are at the right place.");
+const __s_s_describe_current_spot_show_more_info = cptr.lit("  '%s' describe current spot, show 'more info', move to another spot.");
+const __s_s_describe_current_spot_s_move_to = cptr.lit("  '%s' describe current spot,%s move to another spot;");
+const __s_prompt_if_more_info = cptr.lit(" prompt if 'more info',");
+const __s_s_describe_current_spot_move_to_another = cptr.lit("  '%s' describe current spot, move to another spot;");
+const __s_s_describe_current_spot_stop_looking_at = cptr.lit("  '%s' describe current spot, stop looking at things;");
+const __s_type_space_or_escape_when_you_re_done = cptr.lit("Type Space or Escape when you're done.");
+const __s_8_units_at_a_time = cptr.lit("8 units at a time");
+const __s_skipping_same_glyphs = cptr.lit("skipping same glyphs");
+const __s_here = cptr.lit("here");
+const __s_pct_s = cptr.lit("%s");
+const __s_d_s_s = cptr.lit("%d%s%s");
+const __s_comma = cptr.lit(",");
+const __s_d_s = cptr.lit("%d%s");
+const __s_n = cptr.lit("n");
+const __s_north = cptr.lit("north");
+const __s_s = cptr.lit("s");
+const __s_south = cptr.lit("south");
+const __s_w = cptr.lit("w");
+const __s_west = cptr.lit("west");
+const __s_e = cptr.lit("e");
+const __s_east = cptr.lit("east");
+const __s_lparen_pct_s_rparen = cptr.lit("(%s)");
+const __s_d_d = cptr.lit("<%d,%d>");
+const __s_sd_sd = cptr.lit("[%%%sd,%%%sd]");
+const __s_02 = cptr.lit("02");
+const __s_03 = cptr.lit("03");
+const __s_unknown = cptr.lit("unknown");
+const __s_s_s_s_s_s = cptr.lit("%s%s%s%s%s");
+const __s_sp = cptr.lit(" ");
+const __s_invalid_target = cptr.lit(" (invalid target)");
+const __s_no_travel_path = cptr.lit(" (no travel path)");
+const __s_cannot_s_s = cptr.lit("cannot %s %s.");
+const __s_see = cptr.lit("see");
+const __s_detect = cptr.lit("detect");
+const __s_getpos_menu = cptr.lit("getpos_menu");
+const __s_s_s_s = cptr.lit("%s%s%s");
+const __s_pick_s_s_s = cptr.lit("Pick %s%s%s");
+const __s_for_travel_destination = cptr.lit(" for travel destination");
+const __s_desired_location = cptr.lit("desired location");
+const __s_for_instructions_type_a_s = cptr.lit("(For instructions type a '%s')");
+const __s_move_cursor_to_s = cptr.lit("Move cursor to %s:");
+const __s_automatic_description_sis_s = cptr.lit("Automatic description %sis %s.");
+const __s_of_features_under_cursor = cptr.lit("of features under cursor ");
+const __s_on = cptr.lit("on");
+const __s_off = cptr.lit("off");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_s_a_menu_to_show_possible_targets_s = cptr.lit("%s a menu to show possible targets%s.");
+const __s_using = cptr.lit("Using");
+const __s_not_using = cptr.lit("Not using");
+const __s_for_m_m_o_o_d_d_and_x_x = cptr.lit(" for 'm|M', 'o|O', 'd|D', and 'x|X'");
+const __s_skipping_over_similar_terrain_when = cptr.lit("%skipping over similar terrain when fastmoving the cursor.");
+const __s_s__2 = cptr.lit("S");
+const __s_not_s = cptr.lit("Not s");
+const __s_can_t_find_dungeon_feature_c = cptr.lit("Can't find dungeon feature '%c'.");
+const __s_aborted = cptr.lit("aborted");
+const __s_use_s_s_s_s_or_s = cptr.lit("use '%s', '%s', '%s', '%s' or '%s'");
+const __s_unknown_direction_s_s = cptr.lit("Unknown direction: '%s' (%s).");
+const __s_done = cptr.lit("Done.");
+const __s_not_limiting_targets = cptr.lit("Not limiting targets");
+const __s_limiting_targets_to_those_in_sight = cptr.lit("Limiting targets to those in sight");
+const __s_limiting_targets_to_those_in_same_area = cptr.lit("Limiting targets to those in same area");
 
 /** C ref: getpos.c:27 — void (*)(boolean) */
 let getpos_hilitefunc = null;
@@ -244,55 +244,55 @@ function getpos_getvalids_selection(sel, validf) {
 
 /** C ref: getpos.c:117 — char *[6][4] */
 const gloc_descr = (function () { const flat = new Uint8Array(6 * 4 * 8); const a = []; for (let r = 0; r < 6; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(gloc_descr[0]), 0, __sl0);
-cptr.stPtro(cptr.decay(gloc_descr[0]), 8, __sl1);
-cptr.stPtro(cptr.decay(gloc_descr[0]), 16, __sl2);
-cptr.stPtro(cptr.decay(gloc_descr[0]), 24, __sl3);
-cptr.stPtro(cptr.decay(gloc_descr[1]), 0, __sl4);
-cptr.stPtro(cptr.decay(gloc_descr[1]), 8, __sl5);
-cptr.stPtro(cptr.decay(gloc_descr[1]), 16, __sl6);
-cptr.stPtro(cptr.decay(gloc_descr[1]), 24, __sl7);
-cptr.stPtro(cptr.decay(gloc_descr[2]), 0, __sl8);
-cptr.stPtro(cptr.decay(gloc_descr[2]), 8, __sl9);
-cptr.stPtro(cptr.decay(gloc_descr[2]), 16, __sl10);
-cptr.stPtro(cptr.decay(gloc_descr[2]), 24, __sl11);
-cptr.stPtro(cptr.decay(gloc_descr[3]), 0, __sl12);
-cptr.stPtro(cptr.decay(gloc_descr[3]), 8, __sl13);
-cptr.stPtro(cptr.decay(gloc_descr[3]), 16, __sl14);
-cptr.stPtro(cptr.decay(gloc_descr[3]), 24, __sl15);
-cptr.stPtro(cptr.decay(gloc_descr[4]), 0, __sl16);
-cptr.stPtro(cptr.decay(gloc_descr[4]), 8, __sl17);
-cptr.stPtro(cptr.decay(gloc_descr[4]), 16, __sl16);
-cptr.stPtro(cptr.decay(gloc_descr[4]), 24, __sl16);
-cptr.stPtro(cptr.decay(gloc_descr[5]), 0, __sl18);
-cptr.stPtro(cptr.decay(gloc_descr[5]), 8, __sl19);
-cptr.stPtro(cptr.decay(gloc_descr[5]), 16, __sl19);
-cptr.stPtro(cptr.decay(gloc_descr[5]), 24, __sl20);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 0, __s_any_monsters);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 8, __s_monster);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 16, __s_next_previous_monster);
+cptr.stPtro(cptr.decay(gloc_descr[0]), 24, __s_monsters);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 0, __s_any_items);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 8, __s_item);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 16, __s_next_previous_object);
+cptr.stPtro(cptr.decay(gloc_descr[1]), 24, __s_objects);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 0, __s_any_doors);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 8, __s_door);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 16, __s_next_previous_door_or_doorway);
+cptr.stPtro(cptr.decay(gloc_descr[2]), 24, __s_doors_or_doorways);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 0, __s_any_unexplored_areas);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 8, __s_unexplored_area);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 16, __s_unexplored_location);
+cptr.stPtro(cptr.decay(gloc_descr[3]), 24, __s_locations_next_to_unexplored_locations);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 0, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 8, __s_interesting_thing);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 16, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[4]), 24, __s_anything_interesting);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 0, __s_any_valid_locations);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 8, __s_valid_location);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 16, __s_valid_location);
+cptr.stPtro(cptr.decay(gloc_descr[5]), 24, __s_valid_locations);
 
 /** C ref: getpos.c:130 — char *[3] */
 const gloc_filtertxt = cptr.alloc(3 * 8);
-cptr.stPtro(gloc_filtertxt, 0, __sl21);
-cptr.stPtro(gloc_filtertxt, 8, __sl22);
-cptr.stPtro(gloc_filtertxt, 16, __sl23);
+cptr.stPtro(gloc_filtertxt, 0, __s_empty);
+cptr.stPtro(gloc_filtertxt, 8, __s_in_view);
+cptr.stPtro(gloc_filtertxt, 16, __s_in_this_area);
 
 /** C ref: getpos.c:137 — @param {CInt} tmpwin @param {CPtr<char>} k1 @param {CPtr<char>} k2 @param {CInt} gloc */
 function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
     let sbuf = new Uint8Array(256);
     let fbuf = new Uint8Array(128);
-    let move_cursor_to = __sl24;
+    let move_cursor_to = __s_move_the_cursor_to;
     let filtertxt = cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8);
     if (gloc == NHC.GLOC_EXPLORE) {
-        move_cursor_to = __sl25;
+        move_cursor_to = __s_move_the_cursor_next_to_an;
         if (cptr.ld1so(iflags, $instance_flags_getloc_usemenu))
-            filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __sl26, __sl27);
+            filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __s_this_area, __s_area);
     }
-    void cptr.sprintf(cptr.decay(sbuf), __sl28, k1, k2, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __sl29 : move_cursor_to, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0, 8), filtertxt);
+    void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_to_s_s_s, k1, k2, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_get_a_menu_of : move_cursor_to, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0, 8), filtertxt);
     putstr()(tmpwin, 0, cptr.decay(sbuf));
 }
 
 const __static_getpos_help_fastmovemode = cptr.alloc(2 * 8);
-cptr.stPtro(__static_getpos_help_fastmovemode, 0, __sl54);
-cptr.stPtro(__static_getpos_help_fastmovemode, 8, __sl55); /** C ref: getpos.c:169 — char *[2] (function-static) */
+cptr.stPtro(__static_getpos_help_fastmovemode, 0, __s_8_units_at_a_time);
+cptr.stPtro(__static_getpos_help_fastmovemode, 8, __s_skipping_same_glyphs); /** C ref: getpos.c:169 — char *[2] (function-static) */
 
 /** C ref: getpos.c:167 — @param {CInt} force @param {CPtr<char>} goal */
 function getpos_help(force, goal) {
@@ -303,19 +303,19 @@ function getpos_help(force, goal) {
         case 0: {
         sbuf = new Uint8Array(256);
         tmpwin = create_nhwindow()(NHM.NHW_MENU);
-        void cptr.sprintf(cptr.decay(sbuf), __sl30, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
+        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_move_the_cursor_to_s, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        void cptr.sprintf(cptr.decay(sbuf), __sl31, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtro(__static_getpos_help_fastmovemode, cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
+        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_fast_move_the_cursor_s, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtro(__static_getpos_help_fastmovemode, cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        void cptr.sprintf(cptr.decay(sbuf), __sl32, visctrl(cmd_from_func(do_run)), visctrl(cmd_from_func(do_rush)));
+        void cptr.sprintf(cptr.decay(sbuf), __s_or_prefix_normal_move_with_s_or_s_to, visctrl(cmd_from_func(do_run)), visctrl(cmd_from_func(do_rush)));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        putstr()(tmpwin, 0, __sl33);
-        void cptr.sprintf(cptr.decay(sbuf), __sl34, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        putstr()(tmpwin, 0, __s_or_enter_a_background_symbol_ex);
+        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_move_the_cursor_on_yourself, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_MONS);
         }
-        if (goal && !strcmp(goal, __sl35)) { __pc = 3; continue; }
+        if (goal && !strcmp(goal, __s_a_monster)) { __pc = 3; continue; }
         __pc = 2; continue;
         }
         case 3: {
@@ -330,12 +330,12 @@ function getpos_help(force, goal) {
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_EXPLORE);
             getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_INTERESTING);
         }
-        void cptr.sprintf(cptr.decay(sbuf), __sl36, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ldPtro(__static_getpos_help_fastmovemode, !cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
+        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_change_fast_move_mode_to_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ldPtro(__static_getpos_help_fastmovemode, !cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_DETECT) >>> 0) == 0) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl37, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_menu_listing_for, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl38, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_change_the_mode_of_limiting, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 5; continue; }
@@ -344,17 +344,17 @@ function getpos_help(force, goal) {
         case 5: {
         kbuf = new Uint8Array(256);
         if (getpos_getvalid) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl39, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_or_s_to_move_to_valid_locations, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (getpos_hilitefunc) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl40, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SHOWVALID, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_marking_of_valid, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SHOWVALID, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
-        void cptr.sprintf(cptr.decay(sbuf), __sl41, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_automatic_description, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (cptr.ld1so(iflags, $instance_flags_cmdassist)) {
-            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? __sl42 : __sl43, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? __s_set_whatis_coord_option_to_include : __s_reset_whatis_coord_option_to_omit, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
         }
         __pc = 1;
         continue;
@@ -362,20 +362,20 @@ function getpos_help(force, goal) {
         case 1 /* skip_non_mons: */: {
         doing_what_is = schar((cptr.eq(goal, cptr.decay(what_is_a_location))));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(kbuf), __sl44, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(kbuf), __s_s_or_s_or_s_or_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
         } else {
-            void cptr.sprintf(cptr.decay(kbuf), __sl45, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(kbuf), __s_apos_pct_s_apos, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
         }
-        nh_snprintf(__sl46, 280, cptr.decay(sbuf), 256n, __sl47, cptr.decay(kbuf));
+        nh_snprintf(__s_getpos_help, 280, cptr.decay(sbuf), 256n, __s_type_a_s_when_you_are_at_the_right_place, cptr.decay(kbuf));
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(sbuf), __sl48, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_show_more_info, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl49, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ld1so(flags, $flag_help) && !force ? __sl50 : __sl21);
+            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_s_move_to, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ld1so(flags, $flag_help) && !force ? __s_prompt_if_more_info : __s_empty);
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl51, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_move_to_another, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __sl52, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_stop_looking_at, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         __pc = 4;
@@ -383,8 +383,8 @@ function getpos_help(force, goal) {
         }
         case 4: {
         if (!force)
-            putstr()(tmpwin, 0, __sl53);
-        putstr()(tmpwin, 0, __sl21);
+            putstr()(tmpwin, 0, __s_type_space_or_escape_when_you_re_done);
+        putstr()(tmpwin, 0, __s_empty);
         display_nhwindow()(tmpwin, 1);
         destroy_nhwindow()(tmpwin);
         __pc = -1;
@@ -548,33 +548,33 @@ function gather_locs(arr_p, cnt_p, gloc) {
 
 const __static_dxdy_to_dist_descr_buf = new Uint8Array(30); /** C ref: getpos.c:559 — char[30] (function-static) */
 const __static_dxdy_to_dist_descr_dirnames = (function () { const flat = new Uint8Array(4 * 2 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 0, __sl61);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 8, __sl62);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 0, __sl63);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 8, __sl64);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 0, __sl65);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 8, __sl66);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 0, __sl67);
-cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __sl68); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 0, __s_n);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 8, __s_north);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 0, __s_s);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 8, __s_south);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 0, __s_w);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 8, __s_west);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 0, __s_e);
+cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __s_east); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
 
 /** C ref: getpos.c:557 — @param {CInt} dx @param {CInt} dy @param {CInt} fulldir @returns {CPtr<char>} */
 export function dxdy_to_dist_descr(dx, dy, fulldir) {
     let dst;
     if (!dx && !dy) {
-        void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __sl56);
+        void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_here);
     } else if ((dst = xytodir(dx, dy)) != -1) {
-        void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __sl57, directionname(dst));
+        void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_pct_s, directionname(dst));
     } else {
         cptr.st1o(cptr.decay(__static_dxdy_to_dist_descr_buf), 0, 0, 1);
         if (dy) {
             if (Math.abs(dy) > 9999)
                 dy = i16(Math.imul(sgn(dy), 9999));
-            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __sl58, Math.abs(dy), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]), fulldir, 8), dx ? __sl59 : __sl21);
+            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __s_d_s_s, Math.abs(dy), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]), fulldir, 8), dx ? __s_comma : __s_empty);
         }
         if (dx) {
             if (Math.abs(dx) > 9999)
                 dx = i16(Math.imul(sgn(dx), 9999));
-            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __sl60, Math.abs(dx), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(2 + (dx > 0)) | 0]), fulldir, 8));
+            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __s_d_s, Math.abs(dx), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(2 + (dx > 0)) | 0]), fulldir, 8));
         }
     }
     return cptr.decay(__static_dxdy_to_dist_descr_buf);
@@ -594,14 +594,14 @@ export function coord_desc(x, y, outbuf, cmode) {
         case 99:
         dx = (x - cptr.ldI16(u)) | 0;
         dy = (y - cptr.ldI16o(u, $you_uy)) | 0;
-        void cptr.sprintf(outbuf, __sl69, dxdy_to_dist_descr(i16(dx), i16(dy), schar((cmode == 102))));
+        void cptr.sprintf(outbuf, __s_lparen_pct_s_rparen, dxdy_to_dist_descr(i16(dx), i16(dy), schar((cmode == 102))));
         break;
         case 109:
-        void cptr.sprintf(outbuf, __sl70, x, y);
+        void cptr.sprintf(outbuf, __s_d_d, x, y);
         break;
         case 115:
         if (!cptr.ld1s(cptr.decay(__static_coord_desc_screen_fmt)))
-            void cptr.sprintf(cptr.decay(__static_coord_desc_screen_fmt), __sl71, __sl72, __sl72);
+            void cptr.sprintf(cptr.decay(__static_coord_desc_screen_fmt), __s_sd_sd, __s_02, __s_02);
         void cptr.sprintf(outbuf, cptr.decay(__static_coord_desc_screen_fmt), (y + 2) | 0, x);
         break;
     }
@@ -613,12 +613,12 @@ export function auto_describe(cx, cy) {
     let cc = cptr.alloc(4);
     let sym = 0;
     let tmpbuf = new Uint8Array(256);
-    let firstmatch = cptr.box(__sl74);
+    let firstmatch = cptr.box(__s_unknown);
     cptr.stI16(cc, cx);
     cptr.stI16o(cc, $nhcoord_y, cy);
     if (do_screen_description(cc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
         void coord_desc(cx, cy, cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
-        custompline(70, __sl75, firstmatch.v, cptr.ld1s(cptr.decay(tmpbuf)) ? __sl76 : __sl21, cptr.decay(tmpbuf), (cptr.ld1so(iflags, $instance_flags_autodescribe) && getpos_getvalid && !(getpos_getvalid)(cx, cy)) ? __sl77 : __sl21, (cptr.ld1so(iflags, $instance_flags_getloc_travelmode) && !is_valid_travelpt(cx, cy)) ? __sl78 : __sl21);
+        custompline(70, __s_s_s_s_s_s, firstmatch.v, cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty, cptr.decay(tmpbuf), (cptr.ld1so(iflags, $instance_flags_autodescribe) && getpos_getvalid && !(getpos_getvalid)(cx, cy)) ? __s_invalid_target : __s_empty, (cptr.ld1so(iflags, $instance_flags_getloc_travelmode) && !is_valid_travelpt(cx, cy)) ? __s_no_travel_path : __s_empty);
         curs()(WIN_MAP.v, cx, cy);
         flush_screen(0);
     }
@@ -638,7 +638,7 @@ export function getpos_menu(ccp, gloc) {
     gather_locs(garr, gcount, gloc);
     if (gcount.v < 2) {
         cptr.free(garr.v);
-        You(__sl79, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __sl80 : __sl81, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8));
+        You(__s_cannot_s_s, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __s_see : __s_detect, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8));
         return 0;
     }
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
@@ -647,18 +647,18 @@ export function getpos_menu(ccp, gloc) {
     for (i = 1; i < gcount.v; i++) {
         let fullbuf = new Uint8Array(256);
         let tmpcc = cptr.alloc(4);
-        let firstmatch = cptr.box(__sl74);
+        let firstmatch = cptr.box(__s_unknown);
         let sym = 0;
         cptr.stI32(any, (i + 1) | 0);
         cptr.stI16(tmpcc, cptr.ldI16o(garr.v, i, 4));
         cptr.stI16o(tmpcc, $nhcoord_y, cptr.ldI16o2(garr.v, i, 4, $nhcoord_y));
         if (do_screen_description(tmpcc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
             void coord_desc(cptr.ldI16o(garr.v, i, 4), cptr.ldI16o2(garr.v, i, 4, $nhcoord_y), cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
-            nh_snprintf(__sl82, 705, cptr.decay(fullbuf), 256n, __sl83, firstmatch.v, (cptr.ld1s(cptr.decay(tmpbuf)) ? __sl76 : __sl21), cptr.decay(tmpbuf));
+            nh_snprintf(__s_getpos_menu, 705, cptr.decay(fullbuf), 256n, __s_s_s_s, firstmatch.v, (cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty), cptr.decay(tmpbuf));
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(fullbuf), NHM.MENU_ITEMFLAGS_NONE);
         }
     }
-    void cptr.sprintf(cptr.decay(tmpbuf), __sl84, an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8)), cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8), cptr.ld1so(iflags, $instance_flags_getloc_travelmode) ? __sl85 : __sl21);
+    void cptr.sprintf(cptr.decay(tmpbuf), __s_pick_s_s_s, an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8)), cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8), cptr.ld1so(iflags, $instance_flags_getloc_travelmode) ? __s_for_travel_destination : __s_empty);
     end_menu()(tmpwin, cptr.decay(tmpbuf));
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
@@ -726,9 +726,9 @@ cptr.stI32o(__static_getpos_mMoOdDxX_def, 36, NHC.NHKF_GETPOS_INTERESTING_PREV);
 cptr.stI32o(__static_getpos_mMoOdDxX_def, 40, NHC.NHKF_GETPOS_VALID_NEXT);
 cptr.stI32o(__static_getpos_mMoOdDxX_def, 44, NHC.NHKF_GETPOS_VALID_PREV); /** C ref: getpos.c:781 — int[12] (function-static) */
 const __static_getpos_view_filters = cptr.alloc(3 * 8);
-cptr.stPtro(__static_getpos_view_filters, 0, __sl106);
-cptr.stPtro(__static_getpos_view_filters, 8, __sl107);
-cptr.stPtro(__static_getpos_view_filters, 16, __sl108); /** C ref: getpos.c:972 — char *[3] (function-static) */
+cptr.stPtro(__static_getpos_view_filters, 0, __s_not_limiting_targets);
+cptr.stPtro(__static_getpos_view_filters, 8, __s_limiting_targets_to_those_in_sight);
+cptr.stPtro(__static_getpos_view_filters, 16, __s_limiting_targets_to_those_in_same_area); /** C ref: getpos.c:972 — char *[3] (function-static) */
 
 /** C ref: getpos.c:771 — @param {CPtr<coord>} ccp @param {CInt} force @param {CPtr<char>} goal @returns {CInt} */
 export function getpos(ccp, force, goal) {
@@ -775,9 +775,9 @@ export function getpos(ccp, force, goal) {
         if (handle_tip(NHC.TIP_GETPOS))
             show_goal_msg = 1;
         if (!goal)
-            goal = __sl86;
+            goal = __s_desired_location;
         if (cptr.ld1so(flags, $flag_verbose)) {
-            pline(__sl87, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            pline(__s_for_instructions_type_a_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             msg_given = 1;
         }
         cx.v = cptr.stI16o(gg, $instance_globals_g_getposx, cptr.ldI16(ccp));
@@ -793,7 +793,7 @@ export function getpos(ccp, force, goal) {
         }
         case 7: {
         if (show_goal_msg) {
-            pline(__sl88, goal);
+            pline(__s_move_cursor_to_s, goal);
             curs()(WIN_MAP.v, cx.v, cy.v);
             flush_screen(0);
             show_goal_msg = 0;
@@ -950,7 +950,7 @@ export function getpos(ccp, force, goal) {
         }
         case 38: {
         cptr.st1o(iflags, $instance_flags_autodescribe, schar((!cptr.ld1so(iflags, $instance_flags_autodescribe))));
-        pline(__sl89, cptr.ld1so(flags, $flag_verbose) ? __sl90 : __sl21, cptr.ld1so(iflags, $instance_flags_autodescribe) ? __sl91 : __sl92);
+        pline(__s_automatic_description_sis_s, cptr.ld1so(flags, $flag_verbose) ? __s_of_features_under_cursor : __s_empty, cptr.ld1so(iflags, $instance_flags_autodescribe) ? __s_on : __s_off);
         if (!cptr.ld1so(iflags, $instance_flags_autodescribe))
             show_goal_msg = 1;
         msg_given = 1;
@@ -969,7 +969,7 @@ export function getpos(ccp, force, goal) {
             }
             cptr.stI32o(gidx, i, cptr.stI32o(gcount, i, 0, 4), 4);
         }
-        pline(__sl93, cptr.ldPtro(__static_getpos_view_filters, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8));
+        pline(__s_pct_s_dot, cptr.ldPtro(__static_getpos_view_filters, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8));
         msg_given = 1;
         { __pc = 3; continue; }
         }
@@ -979,7 +979,7 @@ export function getpos(ccp, force, goal) {
         }
         case 44: {
         cptr.st1o(iflags, $instance_flags_getloc_usemenu, schar((!cptr.ld1so(iflags, $instance_flags_getloc_usemenu))));
-        pline(__sl94, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __sl95 : __sl96, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __sl97 : __sl21);
+        pline(__s_s_a_menu_to_show_possible_targets_s, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_using : __s_not_using, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_for_m_m_o_o_d_d_and_x_x : __s_empty);
         msg_given = 1;
         { __pc = 3; continue; }
         }
@@ -1000,7 +1000,7 @@ export function getpos(ccp, force, goal) {
         }
         case 50: {
         cptr.st1o(iflags, $instance_flags_getloc_moveskip, schar((!cptr.ld1so(iflags, $instance_flags_getloc_moveskip))));
-        pline(__sl98, cptr.ld1so(iflags, $instance_flags_getloc_moveskip) ? __sl99 : __sl100);
+        pline(__s_skipping_over_similar_terrain_when, cptr.ld1so(iflags, $instance_flags_getloc_moveskip) ? __s_s__2 : __s_not_s);
         msg_given = 1;
         { __pc = 3; continue; }
         }
@@ -1164,17 +1164,17 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 62: {
-        pline(__sl101, c);
+        pline(__s_can_t_find_dungeon_feature_c, c);
         msg_given = 1;
         { __pc = 3; continue; }
         }
         case 61: {
         note = new Uint8Array(128);
         if (!force)
-            void cptr.strcpy(cptr.decay(note), __sl102);
+            void cptr.strcpy(cptr.decay(note), __s_aborted);
         else
-            void cptr.sprintf(cptr.decay(note), __sl103, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
-        pline(__sl104, visctrl(schar(c)), cptr.decay(note));
+            void cptr.sprintf(cptr.decay(note), __s_use_s_s_s_s_or_s, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        pline(__s_unknown_direction_s_s, visctrl(schar(c)), cptr.decay(note));
         msg_given = 1;
         __pc = 59;
         continue;
@@ -1191,7 +1191,7 @@ export function getpos(ccp, force, goal) {
         { __pc = 3; continue; }
         }
         case 86: {
-        pline(__sl105);
+        pline(__s_done);
         msg_given = 0;
         cx.v = -1;
         cy.v = 0;

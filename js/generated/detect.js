@@ -118,159 +118,159 @@ const $NhRegion_glyph = FLD.NhRegion_glyph, $Race_mnum = FLD.Race_mnum,
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("detect.c");
-const __sl1 = cptr.lit("trapped_chest_at");
-const __sl2 = cptr.lit("trapped_door_at");
-const __sl3 = cptr.lit("You feel like a million %s!");
-const __sl4 = cptr.lit("You feel worried about your future financial situation.");
-const __sl5 = cptr.lit("You feel interested in %s financial situation.");
-const __sl6 = cptr.lit("You feel materially poor.");
-const __sl7 = cptr.lit("notice some gold between your %s.");
-const __sl8 = cptr.lit("gold_detect");
-const __sl9 = cptr.lit("very greedy, and sense gold!");
-const __sl10 = cptr.lit("gold");
-const __sl11 = cptr.lit("food");
-const __sl12 = cptr.lit("sense a lack of %s nearby.");
-const __sl13 = cptr.lit("%s starts to tingle.");
-const __sl14 = cptr.lit("Your %s twitches%s.");
-const __sl15 = cptr.lit(" then starts to tingle");
-const __sl16 = cptr.lit("");
-const __sl17 = cptr.lit("%s %s nearby.");
-const __sl18 = cptr.lit("smell");
-const __sl19 = cptr.lit("sense");
-const __sl20 = cptr.lit("%s %s to tingle and you smell %s.");
-const __sl21 = cptr.lit("continues");
-const __sl22 = cptr.lit("starts");
-const __sl23 = cptr.lit("%s tingles and you smell %s.");
-const __sl24 = cptr.lit("sense %s.");
-const __sl25 = cptr.lit("object_detect:  illegal class %d");
-const __sl26 = cptr.lit("objects");
-const __sl27 = cptr.lit(" and/or large stones");
-const __sl28 = cptr.lit("You feel a lack of something.");
-const __sl29 = cptr.lit("sense %s nearby.");
-const __sl30 = cptr.lit("object_detect");
-const __sl31 = cptr.lit("detect the %s of %s.");
-const __sl32 = cptr.lit("presence");
-const __sl33 = cptr.lit("absence");
-const __sl34 = cptr.lit("object");
-const __sl35 = cptr.lit("You get the heebie jeebies.");
-const __sl36 = cptr.lit("You feel threatened.");
-const __sl37 = cptr.lit("sense the presence of monsters.");
-const __sl38 = cptr.lit("Monsters sense the presence of you.");
-const __sl39 = cptr.lit("monster of interest");
-const __sl40 = cptr.lit("sense_trap");
-const __sl41 = cptr.lit("%s.");
-const __sl42 = cptr.lit("very greedy");
-const __sl43 = cptr.lit("entrapped");
-const __sl44 = cptr.lit("trap of interest");
-const __sl45 = cptr.lit("Your %s stop itching.");
-const __sl46 = cptr.lit("%s itch.");
-const __sl47 = cptr.lit("seems to be nothing of interest on this level.");
-const __sl48 = cptr.lit("map already shows all relevant locations.");
-const __sl49 = cptr.lit("location");
-const __sl50 = cptr.lit("level_distance");
-const __sl51 = cptr.lit("far away");
-const __sl52 = cptr.lit("far below");
-const __sl53 = cptr.lit("away below you");
-const __sl54 = cptr.lit("below you");
-const __sl55 = cptr.lit("in the distance");
-const __sl56 = cptr.lit("just below");
-const __sl57 = cptr.lit("far above");
-const __sl58 = cptr.lit("away above you");
-const __sl59 = cptr.lit("above you");
-const __sl60 = cptr.lit("just above");
-const __sl61 = cptr.lit("near you");
-const __sl62 = cptr.lit("Delphi");
-const __sl63 = cptr.lit("Medusa's lair");
-const __sl64 = cptr.lit("a castle");
-const __sl65 = cptr.lit("the Wizard of Yendor's tower");
-const __sl66 = cptr.lit("Too bad you can't see %s.");
-const __sl67 = cptr.lit("use_crystal_ball");
-const __sl68 = cptr.lit("%s too much to comprehend!");
-const __sl69 = cptr.lit("are");
-const __sl70 = cptr.lit("%s you!");
-const __sl71 = cptr.lit("confuse");
-const __sl72 = cptr.lit("%s your vision!");
-const __sl73 = cptr.lit("damage");
-const __sl74 = cptr.lit("%s");
-const __sl75 = cptr.lit("%s your vision.");
-const __sl76 = cptr.lit("assault");
-const __sl77 = cptr.lit("are unaffected!");
-const __sl78 = cptr.lit("%s your mind!");
-const __sl79 = cptr.lit("zap");
-const __sl80 = cptr.lit("%s!");
-const __sl81 = cptr.lit("explode");
-const __sl82 = cptr.lit("exploding crystal ball");
-const __sl83 = cptr.lit("gazing into a Magic 8-Ball (tm)");
-const __sl84 = cptr.lit("All you see is funky %s haze.");
-const __sl85 = cptr.lit("implode");
-const __sl86 = cptr.lit("grok some groovy globs of incandescent lava.");
-const __sl87 = cptr.lit("Whoa!  Psychedelic colors, %s!");
-const __sl88 = cptr.lit("babe");
-const __sl89 = cptr.lit("dude");
-const __sl90 = cptr.lit("crystal pulses with sinister %s light!");
-const __sl91 = cptr.lit("goldfish swimming above fluorescent rocks.");
-const __sl92 = cptr.lit("tiny snowflakes spinning around a miniature farmhouse.");
-const __sl93 = cptr.lit("Oh wow... like a kaleidoscope!");
-const __sl94 = cptr.lit("may look for an object, monster, or special map symbol.");
-const __sl95 = cptr.lit("What do you look for?");
-const __sl96 = cptr.lit("peer into %s...");
-const __sl97 = cptr.lit("gazing into a crystal ball");
-const __sl98 = cptr.lit("vision is unclear.");
-const __sl99 = cptr.lit("%s, %s.");
-const __sl100 = cptr.lit("the Wizard of Yendor gazing out at you.");
-const __sl101 = cptr.lit("show_map_spot");
-const __sl102 = cptr.lit("anything of interest");
-const __sl103 = cptr.lit("sense your surroundings.");
-const __sl104 = cptr.lit("door");
-const __sl105 = cptr.lit("You %s an explosion!");
-const __sl106 = cptr.lit("see");
-const __sl107 = cptr.lit("hear");
-const __sl108 = cptr.lit("feel the shock of");
-const __sl109 = cptr.lit("%d secret doors");
-const __sl110 = cptr.lit("a secret door");
-const __sl111 = cptr.lit(" and ");
-const __sl112 = cptr.lit(", ");
-const __sl113 = cptr.lit("%d secret corridors");
-const __sl114 = cptr.lit("a secret corridor");
-const __sl115 = cptr.lit(", and ");
-const __sl116 = cptr.lit("%d traps");
-const __sl117 = cptr.lit("a trap");
-const __sl118 = cptr.lit("%d hidden monsters");
-const __sl119 = cptr.lit("a hidden monster");
-const __sl120 = cptr.lit("reveal %s!");
-const __sl121 = cptr.lit("%d%s unseen monsters");
-const __sl122 = cptr.lit(" other");
-const __sl123 = cptr.lit("%s unseen monster");
-const __sl124 = cptr.lit("another");
-const __sl125 = cptr.lit("an");
-const __sl126 = cptr.lit("detect %s!");
-const __sl127 = cptr.lit("%sless paranoid.");
-const __sl128 = cptr.lit("somewhat ");
-const __sl129 = cptr.lit("don't find anything.");
-const __sl130 = cptr.lit("Its mouth opens!");
-const __sl131 = cptr.lit("%s opens its mouth!");
-const __sl132 = cptr.lit("find %s.");
-const __sl133 = cptr.lit("danger sense causes you to take a second %s.");
-const __sl134 = cptr.lit("to check nearby");
-const __sl135 = cptr.lit("look close by");
-const __sl136 = cptr.lit("an unseen monster!");
-const __sl137 = cptr.lit("What are you looking for?  The exit?");
-const __sl138 = cptr.lit("dosearch0");
-const __sl139 = cptr.lit("find a hidden door.");
-const __sl140 = cptr.lit("find a hidden passage.");
-const __sl141 = cptr.lit("Searching");
-const __sl142 = cptr.lit("another search");
-const __sl143 = cptr.lit("You already found a monster.");
-const __sl144 = cptr.lit("are too disoriented for this.");
-const __sl145 = cptr.lit("underlying terrain");
-const __sl146 = cptr.lit("known terrain");
-const __sl147 = cptr.lit("%s traps");
-const __sl148 = cptr.lit(",");
-const __sl149 = cptr.lit(" and");
-const __sl150 = cptr.lit("%s%s objects");
-const __sl151 = cptr.lit("%s and monsters");
-const __sl152 = cptr.lit("Showing %s only...");
+const __s_detect_c = cptr.lit("detect.c");
+const __s_trapped_chest_at = cptr.lit("trapped_chest_at");
+const __s_trapped_door_at = cptr.lit("trapped_door_at");
+const __s_you_feel_like_a_million_s = cptr.lit("You feel like a million %s!");
+const __s_you_feel_worried_about_your_future = cptr.lit("You feel worried about your future financial situation.");
+const __s_you_feel_interested_in_s_financial = cptr.lit("You feel interested in %s financial situation.");
+const __s_you_feel_materially_poor = cptr.lit("You feel materially poor.");
+const __s_notice_some_gold_between_your_s = cptr.lit("notice some gold between your %s.");
+const __s_gold_detect = cptr.lit("gold_detect");
+const __s_very_greedy_and_sense_gold = cptr.lit("very greedy, and sense gold!");
+const __s_gold = cptr.lit("gold");
+const __s_food = cptr.lit("food");
+const __s_sense_a_lack_of_s_nearby = cptr.lit("sense a lack of %s nearby.");
+const __s_s_starts_to_tingle = cptr.lit("%s starts to tingle.");
+const __s_your_s_twitches_s = cptr.lit("Your %s twitches%s.");
+const __s_then_starts_to_tingle = cptr.lit(" then starts to tingle");
+const __s_empty = cptr.lit("");
+const __s_s_s_nearby = cptr.lit("%s %s nearby.");
+const __s_smell = cptr.lit("smell");
+const __s_sense = cptr.lit("sense");
+const __s_s_s_to_tingle_and_you_smell_s = cptr.lit("%s %s to tingle and you smell %s.");
+const __s_continues = cptr.lit("continues");
+const __s_starts = cptr.lit("starts");
+const __s_s_tingles_and_you_smell_s = cptr.lit("%s tingles and you smell %s.");
+const __s_sense_s = cptr.lit("sense %s.");
+const __s_object_detect_illegal_class_d = cptr.lit("object_detect:  illegal class %d");
+const __s_objects = cptr.lit("objects");
+const __s_and_or_large_stones = cptr.lit(" and/or large stones");
+const __s_you_feel_a_lack_of_something = cptr.lit("You feel a lack of something.");
+const __s_sense_s_nearby = cptr.lit("sense %s nearby.");
+const __s_object_detect = cptr.lit("object_detect");
+const __s_detect_the_s_of_s = cptr.lit("detect the %s of %s.");
+const __s_presence = cptr.lit("presence");
+const __s_absence = cptr.lit("absence");
+const __s_object = cptr.lit("object");
+const __s_you_get_the_heebie_jeebies = cptr.lit("You get the heebie jeebies.");
+const __s_you_feel_threatened = cptr.lit("You feel threatened.");
+const __s_sense_the_presence_of_monsters = cptr.lit("sense the presence of monsters.");
+const __s_monsters_sense_the_presence_of_you = cptr.lit("Monsters sense the presence of you.");
+const __s_monster_of_interest = cptr.lit("monster of interest");
+const __s_sense_trap = cptr.lit("sense_trap");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_very_greedy = cptr.lit("very greedy");
+const __s_entrapped = cptr.lit("entrapped");
+const __s_trap_of_interest = cptr.lit("trap of interest");
+const __s_your_s_stop_itching = cptr.lit("Your %s stop itching.");
+const __s_s_itch = cptr.lit("%s itch.");
+const __s_seems_to_be_nothing_of_interest_on_this = cptr.lit("seems to be nothing of interest on this level.");
+const __s_map_already_shows_all_relevant_locations = cptr.lit("map already shows all relevant locations.");
+const __s_location = cptr.lit("location");
+const __s_level_distance = cptr.lit("level_distance");
+const __s_far_away = cptr.lit("far away");
+const __s_far_below = cptr.lit("far below");
+const __s_away_below_you = cptr.lit("away below you");
+const __s_below_you = cptr.lit("below you");
+const __s_in_the_distance = cptr.lit("in the distance");
+const __s_just_below = cptr.lit("just below");
+const __s_far_above = cptr.lit("far above");
+const __s_away_above_you = cptr.lit("away above you");
+const __s_above_you = cptr.lit("above you");
+const __s_just_above = cptr.lit("just above");
+const __s_near_you = cptr.lit("near you");
+const __s_delphi = cptr.lit("Delphi");
+const __s_medusa_s_lair = cptr.lit("Medusa's lair");
+const __s_a_castle = cptr.lit("a castle");
+const __s_the_wizard_of_yendor_s_tower = cptr.lit("the Wizard of Yendor's tower");
+const __s_too_bad_you_can_t_see_s = cptr.lit("Too bad you can't see %s.");
+const __s_use_crystal_ball = cptr.lit("use_crystal_ball");
+const __s_s_too_much_to_comprehend = cptr.lit("%s too much to comprehend!");
+const __s_are = cptr.lit("are");
+const __s_s_you = cptr.lit("%s you!");
+const __s_confuse = cptr.lit("confuse");
+const __s_s_your_vision = cptr.lit("%s your vision!");
+const __s_damage = cptr.lit("damage");
+const __s_pct_s = cptr.lit("%s");
+const __s_s_your_vision__2 = cptr.lit("%s your vision.");
+const __s_assault = cptr.lit("assault");
+const __s_are_unaffected = cptr.lit("are unaffected!");
+const __s_s_your_mind = cptr.lit("%s your mind!");
+const __s_zap = cptr.lit("zap");
+const __s_pct_s_bang = cptr.lit("%s!");
+const __s_explode = cptr.lit("explode");
+const __s_exploding_crystal_ball = cptr.lit("exploding crystal ball");
+const __s_gazing_into_a_magic_8_ball_tm = cptr.lit("gazing into a Magic 8-Ball (tm)");
+const __s_all_you_see_is_funky_s_haze = cptr.lit("All you see is funky %s haze.");
+const __s_implode = cptr.lit("implode");
+const __s_grok_some_groovy_globs_of_incandescent = cptr.lit("grok some groovy globs of incandescent lava.");
+const __s_whoa_psychedelic_colors_s = cptr.lit("Whoa!  Psychedelic colors, %s!");
+const __s_babe = cptr.lit("babe");
+const __s_dude = cptr.lit("dude");
+const __s_crystal_pulses_with_sinister_s_light = cptr.lit("crystal pulses with sinister %s light!");
+const __s_goldfish_swimming_above_fluorescent = cptr.lit("goldfish swimming above fluorescent rocks.");
+const __s_tiny_snowflakes_spinning_around_a = cptr.lit("tiny snowflakes spinning around a miniature farmhouse.");
+const __s_oh_wow_like_a_kaleidoscope = cptr.lit("Oh wow... like a kaleidoscope!");
+const __s_may_look_for_an_object_monster_or = cptr.lit("may look for an object, monster, or special map symbol.");
+const __s_what_do_you_look_for = cptr.lit("What do you look for?");
+const __s_peer_into_s = cptr.lit("peer into %s...");
+const __s_gazing_into_a_crystal_ball = cptr.lit("gazing into a crystal ball");
+const __s_vision_is_unclear = cptr.lit("vision is unclear.");
+const __s_s_s = cptr.lit("%s, %s.");
+const __s_the_wizard_of_yendor_gazing_out_at_you = cptr.lit("the Wizard of Yendor gazing out at you.");
+const __s_show_map_spot = cptr.lit("show_map_spot");
+const __s_anything_of_interest = cptr.lit("anything of interest");
+const __s_sense_your_surroundings = cptr.lit("sense your surroundings.");
+const __s_door = cptr.lit("door");
+const __s_you_s_an_explosion = cptr.lit("You %s an explosion!");
+const __s_see = cptr.lit("see");
+const __s_hear = cptr.lit("hear");
+const __s_feel_the_shock_of = cptr.lit("feel the shock of");
+const __s_d_secret_doors = cptr.lit("%d secret doors");
+const __s_a_secret_door = cptr.lit("a secret door");
+const __s_and = cptr.lit(" and ");
+const __s_comma_sp = cptr.lit(", ");
+const __s_d_secret_corridors = cptr.lit("%d secret corridors");
+const __s_a_secret_corridor = cptr.lit("a secret corridor");
+const __s_and__2 = cptr.lit(", and ");
+const __s_d_traps = cptr.lit("%d traps");
+const __s_a_trap = cptr.lit("a trap");
+const __s_d_hidden_monsters = cptr.lit("%d hidden monsters");
+const __s_a_hidden_monster = cptr.lit("a hidden monster");
+const __s_reveal_s = cptr.lit("reveal %s!");
+const __s_d_s_unseen_monsters = cptr.lit("%d%s unseen monsters");
+const __s_other = cptr.lit(" other");
+const __s_s_unseen_monster = cptr.lit("%s unseen monster");
+const __s_another = cptr.lit("another");
+const __s_an = cptr.lit("an");
+const __s_detect_s = cptr.lit("detect %s!");
+const __s_sless_paranoid = cptr.lit("%sless paranoid.");
+const __s_somewhat = cptr.lit("somewhat ");
+const __s_don_t_find_anything = cptr.lit("don't find anything.");
+const __s_its_mouth_opens = cptr.lit("Its mouth opens!");
+const __s_s_opens_its_mouth = cptr.lit("%s opens its mouth!");
+const __s_find_s = cptr.lit("find %s.");
+const __s_danger_sense_causes_you_to_take_a = cptr.lit("danger sense causes you to take a second %s.");
+const __s_to_check_nearby = cptr.lit("to check nearby");
+const __s_look_close_by = cptr.lit("look close by");
+const __s_an_unseen_monster = cptr.lit("an unseen monster!");
+const __s_what_are_you_looking_for_the_exit = cptr.lit("What are you looking for?  The exit?");
+const __s_dosearch0 = cptr.lit("dosearch0");
+const __s_find_a_hidden_door = cptr.lit("find a hidden door.");
+const __s_find_a_hidden_passage = cptr.lit("find a hidden passage.");
+const __s_searching = cptr.lit("Searching");
+const __s_another_search = cptr.lit("another search");
+const __s_you_already_found_a_monster = cptr.lit("You already found a monster.");
+const __s_are_too_disoriented_for_this = cptr.lit("are too disoriented for this.");
+const __s_underlying_terrain = cptr.lit("underlying terrain");
+const __s_known_terrain = cptr.lit("known terrain");
+const __s_s_traps = cptr.lit("%s traps");
+const __s_comma = cptr.lit(",");
+const __s_and__3 = cptr.lit(" and");
+const __s_s_s_objects = cptr.lit("%s%s objects");
+const __s_s_and_monsters = cptr.lit("%s and monsters");
+const __s_showing_s_only = cptr.lit("Showing %s only...");
 
 /** C ref: detect.c:49 — struct trap */
 let dummytrap = cptr.alloc(40);
@@ -330,7 +330,7 @@ export function trapped_chest_at(ttyp, x, y) {
     let otmp;
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 146, __sl1), rn2(20)) : rn2(20))))
+    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 146, __s_trapped_chest_at), rn2(20)) : rn2(20))))
         return 0;
     if (sobj_at(NHC.CHEST, x, y) || sobj_at(NHC.LARGE_BOX, x, y))
         return 1;
@@ -356,7 +356,7 @@ export function trapped_door_at(ttyp, x, y) {
     let lev;
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 188, __sl2), rn2(20)) : rn2(20))))
+    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 188, __s_trapped_door_at), rn2(20)) : rn2(20))))
         return 0;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
@@ -507,19 +507,19 @@ export function gold_detect(sobj) {
         if (!cptr.ld1so(gk, $instance_globals_k_known)) {
             let buf = new Uint8Array(256);
             if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_GOLD_GOLEM, 96)))
-                void cptr.sprintf(cptr.decay(buf), __sl3, currency(2n));
+                void cptr.sprintf(cptr.decay(buf), __s_you_feel_like_a_million_s, currency(2n));
             else if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) || hidden_gold(1))
-                void cptr.strcpy(cptr.decay(buf), __sl4);
+                void cptr.strcpy(cptr.decay(buf), __s_you_feel_worried_about_your_future);
             else if (steedgold)
-                void cptr.sprintf(cptr.decay(buf), __sl5, s_suffix(x_monnam(cptr.ldPtro(u, $you_usteed), cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)));
+                void cptr.sprintf(cptr.decay(buf), __s_you_feel_interested_in_s_financial, s_suffix(x_monnam(cptr.ldPtro(u, $you_usteed), cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)));
             else
-                void cptr.strcpy(cptr.decay(buf), __sl6);
+                void cptr.strcpy(cptr.decay(buf), __s_you_feel_materially_poor);
             strange_feeling(sobj, cptr.decay(buf));
             return 1;
         }
         if (stale)
             docrt();
-        You(__sl7, makeplural(body_part(NHC.FOOT)));
+        You(__s_notice_some_gold_between_your_s, makeplural(body_part(NHC.FOOT)));
         return 0;
     }
     cls();
@@ -548,7 +548,7 @@ export function gold_detect(sobj) {
         if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == NHC.PM_GOLD_GOLEM) {
             cptr.memcpy(gold, cg, 216);
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 442, __sl8), rnd(10)) : rnd(10))));
+            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 442, __s_gold_detect), rnd(10)) : rnd(10))));
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -574,9 +574,9 @@ export function gold_detect(sobj) {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         ter_typ |= NHM.TER_MON;
     }
-    You_feel(__sl9);
+    You_feel(__s_very_greedy_and_sense_gold);
     exercise(NHC.A_WIS, 1);
-    browse_map(ter_typ >>> 0, __sl10);
+    browse_map(ter_typ >>> 0, __s_gold);
     map_redisplay();
     return 0;
 }
@@ -590,7 +590,7 @@ export function food_detect(sobj) {
     let confused = schar((HConfusion() || (sobj && (cptr.ldI32o(sobj, $obj_cursed) & 1) | 0) ? 1 : 0));
     let stale;
     let oclass = schar((confused ? NHC.POTION_CLASS : NHC.FOOD_CLASS));
-    let what = confused ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __sl11;
+    let what = confused ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __s_food;
     stale = clear_stale_map(oclass, 0);
     if (cptr.ldPtro(u, $you_usteed))
         cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)), cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_my, cptr.ldI16o(u, $you_uy));
@@ -617,15 +617,15 @@ export function food_detect(sobj) {
         cptr.st1o(gk, $instance_globals_k_known, schar((stale && !confused ? 1 : 0)));
         if (stale) {
             docrt();
-            You(__sl12, what);
+            You(__s_sense_a_lack_of_s_nearby, what);
             if (sobj && (cptr.ldI32o(sobj, $obj_blessed) & 1) | 0) {
                 if (!(cptr.ldI32o(u, $you_uedibility) & 1))
-                    Your(__sl13, body_part(NHC.NOSE));
+                    Your(__s_s_starts_to_tingle, body_part(NHC.NOSE));
                 cptr.stI32o(u, $you_uedibility, 1);
             }
         } else if (sobj) {
             let buf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(buf), __sl14, body_part(NHC.NOSE), ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 && !(cptr.ldI32o(u, $you_uedibility) & 1)) ? __sl15 : __sl16);
+            void cptr.sprintf(cptr.decay(buf), __s_your_s_twitches_s, body_part(NHC.NOSE), ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 && !(cptr.ldI32o(u, $you_uedibility) & 1)) ? __s_then_starts_to_tingle : __s_empty);
             if ((cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 && !(cptr.ldI32o(u, $you_uedibility) & 1)) {
                 let savebeginner = cptr.ld1so(flags, $flag_beginner);
                 cptr.st1o(flags, $flag_beginner, 0);
@@ -638,10 +638,10 @@ export function food_detect(sobj) {
         return !stale;
     } else if (!ct) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
-        You(__sl17, sobj ? __sl18 : __sl19, what);
+        You(__s_s_s_nearby, sobj ? __s_smell : __s_sense, what);
         if (sobj && (cptr.ldI32o(sobj, $obj_blessed) & 1) | 0) {
             if (!(cptr.ldI32o(u, $you_uedibility) & 1))
-                Your(__sl13, body_part(NHC.NOSE));
+                Your(__s_s_starts_to_tingle, body_part(NHC.NOSE));
             cptr.stI32o(u, $you_uedibility, 1);
         }
     } else {
@@ -675,14 +675,14 @@ export function food_detect(sobj) {
         }
         if (sobj) {
             if ((cptr.ldI32o(sobj, $obj_blessed) & 1)) {
-                Your(__sl20, body_part(NHC.NOSE), (cptr.ldI32o(u, $you_uedibility) & 1) | 0 ? __sl21 : __sl22, what);
+                Your(__s_s_s_to_tingle_and_you_smell_s, body_part(NHC.NOSE), (cptr.ldI32o(u, $you_uedibility) & 1) | 0 ? __s_continues : __s_starts, what);
                 cptr.stI32o(u, $you_uedibility, 1);
             } else
-                Your(__sl23, body_part(NHC.NOSE), what);
+                Your(__s_s_tingles_and_you_smell_s, body_part(NHC.NOSE), what);
         } else
-            You(__sl24, what);
+            You(__s_sense_s, what);
         exercise(NHC.A_WIS, 1);
-        browse_map(ter_typ >>> 0, __sl11);
+        browse_map(ter_typ >>> 0, __s_food);
         map_redisplay();
     }
     return 0;
@@ -704,7 +704,7 @@ export function object_detect(detector, class$) {
     let boulder = 0;
     let ter_typ = 36;
     if (class$ < 0 || class$ >= NHC.MAXOCLASSES) {
-        impossible(__sl25, class$);
+        impossible(__s_object_detect_illegal_class_d, class$);
         class$ = 0;
     }
     sym = class$ ? cptr.ld1so(def_oc_syms, class$, 24) : 0;
@@ -713,9 +713,9 @@ export function object_detect(detector, class$) {
     if (Hallucination() || (HConfusion() && class$ == NHC.SCROLL_CLASS))
         void cptr.strcpy(cptr.decay(stuff), cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
     else
-        void cptr.strcpy(cptr.decay(stuff), class$ ? cptr.ldPtro2(def_oc_syms, class$, 24, $class_sym_name) : __sl26);
+        void cptr.strcpy(cptr.decay(stuff), class$ ? cptr.ldPtro2(def_oc_syms, class$, 24, $class_sym_name) : __s_objects);
     if (boulder && class$ != NHC.ROCK_CLASS)
-        void cptr.strcat(cptr.decay(stuff), __sl27);
+        void cptr.strcat(cptr.decay(stuff), __s_and_or_large_stones);
     if (do_dknown)
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
             observe_recursively(obj);
@@ -758,10 +758,10 @@ export function object_detect(detector, class$) {
     if (!clear_stale_map(schar((!class$ ? ((NHC.MAXOCLASSES + 1) | 0) : class$)), 0) && !ct) {
         if (!ctu) {
             if (detector)
-                strange_feeling(detector, __sl28);
+                strange_feeling(detector, __s_you_feel_a_lack_of_something);
             return 1;
         }
-        You(__sl29, cptr.decay(stuff));
+        You(__s_sense_s_nearby, cptr.decay(stuff));
         return 0;
     }
     cls();
@@ -816,7 +816,7 @@ export function object_detect(detector, class$) {
             let gold = cptr.alloc(216);
             cptr.memcpy(gold, cg, 216);
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 770, __sl30), rnd(10)) : rnd(10))));
+            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 770, __s_object_detect), rnd(10)) : rnd(10))));
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -826,11 +826,11 @@ export function object_detect(detector, class$) {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         ter_typ |= NHM.TER_MON;
     }
-    You(__sl31, ct ? __sl32 : __sl33, cptr.decay(stuff));
+    You(__s_detect_the_s_of_s, ct ? __s_presence : __s_absence, cptr.decay(stuff));
     if (!ct)
         display_nhwindow()(WIN_MAP.v, 1);
     else
-        browse_map(ter_typ >>> 0, __sl34);
+        browse_map(ter_typ >>> 0, __s_object);
     map_redisplay();
     return 0;
 }
@@ -847,7 +847,7 @@ export function monster_detect(otmp, mclass) {
     }
     if (!mcnt) {
         if (otmp)
-            strange_feeling(otmp, Hallucination() ? __sl35 : __sl36);
+            strange_feeling(otmp, Hallucination() ? __s_you_get_the_heebie_jeebies : __s_you_feel_threatened);
         return 1;
     } else {
         let unconstrained;
@@ -868,14 +868,14 @@ export function monster_detect(otmp, mclass) {
         }
         if (!swallowed)
             show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && mon_visible(cptr.ldPtro(u, $you_usteed))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
-        You(__sl37);
+        You(__s_sense_the_presence_of_monsters);
         if (woken)
-            pline(__sl38);
+            pline(__s_monsters_sense_the_presence_of_you);
         if ((otmp && (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0) && !unconstrained) {
             display_nhwindow()(WIN_MAP.v, 1);
         } else {
             cptr.stI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops, cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops) | 536870912n);
-            browse_map(40, __sl39);
+            browse_map(40, __s_monster_of_interest);
             cptr.stI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops, cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops) & (-536870913n));
         }
         map_redisplay();
@@ -896,7 +896,7 @@ function sense_trap(trap, x, y, src_cursed) {
             cptr.stI16o(obj, $obj_oy, y);
         }
         cptr.stI16o(obj, $obj_otyp, i16((!Hallucination() ? NHC.GOLD_PIECE : (((rn2)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))));
-        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 879, __sl40), rnd(10)) : rnd(10)) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 880, __sl40), rnd(2)) : rnd(2)) : 1))));
+        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 879, __s_sense_trap), rnd(10)) : rnd(10)) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 880, __s_sense_trap), rnd(2)) : rnd(2)) : 1))));
         cptr.stI32o(obj, $obj_corpsenm, ((rn2)(NHC.NUMMONS)));
         map_object(obj, 1);
     } else if (trap) {
@@ -982,8 +982,8 @@ function display_trap_map(cursed_src) {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         ter_typ |= NHM.TER_MON;
     }
-    You_feel(__sl41, cursed_src ? __sl42 : __sl43);
-    browse_map(ter_typ >>> 0, cursed_src ? __sl10 : __sl44);
+    You_feel(__s_pct_s_dot, cursed_src ? __s_very_greedy : __s_entrapped);
+    browse_map(ter_typ >>> 0, cursed_src ? __s_gold : __s_trap_of_interest);
     map_redisplay();
 }
 
@@ -1046,11 +1046,11 @@ export function trap_detect(sobj) {
     }
     if (!found) {
         let buf = new Uint8Array(256);
-        void cptr.sprintf(cptr.decay(buf), __sl45, makeplural(body_part(NHC.TOE)));
+        void cptr.sprintf(cptr.decay(buf), __s_your_s_stop_itching, makeplural(body_part(NHC.TOE)));
         strange_feeling(sobj, cptr.decay(buf));
         return 1;
     }
-    Your(__sl46, makeplural(body_part(NHC.TOE)));
+    Your(__s_s_itch, makeplural(body_part(NHC.TOE)));
     return 0;
 }
 
@@ -1082,13 +1082,13 @@ function furniture_detect() {
                 ++revealed;
         }
     if (!found)
-        There(__sl47);
+        There(__s_seems_to_be_nothing_of_interest_on_this);
     else if (!revealed)
-        Your(__sl48);
+        Your(__s_map_already_shows_all_relevant_locations);
     if (!revealed)
         display_nhwindow()(WIN_MAP.v, 1);
     else
-        browse_map(47, __sl49);
+        browse_map(47, __s_location);
     map_redisplay();
     return 0;
 }
@@ -1097,42 +1097,42 @@ function furniture_detect() {
 export function level_distance(where) {
     let ll = schar(((depth(cptr.add(u, $you_uz)) - depth(where)) | 0));
     let indun = schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(where)));
-    let res = __sl16;
+    let res = __s_empty;
     if (ll < 0) {
-        if (ll < ((-8 - (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1149, __sl50), rn2(3)) : rn2(3))) | 0))
+        if (ll < ((-8 - (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1149, __s_level_distance), rn2(3)) : rn2(3))) | 0))
             if (!indun)
-                res = __sl51;
+                res = __s_far_away;
             else
-                res = __sl52;
+                res = __s_far_below;
         else if (ll < -1)
             if (!indun)
-                res = __sl53;
+                res = __s_away_below_you;
             else
-                res = __sl54;
+                res = __s_below_you;
         else if (!indun)
-            res = __sl55;
+            res = __s_in_the_distance;
         else
-            res = __sl56;
+            res = __s_just_below;
     } else if (ll > 0) {
-        if (ll > ((8 + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1164, __sl50), rn2(3)) : rn2(3))) | 0))
+        if (ll > ((8 + (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1164, __s_level_distance), rn2(3)) : rn2(3))) | 0))
             if (!indun)
-                res = __sl51;
+                res = __s_far_away;
             else
-                res = __sl57;
+                res = __s_far_above;
         else if (ll > 1)
             if (!indun)
-                res = __sl58;
+                res = __s_away_above_you;
             else
-                res = __sl59;
+                res = __s_above_you;
         else if (!indun)
-            res = __sl55;
+            res = __s_in_the_distance;
         else
-            res = __sl60;
+            res = __s_just_above;
     } else {
         if (!indun)
-            res = __sl55;
+            res = __s_in_the_distance;
         else
-            res = __sl61;
+            res = __s_near_you;
     }
     return res;
 }
@@ -1141,13 +1141,13 @@ export function level_distance(where) {
 
 /** C ref: detect.c:1198 — struct crystalballlevels[4] */
 const level_detects = cptr.alloc(4 * 16);
-cptr.stPtro(level_detects, 0, __sl62);
+cptr.stPtro(level_detects, 0, __s_delphi);
 cptr.stPtro(level_detects, 0 + $crystalballlevels_where, cptr.add(svd, $instance_globals_saved_d_dungeon_topology));
-cptr.stPtro(level_detects, 16, __sl63);
+cptr.stPtro(level_detects, 16, __s_medusa_s_lair);
 cptr.stPtro(level_detects, 16 + $crystalballlevels_where, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level));
-cptr.stPtro(level_detects, 32, __sl64);
+cptr.stPtro(level_detects, 32, __s_a_castle);
 cptr.stPtro(level_detects, 32 + $crystalballlevels_where, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level));
-cptr.stPtro(level_detects, 48, __sl65);
+cptr.stPtro(level_detects, 48, __s_the_wizard_of_yendor_s_tower);
 cptr.stPtro(level_detects, 48 + $crystalballlevels_where, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level));
 
 /** C ref: detect.c:1206 — @param {CPtr<struct obj *>} optr */
@@ -1157,40 +1157,40 @@ export function use_crystal_ball(optr) {
     let obj = cptr.ldPtr(optr);
     let charged = schar((cptr.ld1so(obj, $obj_spe) > 0));
     if (Blind()) {
-        pline(__sl66, the(xname(obj)));
+        pline(__s_too_bad_you_can_t_see_s, the(xname(obj)));
         return;
     }
     oops = is_quest_artifact(obj) ? 8 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 16 : 20);
-    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1218, __sl67), rnd(oops)) : rnd(oops)) > (acurr(NHC.A_INT)))) {
-        let impair = BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1219, __sl67), rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)) : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1221, __sl67), rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) : rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5))) {
+    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1218, __s_use_crystal_ball), rnd(oops)) : rnd(oops)) > (acurr(NHC.A_INT)))) {
+        let impair = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1219, __s_use_crystal_ball), rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)) : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
+        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1221, __s_use_crystal_ball), rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) : rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5))) {
             case 1:
-            pline(__sl68, Tobjnam(obj, __sl69));
+            pline(__s_s_too_much_to_comprehend, Tobjnam(obj, __s_are));
             break;
             case 2:
-            pline(__sl70, Tobjnam(obj, __sl71));
+            pline(__s_s_you, Tobjnam(obj, __s_confuse));
             make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + impair), 0);
             break;
             case 3:
             if (!resists_blnd(cptr.add(gy, $instance_globals_y_youmonst))) {
-                pline(__sl72, Tobjnam(obj, __sl73));
+                pline(__s_s_your_vision, Tobjnam(obj, __s_damage));
                 make_blinded(BigInt.asIntN(64, BlindedTimeout() + impair), 0);
                 if (!Blind())
-                    Your(__sl74, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears));
+                    Your(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears));
             } else {
-                pline(__sl75, Tobjnam(obj, __sl76));
-                You(__sl77);
+                pline(__s_s_your_vision__2, Tobjnam(obj, __s_assault));
+                You(__s_are_unaffected);
             }
             break;
             case 4:
-            pline(__sl78, Tobjnam(obj, __sl79));
+            pline(__s_s_your_mind, Tobjnam(obj, __s_zap));
             void make_hallucinated(BigInt.asIntN(64, (HHallucination() & 16777215n) + impair), 0, 0n);
             break;
             case 5:
-            pline(__sl80, Tobjnam(obj, __sl81));
+            pline(__s_pct_s_bang, Tobjnam(obj, __s_explode));
             useup(obj);
             cptr.stPtr(optr, obj = null);
-            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1250, __sl67), rnd(30)) : rnd(30))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1250, __sl67), rnd(30)) : rnd(30)))), __sl82, NHM.KILLED_BY_AN);
+            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1250, __s_use_crystal_ball), rnd(30)) : rnd(30))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1250, __s_use_crystal_ball), rnd(30)) : rnd(30)))), __s_exploding_crystal_ball, NHM.KILLED_BY_AN);
             break;
         }
         if (obj)
@@ -1198,37 +1198,37 @@ export function use_crystal_ball(optr) {
         return;
     }
     if (Hallucination()) {
-        nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1260, __sl67), rnd(charged ? 4 : 2)) : rnd(charged ? 4 : 2)));
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl83);
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl16);
+        nomul(-(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1260, __s_use_crystal_ball), rnd(charged ? 4 : 2)) : rnd(charged ? 4 : 2)));
+        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_magic_8_ball_tm);
+        cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
         if (!charged) {
-            pline(__sl84, hcolor(null));
+            pline(__s_all_you_see_is_funky_s_haze, hcolor(null));
             if (cptr.ld1so(obj, $obj_spe) < 0)
                 {
-                    pline(__sl80, Tobjnam(obj, __sl85));
+                    pline(__s_pct_s_bang, Tobjnam(obj, __s_implode));
                     useup(obj);
                     cptr.stPtr(optr, obj = null);
                     return;
                 }
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 1269, __sl67), rnd(6)) : rnd(6))) {
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1269, __s_use_crystal_ball), rnd(6)) : rnd(6))) {
                 case 1:
-                You(__sl86);
+                You(__s_grok_some_groovy_globs_of_incandescent);
                 break;
                 case 2:
-                pline(__sl87, poly_gender() == 1 ? __sl88 : __sl89);
+                pline(__s_whoa_psychedelic_colors_s, poly_gender() == 1 ? __s_babe : __s_dude);
                 break;
                 case 3:
-                pline_The(__sl90, hcolor(null));
+                pline_The(__s_crystal_pulses_with_sinister_s_light, hcolor(null));
                 break;
                 case 4:
-                You_see(__sl91);
+                You_see(__s_goldfish_swimming_above_fluorescent);
                 break;
                 case 5:
-                You_see(__sl92);
+                You_see(__s_tiny_snowflakes_spinning_around_a);
                 break;
                 default:
-                pline(__sl93);
+                pline(__s_oh_wow_like_a_kaleidoscope);
                 break;
             }
             consume_obj_charge(obj, 1);
@@ -1236,21 +1236,21 @@ export function use_crystal_ball(optr) {
         return;
     }
     if (cptr.ld1so(flags, $flag_verbose))
-        You(__sl94);
-    ch = yn_function(__sl95, null, 0, 1);
+        You(__s_may_look_for_an_object_monster_or);
+    ch = yn_function(__s_what_do_you_look_for, null, 0, 1);
     if ((ch != cptr.ld1so(def_monsyms, NHC.S_GHOST, 24)) && cptr.strchr(cptr.decay(quitchars), ch)) {
         if (cptr.ld1so(flags, $flag_verbose))
-            pline(__sl74, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
+            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         return;
     }
-    You(__sl96, the(xname(obj)));
-    nomul(-(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1313, __sl67), rnd(charged ? 10 : 2)) : rnd(charged ? 10 : 2)));
-    cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl97);
-    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl16);
+    You(__s_peer_into_s, the(xname(obj)));
+    nomul(-(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1313, __s_use_crystal_ball), rnd(charged ? 10 : 2)) : rnd(charged ? 10 : 2)));
+    cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_crystal_ball);
+    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
     if (!charged) {
-        pline_The(__sl98);
+        pline_The(__s_vision_is_unclear);
         if (cptr.ld1so(obj, $obj_spe) < 0) {
-            pline(__sl80, Tobjnam(obj, __sl85));
+            pline(__s_pct_s_bang, Tobjnam(obj, __s_implode));
             useup(obj);
             cptr.stPtr(optr, obj = null);
             return;
@@ -1274,15 +1274,15 @@ export function use_crystal_ball(optr) {
         } else if (ch == 94) {
             ret = trap_detect(null);
         } else {
-            i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1354, __sl67), rn2(4)) : rn2(4));
-            You_see(__sl99, cptr.ldPtro(level_detects, i, 16), level_distance(cptr.ldPtro2(level_detects, i, 16, $crystalballlevels_where)));
+            i = (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1354, __s_use_crystal_ball), rn2(4)) : rn2(4));
+            You_see(__s_s_s, cptr.ldPtro(level_detects, i, 16), level_distance(cptr.ldPtro2(level_detects, i, 16, $crystalballlevels_where)));
             ret = 0;
         }
         if (ret) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1361, __sl67), rn2(100)) : rn2(100)))
-                You_see(__sl100);
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1361, __s_use_crystal_ball), rn2(100)) : rn2(100)))
+                You_see(__s_the_wizard_of_yendor_gazing_out_at_you);
             else
-                pline_The(__sl98);
+                pline_The(__s_vision_is_unclear);
         }
     }
     return;
@@ -1294,7 +1294,7 @@ export function show_map_spot(x, y, cnf) {
     let t;
     let ep;
     let oldglyph;
-    if (cnf && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1379, __sl101), rn2(7)) : rn2(7)))
+    if (cnf && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1379, __s_show_map_spot), rn2(7)) : rn2(7)))
         return;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     cptr.st1o(lev, $rm_seenv, 255);
@@ -1335,7 +1335,7 @@ export function do_mapping() {
             show_map_spot(i16(zx), i16(zy), Number(BigInt.asIntN(8, cptr.ldI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic))));
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) || unconstrained) {
         flush_screen(1);
-        browse_map(39, __sl102);
+        browse_map(39, __s_anything_of_interest);
         map_redisplay();
     } else {
         reconstrain_map();
@@ -1397,10 +1397,10 @@ export function do_vicinity_map(sobj) {
         mdetected = (odetected = 0);
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) || unconstrained || mdetected || odetected) {
         flush_screen(1);
-        You(__sl103);
+        You(__s_sense_your_surroundings);
         if (extended || glyph_is_monster(glyph_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
             ter_typ |= NHM.TER_MON;
-        browse_map(ter_typ >>> 0, __sl102);
+        browse_map(ter_typ >>> 0, __s_anything_of_interest);
         refresh = 1;
     }
     reconstrain_map();
@@ -1542,9 +1542,9 @@ function openone(zx, zy, num) {
             cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), zx.v, 756), zy.v, 36));
         if (((cptr.ldI32o3(svl, zx.v, 756, zy.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
             if (dist2((zx.v), (zy.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 3)
-                b_trapped(__sl104, NHC.NO_PART);
+                b_trapped(__s_door, NHC.NO_PART);
             else
-                Norep(__sl105, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), zy.v, 8), zx.v) & NHM.IN_SIGHT) != 0) ? __sl106 : (!Deaf() ? __sl107 : __sl108));
+                Norep(__s_you_s_an_explosion, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), zy.v, 8), zx.v) & NHM.IN_SIGHT) != 0) ? __s_see : (!Deaf() ? __s_hear : __s_feel_the_shock_of));
             wake_nearto(zx.v, zy.v, 121);
             cptr.stI32o3(svl, zx.v, 756, zy.v, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
         } else
@@ -1588,55 +1588,55 @@ export function findit() {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (cptr.ld1uo(found, $found_things_num_sdoors)) {
         if (cptr.ld1uo(found, $found_things_num_sdoors) > 1)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl109, cptr.ld1uo(found, $found_things_num_sdoors));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_d_secret_doors, cptr.ld1uo(found, $found_things_num_sdoors));
         else
-            void cptr.strcat(cptr.decay(buf), __sl110);
+            void cptr.strcat(cptr.decay(buf), __s_a_secret_door);
         num = (num + cptr.ld1uo(found, $found_things_num_sdoors)) | 0;
     }
     if (cptr.ld1uo(found, $found_things_num_scorrs)) {
         if (cptr.ld1s(cptr.decay(buf)))
-            void cptr.strcat(cptr.decay(buf), (k == 2) ? __sl111 : __sl112);
+            void cptr.strcat(cptr.decay(buf), (k == 2) ? __s_and : __s_comma_sp);
         if (cptr.ld1uo(found, $found_things_num_scorrs) > 1)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl113, cptr.ld1uo(found, $found_things_num_scorrs));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_d_secret_corridors, cptr.ld1uo(found, $found_things_num_scorrs));
         else
-            void cptr.strcat(cptr.decay(buf), __sl114);
+            void cptr.strcat(cptr.decay(buf), __s_a_secret_corridor);
         num = (num + cptr.ld1uo(found, $found_things_num_scorrs)) | 0;
     }
     if (cptr.ld1uo(found, $found_things_num_traps)) {
         if (cptr.ld1s(cptr.decay(buf)))
-            void cptr.strcat(cptr.decay(buf), (k == 3 && !cptr.ld1uo(found, $found_things_num_mons)) ? __sl115 : ((k == 2) ? __sl111 : __sl112));
+            void cptr.strcat(cptr.decay(buf), (k == 3 && !cptr.ld1uo(found, $found_things_num_mons)) ? __s_and__2 : ((k == 2) ? __s_and : __s_comma_sp));
         if (cptr.ld1uo(found, $found_things_num_traps) > 1)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl116, cptr.ld1uo(found, $found_things_num_traps));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_d_traps, cptr.ld1uo(found, $found_things_num_traps));
         else
-            void cptr.strcat(cptr.decay(buf), __sl117);
+            void cptr.strcat(cptr.decay(buf), __s_a_trap);
         num = (num + cptr.ld1uo(found, $found_things_num_traps)) | 0;
     }
     if (cptr.ld1uo(found, $found_things_num_mons)) {
         if (cptr.ld1s(cptr.decay(buf)))
-            void cptr.strcat(cptr.decay(buf), (k > 2) ? __sl115 : __sl111);
+            void cptr.strcat(cptr.decay(buf), (k > 2) ? __s_and__2 : __s_and);
         if (cptr.ld1uo(found, $found_things_num_mons) > 1)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl118, cptr.ld1uo(found, $found_things_num_mons));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_d_hidden_monsters, cptr.ld1uo(found, $found_things_num_mons));
         else
-            void cptr.strcat(cptr.decay(buf), __sl119);
+            void cptr.strcat(cptr.decay(buf), __s_a_hidden_monster);
         num = (num + cptr.ld1uo(found, $found_things_num_mons)) | 0;
     }
     if (cptr.ld1s(cptr.decay(buf)))
-        You(__sl120, cptr.decay(buf));
+        You(__s_reveal_s, cptr.decay(buf));
     if (cptr.ld1uo(found, $found_things_num_invis)) {
         if (cptr.ld1uo(found, $found_things_num_invis) > 1)
-            void cptr.sprintf(cptr.decay(buf), __sl121, cptr.ld1uo(found, $found_things_num_invis), cptr.ld1uo(found, $found_things_num_kept_invis) ? __sl122 : __sl16);
+            void cptr.sprintf(cptr.decay(buf), __s_d_s_unseen_monsters, cptr.ld1uo(found, $found_things_num_invis), cptr.ld1uo(found, $found_things_num_kept_invis) ? __s_other : __s_empty);
         else
-            void cptr.sprintf(cptr.decay(buf), __sl123, cptr.ld1uo(found, $found_things_num_kept_invis) ? __sl124 : __sl125);
-        You(__sl126, cptr.decay(buf));
+            void cptr.sprintf(cptr.decay(buf), __s_s_unseen_monster, cptr.ld1uo(found, $found_things_num_kept_invis) ? __s_another : __s_an);
+        You(__s_detect_s, cptr.decay(buf));
         num = (num + cptr.ld1uo(found, $found_things_num_invis)) | 0;
     }
     if (cptr.ld1uo(found, $found_things_num_cleared_invis)) {
         if (!num)
-            You_feel(__sl127, cptr.ld1uo(found, $found_things_num_kept_invis) ? __sl128 : __sl16);
+            You_feel(__s_sless_paranoid, cptr.ld1uo(found, $found_things_num_kept_invis) ? __s_somewhat : __s_empty);
         num = (num + cptr.ld1uo(found, $found_things_num_cleared_invis)) | 0;
     }
     if (!num)
-        You(__sl129);
+        You(__s_don_t_find_anything);
     return num;
 }
 
@@ -1646,9 +1646,9 @@ export function openit() {
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null)) {
             if (Blind())
-                pline(__sl130);
+                pline(__s_its_mouth_opens);
             else
-                pline(__sl131, Monnam(cptr.ldPtro(u, $you_ustuck)));
+                pline(__s_s_opens_its_mouth, Monnam(cptr.ldPtro(u, $you_ustuck)));
         }
         expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), 1);
         return -1;
@@ -1675,7 +1675,7 @@ export function find_trap(trap) {
         cleared = 1;
     }
     set_msg_xy(cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty));
-    You(__sl132, an(trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)));
+    You(__s_find_s, an(trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)));
     if (cleared) {
         display_nhwindow()(WIN_MAP.v, 1);
         docrt();
@@ -1697,7 +1697,7 @@ function mfind0(mtmp, via_warning) {
         if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL)) {
             if (via_warning && found_something) {
                 set_msg_xy(x, y);
-                Your(__sl133, Blind() ? __sl134 : __sl135);
+                Your(__s_danger_sense_causes_you_to_take_a, Blind() ? __s_to_check_nearby : __s_look_close_by);
                 display_nhwindow()(WIN_MESSAGE.v, 0);
             }
             cptr.stI32o(mtmp, $monst_mundetected, 0);
@@ -1712,10 +1712,10 @@ function mfind0(mtmp, via_warning) {
         if (!canspotmon(mtmp)) {
             map_invisible(x, y);
             set_msg_xy(x, y);
-            You_feel(__sl136);
+            You_feel(__s_an_unseen_monster);
         } else if (!sensemon(mtmp)) {
             set_msg_xy(x, y);
-            You(__sl132, cptr.ld1so(mtmp, $monst_mtame) ? y_monnam(mtmp) : a_monnam(mtmp));
+            You(__s_find_s, cptr.ld1so(mtmp, $monst_mtame) ? y_monnam(mtmp) : a_monnam(mtmp));
         }
         return 1;
     }
@@ -1730,7 +1730,7 @@ export function dosearch0(aflag) {
     let mtmp;
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!aflag)
-            Norep(__sl137);
+            Norep(__s_what_are_you_looking_for_the_exit);
     } else {
         let fund = (uwep.v && cptr.ld1so(uwep.v, $obj_oartifact) && spec_ability(uwep.v, 512n)) ? cptr.ld1so(uwep.v, $obj_spe) : 0;
         if (ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && !Blind())
@@ -1746,7 +1746,7 @@ export function dosearch0(aflag) {
                 if (!aflag && (Blind() || visible_region_at(x, y)))
                     feel_location(x, y);
                 if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
-                    if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2043, __sl138), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
+                    if ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2043, __s_dosearch0), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
                         continue;
                     cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36));
                     recalc_block_point(x, y);
@@ -1754,9 +1754,9 @@ export function dosearch0(aflag) {
                     nomul(0);
                     feel_location(x, y);
                     set_msg_xy(x, y);
-                    You(__sl139);
+                    You(__s_find_a_hidden_door);
                 } else if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR) {
-                    if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 2053, __sl138), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
+                    if ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2053, __s_dosearch0), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
                         continue;
                     cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
                     unblock_point(x, y);
@@ -1764,7 +1764,7 @@ export function dosearch0(aflag) {
                     nomul(0);
                     feel_newsym(x, y);
                     set_msg_xy(x, y);
-                    You(__sl140);
+                    You(__s_find_a_hidden_passage);
                 } else {
                     if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && !aflag) {
                         let mfres = mfind0(mtmp, 0);
@@ -1775,7 +1775,7 @@ export function dosearch0(aflag) {
                     }
                     if (!aflag && !mtmp && !Blind())
                         void unmap_invisible(x, y);
-                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2079, __sl138), rnl(8)) : rnl(8))) {
+                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2079, __s_dosearch0), rnl(8)) : rnl(8))) {
                         nomul(0);
                         if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP) {
                             if (activate_statue_trap(trap, x, y, 0))
@@ -1793,7 +1793,7 @@ export function dosearch0(aflag) {
 
 /** C ref: detect.c:2097 @returns {CInt} */
 export function dosearch() {
-    if (cmd_safety_prevention(__sl141, __sl142, __sl143, cptr.add(ga, $instance_globals_a_already_found_flag)))
+    if (cmd_safety_prevention(__s_searching, __s_another_search, __s_you_already_found_a_monster, cptr.add(ga, $instance_globals_a_already_found_flag)))
         return NHM.ECMD_OK;
     return dosearch0(0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
@@ -1909,7 +1909,7 @@ function reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) {
 export function reveal_terrain(which_subset) {
     let full = schar((((which_subset & NHM.TER_FULL) >>> 0) != 0));
     if ((Hallucination() || HStun() || HConfusion()) && !full) {
-        You(__sl144);
+        You(__s_are_too_disoriented_for_this);
     } else {
         let x;
         let y;
@@ -1931,19 +1931,19 @@ export function reveal_terrain(which_subset) {
             }
         flush_screen(1);
         if (full) {
-            void cptr.strcpy(cptr.decay(buf), __sl145);
+            void cptr.strcpy(cptr.decay(buf), __s_underlying_terrain);
         } else {
-            void cptr.strcpy(cptr.decay(buf), __sl146);
+            void cptr.strcpy(cptr.decay(buf), __s_known_terrain);
             if (keep_traps)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl147, (keep_objs || keep_mons) ? __sl148 : __sl149);
+                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_traps, (keep_objs || keep_mons) ? __s_comma : __s_and__3);
             if (keep_objs)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl150, (keep_traps || keep_mons) ? __sl148 : __sl16, keep_mons ? __sl16 : __sl149);
+                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_objects, (keep_traps || keep_mons) ? __s_comma : __s_empty, keep_mons ? __s_empty : __s_and__3);
             if (keep_mons)
-                void cptr.sprintf(eos(cptr.decay(buf)), __sl151, (keep_traps || keep_objs) ? __sl148 : __sl16);
+                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_and_monsters, (keep_traps || keep_objs) ? __s_comma : __s_empty);
         }
-        pline(__sl152, cptr.decay(buf));
+        pline(__s_showing_s_only, cptr.decay(buf));
         which_subset |= NHM.TER_MAP;
-        browse_map(which_subset, __sl102);
+        browse_map(which_subset, __s_anything_of_interest);
         map_redisplay();
     }
     return;

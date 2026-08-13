@@ -163,744 +163,744 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
     $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("wakizashi");
-const __sl1 = cptr.lit("ninja-to");
-const __sl2 = cptr.lit("nunchaku");
-const __sl3 = cptr.lit("naginata");
-const __sl4 = cptr.lit("osaku");
-const __sl5 = cptr.lit("koto");
-const __sl6 = cptr.lit("magic koto");
-const __sl7 = cptr.lit("shito");
-const __sl8 = cptr.lit("tanko");
-const __sl9 = cptr.lit("kabuto");
-const __sl10 = cptr.lit("yugake");
-const __sl11 = cptr.lit("gunyoki");
-const __sl12 = cptr.lit("sake");
-const __sl13 = cptr.lit("");
-const __sl14 = cptr.lit("PREFIX too short (for %d).");
-const __sl15 = cptr.lit("generic");
-const __sl16 = cptr.lit("object?");
-const __sl17 = cptr.lit("potion");
-const __sl18 = cptr.lit("scroll");
-const __sl19 = cptr.lit("wand");
-const __sl20 = cptr.lit("spellbook");
-const __sl21 = cptr.lit("book");
-const __sl22 = cptr.lit("novel");
-const __sl23 = cptr.lit("ring");
-const __sl24 = cptr.lit("amulet");
-const __sl25 = cptr.lit(" (%s)");
-const __sl26 = cptr.lit("pair of ");
-const __sl27 = cptr.lit("set of ");
-const __sl28 = cptr.lit(" stone");
-const __sl29 = cptr.lit(" gem");
-const __sl30 = cptr.lit(" of %s");
-const __sl31 = cptr.lit(" (");
-const __sl32 = cptr.lit("glorkum[%d]");
-const __sl33 = cptr.lit("safe_typename: %s");
-const __sl34 = cptr.lit(" of ");
-const __sl35 = cptr.lit("%s%s");
-const __sl36 = cptr.lit(" juice");
-const __sl37 = cptr.lit("fruit_from_name");
-const __sl38 = cptr.lit("reorder_fruit: fruit index (%d) out of range");
-const __sl39 = cptr.lit("reorder_fruit: duplicate fruit index (%d)");
-const __sl40 = cptr.lit("xcalled: not enough room for prefix (%d > %d)");
-const __sl41 = cptr.lit("%s called %.*s");
-const __sl42 = cptr.lit("%s amulet");
-const __sl43 = cptr.lit("poisoned ");
-const __sl44 = cptr.lit("moist ");
-const __sl45 = cptr.lit("wet ");
-const __sl46 = cptr.lit("xname_flags");
-const __sl47 = cptr.lit(" of %s%s");
-const __sl48 = cptr.lit(" (%d)");
-const __sl49 = cptr.lit("set of %s");
-const __sl50 = cptr.lit("shield");
-const __sl51 = cptr.lit("smooth shield");
-const __sl52 = cptr.lit("Bad fruit #%d?");
-const __sl53 = cptr.lit("fruit");
-const __sl54 = cptr.lit("partly eaten ");
-const __sl55 = cptr.lit("%s %s");
-const __sl56 = cptr.lit("small");
-const __sl57 = cptr.lit("medium");
-const __sl58 = cptr.lit("large");
-const __sl59 = cptr.lit("very large");
-const __sl60 = cptr.lit("%s%s of %s%s");
-const __sl61 = cptr.lit("historic ");
-const __sl62 = cptr.lit("the ");
-const __sl63 = cptr.lit("next ");
-const __sl64 = cptr.lit("%sheavy iron ball");
-const __sl65 = cptr.lit("very ");
-const __sl66 = cptr.lit("diluted ");
-const __sl67 = cptr.lit("holy ");
-const __sl68 = cptr.lit("unholy ");
-const __sl69 = cptr.lit(" potion");
-const __sl70 = cptr.lit(" labeled ");
-const __sl71 = cptr.lit(" scroll");
-const __sl72 = cptr.lit("wand of %s");
-const __sl73 = cptr.lit("%s wand");
-const __sl74 = cptr.lit("%s book");
-const __sl75 = cptr.lit("spellbook of ");
-const __sl76 = cptr.lit("%s spellbook");
-const __sl77 = cptr.lit("ring of %s");
-const __sl78 = cptr.lit("%s ring");
-const __sl79 = cptr.lit("stone");
-const __sl80 = cptr.lit("gem");
-const __sl81 = cptr.lit("glorkum %d %d %d");
-const __sl82 = cptr.lit("xname_flags: %s");
-const __sl83 = cptr.lit("xname");
-const __sl84 = cptr.lit("buf[]=");
-const __sl85 = cptr.lit("xname: buffer overflow before appending name.");
-const __sl86 = cptr.lit(" with text \"%s\"");
-const __sl87 = cptr.lit(" labeled \"%s\"");
-const __sl88 = cptr.lit(" with %s motif");
-const __sl89 = cptr.lit(" named ");
-const __sl90 = cptr.lit("The ");
-const __sl91 = cptr.lit("used up entire obuf[PREFIX..BUFSX-1]");
-const __sl92 = cptr.lit("uncursed ");
-const __sl93 = cptr.lit("the %d%s ");
-const __sl94 = cptr.lit("thoroughly ");
-const __sl95 = cptr.lit("rusty ");
-const __sl96 = cptr.lit("cracked ");
-const __sl97 = cptr.lit("burnt ");
-const __sl98 = cptr.lit("corroded ");
-const __sl99 = cptr.lit("rotted ");
-const __sl100 = cptr.lit("fixed ");
-const __sl101 = cptr.lit("rustproof ");
-const __sl102 = cptr.lit("corrodeproof ");
-const __sl103 = cptr.lit("fireproof ");
-const __sl104 = cptr.lit("tempered ");
-const __sl105 = cptr.lit("rotproof ");
-const __sl106 = cptr.lit("doname_base");
-const __sl107 = cptr.lit("objnam.c");
-const __sl108 = cptr.lit("bp_end >= bp_eos");
-const __sl109 = cptr.lit("%ld ");
-const __sl110 = cptr.lit("some ");
-const __sl111 = cptr.lit("a ");
-const __sl112 = cptr.lit("empty ");
-const __sl113 = cptr.lit("cursed ");
-const __sl114 = cptr.lit("blessed ");
-const __sl115 = cptr.lit("trapped ");
-const __sl116 = cptr.lit("broken ");
-const __sl117 = cptr.lit("locked ");
-const __sl118 = cptr.lit("unlocked ");
-const __sl119 = cptr.lit("greased ");
-const __sl120 = cptr.lit(" containing %ld item%s");
-const __sl121 = cptr.lit("s");
-const __sl122 = cptr.lit(" (being worn)");
-const __sl123 = cptr.lit(" (embedded in your skin)");
-const __sl124 = cptr.lit(" (being doffed)");
-const __sl125 = cptr.lit(" (being donned)");
-const __sl126 = cptr.lit("; slippery)");
-const __sl127 = cptr.lit(", %s lit)");
-const __sl128 = cptr.lit("%+d ");
-const __sl129 = cptr.lit(" (attached to %s)");
-const __sl130 = cptr.lit("leashed %s #%u is dead");
-const __sl131 = cptr.lit("leashed monster #%u not found");
-const __sl132 = cptr.lit(" attached");
-const __sl133 = cptr.lit(", lit");
-const __sl134 = cptr.lit(" (%d of 7 candle%s)");
-const __sl135 = cptr.lit("partly used ");
-const __sl136 = cptr.lit(" (lit)");
-const __sl137 = cptr.lit(" (%d:%d)");
-const __sl138 = cptr.lit(" (on right ");
-const __sl139 = cptr.lit(" (on left ");
-const __sl140 = cptr.lit("%s)");
-const __sl141 = cptr.lit("%s ");
-const __sl142 = cptr.lit(" ");
-const __sl143 = cptr.lit(" (laid by you)");
-const __sl144 = cptr.lit(" (%s to you)");
-const __sl145 = cptr.lit("chained");
-const __sl146 = cptr.lit("attached");
-const __sl147 = cptr.lit("unspecified gender");
-const __sl148 = cptr.lit(" (wielded)");
-const __sl149 = cptr.lit("right");
-const __sl150 = cptr.lit("left");
-const __sl151 = cptr.lit(" (%s %s)");
-const __sl152 = cptr.lit("tethered to");
-const __sl153 = cptr.lit("wielded in");
-const __sl154 = cptr.lit("weapon in");
-const __sl155 = cptr.lit(", %s %s)");
-const __sl156 = cptr.lit(" (wielded in %s %s)");
-const __sl157 = cptr.lit(" (alternate weapon%s; not wielded)");
-const __sl158 = cptr.lit("in quiver");
-const __sl159 = cptr.lit("in quiver pouch");
-const __sl160 = cptr.lit("at the ready");
-const __sl161 = cptr.lit("%ld %s");
-const __sl162 = cptr.lit(" (%s, %s)");
-const __sl163 = cptr.lit("unpaid");
-const __sl164 = cptr.lit("contents");
-const __sl165 = cptr.lit("for sale");
-const __sl166 = cptr.lit(" (no charge)");
-const __sl167 = cptr.lit(", %u aum)");
-const __sl168 = cptr.lit(" (%u aum)");
-const __sl169 = cptr.lit("doname");
-const __sl170 = cptr.lit("doname: long object description overflow.");
-const __sl171 = cptr.lit("long object description%s.");
-const __sl172 = cptr.lit(" truncated for menu use");
-const __sl173 = cptr.lit("thing");
-const __sl174 = cptr.lit(" corpse");
-const __sl175 = cptr.lit("deadly slime mold%s");
-const __sl176 = cptr.lit("'s ");
-const __sl177 = cptr.lit("s' ");
-const __sl178 = cptr.lit("...");
-const __sl179 = cptr.lit("aefhilmnosx");
-const __sl180 = cptr.lit("an ");
-const __sl181 = cptr.lit("molten lava");
-const __sl182 = cptr.lit("iron bars");
-const __sl183 = cptr.lit("ice");
-const __sl184 = cptr.lit("one");
-const __sl185 = cptr.lit("-_ ");
-const __sl186 = cptr.lit("eu");
-const __sl187 = cptr.lit("uke");
-const __sl188 = cptr.lit("ukulele");
-const __sl189 = cptr.lit("unicorn");
-const __sl190 = cptr.lit("uranium");
-const __sl191 = cptr.lit("useful");
-const __sl192 = cptr.lit("Alphabet soup: 'an(%s)'.");
-const __sl193 = cptr.lit("\"\"");
-const __sl194 = cptr.lit("<null>");
-const __sl195 = cptr.lit("an []");
-const __sl196 = cptr.lit("an");
-const __sl197 = cptr.lit("Alphabet soup: 'the(%s)'.");
-const __sl198 = cptr.lit("the []");
-const __sl199 = cptr.lit(" called ");
-const __sl200 = cptr.lit("the");
-const __sl201 = cptr.lit("Platinum Yendorian Express Card");
-const __sl202 = cptr.lit("yobjnam");
-const __sl203 = cptr.lit("an unpaid ");
-const __sl204 = cptr.lit("your ");
-const __sl205 = cptr.lit("the contents of ");
-const __sl206 = cptr.lit("yname");
-const __sl207 = cptr.lit("ysimple_name");
-const __sl208 = cptr.lit("spell book");
-const __sl209 = cptr.lit("weapon");
-const __sl210 = cptr.lit("armor");
-const __sl211 = cptr.lit("tool");
-const __sl212 = cptr.lit("food");
-const __sl213 = cptr.lit("comestible");
-const __sl214 = cptr.lit("erinys");
-const __sl215 = cptr.lit("manes");
-const __sl216 = cptr.lit("Cyclops");
-const __sl217 = cptr.lit("Hippocrates");
-const __sl218 = cptr.lit("Pelias");
-const __sl219 = cptr.lit("aklys");
-const __sl220 = cptr.lit("amnesia");
-const __sl221 = cptr.lit("detect monsters");
-const __sl222 = cptr.lit("paralysis");
-const __sl223 = cptr.lit("shape changers");
-const __sl224 = cptr.lit("nemesis");
-const __sl225 = cptr.lit(" from ");
-const __sl226 = cptr.lit("us");
-const __sl227 = cptr.lit("eeth");
-const __sl228 = cptr.lit("feet");
-const __sl229 = cptr.lit("ia");
-const __sl230 = cptr.lit("ae");
-const __sl231 = cptr.lit("vtense");
-const __sl232 = cptr.lit("they");
-const __sl233 = cptr.lit("you");
-const __sl234 = cptr.lit("are");
-const __sl235 = cptr.lit("is");
-const __sl236 = cptr.lit("have");
-const __sl237 = cptr.lit("zxs");
-const __sl238 = cptr.lit("cs");
-const __sl239 = cptr.lit("es");
-const __sl240 = cptr.lit("ies");
-const __sl241 = cptr.lit("child");
-const __sl242 = cptr.lit("children");
-const __sl243 = cptr.lit("cubus");
-const __sl244 = cptr.lit("cubi");
-const __sl245 = cptr.lit("culus");
-const __sl246 = cptr.lit("culi");
-const __sl247 = cptr.lit("Cyclopes");
-const __sl248 = cptr.lit("djinni");
-const __sl249 = cptr.lit("djinn");
-const __sl250 = cptr.lit("erinyes");
-const __sl251 = cptr.lit("foot");
-const __sl252 = cptr.lit("fungus");
-const __sl253 = cptr.lit("fungi");
-const __sl254 = cptr.lit("goose");
-const __sl255 = cptr.lit("geese");
-const __sl256 = cptr.lit("knife");
-const __sl257 = cptr.lit("knives");
-const __sl258 = cptr.lit("labrum");
-const __sl259 = cptr.lit("labra");
-const __sl260 = cptr.lit("louse");
-const __sl261 = cptr.lit("lice");
-const __sl262 = cptr.lit("mouse");
-const __sl263 = cptr.lit("mice");
-const __sl264 = cptr.lit("mumak");
-const __sl265 = cptr.lit("mumakil");
-const __sl266 = cptr.lit("nemeses");
-const __sl267 = cptr.lit("ovum");
-const __sl268 = cptr.lit("ova");
-const __sl269 = cptr.lit("ox");
-const __sl270 = cptr.lit("oxen");
-const __sl271 = cptr.lit("passerby");
-const __sl272 = cptr.lit("passersby");
-const __sl273 = cptr.lit("rtex");
-const __sl274 = cptr.lit("rtices");
-const __sl275 = cptr.lit("serum");
-const __sl276 = cptr.lit("sera");
-const __sl277 = cptr.lit("staff");
-const __sl278 = cptr.lit("staves");
-const __sl279 = cptr.lit("tooth");
-const __sl280 = cptr.lit("teeth");
-const __sl281 = cptr.lit("boots");
-const __sl282 = cptr.lit("shoes");
-const __sl283 = cptr.lit("gloves");
-const __sl284 = cptr.lit("lenses");
-const __sl285 = cptr.lit("scales");
-const __sl286 = cptr.lit("eyes");
-const __sl287 = cptr.lit("gauntlets");
-const __sl288 = cptr.lit("bison");
-const __sl289 = cptr.lit("deer");
-const __sl290 = cptr.lit("elk");
-const __sl291 = cptr.lit("fish");
-const __sl292 = cptr.lit("fowl");
-const __sl293 = cptr.lit("tuna");
-const __sl294 = cptr.lit("yaki");
-const __sl295 = cptr.lit("-hai");
-const __sl296 = cptr.lit("krill");
-const __sl297 = cptr.lit("moose");
-const __sl298 = cptr.lit("ninja");
-const __sl299 = cptr.lit("sheep");
-const __sl300 = cptr.lit("ronin");
-const __sl301 = cptr.lit("roshi");
-const __sl302 = cptr.lit("tengu");
-const __sl303 = cptr.lit("ki-rin");
-const __sl304 = cptr.lit("Nazgul");
-const __sl305 = cptr.lit("piranha");
-const __sl306 = cptr.lit("samurai");
-const __sl307 = cptr.lit("shuriken");
-const __sl308 = cptr.lit("haggis");
-const __sl309 = cptr.lit("Bordeaux");
-const __sl310 = cptr.lit("singplur_lookup");
-const __sl311 = cptr.lit("craft");
-const __sl312 = cptr.lit("slice");
-const __sl313 = cptr.lit("mongoose");
-const __sl314 = cptr.lit("muskox");
-const __sl315 = cptr.lit("man");
-const __sl316 = cptr.lit("men");
-const __sl317 = cptr.lit(" above");
-const __sl318 = cptr.lit(" versus ");
-const __sl319 = cptr.lit(" in ");
-const __sl320 = cptr.lit(" on ");
-const __sl321 = cptr.lit(" a la ");
-const __sl322 = cptr.lit(" with");
-const __sl323 = cptr.lit(" de ");
-const __sl324 = cptr.lit(" d'");
-const __sl325 = cptr.lit(" du ");
-const __sl326 = cptr.lit(" au ");
-const __sl327 = cptr.lit("-in-");
-const __sl328 = cptr.lit("-at-");
-const __sl329 = cptr.lit("plural of null?");
-const __sl330 = cptr.lit("makeplural");
-const __sl331 = cptr.lit("'s");
-const __sl332 = cptr.lit("ya");
-const __sl333 = cptr.lit(" ya");
-const __sl334 = cptr.lit("en");
-const __sl335 = cptr.lit("erf");
-const __sl336 = cptr.lit("lr");
-const __sl337 = cptr.lit("ves");
-const __sl338 = cptr.lit("ium");
-const __sl339 = cptr.lit("alga");
-const __sl340 = cptr.lit("hypha");
-const __sl341 = cptr.lit("larva");
-const __sl342 = cptr.lit("amoeba");
-const __sl343 = cptr.lit("vertebra");
-const __sl344 = cptr.lit("e");
-const __sl345 = cptr.lit("lotus");
-const __sl346 = cptr.lit("wumpus");
-const __sl347 = cptr.lit("i");
-const __sl348 = cptr.lit("sis");
-const __sl349 = cptr.lit("eau");
-const __sl350 = cptr.lit("bureau");
-const __sl351 = cptr.lit("x");
-const __sl352 = cptr.lit("matzoh");
-const __sl353 = cptr.lit("matzah");
-const __sl354 = cptr.lit("ot");
-const __sl355 = cptr.lit("matzo");
-const __sl356 = cptr.lit("matza");
-const __sl357 = cptr.lit("dex");
-const __sl358 = cptr.lit("dix");
-const __sl359 = cptr.lit("tex");
-const __sl360 = cptr.lit("index");
-const __sl361 = cptr.lit("ices");
-const __sl362 = cptr.lit("ato");
-const __sl363 = cptr.lit("dingo");
-const __sl364 = cptr.lit("eaux");
-const __sl365 = cptr.lit("matzot");
-const __sl366 = cptr.lit("singular of null?");
-const __sl367 = cptr.lit("cookies");
-const __sl368 = cptr.lit("pies");
-const __sl369 = cptr.lit("genies");
-const __sl370 = cptr.lit("mbies");
-const __sl371 = cptr.lit("yries");
-const __sl372 = cptr.lit("y");
-const __sl373 = cptr.lit("cloves");
-const __sl374 = cptr.lit("nerves");
-const __sl375 = cptr.lit("f");
-const __sl376 = cptr.lit("eses");
-const __sl377 = cptr.lit("oxes");
-const __sl378 = cptr.lit("nxes");
-const __sl379 = cptr.lit("ches");
-const __sl380 = cptr.lit("uses");
-const __sl381 = cptr.lit("shes");
-const __sl382 = cptr.lit("sses");
-const __sl383 = cptr.lit("atoes");
-const __sl384 = cptr.lit("dingoes");
-const __sl385 = cptr.lit("Aleaxes");
-const __sl386 = cptr.lit("tengus");
-const __sl387 = cptr.lit("hezrous");
-const __sl388 = cptr.lit("ss");
-const __sl389 = cptr.lit(" lens");
-const __sl390 = cptr.lit("lens");
-const __sl391 = cptr.lit("um");
-const __sl392 = cptr.lit("monarch");
-const __sl393 = cptr.lit("poch");
-const __sl394 = cptr.lit("tech");
-const __sl395 = cptr.lit("mech");
-const __sl396 = cptr.lit("stomach");
-const __sl397 = cptr.lit("psych");
-const __sl398 = cptr.lit("amphibrach");
-const __sl399 = cptr.lit("anarch");
-const __sl400 = cptr.lit("atriarch");
-const __sl401 = cptr.lit("azedarach");
-const __sl402 = cptr.lit("broch");
-const __sl403 = cptr.lit("gastrotrich");
-const __sl404 = cptr.lit("isopach");
-const __sl405 = cptr.lit("loch");
-const __sl406 = cptr.lit("oligarch");
-const __sl407 = cptr.lit("peritrich");
-const __sl408 = cptr.lit("sandarach");
-const __sl409 = cptr.lit("sumach");
-const __sl410 = cptr.lit("symposiarch");
-const __sl411 = cptr.lit("albu");
-const __sl412 = cptr.lit("antihu");
-const __sl413 = cptr.lit("anti");
-const __sl414 = cptr.lit("ata");
-const __sl415 = cptr.lit("auto");
-const __sl416 = cptr.lit("bildungsro");
-const __sl417 = cptr.lit("cai");
-const __sl418 = cptr.lit("cay");
-const __sl419 = cptr.lit("ceru");
-const __sl420 = cptr.lit("corner");
-const __sl421 = cptr.lit("decu");
-const __sl422 = cptr.lit("des");
-const __sl423 = cptr.lit("dura");
-const __sl424 = cptr.lit("fir");
-const __sl425 = cptr.lit("hanu");
-const __sl426 = cptr.lit("het");
-const __sl427 = cptr.lit("infrahu");
-const __sl428 = cptr.lit("inhu");
-const __sl429 = cptr.lit("nonhu");
-const __sl430 = cptr.lit("otto");
-const __sl431 = cptr.lit("out");
-const __sl432 = cptr.lit("prehu");
-const __sl433 = cptr.lit("protohu");
-const __sl434 = cptr.lit("subhu");
-const __sl435 = cptr.lit("superhu");
-const __sl436 = cptr.lit("talis");
-const __sl437 = cptr.lit("unhu");
-const __sl438 = cptr.lit("sha");
-const __sl439 = cptr.lit("hu");
-const __sl440 = cptr.lit("un");
-const __sl441 = cptr.lit("le");
-const __sl442 = cptr.lit("re");
-const __sl443 = cptr.lit("so");
-const __sl444 = cptr.lit("to");
-const __sl445 = cptr.lit("at");
-const __sl446 = cptr.lit("a");
-const __sl447 = cptr.lit("abdo");
-const __sl448 = cptr.lit("acu");
-const __sl449 = cptr.lit("agno");
-const __sl450 = cptr.lit("cogno");
-const __sl451 = cptr.lit("cycla");
-const __sl452 = cptr.lit("fleh");
-const __sl453 = cptr.lit("grava");
-const __sl454 = cptr.lit("hegu");
-const __sl455 = cptr.lit("preno");
-const __sl456 = cptr.lit("sonar");
-const __sl457 = cptr.lit("speci");
-const __sl458 = cptr.lit("dai");
-const __sl459 = cptr.lit("exa");
-const __sl460 = cptr.lit("fla");
-const __sl461 = cptr.lit("sta");
-const __sl462 = cptr.lit("teg");
-const __sl463 = cptr.lit("tegu");
-const __sl464 = cptr.lit("vela");
-const __sl465 = cptr.lit("da");
-const __sl466 = cptr.lit("hy");
-const __sl467 = cptr.lit("lu");
-const __sl468 = cptr.lit("no");
-const __sl469 = cptr.lit("nu");
-const __sl470 = cptr.lit("ra");
-const __sl471 = cptr.lit("ru");
-const __sl472 = cptr.lit("se");
-const __sl473 = cptr.lit("vi");
-const __sl474 = cptr.lit("o");
-const __sl475 = cptr.lit(" -");
-const __sl476 = cptr.lit("dwarvish ");
-const __sl477 = cptr.lit("dwarven ");
-const __sl478 = cptr.lit("elven ");
-const __sl479 = cptr.lit("elvish ");
-const __sl480 = cptr.lit("elfin ");
-const __sl481 = cptr.lit("helm");
-const __sl482 = cptr.lit("helmet");
-const __sl483 = cptr.lit("monster");
-const __sl484 = cptr.lit("ability");
-const __sl485 = cptr.lit("abilities");
-const __sl486 = cptr.lit("aluminum");
-const __sl487 = cptr.lit("aluminium");
-const __sl488 = cptr.lit("bag");
-const __sl489 = cptr.lit("lamp");
-const __sl490 = cptr.lit("candle");
-const __sl491 = cptr.lit("horn");
-const __sl492 = cptr.lit("hat");
-const __sl493 = cptr.lit("cloak");
-const __sl494 = cptr.lit("shirt");
-const __sl495 = cptr.lit("dragon scales");
-const __sl496 = cptr.lit("dragon scale mail");
-const __sl497 = cptr.lit("sword");
-const __sl498 = cptr.lit("venom");
-const __sl499 = cptr.lit("gray stone");
-const __sl500 = cptr.lit("grey stone");
-const __sl501 = cptr.lit("pickax");
-const __sl502 = cptr.lit("whip");
-const __sl503 = cptr.lit("saber");
-const __sl504 = cptr.lit("silver sabre");
-const __sl505 = cptr.lit("grey dragon scale mail");
-const __sl506 = cptr.lit("grey dragon scales");
-const __sl507 = cptr.lit("iron ball");
-const __sl508 = cptr.lit("lantern");
-const __sl509 = cptr.lit("mattock");
-const __sl510 = cptr.lit("amulet of poison resistance");
-const __sl511 = cptr.lit("amulet of protection");
-const __sl512 = cptr.lit("amulet of telepathy");
-const __sl513 = cptr.lit("helm of esp");
-const __sl514 = cptr.lit("gauntlets of ogre power");
-const __sl515 = cptr.lit("gauntlets of giant strength");
-const __sl516 = cptr.lit("elven chain mail");
-const __sl517 = cptr.lit("silver shield");
-const __sl518 = cptr.lit("potion of sleep");
-const __sl519 = cptr.lit("scroll of recharging");
-const __sl520 = cptr.lit("recharging");
-const __sl521 = cptr.lit("camera");
-const __sl522 = cptr.lit("tee shirt");
-const __sl523 = cptr.lit("can");
-const __sl524 = cptr.lit("can opener");
-const __sl525 = cptr.lit("kelp");
-const __sl526 = cptr.lit("eucalyptus");
-const __sl527 = cptr.lit("lembas");
-const __sl528 = cptr.lit("tripe");
-const __sl529 = cptr.lit("cookie");
-const __sl530 = cptr.lit("pie");
-const __sl531 = cptr.lit("huge meatball");
-const __sl532 = cptr.lit("huge chunk of meat");
-const __sl533 = cptr.lit("marker");
-const __sl534 = cptr.lit("hook");
-const __sl535 = cptr.lit("grappling iron");
-const __sl536 = cptr.lit("grapnel");
-const __sl537 = cptr.lit("grapple");
-const __sl538 = cptr.lit("protection from shape shifters");
-const __sl539 = cptr.lit("accuracy");
-const __sl540 = cptr.lit("box");
-const __sl541 = cptr.lit("luck stone");
-const __sl542 = cptr.lit("load stone");
-const __sl543 = cptr.lit("touch stone");
-const __sl544 = cptr.lit("flintstone");
-const __sl545 = cptr.lit("rnd_otyp_by_wpnskill");
-const __sl546 = cptr.lit("rnd_otyp_by_namedesc");
-const __sl547 = cptr.lit("shiny");
-const __sl548 = cptr.lit("undiggable ");
-const __sl549 = cptr.lit("nondiggable ");
-const __sl550 = cptr.lit("unphaseable ");
-const __sl551 = cptr.lit("nonpasswall ");
-const __sl552 = cptr.lit("%s%s.");
-const __sl553 = cptr.lit(" to nowhere");
-const __sl554 = cptr.lit("Creation of %s failed.");
-const __sl555 = cptr.lit("fountain");
-const __sl556 = cptr.lit("magic ");
-const __sl557 = cptr.lit("A %sfountain.");
-const __sl558 = cptr.lit("throne");
-const __sl559 = cptr.lit("A throne.");
-const __sl560 = cptr.lit("sink");
-const __sl561 = cptr.lit("A sink.");
-const __sl562 = cptr.lit("pool");
-const __sl563 = cptr.lit("moat");
-const __sl564 = cptr.lit("wall of water");
-const __sl565 = cptr.lit("%s.");
-const __sl566 = cptr.lit("Moat");
-const __sl567 = cptr.lit("lava");
-const __sl568 = cptr.lit("wall of lava");
-const __sl569 = cptr.lit("A %s of molten lava.");
-const __sl570 = cptr.lit("wall");
-const __sl571 = cptr.lit("Lava");
-const __sl572 = cptr.lit("melting ");
-const __sl573 = cptr.lit("Ice");
-const __sl574 = cptr.lit("altar");
-const __sl575 = cptr.lit("chaotic ");
-const __sl576 = cptr.lit("neutral ");
-const __sl577 = cptr.lit("lawful ");
-const __sl578 = cptr.lit("unaligned ");
-const __sl579 = cptr.lit("wizterrainwish");
-const __sl580 = cptr.lit("%s altar.");
-const __sl581 = cptr.lit("grave");
-const __sl582 = cptr.lit("headstone");
-const __sl583 = cptr.lit("A %sgrave.");
-const __sl584 = cptr.lit("disturbed ");
-const __sl585 = cptr.lit("Can't place a grave here.");
-const __sl586 = cptr.lit("tree");
-const __sl587 = cptr.lit("A tree.");
-const __sl588 = cptr.lit("bars");
-const __sl589 = cptr.lit("Iron bars.");
-const __sl590 = cptr.lit("cloud");
-const __sl591 = cptr.lit("A cloud.");
-const __sl592 = cptr.lit("door");
-const __sl593 = cptr.lit("doorway");
-const __sl594 = cptr.lit("secret door");
-const __sl595 = cptr.lit("closed ");
-const __sl596 = cptr.lit("open ");
-const __sl597 = cptr.lit("doorless doorway");
-const __sl598 = cptr.lit("%s requires door or wall location.");
-const __sl599 = cptr.lit("A wall.");
-const __sl600 = cptr.lit("secret corridor");
-const __sl601 = cptr.lit("Secret corridor.");
-const __sl602 = cptr.lit("Secret corridor requires corridor location.");
-const __sl603 = cptr.lit("room");
-const __sl604 = cptr.lit("floor");
-const __sl605 = cptr.lit("ground");
-const __sl606 = cptr.lit("Room floor.");
-const __sl607 = cptr.lit("Floor");
-const __sl608 = cptr.lit("Room|floor|ground not allowed here.");
-const __sl609 = cptr.lit("%s %s the drawbridge.");
-const __sl610 = cptr.lit("in front of");
-const __sl611 = cptr.lit("under");
-const __sl612 = cptr.lit("0");
-const __sl613 = cptr.lit("erodeproof ");
-const __sl614 = cptr.lit("crackproof ");
-const __sl615 = cptr.lit("lit ");
-const __sl616 = cptr.lit("burning ");
-const __sl617 = cptr.lit("unlit ");
-const __sl618 = cptr.lit("extinguished ");
-const __sl619 = cptr.lit("readobjnam_preparse");
-const __sl620 = cptr.lit("unlabeled ");
-const __sl621 = cptr.lit("unlabelled ");
-const __sl622 = cptr.lit("blank ");
-const __sl623 = cptr.lit("untrapped ");
-const __sl624 = cptr.lit("doorless ");
-const __sl625 = cptr.lit("looted ");
-const __sl626 = cptr.lit("zombifying ");
-const __sl627 = cptr.lit("rusted ");
-const __sl628 = cptr.lit("burned ");
-const __sl629 = cptr.lit("partially eaten ");
-const __sl630 = cptr.lit("small ");
-const __sl631 = cptr.lit("glob");
-const __sl632 = cptr.lit(" glob");
-const __sl633 = cptr.lit("medium ");
-const __sl634 = cptr.lit("large ");
-const __sl635 = cptr.lit("real ");
-const __sl636 = cptr.lit("fake ");
-const __sl637 = cptr.lit("female ");
-const __sl638 = cptr.lit("male ");
-const __sl639 = cptr.lit("neuter ");
-const __sl640 = cptr.lit("corpse ");
-const __sl641 = cptr.lit("statue ");
-const __sl642 = cptr.lit("figurine ");
-const __sl643 = cptr.lit("of ");
-const __sl644 = cptr.lit("lit)");
-const __sl645 = cptr.lit(" labelled ");
-const __sl646 = cptr.lit(" of spinach");
-const __sl647 = cptr.lit("cheap ");
-const __sl648 = cptr.lit("plastic ");
-const __sl649 = cptr.lit("imitation ");
-const __sl650 = cptr.lit("pairs of ");
-const __sl651 = cptr.lit("sets of ");
-const __sl652 = cptr.lit("globs");
-const __sl653 = cptr.lit(" globs");
-const __sl654 = cptr.lit("glob of ");
-const __sl655 = cptr.lit("globs of ");
-const __sl656 = cptr.lit("readobjnam_postparse1");
-const __sl657 = cptr.lit("glob of %s");
-const __sl658 = cptr.lit("wand ");
-const __sl659 = cptr.lit("spellbook ");
-const __sl660 = cptr.lit("gauntlets ");
-const __sl661 = cptr.lit("gloves ");
-const __sl662 = cptr.lit("finger ");
-const __sl663 = cptr.lit("tin of ");
-const __sl664 = cptr.lit("spinach");
-const __sl665 = cptr.lit("samurai sword");
-const __sl666 = cptr.lit("wizard lock");
-const __sl667 = cptr.lit("death wand");
-const __sl668 = cptr.lit("master key");
-const __sl669 = cptr.lit("magenta");
-const __sl670 = cptr.lit("s ");
-const __sl671 = cptr.lit("es ");
-const __sl672 = cptr.lit("tricks");
-const __sl673 = cptr.lit("clothes");
-const __sl674 = cptr.lit("grey spell");
-const __sl675 = cptr.lit("armour");
-const __sl676 = cptr.lit("holy water");
-const __sl677 = cptr.lit("paperback");
-const __sl678 = cptr.lit(" book");
-const __sl679 = cptr.lit("orange");
-const __sl680 = cptr.lit("gold piece");
-const __sl681 = cptr.lit("zorkmid");
-const __sl682 = cptr.lit("gold");
-const __sl683 = cptr.lit("money");
-const __sl684 = cptr.lit("coin");
-const __sl685 = cptr.lit("enchant ");
-const __sl686 = cptr.lit("destroy ");
-const __sl687 = cptr.lit("detect food");
-const __sl688 = cptr.lit("food detection");
-const __sl689 = cptr.lit("ring mail");
-const __sl690 = cptr.lit("studded leather armor");
-const __sl691 = cptr.lit("leather armor");
-const __sl692 = cptr.lit("tooled horn");
-const __sl693 = cptr.lit("food ration");
-const __sl694 = cptr.lit("meat ring");
-const __sl695 = cptr.lit("versus poison ");
-const __sl696 = cptr.lit("bear");
-const __sl697 = cptr.lit("land");
-const __sl698 = cptr.lit("trap");
-const __sl699 = cptr.lit("mine");
-const __sl700 = cptr.lit(" object");
-const __sl701 = cptr.lit("looking glass");
-const __sl702 = cptr.lit(" glass");
-const __sl703 = cptr.lit("glass");
-const __sl704 = cptr.lit("broken");
-const __sl705 = cptr.lit("worthless ");
-const __sl706 = cptr.lit("piece of ");
-const __sl707 = cptr.lit("colored ");
-const __sl708 = cptr.lit("coloured ");
-const __sl709 = cptr.lit("readobjnam_postparse2");
-const __sl710 = cptr.lit("worthless piece of ");
-const __sl711 = cptr.lit("tin");
-const __sl712 = cptr.lit("mail");
-const __sl713 = cptr.lit(" mail");
-const __sl714 = cptr.lit("nothing");
-const __sl715 = cptr.lit("nil");
-const __sl716 = cptr.lit("none");
-const __sl717 = cptr.lit("polearm");
-const __sl718 = cptr.lit("hammer");
-const __sl719 = cptr.lit("readobjnam");
-const __sl720 = cptr.lit("Override glob weight limit?");
-const __sl721 = cptr.lit("For a moment, you feel %s in your %s, but it disappears!");
-const __sl722 = cptr.lit("rnd_class");
-const __sl723 = cptr.lit("unknown armor category (%s => %u)");
-const __sl724 = cptr.lit("dragon mail");
-const __sl725 = cptr.lit(" jacket");
-const __sl726 = cptr.lit("jacket");
-const __sl727 = cptr.lit("suit");
-const __sl728 = cptr.lit("robe");
-const __sl729 = cptr.lit("wrapping");
-const __sl730 = cptr.lit("smock");
-const __sl731 = cptr.lit("apron");
-const __sl732 = cptr.lit("whatcha-may-callit");
-const __sl733 = cptr.lit("safe_qbuf");
-const __sl734 = cptr.lit("endp != NULL");
-const __sl735 = cptr.lit("safe_qbuf: prefix too long (%u characters).");
-const __sl736 = cptr.lit("safe_qbuf: suffix too long (%u + %u characters).");
-const __sl737 = cptr.lit("safe_qbuf: filler too long (%u + %u + %u characters).");
+const __s_wakizashi = cptr.lit("wakizashi");
+const __s_ninja_to = cptr.lit("ninja-to");
+const __s_nunchaku = cptr.lit("nunchaku");
+const __s_naginata = cptr.lit("naginata");
+const __s_osaku = cptr.lit("osaku");
+const __s_koto = cptr.lit("koto");
+const __s_magic_koto = cptr.lit("magic koto");
+const __s_shito = cptr.lit("shito");
+const __s_tanko = cptr.lit("tanko");
+const __s_kabuto = cptr.lit("kabuto");
+const __s_yugake = cptr.lit("yugake");
+const __s_gunyoki = cptr.lit("gunyoki");
+const __s_sake = cptr.lit("sake");
+const __s_empty = cptr.lit("");
+const __s_prefix_too_short_for_d = cptr.lit("PREFIX too short (for %d).");
+const __s_generic = cptr.lit("generic");
+const __s_object = cptr.lit("object?");
+const __s_potion = cptr.lit("potion");
+const __s_scroll = cptr.lit("scroll");
+const __s_wand = cptr.lit("wand");
+const __s_spellbook = cptr.lit("spellbook");
+const __s_book = cptr.lit("book");
+const __s_novel = cptr.lit("novel");
+const __s_ring = cptr.lit("ring");
+const __s_amulet = cptr.lit("amulet");
+const __s_sp_lparen_pct_s_rparen = cptr.lit(" (%s)");
+const __s_pair_of = cptr.lit("pair of ");
+const __s_set_of = cptr.lit("set of ");
+const __s_stone = cptr.lit(" stone");
+const __s_gem = cptr.lit(" gem");
+const __s_of_s = cptr.lit(" of %s");
+const __s_sp_lparen = cptr.lit(" (");
+const __s_glorkum_d = cptr.lit("glorkum[%d]");
+const __s_safe_typename_s = cptr.lit("safe_typename: %s");
+const __s_of = cptr.lit(" of ");
+const __s_s_s = cptr.lit("%s%s");
+const __s_juice = cptr.lit(" juice");
+const __s_fruit_from_name = cptr.lit("fruit_from_name");
+const __s_reorder_fruit_fruit_index_d_out_of_range = cptr.lit("reorder_fruit: fruit index (%d) out of range");
+const __s_reorder_fruit_duplicate_fruit_index_d = cptr.lit("reorder_fruit: duplicate fruit index (%d)");
+const __s_xcalled_not_enough_room_for_prefix_d_d = cptr.lit("xcalled: not enough room for prefix (%d > %d)");
+const __s_s_called_s = cptr.lit("%s called %.*s");
+const __s_s_amulet = cptr.lit("%s amulet");
+const __s_poisoned = cptr.lit("poisoned ");
+const __s_moist = cptr.lit("moist ");
+const __s_wet = cptr.lit("wet ");
+const __s_xname_flags = cptr.lit("xname_flags");
+const __s_of_s_s = cptr.lit(" of %s%s");
+const __s_sp_lparen_pct_d_rparen = cptr.lit(" (%d)");
+const __s_set_of_s = cptr.lit("set of %s");
+const __s_shield = cptr.lit("shield");
+const __s_smooth_shield = cptr.lit("smooth shield");
+const __s_bad_fruit_d = cptr.lit("Bad fruit #%d?");
+const __s_fruit = cptr.lit("fruit");
+const __s_partly_eaten = cptr.lit("partly eaten ");
+const __s_s_s__2 = cptr.lit("%s %s");
+const __s_small = cptr.lit("small");
+const __s_medium = cptr.lit("medium");
+const __s_large = cptr.lit("large");
+const __s_very_large = cptr.lit("very large");
+const __s_s_s_of_s_s = cptr.lit("%s%s of %s%s");
+const __s_historic = cptr.lit("historic ");
+const __s_the = cptr.lit("the ");
+const __s_next = cptr.lit("next ");
+const __s_sheavy_iron_ball = cptr.lit("%sheavy iron ball");
+const __s_very = cptr.lit("very ");
+const __s_diluted = cptr.lit("diluted ");
+const __s_holy = cptr.lit("holy ");
+const __s_unholy = cptr.lit("unholy ");
+const __s_potion__2 = cptr.lit(" potion");
+const __s_labeled = cptr.lit(" labeled ");
+const __s_scroll__2 = cptr.lit(" scroll");
+const __s_wand_of_s = cptr.lit("wand of %s");
+const __s_s_wand = cptr.lit("%s wand");
+const __s_s_book = cptr.lit("%s book");
+const __s_spellbook_of = cptr.lit("spellbook of ");
+const __s_s_spellbook = cptr.lit("%s spellbook");
+const __s_ring_of_s = cptr.lit("ring of %s");
+const __s_s_ring = cptr.lit("%s ring");
+const __s_stone__2 = cptr.lit("stone");
+const __s_gem__2 = cptr.lit("gem");
+const __s_glorkum_d_d_d = cptr.lit("glorkum %d %d %d");
+const __s_xname_flags_s = cptr.lit("xname_flags: %s");
+const __s_xname = cptr.lit("xname");
+const __s_buf = cptr.lit("buf[]=");
+const __s_xname_buffer_overflow_before_appending = cptr.lit("xname: buffer overflow before appending name.");
+const __s_with_text_s = cptr.lit(" with text \"%s\"");
+const __s_labeled_s = cptr.lit(" labeled \"%s\"");
+const __s_with_s_motif = cptr.lit(" with %s motif");
+const __s_named = cptr.lit(" named ");
+const __s_the__2 = cptr.lit("The ");
+const __s_used_up_entire_obuf_prefix_bufsx_1 = cptr.lit("used up entire obuf[PREFIX..BUFSX-1]");
+const __s_uncursed = cptr.lit("uncursed ");
+const __s_the_d_s = cptr.lit("the %d%s ");
+const __s_thoroughly = cptr.lit("thoroughly ");
+const __s_rusty = cptr.lit("rusty ");
+const __s_cracked = cptr.lit("cracked ");
+const __s_burnt = cptr.lit("burnt ");
+const __s_corroded = cptr.lit("corroded ");
+const __s_rotted = cptr.lit("rotted ");
+const __s_fixed = cptr.lit("fixed ");
+const __s_rustproof = cptr.lit("rustproof ");
+const __s_corrodeproof = cptr.lit("corrodeproof ");
+const __s_fireproof = cptr.lit("fireproof ");
+const __s_tempered = cptr.lit("tempered ");
+const __s_rotproof = cptr.lit("rotproof ");
+const __s_doname_base = cptr.lit("doname_base");
+const __s_objnam_c = cptr.lit("objnam.c");
+const __s_bp_end_bp_eos = cptr.lit("bp_end >= bp_eos");
+const __s_ld = cptr.lit("%ld ");
+const __s_some = cptr.lit("some ");
+const __s_a_sp = cptr.lit("a ");
+const __s_empty__2 = cptr.lit("empty ");
+const __s_cursed = cptr.lit("cursed ");
+const __s_blessed = cptr.lit("blessed ");
+const __s_trapped = cptr.lit("trapped ");
+const __s_broken = cptr.lit("broken ");
+const __s_locked = cptr.lit("locked ");
+const __s_unlocked = cptr.lit("unlocked ");
+const __s_greased = cptr.lit("greased ");
+const __s_containing_ld_item_s = cptr.lit(" containing %ld item%s");
+const __s_s = cptr.lit("s");
+const __s_being_worn = cptr.lit(" (being worn)");
+const __s_embedded_in_your_skin = cptr.lit(" (embedded in your skin)");
+const __s_being_doffed = cptr.lit(" (being doffed)");
+const __s_being_donned = cptr.lit(" (being donned)");
+const __s_slippery = cptr.lit("; slippery)");
+const __s_s_lit = cptr.lit(", %s lit)");
+const __s_pct_plus_d_sp = cptr.lit("%+d ");
+const __s_attached_to_s = cptr.lit(" (attached to %s)");
+const __s_leashed_s_u_is_dead = cptr.lit("leashed %s #%u is dead");
+const __s_leashed_monster_u_not_found = cptr.lit("leashed monster #%u not found");
+const __s_attached = cptr.lit(" attached");
+const __s_lit = cptr.lit(", lit");
+const __s_d_of_7_candle_s = cptr.lit(" (%d of 7 candle%s)");
+const __s_partly_used = cptr.lit("partly used ");
+const __s_lit__2 = cptr.lit(" (lit)");
+const __s_d_d = cptr.lit(" (%d:%d)");
+const __s_on_right = cptr.lit(" (on right ");
+const __s_on_left = cptr.lit(" (on left ");
+const __s_pct_s_rparen = cptr.lit("%s)");
+const __s_pct_s_sp = cptr.lit("%s ");
+const __s_sp = cptr.lit(" ");
+const __s_laid_by_you = cptr.lit(" (laid by you)");
+const __s_s_to_you = cptr.lit(" (%s to you)");
+const __s_chained = cptr.lit("chained");
+const __s_attached__2 = cptr.lit("attached");
+const __s_unspecified_gender = cptr.lit("unspecified gender");
+const __s_wielded = cptr.lit(" (wielded)");
+const __s_right = cptr.lit("right");
+const __s_left = cptr.lit("left");
+const __s_s_s__3 = cptr.lit(" (%s %s)");
+const __s_tethered_to = cptr.lit("tethered to");
+const __s_wielded_in = cptr.lit("wielded in");
+const __s_weapon_in = cptr.lit("weapon in");
+const __s_s_s__4 = cptr.lit(", %s %s)");
+const __s_wielded_in_s_s = cptr.lit(" (wielded in %s %s)");
+const __s_alternate_weapon_s_not_wielded = cptr.lit(" (alternate weapon%s; not wielded)");
+const __s_in_quiver = cptr.lit("in quiver");
+const __s_in_quiver_pouch = cptr.lit("in quiver pouch");
+const __s_at_the_ready = cptr.lit("at the ready");
+const __s_ld_s = cptr.lit("%ld %s");
+const __s_s_s__5 = cptr.lit(" (%s, %s)");
+const __s_unpaid = cptr.lit("unpaid");
+const __s_contents = cptr.lit("contents");
+const __s_for_sale = cptr.lit("for sale");
+const __s_no_charge = cptr.lit(" (no charge)");
+const __s_u_aum = cptr.lit(", %u aum)");
+const __s_u_aum__2 = cptr.lit(" (%u aum)");
+const __s_doname = cptr.lit("doname");
+const __s_doname_long_object_description_overflow = cptr.lit("doname: long object description overflow.");
+const __s_long_object_description_s = cptr.lit("long object description%s.");
+const __s_truncated_for_menu_use = cptr.lit(" truncated for menu use");
+const __s_thing = cptr.lit("thing");
+const __s_corpse = cptr.lit(" corpse");
+const __s_deadly_slime_mold_s = cptr.lit("deadly slime mold%s");
+const __s_apos_s_sp = cptr.lit("'s ");
+const __s_s_apos_sp = cptr.lit("s' ");
+const __s_dot3 = cptr.lit("...");
+const __s_aefhilmnosx = cptr.lit("aefhilmnosx");
+const __s_an = cptr.lit("an ");
+const __s_molten_lava = cptr.lit("molten lava");
+const __s_iron_bars = cptr.lit("iron bars");
+const __s_ice = cptr.lit("ice");
+const __s_one = cptr.lit("one");
+const __s_dash_us_sp = cptr.lit("-_ ");
+const __s_eu = cptr.lit("eu");
+const __s_uke = cptr.lit("uke");
+const __s_ukulele = cptr.lit("ukulele");
+const __s_unicorn = cptr.lit("unicorn");
+const __s_uranium = cptr.lit("uranium");
+const __s_useful = cptr.lit("useful");
+const __s_alphabet_soup_an_s = cptr.lit("Alphabet soup: 'an(%s)'.");
+const __s_quot2 = cptr.lit("\"\"");
+const __s_null = cptr.lit("<null>");
+const __s_an__2 = cptr.lit("an []");
+const __s_an__3 = cptr.lit("an");
+const __s_alphabet_soup_the_s = cptr.lit("Alphabet soup: 'the(%s)'.");
+const __s_the__3 = cptr.lit("the []");
+const __s_called = cptr.lit(" called ");
+const __s_the__4 = cptr.lit("the");
+const __s_platinum_yendorian_express_card = cptr.lit("Platinum Yendorian Express Card");
+const __s_yobjnam = cptr.lit("yobjnam");
+const __s_an_unpaid = cptr.lit("an unpaid ");
+const __s_your = cptr.lit("your ");
+const __s_the_contents_of = cptr.lit("the contents of ");
+const __s_yname = cptr.lit("yname");
+const __s_ysimple_name = cptr.lit("ysimple_name");
+const __s_spell_book = cptr.lit("spell book");
+const __s_weapon = cptr.lit("weapon");
+const __s_armor = cptr.lit("armor");
+const __s_tool = cptr.lit("tool");
+const __s_food = cptr.lit("food");
+const __s_comestible = cptr.lit("comestible");
+const __s_erinys = cptr.lit("erinys");
+const __s_manes = cptr.lit("manes");
+const __s_cyclops = cptr.lit("Cyclops");
+const __s_hippocrates = cptr.lit("Hippocrates");
+const __s_pelias = cptr.lit("Pelias");
+const __s_aklys = cptr.lit("aklys");
+const __s_amnesia = cptr.lit("amnesia");
+const __s_detect_monsters = cptr.lit("detect monsters");
+const __s_paralysis = cptr.lit("paralysis");
+const __s_shape_changers = cptr.lit("shape changers");
+const __s_nemesis = cptr.lit("nemesis");
+const __s_from = cptr.lit(" from ");
+const __s_us = cptr.lit("us");
+const __s_eeth = cptr.lit("eeth");
+const __s_feet = cptr.lit("feet");
+const __s_ia = cptr.lit("ia");
+const __s_ae = cptr.lit("ae");
+const __s_vtense = cptr.lit("vtense");
+const __s_they = cptr.lit("they");
+const __s_you = cptr.lit("you");
+const __s_are = cptr.lit("are");
+const __s_is = cptr.lit("is");
+const __s_have = cptr.lit("have");
+const __s_zxs = cptr.lit("zxs");
+const __s_cs = cptr.lit("cs");
+const __s_es = cptr.lit("es");
+const __s_ies = cptr.lit("ies");
+const __s_child = cptr.lit("child");
+const __s_children = cptr.lit("children");
+const __s_cubus = cptr.lit("cubus");
+const __s_cubi = cptr.lit("cubi");
+const __s_culus = cptr.lit("culus");
+const __s_culi = cptr.lit("culi");
+const __s_cyclopes = cptr.lit("Cyclopes");
+const __s_djinni = cptr.lit("djinni");
+const __s_djinn = cptr.lit("djinn");
+const __s_erinyes = cptr.lit("erinyes");
+const __s_foot = cptr.lit("foot");
+const __s_fungus = cptr.lit("fungus");
+const __s_fungi = cptr.lit("fungi");
+const __s_goose = cptr.lit("goose");
+const __s_geese = cptr.lit("geese");
+const __s_knife = cptr.lit("knife");
+const __s_knives = cptr.lit("knives");
+const __s_labrum = cptr.lit("labrum");
+const __s_labra = cptr.lit("labra");
+const __s_louse = cptr.lit("louse");
+const __s_lice = cptr.lit("lice");
+const __s_mouse = cptr.lit("mouse");
+const __s_mice = cptr.lit("mice");
+const __s_mumak = cptr.lit("mumak");
+const __s_mumakil = cptr.lit("mumakil");
+const __s_nemeses = cptr.lit("nemeses");
+const __s_ovum = cptr.lit("ovum");
+const __s_ova = cptr.lit("ova");
+const __s_ox = cptr.lit("ox");
+const __s_oxen = cptr.lit("oxen");
+const __s_passerby = cptr.lit("passerby");
+const __s_passersby = cptr.lit("passersby");
+const __s_rtex = cptr.lit("rtex");
+const __s_rtices = cptr.lit("rtices");
+const __s_serum = cptr.lit("serum");
+const __s_sera = cptr.lit("sera");
+const __s_staff = cptr.lit("staff");
+const __s_staves = cptr.lit("staves");
+const __s_tooth = cptr.lit("tooth");
+const __s_teeth = cptr.lit("teeth");
+const __s_boots = cptr.lit("boots");
+const __s_shoes = cptr.lit("shoes");
+const __s_gloves = cptr.lit("gloves");
+const __s_lenses = cptr.lit("lenses");
+const __s_scales = cptr.lit("scales");
+const __s_eyes = cptr.lit("eyes");
+const __s_gauntlets = cptr.lit("gauntlets");
+const __s_bison = cptr.lit("bison");
+const __s_deer = cptr.lit("deer");
+const __s_elk = cptr.lit("elk");
+const __s_fish = cptr.lit("fish");
+const __s_fowl = cptr.lit("fowl");
+const __s_tuna = cptr.lit("tuna");
+const __s_yaki = cptr.lit("yaki");
+const __s_hai = cptr.lit("-hai");
+const __s_krill = cptr.lit("krill");
+const __s_moose = cptr.lit("moose");
+const __s_ninja = cptr.lit("ninja");
+const __s_sheep = cptr.lit("sheep");
+const __s_ronin = cptr.lit("ronin");
+const __s_roshi = cptr.lit("roshi");
+const __s_tengu = cptr.lit("tengu");
+const __s_ki_rin = cptr.lit("ki-rin");
+const __s_nazgul = cptr.lit("Nazgul");
+const __s_piranha = cptr.lit("piranha");
+const __s_samurai = cptr.lit("samurai");
+const __s_shuriken = cptr.lit("shuriken");
+const __s_haggis = cptr.lit("haggis");
+const __s_bordeaux = cptr.lit("Bordeaux");
+const __s_singplur_lookup = cptr.lit("singplur_lookup");
+const __s_craft = cptr.lit("craft");
+const __s_slice = cptr.lit("slice");
+const __s_mongoose = cptr.lit("mongoose");
+const __s_muskox = cptr.lit("muskox");
+const __s_man = cptr.lit("man");
+const __s_men = cptr.lit("men");
+const __s_above = cptr.lit(" above");
+const __s_versus = cptr.lit(" versus ");
+const __s_in = cptr.lit(" in ");
+const __s_on = cptr.lit(" on ");
+const __s_a_la = cptr.lit(" a la ");
+const __s_with = cptr.lit(" with");
+const __s_de = cptr.lit(" de ");
+const __s_sp_d_apos = cptr.lit(" d'");
+const __s_du = cptr.lit(" du ");
+const __s_au = cptr.lit(" au ");
+const __s_in__2 = cptr.lit("-in-");
+const __s_at = cptr.lit("-at-");
+const __s_plural_of_null = cptr.lit("plural of null?");
+const __s_makeplural = cptr.lit("makeplural");
+const __s_apos_s = cptr.lit("'s");
+const __s_ya = cptr.lit("ya");
+const __s_ya__2 = cptr.lit(" ya");
+const __s_en = cptr.lit("en");
+const __s_erf = cptr.lit("erf");
+const __s_lr = cptr.lit("lr");
+const __s_ves = cptr.lit("ves");
+const __s_ium = cptr.lit("ium");
+const __s_alga = cptr.lit("alga");
+const __s_hypha = cptr.lit("hypha");
+const __s_larva = cptr.lit("larva");
+const __s_amoeba = cptr.lit("amoeba");
+const __s_vertebra = cptr.lit("vertebra");
+const __s_e = cptr.lit("e");
+const __s_lotus = cptr.lit("lotus");
+const __s_wumpus = cptr.lit("wumpus");
+const __s_i = cptr.lit("i");
+const __s_sis = cptr.lit("sis");
+const __s_eau = cptr.lit("eau");
+const __s_bureau = cptr.lit("bureau");
+const __s_x = cptr.lit("x");
+const __s_matzoh = cptr.lit("matzoh");
+const __s_matzah = cptr.lit("matzah");
+const __s_ot = cptr.lit("ot");
+const __s_matzo = cptr.lit("matzo");
+const __s_matza = cptr.lit("matza");
+const __s_dex = cptr.lit("dex");
+const __s_dix = cptr.lit("dix");
+const __s_tex = cptr.lit("tex");
+const __s_index = cptr.lit("index");
+const __s_ices = cptr.lit("ices");
+const __s_ato = cptr.lit("ato");
+const __s_dingo = cptr.lit("dingo");
+const __s_eaux = cptr.lit("eaux");
+const __s_matzot = cptr.lit("matzot");
+const __s_singular_of_null = cptr.lit("singular of null?");
+const __s_cookies = cptr.lit("cookies");
+const __s_pies = cptr.lit("pies");
+const __s_genies = cptr.lit("genies");
+const __s_mbies = cptr.lit("mbies");
+const __s_yries = cptr.lit("yries");
+const __s_y = cptr.lit("y");
+const __s_cloves = cptr.lit("cloves");
+const __s_nerves = cptr.lit("nerves");
+const __s_f = cptr.lit("f");
+const __s_eses = cptr.lit("eses");
+const __s_oxes = cptr.lit("oxes");
+const __s_nxes = cptr.lit("nxes");
+const __s_ches = cptr.lit("ches");
+const __s_uses = cptr.lit("uses");
+const __s_shes = cptr.lit("shes");
+const __s_sses = cptr.lit("sses");
+const __s_atoes = cptr.lit("atoes");
+const __s_dingoes = cptr.lit("dingoes");
+const __s_aleaxes = cptr.lit("Aleaxes");
+const __s_tengus = cptr.lit("tengus");
+const __s_hezrous = cptr.lit("hezrous");
+const __s_ss = cptr.lit("ss");
+const __s_lens = cptr.lit(" lens");
+const __s_lens__2 = cptr.lit("lens");
+const __s_um = cptr.lit("um");
+const __s_monarch = cptr.lit("monarch");
+const __s_poch = cptr.lit("poch");
+const __s_tech = cptr.lit("tech");
+const __s_mech = cptr.lit("mech");
+const __s_stomach = cptr.lit("stomach");
+const __s_psych = cptr.lit("psych");
+const __s_amphibrach = cptr.lit("amphibrach");
+const __s_anarch = cptr.lit("anarch");
+const __s_atriarch = cptr.lit("atriarch");
+const __s_azedarach = cptr.lit("azedarach");
+const __s_broch = cptr.lit("broch");
+const __s_gastrotrich = cptr.lit("gastrotrich");
+const __s_isopach = cptr.lit("isopach");
+const __s_loch = cptr.lit("loch");
+const __s_oligarch = cptr.lit("oligarch");
+const __s_peritrich = cptr.lit("peritrich");
+const __s_sandarach = cptr.lit("sandarach");
+const __s_sumach = cptr.lit("sumach");
+const __s_symposiarch = cptr.lit("symposiarch");
+const __s_albu = cptr.lit("albu");
+const __s_antihu = cptr.lit("antihu");
+const __s_anti = cptr.lit("anti");
+const __s_ata = cptr.lit("ata");
+const __s_auto = cptr.lit("auto");
+const __s_bildungsro = cptr.lit("bildungsro");
+const __s_cai = cptr.lit("cai");
+const __s_cay = cptr.lit("cay");
+const __s_ceru = cptr.lit("ceru");
+const __s_corner = cptr.lit("corner");
+const __s_decu = cptr.lit("decu");
+const __s_des = cptr.lit("des");
+const __s_dura = cptr.lit("dura");
+const __s_fir = cptr.lit("fir");
+const __s_hanu = cptr.lit("hanu");
+const __s_het = cptr.lit("het");
+const __s_infrahu = cptr.lit("infrahu");
+const __s_inhu = cptr.lit("inhu");
+const __s_nonhu = cptr.lit("nonhu");
+const __s_otto = cptr.lit("otto");
+const __s_out = cptr.lit("out");
+const __s_prehu = cptr.lit("prehu");
+const __s_protohu = cptr.lit("protohu");
+const __s_subhu = cptr.lit("subhu");
+const __s_superhu = cptr.lit("superhu");
+const __s_talis = cptr.lit("talis");
+const __s_unhu = cptr.lit("unhu");
+const __s_sha = cptr.lit("sha");
+const __s_hu = cptr.lit("hu");
+const __s_un = cptr.lit("un");
+const __s_le = cptr.lit("le");
+const __s_re = cptr.lit("re");
+const __s_so = cptr.lit("so");
+const __s_to = cptr.lit("to");
+const __s_at__2 = cptr.lit("at");
+const __s_a = cptr.lit("a");
+const __s_abdo = cptr.lit("abdo");
+const __s_acu = cptr.lit("acu");
+const __s_agno = cptr.lit("agno");
+const __s_cogno = cptr.lit("cogno");
+const __s_cycla = cptr.lit("cycla");
+const __s_fleh = cptr.lit("fleh");
+const __s_grava = cptr.lit("grava");
+const __s_hegu = cptr.lit("hegu");
+const __s_preno = cptr.lit("preno");
+const __s_sonar = cptr.lit("sonar");
+const __s_speci = cptr.lit("speci");
+const __s_dai = cptr.lit("dai");
+const __s_exa = cptr.lit("exa");
+const __s_fla = cptr.lit("fla");
+const __s_sta = cptr.lit("sta");
+const __s_teg = cptr.lit("teg");
+const __s_tegu = cptr.lit("tegu");
+const __s_vela = cptr.lit("vela");
+const __s_da = cptr.lit("da");
+const __s_hy = cptr.lit("hy");
+const __s_lu = cptr.lit("lu");
+const __s_no = cptr.lit("no");
+const __s_nu = cptr.lit("nu");
+const __s_ra = cptr.lit("ra");
+const __s_ru = cptr.lit("ru");
+const __s_se = cptr.lit("se");
+const __s_vi = cptr.lit("vi");
+const __s_o = cptr.lit("o");
+const __s_sp_dash = cptr.lit(" -");
+const __s_dwarvish = cptr.lit("dwarvish ");
+const __s_dwarven = cptr.lit("dwarven ");
+const __s_elven = cptr.lit("elven ");
+const __s_elvish = cptr.lit("elvish ");
+const __s_elfin = cptr.lit("elfin ");
+const __s_helm = cptr.lit("helm");
+const __s_helmet = cptr.lit("helmet");
+const __s_monster = cptr.lit("monster");
+const __s_ability = cptr.lit("ability");
+const __s_abilities = cptr.lit("abilities");
+const __s_aluminum = cptr.lit("aluminum");
+const __s_aluminium = cptr.lit("aluminium");
+const __s_bag = cptr.lit("bag");
+const __s_lamp = cptr.lit("lamp");
+const __s_candle = cptr.lit("candle");
+const __s_horn = cptr.lit("horn");
+const __s_hat = cptr.lit("hat");
+const __s_cloak = cptr.lit("cloak");
+const __s_shirt = cptr.lit("shirt");
+const __s_dragon_scales = cptr.lit("dragon scales");
+const __s_dragon_scale_mail = cptr.lit("dragon scale mail");
+const __s_sword = cptr.lit("sword");
+const __s_venom = cptr.lit("venom");
+const __s_gray_stone = cptr.lit("gray stone");
+const __s_grey_stone = cptr.lit("grey stone");
+const __s_pickax = cptr.lit("pickax");
+const __s_whip = cptr.lit("whip");
+const __s_saber = cptr.lit("saber");
+const __s_silver_sabre = cptr.lit("silver sabre");
+const __s_grey_dragon_scale_mail = cptr.lit("grey dragon scale mail");
+const __s_grey_dragon_scales = cptr.lit("grey dragon scales");
+const __s_iron_ball = cptr.lit("iron ball");
+const __s_lantern = cptr.lit("lantern");
+const __s_mattock = cptr.lit("mattock");
+const __s_amulet_of_poison_resistance = cptr.lit("amulet of poison resistance");
+const __s_amulet_of_protection = cptr.lit("amulet of protection");
+const __s_amulet_of_telepathy = cptr.lit("amulet of telepathy");
+const __s_helm_of_esp = cptr.lit("helm of esp");
+const __s_gauntlets_of_ogre_power = cptr.lit("gauntlets of ogre power");
+const __s_gauntlets_of_giant_strength = cptr.lit("gauntlets of giant strength");
+const __s_elven_chain_mail = cptr.lit("elven chain mail");
+const __s_silver_shield = cptr.lit("silver shield");
+const __s_potion_of_sleep = cptr.lit("potion of sleep");
+const __s_scroll_of_recharging = cptr.lit("scroll of recharging");
+const __s_recharging = cptr.lit("recharging");
+const __s_camera = cptr.lit("camera");
+const __s_tee_shirt = cptr.lit("tee shirt");
+const __s_can = cptr.lit("can");
+const __s_can_opener = cptr.lit("can opener");
+const __s_kelp = cptr.lit("kelp");
+const __s_eucalyptus = cptr.lit("eucalyptus");
+const __s_lembas = cptr.lit("lembas");
+const __s_tripe = cptr.lit("tripe");
+const __s_cookie = cptr.lit("cookie");
+const __s_pie = cptr.lit("pie");
+const __s_huge_meatball = cptr.lit("huge meatball");
+const __s_huge_chunk_of_meat = cptr.lit("huge chunk of meat");
+const __s_marker = cptr.lit("marker");
+const __s_hook = cptr.lit("hook");
+const __s_grappling_iron = cptr.lit("grappling iron");
+const __s_grapnel = cptr.lit("grapnel");
+const __s_grapple = cptr.lit("grapple");
+const __s_protection_from_shape_shifters = cptr.lit("protection from shape shifters");
+const __s_accuracy = cptr.lit("accuracy");
+const __s_box = cptr.lit("box");
+const __s_luck_stone = cptr.lit("luck stone");
+const __s_load_stone = cptr.lit("load stone");
+const __s_touch_stone = cptr.lit("touch stone");
+const __s_flintstone = cptr.lit("flintstone");
+const __s_rnd_otyp_by_wpnskill = cptr.lit("rnd_otyp_by_wpnskill");
+const __s_rnd_otyp_by_namedesc = cptr.lit("rnd_otyp_by_namedesc");
+const __s_shiny = cptr.lit("shiny");
+const __s_undiggable = cptr.lit("undiggable ");
+const __s_nondiggable = cptr.lit("nondiggable ");
+const __s_unphaseable = cptr.lit("unphaseable ");
+const __s_nonpasswall = cptr.lit("nonpasswall ");
+const __s_s_s__6 = cptr.lit("%s%s.");
+const __s_to_nowhere = cptr.lit(" to nowhere");
+const __s_creation_of_s_failed = cptr.lit("Creation of %s failed.");
+const __s_fountain = cptr.lit("fountain");
+const __s_magic = cptr.lit("magic ");
+const __s_a_sfountain = cptr.lit("A %sfountain.");
+const __s_throne = cptr.lit("throne");
+const __s_a_throne = cptr.lit("A throne.");
+const __s_sink = cptr.lit("sink");
+const __s_a_sink = cptr.lit("A sink.");
+const __s_pool = cptr.lit("pool");
+const __s_moat = cptr.lit("moat");
+const __s_wall_of_water = cptr.lit("wall of water");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_moat__2 = cptr.lit("Moat");
+const __s_lava = cptr.lit("lava");
+const __s_wall_of_lava = cptr.lit("wall of lava");
+const __s_a_s_of_molten_lava = cptr.lit("A %s of molten lava.");
+const __s_wall = cptr.lit("wall");
+const __s_lava__2 = cptr.lit("Lava");
+const __s_melting = cptr.lit("melting ");
+const __s_ice__2 = cptr.lit("Ice");
+const __s_altar = cptr.lit("altar");
+const __s_chaotic = cptr.lit("chaotic ");
+const __s_neutral = cptr.lit("neutral ");
+const __s_lawful = cptr.lit("lawful ");
+const __s_unaligned = cptr.lit("unaligned ");
+const __s_wizterrainwish = cptr.lit("wizterrainwish");
+const __s_s_altar = cptr.lit("%s altar.");
+const __s_grave = cptr.lit("grave");
+const __s_headstone = cptr.lit("headstone");
+const __s_a_sgrave = cptr.lit("A %sgrave.");
+const __s_disturbed = cptr.lit("disturbed ");
+const __s_can_t_place_a_grave_here = cptr.lit("Can't place a grave here.");
+const __s_tree = cptr.lit("tree");
+const __s_a_tree = cptr.lit("A tree.");
+const __s_bars = cptr.lit("bars");
+const __s_iron_bars__2 = cptr.lit("Iron bars.");
+const __s_cloud = cptr.lit("cloud");
+const __s_a_cloud = cptr.lit("A cloud.");
+const __s_door = cptr.lit("door");
+const __s_doorway = cptr.lit("doorway");
+const __s_secret_door = cptr.lit("secret door");
+const __s_closed = cptr.lit("closed ");
+const __s_open = cptr.lit("open ");
+const __s_doorless_doorway = cptr.lit("doorless doorway");
+const __s_s_requires_door_or_wall_location = cptr.lit("%s requires door or wall location.");
+const __s_a_wall = cptr.lit("A wall.");
+const __s_secret_corridor = cptr.lit("secret corridor");
+const __s_secret_corridor__2 = cptr.lit("Secret corridor.");
+const __s_secret_corridor_requires_corridor = cptr.lit("Secret corridor requires corridor location.");
+const __s_room = cptr.lit("room");
+const __s_floor = cptr.lit("floor");
+const __s_ground = cptr.lit("ground");
+const __s_room_floor = cptr.lit("Room floor.");
+const __s_floor__2 = cptr.lit("Floor");
+const __s_room_floor_ground_not_allowed_here = cptr.lit("Room|floor|ground not allowed here.");
+const __s_s_s_the_drawbridge = cptr.lit("%s %s the drawbridge.");
+const __s_in_front_of = cptr.lit("in front of");
+const __s_under = cptr.lit("under");
+const __s_0 = cptr.lit("0");
+const __s_erodeproof = cptr.lit("erodeproof ");
+const __s_crackproof = cptr.lit("crackproof ");
+const __s_lit__3 = cptr.lit("lit ");
+const __s_burning = cptr.lit("burning ");
+const __s_unlit = cptr.lit("unlit ");
+const __s_extinguished = cptr.lit("extinguished ");
+const __s_readobjnam_preparse = cptr.lit("readobjnam_preparse");
+const __s_unlabeled = cptr.lit("unlabeled ");
+const __s_unlabelled = cptr.lit("unlabelled ");
+const __s_blank = cptr.lit("blank ");
+const __s_untrapped = cptr.lit("untrapped ");
+const __s_doorless = cptr.lit("doorless ");
+const __s_looted = cptr.lit("looted ");
+const __s_zombifying = cptr.lit("zombifying ");
+const __s_rusted = cptr.lit("rusted ");
+const __s_burned = cptr.lit("burned ");
+const __s_partially_eaten = cptr.lit("partially eaten ");
+const __s_small__2 = cptr.lit("small ");
+const __s_glob = cptr.lit("glob");
+const __s_glob__2 = cptr.lit(" glob");
+const __s_medium__2 = cptr.lit("medium ");
+const __s_large__2 = cptr.lit("large ");
+const __s_real = cptr.lit("real ");
+const __s_fake = cptr.lit("fake ");
+const __s_female = cptr.lit("female ");
+const __s_male = cptr.lit("male ");
+const __s_neuter = cptr.lit("neuter ");
+const __s_corpse__2 = cptr.lit("corpse ");
+const __s_statue = cptr.lit("statue ");
+const __s_figurine = cptr.lit("figurine ");
+const __s_of__2 = cptr.lit("of ");
+const __s_lit__4 = cptr.lit("lit)");
+const __s_labelled = cptr.lit(" labelled ");
+const __s_of_spinach = cptr.lit(" of spinach");
+const __s_cheap = cptr.lit("cheap ");
+const __s_plastic = cptr.lit("plastic ");
+const __s_imitation = cptr.lit("imitation ");
+const __s_pairs_of = cptr.lit("pairs of ");
+const __s_sets_of = cptr.lit("sets of ");
+const __s_globs = cptr.lit("globs");
+const __s_globs__2 = cptr.lit(" globs");
+const __s_glob_of = cptr.lit("glob of ");
+const __s_globs_of = cptr.lit("globs of ");
+const __s_readobjnam_postparse1 = cptr.lit("readobjnam_postparse1");
+const __s_glob_of_s = cptr.lit("glob of %s");
+const __s_wand__2 = cptr.lit("wand ");
+const __s_spellbook__2 = cptr.lit("spellbook ");
+const __s_gauntlets__2 = cptr.lit("gauntlets ");
+const __s_gloves__2 = cptr.lit("gloves ");
+const __s_finger = cptr.lit("finger ");
+const __s_tin_of = cptr.lit("tin of ");
+const __s_spinach = cptr.lit("spinach");
+const __s_samurai_sword = cptr.lit("samurai sword");
+const __s_wizard_lock = cptr.lit("wizard lock");
+const __s_death_wand = cptr.lit("death wand");
+const __s_master_key = cptr.lit("master key");
+const __s_magenta = cptr.lit("magenta");
+const __s_s_sp = cptr.lit("s ");
+const __s_es__2 = cptr.lit("es ");
+const __s_tricks = cptr.lit("tricks");
+const __s_clothes = cptr.lit("clothes");
+const __s_grey_spell = cptr.lit("grey spell");
+const __s_armour = cptr.lit("armour");
+const __s_holy_water = cptr.lit("holy water");
+const __s_paperback = cptr.lit("paperback");
+const __s_book__2 = cptr.lit(" book");
+const __s_orange = cptr.lit("orange");
+const __s_gold_piece = cptr.lit("gold piece");
+const __s_zorkmid = cptr.lit("zorkmid");
+const __s_gold = cptr.lit("gold");
+const __s_money = cptr.lit("money");
+const __s_coin = cptr.lit("coin");
+const __s_enchant = cptr.lit("enchant ");
+const __s_destroy = cptr.lit("destroy ");
+const __s_detect_food = cptr.lit("detect food");
+const __s_food_detection = cptr.lit("food detection");
+const __s_ring_mail = cptr.lit("ring mail");
+const __s_studded_leather_armor = cptr.lit("studded leather armor");
+const __s_leather_armor = cptr.lit("leather armor");
+const __s_tooled_horn = cptr.lit("tooled horn");
+const __s_food_ration = cptr.lit("food ration");
+const __s_meat_ring = cptr.lit("meat ring");
+const __s_versus_poison = cptr.lit("versus poison ");
+const __s_bear = cptr.lit("bear");
+const __s_land = cptr.lit("land");
+const __s_trap = cptr.lit("trap");
+const __s_mine = cptr.lit("mine");
+const __s_object__2 = cptr.lit(" object");
+const __s_looking_glass = cptr.lit("looking glass");
+const __s_glass = cptr.lit(" glass");
+const __s_glass__2 = cptr.lit("glass");
+const __s_broken__2 = cptr.lit("broken");
+const __s_worthless = cptr.lit("worthless ");
+const __s_piece_of = cptr.lit("piece of ");
+const __s_colored = cptr.lit("colored ");
+const __s_coloured = cptr.lit("coloured ");
+const __s_readobjnam_postparse2 = cptr.lit("readobjnam_postparse2");
+const __s_worthless_piece_of = cptr.lit("worthless piece of ");
+const __s_tin = cptr.lit("tin");
+const __s_mail = cptr.lit("mail");
+const __s_mail__2 = cptr.lit(" mail");
+const __s_nothing = cptr.lit("nothing");
+const __s_nil = cptr.lit("nil");
+const __s_none = cptr.lit("none");
+const __s_polearm = cptr.lit("polearm");
+const __s_hammer = cptr.lit("hammer");
+const __s_readobjnam = cptr.lit("readobjnam");
+const __s_override_glob_weight_limit = cptr.lit("Override glob weight limit?");
+const __s_for_a_moment_you_feel_s_in_your_s_but = cptr.lit("For a moment, you feel %s in your %s, but it disappears!");
+const __s_rnd_class = cptr.lit("rnd_class");
+const __s_unknown_armor_category_s_u = cptr.lit("unknown armor category (%s => %u)");
+const __s_dragon_mail = cptr.lit("dragon mail");
+const __s_jacket = cptr.lit(" jacket");
+const __s_jacket__2 = cptr.lit("jacket");
+const __s_suit = cptr.lit("suit");
+const __s_robe = cptr.lit("robe");
+const __s_wrapping = cptr.lit("wrapping");
+const __s_smock = cptr.lit("smock");
+const __s_apron = cptr.lit("apron");
+const __s_whatcha_may_callit = cptr.lit("whatcha-may-callit");
+const __s_safe_qbuf = cptr.lit("safe_qbuf");
+const __s_endp_null = cptr.lit("endp != NULL");
+const __s_safe_qbuf_prefix_too_long_u_characters = cptr.lit("safe_qbuf: prefix too long (%u characters).");
+const __s_safe_qbuf_suffix_too_long_u_u_characters = cptr.lit("safe_qbuf: suffix too long (%u + %u characters).");
+const __s_safe_qbuf_filler_too_long_u_u_u = cptr.lit("safe_qbuf: filler too long (%u + %u + %u characters).");
 
 /** C ref: objnam.c:13 — struct _readobjnam_data { otmp, bp, origbp, oclass, un, dn, actualn, name, p, cnt, spe, spesgn, typ, very, rechrg, blessed, uncursed, iscursed, ispoisoned, isgreased, eroded, eroded2, erodeproof, locked, unlocked, broken, real, fake, halfeaten, mntmp, contents, islit, unlabeled, ishistoric, isdiluted, trapped, doorless, open, closed, flags, tmp, tinv, tvariety, mgend, wetness, gsize, ftype, zombify, globbuf, fruitbuf } (memory model v0.5) */
 
@@ -909,40 +909,40 @@ const __sl737 = cptr.lit("safe_qbuf: filler too long (%u + %u + %u characters)."
 /** C ref: objnam.c:105 — struct Jitem[14] */
 const Japanese_items = cptr.alloc(14 * 16);
 cptr.stI32o(Japanese_items, 0, NHC.SHORT_SWORD);
-cptr.stPtro(Japanese_items, 0 + $Jitem_name, __sl0);
+cptr.stPtro(Japanese_items, 0 + $Jitem_name, __s_wakizashi);
 cptr.stI32o(Japanese_items, 16, NHC.BROADSWORD);
-cptr.stPtro(Japanese_items, 16 + $Jitem_name, __sl1);
+cptr.stPtro(Japanese_items, 16 + $Jitem_name, __s_ninja_to);
 cptr.stI32o(Japanese_items, 32, NHC.FLAIL);
-cptr.stPtro(Japanese_items, 32 + $Jitem_name, __sl2);
+cptr.stPtro(Japanese_items, 32 + $Jitem_name, __s_nunchaku);
 cptr.stI32o(Japanese_items, 48, NHC.GLAIVE);
-cptr.stPtro(Japanese_items, 48 + $Jitem_name, __sl3);
+cptr.stPtro(Japanese_items, 48 + $Jitem_name, __s_naginata);
 cptr.stI32o(Japanese_items, 64, NHC.LOCK_PICK);
-cptr.stPtro(Japanese_items, 64 + $Jitem_name, __sl4);
+cptr.stPtro(Japanese_items, 64 + $Jitem_name, __s_osaku);
 cptr.stI32o(Japanese_items, 80, NHC.WOODEN_HARP);
-cptr.stPtro(Japanese_items, 80 + $Jitem_name, __sl5);
+cptr.stPtro(Japanese_items, 80 + $Jitem_name, __s_koto);
 cptr.stI32o(Japanese_items, 96, NHC.MAGIC_HARP);
-cptr.stPtro(Japanese_items, 96 + $Jitem_name, __sl6);
+cptr.stPtro(Japanese_items, 96 + $Jitem_name, __s_magic_koto);
 cptr.stI32o(Japanese_items, 112, NHC.KNIFE);
-cptr.stPtro(Japanese_items, 112 + $Jitem_name, __sl7);
+cptr.stPtro(Japanese_items, 112 + $Jitem_name, __s_shito);
 cptr.stI32o(Japanese_items, 128, NHC.PLATE_MAIL);
-cptr.stPtro(Japanese_items, 128 + $Jitem_name, __sl8);
+cptr.stPtro(Japanese_items, 128 + $Jitem_name, __s_tanko);
 cptr.stI32o(Japanese_items, 144, NHC.HELMET);
-cptr.stPtro(Japanese_items, 144 + $Jitem_name, __sl9);
+cptr.stPtro(Japanese_items, 144 + $Jitem_name, __s_kabuto);
 cptr.stI32o(Japanese_items, 160, NHC.LEATHER_GLOVES);
-cptr.stPtro(Japanese_items, 160 + $Jitem_name, __sl10);
+cptr.stPtro(Japanese_items, 160 + $Jitem_name, __s_yugake);
 cptr.stI32o(Japanese_items, 176, NHC.FOOD_RATION);
-cptr.stPtro(Japanese_items, 176 + $Jitem_name, __sl11);
+cptr.stPtro(Japanese_items, 176 + $Jitem_name, __s_gunyoki);
 cptr.stI32o(Japanese_items, 192, NHC.POT_BOOZE);
-cptr.stPtro(Japanese_items, 192 + $Jitem_name, __sl12);
+cptr.stPtro(Japanese_items, 192 + $Jitem_name, __s_sake);
 cptr.stI32o(Japanese_items, 208, 0);
-cptr.stPtro(Japanese_items, 208 + $Jitem_name, __sl13);
+cptr.stPtro(Japanese_items, 208 + $Jitem_name, __s_empty);
 
 /** C ref: objnam.c:123 — @param {CPtr<char>} s @param {CPtr<char>} pref @returns {CPtr<char>} */
 function strprepend(s, pref) {
     let star_s = cptr.ld1s(s);
     let i = Number(BigInt.asIntN(32, cptr.strlen(pref)));
     if (i > 80) {
-        impossible(__sl14, i);
+        impossible(__s_prefix_too_short_for_d, i);
         return s;
     }
     copynchars(cptr.add(s, -(i)), pref, (i + 1) | 0);
@@ -984,66 +984,66 @@ export function obj_typename(otyp) {
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) {
         actualn = Japanese_item_name(otyp, actualn);
         if (otyp == NHC.WOODEN_HARP || otyp == NHC.MAGIC_HARP)
-            dn = __sl5;
+            dn = __s_koto;
     }
     if (!actualn)
-        actualn = (otyp > 0 && otyp < NHC.MAXOCLASSES) ? __sl15 : __sl16;
+        actualn = (otyp > 0 && otyp < NHC.MAXOCLASSES) ? __s_generic : __s_object;
     cptr.st1o(buf, 0, 0);
     switch (cptr.ld1so(ocl, $objclass_oc_class)) {
         case NHC.COIN_CLASS:
         return cptr.strcpy(buf, actualn);
         case NHC.POTION_CLASS:
-        void cptr.strcpy(buf, __sl17);
+        void cptr.strcpy(buf, __s_potion);
         break;
         case NHC.SCROLL_CLASS:
-        void cptr.strcpy(buf, __sl18);
+        void cptr.strcpy(buf, __s_scroll);
         break;
         case NHC.WAND_CLASS:
-        void cptr.strcpy(buf, __sl19);
+        void cptr.strcpy(buf, __s_wand);
         break;
         case NHC.SPBOOK_CLASS:
         if (otyp != NHC.SPE_NOVEL) {
-            void cptr.strcpy(buf, __sl20);
+            void cptr.strcpy(buf, __s_spellbook);
         } else {
-            void cptr.strcpy(buf, !nn ? __sl21 : __sl22);
+            void cptr.strcpy(buf, !nn ? __s_book : __s_novel);
             nn = 0;
         }
         break;
         case NHC.RING_CLASS:
-        void cptr.strcpy(buf, __sl23);
+        void cptr.strcpy(buf, __s_ring);
         break;
         case NHC.AMULET_CLASS:
         if (nn)
             void cptr.strcpy(buf, actualn);
         else
-            void cptr.strcpy(buf, __sl24);
+            void cptr.strcpy(buf, __s_amulet);
         if (un)
-            xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __sl13, un);
+            xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __s_empty, un);
         if (dn)
-            void cptr.sprintf(eos(buf), __sl25, dn);
+            void cptr.sprintf(eos(buf), __s_sp_lparen_pct_s_rparen, dn);
         return buf;
         case NHC.ARMOR_CLASS:
         if (cptr.ld1so2(objects, otyp, 120, $objclass_oc_subtyp) == NHC.ARM_GLOVES || cptr.ld1so2(objects, otyp, 120, $objclass_oc_subtyp) == NHC.ARM_BOOTS)
-            void cptr.strcpy(buf, __sl26);
+            void cptr.strcpy(buf, __s_pair_of);
         else if (otyp >= NHC.GRAY_DRAGON_SCALES && otyp <= NHC.YELLOW_DRAGON_SCALES)
-            void cptr.strcpy(buf, __sl27);
+            void cptr.strcpy(buf, __s_set_of);
         // @FallThrough
         ;
         default:
         if (nn) {
             void cptr.strcat(buf, actualn);
             if ((otyp == NHC.FLINT || (((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0) == NHC.GEMSTONE && (otyp != NHC.DILITHIUM_CRYSTAL && otyp != NHC.RUBY && otyp != NHC.DIAMOND && otyp != NHC.SAPPHIRE && otyp != NHC.BLACK_OPAL && otyp != NHC.EMERALD && otyp != NHC.OPAL))))
-                void cptr.strcat(buf, __sl28);
+                void cptr.strcat(buf, __s_stone);
             if (un)
-                xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __sl13, un);
+                xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __s_empty, un);
             if (dn)
-                void cptr.sprintf(eos(buf), __sl25, dn);
+                void cptr.sprintf(eos(buf), __s_sp_lparen_pct_s_rparen, dn);
         } else {
             void cptr.strcat(buf, dn ? dn : actualn);
             if (cptr.ld1so(ocl, $objclass_oc_class) == NHC.GEM_CLASS)
-                void cptr.strcat(buf, (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL) ? __sl28 : __sl29);
+                void cptr.strcat(buf, (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL) ? __s_stone : __s_gem);
             if (un)
-                xcalled(buf, NHM.BUFSZ, __sl13, un);
+                xcalled(buf, NHM.BUFSZ, __s_empty, un);
         }
         return buf;
     }
@@ -1051,12 +1051,12 @@ export function obj_typename(otyp) {
         if ((cptr.ldI32o(ocl, $objclass_oc_unique) & 1))
             void cptr.strcpy(buf, actualn);
         else
-            void cptr.sprintf(eos(buf), __sl30, actualn);
+            void cptr.sprintf(eos(buf), __s_of_s, actualn);
     }
     if (un)
-        xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __sl13, un);
+        xcalled(buf, (NHM.BUFSZ - (dn ? (Number(BigInt.asIntN(32, cptr.strlen(dn))) + 3) | 0 : 0)) | 0, __s_empty, un);
     if (dn)
-        void cptr.sprintf(eos(buf), __sl25, dn);
+        void cptr.sprintf(eos(buf), __s_sp_lparen_pct_s_rparen, dn);
     return buf;
 }
 
@@ -1068,7 +1068,7 @@ export function simple_typename(otyp) {
     cptr.stPtro2(objects, otyp, 120, $objclass_oc_uname, null);
     bufp = obj_typename(otyp);
     cptr.stPtro2(objects, otyp, 120, $objclass_oc_uname, save_uname);
-    if ((pp = strstri(bufp, __sl31)) !== null)
+    if ((pp = strstri(bufp, __s_sp_lparen)) !== null)
         cptr.st1(pp, 0);
     return bufp;
 }
@@ -1079,8 +1079,8 @@ export function safe_typename(otyp) {
     let res = null;
     if (otyp < NHC.STRANGE_OBJECT || otyp >= NHC.NUM_OBJECTS || !(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16))) {
         res = nextobuf();
-        void cptr.sprintf(res, __sl32, otyp);
-        impossible(__sl33, res);
+        void cptr.sprintf(res, __s_glorkum_d, otyp);
+        impossible(__s_safe_typename_s, res);
     } else {
         save_nameknown = (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1);
         cptr.stI32o2(objects, otyp, 120, $objclass_oc_name_known, 1);
@@ -1126,12 +1126,12 @@ export function distant_name(obj, func) {
 /** C ref: objnam.c:414 — @param {CInt} juice @returns {CPtr<char>} */
 export function fruitname(juice) {
     let buf = nextobuf();
-    let fruit_nam = strstri(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl34);
+    let fruit_nam = strstri(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_of);
     if (fruit_nam)
         fruit_nam = cptr.add(fruit_nam, 4);
     else
         fruit_nam = cptr.add(svp, $instance_globals_saved_p_pl_fruit);
-    void cptr.sprintf(buf, __sl35, makesingular(fruit_nam), juice ? __sl36 : __sl13);
+    void cptr.sprintf(buf, __s_s_s, makesingular(fruit_nam), juice ? __s_juice : __s_empty);
     return buf;
 }
 
@@ -1160,7 +1160,7 @@ export function fruit_from_name(fname, exact, highest_fid) {
     if (!exact) {
         tentativef = null;
         for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf)) {
-            k = Strlen_(f, __sl37, 470);
+            k = Strlen_(f, __s_fruit_from_name, 470);
             if (!cptr.strncmp(f, fname, BigInt(k >>> 0)) && (!cptr.ld1so(fname, k) || cptr.ld1so(fname, k) == 32) && (!tentativef || BigInt(k >>> 0) > cptr.strlen(tentativef)))
                 tentativef = f;
         }
@@ -1177,15 +1177,15 @@ export function fruit_from_name(fname, exact, highest_fid) {
     if (!f && !exact) {
         let fnamebuf = new Uint8Array(256);
         let p;
-        let fname_k = Strlen_(fname, __sl37, 490);
+        let fname_k = Strlen_(fname, __s_fruit_from_name, 490);
         tentativef = null;
         for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf)) {
-            k = Strlen_(f, __sl37, 494);
+            k = Strlen_(f, __s_fruit_from_name, 494);
             void cptr.strcpy(cptr.decay(fnamebuf), fname);
             if (fname_k >= k && (p = cptr.strchr(cptr.add(cptr.decay(fnamebuf), k, 1), 32)) !== null) {
                 cptr.st1(p, 0);
                 altfname = makesingular(cptr.decay(fnamebuf));
-                k = Strlen_(altfname, __sl37, 509);
+                k = Strlen_(altfname, __s_fruit_from_name, 509);
                 if (!strcmp(f, altfname) && (!tentativef || BigInt(k >>> 0) > cptr.strlen(tentativef)))
                     tentativef = f;
                 releaseobuf(altfname);
@@ -1208,10 +1208,10 @@ export function reorder_fruit(forward) {
     for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf)) {
         j = cptr.ldI32o(f, $fruit_fid);
         if (j < 1 || j >= k) {
-            impossible(__sl38, j);
+            impossible(__s_reorder_fruit_fruit_index_d_out_of_range, j);
             return;
         } else if (cptr.ldPtro(allfr, j, 8)) {
-            impossible(__sl39, j);
+            impossible(__s_reorder_fruit_duplicate_fruit_index_d, j);
             return;
         }
         cptr.stPtro(allfr, j, f, 8);
@@ -1231,8 +1231,8 @@ function xcalled(buf, siz, pfx, sfx) {
     let bufsiz = (((siz - 1) | 0) - Number(BigInt.asIntN(32, cptr.strlen(buf)))) | 0;
     let pfxlen = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(pfx) + 9n) - 1n))));
     if (pfxlen > bufsiz)
-        panic(__sl40, pfxlen, bufsiz);
-    void cptr.sprintf(eos(buf), __sl41, pfx, (bufsiz - pfxlen) | 0, sfx);
+        panic(__s_xcalled_not_enough_room_for_prefix_d_d, pfxlen, bufsiz);
+    void cptr.sprintf(eos(buf), __s_s_called_s, pfx, (bufsiz - pfxlen) | 0, sfx);
 }
 
 /** C ref: objnam.c:575 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
@@ -1266,10 +1266,10 @@ function xname_flags(obj, cxn_flags) {
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) {
             actualn = Japanese_item_name(typ, actualn);
             if (typ == NHC.WOODEN_HARP || typ == NHC.MAGIC_HARP)
-                dn = __sl5;
+                dn = __s_koto;
         }
         if (!actualn)
-            actualn = (typ > 0 && typ < NHC.MAXOCLASSES) ? __sl15 : __sl16;
+            actualn = (typ > 0 && typ < NHC.MAXOCLASSES) ? __s_generic : __s_object;
         if (!dn)
             dn = actualn;
         if (!nn && (cptr.ldI32o(ocl, $objclass_oc_uses_known) & 1) | 0 && (cptr.ldI32o(ocl, $objclass_oc_unique) & 1) | 0)
@@ -1293,27 +1293,27 @@ function xname_flags(obj, cxn_flags) {
         switch (cptr.ld1so(obj, $obj_oclass)) {
             case NHC.AMULET_CLASS:
             if (!dknown)
-                void cptr.strcpy(buf, __sl24);
+                void cptr.strcpy(buf, __s_amulet);
             else if (typ == NHC.AMULET_OF_YENDOR || typ == NHC.FAKE_AMULET_OF_YENDOR)
                 void cptr.strcpy(buf, known ? actualn : dn);
             else if (nn)
                 void cptr.strcpy(buf, actualn);
             else if (un)
-                xcalled(buf, 176, __sl24, un);
+                xcalled(buf, 176, __s_amulet, un);
             else
-                void cptr.sprintf(buf, __sl42, dn);
+                void cptr.sprintf(buf, __s_s_amulet, dn);
             break;
             case NHC.WEAPON_CLASS:
             if (is_poisonable(obj) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0)
-                void cptr.strcpy(buf, __sl43);
+                void cptr.strcpy(buf, __s_poisoned);
             // @FallThrough
             ;
             case NHC.VENOM_CLASS:
             case NHC.TOOL_CLASS:
             if (typ == NHC.LENSES)
-                void cptr.strcpy(buf, __sl26);
+                void cptr.strcpy(buf, __s_pair_of);
             else if (is_wet_towel(obj))
-                void cptr.strcpy(buf, (cptr.ld1so(obj, $obj_spe) < 3) ? __sl44 : __sl45);
+                void cptr.strcpy(buf, (cptr.ld1so(obj, $obj_spe) < 3) ? __s_moist : __s_wet);
             if (!dknown)
                 void cptr.strcat(buf, dn);
             else if (nn)
@@ -1327,29 +1327,29 @@ function xname_flags(obj, cxn_flags) {
                 let anbuf = new Uint8Array(10);
                 let pm_name = obj_pmname(obj);
                 {
-                    nh_snprintf(__sl46, 713, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl47, just_an(cptr.decay(anbuf), pm_name), pm_name);
+                    nh_snprintf(__s_xname_flags, 713, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_of_s_s, just_an(cptr.decay(anbuf), pm_name), pm_name);
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
             } else if (is_wet_towel(obj)) {
                 if (wizard())
                     {
-                        nh_snprintf(__sl46, 716, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl48, cptr.ld1so(obj, $obj_spe));
+                        nh_snprintf(__s_xname_flags, 716, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_sp_lparen_pct_d_rparen, cptr.ld1so(obj, $obj_spe));
                         buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                     }
             }
             break;
             case NHC.ARMOR_CLASS:
             if (typ >= NHC.GRAY_DRAGON_SCALES && typ <= NHC.YELLOW_DRAGON_SCALES) {
-                void cptr.sprintf(buf, __sl49, actualn);
+                void cptr.sprintf(buf, __s_set_of_s, actualn);
                 break;
             } else if (is_boots(obj) || is_gloves(obj)) {
-                void cptr.strcpy(buf, __sl26);
+                void cptr.strcpy(buf, __s_pair_of);
             } else if (is_shield(obj) && !dknown) {
                 if (cptr.ldI16o(obj, $obj_otyp) >= NHC.ELVEN_SHIELD && cptr.ldI16o(obj, $obj_otyp) <= NHC.ORCISH_SHIELD) {
-                    void cptr.strcpy(buf, __sl50);
+                    void cptr.strcpy(buf, __s_shield);
                     break;
                 } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SHIELD_OF_REFLECTION) {
-                    void cptr.strcpy(buf, __sl51);
+                    void cptr.strcpy(buf, __s_smooth_shield);
                     break;
                 }
             }
@@ -1371,8 +1371,8 @@ function xname_flags(obj, cxn_flags) {
             if (typ == NHC.SLIME_MOLD) {
                 let f = fruit_from_indx(cptr.ld1so(obj, $obj_spe));
                 if (!f) {
-                    impossible(__sl52, cptr.ld1so(obj, $obj_spe));
-                    void cptr.strcpy(buf, __sl53);
+                    impossible(__s_bad_fruit_d, cptr.ld1so(obj, $obj_spe));
+                    void cptr.strcpy(buf, __s_fruit);
                 } else {
                     void cptr.strcpy(buf, f);
                     if (pluralize) {
@@ -1387,13 +1387,13 @@ function xname_flags(obj, cxn_flags) {
             }
             if (cptr.ld1so(iflags, $instance_flags_partly_eaten_hack) && cptr.ldI32o(obj, $obj_oeaten)) {
                 {
-                    void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __sl54, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
+                    void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __s_partly_eaten, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
             }
             if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
                 {
-                    nh_snprintf(__sl46, 788, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl55, (cptr.ldI32o(obj, $obj_owt) <= 100) ? __sl56 : ((cptr.ldI32o(obj, $obj_owt) <= 300) ? __sl57 : ((cptr.ldI32o(obj, $obj_owt) <= 500) ? __sl58 : __sl59)), actualn);
+                    nh_snprintf(__s_xname_flags, 788, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_s_s__2, (cptr.ldI32o(obj, $obj_owt) <= 100) ? __s_small : ((cptr.ldI32o(obj, $obj_owt) <= 300) ? __s_medium : ((cptr.ldI32o(obj, $obj_owt) <= 500) ? __s_large : __s_very_large)), actualn);
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
                 break;
@@ -1413,123 +1413,123 @@ function xname_flags(obj, cxn_flags) {
             if (typ == NHC.STATUE && omndx != NHC.NON_PM) {
                 let anbuf = new Uint8Array(10);
                 let statue_pmname = obj_pmname(obj);
-                nh_snprintf(__sl46, 813, buf, bufspaceleft, __sl60, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0) ? __sl61 : __sl13, actualn, ((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl13 : (the_unique_pm(cptr.add(mons, omndx, 96)) ? __sl62 : just_an(cptr.decay(anbuf), statue_pmname)), statue_pmname);
+                nh_snprintf(__s_xname_flags, 813, buf, bufspaceleft, __s_s_s_of_s_s, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0) ? __s_historic : __s_empty, actualn, ((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : (the_unique_pm(cptr.add(mons, omndx, 96)) ? __s_the : just_an(cptr.decay(anbuf), statue_pmname)), statue_pmname);
             } else if (typ == NHC.BOULDER && cptr.ldI32o(obj, $obj_corpsenm) == 1) {
-                void cptr.strcat(cptr.strcpy(buf, __sl63), actualn);
+                void cptr.strcat(cptr.strcpy(buf, __s_next), actualn);
                 cptr.stI32o(obj, $obj_corpsenm, 0);
             } else {
                 void cptr.strcpy(buf, actualn);
             }
             break;
             case NHC.BALL_CLASS:
-            void cptr.sprintf(buf, __sl64, (cptr.ldI32o(obj, $obj_owt) > cptr.ldI32o(ocl, $objclass_oc_weight)) ? __sl65 : __sl13);
+            void cptr.sprintf(buf, __s_sheavy_iron_ball, (cptr.ldI32o(obj, $obj_owt) > cptr.ldI32o(ocl, $objclass_oc_weight)) ? __s_very : __s_empty);
             break;
             case NHC.POTION_CLASS:
             if (dknown && (cptr.ldI32o(obj, $obj_oeroded) & 3) | 0)
-                void cptr.strcpy(buf, __sl66);
+                void cptr.strcpy(buf, __s_diluted);
             if (nn || un || !dknown) {
-                void cptr.strcat(buf, __sl17);
+                void cptr.strcat(buf, __s_potion);
                 if (!dknown)
                     break;
                 if (nn) {
-                    void cptr.strcat(buf, __sl34);
+                    void cptr.strcat(buf, __s_of);
                     if (typ == NHC.POT_WATER && bknown && ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0)) {
-                        void cptr.strcat(buf, (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? __sl67 : __sl68);
+                        void cptr.strcat(buf, (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? __s_holy : __s_unholy);
                     }
                     void cptr.strcat(buf, actualn);
                 } else {
-                    xcalled(buf, 176, __sl13, un);
+                    xcalled(buf, 176, __s_empty, un);
                 }
             } else {
                 void cptr.strcat(buf, dn);
-                void cptr.strcat(buf, __sl69);
+                void cptr.strcat(buf, __s_potion__2);
             }
             break;
             case NHC.SCROLL_CLASS:
-            void cptr.strcpy(buf, __sl18);
+            void cptr.strcpy(buf, __s_scroll);
             if (!dknown)
                 break;
             if (nn) {
-                void cptr.strcat(buf, __sl34);
+                void cptr.strcat(buf, __s_of);
                 void cptr.strcat(buf, actualn);
             } else if (un) {
-                xcalled(buf, 176, __sl13, un);
+                xcalled(buf, 176, __s_empty, un);
             } else if ((cptr.ldI32o(ocl, $objclass_oc_magic) & 1)) {
-                void cptr.strcat(buf, __sl70);
+                void cptr.strcat(buf, __s_labeled);
                 void cptr.strcat(buf, dn);
             } else {
                 void cptr.strcpy(buf, dn);
-                void cptr.strcat(buf, __sl71);
+                void cptr.strcat(buf, __s_scroll__2);
             }
             break;
             case NHC.WAND_CLASS:
             if (!dknown)
-                void cptr.strcpy(buf, __sl19);
+                void cptr.strcpy(buf, __s_wand);
             else if (nn)
-                void cptr.sprintf(buf, __sl72, actualn);
+                void cptr.sprintf(buf, __s_wand_of_s, actualn);
             else if (un)
-                xcalled(buf, 176, __sl19, un);
+                xcalled(buf, 176, __s_wand, un);
             else
-                void cptr.sprintf(buf, __sl73, dn);
+                void cptr.sprintf(buf, __s_s_wand, dn);
             break;
             case NHC.SPBOOK_CLASS:
             if (typ == NHC.SPE_NOVEL) {
                 if (!dknown)
-                    void cptr.strcpy(buf, __sl21);
+                    void cptr.strcpy(buf, __s_book);
                 else if (nn)
                     void cptr.strcpy(buf, actualn);
                 else if (un)
-                    xcalled(buf, 176, __sl22, un);
+                    xcalled(buf, 176, __s_novel, un);
                 else
-                    void cptr.sprintf(buf, __sl74, dn);
+                    void cptr.sprintf(buf, __s_s_book, dn);
                 break;
             } else if (!dknown) {
-                void cptr.strcpy(buf, __sl20);
+                void cptr.strcpy(buf, __s_spellbook);
             } else if (nn) {
                 if (typ != NHC.SPE_BOOK_OF_THE_DEAD)
-                    void cptr.strcpy(buf, __sl75);
+                    void cptr.strcpy(buf, __s_spellbook_of);
                 void cptr.strcat(buf, actualn);
             } else if (un) {
-                xcalled(buf, 176, __sl20, un);
+                xcalled(buf, 176, __s_spellbook, un);
             } else
-                void cptr.sprintf(buf, __sl76, dn);
+                void cptr.sprintf(buf, __s_s_spellbook, dn);
             break;
             case NHC.RING_CLASS:
             if (!dknown)
-                void cptr.strcpy(buf, __sl23);
+                void cptr.strcpy(buf, __s_ring);
             else if (nn)
-                void cptr.sprintf(buf, __sl77, actualn);
+                void cptr.sprintf(buf, __s_ring_of_s, actualn);
             else if (un)
-                xcalled(buf, 176, __sl23, un);
+                xcalled(buf, 176, __s_ring, un);
             else
-                void cptr.sprintf(buf, __sl78, dn);
+                void cptr.sprintf(buf, __s_s_ring, dn);
             break;
             case NHC.GEM_CLASS:
             {
-                let rock = (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL) ? __sl79 : __sl80;
+                let rock = (((cptr.ldI32o(ocl, $objclass_oc_material) & 31) | 0) == NHC.MINERAL) ? __s_stone__2 : __s_gem__2;
                 if (!dknown) {
                     void cptr.strcpy(buf, rock);
                 } else if (!nn) {
                     if (un)
                         xcalled(buf, 176, rock, un);
                     else
-                        void cptr.sprintf(buf, __sl55, dn, rock);
+                        void cptr.sprintf(buf, __s_s_s__2, dn, rock);
                 } else {
                     void cptr.strcpy(buf, actualn);
                     if ((typ == NHC.FLINT || (((cptr.ldI32o2(objects, typ, 120, $objclass_oc_material) & 31) | 0) == NHC.GEMSTONE && (typ != NHC.DILITHIUM_CRYSTAL && typ != NHC.RUBY && typ != NHC.DIAMOND && typ != NHC.SAPPHIRE && typ != NHC.BLACK_OPAL && typ != NHC.EMERALD && typ != NHC.OPAL))))
-                        void cptr.strcat(buf, __sl28);
+                        void cptr.strcat(buf, __s_stone);
                 }
                 break;
             }
             default:
-            void cptr.sprintf(buf, __sl81, cptr.ld1so(obj, $obj_oclass), typ, cptr.ld1so(obj, $obj_spe));
-            impossible(__sl82, buf);
+            void cptr.sprintf(buf, __s_glorkum_d_d_d, cptr.ld1so(obj, $obj_oclass), typ, cptr.ld1so(obj, $obj_spe));
+            impossible(__s_xname_flags_s, buf);
             break;
         }
         buf_eos = eos(buf);
         if (cptr.cmp(buf_eos, buf_end) > 0) {
-            paniclog(__sl83, cptr.memcpy(cptr.add(buf, -(6)), __sl84, 6n));
-            panic(__sl85);
+            paniclog(__s_xname, cptr.memcpy(cptr.add(buf, -(6)), __s_buf, 6n));
+            panic(__s_xname_buffer_overflow_before_appending);
         }
         bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
         if (pluralize) {
@@ -1549,7 +1549,7 @@ function xname_flags(obj, cxn_flags) {
                 case NHC.T_SHIRT:
                 case NHC.ALCHEMY_SMOCK:
                 {
-                    nh_snprintf(__sl46, 982, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl86, (cptr.ldI16o(obj, $obj_otyp) == NHC.T_SHIRT) ? tshirt_text(obj, cptr.decay(tmpbuf)) : apron_text(obj, cptr.decay(tmpbuf)));
+                    nh_snprintf(__s_xname_flags, 982, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_with_text_s, (cptr.ldI16o(obj, $obj_otyp) == NHC.T_SHIRT) ? tshirt_text(obj, cptr.decay(tmpbuf)) : apron_text(obj, cptr.decay(tmpbuf)));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
                 break;
@@ -1557,13 +1557,13 @@ function xname_flags(obj, cxn_flags) {
                 lbl = candy_wrapper_text(obj);
                 if (cptr.ld1s(lbl))
                     {
-                        nh_snprintf(__sl46, 987, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl87, lbl);
+                        nh_snprintf(__s_xname_flags, 987, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_labeled_s, lbl);
                         buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                     }
                 break;
                 case NHC.HAWAIIAN_SHIRT:
                 {
-                    nh_snprintf(__sl46, 991, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __sl88, an(hawaiian_motif(obj, cptr.decay(tmpbuf))));
+                    nh_snprintf(__s_xname_flags, 991, cptr.add(buf_eos, -(0)), BigInt.asUintN(64, bufspaceleft + 0n), __s_with_s_motif, an(hawaiian_motif(obj, cptr.decay(tmpbuf))));
                     buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
                 }
                 break;
@@ -1573,7 +1573,7 @@ function xname_flags(obj, cxn_flags) {
         }
         if (has_oname(obj) && dknown) {
             {
-                void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __sl89, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), __s_named, BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
                 buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
             }
             __go_nameit = true; break __skip_nameit;
@@ -1585,16 +1585,16 @@ function xname_flags(obj, cxn_flags) {
             void __builtin___strncat_chk(cptr.add(buf_eos, -(0)), (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))), BigInt.asUintN(64, bufspaceleft + 0n), __builtin_object_size(cptr.add(buf_eos, -(0)), 1));
             buf_eos = eos(buf), bufspaceleft = BigInt.asUintN(64, (cptr.diff(buf_end, buf_eos)));
         }
-        if (cptr.ld1so(obj, $obj_oartifact) && !cptr.strncmp(obufp, __sl90, 4n))
+        if (cptr.ld1so(obj, $obj_oartifact) && !cptr.strncmp(obufp, __s_the__2, 4n))
             cptr.st1(obufp, lowc(cptr.ld1s(obufp)));
     }
-    if (!strncmpi(buf, __sl62, 4))
+    if (!strncmpi(buf, __s_the, 4))
         buf = cptr.add(buf, 4);
     buf_eos = eos(buf);
     if (cptr.cmp(buf_eos, buf_end) >= 0) {
         if (!__static_xname_flags_xname_full++) {
-            paniclog(__sl83, cptr.memcpy(cptr.add(buf, -(6)), __sl84, 6n));
-            paniclog(__sl83, __sl91);
+            paniclog(__s_xname, cptr.memcpy(cptr.add(buf, -(6)), __s_buf, 6n));
+            paniclog(__s_xname, __s_used_up_entire_obuf_prefix_bufsx_1);
         }
     }
     return buf;
@@ -1624,7 +1624,7 @@ function minimal_xname(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SLIME_MOLD)
         cptr.st1o(bareobj, $obj_spe, cptr.ld1so(obj, $obj_spe));
     bufp = distant_name(bareobj, xname);
-    if (!cptr.strncmp(bufp, __sl92, 9n))
+    if (!cptr.strncmp(bufp, __s_uncursed, 9n))
         bufp = cptr.add(bufp, 9);
     cptr.stPtro2(objects, otyp, 120, $objclass_oc_uname, cptr.ldPtro(saveobcls, $objclass_oc_uname));
     cptr.stI32o2(objects, otyp, 120, $objclass_oc_name_known, (cptr.ldI32o(saveobcls, $objclass_oc_name_known) & 1));
@@ -1636,7 +1636,7 @@ export function mshot_xname(obj) {
     let tmpbuf = new Uint8Array(256);
     let onm = xname(obj);
     if (cptr.ldI32o(gm, $instance_globals_m_m_shot) > 1 && cptr.ldI16o(gm, $instance_globals_m_m_shot + $multishot_o) == cptr.ldI16o(obj, $obj_otyp)) {
-        void cptr.sprintf(cptr.decay(tmpbuf), __sl93, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i), ordin(cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i)));
+        void cptr.sprintf(cptr.decay(tmpbuf), __s_the_d_s, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i), ordin(cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i)));
         onm = strprepend(onm, cptr.decay(tmpbuf));
     }
     return onm;
@@ -1676,27 +1676,27 @@ function add_erosion_words(obj, prefix) {
     if ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 && !iscrys) {
         switch ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) {
             case 2:
-            void cptr.strcat(prefix, __sl65);
+            void cptr.strcat(prefix, __s_very);
             break;
             case 3:
-            void cptr.strcat(prefix, __sl94);
+            void cptr.strcat(prefix, __s_thoroughly);
             break;
         }
-        void cptr.strcat(prefix, (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl95 : (is_crackable(obj) ? __sl96 : __sl97));
+        void cptr.strcat(prefix, (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __s_rusty : (is_crackable(obj) ? __s_cracked : __s_burnt));
     }
     if ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0 && !iscrys) {
         switch ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0) {
             case 2:
-            void cptr.strcat(prefix, __sl65);
+            void cptr.strcat(prefix, __s_very);
             break;
             case 3:
-            void cptr.strcat(prefix, __sl94);
+            void cptr.strcat(prefix, __s_thoroughly);
             break;
         }
-        void cptr.strcat(prefix, is_corrodeable(obj) ? __sl98 : __sl99);
+        void cptr.strcat(prefix, is_corrodeable(obj) ? __s_corroded : __s_rotted);
     }
     if (rknown && (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0)
-        void cptr.strcat(prefix, iscrys ? __sl100 : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl101 : (is_corrodeable(obj) ? __sl102 : (is_flammable(obj) ? __sl103 : (is_crackable(obj) ? __sl104 : (is_rottable(obj) ? __sl105 : __sl13))))));
+        void cptr.strcat(prefix, iscrys ? __s_fixed : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __s_rustproof : (is_corrodeable(obj) ? __s_corrodeproof : (is_flammable(obj) ? __s_fireproof : (is_crackable(obj) ? __s_tempered : (is_rottable(obj) ? __s_rotproof : __s_empty))))));
 }
 
 /** C ref: objnam.c:1195 — @param {CPtr<struct obj>} obj @returns {CInt} */
@@ -1735,7 +1735,7 @@ function doname_base(obj, doname_flags) {
         bp = xname(obj);
         bp_end = cptr.add(cptr.add(cptr.ldPtro(gx, $instance_globals_x_xnamep), NHM.BUFSZ), -(1));
         bp_eos.v = eos(bp);
-        (__builtin_expect(BigInt((!(cptr.cmp(bp_end, bp_eos.v) >= 0))), 0n) ? __assert_rtn(__sl106, __sl107, 1250, __sl108) : void 0);
+        (__builtin_expect(BigInt((!(cptr.cmp(bp_end, bp_eos.v) >= 0))), 0n) ? __assert_rtn(__s_doname_base, __s_objnam_c, 1250, __s_bp_end_bp_eos) : void 0);
         bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
         if (cptr.ldI32o(iflags, $instance_flags_override_ID)) {
             known = (dknown = (cknown = (bknown = (lknown = 1))));
@@ -1746,53 +1746,53 @@ function doname_base(obj, doname_flags) {
             bknown = schar((cptr.ldI32o(obj, $obj_bknown) & 1));
             lknown = schar((cptr.ldI32o(obj, $obj_lknown) & 1));
         }
-        if (!cptr.strncmp(bp, __sl43, 9n) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0) {
+        if (!cptr.strncmp(bp, __s_poisoned, 9n) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0) {
             bp = cptr.add(bp, 9);
             ispoisoned = 1;
         }
         fake_arti = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.SLIME_MOLD && (aname = artifact_name(bp, null, 0)) !== null ? 1 : 0));
-        force_the = schar((fake_arti && !strncmpi(aname, __sl62, 4) ? 1 : 0));
+        force_the = schar((fake_arti && !strncmpi(aname, __s_the, 4) ? 1 : 0));
         cptr.st1o(cptr.decay(prefix), 0, 0, 1);
         if (cptr.ldI64o(obj, $obj_quan) != 1n) {
             if (dknown || !vague_quan)
-                void cptr.sprintf(cptr.decay(prefix), __sl109, cptr.ldI64o(obj, $obj_quan));
+                void cptr.sprintf(cptr.decay(prefix), __s_ld, cptr.ldI64o(obj, $obj_quan));
             else
-                void cptr.strcpy(cptr.decay(prefix), __sl110);
+                void cptr.strcpy(cptr.decay(prefix), __s_some);
         } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) {
             ;
         } else if (force_the || obj_is_pname(obj) || the_unique_obj(obj)) {
-            if (!strncmpi(bp, __sl62, 4))
+            if (!strncmpi(bp, __s_the, 4))
                 bp = cptr.add(bp, 4);
-            void cptr.strcpy(cptr.decay(prefix), __sl62);
+            void cptr.strcpy(cptr.decay(prefix), __s_the);
         } else if (!fake_arti) {
-            void cptr.strcpy(cptr.decay(prefix), __sl111);
+            void cptr.strcpy(cptr.decay(prefix), __s_a_sp);
         }
         if (cknown && ((cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(obj, $obj_otyp) == NHC.HORN_OF_PLENTY) ? (cptr.ld1so(obj, $obj_spe) == 0 && !known ? 1 : 0) : ((Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) && !(cptr.ldPtro((obj), $obj_cobj) !== null) ? 1 : 0)))
-            void cptr.strcat(cptr.decay(prefix), __sl112);
+            void cptr.strcat(cptr.decay(prefix), __s_empty__2);
         if (bknown && cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER || !(cptr.ldI32o2(objects, NHC.POT_WATER, 120, $objclass_oc_name_known) & 1) || (!(cptr.ldI32o(obj, $obj_cursed) & 1) && !(cptr.ldI32o(obj, $obj_blessed) & 1)))) {
             if ((cptr.ldI32o(obj, $obj_cursed) & 1))
-                void cptr.strcat(cptr.decay(prefix), __sl113);
+                void cptr.strcat(cptr.decay(prefix), __s_cursed);
             else if ((cptr.ldI32o(obj, $obj_blessed) & 1))
-                void cptr.strcat(cptr.decay(prefix), __sl114);
+                void cptr.strcat(cptr.decay(prefix), __s_blessed);
             else if (!cptr.ld1so(flags, $flag_implicit_uncursed) || ((!known || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) || cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS) && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL && cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC)))
-                void cptr.strcat(cptr.decay(prefix), __sl92);
+                void cptr.strcat(cptr.decay(prefix), __s_uncursed);
         }
         if (Is_box(obj) && (cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && (cptr.ldI32o(obj, $obj_tknown) & 1) | 0 && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
-            void cptr.strcat(cptr.decay(prefix), __sl115);
+            void cptr.strcat(cptr.decay(prefix), __s_trapped);
         if (lknown && Is_box(obj)) {
             if ((cptr.ldI32o(obj, $obj_obroken) & 1))
-                void cptr.strcat(cptr.decay(prefix), __sl116);
+                void cptr.strcat(cptr.decay(prefix), __s_broken);
             else if ((cptr.ldI32o(obj, $obj_olocked) & 1))
-                void cptr.strcat(cptr.decay(prefix), __sl117);
+                void cptr.strcat(cptr.decay(prefix), __s_locked);
             else
-                void cptr.strcat(cptr.decay(prefix), __sl118);
+                void cptr.strcat(cptr.decay(prefix), __s_unlocked);
         }
         if ((cptr.ldI32o(obj, $obj_greased) & 1))
-            void cptr.strcat(cptr.decay(prefix), __sl119);
+            void cptr.strcat(cptr.decay(prefix), __s_greased);
         if (cknown && (cptr.ldPtro((obj), $obj_cobj) !== null) && bpspaceleft > 0n) {
             itemcount = count_contents(obj, 0, 0, 1, 0);
             {
-                nh_snprintf(__sl106, 1379, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl120, itemcount, (((itemcount) == 1n) ? __sl13 : __sl121));
+                nh_snprintf(__s_doname_base, 1379, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_containing_ld_item_s, itemcount, (((itemcount) == 1n) ? __s_empty : __s_s));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         }
@@ -1812,7 +1812,7 @@ function doname_base(obj, doname_flags) {
         case 5: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 65536n)
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_being_worn, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         { __pc = 3; continue; }
@@ -1820,20 +1820,20 @@ function doname_base(obj, doname_flags) {
         case 6: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), (cptr.eq(obj, uskin.v)) ? __sl123 : (doffing(obj) ? __sl124 : (donning(obj) ? __sl125 : __sl122)), BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), (cptr.eq(obj, uskin.v)) ? __s_embedded_in_your_skin : (doffing(obj) ? __s_being_doffed : (donning(obj) ? __s_being_donned : __s_being_worn)), BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
             if (cptr.ld1so(bp_eos.v, -1) == 41) {
                 if (cptr.eq(obj, uarmg.v) && Glib())
                     {
-                        void __builtin___strncat_chk(cptr.add(bp_eos.v, -(1)), __sl126, BigInt.asUintN(64, bpspaceleft + 1n), __builtin_object_size(cptr.add(bp_eos.v, -(1)), 1));
+                        void __builtin___strncat_chk(cptr.add(bp_eos.v, -(1)), __s_slippery, BigInt.asUintN(64, bpspaceleft + 1n), __builtin_object_size(cptr.add(bp_eos.v, -(1)), 1));
                         bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                     }
             }
             if (cptr.ld1so(bp_eos.v, -1) == 41) {
                 if (!Blind() && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
                     {
-                        nh_snprintf(__sl106, 1413, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl127, arti_light_description(obj));
+                        nh_snprintf(__s_doname_base, 1413, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __s_s_lit, arti_light_description(obj));
                         bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                     }
             }
@@ -1845,10 +1845,10 @@ function doname_base(obj, doname_flags) {
         }
         case 7: {
         if (ispoisoned)
-            void cptr.strcat(cptr.decay(prefix), __sl43);
+            void cptr.strcat(cptr.decay(prefix), __s_poisoned);
         add_erosion_words(obj, cptr.decay(prefix));
         if (known) {
-            void cptr.sprintf(eos(cptr.decay(prefix)), __sl128, cptr.ld1so(obj, $obj_spe));
+            void cptr.sprintf(eos(cptr.decay(prefix)), __s_pct_plus_d_sp, cptr.ld1so(obj, $obj_spe));
         }
         { __pc = 3; continue; }
         }
@@ -1858,7 +1858,7 @@ function doname_base(obj, doname_flags) {
         }
         case 16: {
         {
-            void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl122, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+            void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_being_worn, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
         }
         { __pc = 3; continue; }
@@ -1871,14 +1871,14 @@ function doname_base(obj, doname_flags) {
         mlsh = find_mid(cptr.ldI32o(obj, $obj_corpsenm) >>> 0, NHM.FM_FMON);
         if (mlsh && !(cptr.ldI32o((mlsh), $monst_mhp) < 1)) {
             {
-                nh_snprintf(__sl106, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl129, noit_mon_nam(mlsh));
+                nh_snprintf(__s_doname_base, 1435, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_attached_to_s, noit_mon_nam(mlsh));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         } else {
             if (mlsh)
-                impossible(__sl130, mon_pmname(mlsh), cptr.ldI32o(obj, $obj_corpsenm) >>> 0);
+                impossible(__s_leashed_s_u_is_dead, mon_pmname(mlsh), cptr.ldI32o(obj, $obj_corpsenm) >>> 0);
             else
-                impossible(__sl131, cptr.ldI32o(obj, $obj_corpsenm) >>> 0);
+                impossible(__s_leashed_monster_u_not_found, cptr.ldI32o(obj, $obj_corpsenm) >>> 0);
             cptr.stI32o(obj, $obj_corpsenm, 0);
         }
         { __pc = 3; continue; }
@@ -1889,9 +1889,9 @@ function doname_base(obj, doname_flags) {
         }
         case 20: {
         suffix = new Uint8Array(20);
-        void cptr.sprintf(cptr.decay(suffix), __sl35, (((cptr.ld1so(obj, $obj_spe)) == 1) ? __sl13 : __sl121), !(cptr.ldI32o(obj, $obj_lamplit) & 1) ? __sl132 : __sl133);
+        void cptr.sprintf(cptr.decay(suffix), __s_s_s, (((cptr.ld1so(obj, $obj_spe)) == 1) ? __s_empty : __s_s), !(cptr.ldI32o(obj, $obj_lamplit) & 1) ? __s_attached : __s_lit);
         {
-            nh_snprintf(__sl106, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl134, cptr.ld1so(obj, $obj_spe), cptr.decay(suffix));
+            nh_snprintf(__s_doname_base, 1453, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_d_of_7_candle_s, cptr.ld1so(obj, $obj_spe), cptr.decay(suffix));
             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
         }
         { __pc = 3; continue; }
@@ -1911,11 +1911,11 @@ function doname_base(obj, doname_flags) {
                 turns_left += BigInt.asIntN(64, peek_timer(NHC.BURN_OBJECT, timer) - cptr.ldI64o(svm, $instance_globals_saved_m_moves));
             }
             if (turns_left < full_burn_time)
-                void cptr.strcat(cptr.decay(prefix), __sl135);
+                void cptr.strcat(cptr.decay(prefix), __s_partly_used);
         }
         if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_lit__2, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         { __pc = 3; continue; }
@@ -1941,7 +1941,7 @@ function doname_base(obj, doname_flags) {
         case 1 /* charges: */: {
         if (known)
             {
-                nh_snprintf(__sl106, 1486, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl137, (cptr.ldI32o(obj, $obj_recharged) & 7) | 0, cptr.ld1so(obj, $obj_spe));
+                nh_snprintf(__s_doname_base, 1486, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_d_d, (cptr.ldI32o(obj, $obj_recharged) & 7) | 0, cptr.ld1so(obj, $obj_spe));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         { __pc = 3; continue; }
@@ -1949,7 +1949,7 @@ function doname_base(obj, doname_flags) {
         case 10: {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0)
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl136, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_lit__2, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         { __pc = 3; continue; }
@@ -1961,27 +1961,27 @@ function doname_base(obj, doname_flags) {
         case 2 /* ring: */: {
         if (cptr.ldI64o(obj, $obj_owornmask) & 262144n)
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl138, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_on_right, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         if (cptr.ldI64o(obj, $obj_owornmask) & 131072n)
             {
-                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl139, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_on_left, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         if (cptr.ldI64o(obj, $obj_owornmask) & 393216n)
             {
-                nh_snprintf(__sl106, 1499, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl140, body_part(NHC.HAND));
+                nh_snprintf(__s_doname_base, 1499, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_pct_s_rparen, body_part(NHC.HAND));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         if (known && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) | 0) {
-            void cptr.sprintf(eos(cptr.decay(prefix)), __sl128, cptr.ld1so(obj, $obj_spe));
+            void cptr.sprintf(eos(cptr.decay(prefix)), __s_pct_plus_d_sp, cptr.ld1so(obj, $obj_spe));
         }
         { __pc = 3; continue; }
         }
         case 12: {
         if (cptr.ldI32o(obj, $obj_oeaten))
-            void cptr.strcat(cptr.decay(prefix), __sl54);
+            void cptr.strcat(cptr.decay(prefix), __s_partly_eaten);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) { __pc = 27; continue; }
         __pc = 28; continue;
         }
@@ -1989,7 +1989,7 @@ function doname_base(obj, doname_flags) {
         cxarg = (((cptr.ldI64o(obj, $obj_quan) != 1n) ? 0 : NHM.CXN_ARTICLE) | NHM.CXN_NOCORPSE) >>> 0;
         save_xnamep = cptr.ldPtro(gx, $instance_globals_x_xnamep);
         cxstr = corpse_xname(obj, cptr.decay(prefix), cxarg);
-        void cptr.sprintf(cptr.decay(prefix), __sl141, cxstr);
+        void cptr.sprintf(cptr.decay(prefix), __s_pct_s_sp, cxstr);
         releaseobuf(cxstr);
         cptr.stPtro(gx, $instance_globals_x_xnamep, save_xnamep);
         __pc = 26;
@@ -2002,10 +2002,10 @@ function doname_base(obj, doname_flags) {
         case 30: {
         if (ismnum(omndx) && (known || (cptr.ld1uo2(svm, omndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.MV_KNOWS_EGG))) {
             void cptr.strcat(cptr.decay(prefix), cptr.ldPtro3(mons, omndx, 96, NHC.NEUTRAL, 8, 0));
-            void cptr.strcat(cptr.decay(prefix), __sl142);
+            void cptr.strcat(cptr.decay(prefix), __s_sp);
             if (cptr.ld1so(obj, $obj_spe) == 1)
                 {
-                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl143, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_laid_by_you, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
         }
@@ -2038,7 +2038,7 @@ function doname_base(obj, doname_flags) {
         add_erosion_words(obj, cptr.decay(prefix));
         if (cptr.ldI64o(obj, $obj_owornmask) & 6291456n)
             {
-                nh_snprintf(__sl106, 1545, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl144, (cptr.ldI64o(obj, $obj_owornmask) & 2097152n) ? __sl145 : __sl146);
+                nh_snprintf(__s_doname_base, 1545, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_s_to_you, (cptr.ldI64o(obj, $obj_owornmask) & 2097152n) ? __s_chained : __s_attached__2);
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         { __pc = 3; continue; }
@@ -2048,7 +2048,7 @@ function doname_base(obj, doname_flags) {
             cgend = (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_GENDER);
             mgend = ((cgend == NHM.CORPSTAT_MALE) ? NHC.MALE : ((cgend == NHM.CORPSTAT_FEMALE) ? NHC.FEMALE : NHC.NEUTRAL));
             {
-                nh_snprintf(__sl106, 1558, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl25, (cgend != NHM.CORPSTAT_RANDOM) ? cptr.ldPtro(genders, mgend, 48) : __sl147);
+                nh_snprintf(__s_doname_base, 1558, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_sp_lparen_pct_s_rparen, (cgend != NHM.CORPSTAT_RANDOM) ? cptr.ldPtro(genders, mgend, 48) : __s_unspecified_gender);
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         }
@@ -2057,7 +2057,7 @@ function doname_base(obj, doname_flags) {
             tethered = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.AKLYS));
             if ((cptr.ldI64o(obj, $obj_quan) != 1n || ((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? (is_ammo(obj) || is_missile(obj) ? 1 : 0) : !is_weptool(obj))) && !twoweap_primary) {
                 {
-                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl148, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_wielded, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             } else {
@@ -2067,22 +2067,22 @@ function doname_base(obj, doname_flags) {
                     hand_s = cptr.strcpy(cptr.decay(handsbuf), obufp = makeplural(hand_s));
                     releaseobuf(obufp);
                 } else {
-                    void cptr.sprintf(cptr.decay(handsbuf), __sl55, URIGHTY() ? __sl149 : __sl150, hand_s);
+                    void cptr.sprintf(cptr.decay(handsbuf), __s_s_s__2, URIGHTY() ? __s_right : __s_left, hand_s);
                     hand_s = cptr.decay(handsbuf);
                 }
                 {
-                    nh_snprintf(__sl106, 1595, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl151, tethered ? __sl152 : (twoweap_primary ? __sl153 : __sl154), hand_s);
+                    nh_snprintf(__s_doname_base, 1595, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_s_s__3, tethered ? __s_tethered_to : (twoweap_primary ? __s_wielded_in : __s_weapon_in), hand_s);
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
                 if (!Blind() && bpspaceleft && cptr.ld1so(bp_eos.v, -1) == 41) {
                     if (cptr.ldI32(gw) && cptr.eq(obj, uwep.v) && (EWarn_of_mon() & 256n) != 0n)
                         {
-                            nh_snprintf(__sl106, 1605, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl155, glow_verb(cptr.ldI32(gw), 1), glow_color(cptr.ld1so(obj, $obj_oartifact)));
+                            nh_snprintf(__s_doname_base, 1605, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __s_s_s__4, glow_verb(cptr.ldI32(gw), 1), glow_color(cptr.ld1so(obj, $obj_oartifact)));
                             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                         }
                     else if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
                         {
-                            nh_snprintf(__sl106, 1609, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl127, arti_light_description(obj));
+                            nh_snprintf(__s_doname_base, 1609, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __s_s_lit, arti_light_description(obj));
                             bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                         }
                 }
@@ -2091,12 +2091,12 @@ function doname_base(obj, doname_flags) {
         if (cptr.ldI64o(obj, $obj_owornmask) & 1024n) {
             if (cptr.ld1so(u, $you_twoweap))
                 {
-                    nh_snprintf(__sl106, 1616, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl156, URIGHTY() ? __sl150 : __sl149, body_part(NHC.HAND));
+                    nh_snprintf(__s_doname_base, 1616, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_wielded_in_s_s, URIGHTY() ? __s_left : __s_right, body_part(NHC.HAND));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             else
                 {
-                    nh_snprintf(__sl106, 1620, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl157, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl13 : __sl121));
+                    nh_snprintf(__s_doname_base, 1620, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_alternate_weapon_s_not_wielded, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __s_empty : __s_s));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
         }
@@ -2117,7 +2117,7 @@ function doname_base(obj, doname_flags) {
                 break;
             }
             {
-                nh_snprintf(__sl106, 1645, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl25, (Qtyp == 1) ? __sl158 : ((Qtyp == 2) ? __sl159 : __sl160));
+                nh_snprintf(__s_doname_base, 1645, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_sp_lparen_pct_s_rparen, (Qtyp == 1) ? __s_in_quiver : ((Qtyp == 2) ? __s_in_quiver_pouch : __s_at_the_ready));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
         }
@@ -2126,9 +2126,9 @@ function doname_base(obj, doname_flags) {
         } else if (is_unpaid(obj)) {
             pricebuf = new Uint8Array(40);
             quotedprice = unpaid_cost(obj, NHC.COST_CONTENTS);
-            void cptr.sprintf(cptr.decay(pricebuf), __sl161, quotedprice, currency(quotedprice));
+            void cptr.sprintf(cptr.decay(pricebuf), __s_ld_s, quotedprice, currency(quotedprice));
             {
-                nh_snprintf(__sl106, 1661, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl162, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __sl163 : __sl164, cptr.decay(pricebuf));
+                nh_snprintf(__s_doname_base, 1661, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_s_s__5, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __s_unpaid : __s_contents, cptr.decay(pricebuf));
                 bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
             }
             record_price_quote(cptr.ldI16o(obj, $obj_otyp), BigInt.asUintN(64, (quotedprice / cptr.ldI64o(obj, $obj_quan))), 1);
@@ -2137,14 +2137,14 @@ function doname_base(obj, doname_flags) {
             price = get_cost_of_shop_item(obj, nochrg);
             if (price > 0n) {
                 pricebuf = new Uint8Array(40);
-                void cptr.sprintf(cptr.decay(pricebuf), __sl161, price, currency(price));
+                void cptr.sprintf(cptr.decay(pricebuf), __s_ld_s, price, currency(price));
                 {
-                    nh_snprintf(__sl106, 1673, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl162, nochrg.v ? __sl164 : __sl165, cptr.decay(pricebuf));
+                    nh_snprintf(__s_doname_base, 1673, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_s_s__5, nochrg.v ? __s_contents : __s_for_sale, cptr.decay(pricebuf));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             } else if (nochrg.v > 0) {
                 {
-                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __sl166, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
+                    void __builtin___strncat_chk(cptr.add(bp_eos.v, -(0)), __s_no_charge, BigInt.asUintN(64, bpspaceleft + 0n), __builtin_object_size(cptr.add(bp_eos.v, -(0)), 1));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             } else if (cptr.ld1so(iflags, $instance_flags_pricequotes) && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
@@ -2155,7 +2155,7 @@ function doname_base(obj, doname_flags) {
         } else if (cptr.ld1so(iflags, $instance_flags_pricequotes) && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
             append_price_quote(bp, bp_eos, cptr.ldI16o(obj, $obj_otyp));
         }
-        if (!cptr.strncmp(cptr.decay(prefix), __sl111, 2n)) {
+        if (!cptr.strncmp(cptr.decay(prefix), __s_a_sp, 2n)) {
             void cptr.strcpy(cptr.decay(tmpbuf), cptr.add(cptr.decay(prefix), 2));
             void just_an(cptr.decay(prefix), cptr.ld1s(cptr.decay(tmpbuf)) ? cptr.decay(tmpbuf) : bp);
             void cptr.strcat(cptr.decay(prefix), cptr.decay(tmpbuf));
@@ -2163,12 +2163,12 @@ function doname_base(obj, doname_flags) {
         if (wizard() && cptr.ld1so(iflags, $instance_flags_wizweight)) {
             if (with_price && cptr.ld1so(bp_eos.v, -1) == 41)
                 {
-                    nh_snprintf(__sl106, 1700, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __sl167, cptr.ldI32o(obj, $obj_owt));
+                    nh_snprintf(__s_doname_base, 1700, cptr.add(bp_eos.v, -(1)), BigInt.asUintN(64, bpspaceleft + 1n), __s_u_aum, cptr.ldI32o(obj, $obj_owt));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             else
                 {
-                    nh_snprintf(__sl106, 1702, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __sl168, cptr.ldI32o(obj, $obj_owt));
+                    nh_snprintf(__s_doname_base, 1702, cptr.add(bp_eos.v, -(0)), BigInt.asUintN(64, bpspaceleft + 0n), __s_u_aum__2, cptr.ldI32o(obj, $obj_owt));
                     bp_eos.v = eos(bp), bpspaceleft = BigInt.asUintN(64, (cptr.diff(bp_end, bp_eos.v)));
                 }
             (void (bp_eos.v));
@@ -2176,15 +2176,15 @@ function doname_base(obj, doname_flags) {
         }
         bp = strprepend(bp, cptr.decay(prefix));
         if (cptr.strlen(bp) > 255n) {
-            paniclog(__sl169, bp);
-            panic(__sl170);
+            paniclog(__s_doname, bp);
+            panic(__s_doname_long_object_description_overflow);
         } else {
             offsetbp = for_menu ? 4 : 0;
             if (BigInt.asUintN(64, cptr.strlen(bp) + BigInt.asUintN(64, BigInt(offsetbp))) >= 255n) {
                 if (!__static_doname_base_doname_full++) {
-                    paniclog(__sl169, bp);
-                    void cptr.sprintf(cptr.decay(tmpbuf), __sl171, offsetbp ? __sl172 : __sl13);
-                    paniclog(__sl169, cptr.decay(tmpbuf));
+                    paniclog(__s_doname, bp);
+                    void cptr.sprintf(cptr.decay(tmpbuf), __s_long_object_description_s, offsetbp ? __s_truncated_for_menu_use : __s_empty);
+                    paniclog(__s_doname, cptr.decay(tmpbuf));
                 }
                 cptr.st1o(bp, (255 - offsetbp) | 0, 0);
             }
@@ -2244,7 +2244,7 @@ export function corpse_xname(otmp, adjective, cxn_flags) {
     if (glob) {
         mnam = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), 120))), 16));
     } else if (omndx == NHC.NON_PM) {
-        mnam = __sl173;
+        mnam = __s_thing;
     } else {
         mnam = obj_pmname(otmp);
         if (the_unique_pm(cptr.add(mons, omndx, 96)) || ((cptr.ldU64o((cptr.add(mons, omndx, 96)), $permonst_mflags2) & 524288n) != 0n)) {
@@ -2262,14 +2262,14 @@ export function corpse_xname(otmp, adjective, cxn_flags) {
         any_prefix = 0;
     cptr.st1(nambuf, 0);
     if (the_prefix)
-        void cptr.strcat(nambuf, __sl62);
+        void cptr.strcat(nambuf, __s_the);
     if (!adjective || !cptr.ld1s(adjective)) {
         void cptr.strcat(nambuf, mnam);
     } else {
         if (possessive)
-            void cptr.sprintf(eos(nambuf), __sl55, mnam, adjective);
+            void cptr.sprintf(eos(nambuf), __s_s_s__2, mnam, adjective);
         else
-            void cptr.sprintf(eos(nambuf), __sl55, adjective, mnam);
+            void cptr.sprintf(eos(nambuf), __s_s_s__2, adjective, mnam);
         mungspaces(nambuf);
         if (digit(cptr.ld1s(adjective)))
             any_prefix = 0;
@@ -2277,9 +2277,9 @@ export function corpse_xname(otmp, adjective, cxn_flags) {
     if (glob) {
         ;
     } else if (!omit_corpse) {
-        void cptr.strcat(nambuf, __sl174);
+        void cptr.strcat(nambuf, __s_corpse);
         if (cptr.ldI64o(otmp, $obj_quan) > 1n && !ignore_quan) {
-            void cptr.strcat(nambuf, __sl121);
+            void cptr.strcat(nambuf, __s_s);
             any_prefix = 0;
         }
     }
@@ -2334,11 +2334,11 @@ export function killer_xname(obj) {
         buf = corpse_xname(obj, null, NHM.CXN_NORMAL);
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SLIME_MOLD) {
         buf = nextobuf();
-        void cptr.sprintf(buf, __sl175, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __sl13 : __sl121));
+        void cptr.sprintf(buf, __s_deadly_slime_mold_s, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __s_empty : __s_s));
     } else {
         buf = xname(obj);
     }
-    if (cptr.ldI64o(obj, $obj_quan) == 1n && !strstri(buf, __sl176) && !strstri(buf, __sl177))
+    if (cptr.ldI64o(obj, $obj_quan) == 1n && !strstri(buf, __s_apos_s_sp) && !strstri(buf, __s_s_apos_sp))
         buf = (obj_is_pname(obj) || the_unique_obj(obj)) ? the(buf) : an(buf);
     cptr.stI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known, save_ocknown);
     cptr.stPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname, save_ocuname);
@@ -2362,7 +2362,7 @@ export function short_oname(obj, func, altfunc, lenlimit) {
     save_uname = cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname);
     if (save_uname && cptr.strlen(save_uname) >= 12n) {
         void __builtin___strncpy_chk(cptr.decay(unamebuf), save_uname, 8n, __builtin_object_size(cptr.decay(unamebuf), 1));
-        void cptr.strcpy(cptr.add(cptr.add(cptr.decay(unamebuf), 12n), -(4)), __sl178);
+        void cptr.strcpy(cptr.add(cptr.add(cptr.decay(unamebuf), 12n), -(4)), __s_dot3);
         cptr.stPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname, cptr.decay(unamebuf));
         releaseobuf(outbuf);
         outbuf = (func)(obj);
@@ -2373,7 +2373,7 @@ export function short_oname(obj, func, altfunc, lenlimit) {
     save_oname = has_oname(obj) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : null;
     if (save_oname && cptr.strlen(save_oname) >= 12n) {
         void __builtin___strncpy_chk(cptr.decay(onamebuf), save_oname, 8n, __builtin_object_size(cptr.decay(onamebuf), 1));
-        void cptr.strcpy(cptr.add(cptr.add(cptr.decay(onamebuf), 12n), -(4)), __sl178);
+        void cptr.strcpy(cptr.add(cptr.add(cptr.decay(onamebuf), 12n), -(4)), __s_dot3);
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), cptr.decay(onamebuf));
         releaseobuf(outbuf);
         outbuf = (func)(obj);
@@ -2428,14 +2428,14 @@ export function just_an(outbuf, str) {
     cptr.st1(outbuf, 0);
     c0 = lowc(cptr.ld1s(str));
     if (!cptr.ld1so(str, 1) || cptr.ld1so(str, 1) == 32) {
-        void cptr.strcpy(outbuf, cptr.strchr(__sl179, c0) ? __sl180 : __sl111);
-    } else if (!strncmpi(str, __sl62, 4) || !strncmpi((str), (__sl181), -1) || !strncmpi((str), (__sl182), -1) || !strncmpi((str), (__sl183), -1)) {
+        void cptr.strcpy(outbuf, cptr.strchr(__s_aefhilmnosx, c0) ? __s_an : __s_a_sp);
+    } else if (!strncmpi(str, __s_the, 4) || !strncmpi((str), (__s_molten_lava), -1) || !strncmpi((str), (__s_iron_bars), -1) || !strncmpi((str), (__s_ice), -1)) {
         ;
     } else {
-        if ((cptr.strchr(cptr.decay(vowels), c0) && (strncmpi(str, __sl184, 3) || (cptr.ld1so(str, 3) && !cptr.strchr(__sl185, cptr.ld1so(str, 3)))) && strncmpi(str, __sl186, 2) && strncmpi(str, __sl187, 3) && strncmpi(str, __sl188, 7) && strncmpi(str, __sl189, 7) && strncmpi(str, __sl190, 7) && strncmpi(str, __sl191, 6)) || (c0 == 120 && !cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1so(str, 1)))))
-            void cptr.strcpy(outbuf, __sl180);
+        if ((cptr.strchr(cptr.decay(vowels), c0) && (strncmpi(str, __s_one, 3) || (cptr.ld1so(str, 3) && !cptr.strchr(__s_dash_us_sp, cptr.ld1so(str, 3)))) && strncmpi(str, __s_eu, 2) && strncmpi(str, __s_uke, 3) && strncmpi(str, __s_ukulele, 7) && strncmpi(str, __s_unicorn, 7) && strncmpi(str, __s_uranium, 7) && strncmpi(str, __s_useful, 6)) || (c0 == 120 && !cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1so(str, 1)))))
+            void cptr.strcpy(outbuf, __s_an);
         else
-            void cptr.strcpy(outbuf, __sl111);
+            void cptr.strcpy(outbuf, __s_a_sp);
     }
     return outbuf;
 }
@@ -2444,11 +2444,11 @@ export function just_an(outbuf, str) {
 export function an(str) {
     let buf = nextobuf();
     if (!str || !cptr.ld1s(str)) {
-        impossible(__sl192, str ? __sl193 : __sl194);
-        return cptr.strcpy(buf, __sl195);
+        impossible(__s_alphabet_soup_an_s, str ? __s_quot2 : __s_null);
+        return cptr.strcpy(buf, __s_an__2);
     }
     void just_an(buf, str);
-    return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __sl196, 2154)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
+    return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __s_an__3, 2154)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
 }
 
 /** C ref: objnam.c:2158 — @param {CPtr<char>} str @returns {CPtr<char>} */
@@ -2464,14 +2464,14 @@ export function the(str) {
     let buf = nextobuf();
     let insert_the = 0;
     if (!str || !cptr.ld1s(str)) {
-        impossible(__sl197, str ? __sl193 : __sl194);
-        return cptr.strcpy(buf, __sl198);
+        impossible(__s_alphabet_soup_the_s, str ? __s_quot2 : __s_null);
+        return cptr.strcpy(buf, __s_the__3);
     }
-    if (!strncmpi(str, __sl62, 4)) {
+    if (!strncmpi(str, __s_the, 4)) {
         cptr.st1o(buf, 0, lowc(cptr.ld1s(str)));
         void cptr.strcpy(cptr.add(buf, 1), cptr.add(str, 1));
         return buf;
-    } else if (cptr.ld1s(str) < 65 || cptr.ld1s(str) > 90 || CapitalMon(str) || (fruit_from_name(str, 1, null) && ((aname = artifact_name(str, null, 0)) === null || strncmpi(aname, __sl62, 4) == 0))) {
+    } else if (cptr.ld1s(str) < 65 || cptr.ld1s(str) > 90 || CapitalMon(str) || (fruit_from_name(str, 1, null) && ((aname = artifact_name(str, null, 0)) === null || strncmpi(aname, __s_the, 4) == 0))) {
         insert_the = 1;
     } else {
         let named;
@@ -2481,22 +2481,22 @@ export function the(str) {
         if (((tmp = cptr.strrchr(str, 32)) !== null || (tmp = cptr.strrchr(str, 45)) !== null) && (cptr.ld1so(tmp, 1) < 65 || cptr.ld1so(tmp, 1) > 90)) {
             insert_the = schar((!cptr.strchr(str, 39)));
         } else if (tmp && cptr.cmp(cptr.strchr(str, 32), tmp) < 0) {
-            tmp = strstri(str, __sl34);
-            named = strstri(str, __sl89);
-            called = strstri(str, __sl199);
+            tmp = strstri(str, __s_of);
+            named = strstri(str, __s_named);
+            called = strstri(str, __s_called);
             if (called && (!named || cptr.cmp(called, named) < 0))
                 named = called;
             if (tmp && (!named || cptr.cmp(tmp, named) < 0))
                 insert_the = 1;
-            else if (!named && (l = Strlen_(str, __sl200, 2220) | 0) >= 31 && !strcmp(cptr.add(str, (l - 31) | 0), __sl201))
+            else if (!named && (l = Strlen_(str, __s_the__4, 2220) | 0) >= 31 && !strcmp(cptr.add(str, (l - 31) | 0), __s_platinum_yendorian_express_card))
                 insert_the = 1;
         }
     }
     if (insert_the)
-        void cptr.strcpy(buf, __sl62);
+        void cptr.strcpy(buf, __s_the);
     else
         cptr.st1o(buf, 0, 0);
-    return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __sl200, 2230)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
+    return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __s_the__4, 2230)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
 }
 
 /** C ref: objnam.c:2234 — @param {CPtr<char>} str @returns {CPtr<char>} */
@@ -2511,11 +2511,11 @@ export function aobjnam(otmp, verb) {
     let prefix = new Uint8Array(80);
     let bp = cxname(otmp);
     if (cptr.ldI64o(otmp, $obj_quan) != 1n) {
-        void cptr.sprintf(cptr.decay(prefix), __sl109, cptr.ldI64o(otmp, $obj_quan));
+        void cptr.sprintf(cptr.decay(prefix), __s_ld, cptr.ldI64o(otmp, $obj_quan));
         bp = strprepend(bp, cptr.decay(prefix));
     }
     if (verb) {
-        void cptr.strcat(bp, __sl142);
+        void cptr.strcat(bp, __s_sp);
         void cptr.strcat(bp, otense(otmp, verb));
     }
     return bp;
@@ -2526,7 +2526,7 @@ export function yobjnam(obj, verb) {
     let s = aobjnam(obj, verb);
     if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = shk_your(nextobuf(), obj);
-        let space_left = ((255 - Strlen_(outbuf, __sl202, 2271)) >>> 0) | 0;
+        let space_left = ((255 - Strlen_(outbuf, __s_yobjnam, 2271)) >>> 0) | 0;
         s = __builtin___strncat_chk(outbuf, s, BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(outbuf, 1));
     }
     return s;
@@ -2543,7 +2543,7 @@ export function Yobjnam2(obj, verb) {
 export function Tobjnam(otmp, verb) {
     let bp = The(xname(otmp));
     if (verb) {
-        void cptr.strcat(bp, __sl142);
+        void cptr.strcat(bp, __s_sp);
         void cptr.strcat(bp, otense(otmp, verb));
     }
     return bp;
@@ -2572,18 +2572,18 @@ export function paydoname(obj) {
     cptr.st1o(iflags, $instance_flags_wizweight, save_wizweight);
     if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         if (!(cptr.ldI32o(obj, $obj_no_charge) & 1)) {
-            if (!cptr.strncmp(p, __sl111, 2n))
+            if (!cptr.strncmp(p, __s_a_sp, 2n))
                 p = cptr.add(p, 2);
-            else if (!cptr.strncmp(p, __sl180, 3n))
+            else if (!cptr.strncmp(p, __s_an, 3n))
                 p = cptr.add(p, 3);
-            p = strprepend(p, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __sl203 : __sl204);
+            p = strprepend(p, (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? __s_an_unpaid : __s_your);
         }
         if (!(cptr.ldI32o(obj, $obj_cknown) & 1)) {
             if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
                 if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(p))))) + 18n) - 1n) < 176n)
                     void cptr.strcat(p, cptr.decay(__static_paydoname_and_contents));
             } else {
-                p = strprepend(p, __sl205);
+                p = strprepend(p, __s_the_contents_of);
             }
         }
     }
@@ -2596,7 +2596,7 @@ export function yname(obj) {
     let s = cxname(obj);
     if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = shk_your(nextobuf(), obj);
-        let space_left = ((255 - Strlen_(outbuf, __sl206, 2368)) >>> 0) | 0;
+        let space_left = ((255 - Strlen_(outbuf, __s_yname, 2368)) >>> 0) | 0;
         s = __builtin___strncat_chk(outbuf, s, BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(outbuf, 1));
     }
     return s;
@@ -2613,7 +2613,7 @@ export function Yname2(obj) {
 export function ysimple_name(obj) {
     let outbuf = nextobuf();
     let s = shk_your(outbuf, obj);
-    let space_left = ((255 - Strlen_(s, __sl207, 2395)) >>> 0) | 0;
+    let space_left = ((255 - Strlen_(s, __s_ysimple_name, 2395)) >>> 0) | 0;
     return __builtin___strncat_chk(s, minimal_xname(obj), BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(s, 1));
 }
 
@@ -2679,7 +2679,7 @@ export function bare_artifactname(obj) {
     if (cptr.ld1so(obj, $obj_oartifact)) {
         outbuf = nextobuf();
         void cptr.strcpy(outbuf, artiname(cptr.ld1so(obj, $obj_oartifact)));
-        if (!cptr.strncmp(outbuf, __sl90, 4n))
+        if (!cptr.strncmp(outbuf, __s_the__2, 4n))
             cptr.st1o(outbuf, 0, lowc(cptr.ld1so(outbuf, 0)));
     } else {
         outbuf = xname(obj);
@@ -2689,19 +2689,19 @@ export function bare_artifactname(obj) {
 
 /** C ref: objnam.c:2517 — char *[13] */
 const wrp = cptr.alloc(13 * 8);
-cptr.stPtro(wrp, 0, __sl19);
-cptr.stPtro(wrp, 8, __sl23);
-cptr.stPtro(wrp, 16, __sl17);
-cptr.stPtro(wrp, 24, __sl18);
-cptr.stPtro(wrp, 32, __sl80);
-cptr.stPtro(wrp, 40, __sl24);
-cptr.stPtro(wrp, 48, __sl20);
-cptr.stPtro(wrp, 56, __sl208);
-cptr.stPtro(wrp, 64, __sl209);
-cptr.stPtro(wrp, 72, __sl210);
-cptr.stPtro(wrp, 80, __sl211);
-cptr.stPtro(wrp, 88, __sl212);
-cptr.stPtro(wrp, 96, __sl213);
+cptr.stPtro(wrp, 0, __s_wand);
+cptr.stPtro(wrp, 8, __s_ring);
+cptr.stPtro(wrp, 16, __s_potion);
+cptr.stPtro(wrp, 24, __s_scroll);
+cptr.stPtro(wrp, 32, __s_gem__2);
+cptr.stPtro(wrp, 40, __s_amulet);
+cptr.stPtro(wrp, 48, __s_spellbook);
+cptr.stPtro(wrp, 56, __s_spell_book);
+cptr.stPtro(wrp, 64, __s_weapon);
+cptr.stPtro(wrp, 72, __s_armor);
+cptr.stPtro(wrp, 80, __s_tool);
+cptr.stPtro(wrp, 88, __s_food);
+cptr.stPtro(wrp, 96, __s_comestible);
 
 /** C ref: objnam.c:2523 — char[13] */
 const wrpsym = [NHC.WAND_CLASS, NHC.RING_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.GEM_CLASS, NHC.AMULET_CLASS, NHC.SPBOOK_CLASS, NHC.SPBOOK_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.TOOL_CLASS, NHC.FOOD_CLASS, NHC.FOOD_CLASS];
@@ -2718,17 +2718,17 @@ export function otense(otmp, verb) {
 
 /** C ref: objnam.c:2550 — char *[12] */
 const special_subjs = cptr.alloc(12 * 8);
-cptr.stPtro(special_subjs, 0, __sl214);
-cptr.stPtro(special_subjs, 8, __sl215);
-cptr.stPtro(special_subjs, 16, __sl216);
-cptr.stPtro(special_subjs, 24, __sl217);
-cptr.stPtro(special_subjs, 32, __sl218);
-cptr.stPtro(special_subjs, 40, __sl219);
-cptr.stPtro(special_subjs, 48, __sl220);
-cptr.stPtro(special_subjs, 56, __sl221);
-cptr.stPtro(special_subjs, 64, __sl222);
-cptr.stPtro(special_subjs, 72, __sl223);
-cptr.stPtro(special_subjs, 80, __sl224);
+cptr.stPtro(special_subjs, 0, __s_erinys);
+cptr.stPtro(special_subjs, 8, __s_manes);
+cptr.stPtro(special_subjs, 16, __s_cyclops);
+cptr.stPtro(special_subjs, 24, __s_hippocrates);
+cptr.stPtro(special_subjs, 32, __s_pelias);
+cptr.stPtro(special_subjs, 40, __s_aklys);
+cptr.stPtro(special_subjs, 48, __s_amnesia);
+cptr.stPtro(special_subjs, 56, __s_detect_monsters);
+cptr.stPtro(special_subjs, 64, __s_paralysis);
+cptr.stPtro(special_subjs, 72, __s_shape_changers);
+cptr.stPtro(special_subjs, 80, __s_nemesis);
 cptr.stPtro(special_subjs, 88, null);
 
 /** C ref: objnam.c:2563 — @param {CPtr<char>} subj @param {CPtr<char>} verb @returns {CPtr<char>} */
@@ -2742,11 +2742,11 @@ export function vtense(subj, verb) {
     let spec;
     __lbl_sing: {
         if (subj) {
-            if (!strncmpi(subj, __sl111, 2) || !strncmpi(subj, __sl180, 3))
+            if (!strncmpi(subj, __s_a_sp, 2) || !strncmpi(subj, __s_an, 3))
                 break __lbl_sing;
             spot = null;
             for (sp = subj; (sp = cptr.strchr(sp, 32)) !== null; sp = cptr.add(sp, 1)) {
-                if (!strncmpi(sp, __sl34, 4) || !strncmpi(sp, __sl225, 6) || !strncmpi(sp, __sl199, 8) || !strncmpi(sp, __sl89, 7) || !strncmpi(sp, __sl70, 9)) {
+                if (!strncmpi(sp, __s_of, 4) || !strncmpi(sp, __s_from, 6) || !strncmpi(sp, __s_called, 8) || !strncmpi(sp, __s_named, 7) || !strncmpi(sp, __s_labeled, 9)) {
                     if (!cptr.eq(sp, subj))
                         spot = cptr.add(sp, -(1));
                     break;
@@ -2755,10 +2755,10 @@ export function vtense(subj, verb) {
             len = Number(BigInt.asIntN(32, cptr.strlen(subj)));
             if (!spot)
                 spot = cptr.add(cptr.add(subj, len), -(1));
-            if ((lowc(cptr.ld1s(spot)) == 115 && !cptr.eq(spot, subj) && !cptr.strchr(__sl226, lowc(cptr.ld1s((cptr.add(spot, -(1))))))) || !(cptr.cmp((cptr.add(spot, -(3))), subj) < 0 || strncmpi((cptr.add(spot, -(3))), __sl227, 4)) || !(cptr.cmp((cptr.add(spot, -(3))), subj) < 0 || strncmpi((cptr.add(spot, -(3))), __sl228, 4)) || !(cptr.cmp((cptr.add(spot, -(1))), subj) < 0 || strncmpi((cptr.add(spot, -(1))), __sl229, 2)) || !(cptr.cmp((cptr.add(spot, -(1))), subj) < 0 || strncmpi((cptr.add(spot, -(1))), __sl230, 2))) {
+            if ((lowc(cptr.ld1s(spot)) == 115 && !cptr.eq(spot, subj) && !cptr.strchr(__s_us, lowc(cptr.ld1s((cptr.add(spot, -(1))))))) || !(cptr.cmp((cptr.add(spot, -(3))), subj) < 0 || strncmpi((cptr.add(spot, -(3))), __s_eeth, 4)) || !(cptr.cmp((cptr.add(spot, -(3))), subj) < 0 || strncmpi((cptr.add(spot, -(3))), __s_feet, 4)) || !(cptr.cmp((cptr.add(spot, -(1))), subj) < 0 || strncmpi((cptr.add(spot, -(1))), __s_ia, 2)) || !(cptr.cmp((cptr.add(spot, -(1))), subj) < 0 || strncmpi((cptr.add(spot, -(1))), __s_ae, 2))) {
                 len = (Number(BigInt.asIntN(32, (cptr.diff(spot, subj)))) + 1) | 0;
                 for (spec = special_subjs; cptr.ldPtr(spec); spec = cptr.add(spec, 1, 8)) {
-                    ltmp = Strlen_(cptr.ldPtr(spec), __sl231, 2610) | 0;
+                    ltmp = Strlen_(cptr.ldPtr(spec), __s_vtense, 2610) | 0;
                     if (len == ltmp && !strncmpi(cptr.ldPtr(spec), subj, len))
                         break __lbl_sing;
                     if (len > ltmp && cptr.ld1s((cptr.add(spot, -(ltmp)))) == 32 && !strncmpi(cptr.ldPtr(spec), cptr.add(cptr.add(spot, -(ltmp)), 1), ltmp))
@@ -2766,23 +2766,23 @@ export function vtense(subj, verb) {
                 }
                 return cptr.strcpy(buf, verb);
             }
-            if (!strncmpi((subj), (__sl232), -1) || !strncmpi((subj), (__sl233), -1))
+            if (!strncmpi((subj), (__s_they), -1) || !strncmpi((subj), (__s_you), -1))
                 return cptr.strcpy(buf, verb);
         }
     }
     void cptr.strcpy(buf, verb);
     len = Number(BigInt.asIntN(32, cptr.strlen(buf)));
     bspot = cptr.add(cptr.add(buf, len), -(1));
-    if (!strncmpi((buf), (__sl234), -1)) {
-        void strcasecpy(buf, __sl235);
-    } else if (!strncmpi((buf), (__sl236), -1)) {
-        void strcasecpy(cptr.add(bspot, -(1)), __sl121);
-    } else if (cptr.strchr(__sl237, lowc(cptr.ld1s(bspot))) || (len >= 2 && lowc(cptr.ld1s(bspot)) == 104 && cptr.strchr(__sl238, lowc(cptr.ld1s((cptr.add(bspot, -(1))))))) || (len == 2 && lowc(cptr.ld1s(bspot)) == 111)) {
-        void strcasecpy(cptr.add(bspot, 1), __sl239);
+    if (!strncmpi((buf), (__s_are), -1)) {
+        void strcasecpy(buf, __s_is);
+    } else if (!strncmpi((buf), (__s_have), -1)) {
+        void strcasecpy(cptr.add(bspot, -(1)), __s_s);
+    } else if (cptr.strchr(__s_zxs, lowc(cptr.ld1s(bspot))) || (len >= 2 && lowc(cptr.ld1s(bspot)) == 104 && cptr.strchr(__s_cs, lowc(cptr.ld1s((cptr.add(bspot, -(1))))))) || (len == 2 && lowc(cptr.ld1s(bspot)) == 111)) {
+        void strcasecpy(cptr.add(bspot, 1), __s_es);
     } else if (lowc(cptr.ld1s(bspot)) == 121 && !cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1s((cptr.add(bspot, -(1))))))) {
-        void strcasecpy(bspot, __sl240);
+        void strcasecpy(bspot, __s_ies);
     } else {
-        void strcasecpy(cptr.add(bspot, 1), __sl121);
+        void strcasecpy(cptr.add(bspot, 1), __s_s);
     }
     return buf;
 }
@@ -2791,88 +2791,88 @@ export function vtense(subj, verb) {
 
 /** C ref: objnam.c:2662 — struct sing_plur[23] */
 const one_off = cptr.alloc(23 * 16);
-cptr.stPtro(one_off, 0, __sl241);
-cptr.stPtro(one_off, 0 + $sing_plur_plur, __sl242);
-cptr.stPtro(one_off, 16, __sl243);
-cptr.stPtro(one_off, 16 + $sing_plur_plur, __sl244);
-cptr.stPtro(one_off, 32, __sl245);
-cptr.stPtro(one_off, 32 + $sing_plur_plur, __sl246);
-cptr.stPtro(one_off, 48, __sl216);
-cptr.stPtro(one_off, 48 + $sing_plur_plur, __sl247);
-cptr.stPtro(one_off, 64, __sl248);
-cptr.stPtro(one_off, 64 + $sing_plur_plur, __sl249);
-cptr.stPtro(one_off, 80, __sl214);
-cptr.stPtro(one_off, 80 + $sing_plur_plur, __sl250);
-cptr.stPtro(one_off, 96, __sl251);
-cptr.stPtro(one_off, 96 + $sing_plur_plur, __sl228);
-cptr.stPtro(one_off, 112, __sl252);
-cptr.stPtro(one_off, 112 + $sing_plur_plur, __sl253);
-cptr.stPtro(one_off, 128, __sl254);
-cptr.stPtro(one_off, 128 + $sing_plur_plur, __sl255);
-cptr.stPtro(one_off, 144, __sl256);
-cptr.stPtro(one_off, 144 + $sing_plur_plur, __sl257);
-cptr.stPtro(one_off, 160, __sl258);
-cptr.stPtro(one_off, 160 + $sing_plur_plur, __sl259);
-cptr.stPtro(one_off, 176, __sl260);
-cptr.stPtro(one_off, 176 + $sing_plur_plur, __sl261);
-cptr.stPtro(one_off, 192, __sl262);
-cptr.stPtro(one_off, 192 + $sing_plur_plur, __sl263);
-cptr.stPtro(one_off, 208, __sl264);
-cptr.stPtro(one_off, 208 + $sing_plur_plur, __sl265);
-cptr.stPtro(one_off, 224, __sl224);
-cptr.stPtro(one_off, 224 + $sing_plur_plur, __sl266);
-cptr.stPtro(one_off, 240, __sl267);
-cptr.stPtro(one_off, 240 + $sing_plur_plur, __sl268);
-cptr.stPtro(one_off, 256, __sl269);
-cptr.stPtro(one_off, 256 + $sing_plur_plur, __sl270);
-cptr.stPtro(one_off, 272, __sl271);
-cptr.stPtro(one_off, 272 + $sing_plur_plur, __sl272);
-cptr.stPtro(one_off, 288, __sl273);
-cptr.stPtro(one_off, 288 + $sing_plur_plur, __sl274);
-cptr.stPtro(one_off, 304, __sl275);
-cptr.stPtro(one_off, 304 + $sing_plur_plur, __sl276);
-cptr.stPtro(one_off, 320, __sl277);
-cptr.stPtro(one_off, 320 + $sing_plur_plur, __sl278);
-cptr.stPtro(one_off, 336, __sl279);
-cptr.stPtro(one_off, 336 + $sing_plur_plur, __sl280);
+cptr.stPtro(one_off, 0, __s_child);
+cptr.stPtro(one_off, 0 + $sing_plur_plur, __s_children);
+cptr.stPtro(one_off, 16, __s_cubus);
+cptr.stPtro(one_off, 16 + $sing_plur_plur, __s_cubi);
+cptr.stPtro(one_off, 32, __s_culus);
+cptr.stPtro(one_off, 32 + $sing_plur_plur, __s_culi);
+cptr.stPtro(one_off, 48, __s_cyclops);
+cptr.stPtro(one_off, 48 + $sing_plur_plur, __s_cyclopes);
+cptr.stPtro(one_off, 64, __s_djinni);
+cptr.stPtro(one_off, 64 + $sing_plur_plur, __s_djinn);
+cptr.stPtro(one_off, 80, __s_erinys);
+cptr.stPtro(one_off, 80 + $sing_plur_plur, __s_erinyes);
+cptr.stPtro(one_off, 96, __s_foot);
+cptr.stPtro(one_off, 96 + $sing_plur_plur, __s_feet);
+cptr.stPtro(one_off, 112, __s_fungus);
+cptr.stPtro(one_off, 112 + $sing_plur_plur, __s_fungi);
+cptr.stPtro(one_off, 128, __s_goose);
+cptr.stPtro(one_off, 128 + $sing_plur_plur, __s_geese);
+cptr.stPtro(one_off, 144, __s_knife);
+cptr.stPtro(one_off, 144 + $sing_plur_plur, __s_knives);
+cptr.stPtro(one_off, 160, __s_labrum);
+cptr.stPtro(one_off, 160 + $sing_plur_plur, __s_labra);
+cptr.stPtro(one_off, 176, __s_louse);
+cptr.stPtro(one_off, 176 + $sing_plur_plur, __s_lice);
+cptr.stPtro(one_off, 192, __s_mouse);
+cptr.stPtro(one_off, 192 + $sing_plur_plur, __s_mice);
+cptr.stPtro(one_off, 208, __s_mumak);
+cptr.stPtro(one_off, 208 + $sing_plur_plur, __s_mumakil);
+cptr.stPtro(one_off, 224, __s_nemesis);
+cptr.stPtro(one_off, 224 + $sing_plur_plur, __s_nemeses);
+cptr.stPtro(one_off, 240, __s_ovum);
+cptr.stPtro(one_off, 240 + $sing_plur_plur, __s_ova);
+cptr.stPtro(one_off, 256, __s_ox);
+cptr.stPtro(one_off, 256 + $sing_plur_plur, __s_oxen);
+cptr.stPtro(one_off, 272, __s_passerby);
+cptr.stPtro(one_off, 272 + $sing_plur_plur, __s_passersby);
+cptr.stPtro(one_off, 288, __s_rtex);
+cptr.stPtro(one_off, 288 + $sing_plur_plur, __s_rtices);
+cptr.stPtro(one_off, 304, __s_serum);
+cptr.stPtro(one_off, 304 + $sing_plur_plur, __s_sera);
+cptr.stPtro(one_off, 320, __s_staff);
+cptr.stPtro(one_off, 320 + $sing_plur_plur, __s_staves);
+cptr.stPtro(one_off, 336, __s_tooth);
+cptr.stPtro(one_off, 336 + $sing_plur_plur, __s_teeth);
 cptr.stPtro(one_off, 352, null);
 cptr.stPtro(one_off, 352 + $sing_plur_plur, null);
 
 /** C ref: objnam.c:2689 — char *[34] */
 const as_is = cptr.alloc(34 * 8);
-cptr.stPtro(as_is, 0, __sl281);
-cptr.stPtro(as_is, 8, __sl282);
-cptr.stPtro(as_is, 16, __sl283);
-cptr.stPtro(as_is, 24, __sl284);
-cptr.stPtro(as_is, 32, __sl285);
-cptr.stPtro(as_is, 40, __sl286);
-cptr.stPtro(as_is, 48, __sl287);
-cptr.stPtro(as_is, 56, __sl182);
-cptr.stPtro(as_is, 64, __sl288);
-cptr.stPtro(as_is, 72, __sl289);
-cptr.stPtro(as_is, 80, __sl290);
-cptr.stPtro(as_is, 88, __sl291);
-cptr.stPtro(as_is, 96, __sl292);
-cptr.stPtro(as_is, 104, __sl293);
-cptr.stPtro(as_is, 112, __sl294);
-cptr.stPtro(as_is, 120, __sl295);
-cptr.stPtro(as_is, 128, __sl296);
-cptr.stPtro(as_is, 136, __sl215);
-cptr.stPtro(as_is, 144, __sl297);
-cptr.stPtro(as_is, 152, __sl298);
-cptr.stPtro(as_is, 160, __sl299);
-cptr.stPtro(as_is, 168, __sl300);
-cptr.stPtro(as_is, 176, __sl301);
-cptr.stPtro(as_is, 184, __sl7);
-cptr.stPtro(as_is, 192, __sl302);
-cptr.stPtro(as_is, 200, __sl303);
-cptr.stPtro(as_is, 208, __sl304);
-cptr.stPtro(as_is, 216, __sl11);
-cptr.stPtro(as_is, 224, __sl305);
-cptr.stPtro(as_is, 232, __sl306);
-cptr.stPtro(as_is, 240, __sl307);
-cptr.stPtro(as_is, 248, __sl308);
-cptr.stPtro(as_is, 256, __sl309);
+cptr.stPtro(as_is, 0, __s_boots);
+cptr.stPtro(as_is, 8, __s_shoes);
+cptr.stPtro(as_is, 16, __s_gloves);
+cptr.stPtro(as_is, 24, __s_lenses);
+cptr.stPtro(as_is, 32, __s_scales);
+cptr.stPtro(as_is, 40, __s_eyes);
+cptr.stPtro(as_is, 48, __s_gauntlets);
+cptr.stPtro(as_is, 56, __s_iron_bars);
+cptr.stPtro(as_is, 64, __s_bison);
+cptr.stPtro(as_is, 72, __s_deer);
+cptr.stPtro(as_is, 80, __s_elk);
+cptr.stPtro(as_is, 88, __s_fish);
+cptr.stPtro(as_is, 96, __s_fowl);
+cptr.stPtro(as_is, 104, __s_tuna);
+cptr.stPtro(as_is, 112, __s_yaki);
+cptr.stPtro(as_is, 120, __s_hai);
+cptr.stPtro(as_is, 128, __s_krill);
+cptr.stPtro(as_is, 136, __s_manes);
+cptr.stPtro(as_is, 144, __s_moose);
+cptr.stPtro(as_is, 152, __s_ninja);
+cptr.stPtro(as_is, 160, __s_sheep);
+cptr.stPtro(as_is, 168, __s_ronin);
+cptr.stPtro(as_is, 176, __s_roshi);
+cptr.stPtro(as_is, 184, __s_shito);
+cptr.stPtro(as_is, 192, __s_tengu);
+cptr.stPtro(as_is, 200, __s_ki_rin);
+cptr.stPtro(as_is, 208, __s_nazgul);
+cptr.stPtro(as_is, 216, __s_gunyoki);
+cptr.stPtro(as_is, 224, __s_piranha);
+cptr.stPtro(as_is, 232, __s_samurai);
+cptr.stPtro(as_is, 240, __s_shuriken);
+cptr.stPtro(as_is, 248, __s_haggis);
+cptr.stPtro(as_is, 256, __s_bordeaux);
 cptr.stPtro(as_is, 264, null);
 
 /** C ref: objnam.c:2708 — @param {CPtr<char>} basestr @param {CPtr<char>} endstring @param {CInt} to_plural @param {CPtr<char *>} alt_as_is @returns {CInt} */
@@ -2882,7 +2882,7 @@ function singplur_lookup(basestr, endstring, to_plural, alt_as_is) {
     let other;
     let as;
     let al;
-    let baselen = Strlen_(basestr, __sl310, 2716) | 0;
+    let baselen = Strlen_(basestr, __s_singplur_lookup, 2716) | 0;
     for (as = as_is; cptr.ldPtr(as); as = cptr.add(as, 1, 8)) {
         al = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtr(as))));
         if (!(cptr.cmp((cptr.add(endstring, -(al))), basestr) < 0 || strncmpi(((cptr.add(endstring, -(al)))), (cptr.ldPtr(as)), -1)))
@@ -2895,24 +2895,24 @@ function singplur_lookup(basestr, endstring, to_plural, alt_as_is) {
                 return 1;
         }
     }
-    if ((baselen > 5) && (!(cptr.cmp((cptr.add(endstring, -(5))), basestr) < 0 || strncmpi(((cptr.add(endstring, -(5)))), (__sl311), -1))))
+    if ((baselen > 5) && (!(cptr.cmp((cptr.add(endstring, -(5))), basestr) < 0 || strncmpi(((cptr.add(endstring, -(5)))), (__s_craft), -1))))
         return 1;
-    if (!strncmpi((basestr), (__sl312), -1) || !strncmpi((basestr), (__sl313), -1)) {
+    if (!strncmpi((basestr), (__s_slice), -1) || !strncmpi((basestr), (__s_mongoose), -1)) {
         if (to_plural)
-            void strcasecpy(endstring, __sl121);
+            void strcasecpy(endstring, __s_s);
         return 1;
     }
-    if (to_plural && baselen > 2 && !strncmpi((cptr.add(endstring, -(2))), (__sl269), -1) && !(baselen > 5 && !strncmpi((cptr.add(endstring, -(6))), (__sl314), -1))) {
-        void strcasecpy(endstring, __sl239);
+    if (to_plural && baselen > 2 && !strncmpi((cptr.add(endstring, -(2))), (__s_ox), -1) && !(baselen > 5 && !strncmpi((cptr.add(endstring, -(6))), (__s_muskox), -1))) {
+        void strcasecpy(endstring, __s_es);
         return 1;
     }
     if (to_plural) {
-        if (baselen > 2 && !strncmpi((cptr.add(endstring, -(3))), (__sl315), -1) && badman(basestr, to_plural)) {
-            void strcasecpy(endstring, __sl121);
+        if (baselen > 2 && !strncmpi((cptr.add(endstring, -(3))), (__s_man), -1) && badman(basestr, to_plural)) {
+            void strcasecpy(endstring, __s_s);
             return 1;
         }
     } else {
-        if (baselen > 2 && !strncmpi((cptr.add(endstring, -(3))), (__sl316), -1) && badman(basestr, to_plural))
+        if (baselen > 2 && !strncmpi((cptr.add(endstring, -(3))), (__s_men), -1) && badman(basestr, to_plural))
             return 1;
     }
     for (sp = one_off; cptr.ldPtr(sp); sp = cptr.add(sp, 1, 16)) {
@@ -2931,23 +2931,23 @@ function singplur_lookup(basestr, endstring, to_plural, alt_as_is) {
 }
 
 const __static_singplur_compound_compounds = cptr.alloc(18 * 8);
-cptr.stPtro(__static_singplur_compound_compounds, 0, __sl34);
-cptr.stPtro(__static_singplur_compound_compounds, 8, __sl70);
-cptr.stPtro(__static_singplur_compound_compounds, 16, __sl199);
-cptr.stPtro(__static_singplur_compound_compounds, 24, __sl89);
-cptr.stPtro(__static_singplur_compound_compounds, 32, __sl317);
-cptr.stPtro(__static_singplur_compound_compounds, 40, __sl318);
-cptr.stPtro(__static_singplur_compound_compounds, 48, __sl225);
-cptr.stPtro(__static_singplur_compound_compounds, 56, __sl319);
-cptr.stPtro(__static_singplur_compound_compounds, 64, __sl320);
-cptr.stPtro(__static_singplur_compound_compounds, 72, __sl321);
-cptr.stPtro(__static_singplur_compound_compounds, 80, __sl322);
-cptr.stPtro(__static_singplur_compound_compounds, 88, __sl323);
-cptr.stPtro(__static_singplur_compound_compounds, 96, __sl324);
-cptr.stPtro(__static_singplur_compound_compounds, 104, __sl325);
-cptr.stPtro(__static_singplur_compound_compounds, 112, __sl326);
-cptr.stPtro(__static_singplur_compound_compounds, 120, __sl327);
-cptr.stPtro(__static_singplur_compound_compounds, 128, __sl328);
+cptr.stPtro(__static_singplur_compound_compounds, 0, __s_of);
+cptr.stPtro(__static_singplur_compound_compounds, 8, __s_labeled);
+cptr.stPtro(__static_singplur_compound_compounds, 16, __s_called);
+cptr.stPtro(__static_singplur_compound_compounds, 24, __s_named);
+cptr.stPtro(__static_singplur_compound_compounds, 32, __s_above);
+cptr.stPtro(__static_singplur_compound_compounds, 40, __s_versus);
+cptr.stPtro(__static_singplur_compound_compounds, 48, __s_from);
+cptr.stPtro(__static_singplur_compound_compounds, 56, __s_in);
+cptr.stPtro(__static_singplur_compound_compounds, 64, __s_on);
+cptr.stPtro(__static_singplur_compound_compounds, 72, __s_a_la);
+cptr.stPtro(__static_singplur_compound_compounds, 80, __s_with);
+cptr.stPtro(__static_singplur_compound_compounds, 88, __s_de);
+cptr.stPtro(__static_singplur_compound_compounds, 96, __s_sp_d_apos);
+cptr.stPtro(__static_singplur_compound_compounds, 104, __s_du);
+cptr.stPtro(__static_singplur_compound_compounds, 112, __s_au);
+cptr.stPtro(__static_singplur_compound_compounds, 120, __s_in__2);
+cptr.stPtro(__static_singplur_compound_compounds, 128, __s_at);
 cptr.stPtro(__static_singplur_compound_compounds, 136, null); /** C ref: objnam.c:2786 — char *[18] (function-static) */
 const __static_singplur_compound_compound_start = cptr.bytes(" -"); /** C ref: objnam.c:2796 — char[3] (function-static) */
 
@@ -2966,9 +2966,9 @@ function singplur_compound(str) {
 }
 
 const __static_makeplural_already_plural = cptr.alloc(4 * 8);
-cptr.stPtro(__static_makeplural_already_plural, 0, __sl230);
-cptr.stPtro(__static_makeplural_already_plural, 8, __sl364);
-cptr.stPtro(__static_makeplural_already_plural, 16, __sl365);
+cptr.stPtro(__static_makeplural_already_plural, 0, __s_ae);
+cptr.stPtro(__static_makeplural_already_plural, 8, __s_eaux);
+cptr.stPtro(__static_makeplural_already_plural, 16, __s_matzot);
 cptr.stPtro(__static_makeplural_already_plural, 24, null); /** C ref: objnam.c:2905 — char *[4] (function-static) */
 
 /** C ref: objnam.c:2836 — @param {CPtr<char>} oldstr @returns {CPtr<char>} */
@@ -2984,8 +2984,8 @@ export function makeplural(oldstr) {
             while (cptr.ld1s(oldstr) == 32)
                 oldstr = cptr.add(oldstr, 1);
         if (!oldstr || !cptr.ld1s(oldstr)) {
-            impossible(__sl329);
-            void cptr.strcpy(str, __sl121);
+            impossible(__s_plural_of_null);
+            void cptr.strcpy(str, __s_s);
             return str;
         }
         cptr.st1(str, 0);
@@ -3003,7 +3003,7 @@ export function makeplural(oldstr) {
             }
         }
         void cptr.strcpy(str, oldstr);
-        if (!strncmpi(str, __sl26, 8))
+        if (!strncmpi(str, __s_pair_of, 8))
             break __lbl_bottom;
         if ((spot = singplur_compound(str)) !== null) {
             excess = cptr.add(oldstr, Number(BigInt.asIntN(32, (cptr.diff(spot, str)))));
@@ -3014,72 +3014,72 @@ export function makeplural(oldstr) {
         while (cptr.cmp(spot, str) > 0 && cptr.ld1s(spot) == 32)
             spot = cptr.add(spot, -1);
         cptr.st1((cptr.add(spot, 1)), 0);
-        len = Strlen_(str, __sl330, 2895) | 0;
+        len = Strlen_(str, __s_makeplural, 2895) | 0;
         if (len == 1 || !letter(cptr.ld1s(spot))) {
-            void cptr.strcpy(cptr.add(spot, 1), __sl331);
+            void cptr.strcpy(cptr.add(spot, 1), __s_apos_s);
             break __lbl_bottom;
         }
         {
             if (singplur_lookup(str, cptr.add(spot, 1), 1, __static_makeplural_already_plural))
                 break __lbl_bottom;
-            if ((len == 2 && !strncmpi((str), (__sl332), -1)) || (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl333), -1)))
+            if ((len == 2 && !strncmpi((str), (__s_ya), -1)) || (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_ya__2), -1)))
                 break __lbl_bottom;
         }
-        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl315), -1) && !badman(str, 1)) {
-            void strcasecpy(cptr.add(spot, -(1)), __sl334);
+        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_man), -1) && !badman(str, 1)) {
+            void strcasecpy(cptr.add(spot, -(1)), __s_en);
             break __lbl_bottom;
         }
         if (lowc(cptr.ld1s(spot)) == 102) {
             lo_c = lowc(cptr.ld1s((cptr.add(spot, -(1)))));
-            if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl335), -1)) {
+            if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_erf), -1)) {
                 ;
-            } else if (cptr.strchr(__sl336, lo_c) || cptr.strchr(cptr.decay(vowels), lo_c)) {
-                void strcasecpy(spot, __sl337);
+            } else if (cptr.strchr(__s_lr, lo_c) || cptr.strchr(cptr.decay(vowels), lo_c)) {
+                void strcasecpy(spot, __s_ves);
                 break __lbl_bottom;
             }
         }
-        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl338), -1)) {
-            void strcasecpy(cptr.add(spot, -(2)), __sl229);
+        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_ium), -1)) {
+            void strcasecpy(cptr.add(spot, -(2)), __s_ia);
             break __lbl_bottom;
         }
-        if ((len >= 4 && !strncmpi((cptr.add(spot, -(3))), (__sl339), -1)) || (len >= 5 && (!strncmpi((cptr.add(spot, -(4))), (__sl340), -1) || !strncmpi((cptr.add(spot, -(4))), (__sl341), -1))) || (len >= 6 && !strncmpi((cptr.add(spot, -(5))), (__sl342), -1)) || (len >= 8 && (!strncmpi((cptr.add(spot, -(7))), (__sl343), -1)))) {
-            void strcasecpy(cptr.add(spot, 1), __sl344);
+        if ((len >= 4 && !strncmpi((cptr.add(spot, -(3))), (__s_alga), -1)) || (len >= 5 && (!strncmpi((cptr.add(spot, -(4))), (__s_hypha), -1) || !strncmpi((cptr.add(spot, -(4))), (__s_larva), -1))) || (len >= 6 && !strncmpi((cptr.add(spot, -(5))), (__s_amoeba), -1)) || (len >= 8 && (!strncmpi((cptr.add(spot, -(7))), (__s_vertebra), -1)))) {
+            void strcasecpy(cptr.add(spot, 1), __s_e);
             break __lbl_bottom;
         }
-        if (len > 3 && !strncmpi((cptr.add(spot, -(1))), (__sl226), -1) && !((len >= 5 && !strncmpi((cptr.add(spot, -(4))), (__sl345), -1)) || (len >= 6 && !strncmpi((cptr.add(spot, -(5))), (__sl346), -1)))) {
-            void strcasecpy(cptr.add(spot, -(1)), __sl347);
+        if (len > 3 && !strncmpi((cptr.add(spot, -(1))), (__s_us), -1) && !((len >= 5 && !strncmpi((cptr.add(spot, -(4))), (__s_lotus), -1)) || (len >= 6 && !strncmpi((cptr.add(spot, -(5))), (__s_wumpus), -1)))) {
+            void strcasecpy(cptr.add(spot, -(1)), __s_i);
             break __lbl_bottom;
         }
-        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl348), -1)) {
-            void strcasecpy(cptr.add(spot, -(1)), __sl239);
+        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_sis), -1)) {
+            void strcasecpy(cptr.add(spot, -(1)), __s_es);
             break __lbl_bottom;
         }
-        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__sl349), -1) && (cptr.cmp((cptr.add(spot, -(5))), str) < 0 || strncmpi(((cptr.add(spot, -(5)))), (__sl350), -1))) {
-            void strcasecpy(cptr.add(spot, 1), __sl351);
+        if (len >= 3 && !strncmpi((cptr.add(spot, -(2))), (__s_eau), -1) && (cptr.cmp((cptr.add(spot, -(5))), str) < 0 || strncmpi(((cptr.add(spot, -(5)))), (__s_bureau), -1))) {
+            void strcasecpy(cptr.add(spot, 1), __s_x);
             break __lbl_bottom;
         }
-        if (len >= 6 && (!strncmpi((cptr.add(spot, -(5))), (__sl352), -1) || !strncmpi((cptr.add(spot, -(5))), (__sl353), -1))) {
-            void strcasecpy(cptr.add(spot, -(1)), __sl354);
+        if (len >= 6 && (!strncmpi((cptr.add(spot, -(5))), (__s_matzoh), -1) || !strncmpi((cptr.add(spot, -(5))), (__s_matzah), -1))) {
+            void strcasecpy(cptr.add(spot, -(1)), __s_ot);
             break __lbl_bottom;
         }
-        if (len >= 5 && (!strncmpi((cptr.add(spot, -(4))), (__sl355), -1) || !strncmpi((cptr.add(spot, -(4))), (__sl356), -1))) {
-            void strcasecpy(spot, __sl354);
+        if (len >= 5 && (!strncmpi((cptr.add(spot, -(4))), (__s_matzo), -1) || !strncmpi((cptr.add(spot, -(4))), (__s_matza), -1))) {
+            void strcasecpy(spot, __s_ot);
             break __lbl_bottom;
         }
         lo_c = lowc(cptr.ld1s(spot));
-        if (len >= 5 && (!strncmpi((cptr.add(spot, -(2))), (__sl357), -1) || !strncmpi((cptr.add(spot, -(2))), (__sl358), -1) || !strncmpi((cptr.add(spot, -(2))), (__sl359), -1)) && (strncmpi((cptr.add(spot, -(4))), (__sl360), -1) != 0)) {
-            void strcasecpy(cptr.add(spot, -(1)), __sl361);
+        if (len >= 5 && (!strncmpi((cptr.add(spot, -(2))), (__s_dex), -1) || !strncmpi((cptr.add(spot, -(2))), (__s_dix), -1) || !strncmpi((cptr.add(spot, -(2))), (__s_tex), -1)) && (strncmpi((cptr.add(spot, -(4))), (__s_index), -1) != 0)) {
+            void strcasecpy(cptr.add(spot, -(1)), __s_ices);
             break __lbl_bottom;
         }
-        if (cptr.strchr(__sl237, lo_c) || (len >= 2 && lo_c == 104 && cptr.strchr(__sl238, lowc(cptr.ld1s((cptr.add(spot, -(1)))))) && !(len >= 4 && lowc(cptr.ld1s((cptr.add(spot, -(1))))) == 99 && ch_ksound(str))) || (len >= 4 && !strncmpi((cptr.add(spot, -(2))), (__sl362), -1)) || (len >= 5 && !strncmpi((cptr.add(spot, -(4))), (__sl363), -1))) {
-            void strcasecpy(cptr.add(spot, 1), __sl239);
+        if (cptr.strchr(__s_zxs, lo_c) || (len >= 2 && lo_c == 104 && cptr.strchr(__s_cs, lowc(cptr.ld1s((cptr.add(spot, -(1)))))) && !(len >= 4 && lowc(cptr.ld1s((cptr.add(spot, -(1))))) == 99 && ch_ksound(str))) || (len >= 4 && !strncmpi((cptr.add(spot, -(2))), (__s_ato), -1)) || (len >= 5 && !strncmpi((cptr.add(spot, -(4))), (__s_dingo), -1))) {
+            void strcasecpy(cptr.add(spot, 1), __s_es);
             break __lbl_bottom;
         }
         if (lo_c == 121 && !cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1s((cptr.add(spot, -(1))))))) {
-            void strcasecpy(spot, __sl240);
+            void strcasecpy(spot, __s_ies);
             break __lbl_bottom;
         }
-        void strcasecpy(cptr.add(spot, 1), __sl121);
+        void strcasecpy(cptr.add(spot, 1), __s_s);
     }
     if (excess)
         void cptr.strcat(str, excess);
@@ -3097,7 +3097,7 @@ export function makesingular(oldstr) {
             while (cptr.ld1s(oldstr) == 32)
                 oldstr = cptr.add(oldstr, 1);
         if (!oldstr || !cptr.ld1s(oldstr)) {
-            impossible(__sl366);
+            impossible(__s_singular_of_null);
             cptr.st1o(str, 0, 0);
             return str;
         }
@@ -3125,40 +3125,40 @@ export function makesingular(oldstr) {
             __lbl_mins: {
                 if (cptr.cmp(p, cptr.add(bp, 2)) >= 0 && lowc(cptr.ld1so(p, -2)) == 101) {
                     if (cptr.cmp(p, cptr.add(bp, 3)) >= 0 && lowc(cptr.ld1so(p, -3)) == 105) {
-                        if (!(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl367), -1)) || (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl368), -1)) && (cptr.eq(cptr.add(p, -(4)), bp) || cptr.ld1so(p, -5) == 32)) || (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl369), -1)) && (cptr.eq(cptr.add(p, -(6)), bp) || cptr.ld1so(p, -7) == 32)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl370), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl371), -1)))
+                        if (!(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__s_cookies), -1)) || (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_pies), -1)) && (cptr.eq(cptr.add(p, -(4)), bp) || cptr.ld1so(p, -5) == 32)) || (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_genies), -1)) && (cptr.eq(cptr.add(p, -(6)), bp) || cptr.ld1so(p, -7) == 32)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_mbies), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_yries), -1)))
                             break __lbl_mins;
-                        void strcasecpy(cptr.add(p, -(3)), __sl372);
+                        void strcasecpy(cptr.add(p, -(3)), __s_y);
                         break __lbl_bottom;
                     }
-                    if (cptr.cmp(cptr.add(p, -(4)), bp) >= 0 && (cptr.strchr(__sl336, lowc(cptr.ld1s((cptr.add(p, -(4)))))) || cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1s((cptr.add(p, -(4))))))) && !(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__sl337), -1))) {
-                        if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl373), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl374), -1)))
+                    if (cptr.cmp(cptr.add(p, -(4)), bp) >= 0 && (cptr.strchr(__s_lr, lowc(cptr.ld1s((cptr.add(p, -(4)))))) || cptr.strchr(cptr.decay(vowels), lowc(cptr.ld1s((cptr.add(p, -(4))))))) && !(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__s_ves), -1))) {
+                        if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_cloves), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_nerves), -1)))
                             break __lbl_mins;
-                        void strcasecpy(cptr.add(p, -(3)), __sl375);
+                        void strcasecpy(cptr.add(p, -(3)), __s_f);
                         break __lbl_bottom;
                     }
-                    if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl376), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl377), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl378), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl379), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl380), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl381), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl382), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl383), -1)) || !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl384), -1)) || !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl385), -1))) {
+                    if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_eses), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_oxes), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_nxes), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_ches), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_uses), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_shes), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_sses), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_atoes), -1)) || !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__s_dingoes), -1)) || !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__s_aleaxes), -1))) {
                         cptr.st1((cptr.add(p, -(2))), 0);
                         break __lbl_bottom;
                     }
-                } else if (!(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__sl226), -1))) {
-                    if ((cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl386), -1)) && (cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl387), -1)))
+                } else if (!(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__s_us), -1))) {
+                    if ((cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_tengus), -1)) && (cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__s_hezrous), -1)))
                         break __lbl_bottom;
-                } else if (!(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__sl388), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl389), -1)) || (cptr.eq(cptr.add(p, -(4)), bp) && !strncmpi((cptr.add(p, -(4))), (__sl390), -1))) {
+                } else if (!(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__s_ss), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_lens), -1)) || (cptr.eq(cptr.add(p, -(4)), bp) && !strncmpi((cptr.add(p, -(4))), (__s_lens__2), -1))) {
                     break __lbl_bottom;
                 }
             }
             cptr.st1((cptr.add(p, -(1))), 0);
         } else {
-            if (!(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__sl316), -1)) && !badman(bp, 0)) {
-                void strcasecpy(cptr.add(p, -(2)), __sl196);
+            if (!(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__s_men), -1)) && !badman(bp, 0)) {
+                void strcasecpy(cptr.add(p, -(2)), __s_an__3);
                 break __lbl_bottom;
             }
-            if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl365), -1)) || !(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__sl230), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl364), -1))) {
+            if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_matzot), -1)) || !(cptr.cmp((cptr.add(p, -(2))), bp) < 0 || strncmpi(((cptr.add(p, -(2)))), (__s_ae), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_eaux), -1))) {
                 cptr.st1((cptr.add(p, -(1))), 0);
                 break __lbl_bottom;
             }
-            if (cptr.cmp(cptr.add(p, -(4)), bp) >= 0 && !strncmpi((cptr.add(p, -(2))), (__sl229), -1) && cptr.strchr(__sl336, lowc(cptr.ld1s((cptr.add(p, -(3)))))) && lowc(cptr.ld1s((cptr.add(p, -(4))))) == 101) {
-                void strcasecpy(cptr.add(p, -(1)), __sl391);
+            if (cptr.cmp(cptr.add(p, -(4)), bp) >= 0 && !strncmpi((cptr.add(p, -(2))), (__s_ia), -1) && cptr.strchr(__s_lr, lowc(cptr.ld1s((cptr.add(p, -(3)))))) && lowc(cptr.ld1s((cptr.add(p, -(4))))) == 101) {
+                void strcasecpy(cptr.add(p, -(1)), __s_um);
             }
         }
     }
@@ -3168,25 +3168,25 @@ export function makesingular(oldstr) {
 }
 
 const __static_ch_ksound_ch_k = cptr.alloc(19 * 8);
-cptr.stPtro(__static_ch_ksound_ch_k, 0, __sl392);
-cptr.stPtro(__static_ch_ksound_ch_k, 8, __sl393);
-cptr.stPtro(__static_ch_ksound_ch_k, 16, __sl394);
-cptr.stPtro(__static_ch_ksound_ch_k, 24, __sl395);
-cptr.stPtro(__static_ch_ksound_ch_k, 32, __sl396);
-cptr.stPtro(__static_ch_ksound_ch_k, 40, __sl397);
-cptr.stPtro(__static_ch_ksound_ch_k, 48, __sl398);
-cptr.stPtro(__static_ch_ksound_ch_k, 56, __sl399);
-cptr.stPtro(__static_ch_ksound_ch_k, 64, __sl400);
-cptr.stPtro(__static_ch_ksound_ch_k, 72, __sl401);
-cptr.stPtro(__static_ch_ksound_ch_k, 80, __sl402);
-cptr.stPtro(__static_ch_ksound_ch_k, 88, __sl403);
-cptr.stPtro(__static_ch_ksound_ch_k, 96, __sl404);
-cptr.stPtro(__static_ch_ksound_ch_k, 104, __sl405);
-cptr.stPtro(__static_ch_ksound_ch_k, 112, __sl406);
-cptr.stPtro(__static_ch_ksound_ch_k, 120, __sl407);
-cptr.stPtro(__static_ch_ksound_ch_k, 128, __sl408);
-cptr.stPtro(__static_ch_ksound_ch_k, 136, __sl409);
-cptr.stPtro(__static_ch_ksound_ch_k, 144, __sl410); /** C ref: objnam.c:3172 — char *[19] (function-static) */
+cptr.stPtro(__static_ch_ksound_ch_k, 0, __s_monarch);
+cptr.stPtro(__static_ch_ksound_ch_k, 8, __s_poch);
+cptr.stPtro(__static_ch_ksound_ch_k, 16, __s_tech);
+cptr.stPtro(__static_ch_ksound_ch_k, 24, __s_mech);
+cptr.stPtro(__static_ch_ksound_ch_k, 32, __s_stomach);
+cptr.stPtro(__static_ch_ksound_ch_k, 40, __s_psych);
+cptr.stPtro(__static_ch_ksound_ch_k, 48, __s_amphibrach);
+cptr.stPtro(__static_ch_ksound_ch_k, 56, __s_anarch);
+cptr.stPtro(__static_ch_ksound_ch_k, 64, __s_atriarch);
+cptr.stPtro(__static_ch_ksound_ch_k, 72, __s_azedarach);
+cptr.stPtro(__static_ch_ksound_ch_k, 80, __s_broch);
+cptr.stPtro(__static_ch_ksound_ch_k, 88, __s_gastrotrich);
+cptr.stPtro(__static_ch_ksound_ch_k, 96, __s_isopach);
+cptr.stPtro(__static_ch_ksound_ch_k, 104, __s_loch);
+cptr.stPtro(__static_ch_ksound_ch_k, 112, __s_oligarch);
+cptr.stPtro(__static_ch_ksound_ch_k, 120, __s_peritrich);
+cptr.stPtro(__static_ch_ksound_ch_k, 128, __s_sandarach);
+cptr.stPtro(__static_ch_ksound_ch_k, 136, __s_sumach);
+cptr.stPtro(__static_ch_ksound_ch_k, 144, __s_symposiarch); /** C ref: objnam.c:3172 — char *[19] (function-static) */
 
 /** C ref: objnam.c:3168 — @param {CPtr<char>} basestr @returns {CInt} */
 function ch_ksound(basestr) {
@@ -3205,74 +3205,74 @@ function ch_ksound(basestr) {
 }
 
 const __static_badman_no_men = cptr.alloc(36 * 8);
-cptr.stPtro(__static_badman_no_men, 0, __sl411);
-cptr.stPtro(__static_badman_no_men, 8, __sl412);
-cptr.stPtro(__static_badman_no_men, 16, __sl413);
-cptr.stPtro(__static_badman_no_men, 24, __sl414);
-cptr.stPtro(__static_badman_no_men, 32, __sl415);
-cptr.stPtro(__static_badman_no_men, 40, __sl416);
-cptr.stPtro(__static_badman_no_men, 48, __sl417);
-cptr.stPtro(__static_badman_no_men, 56, __sl418);
-cptr.stPtro(__static_badman_no_men, 64, __sl419);
-cptr.stPtro(__static_badman_no_men, 72, __sl420);
-cptr.stPtro(__static_badman_no_men, 80, __sl421);
-cptr.stPtro(__static_badman_no_men, 88, __sl422);
-cptr.stPtro(__static_badman_no_men, 96, __sl423);
-cptr.stPtro(__static_badman_no_men, 104, __sl424);
-cptr.stPtro(__static_badman_no_men, 112, __sl425);
-cptr.stPtro(__static_badman_no_men, 120, __sl426);
-cptr.stPtro(__static_badman_no_men, 128, __sl427);
-cptr.stPtro(__static_badman_no_men, 136, __sl428);
-cptr.stPtro(__static_badman_no_men, 144, __sl429);
-cptr.stPtro(__static_badman_no_men, 152, __sl430);
-cptr.stPtro(__static_badman_no_men, 160, __sl431);
-cptr.stPtro(__static_badman_no_men, 168, __sl432);
-cptr.stPtro(__static_badman_no_men, 176, __sl433);
-cptr.stPtro(__static_badman_no_men, 184, __sl434);
-cptr.stPtro(__static_badman_no_men, 192, __sl435);
-cptr.stPtro(__static_badman_no_men, 200, __sl436);
-cptr.stPtro(__static_badman_no_men, 208, __sl437);
-cptr.stPtro(__static_badman_no_men, 216, __sl438);
-cptr.stPtro(__static_badman_no_men, 224, __sl439);
-cptr.stPtro(__static_badman_no_men, 232, __sl440);
-cptr.stPtro(__static_badman_no_men, 240, __sl441);
-cptr.stPtro(__static_badman_no_men, 248, __sl442);
-cptr.stPtro(__static_badman_no_men, 256, __sl443);
-cptr.stPtro(__static_badman_no_men, 264, __sl444);
-cptr.stPtro(__static_badman_no_men, 272, __sl445);
-cptr.stPtro(__static_badman_no_men, 280, __sl446); /** C ref: objnam.c:3199 — char *[36] (function-static) */
+cptr.stPtro(__static_badman_no_men, 0, __s_albu);
+cptr.stPtro(__static_badman_no_men, 8, __s_antihu);
+cptr.stPtro(__static_badman_no_men, 16, __s_anti);
+cptr.stPtro(__static_badman_no_men, 24, __s_ata);
+cptr.stPtro(__static_badman_no_men, 32, __s_auto);
+cptr.stPtro(__static_badman_no_men, 40, __s_bildungsro);
+cptr.stPtro(__static_badman_no_men, 48, __s_cai);
+cptr.stPtro(__static_badman_no_men, 56, __s_cay);
+cptr.stPtro(__static_badman_no_men, 64, __s_ceru);
+cptr.stPtro(__static_badman_no_men, 72, __s_corner);
+cptr.stPtro(__static_badman_no_men, 80, __s_decu);
+cptr.stPtro(__static_badman_no_men, 88, __s_des);
+cptr.stPtro(__static_badman_no_men, 96, __s_dura);
+cptr.stPtro(__static_badman_no_men, 104, __s_fir);
+cptr.stPtro(__static_badman_no_men, 112, __s_hanu);
+cptr.stPtro(__static_badman_no_men, 120, __s_het);
+cptr.stPtro(__static_badman_no_men, 128, __s_infrahu);
+cptr.stPtro(__static_badman_no_men, 136, __s_inhu);
+cptr.stPtro(__static_badman_no_men, 144, __s_nonhu);
+cptr.stPtro(__static_badman_no_men, 152, __s_otto);
+cptr.stPtro(__static_badman_no_men, 160, __s_out);
+cptr.stPtro(__static_badman_no_men, 168, __s_prehu);
+cptr.stPtro(__static_badman_no_men, 176, __s_protohu);
+cptr.stPtro(__static_badman_no_men, 184, __s_subhu);
+cptr.stPtro(__static_badman_no_men, 192, __s_superhu);
+cptr.stPtro(__static_badman_no_men, 200, __s_talis);
+cptr.stPtro(__static_badman_no_men, 208, __s_unhu);
+cptr.stPtro(__static_badman_no_men, 216, __s_sha);
+cptr.stPtro(__static_badman_no_men, 224, __s_hu);
+cptr.stPtro(__static_badman_no_men, 232, __s_un);
+cptr.stPtro(__static_badman_no_men, 240, __s_le);
+cptr.stPtro(__static_badman_no_men, 248, __s_re);
+cptr.stPtro(__static_badman_no_men, 256, __s_so);
+cptr.stPtro(__static_badman_no_men, 264, __s_to);
+cptr.stPtro(__static_badman_no_men, 272, __s_at__2);
+cptr.stPtro(__static_badman_no_men, 280, __s_a); /** C ref: objnam.c:3199 — char *[36] (function-static) */
 const __static_badman_no_man = cptr.alloc(31 * 8);
-cptr.stPtro(__static_badman_no_man, 0, __sl447);
-cptr.stPtro(__static_badman_no_man, 8, __sl448);
-cptr.stPtro(__static_badman_no_man, 16, __sl449);
-cptr.stPtro(__static_badman_no_man, 24, __sl419);
-cptr.stPtro(__static_badman_no_man, 32, __sl450);
-cptr.stPtro(__static_badman_no_man, 40, __sl451);
-cptr.stPtro(__static_badman_no_man, 48, __sl452);
-cptr.stPtro(__static_badman_no_man, 56, __sl453);
-cptr.stPtro(__static_badman_no_man, 64, __sl454);
-cptr.stPtro(__static_badman_no_man, 72, __sl455);
-cptr.stPtro(__static_badman_no_man, 80, __sl456);
-cptr.stPtro(__static_badman_no_man, 88, __sl457);
-cptr.stPtro(__static_badman_no_man, 96, __sl458);
-cptr.stPtro(__static_badman_no_man, 104, __sl459);
-cptr.stPtro(__static_badman_no_man, 112, __sl460);
-cptr.stPtro(__static_badman_no_man, 120, __sl461);
-cptr.stPtro(__static_badman_no_man, 128, __sl462);
-cptr.stPtro(__static_badman_no_man, 136, __sl463);
-cptr.stPtro(__static_badman_no_man, 144, __sl464);
-cptr.stPtro(__static_badman_no_man, 152, __sl465);
-cptr.stPtro(__static_badman_no_man, 160, __sl466);
-cptr.stPtro(__static_badman_no_man, 168, __sl467);
-cptr.stPtro(__static_badman_no_man, 176, __sl468);
-cptr.stPtro(__static_badman_no_man, 184, __sl469);
-cptr.stPtro(__static_badman_no_man, 192, __sl470);
-cptr.stPtro(__static_badman_no_man, 200, __sl471);
-cptr.stPtro(__static_badman_no_man, 208, __sl472);
-cptr.stPtro(__static_badman_no_man, 216, __sl473);
-cptr.stPtro(__static_badman_no_man, 224, __sl332);
-cptr.stPtro(__static_badman_no_man, 232, __sl474);
-cptr.stPtro(__static_badman_no_man, 240, __sl446); /** C ref: objnam.c:3207 — char *[31] (function-static) */
+cptr.stPtro(__static_badman_no_man, 0, __s_abdo);
+cptr.stPtro(__static_badman_no_man, 8, __s_acu);
+cptr.stPtro(__static_badman_no_man, 16, __s_agno);
+cptr.stPtro(__static_badman_no_man, 24, __s_ceru);
+cptr.stPtro(__static_badman_no_man, 32, __s_cogno);
+cptr.stPtro(__static_badman_no_man, 40, __s_cycla);
+cptr.stPtro(__static_badman_no_man, 48, __s_fleh);
+cptr.stPtro(__static_badman_no_man, 56, __s_grava);
+cptr.stPtro(__static_badman_no_man, 64, __s_hegu);
+cptr.stPtro(__static_badman_no_man, 72, __s_preno);
+cptr.stPtro(__static_badman_no_man, 80, __s_sonar);
+cptr.stPtro(__static_badman_no_man, 88, __s_speci);
+cptr.stPtro(__static_badman_no_man, 96, __s_dai);
+cptr.stPtro(__static_badman_no_man, 104, __s_exa);
+cptr.stPtro(__static_badman_no_man, 112, __s_fla);
+cptr.stPtro(__static_badman_no_man, 120, __s_sta);
+cptr.stPtro(__static_badman_no_man, 128, __s_teg);
+cptr.stPtro(__static_badman_no_man, 136, __s_tegu);
+cptr.stPtro(__static_badman_no_man, 144, __s_vela);
+cptr.stPtro(__static_badman_no_man, 152, __s_da);
+cptr.stPtro(__static_badman_no_man, 160, __s_hy);
+cptr.stPtro(__static_badman_no_man, 168, __s_lu);
+cptr.stPtro(__static_badman_no_man, 176, __s_no);
+cptr.stPtro(__static_badman_no_man, 184, __s_nu);
+cptr.stPtro(__static_badman_no_man, 192, __s_ra);
+cptr.stPtro(__static_badman_no_man, 200, __s_ru);
+cptr.stPtro(__static_badman_no_man, 208, __s_se);
+cptr.stPtro(__static_badman_no_man, 216, __s_vi);
+cptr.stPtro(__static_badman_no_man, 224, __s_ya);
+cptr.stPtro(__static_badman_no_man, 232, __s_o);
+cptr.stPtro(__static_badman_no_man, 240, __s_a); /** C ref: objnam.c:3207 — char *[31] (function-static) */
 
 /** C ref: objnam.c:3194 — @param {CPtr<char>} basestr @param {CInt} to_plural @returns {CInt} */
 function badman(basestr, to_plural) {
@@ -3308,66 +3308,66 @@ const __static_wishymatch_SP_detection = cptr.bytes(" detection"); /** C ref: ob
 function wishymatch(u_str, o_str, retry_inverted) {
     let p;
     let buf = new Uint8Array(256);
-    if (fuzzymatch(u_str, o_str, __sl475, 1))
+    if (fuzzymatch(u_str, o_str, __s_sp_dash, 1))
         return 1;
     if (retry_inverted) {
         let u_of;
         let o_of;
-        u_of = strstri(u_str, __sl34);
-        o_of = strstri(o_str, __sl34);
+        u_of = strstri(u_str, __s_of);
+        o_of = strstri(o_str, __s_of);
         if (u_of && !o_of) {
             void cptr.strcpy(cptr.decay(buf), cptr.add(u_of, 4));
-            copynchars(eos(cptr.strcat(cptr.decay(buf), __sl142)), u_str, Number(BigInt.asIntN(32, (cptr.diff(u_of, u_str)))));
-            if (fuzzymatch(cptr.decay(buf), o_str, __sl475, 1))
+            copynchars(eos(cptr.strcat(cptr.decay(buf), __s_sp)), u_str, Number(BigInt.asIntN(32, (cptr.diff(u_of, u_str)))));
+            if (fuzzymatch(cptr.decay(buf), o_str, __s_sp_dash, 1))
                 return 1;
         } else if (o_of && !u_of) {
             void cptr.strcpy(cptr.decay(buf), cptr.add(o_of, 4));
-            copynchars(eos(cptr.strcat(cptr.decay(buf), __sl142)), o_str, Number(BigInt.asIntN(32, (cptr.diff(o_of, o_str)))));
-            if (fuzzymatch(u_str, cptr.decay(buf), __sl475, 1))
+            copynchars(eos(cptr.strcat(cptr.decay(buf), __s_sp)), o_str, Number(BigInt.asIntN(32, (cptr.diff(o_of, o_str)))));
+            if (fuzzymatch(u_str, cptr.decay(buf), __s_sp_dash, 1))
                 return 1;
         }
     }
-    if (!cptr.strncmp(o_str, __sl476, 9n)) {
-        if (!strncmpi(u_str, __sl477, 8))
-            return fuzzymatch(cptr.add(u_str, 8), cptr.add(o_str, 9), __sl475, 1);
-    } else if (!cptr.strncmp(o_str, __sl478, 6n)) {
-        if (!strncmpi(u_str, __sl479, 7))
-            return fuzzymatch(cptr.add(u_str, 7), cptr.add(o_str, 6), __sl475, 1);
-        else if (!strncmpi(u_str, __sl480, 6))
-            return fuzzymatch(cptr.add(u_str, 6), cptr.add(o_str, 6), __sl475, 1);
-    } else if (strstri(o_str, __sl481) && strstri(u_str, __sl482)) {
+    if (!cptr.strncmp(o_str, __s_dwarvish, 9n)) {
+        if (!strncmpi(u_str, __s_dwarven, 8))
+            return fuzzymatch(cptr.add(u_str, 8), cptr.add(o_str, 9), __s_sp_dash, 1);
+    } else if (!cptr.strncmp(o_str, __s_elven, 6n)) {
+        if (!strncmpi(u_str, __s_elvish, 7))
+            return fuzzymatch(cptr.add(u_str, 7), cptr.add(o_str, 6), __s_sp_dash, 1);
+        else if (!strncmpi(u_str, __s_elfin, 6))
+            return fuzzymatch(cptr.add(u_str, 6), cptr.add(o_str, 6), __s_sp_dash, 1);
+    } else if (strstri(o_str, __s_helm) && strstri(u_str, __s_helmet)) {
         copynchars(cptr.decay(buf), u_str, 255);
-        void strsubst(cptr.decay(buf), __sl482, __sl481);
+        void strsubst(cptr.decay(buf), __s_helmet, __s_helm);
         return wishymatch(cptr.decay(buf), o_str, 1);
-    } else if (strstri(o_str, __sl287) && strstri(u_str, __sl283)) {
+    } else if (strstri(o_str, __s_gauntlets) && strstri(u_str, __s_gloves)) {
         copynchars(cptr.decay(buf), u_str, 252);
-        void strsubst(cptr.decay(buf), __sl283, __sl287);
+        void strsubst(cptr.decay(buf), __s_gloves, __s_gauntlets);
         return wishymatch(cptr.decay(buf), o_str, 1);
     } else if (!cptr.strncmp(o_str, cptr.decay(__static_wishymatch_detect_SP), 7n)) {
         if ((p = strstri(u_str, cptr.decay(__static_wishymatch_SP_detection))) !== null && !cptr.ld1s((cptr.add(cptr.add(p, 11n), -(1))))) {
             cptr.st1(p, 0);
             void cptr.strcat(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_wishymatch_detect_SP)), u_str);
-            if (!strncmpi((u_str), (__sl483), -1))
-                void cptr.strcat(cptr.decay(buf), __sl121);
+            if (!strncmpi((u_str), (__s_monster), -1))
+                void cptr.strcat(cptr.decay(buf), __s_s);
             cptr.st1(p, 32);
-            return fuzzymatch(cptr.decay(buf), o_str, __sl475, 1);
+            return fuzzymatch(cptr.decay(buf), o_str, __s_sp_dash, 1);
         }
     } else if (strstri(o_str, cptr.decay(__static_wishymatch_SP_detection))) {
         if (!strncmpi(u_str, cptr.decay(__static_wishymatch_detect_SP), 7)) {
             p = makesingular(cptr.add(cptr.add(u_str, 8n), -(1)));
             void cptr.strcat(cptr.strcpy(cptr.decay(buf), p), cptr.decay(__static_wishymatch_SP_detection));
             releaseobuf(p);
-            return fuzzymatch(cptr.decay(buf), o_str, __sl475, 1);
+            return fuzzymatch(cptr.decay(buf), o_str, __s_sp_dash, 1);
         }
-    } else if (strstri(o_str, __sl484)) {
-        if ((p = strstri(u_str, __sl485)) !== null && !cptr.ld1s((cptr.add(cptr.add(p, 10n), -(1))))) {
+    } else if (strstri(o_str, __s_ability)) {
+        if ((p = strstri(u_str, __s_abilities)) !== null && !cptr.ld1s((cptr.add(cptr.add(p, 10n), -(1))))) {
             void __builtin___strncpy_chk(cptr.decay(buf), u_str, BigInt(Number(BigInt.asUintN(32, (cptr.diff(p, u_str)))) >>> 0), __builtin_object_size(cptr.decay(buf), 1));
-            void cptr.strcpy(cptr.add(cptr.decay(buf), (cptr.diff(p, u_str))), __sl484);
-            return fuzzymatch(cptr.decay(buf), o_str, __sl475, 1);
+            void cptr.strcpy(cptr.add(cptr.decay(buf), (cptr.diff(p, u_str))), __s_ability);
+            return fuzzymatch(cptr.decay(buf), o_str, __s_sp_dash, 1);
         }
-    } else if (!strcmp(o_str, __sl486)) {
-        if (!strncmpi((u_str), (__sl487), -1))
-            return fuzzymatch(cptr.add(u_str, 9), cptr.add(o_str, 8), __sl475, 1);
+    } else if (!strcmp(o_str, __s_aluminum)) {
+        if (!strncmpi((u_str), (__s_aluminium), -1))
+            return fuzzymatch(cptr.add(u_str, 9), cptr.add(o_str, 8), __s_sp_dash, 1);
     }
     return 0;
 }
@@ -3376,79 +3376,79 @@ function wishymatch(u_str, o_str, retry_inverted) {
 
 /** C ref: objnam.c:3346 — struct o_range[19] */
 const o_ranges = cptr.alloc(19 * 24);
-cptr.stPtro(o_ranges, 0, __sl488);
+cptr.stPtro(o_ranges, 0, __s_bag);
 cptr.st1o(o_ranges, 0 + $o_range_oclass, NHC.TOOL_CLASS);
 cptr.stI32o(o_ranges, 0 + $o_range_f_o_range, NHC.SACK);
 cptr.stI32o(o_ranges, 0 + $o_range_l_o_range, NHC.BAG_OF_TRICKS);
-cptr.stPtro(o_ranges, 24, __sl489);
+cptr.stPtro(o_ranges, 24, __s_lamp);
 cptr.st1o(o_ranges, 24 + $o_range_oclass, NHC.TOOL_CLASS);
 cptr.stI32o(o_ranges, 24 + $o_range_f_o_range, NHC.OIL_LAMP);
 cptr.stI32o(o_ranges, 24 + $o_range_l_o_range, NHC.MAGIC_LAMP);
-cptr.stPtro(o_ranges, 48, __sl490);
+cptr.stPtro(o_ranges, 48, __s_candle);
 cptr.st1o(o_ranges, 48 + $o_range_oclass, NHC.TOOL_CLASS);
 cptr.stI32o(o_ranges, 48 + $o_range_f_o_range, NHC.TALLOW_CANDLE);
 cptr.stI32o(o_ranges, 48 + $o_range_l_o_range, NHC.WAX_CANDLE);
-cptr.stPtro(o_ranges, 72, __sl491);
+cptr.stPtro(o_ranges, 72, __s_horn);
 cptr.st1o(o_ranges, 72 + $o_range_oclass, NHC.TOOL_CLASS);
 cptr.stI32o(o_ranges, 72 + $o_range_f_o_range, NHC.TOOLED_HORN);
 cptr.stI32o(o_ranges, 72 + $o_range_l_o_range, NHC.HORN_OF_PLENTY);
-cptr.stPtro(o_ranges, 96, __sl50);
+cptr.stPtro(o_ranges, 96, __s_shield);
 cptr.st1o(o_ranges, 96 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 96 + $o_range_f_o_range, NHC.SMALL_SHIELD);
 cptr.stI32o(o_ranges, 96 + $o_range_l_o_range, NHC.SHIELD_OF_REFLECTION);
-cptr.stPtro(o_ranges, 120, __sl492);
+cptr.stPtro(o_ranges, 120, __s_hat);
 cptr.st1o(o_ranges, 120 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 120 + $o_range_f_o_range, NHC.FEDORA);
 cptr.stI32o(o_ranges, 120 + $o_range_l_o_range, NHC.DUNCE_CAP);
-cptr.stPtro(o_ranges, 144, __sl481);
+cptr.stPtro(o_ranges, 144, __s_helm);
 cptr.st1o(o_ranges, 144 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 144 + $o_range_f_o_range, NHC.ELVEN_LEATHER_HELM);
 cptr.stI32o(o_ranges, 144 + $o_range_l_o_range, NHC.HELM_OF_TELEPATHY);
-cptr.stPtro(o_ranges, 168, __sl283);
+cptr.stPtro(o_ranges, 168, __s_gloves);
 cptr.st1o(o_ranges, 168 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 168 + $o_range_f_o_range, NHC.LEATHER_GLOVES);
 cptr.stI32o(o_ranges, 168 + $o_range_l_o_range, NHC.GAUNTLETS_OF_DEXTERITY);
-cptr.stPtro(o_ranges, 192, __sl287);
+cptr.stPtro(o_ranges, 192, __s_gauntlets);
 cptr.st1o(o_ranges, 192 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 192 + $o_range_f_o_range, NHC.LEATHER_GLOVES);
 cptr.stI32o(o_ranges, 192 + $o_range_l_o_range, NHC.GAUNTLETS_OF_DEXTERITY);
-cptr.stPtro(o_ranges, 216, __sl281);
+cptr.stPtro(o_ranges, 216, __s_boots);
 cptr.st1o(o_ranges, 216 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 216 + $o_range_f_o_range, NHC.LOW_BOOTS);
 cptr.stI32o(o_ranges, 216 + $o_range_l_o_range, NHC.LEVITATION_BOOTS);
-cptr.stPtro(o_ranges, 240, __sl282);
+cptr.stPtro(o_ranges, 240, __s_shoes);
 cptr.st1o(o_ranges, 240 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 240 + $o_range_f_o_range, NHC.LOW_BOOTS);
 cptr.stI32o(o_ranges, 240 + $o_range_l_o_range, NHC.IRON_SHOES);
-cptr.stPtro(o_ranges, 264, __sl493);
+cptr.stPtro(o_ranges, 264, __s_cloak);
 cptr.st1o(o_ranges, 264 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 264 + $o_range_f_o_range, NHC.MUMMY_WRAPPING);
 cptr.stI32o(o_ranges, 264 + $o_range_l_o_range, NHC.CLOAK_OF_DISPLACEMENT);
-cptr.stPtro(o_ranges, 288, __sl494);
+cptr.stPtro(o_ranges, 288, __s_shirt);
 cptr.st1o(o_ranges, 288 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 288 + $o_range_f_o_range, NHC.HAWAIIAN_SHIRT);
 cptr.stI32o(o_ranges, 288 + $o_range_l_o_range, NHC.T_SHIRT);
-cptr.stPtro(o_ranges, 312, __sl495);
+cptr.stPtro(o_ranges, 312, __s_dragon_scales);
 cptr.st1o(o_ranges, 312 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 312 + $o_range_f_o_range, NHC.GRAY_DRAGON_SCALES);
 cptr.stI32o(o_ranges, 312 + $o_range_l_o_range, NHC.YELLOW_DRAGON_SCALES);
-cptr.stPtro(o_ranges, 336, __sl496);
+cptr.stPtro(o_ranges, 336, __s_dragon_scale_mail);
 cptr.st1o(o_ranges, 336 + $o_range_oclass, NHC.ARMOR_CLASS);
 cptr.stI32o(o_ranges, 336 + $o_range_f_o_range, NHC.GRAY_DRAGON_SCALE_MAIL);
 cptr.stI32o(o_ranges, 336 + $o_range_l_o_range, NHC.YELLOW_DRAGON_SCALE_MAIL);
-cptr.stPtro(o_ranges, 360, __sl497);
+cptr.stPtro(o_ranges, 360, __s_sword);
 cptr.st1o(o_ranges, 360 + $o_range_oclass, NHC.WEAPON_CLASS);
 cptr.stI32o(o_ranges, 360 + $o_range_f_o_range, NHC.SHORT_SWORD);
 cptr.stI32o(o_ranges, 360 + $o_range_l_o_range, NHC.KATANA);
-cptr.stPtro(o_ranges, 384, __sl498);
+cptr.stPtro(o_ranges, 384, __s_venom);
 cptr.st1o(o_ranges, 384 + $o_range_oclass, NHC.VENOM_CLASS);
 cptr.stI32o(o_ranges, 384 + $o_range_f_o_range, NHC.BLINDING_VENOM);
 cptr.stI32o(o_ranges, 384 + $o_range_l_o_range, NHC.ACID_VENOM);
-cptr.stPtro(o_ranges, 408, __sl499);
+cptr.stPtro(o_ranges, 408, __s_gray_stone);
 cptr.st1o(o_ranges, 408 + $o_range_oclass, NHC.GEM_CLASS);
 cptr.stI32o(o_ranges, 408 + $o_range_f_o_range, NHC.LUCKSTONE);
 cptr.stI32o(o_ranges, 408 + $o_range_l_o_range, NHC.FLINT);
-cptr.stPtro(o_ranges, 432, __sl500);
+cptr.stPtro(o_ranges, 432, __s_grey_stone);
 cptr.st1o(o_ranges, 432 + $o_range_oclass, NHC.GEM_CLASS);
 cptr.stI32o(o_ranges, 432 + $o_range_f_o_range, NHC.LUCKSTONE);
 cptr.stI32o(o_ranges, 432 + $o_range_l_o_range, NHC.FLINT);
@@ -3457,97 +3457,97 @@ cptr.stI32o(o_ranges, 432 + $o_range_l_o_range, NHC.FLINT);
 
 /** C ref: objnam.c:3377 — struct alt_spellings[47] */
 const spellings = cptr.alloc(47 * 16);
-cptr.stPtro(spellings, 0, __sl501);
+cptr.stPtro(spellings, 0, __s_pickax);
 cptr.stI32o(spellings, 0 + $alt_spellings_ob, NHC.PICK_AXE);
-cptr.stPtro(spellings, 16, __sl502);
+cptr.stPtro(spellings, 16, __s_whip);
 cptr.stI32o(spellings, 16 + $alt_spellings_ob, NHC.BULLWHIP);
-cptr.stPtro(spellings, 32, __sl503);
+cptr.stPtro(spellings, 32, __s_saber);
 cptr.stI32o(spellings, 32 + $alt_spellings_ob, NHC.SILVER_SABER);
-cptr.stPtro(spellings, 48, __sl504);
+cptr.stPtro(spellings, 48, __s_silver_sabre);
 cptr.stI32o(spellings, 48 + $alt_spellings_ob, NHC.SILVER_SABER);
-cptr.stPtro(spellings, 64, __sl51);
+cptr.stPtro(spellings, 64, __s_smooth_shield);
 cptr.stI32o(spellings, 64 + $alt_spellings_ob, NHC.SHIELD_OF_REFLECTION);
-cptr.stPtro(spellings, 80, __sl505);
+cptr.stPtro(spellings, 80, __s_grey_dragon_scale_mail);
 cptr.stI32o(spellings, 80 + $alt_spellings_ob, NHC.GRAY_DRAGON_SCALE_MAIL);
-cptr.stPtro(spellings, 96, __sl506);
+cptr.stPtro(spellings, 96, __s_grey_dragon_scales);
 cptr.stI32o(spellings, 96 + $alt_spellings_ob, NHC.GRAY_DRAGON_SCALES);
-cptr.stPtro(spellings, 112, __sl507);
+cptr.stPtro(spellings, 112, __s_iron_ball);
 cptr.stI32o(spellings, 112 + $alt_spellings_ob, NHC.HEAVY_IRON_BALL);
-cptr.stPtro(spellings, 128, __sl508);
+cptr.stPtro(spellings, 128, __s_lantern);
 cptr.stI32o(spellings, 128 + $alt_spellings_ob, NHC.BRASS_LANTERN);
-cptr.stPtro(spellings, 144, __sl509);
+cptr.stPtro(spellings, 144, __s_mattock);
 cptr.stI32o(spellings, 144 + $alt_spellings_ob, NHC.DWARVISH_MATTOCK);
-cptr.stPtro(spellings, 160, __sl510);
+cptr.stPtro(spellings, 160, __s_amulet_of_poison_resistance);
 cptr.stI32o(spellings, 160 + $alt_spellings_ob, NHC.AMULET_VERSUS_POISON);
-cptr.stPtro(spellings, 176, __sl511);
+cptr.stPtro(spellings, 176, __s_amulet_of_protection);
 cptr.stI32o(spellings, 176 + $alt_spellings_ob, NHC.AMULET_OF_GUARDING);
-cptr.stPtro(spellings, 192, __sl512);
+cptr.stPtro(spellings, 192, __s_amulet_of_telepathy);
 cptr.stI32o(spellings, 192 + $alt_spellings_ob, NHC.AMULET_OF_ESP);
-cptr.stPtro(spellings, 208, __sl513);
+cptr.stPtro(spellings, 208, __s_helm_of_esp);
 cptr.stI32o(spellings, 208 + $alt_spellings_ob, NHC.HELM_OF_TELEPATHY);
-cptr.stPtro(spellings, 224, __sl514);
+cptr.stPtro(spellings, 224, __s_gauntlets_of_ogre_power);
 cptr.stI32o(spellings, 224 + $alt_spellings_ob, NHC.GAUNTLETS_OF_POWER);
-cptr.stPtro(spellings, 240, __sl515);
+cptr.stPtro(spellings, 240, __s_gauntlets_of_giant_strength);
 cptr.stI32o(spellings, 240 + $alt_spellings_ob, NHC.GAUNTLETS_OF_POWER);
-cptr.stPtro(spellings, 256, __sl516);
+cptr.stPtro(spellings, 256, __s_elven_chain_mail);
 cptr.stI32o(spellings, 256 + $alt_spellings_ob, NHC.ELVEN_MITHRIL_COAT);
-cptr.stPtro(spellings, 272, __sl517);
+cptr.stPtro(spellings, 272, __s_silver_shield);
 cptr.stI32o(spellings, 272 + $alt_spellings_ob, NHC.SHIELD_OF_REFLECTION);
-cptr.stPtro(spellings, 288, __sl518);
+cptr.stPtro(spellings, 288, __s_potion_of_sleep);
 cptr.stI32o(spellings, 288 + $alt_spellings_ob, NHC.POT_SLEEPING);
-cptr.stPtro(spellings, 304, __sl519);
+cptr.stPtro(spellings, 304, __s_scroll_of_recharging);
 cptr.stI32o(spellings, 304 + $alt_spellings_ob, NHC.SCR_CHARGING);
-cptr.stPtro(spellings, 320, __sl520);
+cptr.stPtro(spellings, 320, __s_recharging);
 cptr.stI32o(spellings, 320 + $alt_spellings_ob, NHC.SCR_CHARGING);
-cptr.stPtro(spellings, 336, __sl79);
+cptr.stPtro(spellings, 336, __s_stone__2);
 cptr.stI32o(spellings, 336 + $alt_spellings_ob, NHC.ROCK);
-cptr.stPtro(spellings, 352, __sl521);
+cptr.stPtro(spellings, 352, __s_camera);
 cptr.stI32o(spellings, 352 + $alt_spellings_ob, NHC.EXPENSIVE_CAMERA);
-cptr.stPtro(spellings, 368, __sl522);
+cptr.stPtro(spellings, 368, __s_tee_shirt);
 cptr.stI32o(spellings, 368 + $alt_spellings_ob, NHC.T_SHIRT);
-cptr.stPtro(spellings, 384, __sl523);
+cptr.stPtro(spellings, 384, __s_can);
 cptr.stI32o(spellings, 384 + $alt_spellings_ob, NHC.TIN);
-cptr.stPtro(spellings, 400, __sl524);
+cptr.stPtro(spellings, 400, __s_can_opener);
 cptr.stI32o(spellings, 400 + $alt_spellings_ob, NHC.TIN_OPENER);
-cptr.stPtro(spellings, 416, __sl525);
+cptr.stPtro(spellings, 416, __s_kelp);
 cptr.stI32o(spellings, 416 + $alt_spellings_ob, NHC.KELP_FROND);
-cptr.stPtro(spellings, 432, __sl526);
+cptr.stPtro(spellings, 432, __s_eucalyptus);
 cptr.stI32o(spellings, 432 + $alt_spellings_ob, NHC.EUCALYPTUS_LEAF);
-cptr.stPtro(spellings, 448, __sl527);
+cptr.stPtro(spellings, 448, __s_lembas);
 cptr.stI32o(spellings, 448 + $alt_spellings_ob, NHC.LEMBAS_WAFER);
-cptr.stPtro(spellings, 464, __sl528);
+cptr.stPtro(spellings, 464, __s_tripe);
 cptr.stI32o(spellings, 464 + $alt_spellings_ob, NHC.TRIPE_RATION);
-cptr.stPtro(spellings, 480, __sl529);
+cptr.stPtro(spellings, 480, __s_cookie);
 cptr.stI32o(spellings, 480 + $alt_spellings_ob, NHC.FORTUNE_COOKIE);
-cptr.stPtro(spellings, 496, __sl530);
+cptr.stPtro(spellings, 496, __s_pie);
 cptr.stI32o(spellings, 496 + $alt_spellings_ob, NHC.CREAM_PIE);
-cptr.stPtro(spellings, 512, __sl531);
+cptr.stPtro(spellings, 512, __s_huge_meatball);
 cptr.stI32o(spellings, 512 + $alt_spellings_ob, NHC.ENORMOUS_MEATBALL);
-cptr.stPtro(spellings, 528, __sl532);
+cptr.stPtro(spellings, 528, __s_huge_chunk_of_meat);
 cptr.stI32o(spellings, 528 + $alt_spellings_ob, NHC.ENORMOUS_MEATBALL);
-cptr.stPtro(spellings, 544, __sl533);
+cptr.stPtro(spellings, 544, __s_marker);
 cptr.stI32o(spellings, 544 + $alt_spellings_ob, NHC.MAGIC_MARKER);
-cptr.stPtro(spellings, 560, __sl534);
+cptr.stPtro(spellings, 560, __s_hook);
 cptr.stI32o(spellings, 560 + $alt_spellings_ob, NHC.GRAPPLING_HOOK);
-cptr.stPtro(spellings, 576, __sl535);
+cptr.stPtro(spellings, 576, __s_grappling_iron);
 cptr.stI32o(spellings, 576 + $alt_spellings_ob, NHC.GRAPPLING_HOOK);
-cptr.stPtro(spellings, 592, __sl536);
+cptr.stPtro(spellings, 592, __s_grapnel);
 cptr.stI32o(spellings, 592 + $alt_spellings_ob, NHC.GRAPPLING_HOOK);
-cptr.stPtro(spellings, 608, __sl537);
+cptr.stPtro(spellings, 608, __s_grapple);
 cptr.stI32o(spellings, 608 + $alt_spellings_ob, NHC.GRAPPLING_HOOK);
-cptr.stPtro(spellings, 624, __sl538);
+cptr.stPtro(spellings, 624, __s_protection_from_shape_shifters);
 cptr.stI32o(spellings, 624 + $alt_spellings_ob, NHC.RIN_PROTECTION_FROM_SHAPE_CHAN);
-cptr.stPtro(spellings, 640, __sl539);
+cptr.stPtro(spellings, 640, __s_accuracy);
 cptr.stI32o(spellings, 640 + $alt_spellings_ob, NHC.RIN_INCREASE_ACCURACY);
-cptr.stPtro(spellings, 656, __sl540);
+cptr.stPtro(spellings, 656, __s_box);
 cptr.stI32o(spellings, 656 + $alt_spellings_ob, NHC.LARGE_BOX);
-cptr.stPtro(spellings, 672, __sl541);
+cptr.stPtro(spellings, 672, __s_luck_stone);
 cptr.stI32o(spellings, 672 + $alt_spellings_ob, NHC.LUCKSTONE);
-cptr.stPtro(spellings, 688, __sl542);
+cptr.stPtro(spellings, 688, __s_load_stone);
 cptr.stI32o(spellings, 688 + $alt_spellings_ob, NHC.LOADSTONE);
-cptr.stPtro(spellings, 704, __sl543);
+cptr.stPtro(spellings, 704, __s_touch_stone);
 cptr.stI32o(spellings, 704 + $alt_spellings_ob, NHC.TOUCHSTONE);
-cptr.stPtro(spellings, 720, __sl544);
+cptr.stPtro(spellings, 720, __s_flintstone);
 cptr.stI32o(spellings, 720 + $alt_spellings_ob, NHC.FLINT);
 cptr.stPtro(spellings, 736, null);
 cptr.stI32o(spellings, 736 + $alt_spellings_ob, 0);
@@ -3563,7 +3563,7 @@ function rnd_otyp_by_wpnskill(skill) {
             otyp = i16(i);
         }
     if (n > 0) {
-        n = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 3444, __sl545), rn2(n)) : rn2(n));
+        n = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3444, __s_rnd_otyp_by_wpnskill), rn2(n)) : rn2(n));
         for (i = cptr.ldI32o2(svb, NHC.WEAPON_CLASS, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, 120, $objclass_oc_class) == NHC.WEAPON_CLASS; i++)
             if (cptr.ld1so2(objects, i, 120, $objclass_oc_subtyp) == skill)
                 if (--n < 0)
@@ -3588,7 +3588,7 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
     let maxprob = 0;
     if (!name || !cptr.ld1s(name))
         return NHC.STRANGE_OBJECT;
-    check_of = schar((strstri(name, __sl34) === null));
+    check_of = schar((strstri(name, __s_of) === null));
     minglob = NHC.GLOB_OF_GRAY_OOZE;
     maxglob = NHC.GLOB_OF_BLACK_PUDDING;
     void __builtin___memset_chk(validobjs, 0, 962n, __builtin_object_size(validobjs, 0));
@@ -3602,13 +3602,13 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
     for (i = lo; i <= hi; ++i) {
         if ((zn = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))) === null)
             continue;
-        if (wishymatch(name, zn, 1) || (check_of && i != NHC.BELL_OF_OPENING && (i < minglob || i > maxglob) && (of = strstri(zn, __sl34)) !== null && wishymatch(name, cptr.add(of, 4), 0)) || ((zn = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))) !== null && wishymatch(name, zn, 0)) || (zn && check_of && (of = strstri(zn, __sl34)) !== null && wishymatch(name, cptr.add(of, 4), 0)) || ((zn = cptr.ldPtro2(objects, i, 120, $objclass_oc_uname)) !== null && wishymatch(name, zn, 0))) {
+        if (wishymatch(name, zn, 1) || (check_of && i != NHC.BELL_OF_OPENING && (i < minglob || i > maxglob) && (of = strstri(zn, __s_of)) !== null && wishymatch(name, cptr.add(of, 4), 0)) || ((zn = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))) !== null && wishymatch(name, zn, 0)) || (zn && check_of && (of = strstri(zn, __s_of)) !== null && wishymatch(name, cptr.add(of, 4), 0)) || ((zn = cptr.ldPtro2(objects, i, 120, $objclass_oc_uname)) !== null && wishymatch(name, zn, 0))) {
             cptr.stI16o(validobjs, n++, i16(i), 2);
             maxprob = (maxprob + ((cptr.ldI16o2(objects, i, 120, $objclass_oc_prob) + xtra_prob) | 0)) | 0;
         }
     }
     if (n > 0 && maxprob) {
-        prob = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 3522, __sl546), rn2(maxprob)) : rn2(maxprob));
+        prob = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3522, __s_rnd_otyp_by_namedesc), rn2(maxprob)) : rn2(maxprob));
         for (i = 0; i < ((n - 1) | 0); i++)
             if ((prob = (prob - ((cptr.ldI16o2(objects, cptr.ldI16o(validobjs, i, 2), 120, $objclass_oc_prob) + xtra_prob) | 0)) | 0) < 0)
                 break;
@@ -3619,15 +3619,15 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
 
 /** C ref: objnam.c:3532 — @param {CInt} oclass @returns {CInt} */
 export function shiny_obj(oclass) {
-    return rnd_otyp_by_namedesc(__sl547, oclass, 0);
+    return rnd_otyp_by_namedesc(__s_shiny, oclass, 0);
 }
 
 /** C ref: objnam.c:3539 — @param {CPtr<char>} bp */
 function set_wallprop_from_str(bp) {
     let wall_prop = 0;
-    if (cptr.strstr(bp, __sl548) || cptr.strstr(bp, __sl549))
+    if (cptr.strstr(bp, __s_undiggable) || cptr.strstr(bp, __s_nondiggable))
         wall_prop |= NHM.W_NONDIGGABLE;
-    if (cptr.strstr(bp, __sl550) || cptr.strstr(bp, __sl551))
+    if (cptr.strstr(bp, __s_unphaseable) || cptr.strstr(bp, __s_nonpasswall))
         wall_prop |= NHM.W_NONPASSWALL;
     if (wall_prop)
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) | wall_prop);
@@ -3657,9 +3657,9 @@ function wizterrainwish(d) {
         if ((t = maketrap(x, y, trap)) !== null) {
             trap = (cptr.ldI32o(t, $trap_ttyp) & 31) | 0;
             tname = trapname(trap, 1);
-            pline(__sl552, An(tname), (trap != NHC.MAGIC_PORTAL) ? __sl13 : __sl553);
+            pline(__s_s_s__6, An(tname), (trap != NHC.MAGIC_PORTAL) ? __s_empty : __s_to_nowhere);
         } else {
-            pline(__sl554, an(tname));
+            pline(__s_creation_of_s_failed, an(tname));
         }
         return hands_obj;
     }
@@ -3667,30 +3667,30 @@ function wizterrainwish(d) {
     oldtyp = cptr.ld1so(lev, $rm_typ);
     is_dbridge = schar((oldtyp == NHC.DRAWBRIDGE_DOWN || oldtyp == NHC.DRAWBRIDGE_UP ? 1 : 0));
     p = eos(bp);
-    if (!(cptr.cmp((cptr.add(p, -(8))), bp) < 0 || strncmpi(((cptr.add(p, -(8)))), (__sl555), -1))) {
+    if (!(cptr.cmp((cptr.add(p, -(8))), bp) < 0 || strncmpi(((cptr.add(p, -(8)))), (__s_fountain), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.FOUNTAIN);
         if (oldtyp != NHC.FOUNTAIN)
             cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? NHM.F_LOOTED : 0) >>> 0);
-        cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_blessed) || !strncmpi(bp, __sl556, 6) ? 1 : 0) >>> 0);
-        pline(__sl557, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl556 : __sl13);
+        cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_blessed) || !strncmpi(bp, __s_magic, 6) ? 1 : 0) >>> 0);
+        pline(__s_a_sfountain, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __s_magic : __s_empty);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl558), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_throne), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.THRONE);
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? NHM.T_LOOTED : 0) >>> 0);
-        pline(__sl559);
+        pline(__s_a_throne);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl560), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_sink), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.SINK);
         if (oldtyp != NHC.SINK)
             cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks));
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 7 : 0) >>> 0);
-        pline(__sl561);
+        pline(__s_a_sink);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl562), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) || !(cptr.cmp((cptr.add(p, -(13))), bp) < 0 || strncmpi(((cptr.add(p, -(13)))), (__sl564), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_pool), -1)) || !(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_moat), -1)) || !(cptr.cmp((cptr.add(p, -(13))), bp) < 0 || strncmpi(((cptr.add(p, -(13)))), (__s_wall_of_water), -1))) {
         let save_prop;
         let new_water;
-        ltyp = (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl562), -1)) ? NHC.POOL : (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl563), -1)) ? NHC.MOAT : NHC.WATER)) >>> 0;
+        ltyp = (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_pool), -1)) ? NHC.POOL : (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_moat), -1)) ? NHC.MOAT : NHC.WATER)) >>> 0;
         if (!is_dbridge) {
             cptr.st1o(lev, $rm_typ, schar(ltyp));
             cptr.stI32o(lev, $rm_flags, 0);
@@ -3704,14 +3704,14 @@ function wizterrainwish(d) {
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, 1n);
             new_water = waterbody_name(x, y);
             cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, save_prop);
-            pline(__sl565, An(new_water));
+            pline(__s_pct_s_dot, An(new_water));
         } else {
-            dbterrainmesg(__sl566, x, y);
+            dbterrainmesg(__s_moat__2, x, y);
         }
         water_damage_chain(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), 1);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl567), -1)) || !(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl568), -1))) {
-        ltyp = (!(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__sl568), -1)) ? NHC.LAVAWALL : NHC.LAVAPOOL) >>> 0;
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_lava), -1)) || !(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__s_wall_of_lava), -1))) {
+        ltyp = (!(cptr.cmp((cptr.add(p, -(12))), bp) < 0 || strncmpi(((cptr.add(p, -(12)))), (__s_wall_of_lava), -1)) ? NHC.LAVAWALL : NHC.LAVAPOOL) >>> 0;
         if (!is_dbridge) {
             cptr.st1o(lev, $rm_typ, schar(ltyp));
             cptr.stI32o(lev, $rm_flags, 0);
@@ -3721,15 +3721,15 @@ function wizterrainwish(d) {
         }
         del_engr_at(x, y);
         if (!is_dbridge) {
-            pline(__sl569, (cptr.ld1so(lev, $rm_typ) == NHC.LAVAPOOL) ? __sl562 : __sl570);
+            pline(__s_a_s_of_molten_lava, (cptr.ld1so(lev, $rm_typ) == NHC.LAVAPOOL) ? __s_pool : __s_wall);
             if (!(Levitation() || Flying()) || cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL)
                 pooleffects(0);
         } else {
-            dbterrainmesg(__sl571, x, y);
+            dbterrainmesg(__s_lava__2, x, y);
         }
         fire_damage_chain(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), 1, 1, x, y);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__sl183), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(3))), bp) < 0 || strncmpi(((cptr.add(p, -(3)))), (__s_ice), -1))) {
         if (!is_dbridge) {
             cptr.st1o(lev, $rm_typ, NHC.ICE);
             cptr.stI32o(lev, $rm_flags, ((oldtyp == NHC.ROOM) ? NHM.ICED_POOL : NHM.ICED_MOAT) >>> 0);
@@ -3738,64 +3738,64 @@ function wizterrainwish(d) {
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.DB_ICE);
         }
         del_engr_at(x, y);
-        if (!strncmpi(bp, __sl572, 8))
+        if (!strncmpi(bp, __s_melting, 8))
             start_melt_ice_timeout(x, y, 0n);
         if (!is_dbridge) {
             let icebuf = new Uint8Array(40);
-            pline(__sl565, upstart(ice_descr(x, y, cptr.decay(icebuf))));
+            pline(__s_pct_s_dot, upstart(ice_descr(x, y, cptr.decay(icebuf))));
         } else {
-            dbterrainmesg(__sl573, x, y);
+            dbterrainmesg(__s_ice__2, x, y);
         }
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl574), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_altar), -1))) {
         let al;
         cptr.st1o(lev, $rm_typ, NHC.ALTAR);
-        if (!strncmpi(bp, __sl575, 8))
+        if (!strncmpi(bp, __s_chaotic, 8))
             al = -1;
-        else if (!strncmpi(bp, __sl576, 8))
+        else if (!strncmpi(bp, __s_neutral, 8))
             al = NHM.A_NEUTRAL;
-        else if (!strncmpi(bp, __sl577, 7))
+        else if (!strncmpi(bp, __s_lawful, 7))
             al = NHM.A_LAWFUL;
-        else if (!strncmpi(bp, __sl578, 10))
+        else if (!strncmpi(bp, __s_unaligned, 10))
             al = -128;
         else
-            al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 3702, __sl579), rn2(3)) : rn2(3)) - 1) | 0)));
+            al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3702, __s_wizterrainwish), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3702, __s_wizterrainwish), rn2(3)) : rn2(3)) - 1) | 0)));
         cptr.stI32o(lev, $rm_flags, Align2amask(al));
-        pline(__sl580, An(align_str(al)));
+        pline(__s_s_altar, An(align_str(al)));
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl581), -1)) || !(cptr.cmp((cptr.add(p, -(9))), bp) < 0 || strncmpi(((cptr.add(p, -(9)))), (__sl582), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_grave), -1)) || !(cptr.cmp((cptr.add(p, -(9))), bp) < 0 || strncmpi(((cptr.add(p, -(9)))), (__s_headstone), -1))) {
         make_grave(x, y, null);
         if (((cptr.ld1so(lev, $rm_typ)) == NHC.GRAVE)) {
             cptr.stI32o(lev, $rm_flags, 0);
             cptr.stI32o(lev, $rm_horizontal, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 1 : 0) >>> 0);
-            pline(__sl583, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __sl584 : __sl13);
+            pline(__s_a_sgrave, (cptr.ldI32o(lev, $rm_horizontal) & 1) | 0 ? __s_disturbed : __s_empty);
             madeterrain = 1;
         } else {
-            pline(__sl585);
+            pline(__s_can_t_place_a_grave_here);
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl586), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_tree), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.TREE);
         cptr.stI32o(lev, $rm_flags, (cptr.ldI32o(d, $_readobjnam_data_flags) ? 3 : 0) >>> 0);
         set_wallprop_from_str(bp);
-        pline(__sl587);
+        pline(__s_a_tree);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl588), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_bars), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.IRONBARS);
         cptr.stI32o(lev, $rm_flags, 0);
         set_wallprop_from_str(bp);
-        pline(__sl589);
+        pline(__s_iron_bars__2);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl590), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_cloud), -1))) {
         cptr.st1o(lev, $rm_typ, NHC.CLOUD);
         cptr.stI32o(lev, $rm_flags, 0);
-        pline(__sl591);
+        pline(__s_a_cloud);
         del_engr_at(x, y);
         madeterrain = 1;
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl592), -1)) || (cptr.ldI32o(d, $_readobjnam_data_doorless) && !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__sl593), -1)))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_door), -1)) || (cptr.ldI32o(d, $_readobjnam_data_doorless) && !(cptr.cmp((cptr.add(p, -(7))), bp) < 0 || strncmpi(((cptr.add(p, -(7)))), (__s_doorway), -1)))) {
         let dbuf = new Uint8Array(40);
         let old_wall_info;
-        let secret = schar((!(cptr.cmp((cptr.add(p, -(11))), bp) < 0 || strncmpi(((cptr.add(p, -(11)))), (__sl594), -1))));
+        let secret = schar((!(cptr.cmp((cptr.add(p, -(11))), bp) < 0 || strncmpi(((cptr.add(p, -(11)))), (__s_secret_door), -1))));
         if (cptr.ld1so(lev, $rm_typ) == NHC.DOOR || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || (IS_WALL(cptr.ld1so(lev, $rm_typ)) && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL) || cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
             old_wall_info = ((cptr.ld1so(lev, $rm_typ) != NHC.DOOR) ? (cptr.ldI32o(lev, $rm_flags) & 31) | 0 : 0) >>> 0;
             cptr.st1o(lev, $rm_typ, schar((secret ? NHC.SDOOR : NHC.DOOR)));
@@ -3813,31 +3813,31 @@ function wizterrainwish(d) {
                 cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.D_TRAPPED);
             cptr.st1o(cptr.decay(dbuf), 0, 0, 1);
             if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)
-                void cptr.strcat(cptr.decay(dbuf), __sl115);
+                void cptr.strcat(cptr.decay(dbuf), __s_trapped);
             if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_LOCKED)
-                void cptr.strcat(cptr.decay(dbuf), __sl117);
+                void cptr.strcat(cptr.decay(dbuf), __s_locked);
             if (cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) {
-                void cptr.strcat(cptr.decay(dbuf), __sl594);
+                void cptr.strcat(cptr.decay(dbuf), __s_secret_door);
             } else {
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_CLOSED)
-                    void cptr.strcat(cptr.decay(dbuf), __sl595);
+                    void cptr.strcat(cptr.decay(dbuf), __s_closed);
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN)
-                    void cptr.strcat(cptr.decay(dbuf), __sl596);
+                    void cptr.strcat(cptr.decay(dbuf), __s_open);
                 if (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_BROKEN)
-                    void cptr.strcat(cptr.decay(dbuf), __sl116);
+                    void cptr.strcat(cptr.decay(dbuf), __s_broken);
                 if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -17) == NHM.D_NODOOR)
-                    void cptr.strcat(cptr.decay(dbuf), __sl597);
+                    void cptr.strcat(cptr.decay(dbuf), __s_doorless_doorway);
                 else
-                    void cptr.strcat(cptr.decay(dbuf), __sl592);
+                    void cptr.strcat(cptr.decay(dbuf), __s_door);
             }
-            pline(__sl565, upstart(an(cptr.decay(dbuf))));
+            pline(__s_pct_s_dot, upstart(an(cptr.decay(dbuf))));
             madeterrain = 1;
         } else {
-            void cptr.strcpy(cptr.decay(dbuf), secret ? __sl594 : __sl592);
-            pline(__sl598, upstart(cptr.decay(dbuf)));
+            void cptr.strcpy(cptr.decay(dbuf), secret ? __s_secret_door : __s_door);
+            pline(__s_s_requires_door_or_wall_location, upstart(cptr.decay(dbuf)));
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl570), -1)) && (cptr.eq(bp, cptr.add(p, -(4))) || cptr.ld1so(p, -5) == 32)) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_wall), -1)) && (cptr.eq(bp, cptr.add(p, -(4))) || cptr.ld1so(p, -5) == 32)) {
         let wall = NHC.HWALL;
         if ((isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) - 1) | 0))) && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) || (isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) + 1) | 0))) && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, cptr.ldI16(u), 756, (cptr.ldI16o(u, $you_uy) + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)))
             wall = NHC.VWALL;
@@ -3846,21 +3846,21 @@ function wizterrainwish(d) {
         cptr.stI32o(lev, $rm_flags, 0);
         set_wallprop_from_str(bp);
         fix_wall_spines(i16((0 > ((cptr.ldI16(u) - 1) | 0) ? 0 : ((cptr.ldI16(u) - 1) | 0))), i16((0 > ((cptr.ldI16o(u, $you_uy) - 1) | 0) ? 0 : ((cptr.ldI16o(u, $you_uy) - 1) | 0))), i16((NHM.COLNO < ((cptr.ldI16(u) + 1) | 0) ? NHM.COLNO : ((cptr.ldI16(u) + 1) | 0))), i16((NHM.ROWNO < ((cptr.ldI16o(u, $you_uy) + 1) | 0) ? NHM.ROWNO : ((cptr.ldI16o(u, $you_uy) + 1) | 0))));
-        pline(__sl599);
-    } else if (!(cptr.cmp((cptr.add(p, -(15))), bp) < 0 || strncmpi(((cptr.add(p, -(15)))), (__sl600), -1))) {
+        pline(__s_a_wall);
+    } else if (!(cptr.cmp((cptr.add(p, -(15))), bp) < 0 || strncmpi(((cptr.add(p, -(15)))), (__s_secret_corridor), -1))) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CORR) {
             cptr.st1o(lev, $rm_typ, NHC.SCORR);
-            pline(__sl601);
+            pline(__s_secret_corridor__2);
             madeterrain = 1;
         } else {
-            pline(__sl602);
+            pline(__s_secret_corridor_requires_corridor);
             badterrain = 1;
         }
-    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__sl603), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__sl604), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__sl605), -1))) {
+    } else if (!(cptr.cmp((cptr.add(p, -(4))), bp) < 0 || strncmpi(((cptr.add(p, -(4)))), (__s_room), -1)) || !(cptr.cmp((cptr.add(p, -(5))), bp) < 0 || strncmpi(((cptr.add(p, -(5)))), (__s_floor), -1)) || !(cptr.cmp((cptr.add(p, -(6))), bp) < 0 || strncmpi(((cptr.add(p, -(6)))), (__s_ground), -1))) {
         if (oldtyp == NHC.ROOM || (IS_FURNITURE(oldtyp) && CAN_OVERWRITE_TERRAIN(oldtyp)) || oldtyp == NHC.ICE || is_pool_or_lava(x, y)) {
             let t;
             cptr.st1o(lev, $rm_typ, NHC.ROOM);
-            pline(__sl606);
+            pline(__s_room_floor);
             if (IS_FURNITURE(oldtyp))
                 count_level_features();
             if ((t = t_at(x, y)) !== null && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.MAGIC_PORTAL)
@@ -3869,10 +3869,10 @@ function wizterrainwish(d) {
         } else if (is_dbridge) {
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) & -29);
             cptr.stI32o(lev, $rm_flags, cptr.ldI32o(lev, $rm_flags) | NHM.DB_FLOOR);
-            dbterrainmesg(__sl607, x, y);
+            dbterrainmesg(__s_floor__2, x, y);
             madeterrain = 1;
         } else {
-            pline(__sl608);
+            pline(__s_room_floor_ground_not_allowed_here);
             badterrain = 1;
         }
     }
@@ -3903,7 +3903,7 @@ function wizterrainwish(d) {
 
 /** C ref: objnam.c:3920 — @param {CPtr<char>} newtype @param {CInt} x @param {CInt} y */
 function dbterrainmesg(newtype, x, y) {
-    pline(__sl609, newtype, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? __sl610 : __sl611);
+    pline(__s_s_s_the_drawbridge, newtype, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? __s_in_front_of : __s_under);
 }
 
 /** C ref: objnam.c:3933 — @param {CPtr<char>} bp @param {CPtr<struct _readobjnam_data>} d */
@@ -3938,11 +3938,11 @@ function readobjnam_preparse(d) {
         if (!cptr.ldPtro(d, $_readobjnam_data_bp) || !cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)))
             break;
         res = 0;
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl180, l = 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl111, l = 2)) {
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_an, l = 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_a_sp, l = 2)) {
             cptr.stI32o(d, $_readobjnam_data_cnt, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl62, l = 4)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_the, l = 4)) {
             ;
-        } else if (!cptr.ldI32o(d, $_readobjnam_data_cnt) && digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) && strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), __sl612)) {
+        } else if (!cptr.ldI32o(d, $_readobjnam_data_cnt) && digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) && strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), __s_0)) {
             cptr.stI32o(d, $_readobjnam_data_cnt, atoi(cptr.ldPtro(d, $_readobjnam_data_bp)));
             while (digit(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))))
                 cptr.postinc(() => cptr.ldPtro(d, $_readobjnam_data_bp), (v) => { cptr.stPtro(d, $_readobjnam_data_bp, v); });
@@ -3957,99 +3957,99 @@ function readobjnam_preparse(d) {
             while (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == 32)
                 cptr.postinc(() => cptr.ldPtro(d, $_readobjnam_data_bp), (v) => { cptr.stPtro(d, $_readobjnam_data_bp, v); });
             l = 0;
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl114, l = 8) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl67, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_blessed, l = 8) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_holy, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_blessed, 1), cptr.stI32o(d, $_readobjnam_data_uncursed, cptr.stI32o(d, $_readobjnam_data_iscursed, 0));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl113, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl68, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_cursed, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unholy, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_iscursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_uncursed, 0));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl92, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_uncursed, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_uncursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_iscursed, 0));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl101, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl613, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl102, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl100, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl103, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl105, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl104, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl614, l = 11)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_rustproof, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_erodeproof, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_corrodeproof, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_fixed, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_fireproof, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_rotproof, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_tempered, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_crackproof, l = 11)) {
             cptr.stI32o(d, $_readobjnam_data_erodeproof, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl615, l = 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl616, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_lit__3, l = 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_burning, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl617, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl618, l = 13)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlit, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_extinguished, l = 13)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl44, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl45, l = 4)) {
-            if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl45, 4))
-                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4025, __sl619), rn2(3)) : rn2(3))) | 0);
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_moist, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wet, l = 4)) {
+            if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wet, 4))
+                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4025, __s_readobjnam_preparse), rn2(3)) : rn2(3))) | 0);
             else
-                cptr.stI32o(d, $_readobjnam_data_wetness, (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4027, __sl619), rnd(2)) : rnd(2)));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl620, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl621, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl622, l = 6)) {
+                cptr.stI32o(d, $_readobjnam_data_wetness, (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4027, __s_readobjnam_preparse), rnd(2)) : rnd(2)));
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlabeled, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlabelled, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_blank, l = 6)) {
             cptr.stI32o(d, $_readobjnam_data_unlabeled, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl43, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_poisoned, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_ispoisoned, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl115, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_trapped, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_trapped, 0);
             if (wizard())
                 cptr.stI32o(d, $_readobjnam_data_trapped, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl623, l = 10)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_untrapped, l = 10)) {
             cptr.stI32o(d, $_readobjnam_data_trapped, 2);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl117, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_locked, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_closed, 1)), cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl118, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlocked, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_closed, 1)), cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl116, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_broken, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_broken, 1), cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_doorless, 0)))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl596, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_open, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_open, 1), cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl595, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_closed, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_closed, 1), cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_broken, cptr.stI32o(d, $_readobjnam_data_doorless, 0))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl624, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_doorless, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_doorless, 1), cptr.stI32o(d, $_readobjnam_data_open, cptr.stI32o(d, $_readobjnam_data_closed, cptr.stI32o(d, $_readobjnam_data_locked, cptr.stI32o(d, $_readobjnam_data_unlocked, cptr.stI32o(d, $_readobjnam_data_broken, 0)))));
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl625, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl584, l = 10)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_looted, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_disturbed, l = 10)) {
             cptr.stI32o(d, $_readobjnam_data_flags, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl119, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_greased, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_isgreased, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl626, l = 11)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_zombifying, l = 11)) {
             cptr.st1o(d, $_readobjnam_data_zombify, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl65, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_very, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_very, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl94, l = 11)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_thoroughly, l = 11)) {
             cptr.stI32o(d, $_readobjnam_data_very, 2);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl95, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl627, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl97, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl628, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl96, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_rusty, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_rusted, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_burnt, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_burned, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_cracked, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_eroded, (1 + cptr.ldI32o(d, $_readobjnam_data_very)) | 0);
             cptr.stI32o(d, $_readobjnam_data_very, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl98, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl99, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_corroded, l = 9) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_rotted, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_eroded2, (1 + cptr.ldI32o(d, $_readobjnam_data_very)) | 0);
             cptr.stI32o(d, $_readobjnam_data_very, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl54, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl629, l = 16)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_partly_eaten, l = 13) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_partially_eaten, l = 16)) {
             cptr.stI32o(d, $_readobjnam_data_halfeaten, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl61, l = 9)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_historic, l = 9)) {
             cptr.stI32o(d, $_readobjnam_data_ishistoric, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl66, l = 8)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_diluted, l = 8)) {
             cptr.stI32o(d, $_readobjnam_data_isdiluted, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl112, l = 6)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_empty__2, l = 6)) {
             cptr.stI32o(d, $_readobjnam_data_contents, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl630, l = 6)) {
-            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl631, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632))
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_small__2, l = 6)) {
+            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_glob, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_glob__2))
                 break;
             cptr.stI32o(d, $_readobjnam_data_gsize, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl633, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_medium__2, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_gsize, 2);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl634, l = 6)) {
-            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl631, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl632))
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_large__2, l = 6)) {
+            if (strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_glob, 4) && !strstri(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_glob__2))
                 break;
             cptr.stI32o(d, $_readobjnam_data_gsize, (cptr.ldI32o(d, $_readobjnam_data_very) != 1) ? 3 : 4);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl635, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_real, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_real, 1);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl636, l = 5)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_fake, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_fake, 1), cptr.stI32o(d, $_readobjnam_data_real, 0);
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl637, l = 7)) {
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_female, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.FEMALE);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl637, __sl13), l = 0;
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, l = 5)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __s_female, __s_empty), l = 0;
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_male, l = 5)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.MALE);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl638, __sl13), l = 0;
-        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, l = 7)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __s_male, __s_empty), l = 0;
+        } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_neuter, l = 7)) {
             cptr.stI32o(d, $_readobjnam_data_mgend, NHC.NEUTRAL);
             if (save_bp)
-                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __sl639, __sl13), l = 0;
-        } else if ((!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl640, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl641, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl642, l = 9)) && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl643, more_l = 3)) {
+                strsubst(cptr.ldPtro(d, $_readobjnam_data_bp), __s_neuter, __s_empty), l = 0;
+        } else if ((!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_corpse__2, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_statue, l = 7) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_figurine, l = 9)) && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_of__2, more_l = 3)) {
             save_bp = cptr.ldPtro(d, $_readobjnam_data_bp);
             l = (l + more_l) | 0, more_l = 0;
-            if (!strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl111, more_l = 2) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl180, more_l = 3) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __sl62, more_l = 4))
+            if (!strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_a_sp, more_l = 2) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_an, more_l = 3) || !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), l), __s_the, more_l = 4))
                 l = (l + more_l) | 0;
         } else {
             break;
@@ -4070,7 +4070,7 @@ function readobjnam_parse_charges(d) {
             idx = -1;
         cptr.st1o(cptr.ldPtro(d, $_readobjnam_data_p), idx, 0);
         cptr.preinc(() => cptr.ldPtro(d, $_readobjnam_data_p), (v) => { cptr.stPtro(d, $_readobjnam_data_p, v); });
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_p), __sl644, 4)) {
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_p), __s_lit__4, 4)) {
             cptr.stI32o(d, $_readobjnam_data_islit, 1);
             cptr.stPtro(d, $_readobjnam_data_p, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 3));
         } else {
@@ -4111,11 +4111,11 @@ function readobjnam_parse_charges(d) {
 /** C ref: objnam.c:4240 — @param {CPtr<struct _readobjnam_data>} d @returns {CInt} */
 function readobjnam_postparse1(d) {
     let i;
-    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl89))) !== null) {
+    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_named))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_name, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 7));
     }
-    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl199))) !== null) {
+    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_called))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_un, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 8));
         for (i = 0; i < 19; i++)
@@ -4124,60 +4124,60 @@ function readobjnam_postparse1(d) {
                 return 1;
             }
     }
-    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl70))) !== null) {
+    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_labeled))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 9));
-    } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl645))) !== null) {
+    } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_labelled))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 10));
     }
-    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl646))) !== null) {
+    if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_of_spinach))) !== null) {
         cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         cptr.stI32o(d, $_readobjnam_data_contents, 2);
     }
     if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, NHC.AMULET_OF_YENDOR, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))))) !== null && (cptr.eq(cptr.ldPtro(d, $_readobjnam_data_p), cptr.ldPtro(d, $_readobjnam_data_bp)) || cptr.ld1so(cptr.ldPtro(d, $_readobjnam_data_p), -1) == 32)) {
         let s = cptr.ldPtro(d, $_readobjnam_data_bp);
-        if (!strncmpi(s, __sl647, 6))
+        if (!strncmpi(s, __s_cheap, 6))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 6);
-        if (!strncmpi(s, __sl648, 8))
+        if (!strncmpi(s, __s_plastic, 8))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 8);
-        if (!strncmpi(s, __sl649, 10))
+        if (!strncmpi(s, __s_imitation, 10))
             cptr.stI32o(d, $_readobjnam_data_fake, 1), s = cptr.add(s, 10);
         (void (s));
         cptr.stI32o(d, $_readobjnam_data_real, !cptr.ldI32o(d, $_readobjnam_data_fake));
         cptr.stI32o(d, $_readobjnam_data_typ, cptr.ldI32o(d, $_readobjnam_data_real) ? NHC.AMULET_OF_YENDOR : NHC.FAKE_AMULET_OF_YENDOR);
         return 2;
     }
-    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl26, 8)) {
+    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_pair_of, 8)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 8));
         cptr.stI32o(d, $_readobjnam_data_cnt, Math.imul(cptr.ldI32o(d, $_readobjnam_data_cnt), 2));
-    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl650, 9)) {
+    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_pairs_of, 9)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 9));
         if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 1)
             cptr.stI32o(d, $_readobjnam_data_cnt, Math.imul(cptr.ldI32o(d, $_readobjnam_data_cnt), 2));
-    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl27, 7)) {
+    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_set_of, 7)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 7));
-    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl651, 8)) {
+    } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_sets_of, 8)) {
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 8));
     }
     i = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(d, $_readobjnam_data_bp))));
     cptr.stPtro(d, $_readobjnam_data_p, null);
-    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl631), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5)))), (__sl632), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl652), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6)))), (__sl653), -1)) || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl654))) !== null || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl655))) !== null) {
-        cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(!cptr.ldPtro(d, $_readobjnam_data_p) ? cptr.ldPtro(d, $_readobjnam_data_bp) : (cptr.add(strstri(cptr.ldPtro(d, $_readobjnam_data_p), __sl34), 4)), null));
+    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_glob), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5)))), (__s_glob__2), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_globs), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6)))), (__s_globs__2), -1)) || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_glob_of))) !== null || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_globs_of))) !== null) {
+        cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(!cptr.ldPtro(d, $_readobjnam_data_p) ? cptr.ldPtro(d, $_readobjnam_data_bp) : (cptr.add(strstri(cptr.ldPtro(d, $_readobjnam_data_p), __s_of), 4)), null));
         if (cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM)
-            cptr.stI32o(d, $_readobjnam_data_mntmp, (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 4354, __sl656), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
-        if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 2 && strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl652))
+            cptr.stI32o(d, $_readobjnam_data_mntmp, (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4354, __s_readobjnam_postparse1), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
+        if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 2 && strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_globs))
             cptr.stI32o(d, $_readobjnam_data_cnt, 2);
-        void cptr.sprintf(cptr.add(d, $_readobjnam_data_globbuf), __sl657, cptr.ldPtro3(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, NHC.NEUTRAL, 8, 0));
+        void cptr.sprintf(cptr.add(d, $_readobjnam_data_globbuf), __s_glob_of_s, cptr.ldPtro3(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96, NHC.NEUTRAL, 8, 0));
         cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(d, $_readobjnam_data_globbuf));
         cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);
         cptr.st1o(d, $_readobjnam_data_oclass, NHC.FOOD_CLASS);
         cptr.stPtro(d, $_readobjnam_data_actualn, cptr.ldPtro(d, $_readobjnam_data_bp)), cptr.stPtro(d, $_readobjnam_data_dn, null);
         return 1;
     } else {
-        if (!strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl658) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl659) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl660) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl661) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl662)) {
-            if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl663))) !== null) {
-                if (!strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 7)), (__sl664), -1)) {
+        if (!strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wand__2) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_spellbook__2) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_gauntlets__2) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_gloves__2) && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_finger)) {
+            if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_tin_of))) !== null) {
+                if (!strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 7)), (__s_spinach), -1)) {
                     cptr.stI32o(d, $_readobjnam_data_contents, 2);
                     cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);
                 } else {
@@ -4187,20 +4187,20 @@ function readobjnam_postparse1(d) {
                 }
                 cptr.stI32o(d, $_readobjnam_data_typ, NHC.TIN);
                 return 2;
-            } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl34))) !== null && ((cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 4), cptr.add(d, $_readobjnam_data_mgend)))) >= NHC.LOW_PM))
+            } else if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_of))) !== null && ((cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 4), cptr.add(d, $_readobjnam_data_mgend)))) >= NHC.LOW_PM))
                 cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), 0);
         }
     }
-    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl665, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl666, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl667, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl668, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl1, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl669, 7)) {
+    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_samurai_sword, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wizard_lock, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_death_wand, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_master_key, 10) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_ninja_to, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_magenta, 7)) {
         let rest = cptr.box(null);
         if (cptr.ldI32o(d, $_readobjnam_data_mntmp) < NHC.LOW_PM && cptr.strlen(cptr.ldPtro(d, $_readobjnam_data_bp)) > 2n && ((cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_monplus(cptr.ldPtro(d, $_readobjnam_data_bp), rest, cptr.add(d, $_readobjnam_data_mgend)))) >= NHC.LOW_PM)) {
             let obp = cptr.ldPtro(d, $_readobjnam_data_bp);
             cptr.stPtro(d, $_readobjnam_data_bp, rest.v);
             if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == 32) {
                 cptr.postinc(() => cptr.ldPtro(d, $_readobjnam_data_bp), (v) => { cptr.stPtro(d, $_readobjnam_data_bp, v); });
-            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl670, 2) || (cptr.cmp(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(d, $_readobjnam_data_origbp)) > 0 && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), -(1)), __sl177, 3))) {
+            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_s_sp, 2) || (cptr.cmp(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(d, $_readobjnam_data_origbp)) > 0 && !strncmpi(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), -(1)), __s_s_apos_sp, 3))) {
                 cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 2));
-            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl671, 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl176, 3)) {
+            } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_es__2, 3) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_apos_s_sp, 3)) {
                 cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 3));
             } else if (!cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && !cptr.ldPtro(d, $_readobjnam_data_actualn) && !cptr.ldPtro(d, $_readobjnam_data_dn) && !cptr.ldPtro(d, $_readobjnam_data_un) && !cptr.ld1so(d, $_readobjnam_data_oclass)) {
                 cptr.stPtro(d, $_readobjnam_data_bp, obp);
@@ -4208,7 +4208,7 @@ function readobjnam_postparse1(d) {
             }
         }
     }
-    if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl672), -1) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl673), -1)) {
+    if (cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_tricks), -1) && strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_clothes), -1)) {
         let sng = makesingular(cptr.ldPtro(d, $_readobjnam_data_bp));
         if (strcmp(cptr.ldPtro(d, $_readobjnam_data_bp), sng)) {
             if (cptr.ldI32o(d, $_readobjnam_data_cnt) == 1)
@@ -4225,31 +4225,31 @@ function readobjnam_postparse1(d) {
             }
             as = cptr.add(as, 1, 16);
         }
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl674, 10))
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_grey_spell, 10))
             cptr.st1((cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 2)), 97);
-        if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl675))) !== null) {
+        if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_armour))) !== null) {
             cptr.stPtro(d, $_readobjnam_data_p, cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 4));
             while ((cptr.st1(cptr.ldPtro(d, $_readobjnam_data_p), cptr.ld1s((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), 1))))) != 0)
                 cptr.preinc(() => cptr.ldPtro(d, $_readobjnam_data_p), (v) => { cptr.stPtro(d, $_readobjnam_data_p, v); });
         }
     }
-    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl285), -1) && cptr.ldI32o(d, $_readobjnam_data_mntmp) >= NHC.PM_GRAY_DRAGON && cptr.ldI32o(d, $_readobjnam_data_mntmp) <= NHC.PM_YELLOW_DRAGON) {
+    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_scales), -1) && cptr.ldI32o(d, $_readobjnam_data_mntmp) >= NHC.PM_GRAY_DRAGON && cptr.ldI32o(d, $_readobjnam_data_mntmp) <= NHC.PM_YELLOW_DRAGON) {
         cptr.stI32o(d, $_readobjnam_data_typ, (((NHC.GRAY_DRAGON_SCALES + cptr.ldI32o(d, $_readobjnam_data_mntmp)) | 0) - NHC.PM_GRAY_DRAGON) | 0);
         cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);
         return 2;
     }
     cptr.stPtro(d, $_readobjnam_data_p, eos(cptr.ldPtro(d, $_readobjnam_data_bp)));
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl676), -1))) {
-        if (!(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), __sl440, 2)))
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__s_holy_water), -1))) {
+        if (!(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)), -(2))), __s_un, 2)))
             cptr.stI32o(d, $_readobjnam_data_iscursed, 1), cptr.stI32o(d, $_readobjnam_data_blessed, cptr.stI32o(d, $_readobjnam_data_uncursed, 0));
         else
             cptr.stI32o(d, $_readobjnam_data_blessed, 1), cptr.stI32o(d, $_readobjnam_data_iscursed, cptr.stI32o(d, $_readobjnam_data_uncursed, 0));
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.POT_WATER);
         return 2;
     }
-    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl677, 9)) {
+    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_paperback, 9)) {
         let dbp = cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 9);
-        if (!cptr.ld1s(dbp) || !strncmpi(dbp, __sl678, 5)) {
+        if (!cptr.ld1s(dbp) || !strncmpi(dbp, __s_book__2, 5)) {
             cptr.stI32o(d, $_readobjnam_data_typ, NHC.SPE_NOVEL);
             return 2;
         } else {
@@ -4257,19 +4257,19 @@ function readobjnam_postparse1(d) {
             return 3;
         }
     }
-    if (cptr.ldI32o(d, $_readobjnam_data_unlabeled) && !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl18), -1))) {
+    if (cptr.ldI32o(d, $_readobjnam_data_unlabeled) && !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__s_scroll), -1))) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.SCR_BLANK_PAPER);
         return 2;
     }
-    if (cptr.ldI32o(d, $_readobjnam_data_unlabeled) && !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(9))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(9)))), (__sl20), -1))) {
+    if (cptr.ldI32o(d, $_readobjnam_data_unlabeled) && !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(9))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(9)))), (__s_spellbook), -1))) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.SPE_BLANK_PAPER);
         return 2;
     }
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl679), -1)) && cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM) {
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__s_orange), -1)) && cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM) {
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.ORANGE);
         return 2;
     }
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__sl680), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7)))), (__sl681), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl682), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl683), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl684), -1) || cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == NHC.GOLD_SYM) {
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(10)))), (__s_gold_piece), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(7)))), (__s_zorkmid), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_gold), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_money), -1) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_coin), -1) || cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp)) == NHC.GOLD_SYM) {
         if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 5000 && !wizard())
             cptr.stI32o(d, $_readobjnam_data_cnt, 5000);
         else if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 1)
@@ -4284,14 +4284,14 @@ function readobjnam_postparse1(d) {
         cptr.st1o(d, $_readobjnam_data_oclass, schar(i));
         return 4;
     }
-    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl685, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl686, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl687, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl688, 14) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl689, 9) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl690, 21) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl691, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl692, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl693, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl694, 9))
+    if (strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_enchant, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_destroy, 8) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_detect_food, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_food_detection, 14) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_ring_mail, 9) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_studded_leather_armor, 21) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_leather_armor, 13) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_tooled_horn, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_food_ration, 11) && strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_meat_ring, 9))
         for (i = 0; i < 13; i++) {
-            let j = Strlen_(cptr.ldPtro(wrp, i, 8), __sl656, 4568) | 0;
+            let j = Strlen_(cptr.ldPtro(wrp, i, 8), __s_readobjnam_postparse1, 4568) | 0;
             if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.ldPtro(wrp, i, 8), j)) {
                 cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), i, 1));
                 if (cptr.ld1so(d, $_readobjnam_data_oclass) != NHC.AMULET_CLASS) {
                     cptr.stPtro(d, $_readobjnam_data_bp, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), j));
-                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl34, 4))
+                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_of, 4))
                         cptr.stPtro(d, $_readobjnam_data_actualn, cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 4));
                 } else
                     cptr.stPtro(d, $_readobjnam_data_actualn, cptr.ldPtro(d, $_readobjnam_data_bp));
@@ -4308,7 +4308,7 @@ function readobjnam_postparse1(d) {
                     let k;
                     let l;
                     let amubuf = new Uint8Array(256);
-                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl695, 14)) {
+                    if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_versus_poison, 14)) {
                         cptr.stI32o(d, $_readobjnam_data_typ, NHC.AMULET_VERSUS_POISON);
                         return 2;
                     }
@@ -4326,14 +4326,14 @@ function readobjnam_postparse1(d) {
                 return 1;
             }
         }
-    if (wizard() && (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl696, 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl697, 4))) {
+    if (wizard() && (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_bear, 4) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_land, 4))) {
         let beartrap = schar((lowc(cptr.ld1s(cptr.ldPtro(d, $_readobjnam_data_bp))) == 98));
         let zp = cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), 4);
         if (cptr.ld1s(zp) == 32)
             zp = cptr.add(zp, 1);
-        if (!strncmpi(zp, beartrap ? __sl698 : __sl699, 4)) {
+        if (!strncmpi(zp, beartrap ? __s_trap : __s_mine, 4)) {
             zp = cptr.add(zp, 4);
-            if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 2 || !strncmpi((zp), (__sl700), -1)) {
+            if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 2 || !strncmpi((zp), (__s_object__2), -1)) {
                 cptr.stI32o(d, $_readobjnam_data_typ, beartrap ? NHC.BEARTRAP : NHC.LAND_MINE);
                 return 2;
             } else if (cptr.ldI32o(d, $_readobjnam_data_trapped) == 1 || cptr.ld1s(zp) != 0) {
@@ -4353,36 +4353,36 @@ function readobjnam_postparse2(d) {
             cptr.stI32o(d, $_readobjnam_data_typ, rnd_class(cptr.ldI32o2(o_ranges, i, 24, $o_range_f_o_range), cptr.ldI32o2(o_ranges, i, 24, $o_range_l_o_range)));
             return 2;
         }
-    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl28), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4)))), (__sl29), -1))) {
-        cptr.st1o(cptr.ldPtro(d, $_readobjnam_data_p), !strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4))), (__sl29), -1) ? -4 : -6, 0);
+    if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__s_stone), -1)) || !(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4)))), (__s_gem), -1))) {
+        cptr.st1o(cptr.ldPtro(d, $_readobjnam_data_p), !strncmpi((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(4))), (__s_gem), -1) ? -4 : -6, 0);
         cptr.st1o(d, $_readobjnam_data_oclass, NHC.GEM_CLASS);
         cptr.stPtro(d, $_readobjnam_data_dn, cptr.stPtro(d, $_readobjnam_data_actualn, cptr.ldPtro(d, $_readobjnam_data_bp)));
         return 1;
-    } else if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl701), -1)) {
+    } else if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_looking_glass), -1)) {
         ;
-    } else if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__sl702), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl703), -1)) {
+    } else if (!(cptr.cmp((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.ldPtro(d, $_readobjnam_data_p), -(6)))), (__s_glass), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_glass__2), -1)) {
         let s = cptr.ldPtro(d, $_readobjnam_data_bp);
-        if (cptr.ldI32o(d, $_readobjnam_data_broken) || strstri(s, __sl704)) {
+        if (cptr.ldI32o(d, $_readobjnam_data_broken) || strstri(s, __s_broken__2)) {
             cptr.stPtr(d, null);
             return 3;
         }
-        if (!strncmpi(s, __sl705, 10))
+        if (!strncmpi(s, __s_worthless, 10))
             s = cptr.add(s, 10);
-        if (!strncmpi(s, __sl706, 9))
+        if (!strncmpi(s, __s_piece_of, 9))
             s = cptr.add(s, 9);
-        if (!strncmpi(s, __sl707, 8))
+        if (!strncmpi(s, __s_colored, 8))
             s = cptr.add(s, 8);
-        else if (!strncmpi(s, __sl708, 9))
+        else if (!strncmpi(s, __s_coloured, 9))
             s = cptr.add(s, 9);
-        if (!strncmpi((s), (__sl703), -1)) {
-            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4705, __sl709), rn2(NHC.NUM_GLASS_GEMS)) : rn2(NHC.NUM_GLASS_GEMS))) | 0);
+        if (!strncmpi((s), (__s_glass__2), -1)) {
+            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4705, __s_readobjnam_postparse2), rn2(NHC.NUM_GLASS_GEMS)) : rn2(NHC.NUM_GLASS_GEMS))) | 0);
             if (cptr.ld1so2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_class) == NHC.GEM_CLASS)
                 return 2;
             else
                 cptr.stI32o(d, $_readobjnam_data_typ, 0);
         } else {
             let tbuf = new Uint8Array(256);
-            void cptr.strcpy(cptr.decay(tbuf), __sl710);
+            void cptr.strcpy(cptr.decay(tbuf), __s_worthless_piece_of);
             void cptr.strcat(cptr.decay(tbuf), s);
             void cptr.strcpy(cptr.ldPtro(d, $_readobjnam_data_bp), cptr.decay(tbuf));
         }
@@ -4404,7 +4404,7 @@ function readobjnam_postparse3(d) {
                 return 2;
             }
         }
-        if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_actualn)), (__sl711), -1)) {
+        if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_actualn)), (__s_tin), -1)) {
             cptr.stI32o(d, $_readobjnam_data_typ, NHC.TIN);
             return 2;
         }
@@ -4422,11 +4422,11 @@ function readobjnam_postparse3(d) {
             j = cptr.add(j, 1, 16);
         }
     }
-    if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl712)) {
-        void cptr.strcat(cptr.ldPtro(d, $_readobjnam_data_bp), __sl713);
+    if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS && !strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_mail)) {
+        void cptr.strcat(cptr.ldPtro(d, $_readobjnam_data_bp), __s_mail__2);
         return 6;
     }
-    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__sl664), -1)) {
+    if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_spinach), -1)) {
         cptr.stI32o(d, $_readobjnam_data_contents, 2);
         cptr.stI32o(d, $_readobjnam_data_typ, NHC.TIN);
         return 2;
@@ -4446,7 +4446,7 @@ function readobjnam_postparse3(d) {
         for (; ; ) {
             if (!fp || !cptr.ld1s(fp))
                 break;
-            if (!strncmpi(fp, __sl180, l = 3) || !strncmpi(fp, __sl111, l = 2)) {
+            if (!strncmpi(fp, __s_an, l = 3) || !strncmpi(fp, __s_a_sp, l = 2)) {
                 cntf = 1;
             } else if (!cntf && digit(cptr.ld1s(fp))) {
                 cntf = atoi(fp);
@@ -4455,13 +4455,13 @@ function readobjnam_postparse3(d) {
                 while (cptr.ld1s(fp) == 32)
                     fp = cptr.add(fp, 1);
                 l = 0;
-            } else if (!strncmpi(fp, __sl114, l = 8)) {
+            } else if (!strncmpi(fp, __s_blessed, l = 8)) {
                 blessedf = 1;
-            } else if (!strncmpi(fp, __sl113, l = 7)) {
+            } else if (!strncmpi(fp, __s_cursed, l = 7)) {
                 iscursedf = 1;
-            } else if (!strncmpi(fp, __sl92, l = 9)) {
+            } else if (!strncmpi(fp, __s_uncursed, l = 9)) {
                 uncursedf = 1;
-            } else if (!strncmpi(fp, __sl54, l = 13) || !strncmpi(fp, __sl629, l = 16)) {
+            } else if (!strncmpi(fp, __s_partly_eaten, l = 13) || !strncmpi(fp, __s_partially_eaten, l = 16)) {
                 halfeatenf = 1;
             } else
                 break;
@@ -4529,7 +4529,7 @@ export function readobjnam(bp, no_wish) {
         }
         case 6: {
         void mungspaces(bp);
-        if (!strncmpi((bp), (__sl714), -1) || !strncmpi((bp), (__sl715), -1) || !strncmpi((bp), (__sl716), -1))
+        if (!strncmpi((bp), (__s_nothing), -1) || !strncmpi((bp), (__s_nil), -1) || !strncmpi((bp), (__s_none), -1))
             return no_wish;
         void cptr.strcpy(cptr.add(d, $_readobjnam_data_fruitbuf), bp);
         if (readobjnam_preparse(d)) { __pc = 9; continue; }
@@ -4662,7 +4662,7 @@ export function readobjnam(bp, no_wish) {
         __pc = 38; continue;
         }
         case 39: {
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl717, 7)) { __pc = 41; continue; }
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_polearm, 7)) { __pc = 41; continue; }
         __pc = 42; continue;
         }
         case 41: {
@@ -4670,7 +4670,7 @@ export function readobjnam(bp, no_wish) {
         { __pc = 5; continue; }
         }
         case 42: {
-        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __sl718, 6)) { __pc = 44; continue; }
+        if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_hammer, 6)) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
@@ -4693,7 +4693,7 @@ export function readobjnam(bp, no_wish) {
         }
         case 4 /* any: */: {
         if (!cptr.ld1so(d, $_readobjnam_data_oclass))
-            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__sl107, 4996, __sl719), rn2(13)) : rn2(13)), 1));
+            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4996, __s_readobjnam), rn2(13)) : rn2(13)), 1));
         __pc = 5;
         continue;
         }
@@ -4735,16 +4735,16 @@ export function readobjnam(bp, no_wish) {
             if (cptr.ldI32o(d, $_readobjnam_data_gsize) > 1)
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) + (Math.imul(((5 + Math.imul(((cptr.ldI32o(d, $_readobjnam_data_gsize) - 2) | 0), 10)) | 0) >>> 0, cptr.ldI32o(cptr.ldPtr(d), $obj_owt)) >>> 0)) | 0);
             if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 1) {
-                rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5059, __sl719), rn2(5)) : rn2(5)) + 2) | 0);
+                rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5059, __s_readobjnam), rn2(5)) : rn2(5)) + 2) | 0);
                 if (rn1cnt > ((6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0))
                     rn1cnt = (6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0;
-                if (cptr.ldI32o(d, $_readobjnam_data_cnt) > rn1cnt && (!wizard() || cptr.ldI32o(program_state, $sinfo_wizkit_wishing) || yn_function(__sl720, cptr.decay(ynchars), 110, 1) != 121))
+                if (cptr.ldI32o(d, $_readobjnam_data_cnt) > rn1cnt && (!wizard() || cptr.ldI32o(program_state, $sinfo_wizkit_wishing) || yn_function(__s_override_glob_weight_limit, cptr.decay(ynchars), 110, 1) != 121))
                     cptr.stI32o(d, $_readobjnam_data_cnt, rn1cnt);
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, Math.imul(cptr.ldI32o(cptr.ldPtr(d), $obj_owt), cptr.ldI32o(d, $_readobjnam_data_cnt) >>> 0));
             }
             cptr.stI32o(d, $_readobjnam_data_cnt, 0);
         } else if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 0) {
-            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5077, __sl719), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && Is_candle(cptr.ldPtr(d))) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || is_missile(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && is_ammo(cptr.ldPtr(d)))))))
+            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5077, __s_readobjnam), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && Is_candle(cptr.ldPtr(d))) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || is_missile(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && is_ammo(cptr.ldPtr(d)))))))
                 cptr.stI64o(cptr.ldPtr(d), $obj_quan, BigInt(cptr.ldI32o(d, $_readobjnam_data_cnt)));
         }
         if (cptr.ldI32o(d, $_readobjnam_data_islit) && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.OIL_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.MAGIC_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.BRASS_LANTERN || Is_candle(cptr.ldPtr(d)) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.POT_OIL)) {
@@ -4757,7 +4757,7 @@ export function readobjnam(bp, no_wish) {
         } else if (wizard()) {
             ;
         } else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS || is_weptool(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), 120, $objclass_oc_charged) & 1) | 0)) {
-            if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5102, __sl719), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
+            if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5102, __s_readobjnam), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
                 cptr.stI32o(d, $_readobjnam_data_spe, 0);
             if (cptr.ldI32o(d, $_readobjnam_data_spe) > 2 && Luck() < 0)
                 cptr.stI32o(d, $_readobjnam_data_spesgn, -1);
@@ -4805,7 +4805,7 @@ export function readobjnam(bp, no_wish) {
                 P = (ismnum(cptr.ldI32o(d, $_readobjnam_data_mntmp))) ? cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96) : null;
                 cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((!P ? NHM.CORPSTAT_RANDOM : (((cptr.ldU64o((P), $permonst_mflags2) & 262144n) != 0n) ? NHM.CORPSTAT_NEUTER : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.FEMALE && !((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n)) ? NHM.CORPSTAT_FEMALE : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.MALE && !((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_RANDOM))))));
                 if (P && cptr.ld1so(cptr.ldPtr(d), $obj_spe) == NHM.CORPSTAT_RANDOM)
-                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5163, __sl719), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
+                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5163, __s_readobjnam), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
                 if (cptr.ldI32o(d, $_readobjnam_data_ishistoric) && cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.STATUE)
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe) | NHM.CORPSTAT_HISTORIC);
                 break;
@@ -4819,7 +4819,7 @@ export function readobjnam(bp, no_wish) {
             break;
             case NHC.WAN_WISHING:
             if (!wizard()) {
-                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5182, __sl719), rn2(10)) : rn2(10)) ? -1 : 0)));
+                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5182, __s_readobjnam), rn2(10)) : rn2(10)) ? -1 : 0)));
                 break;
             }
             // @FallThrough
@@ -4847,7 +4847,7 @@ export function readobjnam(bp, no_wish) {
                     set_corpsenm(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_mntmp));
                 }
                 if (cptr.ld1so(d, $_readobjnam_data_zombify) && zombie_form(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), 96))) {
-                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5223, __sl719), rn2(5)) : rn2(5)) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
+                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5223, __s_readobjnam), rn2(5)) : rn2(5)) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
                 }
                 break;
                 case NHC.EGG:
@@ -4928,7 +4928,7 @@ export function readobjnam(bp, no_wish) {
             cptr.stI32o(cptr.ldPtr(d), $obj_greased, 1);
         if (cptr.ldI32o(d, $_readobjnam_data_isdiluted) && cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.POTION_CLASS)
             cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) != NHC.POT_WATER) >>> 0);
-        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && ((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5343, __sl719), rn2(4)) : rn2(4)) || wizard()))
+        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && ((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5343, __s_readobjnam), rn2(4)) : rn2(4)) || wizard()))
             set_tin_variety(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_tvariety));
         if (cptr.ldPtro(d, $_readobjnam_data_name)) {
             aname = artifact_name(cptr.ldPtro(d, $_readobjnam_data_name), objtyp, 1);
@@ -4944,11 +4944,11 @@ export function readobjnam(bp, no_wish) {
         }
         if (permapoisoned(cptr.ldPtr(d)))
             cptr.stI32o(cptr.ldPtr(d), $obj_otrapped, 1);
-        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5374, __sl719), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1)) && !wizard()) {
+        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5374, __s_readobjnam), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1)) && !wizard()) {
             artifact_exists(cptr.ldPtr(d), safe_oname(cptr.ldPtr(d)), 0, NHM.ONAME_NO_FLAGS);
             obfree(cptr.ldPtr(d), null);
             cptr.stPtr(d, hands_obj);
-            pline(__sl721, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), makeplural(body_part(NHC.HAND)));
+            pline(__s_for_a_moment_you_feel_s_in_your_s_but, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), makeplural(body_part(NHC.HAND)));
             return cptr.ldPtr(d);
         }
         if (cptr.ldI32o(d, $_readobjnam_data_halfeaten) && cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.FOOD_CLASS) {
@@ -4977,8 +4977,8 @@ export function rnd_class(first, last) {
         for (i = first; i <= last; i++)
             sum = (sum + cptr.ldI16o2(objects, i, 120, $objclass_oc_prob)) | 0;
         if (!sum)
-            return (((rng_log_enabled() ? (rng_log_set_caller(__sl107, 5411, __sl722), rn2((((last - first) | 0) + 1) | 0)) : rn2((((last - first) | 0) + 1) | 0)) + (first)) | 0);
-        x = (rng_log_enabled() ? (rng_log_set_caller(__sl107, 5413, __sl722), rnd(sum)) : rnd(sum));
+            return (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5411, __s_rnd_class), rn2((((last - first) | 0) + 1) | 0)) : rn2((((last - first) | 0) + 1) | 0)) + (first)) | 0);
+        x = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5413, __s_rnd_class), rnd(sum)) : rnd(sum));
         for (i = first; i <= last; i++)
             if ((x = (x - cptr.ldI16o2(objects, i, 120, $objclass_oc_prob)) | 0) <= 0)
                 return i;
@@ -5025,7 +5025,7 @@ export function armor_simple_name(armor) {
         break;
         default:
         result = simpleonames(armor);
-        impossible(__sl723, result, armcat);
+        impossible(__s_unknown_armor_category_s_u, result, armcat);
         break;
     }
     return result;
@@ -5037,17 +5037,17 @@ export function suit_simple_name(suit) {
     let esuitp;
     if (suit) {
         if (Is_dragon_mail(suit))
-            return __sl724;
+            return __s_dragon_mail;
         else if (Is_dragon_scales(suit))
-            return __sl495;
+            return __s_dragon_scales;
         suitnm = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(suit, $obj_otyp), 120))), 16));
         esuitp = eos(suitnm);
-        if (cptr.strlen(suitnm) > 5n && !strcmp(cptr.add(esuitp, -(5)), __sl713))
-            return __sl712;
-        else if (cptr.strlen(suitnm) > 7n && !strcmp(cptr.add(esuitp, -(7)), __sl725))
-            return __sl726;
+        if (cptr.strlen(suitnm) > 5n && !strcmp(cptr.add(esuitp, -(5)), __s_mail__2))
+            return __s_mail;
+        else if (cptr.strlen(suitnm) > 7n && !strcmp(cptr.add(esuitp, -(7)), __s_jacket))
+            return __s_jacket__2;
     }
-    return __sl727;
+    return __s_suit;
 }
 
 /** C ref: objnam.c:5492 — @param {CPtr<struct obj>} cloak @returns {CPtr<char>} */
@@ -5055,21 +5055,21 @@ export function cloak_simple_name(cloak) {
     if (cloak) {
         switch (cptr.ldI16o(cloak, $obj_otyp)) {
             case NHC.ROBE:
-            return __sl728;
+            return __s_robe;
             case NHC.MUMMY_WRAPPING:
-            return __sl729;
+            return __s_wrapping;
             case NHC.ALCHEMY_SMOCK:
-            return ((cptr.ldI32o2(objects, cptr.ldI16o(cloak, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 && (cptr.ldI32o(cloak, $obj_dknown) & 1) | 0) ? __sl730 : __sl731;
+            return ((cptr.ldI32o2(objects, cptr.ldI16o(cloak, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0 && (cptr.ldI32o(cloak, $obj_dknown) & 1) | 0) ? __s_smock : __s_apron;
             default:
             break;
         }
     }
-    return __sl493;
+    return __s_cloak;
 }
 
 /** C ref: objnam.c:5513 — @param {CPtr<struct obj>} helmet @returns {CPtr<char>} */
 export function helm_simple_name(helmet) {
-    return !hard_helmet(helmet) ? __sl492 : __sl481;
+    return !hard_helmet(helmet) ? __s_hat : __s_helm;
 }
 
 const __static_gloves_simple_name_gauntlets = cptr.bytes("gauntlets"); /** C ref: objnam.c:5534 — char[10] (function-static) */
@@ -5084,7 +5084,7 @@ export function gloves_simple_name(gloves) {
         if (strstri((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? actualn : descrpn, cptr.decay(__static_gloves_simple_name_gauntlets)))
             return cptr.decay(__static_gloves_simple_name_gauntlets);
     }
-    return __sl283;
+    return __s_gloves;
 }
 
 const __static_boots_simple_name_shoes = cptr.bytes("shoes"); /** C ref: objnam.c:5553 — char[6] (function-static) */
@@ -5099,32 +5099,32 @@ export function boots_simple_name(boots) {
         if (strstri(descrpn, cptr.decay(__static_boots_simple_name_shoes)) || ((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 && strstri(actualn, cptr.decay(__static_boots_simple_name_shoes))))
             return cptr.decay(__static_boots_simple_name_shoes);
     }
-    return __sl281;
+    return __s_boots;
 }
 
 /** C ref: objnam.c:5570 — @param {CPtr<struct obj>} shield @returns {CPtr<char>} */
 export function shield_simple_name(shield) {
     if (shield) {
         if (cptr.ldI16o(shield, $obj_otyp) == NHC.SHIELD_OF_REFLECTION)
-            return (cptr.ldI32o(shield, $obj_dknown) & 1) | 0 ? __sl517 : __sl51;
+            return (cptr.ldI32o(shield, $obj_dknown) & 1) | 0 ? __s_silver_shield : __s_smooth_shield;
     }
-    return __sl50;
+    return __s_shield;
 }
 
 /** C ref: objnam.c:5600 — @param {CPtr<struct obj>} shirt @returns {CPtr<char>} */
 export function shirt_simple_name(shirt) {
-    return __sl494;
+    return __s_shirt;
 }
 
 /** C ref: objnam.c:5606 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function mimic_obj_name(mtmp) {
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
         if (cptr.ldI32o(mtmp, $monst_mappearance) == NHC.GOLD_PIECE)
-            return __sl682;
+            return __s_gold;
         if (cptr.ldI32o(mtmp, $monst_mappearance) != NHC.STRANGE_OBJECT)
             return simple_typename(cptr.ldI32o(mtmp, $monst_mappearance) | 0);
     }
-    return __sl732;
+    return __s_whatcha_may_callit;
 }
 
 /** C ref: objnam.c:5624 — @param {CPtr<char>} qbuf @param {CPtr<char>} qprefix @param {CPtr<char>} qsuffix @param {CPtr<struct obj>} obj @param {CPtr} func @param {CPtr} altfunc @param {CPtr<char>} lastR @returns {CPtr<char>} */
@@ -5138,13 +5138,13 @@ export function safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
     let len_lastR = Number(BigInt.asUintN(32, cptr.strlen(lastR)));
     lenlimit = 127;
     endp = cptr.add(qbuf, lenlimit);
-    (__builtin_expect(BigInt((!(!cptr.eq(endp, (null))))), 0n) ? __assert_rtn(__sl733, __sl107, 5642, __sl734) : void 0);
+    (__builtin_expect(BigInt((!(!cptr.eq(endp, (null))))), 0n) ? __assert_rtn(__s_safe_qbuf, __s_objnam_c, 5642, __s_endp_null) : void 0);
     if (len_qpfx > lenlimit)
-        impossible(__sl735, len_qpfx);
+        impossible(__s_safe_qbuf_prefix_too_long_u_characters, len_qpfx);
     else if ((len_qpfx + len_qsfx) >>> 0 > lenlimit)
-        impossible(__sl736, len_qpfx, len_qsfx);
+        impossible(__s_safe_qbuf_suffix_too_long_u_u_characters, len_qpfx, len_qsfx);
     else if ((((len_qpfx + len_lastR) >>> 0) + len_qsfx) >>> 0 > lenlimit)
-        impossible(__sl737, len_qpfx, len_lastR, len_qsfx);
+        impossible(__s_safe_qbuf_filler_too_long_u_u_u, len_qpfx, len_lastR, len_qsfx);
     if (cptr.eq(qbuf, qprefix)) {
         cptr.st1(endp, 0);
     } else if (qprefix) {

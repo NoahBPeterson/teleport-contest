@@ -88,81 +88,81 @@ const $Gender_his = FLD.Gender_his, $align_record = FLD.align_record, $d_level_d
     $you_urooms0 = FLD.you_urooms0, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("priest.c");
-const __sl1 = cptr.lit("move_special");
-const __sl2 = cptr.lit("pri_move");
-const __sl3 = cptr.lit("displaced image doesn't fool %s!");
-const __sl4 = cptr.lit("priestini");
-const __sl5 = cptr.lit("poohbah");
-const __sl6 = cptr.lit("priestess");
-const __sl7 = cptr.lit("priest");
-const __sl8 = cptr.lit("the ");
-const __sl9 = cptr.lit("Angel");
-const __sl10 = cptr.lit("an ");
-const __sl11 = cptr.lit("a ");
-const __sl12 = cptr.lit("invisible ");
-const __sl13 = cptr.lit("renegade ");
-const __sl14 = cptr.lit("grand ");
-const __sl15 = cptr.lit("high ");
-const __sl16 = cptr.lit("guardian ");
-const __sl17 = cptr.lit(" of ");
-const __sl18 = cptr.lit("%s intones:");
-const __sl19 = cptr.lit("A nearby voice");
-const __sl20 = cptr.lit("intemple");
-const __sl21 = cptr.lit("Infidel, you have entered Moloch's Sanctum!");
-const __sl22 = cptr.lit("Be gone!");
-const __sl23 = cptr.lit("You desecrate this place by your presence!");
-const __sl24 = cptr.lit("Pilgrim, you enter a %s place!");
-const __sl25 = cptr.lit("desecrated");
-const __sl26 = cptr.lit("sacred");
-const __sl27 = cptr.lit("%s");
-const __sl28 = cptr.lit("have a%s forbidding feeling...");
-const __sl29 = cptr.lit("");
-const __sl30 = cptr.lit(" strange");
-const __sl31 = cptr.lit("experience %s sense of peace.");
-const __sl32 = cptr.lit("a");
-const __sl33 = cptr.lit("an unusual");
-const __sl34 = cptr.lit("have an eerie feeling...");
-const __sl35 = cptr.lit("like you are being watched.");
-const __sl36 = cptr.lit("A shiver runs down your %s.");
-const __sl37 = cptr.lit("A%s ghost appears next to you%c");
-const __sl38 = cptr.lit("n enormous");
-const __sl39 = cptr.lit("sense a presence close by!");
-const __sl40 = cptr.lit("are frightened to death, and unable to move.");
-const __sl41 = cptr.lit("being terrified of a ghost");
-const __sl42 = cptr.lit("You regain your composure.");
-const __sl43 = cptr.lit("attempting to manipulate shrine data for non-priest?");
-const __sl44 = cptr.lit("rejected atheism by consulting with %s");
-const __sl45 = cptr.lit("%s doesn't want anything to do with you!");
-const __sl46 = cptr.lit("%s breaks out of %s reverie!");
-const __sl47 = cptr.lit("priest_talk");
-const __sl48 = cptr.lit("Begone!  Thou desecratest this holy place with thy presence.");
-const __sl49 = cptr.lit("bit");
-const __sl50 = cptr.lit("bits");
-const __sl51 = cptr.lit("%s gives you %s%s for an ale.");
-const __sl52 = cptr.lit("one ");
-const __sl53 = cptr.lit("two ");
-const __sl54 = cptr.lit("%s preaches the virtues of poverty.");
-const __sl55 = cptr.lit("%s is not interested.");
-const __sl56 = cptr.lit("How much will you offer (suggested: %ld or %ld)?");
-const __sl57 = cptr.lit("%s asks you for a contribution for the temple (base %ld).");
-const __sl58 = cptr.lit("%s asks you for a contribution for the temple.");
-const __sl59 = cptr.lit("Thou shalt regret thine action!");
-const __sl60 = cptr.lit("Cheapskate.");
-const __sl61 = cptr.lit("I thank thee for thy contribution.");
-const __sl62 = cptr.lit("Thou art indeed a pious individual.");
-const __sl63 = cptr.lit("I bestow upon thee a blessing.");
-const __sl64 = cptr.lit("Thou hast been rewarded for thy devotion.");
-const __sl65 = cptr.lit("Thy selfless generosity is deeply appreciated.");
-const __sl66 = cptr.lit("Thou wouldst have words, eh?  I'll give thee a word or two!");
-const __sl67 = cptr.lit("Talk?  Here is what I have to say!");
-const __sl68 = cptr.lit("Pilgrim, I would speak no longer with thee.");
-const __sl69 = cptr.lit("ghod_hitsu");
-const __sl70 = cptr.lit("%s roars in anger:  \"Thou shalt suffer!\"");
-const __sl71 = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
-const __sl72 = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
-const __sl73 = cptr.lit("angry_priest");
-const __sl74 = cptr.lit("has_emin(priest)");
+const __s_priest_c = cptr.lit("priest.c");
+const __s_move_special = cptr.lit("move_special");
+const __s_pri_move = cptr.lit("pri_move");
+const __s_displaced_image_doesn_t_fool_s = cptr.lit("displaced image doesn't fool %s!");
+const __s_priestini = cptr.lit("priestini");
+const __s_poohbah = cptr.lit("poohbah");
+const __s_priestess = cptr.lit("priestess");
+const __s_priest = cptr.lit("priest");
+const __s_the = cptr.lit("the ");
+const __s_angel = cptr.lit("Angel");
+const __s_an = cptr.lit("an ");
+const __s_a_sp = cptr.lit("a ");
+const __s_invisible = cptr.lit("invisible ");
+const __s_renegade = cptr.lit("renegade ");
+const __s_grand = cptr.lit("grand ");
+const __s_high = cptr.lit("high ");
+const __s_guardian = cptr.lit("guardian ");
+const __s_of = cptr.lit(" of ");
+const __s_s_intones = cptr.lit("%s intones:");
+const __s_a_nearby_voice = cptr.lit("A nearby voice");
+const __s_intemple = cptr.lit("intemple");
+const __s_infidel_you_have_entered_moloch_s = cptr.lit("Infidel, you have entered Moloch's Sanctum!");
+const __s_be_gone = cptr.lit("Be gone!");
+const __s_you_desecrate_this_place_by_your = cptr.lit("You desecrate this place by your presence!");
+const __s_pilgrim_you_enter_a_s_place = cptr.lit("Pilgrim, you enter a %s place!");
+const __s_desecrated = cptr.lit("desecrated");
+const __s_sacred = cptr.lit("sacred");
+const __s_pct_s = cptr.lit("%s");
+const __s_have_a_s_forbidding_feeling = cptr.lit("have a%s forbidding feeling...");
+const __s_empty = cptr.lit("");
+const __s_strange = cptr.lit(" strange");
+const __s_experience_s_sense_of_peace = cptr.lit("experience %s sense of peace.");
+const __s_a = cptr.lit("a");
+const __s_an_unusual = cptr.lit("an unusual");
+const __s_have_an_eerie_feeling = cptr.lit("have an eerie feeling...");
+const __s_like_you_are_being_watched = cptr.lit("like you are being watched.");
+const __s_a_shiver_runs_down_your_s = cptr.lit("A shiver runs down your %s.");
+const __s_a_s_ghost_appears_next_to_you_c = cptr.lit("A%s ghost appears next to you%c");
+const __s_n_enormous = cptr.lit("n enormous");
+const __s_sense_a_presence_close_by = cptr.lit("sense a presence close by!");
+const __s_are_frightened_to_death_and_unable_to = cptr.lit("are frightened to death, and unable to move.");
+const __s_being_terrified_of_a_ghost = cptr.lit("being terrified of a ghost");
+const __s_you_regain_your_composure = cptr.lit("You regain your composure.");
+const __s_attempting_to_manipulate_shrine_data = cptr.lit("attempting to manipulate shrine data for non-priest?");
+const __s_rejected_atheism_by_consulting_with_s = cptr.lit("rejected atheism by consulting with %s");
+const __s_s_doesn_t_want_anything_to_do_with_you = cptr.lit("%s doesn't want anything to do with you!");
+const __s_s_breaks_out_of_s_reverie = cptr.lit("%s breaks out of %s reverie!");
+const __s_priest_talk = cptr.lit("priest_talk");
+const __s_begone_thou_desecratest_this_holy_place = cptr.lit("Begone!  Thou desecratest this holy place with thy presence.");
+const __s_bit = cptr.lit("bit");
+const __s_bits = cptr.lit("bits");
+const __s_s_gives_you_s_s_for_an_ale = cptr.lit("%s gives you %s%s for an ale.");
+const __s_one = cptr.lit("one ");
+const __s_two = cptr.lit("two ");
+const __s_s_preaches_the_virtues_of_poverty = cptr.lit("%s preaches the virtues of poverty.");
+const __s_s_is_not_interested = cptr.lit("%s is not interested.");
+const __s_how_much_will_you_offer_suggested_ld_or = cptr.lit("How much will you offer (suggested: %ld or %ld)?");
+const __s_s_asks_you_for_a_contribution_for_the = cptr.lit("%s asks you for a contribution for the temple (base %ld).");
+const __s_s_asks_you_for_a_contribution_for_the__2 = cptr.lit("%s asks you for a contribution for the temple.");
+const __s_thou_shalt_regret_thine_action = cptr.lit("Thou shalt regret thine action!");
+const __s_cheapskate = cptr.lit("Cheapskate.");
+const __s_i_thank_thee_for_thy_contribution = cptr.lit("I thank thee for thy contribution.");
+const __s_thou_art_indeed_a_pious_individual = cptr.lit("Thou art indeed a pious individual.");
+const __s_i_bestow_upon_thee_a_blessing = cptr.lit("I bestow upon thee a blessing.");
+const __s_thou_hast_been_rewarded_for_thy_devotion = cptr.lit("Thou hast been rewarded for thy devotion.");
+const __s_thy_selfless_generosity_is_deeply = cptr.lit("Thy selfless generosity is deeply appreciated.");
+const __s_thou_wouldst_have_words_eh_i_ll_give = cptr.lit("Thou wouldst have words, eh?  I'll give thee a word or two!");
+const __s_talk_here_is_what_i_have_to_say = cptr.lit("Talk?  Here is what I have to say!");
+const __s_pilgrim_i_would_speak_no_longer_with = cptr.lit("Pilgrim, I would speak no longer with thee.");
+const __s_ghod_hitsu = cptr.lit("ghod_hitsu");
+const __s_s_roars_in_anger_thou_shalt_suffer = cptr.lit("%s roars in anger:  \"Thou shalt suffer!\"");
+const __s_s_voice_booms_how_darest_thou_harm_my = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
+const __s_s_roars_thou_dost_profane_my_shrine = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
+const __s_angry_priest = cptr.lit("angry_priest");
+const __s_has_emin_priest = cptr.lit("has_emin(priest)");
 
 /** C ref: priest.c:16 — @param {CPtr<struct monst>} mtmp */
 export function newepri(mtmp) {
@@ -222,7 +222,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
             if (((cptr.ld1so3(svl, nx, 756, ny, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (!in_his_shop || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_following)))) {
                 if (avoid && (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n) && !(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n))
                     continue;
-                if ((!appr && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 85, __sl1), rn2(++chcnt)) : rn2(++chcnt))) || (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy))) || (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n)) {
+                if ((!appr && !(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 85, __s_move_special), rn2(++chcnt)) : rn2(++chcnt))) || (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy))) || (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n)) {
                     nix = nx;
                     niy = ny;
                     ninfo = cptr.ldI64o2(mfp, i, 8, $mfndposdata_info);
@@ -296,12 +296,12 @@ export function pri_move(priest) {
     temple = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom);
     ggx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos);
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y);
-    ggx = i16(ggx + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 194, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
-    ggy = i16(ggy + (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 195, __sl2), rn2(3)) : rn2(3)) + -1) | 0));
+    ggx = i16(ggx + (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 194, __s_pri_move), rn2(3)) : rn2(3)) + -1) | 0));
+    ggy = i16(ggy + (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 195, __s_pri_move), rn2(3)) : rn2(3)) + -1) | 0));
     if (!(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(priest))) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             if (Displaced())
-                Your(__sl3, mon_nam(priest));
+                Your(__s_displaced_image_doesn_t_fool_s, mon_nam(priest));
             void mattacku(priest);
             return 0;
         } else if (cptr.strchr(cptr.add(u, $you_urooms), temple)) {
@@ -324,7 +324,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let px = 0;
     let py = 0;
     let i;
-    let si = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 229, __sl4), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
+    let si = (rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 229, __s_priestini), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
     let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, 96);
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         px = (sx + cptr.ld1so(cptr.decay(xdir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
@@ -352,10 +352,10 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
         if (sanctum && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shralign) == -128 && on_level(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level), cptr.add(u, $you_uz))) {
             void mongets(priest, NHC.AMULET_OF_YENDOR);
         }
-        for (cnt = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 265, __sl4), rn2(3)) : rn2(3)) + 2) | 0); cnt > 0; --cnt) {
+        for (cnt = (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 265, __s_priestini), rn2(3)) : rn2(3)) + 2) | 0); cnt > 0; --cnt) {
             void mpickobj(priest, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 269, __sl4), rn2(2)) : rn2(2)) && (otmp = which_armor(priest, 2n)) !== null) {
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 269, __s_priestini), rn2(2)) : rn2(2)) && (otmp = which_armor(priest, 2n)) !== null) {
             if (p_coaligned(priest))
                 uncurse(otmp);
             else
@@ -382,39 +382,39 @@ export function priestname(mon, article, reveal_high_priest, pname) {
     if (!(cptr.ldI32o(mon, $monst_ispriest) & 1) && !(cptr.ldI32o(mon, $monst_isminion) & 1))
         return cptr.strcpy(pname, what);
     if ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 || aligned_priest || high_priest)
-        what = do_hallu ? __sl5 : ((cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __sl6 : __sl7);
+        what = do_hallu ? __s_poohbah : ((cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __s_priestess : __s_priest);
     cptr.st1(pname, 0);
     if (article != NHM.ARTICLE_NONE && (!do_hallu || !bogon_is_pname(whatcode.v))) {
         if (article == NHM.ARTICLE_YOUR || (article == NHM.ARTICLE_A && high_priest))
             article = NHM.ARTICLE_THE;
         if (article == NHM.ARTICLE_THE) {
-            void cptr.strcpy(pname, __sl8);
-        } else if (!strcmp(what, __sl9)) {
-            void cptr.strcpy(pname, __sl10);
+            void cptr.strcpy(pname, __s_the);
+        } else if (!strcmp(what, __s_angel)) {
+            void cptr.strcpy(pname, __s_an);
         } else {
             void just_an(pname, what);
         }
     }
     if ((cptr.ldI32o(mon, $monst_minvis) & 1)) {
-        if (!strcmp(pname, __sl11))
-            void cptr.strcpy(pname, __sl10);
-        void cptr.strcat(pname, __sl12);
+        if (!strcmp(pname, __s_a_sp))
+            void cptr.strcpy(pname, __s_an);
+        void cptr.strcat(pname, __s_invisible);
     }
     if ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_renegade)) {
-        if (!strcmp(pname, __sl10) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
-            void cptr.strcpy(pname, __sl11);
-        void cptr.strcat(pname, __sl13);
+        if (!strcmp(pname, __s_an) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
+            void cptr.strcpy(pname, __s_a_sp);
+        void cptr.strcat(pname, __s_renegade);
     }
     if ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 || aligned_priest) {
         if (high_priest)
-            void cptr.strcat(pname, do_hallu ? __sl14 : __sl15);
+            void cptr.strcat(pname, do_hallu ? __s_grand : __s_high);
     } else {
-        if (cptr.ld1so(mon, $monst_mtame) && !strncmpi((what), (__sl9), -1))
-            void cptr.strcat(pname, __sl16);
+        if (cptr.ld1so(mon, $monst_mtame) && !strncmpi((what), (__s_angel), -1))
+            void cptr.strcat(pname, __s_guardian);
     }
     void cptr.strcat(pname, what);
     if (do_hallu || !high_priest || reveal_high_priest || !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || m_next2u(mon) || cptr.ldI32(program_state)) {
-        void cptr.strcat(pname, __sl17);
+        void cptr.strcat(pname, __s_of);
         void cptr.strcat(pname, halu_gname(mon_aligntyp(mon)));
     }
     return pname;
@@ -475,79 +475,79 @@ export function intemple(roomno) {
             let save_priest = (cptr.ldI32o(priest, $monst_ispriest) & 1);
             if (sanctum && !Hallucination())
                 cptr.stI32o(priest, $monst_ispriest, 0);
-            pline(__sl18, canseemon(priest) ? Monnam(priest) : __sl19);
+            pline(__s_s_intones, canseemon(priest) ? Monnam(priest) : __s_a_nearby_voice);
             cptr.stI32o(priest, $monst_ispriest, save_priest);
-            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 443, __sl20), d(10, 500)) : d(10, 500)))));
+            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 443, __s_intemple), d(10, 500)) : d(10, 500)))));
             cptr.stI64o(epri_p, $epri_enter_time, 0n);
         }
         msg1 = (msg2 = null);
         if (sanctum && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
             if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1)) {
-                msg1 = __sl21;
-                msg2 = __sl22;
+                msg1 = __s_infidel_you_have_entered_moloch_s;
+                msg2 = __s_be_gone;
                 cptr.stI32o(priest, $monst_mpeaceful, 0);
                 set_malign(priest);
             } else {
-                msg1 = __sl23;
+                msg1 = __s_you_desecrate_this_place_by_your;
             }
         } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, $epri_enter_time)) {
-            void cptr.sprintf(cptr.decay(buf), __sl24, !shrined ? __sl25 : __sl26);
+            void cptr.sprintf(cptr.decay(buf), __s_pilgrim_you_enter_a_s_place, !shrined ? __s_desecrated : __s_sacred);
             msg1 = cptr.decay(buf);
         }
         if (msg1 && can_speak && !Deaf()) {
             ;
-            verbalize(__sl27, msg1);
+            verbalize(__s_pct_s, msg1);
             if (msg2)
-                verbalize(__sl27, msg2);
-            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 471, __sl20), d(10, 100)) : d(10, 100)))));
+                verbalize(__s_pct_s, msg2);
+            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 471, __s_intemple), d(10, 100)) : d(10, 100)))));
         }
         if (!sanctum) {
             if (!shrined || !p_coaligned(priest) || cptr.ldI32o(u, $you_ualign + $align_record) <= -4) {
-                msg1 = __sl28;
-                msg2 = (!shrined || !p_coaligned(priest)) ? __sl29 : __sl30;
+                msg1 = __s_have_a_s_forbidding_feeling;
+                msg2 = (!shrined || !p_coaligned(priest)) ? __s_empty : __s_strange;
                 this_time = cptr.add(epri_p, $epri_hostile_time);
                 other_time = cptr.add(epri_p, $epri_peaceful_time);
             } else {
-                msg1 = __sl31;
-                msg2 = (cptr.ldI32o(u, $you_ualign + $align_record) >= 14) ? __sl32 : __sl33;
+                msg1 = __s_experience_s_sense_of_peace;
+                msg2 = (cptr.ldI32o(u, $you_ualign + $align_record) >= 14) ? __s_a : __s_an_unusual;
                 this_time = cptr.add(epri_p, $epri_peaceful_time);
                 other_time = cptr.add(epri_p, $epri_hostile_time);
             }
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64(this_time) || cptr.ldI64(other_time) >= cptr.ldI64(this_time)) {
                 You(msg1, msg2);
-                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 491, __sl20), d(10, 20)) : d(10, 20)))));
+                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 491, __s_intemple), d(10, 20)) : d(10, 20)))));
                 if (cptr.ldI64(this_time) <= cptr.ldI64(other_time))
                     cptr.stI64(other_time, BigInt.asIntN(64, cptr.ldI64(this_time) - 1n));
             }
         }
         mapseen_temple(priest);
     } else {
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 504, __sl20), rn2(4)) : rn2(4))) {
+        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 504, __s_intemple), rn2(4)) : rn2(4))) {
             case 0:
-            You(__sl34);
+            You(__s_have_an_eerie_feeling);
             break;
             case 1:
-            You_feel(__sl35);
+            You_feel(__s_like_you_are_being_watched);
             break;
             case 2:
-            pline(__sl36, body_part(NHC.SPINE));
+            pline(__s_a_shiver_runs_down_your_s, body_part(NHC.SPINE));
             break;
             default:
             break;
         }
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 519, __sl20), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 519, __s_intemple), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
             let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, 12, $instance_globals_saved_m_mvitals);
             if (canspotmon(mtmp))
-                pline(__sl37, ngen < 5 ? __sl38 : __sl29, ngen < 10 ? 33 : 46);
+                pline(__s_a_s_ghost_appears_next_to_you_c, ngen < 5 ? __s_n_enormous : __s_empty, ngen < 10 ? 33 : 46);
             else
-                You(__sl39);
+                You(__s_sense_a_presence_close_by);
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
             if (cptr.ld1so(flags, $flag_verbose))
-                You(__sl40);
+                You(__s_are_frightened_to_death_and_unable_to);
             nomul(-3);
-            cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl41);
-            cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl42);
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_being_terrified_of_a_ghost);
+            cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_regain_your_composure);
         }
     }
 }
@@ -556,16 +556,16 @@ export function intemple(roomno) {
 export function forget_temple_entry(priest) {
     let epri_p = (cptr.ldI32o(priest, $monst_ispriest) & 1) | 0 ? (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)) : null;
     if (!epri_p) {
-        impossible(__sl43);
+        impossible(__s_attempting_to_manipulate_shrine_data);
         return;
     }
     cptr.stI64o(epri_p, $epri_intone_time, cptr.stI64o(epri_p, $epri_enter_time, cptr.stI64o(epri_p, $epri_peaceful_time, cptr.stI64o(epri_p, $epri_hostile_time, 0n))));
 }
 
 const __static_priest_talk_cranky_msg = cptr.alloc(3 * 8);
-cptr.stPtro(__static_priest_talk_cranky_msg, 0, __sl66);
-cptr.stPtro(__static_priest_talk_cranky_msg, 8, __sl67);
-cptr.stPtro(__static_priest_talk_cranky_msg, 16, __sl68); /** C ref: priest.c:585 — char *[3] (function-static) */
+cptr.stPtro(__static_priest_talk_cranky_msg, 0, __s_thou_wouldst_have_words_eh_i_ll_give);
+cptr.stPtro(__static_priest_talk_cranky_msg, 8, __s_talk_here_is_what_i_have_to_say);
+cptr.stPtro(__static_priest_talk_cranky_msg, 16, __s_pilgrim_i_would_speak_no_longer_with); /** C ref: priest.c:585 — char *[3] (function-static) */
 
 /** C ref: priest.c:558 — @param {CPtr<struct monst>} priest */
 export function priest_talk(priest) {
@@ -575,26 +575,26 @@ export function priest_talk(priest) {
     if ((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)))
         cheapskate = cptr.add((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_cheapskate_count);
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_gnostic, cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n)) - (1n)))
-        livelog_printf(32n, __sl44, mon_nam(priest));
+        livelog_printf(32n, __s_rejected_atheism_by_consulting_with_s, mon_nam(priest));
     if ((cptr.ldI32o(priest, $monst_mflee) & 1) | 0 || (!(cptr.ldI32o(priest, $monst_ispriest) & 1) && coaligned && strayed)) {
-        pline(__sl45, Monnam(priest));
+        pline(__s_s_doesn_t_want_anything_to_do_with_you, Monnam(priest));
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         return;
     }
     if (!inhistemple(priest) || !(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || helpless(priest)) {
         if (helpless(priest)) {
-            pline(__sl46, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), 48, $Gender_his)));
+            pline(__s_s_breaks_out_of_s_reverie, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), 48, $Gender_his)));
             cptr.stI32o(priest, $monst_mfrozen, cptr.stI32o(priest, $monst_msleeping, 0));
             cptr.stI32o(priest, $monst_mcanmove, 1);
         }
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         ;
-        verbalize(__sl27, cptr.ldPtro(__static_priest_talk_cranky_msg, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 599, __sl47), rn2(3)) : rn2(3)), 8));
+        verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 599, __s_priest_talk), rn2(3)) : rn2(3)), 8));
         return;
     }
     if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1) | 0 && cptr.ld1s(in_rooms(cptr.ldI16o(priest, $monst_mx), cptr.ldI16o(priest, $monst_my), NHC.TEMPLE)) && !has_shrine(priest)) {
         ;
-        verbalize(__sl48);
+        verbalize(__s_begone_thou_desecratest_this_holy_place);
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         return;
     }
@@ -603,30 +603,30 @@ export function priest_talk(priest) {
             let pmoney = money_cnt(cptr.ldPtro(priest, $monst_minvent));
             if (pmoney > 0n) {
                 let bits;
-                bits = (Hallucination()) ? currency(pmoney) : ((pmoney == 1n) ? __sl49 : __sl50);
-                pline(__sl51, Monnam(priest), (pmoney == 1n) ? __sl52 : __sl53, bits);
+                bits = (Hallucination()) ? currency(pmoney) : ((pmoney == 1n) ? __s_bit : __s_bits);
+                pline(__s_s_gives_you_s_s_for_an_ale, Monnam(priest), (pmoney == 1n) ? __s_one : __s_two, bits);
                 money2u(priest, BigInt((pmoney > 1n ? 2 : 1)));
             } else
-                pline(__sl54, Monnam(priest));
+                pline(__s_s_preaches_the_virtues_of_poverty, Monnam(priest));
             exercise(NHC.A_WIS, 1);
         } else
-            pline(__sl55, Monnam(priest));
+            pline(__s_s_is_not_interested, Monnam(priest));
         return;
     } else {
         let offer;
-        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, ((((rng_log_enabled() ? (rng_log_set_caller(__sl0, 638, __sl47), rn2(101)) : rn2(101)) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
+        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, ((((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 638, __s_priest_talk), rn2(101)) : rn2(101)) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) / (BigInt.asIntN(64, suggested * 3n));
         let buf = new Uint8Array(256);
         if (quan < 1n)
             quan = 1n;
-        void cptr.sprintf(cptr.decay(buf), __sl56, BigInt.asIntN(64, suggested * quan), BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n));
+        void cptr.sprintf(cptr.decay(buf), __s_how_much_will_you_offer_suggested_ld_or, BigInt.asIntN(64, suggested * quan), BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n));
         if (cptr.ld1so(flags, $flag_debug))
-            pline(__sl57, Monnam(priest), suggested);
+            pline(__s_s_asks_you_for_a_contribution_for_the, Monnam(priest), suggested);
         else
-            pline(__sl58, Monnam(priest));
+            pline(__s_s_asks_you_for_a_contribution_for_the__2, Monnam(priest));
         if ((offer = bribe(priest, cptr.decay(buf))) == 0n) {
             ;
-            verbalize(__sl59);
+            verbalize(__s_thou_shalt_regret_thine_action);
             if (coaligned)
                 adjalign(-1);
             if (cheapskate)
@@ -634,23 +634,23 @@ export function priest_talk(priest) {
         } else if (offer < BigInt.asIntN(64, suggested * quan)) {
             if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) > (BigInt.asIntN(64, offer * 2n))) {
                 ;
-                verbalize(__sl60);
+                verbalize(__s_cheapskate);
                 if (cheapskate)
                     cptr.stI32(cheapskate, cptr.ldI32(cheapskate) + 1);
             } else {
                 ;
-                verbalize(__sl61);
+                verbalize(__s_i_thank_thee_for_thy_contribution);
                 exercise(NHC.A_WIS, 1);
             }
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n)) {
             ;
-            verbalize(__sl62);
+            verbalize(__s_thou_art_indeed_a_pious_individual);
             if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) < (BigInt.asIntN(64, offer * 2n))) {
                 if (coaligned && cptr.ldI32o(u, $you_ualign + $align_record) <= -4)
                     adjalign(1);
             }
-            verbalize(__sl63);
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, 24), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 680, __sl47), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
+            verbalize(__s_i_bestow_upon_thee_a_blessing);
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, 24), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 680, __s_priest_talk), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
             if (!(HProtection() & 117440512n)) {
@@ -659,19 +659,19 @@ export function priest_talk(priest) {
             }
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
                 if (!cptr.ldI32o(u, $you_ublessed))
-                    cptr.stI32o(u, $you_ublessed, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 695, __sl47), rn2(3)) : rn2(3)) + 2) | 0));
-                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 697, __sl47), rn2(cptr.ldI32o(u, $you_ublessed))) : rn2(cptr.ldI32o(u, $you_ublessed)))))
+                    cptr.stI32o(u, $you_ublessed, (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 695, __s_priest_talk), rn2(3)) : rn2(3)) + 2) | 0));
+                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 697, __s_priest_talk), rn2(cptr.ldI32o(u, $you_ublessed))) : rn2(cptr.ldI32o(u, $you_ublessed)))))
                     (cptr.stI32o(u, $you_ublessed, cptr.ldI32o(u, $you_ublessed) + 1)) - (1);
             }
             ;
             if (cptr.ldI32o(u, $you_ublessed) > orig_ublessed) {
-                verbalize(__sl64);
+                verbalize(__s_thou_hast_been_rewarded_for_thy_devotion);
             } else {
-                verbalize(__sl65);
+                verbalize(__s_thy_selfless_generosity_is_deeply);
             }
         } else {
             ;
-            verbalize(__sl65);
+            verbalize(__s_thy_selfless_generosity_is_deeply);
             if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) < (BigInt.asIntN(64, offer * 2n)) && coaligned) {
                 if (strayed && (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(u, $you_ucleansed))) > 5000n) {
                     cptr.stI32o(u, $you_ualign + $align_record, 0);
@@ -765,7 +765,7 @@ export function ghod_hitsu(priest) {
                 y = cptr.ldI16o(troom, $mkroom_ly);
             }
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 827, __sl69), rn2(4)) : rn2(4))) {
+            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 827, __s_ghod_hitsu), rn2(4)) : rn2(4))) {
                 case 0:
                 x = cptr.ldI16(u);
                 y = cptr.ldI16o(troom, $mkroom_ly);
@@ -787,15 +787,15 @@ export function ghod_hitsu(priest) {
         if (!linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1))
             return;
     }
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 850, __sl69), rn2(3)) : rn2(3))) {
+    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 850, __s_ghod_hitsu), rn2(3)) : rn2(3))) {
         case 0:
-        pline(__sl70, a_gname_at(ax, ay));
+        pline(__s_s_roars_in_anger_thou_shalt_suffer, a_gname_at(ax, ay));
         break;
         case 1:
-        pline(__sl71, s_suffix(a_gname_at(ax, ay)));
+        pline(__s_s_voice_booms_how_darest_thou_harm_my, s_suffix(a_gname_at(ax, ay)));
         break;
         default:
-        pline(__sl72, a_gname_at(ax, ay));
+        pline(__s_s_roars_thou_dost_profane_my_shrine, a_gname_at(ax, ay));
         break;
     }
     oldcurrwand = cptr.ldPtro(gc, $instance_globals_c_current_wand);
@@ -822,7 +822,7 @@ export function angry_priest() {
                 newemin(priest);
             cptr.stI32o(priest, $monst_ispriest, 0);
             cptr.stI32o(priest, $monst_isminion, 1);
-            (__builtin_expect(BigInt((!(has_emin(priest)))), 0n) ? __assert_rtn(__sl73, __sl0, 902, __sl74) : void 0);
+            (__builtin_expect(BigInt((!(has_emin(priest)))), 0n) ? __assert_rtn(__s_angry_priest, __s_priest_c, 902, __s_has_emin_priest) : void 0);
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_min_align, cptr.ld1so(eprip, $epri_shralign));
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_renegade, 0);
             free_epri(priest);

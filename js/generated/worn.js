@@ -84,77 +84,77 @@ const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Role_mnum = F
     $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("suit");
-const __sl1 = cptr.lit("cloak");
-const __sl2 = cptr.lit("helmet");
-const __sl3 = cptr.lit("shield");
-const __sl4 = cptr.lit("gloves");
-const __sl5 = cptr.lit("boots");
-const __sl6 = cptr.lit("shirt");
-const __sl7 = cptr.lit("left ring");
-const __sl8 = cptr.lit("right ring");
-const __sl9 = cptr.lit("weapon");
-const __sl10 = cptr.lit("alternate weapon");
-const __sl11 = cptr.lit("quiver");
-const __sl12 = cptr.lit("amulet");
-const __sl13 = cptr.lit("facewear");
-const __sl14 = cptr.lit("chained ball");
-const __sl15 = cptr.lit("attached chain");
-const __sl16 = cptr.lit("Setworn: mask=0x%08lx.");
-const __sl17 = cptr.lit("%s (%s) not found in invent");
-const __sl18 = cptr.lit("%s bit not set in owornmask [0x%08lx]");
-const __sl19 = cptr.lit("%s wrong bit set in owornmask [0x%08lx]");
-const __sl20 = cptr.lit("Worn-slot insanity: %s.");
-const __sl21 = cptr.lit("%s [0x%08lx] has %s mask 0x%08lx bit set");
-const __sl22 = cptr.lit("much ");
-const __sl23 = cptr.lit("");
-const __sl24 = cptr.lit("%s is slowing down.");
-const __sl25 = cptr.lit("%s is suddenly moving %sfaster.");
-const __sl26 = cptr.lit("%s seems to be moving %sslower.");
-const __sl27 = cptr.lit("m_dowear_type");
-const __sl28 = cptr.lit(" removes %s and");
-const __sl29 = cptr.lit("a ");
-const __sl30 = cptr.lit("another ");
-const __sl31 = cptr.lit("an ");
-const __sl32 = cptr.lit("%s%s puts on %s.");
-const __sl33 = cptr.lit("%s %s %s %s for a moment.");
-const __sl34 = cptr.lit("glow");
-const __sl35 = cptr.lit("%s %s to shine %s.");
-const __sl36 = cptr.lit("begin");
-const __sl37 = cptr.lit("%s %s shining %s.");
-const __sl38 = cptr.lit("are");
-const __sl39 = cptr.lit("%s begins to shine %s.");
-const __sl40 = cptr.lit("%s is shining %s.");
-const __sl41 = cptr.lit("Suddenly you cannot see %s.");
-const __sl42 = cptr.lit("bad flag in which_armor");
-const __sl43 = cptr.lit("%s breaks out of %s armor!");
-const __sl44 = cptr.lit("a cracking sound.");
-const __sl45 = cptr.lit("%s %s falls off!");
-const __sl46 = cptr.lit("%s %s tears apart!");
-const __sl47 = cptr.lit("a ripping sound.");
-const __sl48 = cptr.lit("%s shirt rips to shreds!");
-const __sl49 = cptr.lit("%s armor falls around %s!");
-const __sl50 = cptr.lit("a thud.");
-const __sl51 = cptr.lit("%s %s falls, unsupported!");
-const __sl52 = cptr.lit("%s shrinks out of %s %s!");
-const __sl53 = cptr.lit("%s seeps right through %s shirt!");
-const __sl54 = cptr.lit("%s becomes much too small for %s shirt!");
-const __sl55 = cptr.lit("%s drops %s gloves%s!");
-const __sl56 = cptr.lit(" and weapon");
-const __sl57 = cptr.lit("%s can no longer hold %s shield!");
-const __sl58 = cptr.lit("a clank.");
-const __sl59 = cptr.lit("%s helmet falls to the %s!");
-const __sl60 = cptr.lit("%s boots fall away!");
-const __sl61 = cptr.lit("%s boots %s off %s feet!");
-const __sl62 = cptr.lit("slide");
-const __sl63 = cptr.lit("are pushed");
-const __sl64 = cptr.lit("%s saddle falls off.");
-const __sl65 = cptr.lit("can no longer ride %s.");
-const __sl66 = cptr.lit("worn.c");
-const __sl67 = cptr.lit("mon_break_armor");
-const __sl68 = cptr.lit("touch %s.");
-const __sl69 = cptr.lit("falling off %s");
-const __sl70 = cptr.lit("extract_from_minvent called on object not in minvent");
+const __s_suit = cptr.lit("suit");
+const __s_cloak = cptr.lit("cloak");
+const __s_helmet = cptr.lit("helmet");
+const __s_shield = cptr.lit("shield");
+const __s_gloves = cptr.lit("gloves");
+const __s_boots = cptr.lit("boots");
+const __s_shirt = cptr.lit("shirt");
+const __s_left_ring = cptr.lit("left ring");
+const __s_right_ring = cptr.lit("right ring");
+const __s_weapon = cptr.lit("weapon");
+const __s_alternate_weapon = cptr.lit("alternate weapon");
+const __s_quiver = cptr.lit("quiver");
+const __s_amulet = cptr.lit("amulet");
+const __s_facewear = cptr.lit("facewear");
+const __s_chained_ball = cptr.lit("chained ball");
+const __s_attached_chain = cptr.lit("attached chain");
+const __s_setworn_mask_0x_08lx = cptr.lit("Setworn: mask=0x%08lx.");
+const __s_s_s_not_found_in_invent = cptr.lit("%s (%s) not found in invent");
+const __s_s_bit_not_set_in_owornmask_0x_08lx = cptr.lit("%s bit not set in owornmask [0x%08lx]");
+const __s_s_wrong_bit_set_in_owornmask_0x_08lx = cptr.lit("%s wrong bit set in owornmask [0x%08lx]");
+const __s_worn_slot_insanity_s = cptr.lit("Worn-slot insanity: %s.");
+const __s_s_0x_08lx_has_s_mask_0x_08lx_bit_set = cptr.lit("%s [0x%08lx] has %s mask 0x%08lx bit set");
+const __s_much = cptr.lit("much ");
+const __s_empty = cptr.lit("");
+const __s_s_is_slowing_down = cptr.lit("%s is slowing down.");
+const __s_s_is_suddenly_moving_sfaster = cptr.lit("%s is suddenly moving %sfaster.");
+const __s_s_seems_to_be_moving_sslower = cptr.lit("%s seems to be moving %sslower.");
+const __s_m_dowear_type = cptr.lit("m_dowear_type");
+const __s_removes_s_and = cptr.lit(" removes %s and");
+const __s_a_sp = cptr.lit("a ");
+const __s_another = cptr.lit("another ");
+const __s_an = cptr.lit("an ");
+const __s_s_s_puts_on_s = cptr.lit("%s%s puts on %s.");
+const __s_s_s_s_s_for_a_moment = cptr.lit("%s %s %s %s for a moment.");
+const __s_glow = cptr.lit("glow");
+const __s_s_s_to_shine_s = cptr.lit("%s %s to shine %s.");
+const __s_begin = cptr.lit("begin");
+const __s_s_s_shining_s = cptr.lit("%s %s shining %s.");
+const __s_are = cptr.lit("are");
+const __s_s_begins_to_shine_s = cptr.lit("%s begins to shine %s.");
+const __s_s_is_shining_s = cptr.lit("%s is shining %s.");
+const __s_suddenly_you_cannot_see_s = cptr.lit("Suddenly you cannot see %s.");
+const __s_bad_flag_in_which_armor = cptr.lit("bad flag in which_armor");
+const __s_s_breaks_out_of_s_armor = cptr.lit("%s breaks out of %s armor!");
+const __s_a_cracking_sound = cptr.lit("a cracking sound.");
+const __s_s_s_falls_off = cptr.lit("%s %s falls off!");
+const __s_s_s_tears_apart = cptr.lit("%s %s tears apart!");
+const __s_a_ripping_sound = cptr.lit("a ripping sound.");
+const __s_s_shirt_rips_to_shreds = cptr.lit("%s shirt rips to shreds!");
+const __s_s_armor_falls_around_s = cptr.lit("%s armor falls around %s!");
+const __s_a_thud = cptr.lit("a thud.");
+const __s_s_s_falls_unsupported = cptr.lit("%s %s falls, unsupported!");
+const __s_s_shrinks_out_of_s_s = cptr.lit("%s shrinks out of %s %s!");
+const __s_s_seeps_right_through_s_shirt = cptr.lit("%s seeps right through %s shirt!");
+const __s_s_becomes_much_too_small_for_s_shirt = cptr.lit("%s becomes much too small for %s shirt!");
+const __s_s_drops_s_gloves_s = cptr.lit("%s drops %s gloves%s!");
+const __s_and_weapon = cptr.lit(" and weapon");
+const __s_s_can_no_longer_hold_s_shield = cptr.lit("%s can no longer hold %s shield!");
+const __s_a_clank = cptr.lit("a clank.");
+const __s_s_helmet_falls_to_the_s = cptr.lit("%s helmet falls to the %s!");
+const __s_s_boots_fall_away = cptr.lit("%s boots fall away!");
+const __s_s_boots_s_off_s_feet = cptr.lit("%s boots %s off %s feet!");
+const __s_slide = cptr.lit("slide");
+const __s_are_pushed = cptr.lit("are pushed");
+const __s_s_saddle_falls_off = cptr.lit("%s saddle falls off.");
+const __s_can_no_longer_ride_s = cptr.lit("can no longer ride %s.");
+const __s_worn_c = cptr.lit("worn.c");
+const __s_mon_break_armor = cptr.lit("mon_break_armor");
+const __s_touch_s = cptr.lit("touch %s.");
+const __s_falling_off_s = cptr.lit("falling off %s");
+const __s_extract_from_minvent_called_on_object = cptr.lit("extract_from_minvent called on object not in minvent");
 
 /** C ref: worn.c:14 — struct worn { w_mask, w_obj, w_what } (memory model v0.5) */
 
@@ -162,52 +162,52 @@ const __sl70 = cptr.lit("extract_from_minvent called on object not in minvent");
 const worn = cptr.alloc(17 * 24);
 cptr.stI64o(worn, 0, 1n);
 cptr.stPtro(worn, 0 + $worn_w_obj, uarm);
-cptr.stPtro(worn, 0 + $worn_w_what, __sl0);
+cptr.stPtro(worn, 0 + $worn_w_what, __s_suit);
 cptr.stI64o(worn, 24, 2n);
 cptr.stPtro(worn, 24 + $worn_w_obj, uarmc);
-cptr.stPtro(worn, 24 + $worn_w_what, __sl1);
+cptr.stPtro(worn, 24 + $worn_w_what, __s_cloak);
 cptr.stI64o(worn, 48, 4n);
 cptr.stPtro(worn, 48 + $worn_w_obj, uarmh);
-cptr.stPtro(worn, 48 + $worn_w_what, __sl2);
+cptr.stPtro(worn, 48 + $worn_w_what, __s_helmet);
 cptr.stI64o(worn, 72, 8n);
 cptr.stPtro(worn, 72 + $worn_w_obj, uarms);
-cptr.stPtro(worn, 72 + $worn_w_what, __sl3);
+cptr.stPtro(worn, 72 + $worn_w_what, __s_shield);
 cptr.stI64o(worn, 96, 16n);
 cptr.stPtro(worn, 96 + $worn_w_obj, uarmg);
-cptr.stPtro(worn, 96 + $worn_w_what, __sl4);
+cptr.stPtro(worn, 96 + $worn_w_what, __s_gloves);
 cptr.stI64o(worn, 120, 32n);
 cptr.stPtro(worn, 120 + $worn_w_obj, uarmf);
-cptr.stPtro(worn, 120 + $worn_w_what, __sl5);
+cptr.stPtro(worn, 120 + $worn_w_what, __s_boots);
 cptr.stI64o(worn, 144, 64n);
 cptr.stPtro(worn, 144 + $worn_w_obj, uarmu);
-cptr.stPtro(worn, 144 + $worn_w_what, __sl6);
+cptr.stPtro(worn, 144 + $worn_w_what, __s_shirt);
 cptr.stI64o(worn, 168, 131072n);
 cptr.stPtro(worn, 168 + $worn_w_obj, uleft);
-cptr.stPtro(worn, 168 + $worn_w_what, __sl7);
+cptr.stPtro(worn, 168 + $worn_w_what, __s_left_ring);
 cptr.stI64o(worn, 192, 262144n);
 cptr.stPtro(worn, 192 + $worn_w_obj, uright);
-cptr.stPtro(worn, 192 + $worn_w_what, __sl8);
+cptr.stPtro(worn, 192 + $worn_w_what, __s_right_ring);
 cptr.stI64o(worn, 216, 256n);
 cptr.stPtro(worn, 216 + $worn_w_obj, uwep);
-cptr.stPtro(worn, 216 + $worn_w_what, __sl9);
+cptr.stPtro(worn, 216 + $worn_w_what, __s_weapon);
 cptr.stI64o(worn, 240, 1024n);
 cptr.stPtro(worn, 240 + $worn_w_obj, uswapwep);
-cptr.stPtro(worn, 240 + $worn_w_what, __sl10);
+cptr.stPtro(worn, 240 + $worn_w_what, __s_alternate_weapon);
 cptr.stI64o(worn, 264, 512n);
 cptr.stPtro(worn, 264 + $worn_w_obj, uquiver);
-cptr.stPtro(worn, 264 + $worn_w_what, __sl11);
+cptr.stPtro(worn, 264 + $worn_w_what, __s_quiver);
 cptr.stI64o(worn, 288, 65536n);
 cptr.stPtro(worn, 288 + $worn_w_obj, uamul);
-cptr.stPtro(worn, 288 + $worn_w_what, __sl12);
+cptr.stPtro(worn, 288 + $worn_w_what, __s_amulet);
 cptr.stI64o(worn, 312, 524288n);
 cptr.stPtro(worn, 312 + $worn_w_obj, ublindf);
-cptr.stPtro(worn, 312 + $worn_w_what, __sl13);
+cptr.stPtro(worn, 312 + $worn_w_what, __s_facewear);
 cptr.stI64o(worn, 336, 2097152n);
 cptr.stPtro(worn, 336 + $worn_w_obj, uball);
-cptr.stPtro(worn, 336 + $worn_w_what, __sl14);
+cptr.stPtro(worn, 336 + $worn_w_what, __s_chained_ball);
 cptr.stI64o(worn, 360, 4194304n);
 cptr.stPtro(worn, 360 + $worn_w_obj, uchain);
-cptr.stPtro(worn, 360 + $worn_w_what, __sl15);
+cptr.stPtro(worn, 360 + $worn_w_what, __s_attached_chain);
 cptr.stI64o(worn, 384, 0n);
 cptr.stPtro(worn, 384 + $worn_w_obj, null);
 cptr.stPtro(worn, 384 + $worn_w_what, null);
@@ -241,7 +241,7 @@ export function setworn(obj, mask) {
             if (cptr.ldI64(wp) & mask) {
                 oobj = cptr.ldPtr((cptr.ldPtro(wp, $worn_w_obj)));
                 if (oobj && !(cptr.ldI64o(oobj, $obj_owornmask) & cptr.ldI64(wp)))
-                    impossible(__sl16, cptr.ldI64(wp));
+                    impossible(__s_setworn_mask_0x_08lx, cptr.ldI64(wp));
                 if (oobj) {
                     if (cptr.ld1so(u, $you_twoweap) && (cptr.ldI64o(oobj, $obj_owornmask) & 1280n))
                         set_twoweap(0);
@@ -475,18 +475,18 @@ export function check_wornmask_slots() {
                 if (cptr.eq(otmp, o))
                     break;
             if (!otmp)
-                void cptr.sprintf(cptr.decay(whybuf), __sl17, cptr.ldPtro(wp, $worn_w_what), fmt_ptr(o));
+                void cptr.sprintf(cptr.decay(whybuf), __s_s_s_not_found_in_invent, cptr.ldPtro(wp, $worn_w_what), fmt_ptr(o));
             else if ((cptr.ldI64o(o, $obj_owornmask) & m) == 0n)
-                void cptr.sprintf(cptr.decay(whybuf), __sl18, cptr.ldPtro(wp, $worn_w_what), cptr.ldI64o(o, $obj_owornmask));
+                void cptr.sprintf(cptr.decay(whybuf), __s_s_bit_not_set_in_owornmask_0x_08lx, cptr.ldPtro(wp, $worn_w_what), cptr.ldI64o(o, $obj_owornmask));
             else if ((cptr.ldI64o(o, $obj_owornmask) & BigInt.asIntN(64, ~(m | 7352320n))) != 0n)
-                void cptr.sprintf(cptr.decay(whybuf), __sl19, cptr.ldPtro(wp, $worn_w_what), cptr.ldI64o(o, $obj_owornmask));
+                void cptr.sprintf(cptr.decay(whybuf), __s_s_wrong_bit_set_in_owornmask_0x_08lx, cptr.ldPtro(wp, $worn_w_what), cptr.ldI64o(o, $obj_owornmask));
             if (cptr.ld1so(cptr.decay(whybuf), 0, 1))
-                impossible(__sl20, cptr.decay(whybuf));
+                impossible(__s_worn_slot_insanity_s, cptr.decay(whybuf));
         }
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
             if (!cptr.eq(otmp, o) && (cptr.ldI64o(otmp, $obj_owornmask) & m) != 0n && (m != 1n || !cptr.eq(otmp, uskin.v) || (cptr.ldI64o(otmp, $obj_owornmask) & 536870912n) == 0n)) {
-                void cptr.sprintf(cptr.decay(whybuf), __sl21, simpleonames(otmp), cptr.ldI64o(otmp, $obj_owornmask), cptr.ldPtro(wp, $worn_w_what), m);
-                impossible(__sl20, cptr.decay(whybuf));
+                void cptr.sprintf(cptr.decay(whybuf), __s_s_0x_08lx_has_s_mask_0x_08lx_bit_set, simpleonames(otmp), cptr.ldI64o(otmp, $obj_owornmask), cptr.ldPtro(wp, $worn_w_what), m);
+                impossible(__s_worn_slot_insanity_s, cptr.decay(whybuf));
             }
         }
     }
@@ -552,14 +552,14 @@ export function mon_adjust_speed(mon, adjust, obj) {
     else
         cptr.stI32o(mon, $monst_mspeed, (cptr.ldI32o(mon, $monst_permspeed) & 3));
     if (give_msg && ((cptr.ldI32o(mon, $monst_mspeed) & 3) != oldspeed || petrify) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !((cptr.ldI32o(mon, $monst_mfrozen) & 127) | 0 || (cptr.ldI32o(mon, $monst_msleeping) & 1) | 0) && canseemon(mon)) {
-        let howmuch = (((cptr.ldI32o(mon, $monst_mspeed) & 3) + oldspeed) >>> 0 == 3) ? __sl22 : __sl23;
+        let howmuch = (((cptr.ldI32o(mon, $monst_mspeed) & 3) + oldspeed) >>> 0 == 3) ? __s_much : __s_empty;
         if (petrify) {
             if (cptr.ld1so(flags, $flag_verbose))
-                pline_mon(mon, __sl24, Monnam(mon));
+                pline_mon(mon, __s_s_is_slowing_down, Monnam(mon));
         } else if (adjust > 0 || ((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) == NHM.MFAST)
-            pline_mon(mon, __sl25, Monnam(mon), howmuch);
+            pline_mon(mon, __s_s_is_suddenly_moving_sfaster, Monnam(mon), howmuch);
         else
-            pline_mon(mon, __sl26, Monnam(mon), howmuch);
+            pline_mon(mon, __s_s_seems_to_be_moving_sslower, Monnam(mon), howmuch);
         if (obj !== null)
             learnwand(obj);
     }
@@ -828,21 +828,21 @@ function m_dowear_type(mon, flag, creation, racialexception) {
             let newarm = new Uint8Array(265);
             if (old) {
                 void cptr.strcpy(cptr.decay(oldarm), distant_name(old, doname));
-                nh_snprintf(__sl27, 932, cptr.decay(buf), 256n, __sl28, cptr.decay(oldarm));
+                nh_snprintf(__s_m_dowear_type, 932, cptr.decay(buf), 256n, __s_removes_s_and, cptr.decay(oldarm));
             } else {
                 cptr.st1o(cptr.decay(buf), 0, cptr.st1o(cptr.decay(oldarm), 0, 0, 1), 1);
             }
             void cptr.strcpy(cptr.decay(newarm), distant_name(best, doname));
             if (!strncmpi(cptr.decay((newarm)), cptr.decay((oldarm)), -1)) {
-                if (!strncmpi(cptr.decay(newarm), __sl29, 2))
-                    void strsubst(cptr.decay(newarm), __sl29, __sl30);
-                else if (!strncmpi(cptr.decay(newarm), __sl31, 3))
-                    void strsubst(cptr.decay(newarm), __sl31, __sl30);
+                if (!strncmpi(cptr.decay(newarm), __s_a_sp, 2))
+                    void strsubst(cptr.decay(newarm), __s_a_sp, __s_another);
+                else if (!strncmpi(cptr.decay(newarm), __s_an, 3))
+                    void strsubst(cptr.decay(newarm), __s_an, __s_another);
                 cptr.st1o(cptr.decay(newarm), 255, 0, 1);
             }
-            pline_mon(mon, __sl32, Monnam(mon), cptr.decay(buf), cptr.decay(newarm));
+            pline_mon(mon, __s_s_s_puts_on_s, Monnam(mon), cptr.decay(buf), cptr.decay(newarm));
             if (autocurse)
-                pline(__sl33, s_suffix(Monnam(mon)), simpleonames(best), otense(best, __sl34), hcolor(cptr.ldPtr(c_color_names)));
+                pline(__s_s_s_s_s_for_a_moment, s_suffix(Monnam(mon)), simpleonames(best), otense(best, __s_glow), hcolor(cptr.ldPtr(c_color_names)));
         }
         m_delay = (m_delay + cptr.ld1so2(objects, cptr.ldI16o(best, $obj_otyp), 120, $objclass_oc_delay)) | 0;
         cptr.stI32o(mon, $monst_mfrozen, m_delay >>> 0);
@@ -866,19 +866,19 @@ function m_dowear_type(mon, flag, creation, racialexception) {
         if (!creation && (cptr.ldI32o(best, $obj_lamplit) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
             let adesc = arti_light_description(best);
             if (sawmon)
-                pline(__sl35, Yname2(best), otense(best, __sl36), adesc);
+                pline(__s_s_s_to_shine_s, Yname2(best), otense(best, __s_begin), adesc);
             else if (canseemon(mon))
-                pline(__sl37, Yname2(best), otense(best, __sl38), adesc);
+                pline(__s_s_s_shining_s, Yname2(best), otense(best, __s_are), adesc);
             else if (sawloc)
-                pline(__sl39, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), adesc);
+                pline(__s_s_begins_to_shine_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), adesc);
             else
-                pline(__sl40, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), adesc);
+                pline(__s_s_is_shining_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), adesc);
         }
     }
     update_mon_extrinsics(mon, best, 1, creation);
     if (!creation && (sawmon ^ canseemon(mon))) {
         if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 && !See_invisible()) {
-            pline(__sl41, cptr.decay(nambuf));
+            pline(__s_suddenly_you_cannot_see_s, cptr.decay(nambuf));
             discover_object((cptr.ldI16o(best, $obj_otyp)), 1, 1, 1);
         }
     }
@@ -903,7 +903,7 @@ export function which_armor(mon, flag) {
             case 64n:
             return uarmu.v;
             default:
-            impossible(__sl42);
+            impossible(__s_bad_flag_in_which_armor);
             return null;
         }
     } else {
@@ -1023,31 +1023,31 @@ export function mon_break_armor(mon, polyspot) {
             } else {
                 ;
                 if (vis)
-                    pline_mon(mon, __sl43, Monnam(mon), ppronoun);
+                    pline_mon(mon, __s_s_breaks_out_of_s_armor, Monnam(mon), ppronoun);
                 else
-                    You_hear(__sl44);
+                    You_hear(__s_a_cracking_sound);
             }
             m_useup(mon, otmp);
         }
         if ((otmp = which_armor(mon, 2n)) !== null && (cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING || !WrappingAllowed(mdat))) {
             if (cptr.ld1so(otmp, $obj_oartifact)) {
                 if (vis)
-                    pline_mon(mon, __sl45, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
+                    pline_mon(mon, __s_s_s_falls_off, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
                 m_lose_armor(mon, otmp, polyspot);
             } else {
                 ;
                 if (vis)
-                    pline_mon(mon, __sl46, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
+                    pline_mon(mon, __s_s_s_tears_apart, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
                 else
-                    You_hear(__sl47);
+                    You_hear(__s_a_ripping_sound);
                 m_useup(mon, otmp);
             }
         }
         if ((otmp = which_armor(mon, 64n)) !== null) {
             if (vis)
-                pline_mon(mon, __sl48, s_suffix(Monnam(mon)));
+                pline_mon(mon, __s_s_shirt_rips_to_shreds, s_suffix(Monnam(mon)));
             else
-                You_hear(__sl47);
+                You_hear(__s_a_ripping_sound);
             m_useup(mon, otmp);
         }
     } else if (sliparm(mdat)) {
@@ -1055,26 +1055,26 @@ export function mon_break_armor(mon, polyspot) {
         if ((otmp = which_armor(mon, 1n)) !== null) {
             ;
             if (vis)
-                pline_mon(mon, __sl49, s_suffix(Monnam(mon)), pronoun);
+                pline_mon(mon, __s_s_armor_falls_around_s, s_suffix(Monnam(mon)), pronoun);
             else
-                You_hear(__sl50);
+                You_hear(__s_a_thud);
             m_lose_armor(mon, otmp, polyspot);
         }
         if ((otmp = which_armor(mon, 2n)) !== null && (cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING || !WrappingAllowed(mdat))) {
             if (vis) {
                 if (is_whirly(cptr.ldPtro(mon, $monst_data)))
-                    pline_mon(mon, __sl51, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
+                    pline_mon(mon, __s_s_s_falls_unsupported, s_suffix(Monnam(mon)), cloak_simple_name(otmp));
                 else
-                    pline_mon(mon, __sl52, Monnam(mon), ppronoun, cloak_simple_name(otmp));
+                    pline_mon(mon, __s_s_shrinks_out_of_s_s, Monnam(mon), ppronoun, cloak_simple_name(otmp));
             }
             m_lose_armor(mon, otmp, polyspot);
         }
         if ((otmp = which_armor(mon, 64n)) !== null) {
             if (vis) {
                 if (passes_thru_clothes)
-                    pline_mon(mon, __sl53, Monnam(mon), ppronoun);
+                    pline_mon(mon, __s_s_seeps_right_through_s_shirt, Monnam(mon), ppronoun);
                 else
-                    pline_mon(mon, __sl54, Monnam(mon), ppronoun);
+                    pline_mon(mon, __s_s_becomes_much_too_small_for_s_shirt, Monnam(mon), ppronoun);
             }
             m_lose_armor(mon, otmp, polyspot);
         }
@@ -1082,24 +1082,24 @@ export function mon_break_armor(mon, polyspot) {
     if (handless_or_tiny) {
         if ((otmp = which_armor(mon, 16n)) !== null) {
             if (vis)
-                pline_mon(mon, __sl55, Monnam(mon), ppronoun, (cptr.ldPtro((mon), $monst_mw)) ? __sl56 : __sl23);
+                pline_mon(mon, __s_s_drops_s_gloves_s, Monnam(mon), ppronoun, (cptr.ldPtro((mon), $monst_mw)) ? __s_and_weapon : __s_empty);
             m_lose_armor(mon, otmp, polyspot);
         }
         if ((otmp = which_armor(mon, 8n)) !== null) {
             ;
             if (vis)
-                pline_mon(mon, __sl57, Monnam(mon), ppronoun);
+                pline_mon(mon, __s_s_can_no_longer_hold_s_shield, Monnam(mon), ppronoun);
             else
-                You_hear(__sl58);
+                You_hear(__s_a_clank);
             m_lose_armor(mon, otmp, polyspot);
         }
     }
     if (handless_or_tiny || (num_horns(mdat) > 0)) {
         if ((otmp = which_armor(mon, 4n)) !== null && (handless_or_tiny || !is_flimsy(otmp))) {
             if (vis)
-                pline_mon(mon, __sl59, s_suffix(Monnam(mon)), surface(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
+                pline_mon(mon, __s_s_helmet_falls_to_the_s, s_suffix(Monnam(mon)), surface(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
             else
-                You_hear(__sl58);
+                You_hear(__s_a_clank);
             m_lose_armor(mon, otmp, polyspot);
         }
     }
@@ -1107,9 +1107,9 @@ export function mon_break_armor(mon, polyspot) {
         if ((otmp = which_armor(mon, 32n)) !== null) {
             if (vis) {
                 if (is_whirly(cptr.ldPtro(mon, $monst_data)))
-                    pline_mon(mon, __sl60, s_suffix(Monnam(mon)));
+                    pline_mon(mon, __s_s_boots_fall_away, s_suffix(Monnam(mon)));
                 else
-                    pline_mon(mon, __sl61, s_suffix(Monnam(mon)), (cptr.ld1uo((mdat), $permonst_msize) < NHM.MZ_SMALL) ? __sl62 : __sl63, ppronoun);
+                    pline_mon(mon, __s_s_boots_s_off_s_feet, s_suffix(Monnam(mon)), (cptr.ld1uo((mdat), $permonst_msize) < NHM.MZ_SMALL) ? __s_slide : __s_are_pushed, ppronoun);
             }
             m_lose_armor(mon, otmp, polyspot);
         }
@@ -1118,17 +1118,17 @@ export function mon_break_armor(mon, polyspot) {
         if ((otmp = which_armor(mon, 1048576n)) !== null) {
             m_lose_armor(mon, otmp, polyspot);
             if (vis)
-                pline_mon(mon, __sl64, s_suffix(Monnam(mon)));
+                pline_mon(mon, __s_s_saddle_falls_off, s_suffix(Monnam(mon)));
         }
         if (cptr.eq(mon, cptr.ldPtro(u, $you_usteed)))
             noride = 1;
     }
     if (noride || (cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) && !can_ride(mon))) {
-        You(__sl65, mon_nam(mon));
-        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && (rng_log_enabled() ? (rng_log_set_caller(__sl66, 1324, __sl67), rnl(3)) : rnl(3))) {
+        You(__s_can_no_longer_ride_s, mon_nam(mon));
+        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && (rng_log_enabled() ? (rng_log_set_caller(__s_worn_c, 1324, __s_mon_break_armor), rnl(3)) : rnl(3))) {
             let buf = new Uint8Array(256);
-            You(__sl68, mon_nam(cptr.ldPtro(u, $you_usteed)));
-            void cptr.sprintf(cptr.decay(buf), __sl69, an(pmname(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), Mgender(cptr.ldPtro(u, $you_usteed)))));
+            You(__s_touch_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
+            void cptr.sprintf(cptr.decay(buf), __s_falling_off_s, an(pmname(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), Mgender(cptr.ldPtro(u, $you_usteed)))));
             instapetrify(cptr.decay(buf));
         }
         dismount_steed(NHC.DISMOUNT_FELL);
@@ -1157,7 +1157,7 @@ export function racial_exception(mon, obj) {
 export function extract_from_minvent(mon, obj, do_extrinsics, silently) {
     let unwornmask = cptr.ldI64o(obj, $obj_owornmask);
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_MINVENT) {
-        impossible(__sl70);
+        impossible(__s_extract_from_minvent_called_on_object);
         return;
     }
     if ((unwornmask & 1n) != 0n && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))

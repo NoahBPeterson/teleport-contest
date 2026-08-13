@@ -73,53 +73,53 @@ const $align_record = FLD.align_record, $dgn_topology_d_astral_level = FLD.dgn_t
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s looks puzzled for a moment.");
-const __sl1 = cptr.lit("minion.c");
-const __sl2 = cptr.lit("msummon");
-const __sl3 = cptr.lit("%s appears in a %s of %s!");
-const __sl4 = cptr.lit("summon_minion");
-const __sl5 = cptr.lit("unaligned player?");
-const __sl6 = cptr.lit("voice of %s booms:");
-const __sl7 = cptr.lit("%s booming voice:");
-const __sl8 = cptr.lit("Thou shalt pay for thine indiscretion!");
-const __sl9 = cptr.lit("%s appears before you.");
-const __sl10 = cptr.lit("%s looks very angry.");
-const __sl11 = cptr.lit("tension building.");
-const __sl12 = cptr.lit("%s says, \"Good hunting, %s.\"");
-const __sl13 = cptr.lit("Sister");
-const __sl14 = cptr.lit("Brother");
-const __sl15 = cptr.lit("%s says something.");
-const __sl16 = cptr.lit("demon_talk");
-const __sl17 = cptr.lit("%s demands %ld %s for safe passage.");
-const __sl18 = cptr.lit("%s seems to be demanding something.");
-const __sl19 = cptr.lit("How much will you offer?");
-const __sl20 = cptr.lit("%s vanishes, laughing about cowardly mortals.");
-const __sl21 = cptr.lit("%s scowls at you menacingly, then vanishes.");
-const __sl22 = cptr.lit("%s gets angry...");
-const __sl23 = cptr.lit("bribed %s with %ld %s for safe passage");
-const __sl24 = cptr.lit("zorkmid");
-const __sl25 = cptr.lit("zorkmids");
-const __sl26 = cptr.lit("%ld");
-const __sl27 = cptr.lit("try to shortchange %s, but fumble.");
-const __sl28 = cptr.lit("refuse.");
-const __sl29 = cptr.lit("give %s all your gold.");
-const __sl30 = cptr.lit("give %s %ld %s.");
-const __sl31 = cptr.lit("dprince");
-const __sl32 = cptr.lit("dlord");
-const __sl33 = cptr.lit("%s rebukes you, saying:");
-const __sl34 = cptr.lit("Since you desire conflict, have some more!");
-const __sl35 = cptr.lit("%s vanishes!");
-const __sl36 = cptr.lit("lose_guardian_angel");
-const __sl37 = cptr.lit("A voice booms:");
-const __sl38 = cptr.lit("a booming voice:");
-const __sl39 = cptr.lit("Thy desire for conflict shall be fulfilled!");
-const __sl40 = cptr.lit("A voice whispers:");
-const __sl41 = cptr.lit("a soft voice:");
-const __sl42 = cptr.lit("Thou hast been worthy of me!");
-const __sl43 = cptr.lit("An angel appears near you.");
-const __sl44 = cptr.lit("the presence of a friendly angel near you.");
-const __sl45 = cptr.lit("gain_guardian_angel");
-const __sl46 = cptr.lit("merged weapon?");
+const __s_s_looks_puzzled_for_a_moment = cptr.lit("%s looks puzzled for a moment.");
+const __s_minion_c = cptr.lit("minion.c");
+const __s_msummon = cptr.lit("msummon");
+const __s_s_appears_in_a_s_of_s = cptr.lit("%s appears in a %s of %s!");
+const __s_summon_minion = cptr.lit("summon_minion");
+const __s_unaligned_player = cptr.lit("unaligned player?");
+const __s_voice_of_s_booms = cptr.lit("voice of %s booms:");
+const __s_s_booming_voice = cptr.lit("%s booming voice:");
+const __s_thou_shalt_pay_for_thine_indiscretion = cptr.lit("Thou shalt pay for thine indiscretion!");
+const __s_s_appears_before_you = cptr.lit("%s appears before you.");
+const __s_s_looks_very_angry = cptr.lit("%s looks very angry.");
+const __s_tension_building = cptr.lit("tension building.");
+const __s_s_says_good_hunting_s = cptr.lit("%s says, \"Good hunting, %s.\"");
+const __s_sister = cptr.lit("Sister");
+const __s_brother = cptr.lit("Brother");
+const __s_s_says_something = cptr.lit("%s says something.");
+const __s_demon_talk = cptr.lit("demon_talk");
+const __s_s_demands_ld_s_for_safe_passage = cptr.lit("%s demands %ld %s for safe passage.");
+const __s_s_seems_to_be_demanding_something = cptr.lit("%s seems to be demanding something.");
+const __s_how_much_will_you_offer = cptr.lit("How much will you offer?");
+const __s_s_vanishes_laughing_about_cowardly = cptr.lit("%s vanishes, laughing about cowardly mortals.");
+const __s_s_scowls_at_you_menacingly_then_vanishes = cptr.lit("%s scowls at you menacingly, then vanishes.");
+const __s_s_gets_angry = cptr.lit("%s gets angry...");
+const __s_bribed_s_with_ld_s_for_safe_passage = cptr.lit("bribed %s with %ld %s for safe passage");
+const __s_zorkmid = cptr.lit("zorkmid");
+const __s_zorkmids = cptr.lit("zorkmids");
+const __s_ld = cptr.lit("%ld");
+const __s_try_to_shortchange_s_but_fumble = cptr.lit("try to shortchange %s, but fumble.");
+const __s_refuse = cptr.lit("refuse.");
+const __s_give_s_all_your_gold = cptr.lit("give %s all your gold.");
+const __s_give_s_ld_s = cptr.lit("give %s %ld %s.");
+const __s_dprince = cptr.lit("dprince");
+const __s_dlord = cptr.lit("dlord");
+const __s_s_rebukes_you_saying = cptr.lit("%s rebukes you, saying:");
+const __s_since_you_desire_conflict_have_some_more = cptr.lit("Since you desire conflict, have some more!");
+const __s_s_vanishes = cptr.lit("%s vanishes!");
+const __s_lose_guardian_angel = cptr.lit("lose_guardian_angel");
+const __s_a_voice_booms = cptr.lit("A voice booms:");
+const __s_a_booming_voice = cptr.lit("a booming voice:");
+const __s_thy_desire_for_conflict_shall_be = cptr.lit("Thy desire for conflict shall be fulfilled!");
+const __s_a_voice_whispers = cptr.lit("A voice whispers:");
+const __s_a_soft_voice = cptr.lit("a soft voice:");
+const __s_thou_hast_been_worthy_of_me = cptr.lit("Thou hast been worthy of me!");
+const __s_an_angel_appears_near_you = cptr.lit("An angel appears near you.");
+const __s_the_presence_of_a_friendly_angel_near = cptr.lit("the presence of a friendly angel near you.");
+const __s_gain_guardian_angel = cptr.lit("gain_guardian_angel");
+const __s_merged_weapon = cptr.lit("merged weapon?");
 
 /** C ref: minion.c:11 — int[4] */
 const elementals = cptr.alloc(4 * 4);
@@ -178,7 +178,7 @@ export function* msummon(mon) {
         ptr = cptr.ldPtro(mon, $monst_data);
         if (is_art(uwep.v, NHC.ART_DEMONBANE) && ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n)) {
             if (canseemon(mon))
-                (yield* pline(__sl0, (yield* Monnam(mon))));
+                (yield* pline(__s_s_looks_puzzled_for_a_moment, (yield* Monnam(mon))));
             return 0;
         }
         atyp = schar(((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_epri)), $epri_shralign) : ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_min_align) : ((cptr.ld1so(ptr, $permonst_maligntyp) == -128) ? -128 : sgn(cptr.ld1so(ptr, $permonst_maligntyp))))));
@@ -187,25 +187,25 @@ export function* msummon(mon) {
         atyp = schar(((cptr.ld1so(ptr, $permonst_maligntyp) == -128) ? -128 : sgn(cptr.ld1so(ptr, $permonst_maligntyp))));
     }
     if (is_dprince(ptr) || (cptr.eq(ptr, cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96)))) {
-        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 86, __sl2), rn2(20)) : rn2(20))) ? (yield* dprince(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 86, __sl2), rn2(4)) : rn2(4))) ? (yield* dlord(atyp)) : (yield* ndemon(atyp)));
-        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 89, __sl2), rn2(4)) : rn2(4)) && is_ndemon(cptr.add(mons, dtype, 96))) ? 2 : 1;
+        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 86, __s_msummon), rn2(20)) : rn2(20))) ? (yield* dprince(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 86, __s_msummon), rn2(4)) : rn2(4))) ? (yield* dlord(atyp)) : (yield* ndemon(atyp)));
+        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 89, __s_msummon), rn2(4)) : rn2(4)) && is_ndemon(cptr.add(mons, dtype, 96))) ? 2 : 1;
     } else if (is_dlord(ptr)) {
-        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 91, __sl2), rn2(50)) : rn2(50))) ? (yield* dprince(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 91, __sl2), rn2(20)) : rn2(20))) ? (yield* dlord(atyp)) : (yield* ndemon(atyp)));
-        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 94, __sl2), rn2(4)) : rn2(4)) && is_ndemon(cptr.add(mons, dtype, 96))) ? 2 : 1;
+        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 91, __s_msummon), rn2(50)) : rn2(50))) ? (yield* dprince(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 91, __s_msummon), rn2(20)) : rn2(20))) ? (yield* dlord(atyp)) : (yield* ndemon(atyp)));
+        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 94, __s_msummon), rn2(4)) : rn2(4)) && is_ndemon(cptr.add(mons, dtype, 96))) ? 2 : 1;
     } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_BONE_DEVIL, 96))) {
         dtype = NHC.PM_SKELETON;
         cnt = 1;
     } else if (is_ndemon(ptr)) {
-        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 99, __sl2), rn2(20)) : rn2(20))) ? (yield* dlord(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 99, __sl2), rn2(6)) : rn2(6))) ? (yield* ndemon(atyp)) : (cptr.ldI32o((ptr), $permonst_pmidx)));
+        dtype = (!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 99, __s_msummon), rn2(20)) : rn2(20))) ? (yield* dlord(atyp)) : ((!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 99, __s_msummon), rn2(6)) : rn2(6))) ? (yield* ndemon(atyp)) : (cptr.ldI32o((ptr), $permonst_pmidx)));
         cnt = 1;
     } else if (is_lminion(mon)) {
-        dtype = (((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 103, __sl2), rn2(20)) : rn2(20))) ? (yield* llord()) : ((((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) || !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 105, __sl2), rn2(6)) : rn2(6))) ? (yield* lminion()) : (cptr.ldI32o((ptr), $permonst_pmidx)));
-        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 107, __sl2), rn2(4)) : rn2(4)) && !((cptr.ldU64o((cptr.add(mons, dtype, 96)), $permonst_mflags2) & 1024n) != 0n)) ? 2 : 1;
+        dtype = (((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) && !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 103, __s_msummon), rn2(20)) : rn2(20))) ? (yield* llord()) : ((((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) || !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 105, __s_msummon), rn2(6)) : rn2(6))) ? (yield* lminion()) : (cptr.ldI32o((ptr), $permonst_pmidx)));
+        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 107, __s_msummon), rn2(4)) : rn2(4)) && !((cptr.ldU64o((cptr.add(mons, dtype, 96)), $permonst_mflags2) & 1024n) != 0n)) ? 2 : 1;
     } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ANGEL, 96))) {
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl1, 110, __sl2), rn2(6)) : rn2(6))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 110, __s_msummon), rn2(6)) : rn2(6))) {
             switch (atyp) {
                 case NHM.A_NEUTRAL:
-                dtype = cptr.ldI32o(elementals, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 113, __sl2), rn2(4)) : rn2(4)), 4);
+                dtype = cptr.ldI32o(elementals, (rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 113, __s_msummon), rn2(4)) : rn2(4)), 4);
                 break;
                 case -1:
                 case -128:
@@ -215,7 +215,7 @@ export function* msummon(mon) {
         } else {
             dtype = NHC.PM_ANGEL;
         }
-        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 124, __sl2), rn2(4)) : rn2(4)) && !((cptr.ldU64o((cptr.add(mons, dtype, 96)), $permonst_mflags2) & 1024n) != 0n)) ? 2 : 1;
+        cnt = ((dtype != NHC.NON_PM) && !(rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 124, __s_msummon), rn2(4)) : rn2(4)) && !((cptr.ldU64o((cptr.add(mons, dtype, 96)), $permonst_mflags2) & 1024n) != 0n)) ? 2 : 1;
     }
     if (dtype == NHC.NON_PM)
         return 0;
@@ -244,7 +244,7 @@ export function* msummon(mon) {
             if (cnt == 1 && canseemon(mtmp)) {
                 let cloud = cptr.box(null);
                 let what = msummon_environ(cptr.ldPtro(mtmp, $monst_data), cloud);
-                (yield* pline(__sl3, (yield* Amonnam(mtmp)), cloud.v, what));
+                (yield* pline(__s_s_appears_in_a_s_of_s, (yield* Amonnam(mtmp)), cloud.v, what));
             }
         }
         cnt--;
@@ -266,14 +266,14 @@ export function* summon_minion(alignment, talk) {
         mnum = (yield* lminion());
         break;
         case NHM.A_NEUTRAL:
-        mnum = cptr.ldI32o(elementals, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 208, __sl4), rn2(4)) : rn2(4)), 4);
+        mnum = cptr.ldI32o(elementals, (rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 208, __s_summon_minion), rn2(4)) : rn2(4)), 4);
         break;
         case -1:
         case -128:
         mnum = (yield* ndemon(alignment));
         break;
         default:
-        (yield* impossible(__sl5));
+        (yield* impossible(__s_unaligned_player));
         mnum = (yield* ndemon(-128));
         break;
     }
@@ -299,13 +299,13 @@ export function* summon_minion(alignment, talk) {
     if (mon) {
         if (talk) {
             if (!Deaf())
-                (yield* pline_The(__sl6, (yield* align_gname(alignment))));
+                (yield* pline_The(__s_voice_of_s_booms, (yield* align_gname(alignment))));
             else
-                (yield* You_feel(__sl7, (yield* s_suffix((yield* align_gname(alignment))))));
+                (yield* You_feel(__s_s_booming_voice, (yield* s_suffix((yield* align_gname(alignment))))));
             ;
-            (yield* verbalize(__sl8));
+            (yield* verbalize(__s_thou_shalt_pay_for_thine_indiscretion));
             if (canspotmon(mon))
-                (yield* pline(__sl9, (yield* Amonnam(mon))));
+                (yield* pline(__s_s_appears_before_you, (yield* Amonnam(mon))));
             cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744071562067967n);
         }
         cptr.stI32o(mon, $monst_mpeaceful, 0);
@@ -319,9 +319,9 @@ export function* demon_talk(mtmp) {
     let offer;
     if (is_art(uwep.v, NHC.ART_EXCALIBUR) || is_art(uwep.v, NHC.ART_DEMONBANE)) {
         if (canspotmon(mtmp))
-            (yield* pline(__sl10, (yield* Amonnam(mtmp))));
+            (yield* pline(__s_s_looks_very_angry, (yield* Amonnam(mtmp))));
         else
-            (yield* You_feel(__sl11));
+            (yield* You_feel(__s_tension_building));
         cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
         set_malign(mtmp);
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
@@ -340,46 +340,46 @@ export function* demon_talk(mtmp) {
         let wasunseen = schar((!canspotmon(mtmp)));
         cptr.stI32o(mtmp, $monst_minvis, cptr.stI32o(mtmp, $monst_perminvis, 0));
         if (wasunseen && canspotmon(mtmp)) {
-            (yield* pline(__sl9, (yield* Amonnam(mtmp))));
+            (yield* pline(__s_s_appears_before_you, (yield* Amonnam(mtmp))));
             cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071562067967n);
         }
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     }
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DEMON) {
         if (!Deaf())
-            (yield* pline(__sl12, (yield* Amonnam(mtmp)), cptr.ld1so(flags, $flag_female) ? __sl13 : __sl14));
+            (yield* pline(__s_s_says_good_hunting_s, (yield* Amonnam(mtmp)), cptr.ld1so(flags, $flag_female) ? __s_sister : __s_brother));
         else if (canseemon(mtmp))
-            (yield* pline(__sl15, (yield* Amonnam(mtmp))));
+            (yield* pline(__s_s_says_something, (yield* Amonnam(mtmp))));
         if (!(yield* tele_restrict(mtmp)))
             void (yield* rloc(mtmp, NHM.RLOC_MSG));
         return 1;
     }
     cash = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
-    demand = (BigInt.asIntN(64, cash * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 310, __sl16), rnd(80)) : rnd(80)) + Math.imul(20, (In_hell(cptr.add(u, $you_uz)) && (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM) ? 1 : 0))) | 0)))) / BigInt((Math.imul(100, ((1 + (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) | 0))));
+    demand = (BigInt.asIntN(64, cash * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 310, __s_demon_talk), rnd(80)) : rnd(80)) + Math.imul(20, (In_hell(cptr.add(u, $you_uz)) && (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM) ? 1 : 0))) | 0)))) / BigInt((Math.imul(100, ((1 + (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) | 0))));
     if (!demand || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
         cptr.stI32o(mtmp, $monst_mpeaceful, 0);
         set_malign(mtmp);
         return 0;
     } else {
         if (mon_has_amulet(mtmp) || Deaf())
-            demand = BigInt.asIntN(64, cash + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 327, __sl16), rn2(1000)) : rn2(1000)) + 125) | 0)));
+            demand = BigInt.asIntN(64, cash + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 327, __s_demon_talk), rn2(1000)) : rn2(1000)) + 125) | 0)));
         if (!Deaf())
-            (yield* pline(__sl17, (yield* Amonnam(mtmp)), demand, (yield* currency(demand))));
+            (yield* pline(__s_s_demands_ld_s_for_safe_passage, (yield* Amonnam(mtmp)), demand, (yield* currency(demand))));
         else if (canseemon(mtmp))
-            (yield* pline(__sl18, (yield* Amonnam(mtmp))));
+            (yield* pline(__s_s_seems_to_be_demanding_something, (yield* Amonnam(mtmp))));
         offer = 0n;
-        if (!Deaf() && ((offer = (yield* bribe(mtmp, __sl19))) >= demand)) {
-            (yield* pline(__sl20, (yield* Amonnam(mtmp))));
-        } else if (offer > 0n && BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl1, 340, __sl16), rnd(Math.imul(5, (acurr(NHC.A_CHA))))) : rnd(Math.imul(5, (acurr(NHC.A_CHA)))))) > (BigInt.asIntN(64, demand - offer))) {
-            (yield* pline(__sl21, (yield* Amonnam(mtmp))));
+        if (!Deaf() && ((offer = (yield* bribe(mtmp, __s_how_much_will_you_offer))) >= demand)) {
+            (yield* pline(__s_s_vanishes_laughing_about_cowardly, (yield* Amonnam(mtmp))));
+        } else if (offer > 0n && BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 340, __s_demon_talk), rnd(Math.imul(5, (acurr(NHC.A_CHA))))) : rnd(Math.imul(5, (acurr(NHC.A_CHA)))))) > (BigInt.asIntN(64, demand - offer))) {
+            (yield* pline(__s_s_scowls_at_you_menacingly_then_vanishes, (yield* Amonnam(mtmp))));
         } else {
-            (yield* pline(__sl22, (yield* Amonnam(mtmp))));
+            (yield* pline(__s_s_gets_angry, (yield* Amonnam(mtmp))));
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
             return 0;
         }
     }
-    (yield* livelog_printf(4n, __sl23, (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, NHM.EXACT_NAME, 0)), offer, (offer == 1n) ? __sl24 : __sl25));
+    (yield* livelog_printf(4n, __s_bribed_s_with_ld_s_for_safe_passage, (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, NHM.EXACT_NAME, 0)), offer, (offer == 1n) ? __s_zorkmid : __s_zorkmids));
     (yield* mongone(mtmp));
     return 1;
 }
@@ -390,19 +390,19 @@ export function* bribe(mtmp, prompt) {
     let offer = cptr.box(0n);
     let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
     (yield* getlin(prompt, cptr.decay(buf)));
-    if (sscanf(cptr.decay(buf), __sl26, offer) != 1)
+    if (sscanf(cptr.decay(buf), __s_ld, offer) != 1)
         offer.v = 0n;
     if (offer.v < 0n) {
-        (yield* You(__sl27, (yield* mon_nam(mtmp))));
+        (yield* You(__s_try_to_shortchange_s_but_fumble, (yield* mon_nam(mtmp))));
         return 0n;
     } else if (offer.v == 0n) {
-        (yield* You(__sl28));
+        (yield* You(__s_refuse));
         return 0n;
     } else if (offer.v >= umoney) {
-        (yield* You(__sl29, (yield* mon_nam(mtmp))));
+        (yield* You(__s_give_s_all_your_gold, (yield* mon_nam(mtmp))));
         offer.v = umoney;
     } else {
-        (yield* You(__sl30, (yield* mon_nam(mtmp)), offer.v, (yield* currency(offer.v))));
+        (yield* You(__s_give_s_ld_s, (yield* mon_nam(mtmp)), offer.v, (yield* currency(offer.v))));
     }
     void (yield* money2mon(mtmp, offer.v));
     cptr.st1(disp, 1);
@@ -414,7 +414,7 @@ export function* dprince(atyp) {
     let tryct;
     let pm;
     for (tryct = !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 20 : 0; tryct > 0; --tryct) {
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 396, __sl31), rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) : rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) + NHC.PM_ORCUS) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 396, __s_dprince), rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) : rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0))) + NHC.PM_ORCUS) | 0);
         if (!(cptr.ld1uo2(svm, pm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (atyp == -128 || sgn(cptr.ld1so2(mons, pm, 96, $permonst_maligntyp)) == sgn(atyp)))
             return pm;
     }
@@ -426,7 +426,7 @@ export function* dlord(atyp) {
     let tryct;
     let pm;
     for (tryct = !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 20 : 0; tryct > 0; --tryct) {
-        pm = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 410, __sl32), rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) : rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) + NHC.PM_JUIBLEX) | 0);
+        pm = (((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 410, __s_dlord), rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) : rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0))) + NHC.PM_JUIBLEX) | 0);
         if (!(cptr.ld1uo2(svm, pm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (atyp == -128 || sgn(cptr.ld1so2(mons, pm, 96, $permonst_maligntyp)) == sgn(atyp)))
             return pm;
     }
@@ -466,16 +466,16 @@ export function* lose_guardian_angel(mon) {
     if (mon) {
         if (canspotmon(mon)) {
             if (!Deaf()) {
-                (yield* pline(__sl33, (yield* Monnam(mon))));
+                (yield* pline(__s_s_rebukes_you_saying, (yield* Monnam(mon))));
                 ;
-                (yield* verbalize(__sl34));
+                (yield* verbalize(__s_since_you_desire_conflict_have_some_more));
             } else {
-                (yield* pline(__sl35, (yield* Monnam(mon))));
+                (yield* pline(__s_s_vanishes, (yield* Monnam(mon))));
             }
         }
         (yield* mongone(mon));
     }
-    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__sl1, 487, __sl36), rn2(3)) : rn2(3)) + 2) | 0); i > 0; --i) {
+    for (i = (((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 487, __s_lose_guardian_angel), rn2(3)) : rn2(3)) + 2) | 0); i > 0; --i) {
         cptr.stI16(mm, cptr.ldI16(u));
         cptr.stI16o(mm, $nhcoord_y, cptr.ldI16o(u, $you_uy));
         if ((yield* enexto(mm, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), cptr.add(mons, NHC.PM_ANGEL, 96))))
@@ -491,19 +491,19 @@ export function* gain_guardian_angel() {
     (yield* Hear_again());
     if (Conflict()) {
         if (!Deaf())
-            (yield* pline(__sl37));
+            (yield* pline(__s_a_voice_booms));
         else
-            (yield* You_feel(__sl38));
+            (yield* You_feel(__s_a_booming_voice));
         ;
-        (yield* verbalize(__sl39));
+        (yield* verbalize(__s_thy_desire_for_conflict_shall_be));
         (yield* lose_guardian_angel(null));
     } else if (cptr.ldI32o(u, $you_ualign + $align_record) > 8) {
         if (!Deaf())
-            (yield* pline(__sl40));
+            (yield* pline(__s_a_voice_whispers));
         else
-            (yield* You_feel(__sl41));
+            (yield* You_feel(__s_a_soft_voice));
         ;
-        (yield* verbalize(__sl42));
+        (yield* verbalize(__s_thou_hast_been_worthy_of_me));
         cptr.stI16(mm, cptr.ldI16(u));
         cptr.stI16o(mm, $nhcoord_y, cptr.ldI16o(u, $you_uy));
         if ((yield* enexto(mm, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), cptr.add(mons, NHC.PM_ANGEL, 96))) && (mtmp = (yield* mk_roamer(cptr.add(mons, NHC.PM_ANGEL, 96), cptr.ld1so(u, $you_ualign), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1))) !== null) {
@@ -514,19 +514,19 @@ export function* gain_guardian_angel() {
             }
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             if (!Blind())
-                (yield* pline(__sl43));
+                (yield* pline(__s_an_angel_appears_near_you));
             else
-                (yield* You_feel(__sl44));
-            cptr.st1o(mtmp, $monst_m_lev, uchar((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 547, __sl45), rn2(8)) : rn2(8)) + 15) | 0)));
-            cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, ((((rng_log_enabled() ? (rng_log_set_caller(__sl1, 549, __sl45), d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) : d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) + 30) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 549, __sl45), rnd(30)) : rnd(30))) | 0));
+                (yield* You_feel(__s_the_presence_of_a_friendly_angel_near));
+            cptr.st1o(mtmp, $monst_m_lev, uchar((((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 547, __s_gain_guardian_angel), rn2(8)) : rn2(8)) + 15) | 0)));
+            cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, ((((rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 549, __s_gain_guardian_angel), d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) : d((cptr.ld1uo(mtmp, $monst_m_lev)), 10)) + 30) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 549, __s_gain_guardian_angel), rnd(30)) : rnd(30))) | 0));
             if ((otmp = (yield* select_hwep(mtmp))) === null) {
                 otmp = (yield* mksobj(NHC.SILVER_SABER, 0, 0));
                 if ((yield* mpickobj(mtmp, otmp)))
-                    (yield* panic(__sl46));
+                    (yield* panic(__s_merged_weapon));
             }
             (yield* bless(otmp));
             if (cptr.ld1so(otmp, $obj_spe) < 4)
-                cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__sl1, 557, __sl45), rnd(4)) : rnd(4)));
+                cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_minion_c, 557, __s_gain_guardian_angel), rnd(4)) : rnd(4)));
             if ((otmp = (yield* which_armor(mtmp, 8n))) === null || cptr.ldI16o(otmp, $obj_otyp) != NHC.SHIELD_OF_REFLECTION) {
                 void (yield* mongets(mtmp, NHC.AMULET_OF_REFLECTION));
                 (yield* m_dowear(mtmp, 1));

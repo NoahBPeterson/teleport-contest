@@ -27,35 +27,35 @@ const $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
     $sysopt_s_greppath = FLD.sysopt_s_greppath, $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("unknown");
-const __sl1 = cptr.lit("_-.~");
-const __sl2 = cptr.lit("%%%02X");
-const __sl3 = cptr.lit("?cos=%d&v=1");
-const __sl4 = cptr.lit("&subject=");
-const __sl5 = cptr.lit("%.40s report for NetHack %.40s");
-const __sl6 = cptr.lit("&gitver=");
-const __sl7 = cptr.lit("&name=");
-const __sl8 = cptr.lit("&email=");
-const __sl9 = cptr.lit("&details=");
-const __sl10 = cptr.lit("\n");
-const __sl11 = cptr.lit("bid: ");
-const __sl12 = cptr.lit("        ");
-const __sl13 = cptr.lit("");
-const __sl14 = cptr.lit("Latest messages:\n");
-const __sl15 = cptr.lit("&detailrows=");
-const __sl16 = cptr.lit("%d");
-const __sl17 = cptr.lit("/usr/bin/open");
-const __sl18 = cptr.lit("Can't start /usr/bin/open: %.*s");
-const __sl19 = cptr.lit("#bugreport command");
-const __sl20 = cptr.lit("Unable to send bug report.  Please visit %s instead.");
-const __sl21 = cptr.lit("https://www.nethack.org/");
-const __sl22 = cptr.lit("  Generating more information you may report:\n");
-const __sl23 = cptr.lit("[%02lu] %s");
-const __sl24 = cptr.lit("NH_panictrace_gdb");
-const __sl25 = cptr.lit("%s -n -q %s %d 2>&1 | %s '^#'");
-const __sl26 = cptr.lit("w");
-const __sl27 = cptr.lit("bt\nquit\ny");
-const __sl28 = cptr.lit("\nSignal received.\n");
+const __s_unknown = cptr.lit("unknown");
+const __s_us_dash_dot_tilde = cptr.lit("_-.~");
+const __s_02x = cptr.lit("%%%02X");
+const __s_cos_d_v_1 = cptr.lit("?cos=%d&v=1");
+const __s_subject = cptr.lit("&subject=");
+const __s_40s_report_for_nethack_40s = cptr.lit("%.40s report for NetHack %.40s");
+const __s_gitver = cptr.lit("&gitver=");
+const __s_name = cptr.lit("&name=");
+const __s_email = cptr.lit("&email=");
+const __s_details = cptr.lit("&details=");
+const __s_nl = cptr.lit("\n");
+const __s_bid = cptr.lit("bid: ");
+const __s_sp8 = cptr.lit("        ");
+const __s_empty = cptr.lit("");
+const __s_latest_messages = cptr.lit("Latest messages:\n");
+const __s_detailrows = cptr.lit("&detailrows=");
+const __s_pct_d = cptr.lit("%d");
+const __s_usr_bin_open = cptr.lit("/usr/bin/open");
+const __s_can_t_start_usr_bin_open_s = cptr.lit("Can't start /usr/bin/open: %.*s");
+const __s_bugreport_command = cptr.lit("#bugreport command");
+const __s_unable_to_send_bug_report_please_visit = cptr.lit("Unable to send bug report.  Please visit %s instead.");
+const __s_https_www_nethack_org = cptr.lit("https://www.nethack.org/");
+const __s_generating_more_information_you_may = cptr.lit("  Generating more information you may report:\n");
+const __s_02lu_s = cptr.lit("[%02lu] %s");
+const __s_nh_panictrace_gdb = cptr.lit("NH_panictrace_gdb");
+const __s_s_n_q_s_d_2_1_s = cptr.lit("%s -n -q %s %d 2>&1 | %s '^#'");
+const __s_w = cptr.lit("w");
+const __s_bt_quit_y = cptr.lit("bt\nquit\ny");
+const __s_signal_received = cptr.lit("\nSignal received.\n");
 
 /** C ref: report.c:109 — char[40] */
 const bid = new Uint8Array(40);
@@ -112,7 +112,7 @@ export function crashreport_init(argc, argv) {
         ;
         return;
     }
-    void cptr.strcpy(cptr.decay(bid), __sl0);
+    void cptr.strcpy(cptr.decay(bid), __s_unknown);
     ;
     ;
     (void (argc));
@@ -129,7 +129,7 @@ export function crashreport_bidshow() {
 /** C ref: report.c:237 — @param {CPtr<char>} in @param {CPtr<char *>} out @param {CPtr<int>} remaining @param {CPtr<char>} markp @returns {CInt} */
 export function swr_add_uricoded(in$, out, remaining, markp) {
     while (cptr.ld1s(in$)) {
-        if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__sl1, cptr.ld1s(in$))) {
+        if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__s_us_dash_dot_tilde, cptr.ld1s(in$))) {
             cptr.st1(cptr.ldPtr(out), cptr.ld1s(in$));
             cptr.postinc(() => cptr.ldPtr(out), (v) => { cptr.stPtr(out, v); });
             (cptr.stI32(remaining, cptr.ldI32(remaining) + -1)) - (-1);
@@ -146,7 +146,7 @@ export function swr_add_uricoded(in$, out, remaining, markp) {
             } else {
                 let chr = new Uint8Array(40);
                 let x;
-                void cptr.sprintf(cptr.decay(chr), __sl2, cptr.ld1s(in$));
+                void cptr.sprintf(cptr.decay(chr), __s_02x, cptr.ld1s(in$));
                 x = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(chr))));
                 if (x <= cptr.ldI32(remaining)) {
                     void cptr.strcpy(cptr.ldPtr(out), cptr.decay(chr));
@@ -200,7 +200,7 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
-        void cptr.sprintf(cptr.decay(temp), __sl3, cos);
+        void cptr.sprintf(cptr.decay(temp), __s_cos_d_v_1, cos);
         utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(temp))));
         mark = uend.v;
         if (utmp >= urem.v)
@@ -211,25 +211,25 @@ export function submit_web_report(cos, msg, why) {
         cptr.st1(uend.v, 0);
         ;
         if (msg) {
-            utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl4)));
+            utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_subject)));
             mark = uend.v;
             if (utmp >= urem.v)
                 break __lbl_full;
-            cptr.memcpy(uend.v, __sl4, BigInt.asUintN(64, BigInt(utmp)));
+            cptr.memcpy(uend.v, __s_subject, BigInt.asUintN(64, BigInt(utmp)));
             uend.v = cptr.add(uend.v, utmp);
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            void cptr.sprintf(cptr.decay(temp), __sl5, msg, version_string(cptr.decay(temp2), 200n));
+            void cptr.sprintf(cptr.decay(temp), __s_40s_report_for_nethack_40s, msg, version_string(cptr.decay(temp2), 200n));
             if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
                 break __lbl_full;
             ;
         }
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl6)));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_gitver)));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, __sl6, BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, __s_gitver, BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -238,11 +238,11 @@ export function submit_web_report(cos, msg, why) {
             break __lbl_full;
         ;
         if (cptr.ldPtro(gc, $instance_globals_c_crash_name)) {
-            utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl7)));
+            utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_name)));
             mark = uend.v;
             if (utmp >= urem.v)
                 break __lbl_full;
-            cptr.memcpy(uend.v, __sl7, BigInt.asUintN(64, BigInt(utmp)));
+            cptr.memcpy(uend.v, __s_name, BigInt.asUintN(64, BigInt(utmp)));
             uend.v = cptr.add(uend.v, utmp);
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
@@ -252,11 +252,11 @@ export function submit_web_report(cos, msg, why) {
             ;
         }
         if (cptr.ldPtro(gc, $instance_globals_c_crash_email)) {
-            utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl8)));
+            utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_email)));
             mark = uend.v;
             if (utmp >= urem.v)
                 break __lbl_full;
-            cptr.memcpy(uend.v, __sl8, BigInt.asUintN(64, BigInt(utmp)));
+            cptr.memcpy(uend.v, __s_email, BigInt.asUintN(64, BigInt(utmp)));
             uend.v = cptr.add(uend.v, utmp);
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
@@ -265,11 +265,11 @@ export function submit_web_report(cos, msg, why) {
                 break __lbl_full;
             ;
         }
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl9)));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_details)));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, __sl9, BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, __s_details, BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -278,19 +278,19 @@ export function submit_web_report(cos, msg, why) {
             if (swr_add_uricoded(why, uend, urem, mark))
                 break __lbl_full;
             ;
-            if (swr_add_uricoded(__sl10, uend, urem, mark))
+            if (swr_add_uricoded(__s_nl, uend, urem, mark))
                 break __lbl_full;
             ;
             mark = uend.v;
             countpp++;
         }
-        if (swr_add_uricoded(__sl11, uend, urem, mark))
+        if (swr_add_uricoded(__s_bid, uend, urem, mark))
             break __lbl_full;
         ;
         if (swr_add_uricoded(cptr.decay(bid), uend, urem, mark))
             break __lbl_full;
         ;
-        if (swr_add_uricoded(__sl10, uend, urem, mark))
+        if (swr_add_uricoded(__s_nl, uend, urem, mark))
             break __lbl_full;
         ;
         mark = uend.v;
@@ -304,9 +304,9 @@ export function submit_web_report(cos, msg, why) {
             info = backtrace_symbols(bt, count);
             for (x = 0; x < count; x++) {
                 copynchars(cptr.decay(temp), cptr.ldPtro(info, x, 8), 198);
-                void strsubst(cptr.decay(temp), __sl12, __sl13);
-                void strsubst(cptr.decay(temp), __sl12, __sl13);
-                void __builtin___strncat_chk(cptr.decay(temp), __sl10, 199n, __builtin_object_size(cptr.decay(temp), 1));
+                void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
+                void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
+                void __builtin___strncat_chk(cptr.decay(temp), __s_nl, 199n, __builtin_object_size(cptr.decay(temp), 1));
                 if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
                     break __lbl_full;
                 ;
@@ -315,7 +315,7 @@ export function submit_web_report(cos, msg, why) {
         }
         if (cos == 1) {
             let k;
-            if (swr_add_uricoded(__sl14, uend, urem, mark))
+            if (swr_add_uricoded(__s_latest_messages, uend, urem, mark))
                 break __lbl_full;
             ;
             mark = uend.v;
@@ -327,34 +327,34 @@ export function submit_web_report(cos, msg, why) {
                 if (swr_add_uricoded(line, uend, urem, mark))
                     break __lbl_full;
                 ;
-                if (swr_add_uricoded(__sl10, uend, urem, mark))
+                if (swr_add_uricoded(__s_nl, uend, urem, mark))
                     break __lbl_full;
                 ;
                 countpp++;
                 mark = uend.v;
             }
         }
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(__sl15)));
+        utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_detailrows)));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, __sl15, BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(uend.v, __s_detailrows, BigInt.asUintN(64, BigInt(utmp)));
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
-        void cptr.sprintf(cptr.decay(temp), __sl16, (((count + countpp) | 0) < 30 ? ((count + countpp) | 0) : 30));
+        void cptr.sprintf(cptr.decay(temp), __s_pct_d, (((count + countpp) | 0) < 30 ? ((count + countpp) | 0) : 30));
         if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
             break __lbl_full;
         ;
     }
     ;
-    let xargv = cptr.alloc(3 * 8); cptr.stPtro(xargv, 0, __sl17); cptr.stPtro(xargv, 8, cptr.decay(url)); cptr.stPtro(xargv, 16, null);
+    let xargv = cptr.alloc(3 * 8); cptr.stPtro(xargv, 0, __s_usr_bin_open); cptr.stPtro(xargv, 8, cptr.decay(url)); cptr.stPtro(xargv, 16, null);
     let pid = fork();
     if (pid == 0) {
         let err = new Uint8Array(400);
-        void execve(__sl17, xargv, environ);
-        void cptr.sprintf(cptr.decay(err), __sl18, 372, strerror((cptr.ldI32(__error()))));
+        void execve(__s_usr_bin_open, xargv, environ);
+        void cptr.sprintf(cptr.decay(err), __s_can_t_start_usr_bin_open_s, 372, strerror((cptr.ldI32(__error()))));
         raw_print()(cptr.decay(err));
         exit(1);
     } else {
@@ -370,8 +370,8 @@ export function submit_web_report(cos, msg, why) {
 
 /** C ref: report.c:461 @returns {CInt} */
 export function dobugreport() {
-    if (!submit_web_report(2, null, __sl19)) {
-        pline(__sl20, (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) : __sl21);
+    if (!submit_web_report(2, null, __s_bugreport_command)) {
+        pline(__s_unable_to_send_bug_report_please_visit, (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) : __s_https_www_nethack_org);
     }
     return NHM.ECMD_OK;
 }
@@ -383,14 +383,14 @@ export function NH_panictrace_libc() {
     let x;
     let info;
     let buf = new Uint8Array(256);
-    raw_print()(__sl22);
+    raw_print()(__s_generating_more_information_you_may);
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
         copynchars(cptr.decay(buf), cptr.ldPtro(info, x, 8), 255);
-        void strsubst(cptr.decay(buf), __sl12, __sl13);
-        void strsubst(cptr.decay(buf), __sl12, __sl13);
-        raw_printf(__sl23, BigInt.asUintN(64, BigInt(x)), cptr.decay(buf));
+        void strsubst(cptr.decay(buf), __s_sp8, __s_empty);
+        void strsubst(cptr.decay(buf), __s_sp8, __s_empty);
+        raw_printf(__s_02lu_s, BigInt.asUintN(64, BigInt(x)), cptr.decay(buf));
     }
     return 1;
 }
@@ -405,11 +405,11 @@ export function NH_panictrace_gdb() {
         return 0;
     if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0)
         return 0;
-    nh_snprintf(__sl24, 545, cptr.decay(buf), 256n, __sl25, gdbpath, ARGV0.v, getpid(), greppath);
-    gdb = popen(cptr.decay(buf), __sl26);
+    nh_snprintf(__s_nh_panictrace_gdb, 545, cptr.decay(buf), 256n, __s_s_n_q_s_d_2_1_s, gdbpath, ARGV0.v, getpid(), greppath);
+    gdb = popen(cptr.decay(buf), __s_w);
     if (gdb) {
-        raw_print()(__sl22);
-        void fprintf(gdb, __sl27);
+        raw_print()(__s_generating_more_information_you_may);
+        void fprintf(gdb, __s_bt_quit_y);
         void fflush(gdb);
         sleep(4);
         void pclose(gdb);
@@ -441,7 +441,7 @@ export function get_saved_pline(lineno) {
 /** C ref: report.c:600 — @param {CInt} sig_unused */
 export function panictrace_handler(sig_unused) {
     let f2;
-    f2 = Number(BigInt.asIntN(32, cptr.write(2, __sl28, 18n)));
+    f2 = Number(BigInt.asIntN(32, cptr.write(2, __s_signal_received, 18n)));
     (void (f2));
     NH_abort(null);
 }

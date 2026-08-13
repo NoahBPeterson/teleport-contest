@@ -35,7 +35,7 @@ const $classic_representation_symidx = FLD.classic_representation_symidx, $custo
     $unicode_representation_utf8str = FLD.unicode_representation_utf8str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("");
+const __s_empty = cptr.lit("");
 
 /** C ref: utf8map.c:18 — @param {CPtr<char>} cp @returns {CInt} */
 export function* unicode_val(cp) {
@@ -99,7 +99,7 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
     if (!str)
-        return cptr.strcpy(buf, __sl0);
+        return cptr.strcpy(buf, __s_empty);
     while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0) {
         if (cptr.ld1s(str) == 92) {
             let dcount;

@@ -52,8 +52,11 @@
 //     them. Verified rather than assumed: a declarator is only dropped when its
 //     name is `$X` and its initialiser is exactly `FLD.X`, and a statement that
 //     mixes anything else in is left alone and renamed normally.
-//   - 24,129 `__slN` string-table consts restart their numbering in every file.
-//     They rename mechanically, as do the 146 reset blocks resetify.mjs appends.
+//   - 24,129 `__s_*` string-table consts are per-file: two modules that intern
+//     the same literal (or two literals with the same slug) each declare their
+//     own. They rename mechanically, as do the 146 reset blocks resetify.mjs
+//     appends. (`__slN` is the pre-1.13 spelling, still matched so a
+//     C2JS_STRNAMES=0 tree bundles with the same accounting.)
 //   - **16** are real C symbols. §2.5's "247 collisions, 211 exported" counted
 //     collisions with nhconst/nhmacro/nhfield, which stay outside as namespaces
 //     and therefore collide with nothing.
@@ -822,7 +825,7 @@ export function buildBundle(dirRel) {
             foldDecls,
             hoisted: declCount,
             renamed: collisions.length,
-            realCollisions: collisions.filter((c) => !/^__sl\d+$/.test(c.from)
+            realCollisions: collisions.filter((c) => !/^__s(l\d+|_)/.test(c.from)
                 && !/^__(c2js_rs|captureState|resetState)$/.test(c.from)).length,
             stateful: statefulCount,
             bytes: text.length,
@@ -920,7 +923,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToP
             + `${s.renamed} renamed (${s.realCollisions} of them real C symbols); `
             + `${s.stateful} stateful modules in the barrel`);
         if (stats) {
-            for (const c of s.collisions.filter((x) => !/^__sl\d+$/.test(x.from)
+            for (const c of s.collisions.filter((x) => !/^__s(l\d+|_)/.test(x.from)
                 && !/^__(c2js_rs|captureState|resetState)$/.test(x.from))) {
                 console.log(`    ${c.from} -> ${c.to}   (${c.kind}, ${c.file}; bare name held by ${c.was})`);
             }

@@ -106,24 +106,24 @@ let has_strong_rngseed = 1; /* TRUE in the recorder build */
 // ---- end runtime prelude ----
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("NETHACK_RNGLOG");
-const __sl1 = cptr.lit("NETHACK_RNGLOG_DISP");
-const __sl2 = cptr.lit("w");
-const __sl3 = cptr.lit("%d %s(%s) = %d @ %s(%s:%d)\n");
-const __sl4 = cptr.lit("%d %s(%s) = %d @ %s:%d\n");
-const __sl5 = cptr.lit("%d %s(%s) = %d\n");
-const __sl6 = cptr.lit("Bad rng function passed to init_isaac64().");
-const __sl7 = cptr.lit("%d ~drn2(%d) = %d");
-const __sl8 = cptr.lit(" @ %s(%s:%d)");
-const __sl9 = cptr.lit(" @ %s:%d");
-const __sl10 = cptr.lit("%d");
-const __sl11 = cptr.lit("rn2");
-const __sl12 = cptr.lit("rnl");
-const __sl13 = cptr.lit("rnd");
-const __sl14 = cptr.lit("%d,%d");
-const __sl15 = cptr.lit("d");
-const __sl16 = cptr.lit("rne");
-const __sl17 = cptr.lit("rnz");
+const __s_nethack_rnglog = cptr.lit("NETHACK_RNGLOG");
+const __s_nethack_rnglog_disp = cptr.lit("NETHACK_RNGLOG_DISP");
+const __s_w = cptr.lit("w");
+const __s_d_s_s_d_s_s_d = cptr.lit("%d %s(%s) = %d @ %s(%s:%d)\n");
+const __s_d_s_s_d_s_d = cptr.lit("%d %s(%s) = %d @ %s:%d\n");
+const __s_d_s_s_d = cptr.lit("%d %s(%s) = %d\n");
+const __s_bad_rng_function_passed_to_init_isaac64 = cptr.lit("Bad rng function passed to init_isaac64().");
+const __s_d_drn2_d_d = cptr.lit("%d ~drn2(%d) = %d");
+const __s_s_s_d = cptr.lit(" @ %s(%s:%d)");
+const __s_s_d = cptr.lit(" @ %s:%d");
+const __s_pct_d = cptr.lit("%d");
+const __s_rn2 = cptr.lit("rn2");
+const __s_rnl = cptr.lit("rnl");
+const __s_rnd = cptr.lit("rnd");
+const __s_d_d = cptr.lit("%d,%d");
+const __s_d = cptr.lit("d");
+const __s_rne = cptr.lit("rne");
+const __s_rnz = cptr.lit("rnz");
 
 /** C ref: rnd.c:30 — FILE * */
 let rng_logfile = null;
@@ -145,10 +145,10 @@ let rng_caller_func = null;
 
 /** C ref: rnd.c:38 */
 export function rng_log_init() {
-    let logpath = getenv(__sl0);
-    let disp = getenv(__sl1);
+    let logpath = getenv(__s_nethack_rnglog);
+    let disp = getenv(__s_nethack_rnglog_disp);
     if (logpath && cptr.ld1s(logpath)) {
-        rng_logfile = fopen(logpath, __sl2);
+        rng_logfile = fopen(logpath, __s_w);
         if (rng_logfile)
             setvbuf(rng_logfile, null, 1, 0n);
     }
@@ -179,12 +179,12 @@ function rng_log_write(func, args, result) {
     rng_call_count++;
     if (rng_caller_file) {
         if (rng_caller_func) {
-            fprintf(rng_logfile, __sl3, rng_call_count, func, args, result, rng_caller_func, rng_caller_file, rng_caller_line);
+            fprintf(rng_logfile, __s_d_s_s_d_s_s_d, rng_call_count, func, args, result, rng_caller_func, rng_caller_file, rng_caller_line);
         } else {
-            fprintf(rng_logfile, __sl4, rng_call_count, func, args, result, rng_caller_file, rng_caller_line);
+            fprintf(rng_logfile, __s_d_s_s_d_s_d, rng_call_count, func, args, result, rng_caller_file, rng_caller_line);
         }
     } else {
-        fprintf(rng_logfile, __sl5, rng_call_count, func, args, result);
+        fprintf(rng_logfile, __s_d_s_s_d, rng_call_count, func, args, result);
     }
 }
 
@@ -218,7 +218,7 @@ export function init_isaac64(seed, fn) {
     let i;
     let rngindx = whichrng(fn);
     if (rngindx < 0)
-        panic(__sl6);
+        panic(__s_bad_rng_function_passed_to_init_isaac64);
     for (i = 0; BigInt(i >>> 0) < 8n; i++) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
         seed >>= 8n;
@@ -236,12 +236,12 @@ export function rn2_on_display_rng(x) {
     let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, 4144, $rnglist_t_rng_state)) % BigInt.asUintN(64, BigInt(x)))));
     if (rng_logfile && rng_log_disp) {
         rng_call_count++;
-        fprintf(rng_logfile, __sl7, rng_call_count, x, result);
+        fprintf(rng_logfile, __s_d_drn2_d_d, rng_call_count, x, result);
         if (rng_caller_file) {
             if (rng_caller_func) {
-                fprintf(rng_logfile, __sl8, rng_caller_func, rng_caller_file, rng_caller_line);
+                fprintf(rng_logfile, __s_s_s_d, rng_caller_func, rng_caller_file, rng_caller_line);
             } else {
-                fprintf(rng_logfile, __sl9, rng_caller_file, rng_caller_line);
+                fprintf(rng_logfile, __s_s_d, rng_caller_file, rng_caller_line);
             }
         }
         fputc(10, rng_logfile);
@@ -255,8 +255,8 @@ export function rn2(x) {
     result = RND(x);
     if (rng_logfile) {
         let buf = new Uint8Array(32);
-        cptr.snprintf(cptr.decay(buf), 32n, __sl10, x);
-        rng_log_write(__sl11, cptr.decay(buf), result);
+        cptr.snprintf(cptr.decay(buf), 32n, __s_pct_d, x);
+        rng_log_write(__s_rn2, cptr.decay(buf), result);
     }
     return result;
 }
@@ -279,8 +279,8 @@ export function rnl(x) {
     }
     if (rng_logfile) {
         let buf = new Uint8Array(32);
-        cptr.snprintf(cptr.decay(buf), 32n, __sl10, x);
-        rng_log_write(__sl12, cptr.decay(buf), i);
+        cptr.snprintf(cptr.decay(buf), 32n, __s_pct_d, x);
+        rng_log_write(__s_rnl, cptr.decay(buf), i);
     }
     return i;
 }
@@ -291,8 +291,8 @@ export function rnd(x) {
     result = (RND(x) + 1) | 0;
     if (rng_logfile) {
         let buf = new Uint8Array(32);
-        cptr.snprintf(cptr.decay(buf), 32n, __sl10, x);
-        rng_log_write(__sl13, cptr.decay(buf), result);
+        cptr.snprintf(cptr.decay(buf), 32n, __s_pct_d, x);
+        rng_log_write(__s_rnd, cptr.decay(buf), result);
     }
     return result;
 }
@@ -310,8 +310,8 @@ export function d(n, x) {
         tmp = (tmp + RND(x)) | 0;
     if (rng_logfile) {
         let buf = new Uint8Array(64);
-        cptr.snprintf(cptr.decay(buf), 64n, __sl14, orig_n, x);
-        rng_log_write(__sl15, cptr.decay(buf), tmp);
+        cptr.snprintf(cptr.decay(buf), 64n, __s_d_d, orig_n, x);
+        rng_log_write(__s_d, cptr.decay(buf), tmp);
     }
     return tmp;
 }
@@ -326,8 +326,8 @@ export function rne(x) {
         tmp++;
     if (rng_logfile) {
         let buf = new Uint8Array(32);
-        cptr.snprintf(cptr.decay(buf), 32n, __sl10, x);
-        rng_log_write(__sl16, cptr.decay(buf), tmp);
+        cptr.snprintf(cptr.decay(buf), 32n, __s_pct_d, x);
+        rng_log_write(__s_rne, cptr.decay(buf), tmp);
     }
     return tmp;
 }
@@ -347,8 +347,8 @@ export function rnz(i) {
     }
     if (rng_logfile) {
         let buf = new Uint8Array(32);
-        cptr.snprintf(cptr.decay(buf), 32n, __sl10, i);
-        rng_log_write(__sl17, cptr.decay(buf), Number(BigInt.asIntN(32, x)));
+        cptr.snprintf(cptr.decay(buf), 32n, __s_pct_d, i);
+        rng_log_write(__s_rnz, cptr.decay(buf), Number(BigInt.asIntN(32, x)));
     }
     return Number(BigInt.asIntN(32, x));
 }

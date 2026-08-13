@@ -70,92 +70,92 @@ const $Gender_he = FLD.Gender_he, $context_info_mon_moving = FLD.context_info_mo
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("bad direction in create_drawbridge");
-const __sl1 = cptr.lit("dbridge.c");
-const __sl2 = cptr.lit("entitycnt = %d");
-const __sl3 = cptr.lit("you");
-const __sl4 = cptr.lit("You");
-const __sl5 = cptr.lit(" ");
-const __sl6 = cptr.lit("falling drawbridge");
-const __sl7 = cptr.lit("A %s force teleports you away...");
-const __sl8 = cptr.lit("normal");
-const __sl9 = cptr.lit("strange");
-const __sl10 = cptr.lit("");
-const __sl11 = cptr.lit("Unfortunately for %s, %s is still crushed.");
-const __sl12 = cptr.lit("Do chunks miss?");
-const __sl13 = cptr.lit("Miss chance = %d (out of 8)");
-const __sl14 = cptr.lit("e_missed");
-const __sl15 = cptr.lit("%s to jump (%d chances in 10)");
-const __sl16 = cptr.lit("try");
-const __sl17 = cptr.lit("e_jumps");
-const __sl18 = cptr.lit("%s passes through %s!");
-const __sl19 = cptr.lit("portcullis");
-const __sl20 = cptr.lit("drawbridge");
-const __sl21 = cptr.lit("portcullis misses %s!");
-const __sl22 = cptr.lit("The drawbridge misses %s!");
-const __sl23 = cptr.lit("Mon can't survive here");
-const __sl24 = cptr.lit("crushed to death underneath a drawbridge");
-const __sl25 = cptr.lit("%s crushed underneath the drawbridge.");
-const __sl26 = cptr.lit("are");
-const __sl27 = cptr.lit("Jump succeeds!");
-const __sl28 = cptr.lit("%s crushed by the falling portcullis!");
-const __sl29 = cptr.lit("a crushing sound.");
-const __sl30 = cptr.lit("Jump %s!");
-const __sl31 = cptr.lit("fails");
-const __sl32 = cptr.lit("succeeds");
-const __sl33 = cptr.lit("Doing relocation.");
-const __sl34 = cptr.lit("Checking new square for occupancy.");
-const __sl35 = cptr.lit("New square is occupied by %s");
-const __sl36 = cptr.lit("%s suicide.");
-const __sl37 = cptr.lit("commit");
-const __sl38 = cptr.lit("Handling %s");
-const __sl39 = cptr.lit("Checking existence of %s");
-const __sl40 = cptr.lit("%s moved or died in recursion somewhere");
-const __sl41 = cptr.lit("have");
-const __sl42 = cptr.lit("Moving %s");
-const __sl43 = cptr.lit("Final disposition of %s");
-const __sl44 = cptr.lit("%s in portcullis chamber");
-const __sl45 = cptr.lit("tumble towards the closed portcullis!");
-const __sl46 = cptr.lit("pass through it!");
-const __sl47 = cptr.lit("drawbridge closes in...");
-const __sl48 = cptr.lit("%s behind the drawbridge.");
-const __sl49 = cptr.lit("disappear");
-const __sl50 = cptr.lit("closing drawbridge");
-const __sl51 = cptr.lit("%s in here");
-const __sl52 = cptr.lit("survive");
-const __sl53 = cptr.lit("%s on drawbridge square");
-const __sl54 = cptr.lit("a splash.");
-const __sl55 = cptr.lit("%s from the bridge.");
-const __sl56 = cptr.lit("fall");
-const __sl57 = cptr.lit("%s cannot survive on the drawbridge square");
-const __sl58 = cptr.lit("%s the %s and disappears.");
-const __sl59 = cptr.lit("drink");
-const __sl60 = cptr.lit("lava");
-const __sl61 = cptr.lit("moat");
-const __sl62 = cptr.lit("%s into the %s.");
-const __sl63 = cptr.lit("fell from a drawbridge");
-const __sl64 = cptr.lit("a drawbridge %s up!");
-const __sl65 = cptr.lit("coming");
-const __sl66 = cptr.lit("going");
-const __sl67 = cptr.lit("chains rattling and gears turning.");
-const __sl68 = cptr.lit("smashing and crushing.");
-const __sl69 = cptr.lit("a drawbridge %s down!");
-const __sl70 = cptr.lit("gears turning and chains rattling.");
-const __sl71 = cptr.lit("portcullis of the drawbridge falls into the %s!");
-const __sl72 = cptr.lit("a loud *SPLASH*!");
-const __sl73 = cptr.lit("drawbridge collapses into the %s!");
-const __sl74 = cptr.lit("drawbridge disintegrates!");
-const __sl75 = cptr.lit("a loud *CRASH*!");
-const __sl76 = cptr.lit("destroy_drawbridge");
-const __sl77 = cptr.lit("%s blown apart by flying debris.");
-const __sl78 = cptr.lit("exploding drawbridge");
-const __sl79 = cptr.lit("%s spared!");
-const __sl80 = cptr.lit("%s into some heavy metal!");
-const __sl81 = cptr.lit("get");
-const __sl82 = cptr.lit("%s hit by a huge chunk of metal!");
-const __sl83 = cptr.lit("%s from shrapnel");
-const __sl84 = cptr.lit("die");
-const __sl85 = cptr.lit("collapsing drawbridge");
+const __s_bad_direction_in_create_drawbridge = cptr.lit("bad direction in create_drawbridge");
+const __s_dbridge_c = cptr.lit("dbridge.c");
+const __s_entitycnt_d = cptr.lit("entitycnt = %d");
+const __s_you = cptr.lit("you");
+const __s_you__2 = cptr.lit("You");
+const __s_sp = cptr.lit(" ");
+const __s_falling_drawbridge = cptr.lit("falling drawbridge");
+const __s_a_s_force_teleports_you_away = cptr.lit("A %s force teleports you away...");
+const __s_normal = cptr.lit("normal");
+const __s_strange = cptr.lit("strange");
+const __s_empty = cptr.lit("");
+const __s_unfortunately_for_s_s_is_still_crushed = cptr.lit("Unfortunately for %s, %s is still crushed.");
+const __s_do_chunks_miss = cptr.lit("Do chunks miss?");
+const __s_miss_chance_d_out_of_8 = cptr.lit("Miss chance = %d (out of 8)");
+const __s_e_missed = cptr.lit("e_missed");
+const __s_s_to_jump_d_chances_in_10 = cptr.lit("%s to jump (%d chances in 10)");
+const __s_try = cptr.lit("try");
+const __s_e_jumps = cptr.lit("e_jumps");
+const __s_s_passes_through_s = cptr.lit("%s passes through %s!");
+const __s_portcullis = cptr.lit("portcullis");
+const __s_drawbridge = cptr.lit("drawbridge");
+const __s_portcullis_misses_s = cptr.lit("portcullis misses %s!");
+const __s_the_drawbridge_misses_s = cptr.lit("The drawbridge misses %s!");
+const __s_mon_can_t_survive_here = cptr.lit("Mon can't survive here");
+const __s_crushed_to_death_underneath_a_drawbridge = cptr.lit("crushed to death underneath a drawbridge");
+const __s_s_crushed_underneath_the_drawbridge = cptr.lit("%s crushed underneath the drawbridge.");
+const __s_are = cptr.lit("are");
+const __s_jump_succeeds = cptr.lit("Jump succeeds!");
+const __s_s_crushed_by_the_falling_portcullis = cptr.lit("%s crushed by the falling portcullis!");
+const __s_a_crushing_sound = cptr.lit("a crushing sound.");
+const __s_jump_s = cptr.lit("Jump %s!");
+const __s_fails = cptr.lit("fails");
+const __s_succeeds = cptr.lit("succeeds");
+const __s_doing_relocation = cptr.lit("Doing relocation.");
+const __s_checking_new_square_for_occupancy = cptr.lit("Checking new square for occupancy.");
+const __s_new_square_is_occupied_by_s = cptr.lit("New square is occupied by %s");
+const __s_s_suicide = cptr.lit("%s suicide.");
+const __s_commit = cptr.lit("commit");
+const __s_handling_s = cptr.lit("Handling %s");
+const __s_checking_existence_of_s = cptr.lit("Checking existence of %s");
+const __s_s_moved_or_died_in_recursion_somewhere = cptr.lit("%s moved or died in recursion somewhere");
+const __s_have = cptr.lit("have");
+const __s_moving_s = cptr.lit("Moving %s");
+const __s_final_disposition_of_s = cptr.lit("Final disposition of %s");
+const __s_s_in_portcullis_chamber = cptr.lit("%s in portcullis chamber");
+const __s_tumble_towards_the_closed_portcullis = cptr.lit("tumble towards the closed portcullis!");
+const __s_pass_through_it = cptr.lit("pass through it!");
+const __s_drawbridge_closes_in = cptr.lit("drawbridge closes in...");
+const __s_s_behind_the_drawbridge = cptr.lit("%s behind the drawbridge.");
+const __s_disappear = cptr.lit("disappear");
+const __s_closing_drawbridge = cptr.lit("closing drawbridge");
+const __s_s_in_here = cptr.lit("%s in here");
+const __s_survive = cptr.lit("survive");
+const __s_s_on_drawbridge_square = cptr.lit("%s on drawbridge square");
+const __s_a_splash = cptr.lit("a splash.");
+const __s_s_from_the_bridge = cptr.lit("%s from the bridge.");
+const __s_fall = cptr.lit("fall");
+const __s_s_cannot_survive_on_the_drawbridge = cptr.lit("%s cannot survive on the drawbridge square");
+const __s_s_the_s_and_disappears = cptr.lit("%s the %s and disappears.");
+const __s_drink = cptr.lit("drink");
+const __s_lava = cptr.lit("lava");
+const __s_moat = cptr.lit("moat");
+const __s_s_into_the_s = cptr.lit("%s into the %s.");
+const __s_fell_from_a_drawbridge = cptr.lit("fell from a drawbridge");
+const __s_a_drawbridge_s_up = cptr.lit("a drawbridge %s up!");
+const __s_coming = cptr.lit("coming");
+const __s_going = cptr.lit("going");
+const __s_chains_rattling_and_gears_turning = cptr.lit("chains rattling and gears turning.");
+const __s_smashing_and_crushing = cptr.lit("smashing and crushing.");
+const __s_a_drawbridge_s_down = cptr.lit("a drawbridge %s down!");
+const __s_gears_turning_and_chains_rattling = cptr.lit("gears turning and chains rattling.");
+const __s_portcullis_of_the_drawbridge_falls_into = cptr.lit("portcullis of the drawbridge falls into the %s!");
+const __s_a_loud_splash = cptr.lit("a loud *SPLASH*!");
+const __s_drawbridge_collapses_into_the_s = cptr.lit("drawbridge collapses into the %s!");
+const __s_drawbridge_disintegrates = cptr.lit("drawbridge disintegrates!");
+const __s_a_loud_crash = cptr.lit("a loud *CRASH*!");
+const __s_destroy_drawbridge = cptr.lit("destroy_drawbridge");
+const __s_s_blown_apart_by_flying_debris = cptr.lit("%s blown apart by flying debris.");
+const __s_exploding_drawbridge = cptr.lit("exploding drawbridge");
+const __s_s_spared = cptr.lit("%s spared!");
+const __s_s_into_some_heavy_metal = cptr.lit("%s into some heavy metal!");
+const __s_get = cptr.lit("get");
+const __s_s_hit_by_a_huge_chunk_of_metal = cptr.lit("%s hit by a huge chunk of metal!");
+const __s_s_from_shrapnel = cptr.lit("%s from shrapnel");
+const __s_die = cptr.lit("die");
+const __s_collapsing_drawbridge = cptr.lit("collapsing drawbridge");
 
 /** C ref: dbridge.c:38 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_waterwall(x, y) {
@@ -320,7 +320,7 @@ export function* create_drawbridge(x, y, dir, flag) {
         x2++;
         break;
         default:
-        (yield* impossible(__sl0));
+        (yield* impossible(__s_bad_direction_in_create_drawbridge));
         // @FallThrough
         ;
         case NHM.DB_WEST:
@@ -354,9 +354,9 @@ function* e_at(x, y) {
         if (cptr.ldPtro2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_edata) && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ex) == x && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ey) == y)
             break;
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl2, entitycnt));
+            (yield* pline(__s_entitycnt_d, entitycnt));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -397,17 +397,17 @@ function set_entity(x, y, etmp) {
 
 /** C ref: dbridge.c:351 — @param {CPtr<struct entity>} etmp @returns {CPtr<char>} */
 function* e_nam(etmp) {
-    return (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __sl3 : (yield* mon_nam(cptr.ldPtr(etmp)));
+    return (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you : (yield* mon_nam(cptr.ldPtr(etmp)));
 }
 
 const __static_E_phrase_wholebuf = new Uint8Array(80); /** C ref: dbridge.c:363 — char[80] (function-static) */
 
 /** C ref: dbridge.c:361 — @param {CPtr<struct entity>} etmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 function* E_phrase(etmp, verb) {
-    void cptr.strcpy(cptr.decay(__static_E_phrase_wholebuf), (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __sl4 : (yield* Monnam(cptr.ldPtr(etmp))));
+    void cptr.strcpy(cptr.decay(__static_E_phrase_wholebuf), (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you__2 : (yield* Monnam(cptr.ldPtr(etmp))));
     if (!verb || !cptr.ld1s(verb))
         return cptr.decay(__static_E_phrase_wholebuf);
-    void cptr.strcat(cptr.decay(__static_E_phrase_wholebuf), __sl5);
+    void cptr.strcat(cptr.decay(__static_E_phrase_wholebuf), __s_sp);
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))))
         void cptr.strcat(cptr.decay(__static_E_phrase_wholebuf), verb);
     else
@@ -441,12 +441,12 @@ function* e_died(etmp, xkill_flags, how) {
             let xy = cptr.alloc(4);
             if (!cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl6);
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_falling_drawbridge);
             }
             (yield* done(how));
             if (!e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
                 if ((yield* enexto(xy, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)), cptr.ldPtro(etmp, $entity_edata)))) {
-                    (yield* pline(__sl7, Hallucination() ? __sl8 : __sl9));
+                    (yield* pline(__s_a_s_force_teleports_you_away, Hallucination() ? __s_normal : __s_strange));
                     (yield* teleds(cptr.ldI16(xy), cptr.ldI16o(xy, $nhcoord_y), NHM.TELEDS_NO_FLAGS));
                 }
             }
@@ -456,19 +456,19 @@ function* e_died(etmp, xkill_flags, how) {
         let entitycnt;
         cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
         if (cptr.ld1so(svc, $context_info_mon_moving))
-            (yield* monkilled(cptr.ldPtr(etmp), (((xkill_flags & NHM.XKILL_NOMSG) != 0) ? null : __sl10), (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
+            (yield* monkilled(cptr.ldPtr(etmp), (((xkill_flags & NHM.XKILL_NOMSG) != 0) ? null : __s_empty), (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
         else
             (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
         if (!(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
             let seeit = canspotmon(cptr.ldPtr(etmp));
             xkill_flags |= 5;
             if (cptr.ld1so(svc, $context_info_mon_moving))
-                (yield* monkilled(cptr.ldPtr(etmp), __sl10, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
+                (yield* monkilled(cptr.ldPtr(etmp), __s_empty, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
             else
                 (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
             if ((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
                 if (seeit)
-                    (yield* pline(__sl11, (yield* mon_nam(cptr.ldPtr(etmp))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), 48, $Gender_he))));
+                    (yield* pline(__s_unfortunately_for_s_s_is_still_crushed, (yield* mon_nam(cptr.ldPtr(etmp))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), 48, $Gender_he))));
             } else {
                 ;
             }
@@ -491,9 +491,9 @@ function* e_missed(etmp, chunks) {
     let misses;
     if (chunks) {
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl12));
+                (yield* pline(__s_do_chunks_miss));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -511,13 +511,13 @@ function* e_missed(etmp, chunks) {
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         misses = (misses - 3) | 0;
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl13, misses));
+            (yield* pline(__s_miss_chance_d_out_of_8, misses));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return schar(((misses >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 524, __sl14), rnd(8)) : rnd(8))) ? 1 : 0));
+    return schar(((misses >= (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 524, __s_e_missed), rnd(8)) : rnd(8))) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:531 — @param {CPtr<struct entity>} etmp @returns {CInt} */
@@ -532,13 +532,13 @@ function* e_jumps(etmp) {
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
         tmp = (tmp - 2) | 0;
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl15, (yield* E_phrase(etmp, __sl16)), tmp));
+            (yield* pline(__s_s_to_jump_d_chances_in_10, (yield* E_phrase(etmp, __s_try)), tmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return schar(((tmp >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 550, __sl17), rnd(10)) : rnd(10))) ? 1 : 0));
+    return schar(((tmp >= (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 550, __s_e_jumps), rnd(10)) : rnd(10))) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:554 — @param {CPtr<struct entity>} etmp */
@@ -561,19 +561,19 @@ function* do_entity(etmp) {
     crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, 756), oldy, 36);
     if (automiss(etmp) && e_survives_at(etmp, oldx, oldy)) {
         if (e_inview && (at_portcullis || IS_DRAWBRIDGE(cptr.ld1so(crm, $rm_typ))))
-            (yield* pline_The(__sl18, at_portcullis ? __sl19 : __sl20, (yield* e_nam(etmp))));
+            (yield* pline_The(__s_s_passes_through_s, at_portcullis ? __s_portcullis : __s_drawbridge, (yield* e_nam(etmp))));
         if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))))
             (yield* spoteffects(0));
         return;
     }
     if ((yield* e_missed(etmp, 0))) {
         if (at_portcullis) {
-            (yield* pline_The(__sl21, (yield* e_nam(etmp))));
+            (yield* pline_The(__s_portcullis_misses_s, (yield* e_nam(etmp))));
         } else {
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl22, (yield* e_nam(etmp))));
+                    (yield* pline(__s_the_drawbridge_misses_s, (yield* e_nam(etmp))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
@@ -582,9 +582,9 @@ function* do_entity(etmp) {
             return;
         } else {
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl23));
+                    (yield* pline(__s_mon_can_t_survive_here));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
@@ -597,9 +597,9 @@ function* do_entity(etmp) {
         if (cptr.ld1so(crm, $rm_typ) == NHC.DRAWBRIDGE_DOWN) {
             if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
                 cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl24);
+                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_crushed_to_death_underneath_a_drawbridge);
             }
-            (yield* pline(__sl25, (yield* E_phrase(etmp, __sl26))));
+            (yield* pline(__s_s_crushed_underneath_the_drawbridge, (yield* E_phrase(etmp, __s_are))));
             (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
             return;
         }
@@ -610,18 +610,18 @@ function* do_entity(etmp) {
             if ((yield* e_jumps(etmp))) {
                 relocates = 1;
                 {
-                    if ((yield* debugcore(__sl1, 1))) {
+                    if ((yield* debugcore(__s_dbridge_c, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        (yield* pline(__sl27));
+                        (yield* pline(__s_jump_succeeds));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
             } else {
                 if (e_inview) {
-                    (yield* pline(__sl28, (yield* E_phrase(etmp, __sl26))));
+                    (yield* pline(__s_s_crushed_by_the_falling_portcullis, (yield* E_phrase(etmp, __s_are))));
                 } else if (!Deaf()) {
                     ;
-                    (yield* You_hear(__sl29));
+                    (yield* You_hear(__s_a_crushing_sound));
                 }
                 (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
                 return;
@@ -629,18 +629,18 @@ function* do_entity(etmp) {
         } else {
             relocates = schar((!(yield* e_jumps(etmp))));
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl30, (relocates) ? __sl31 : __sl32));
+                    (yield* pline(__s_jump_s, (relocates) ? __s_fails : __s_succeeds));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
         }
     }
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl33));
+            (yield* pline(__s_doing_relocation));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -650,9 +650,9 @@ function* do_entity(etmp) {
     if ((newx.v == oldx) && (newy.v == oldy))
         get_wall_for_db(newx, newy);
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl34));
+            (yield* pline(__s_checking_new_square_for_occupancy));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -660,43 +660,43 @@ function* do_entity(etmp) {
         let other;
         other = (yield* e_at(newx.v, newy.v));
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl35, (yield* e_nam(other))));
+                (yield* pline(__s_new_square_is_occupied_by_s, (yield* e_nam(other))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
         if (e_survives_at(other, newx.v, newy.v) && automiss(other)) {
             relocates = 0;
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl36, (yield* E_phrase(etmp, __sl37))));
+                    (yield* pline(__s_s_suicide, (yield* E_phrase(etmp, __s_commit))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
         } else {
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl38, (yield* e_nam(other))));
+                    (yield* pline(__s_handling_s, (yield* e_nam(other))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
             while (((yield* e_at(newx.v, newy.v)) !== null) && (!cptr.eq((yield* e_at(newx.v, newy.v)), etmp)))
                 (yield* do_entity(other));
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl39, (yield* e_nam(etmp))));
+                    (yield* pline(__s_checking_existence_of_s, (yield* e_nam(etmp))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
             if (!cptr.eq((yield* e_at(oldx, oldy)), etmp)) {
                 {
-                    if ((yield* debugcore(__sl1, 1))) {
+                    if ((yield* debugcore(__s_dbridge_c, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        (yield* pline(__sl40, (yield* E_phrase(etmp, __sl41))));
+                        (yield* pline(__s_s_moved_or_died_in_recursion_somewhere, (yield* E_phrase(etmp, __s_have))));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
@@ -706,9 +706,9 @@ function* do_entity(etmp) {
     }
     if (relocates && !(yield* e_at(newx.v, newy.v))) {
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl42, (yield* e_nam(etmp))));
+                (yield* pline(__s_moving_s, (yield* e_nam(etmp))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -725,65 +725,65 @@ function* do_entity(etmp) {
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp)) ? 1 : 0));
     }
     {
-        if ((yield* debugcore(__sl1, 1))) {
+        if ((yield* debugcore(__s_dbridge_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl43, (yield* e_nam(etmp))));
+            (yield* pline(__s_final_disposition_of_s, (yield* e_nam(etmp))));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl44, (yield* E_phrase(etmp, __sl26))));
+                (yield* pline(__s_s_in_portcullis_chamber, (yield* E_phrase(etmp, __s_are))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
         if (e_inview) {
             if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
-                (yield* You(__sl45));
+                (yield* You(__s_tumble_towards_the_closed_portcullis));
                 if (automiss(etmp))
-                    (yield* You(__sl46));
+                    (yield* You(__s_pass_through_it));
                 else
-                    (yield* pline_The(__sl47));
+                    (yield* pline_The(__s_drawbridge_closes_in));
             } else
-                (yield* pline(__sl48, (yield* E_phrase(etmp, __sl49))));
+                (yield* pline(__s_s_behind_the_drawbridge, (yield* E_phrase(etmp, __s_disappear))));
         }
         if (!e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl50);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_closing_drawbridge);
             (yield* e_died(etmp, NHM.XKILL_NOMSG, NHC.CRUSHING));
             return;
         }
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl51, (yield* E_phrase(etmp, __sl52))));
+                (yield* pline(__s_s_in_here, (yield* E_phrase(etmp, __s_survive))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
     } else {
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl53, (yield* E_phrase(etmp, __sl26))));
+                (yield* pline(__s_s_on_drawbridge_square, (yield* E_phrase(etmp, __s_are))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
         if (is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) && !e_inview)
             if (!Deaf()) {
                 ;
-                (yield* You_hear(__sl54));
+                (yield* You_hear(__s_a_splash));
             }
         if (e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
             if (e_inview && !((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && !is_floater(cptr.ldPtro(etmp, $entity_edata)))
-                (yield* pline(__sl55, (yield* E_phrase(etmp, __sl56))));
+                (yield* pline(__s_s_from_the_bridge, (yield* E_phrase(etmp, __s_fall))));
             return;
         }
         {
-            if ((yield* debugcore(__sl1, 1))) {
+            if ((yield* debugcore(__s_dbridge_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl57, (yield* E_phrase(etmp, null))));
+                (yield* pline(__s_s_cannot_survive_on_the_drawbridge, (yield* E_phrase(etmp, null))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -791,12 +791,12 @@ function* do_entity(etmp) {
             if (e_inview && !(cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
                 let lava = is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)));
                 if (Hallucination())
-                    (yield* pline(__sl58, (yield* E_phrase(etmp, __sl59)), lava ? __sl60 : __sl61));
+                    (yield* pline(__s_s_the_s_and_disappears, (yield* E_phrase(etmp, __s_drink)), lava ? __s_lava : __s_moat));
                 else
-                    (yield* pline(__sl62, (yield* E_phrase(etmp, __sl56)), lava ? hliquid(__sl60) : __sl61));
+                    (yield* pline(__s_s_into_the_s, (yield* E_phrase(etmp, __s_fall)), lava ? hliquid(__s_lava) : __s_moat));
             }
         cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-        void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl63);
+        void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_fell_from_a_drawbridge);
         (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.DROWNING : (is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.BURNING : NHC.CRUSHING)));
         return;
     }
@@ -824,10 +824,10 @@ export function* close_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0)) {
-        (yield* You_see(__sl64, (((cptr.ldI16(u) == x || cptr.ldI16o(u, $you_uy) == y) && !Underwater()) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __sl65 : __sl66));
+        (yield* You_see(__s_a_drawbridge_s_up, (((cptr.ldI16(u) == x || cptr.ldI16o(u, $you_uy) == y) && !Underwater()) || dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __s_coming : __s_going));
     } else {
         ;
-        (yield* You_hear(__sl67));
+        (yield* You_hear(__s_chains_rattling_and_gears_turning));
     }
     cptr.st1o(lev1, $rm_typ, NHC.DRAWBRIDGE_UP);
     lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, 756), y2.v, 36);
@@ -850,7 +850,7 @@ export function* close_drawbridge(x, y) {
     (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24)));
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !Deaf()) {
         ;
-        (yield* You_hear(__sl68));
+        (yield* You_hear(__s_smashing_and_crushing));
     }
     void (yield* revive_nasty(x, y, null));
     void (yield* revive_nasty(x2.v, y2.v, null));
@@ -882,10 +882,10 @@ export function* open_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0)) {
-        (yield* You_see(__sl69, (dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __sl66 : __sl65));
+        (yield* You_see(__s_a_drawbridge_s_down, (dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? __s_going : __s_coming));
     } else {
         ;
-        (yield* You_hear(__sl70));
+        (yield* You_hear(__s_gears_turning_and_chains_rattling));
     }
     cptr.st1o(lev1, $rm_typ, NHC.DRAWBRIDGE_DOWN);
     lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, 756), y2.v, 36);
@@ -937,27 +937,27 @@ export function* destroy_drawbridge(x, y) {
         ;
         if (cptr.ld1so(lev1, $rm_typ) == NHC.DRAWBRIDGE_UP) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0) || ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16o(u, $you_uy)))
-                (yield* pline_The(__sl71, lava ? hliquid(__sl60) : __sl61));
+                (yield* pline_The(__s_portcullis_of_the_drawbridge_falls_into, lava ? hliquid(__s_lava) : __s_moat));
             else
-                (yield* You_hear(__sl72));
+                (yield* You_hear(__s_a_loud_splash));
         } else {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
-                (yield* pline_The(__sl73, lava ? hliquid(__sl60) : __sl61));
+                (yield* pline_The(__s_drawbridge_collapses_into_the_s, lava ? hliquid(__s_lava) : __s_moat));
             else
-                (yield* You_hear(__sl72));
+                (yield* You_hear(__s_a_loud_splash));
         }
         cptr.st1o(lev1, $rm_typ, schar((lava ? NHC.LAVAPOOL : NHC.MOAT)));
         cptr.stI32o(lev1, $rm_flags, 0);
         if ((otmp2 = sobj_at(NHC.BOULDER, x, y)) !== null) {
             (yield* obj_extract_self(otmp2));
-            void (yield* flooreffects(otmp2, x, y, __sl56));
+            void (yield* flooreffects(otmp2, x, y, __s_fall));
         }
     } else {
         ;
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
-            (yield* pline_The(__sl74));
+            (yield* pline_The(__s_drawbridge_disintegrates));
         else
-            (yield* You_hear(__sl75));
+            (yield* You_hear(__s_a_loud_crash));
         cptr.st1o(lev1, $rm_typ, schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHC.ICE : NHC.ROOM)));
         cptr.stI32o(lev1, $rm_flags, ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHM.ICED_MOAT : 0) >>> 0);
     }
@@ -970,8 +970,8 @@ export function* destroy_drawbridge(x, y) {
         (yield* deltrap(t));
     (yield* del_engr_at(x, y));
     (yield* del_engr_at(x2.v, y2.v));
-    for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl1, 949, __sl76), rn2(6)) : rn2(6)); i > 0; --i) {
-        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16(((rng_log_enabled() ? (rng_log_set_caller(__sl1, 953, __sl76), rn2(2)) : rn2(2)) ? x : x2.v)), i16(((rng_log_enabled() ? (rng_log_set_caller(__sl1, 953, __sl76), rn2(2)) : rn2(2)) ? y : y2.v)), 1, 0));
+    for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 949, __s_destroy_drawbridge), rn2(6)) : rn2(6)); i > 0; --i) {
+        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16(((rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 953, __s_destroy_drawbridge), rn2(2)) : rn2(2)) ? x : x2.v)), i16(((rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 953, __s_destroy_drawbridge), rn2(2)) : rn2(2)) ? y : y2.v)), 1, 0));
         void (yield* scatter(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 1, 6, otmp));
     }
     (yield* newsym(x, y));
@@ -986,9 +986,9 @@ export function* destroy_drawbridge(x, y) {
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp2), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp2)) ? 1 : 0));
         if (!automiss(etmp2)) {
             if (e_inview)
-                (yield* pline(__sl77, (yield* E_phrase(etmp2, __sl26))));
+                (yield* pline(__s_s_blown_apart_by_flying_debris, (yield* E_phrase(etmp2, __s_are))));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl78);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_exploding_drawbridge);
             (yield* e_died(etmp2, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
         }
     }
@@ -997,9 +997,9 @@ export function* destroy_drawbridge(x, y) {
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp1)) ? 1 : 0));
         if ((yield* e_missed(etmp1, 1))) {
             {
-                if ((yield* debugcore(__sl1, 1))) {
+                if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    (yield* pline(__sl79, (yield* E_phrase(etmp1, __sl26))));
+                    (yield* pline(__s_s_spared, (yield* E_phrase(etmp1, __s_are))));
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
@@ -1010,25 +1010,25 @@ export function* destroy_drawbridge(x, y) {
         } else {
             if (e_inview) {
                 if (!(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))) && Hallucination())
-                    (yield* pline(__sl80, (yield* E_phrase(etmp1, __sl81))));
+                    (yield* pline(__s_s_into_some_heavy_metal, (yield* E_phrase(etmp1, __s_get))));
                 else
-                    (yield* pline(__sl82, (yield* E_phrase(etmp1, __sl26))));
+                    (yield* pline(__s_s_hit_by_a_huge_chunk_of_metal, (yield* E_phrase(etmp1, __s_are))));
             } else {
                 if (!Deaf() && !(cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))) && !is_pool(x, y)) {
                     ;
-                    (yield* You_hear(__sl29));
+                    (yield* You_hear(__s_a_crushing_sound));
                 } else {
                     {
-                        if ((yield* debugcore(__sl1, 1))) {
+                        if ((yield* debugcore(__s_dbridge_c, 1))) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                            (yield* pline(__sl83, (yield* E_phrase(etmp1, __sl84))));
+                            (yield* pline(__s_s_from_shrapnel, (yield* E_phrase(etmp1, __s_die))));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
                     }
                 }
             }
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl85);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_collapsing_drawbridge);
             (yield* e_died(etmp1, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
             if (cptr.ld1so3(svl, cptr.ldI32o(etmp1, $entity_ex), 756, cptr.ldI32o(etmp1, $entity_ey), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT)
                 (yield* do_entity(etmp1));

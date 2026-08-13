@@ -836,9 +836,17 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
 
   const fieldTable = fieldPreamble(emitter.fieldRefs, emitter.declared, `${name}.c`);
 
+  // Named after their own content (STRING_PREFIX in emit.mjs). The `__s_`
+  // prefix is checked rather than assumed: a C identifier may legally start
+  // with `__s_`, so a name that also names something the module declares would
+  // be a silent capture — the string table is emitted above the body, so the
+  // *declaration* would win and every use would read the wrong thing.
+  const stringNames = emitter.stringNames.length ? emitter.stringNames : emitter.stringList.map((_, i) => `__sl${i}`);
+  const strClash = stringNames.filter((n) => emitter.declared.has(n));
+  if (strClash.length) throw new Error(`string-literal name(s) collide with a declaration in ${name}.c: ${strClash.join(', ')}`);
   const stringTable = emitter.stringList.length
     ? ['// string literals (C char* uses decay to CPtr into these static buffers)',
-      ...emitter.stringList.map((raw, i) => `const __sl${i} = cptr.lit(${raw});`)].join('\n')
+      ...emitter.stringList.map((raw, i) => `const ${stringNames[i]} = cptr.lit(${raw});`)].join('\n')
     : null;
 
   const out = [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');

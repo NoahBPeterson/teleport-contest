@@ -21,43 +21,43 @@ const $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_si
     $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday, $tm_tm_year = FLD.tm_tm_year;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("/tmp/lua_XXXXXX");
-const __sl1 = cptr.lit("unable to generate a unique filename");
-const __sl2 = cptr.lit("year");
-const __sl3 = cptr.lit("month");
-const __sl4 = cptr.lit("day");
-const __sl5 = cptr.lit("hour");
-const __sl6 = cptr.lit("min");
-const __sl7 = cptr.lit("sec");
-const __sl8 = cptr.lit("yday");
-const __sl9 = cptr.lit("wday");
-const __sl10 = cptr.lit("isdst");
-const __sl11 = cptr.lit("field '%s' is not an integer");
-const __sl12 = cptr.lit("field '%s' missing in date table");
-const __sl13 = cptr.lit("field '%s' is out-of-bound");
-const __sl14 = cptr.lit("aAbBcCdDeFgGhHIjmMnprRStTuUVwWxXyYzZ%||EcECExEXEyEYOdOeOHOIOmOMOSOuOUOVOwOWOy");
-const __sl15 = cptr.lit("invalid conversion specifier '%%%s'");
-const __sl16 = cptr.lit("time out-of-bounds");
-const __sl17 = cptr.lit("%c");
-const __sl18 = cptr.lit("date result cannot be represented in this installation");
-const __sl19 = cptr.lit("*t");
-const __sl20 = cptr.lit("time result cannot be represented in this installation");
-const __sl21 = cptr.lit("all");
-const __sl22 = cptr.lit("collate");
-const __sl23 = cptr.lit("ctype");
-const __sl24 = cptr.lit("monetary");
-const __sl25 = cptr.lit("numeric");
-const __sl26 = cptr.lit("time");
-const __sl27 = cptr.lit("clock");
-const __sl28 = cptr.lit("date");
-const __sl29 = cptr.lit("difftime");
-const __sl30 = cptr.lit("execute");
-const __sl31 = cptr.lit("exit");
-const __sl32 = cptr.lit("getenv");
-const __sl33 = cptr.lit("remove");
-const __sl34 = cptr.lit("rename");
-const __sl35 = cptr.lit("setlocale");
-const __sl36 = cptr.lit("tmpname");
+const __s_tmp_lua_xxxxxx = cptr.lit("/tmp/lua_XXXXXX");
+const __s_unable_to_generate_a_unique_filename = cptr.lit("unable to generate a unique filename");
+const __s_year = cptr.lit("year");
+const __s_month = cptr.lit("month");
+const __s_day = cptr.lit("day");
+const __s_hour = cptr.lit("hour");
+const __s_min = cptr.lit("min");
+const __s_sec = cptr.lit("sec");
+const __s_yday = cptr.lit("yday");
+const __s_wday = cptr.lit("wday");
+const __s_isdst = cptr.lit("isdst");
+const __s_field_s_is_not_an_integer = cptr.lit("field '%s' is not an integer");
+const __s_field_s_missing_in_date_table = cptr.lit("field '%s' missing in date table");
+const __s_field_s_is_out_of_bound = cptr.lit("field '%s' is out-of-bound");
+const __s_aabbccddefgghhijmmnprrsttuuvwwxxyyzz = cptr.lit("aAbBcCdDeFgGhHIjmMnprRStTuUVwWxXyYzZ%||EcECExEXEyEYOdOeOHOIOmOMOSOuOUOVOwOWOy");
+const __s_invalid_conversion_specifier_s = cptr.lit("invalid conversion specifier '%%%s'");
+const __s_time_out_of_bounds = cptr.lit("time out-of-bounds");
+const __s_pct_c = cptr.lit("%c");
+const __s_date_result_cannot_be_represented_in = cptr.lit("date result cannot be represented in this installation");
+const __s_star_t = cptr.lit("*t");
+const __s_time_result_cannot_be_represented_in = cptr.lit("time result cannot be represented in this installation");
+const __s_all = cptr.lit("all");
+const __s_collate = cptr.lit("collate");
+const __s_ctype = cptr.lit("ctype");
+const __s_monetary = cptr.lit("monetary");
+const __s_numeric = cptr.lit("numeric");
+const __s_time = cptr.lit("time");
+const __s_clock = cptr.lit("clock");
+const __s_date = cptr.lit("date");
+const __s_difftime = cptr.lit("difftime");
+const __s_execute = cptr.lit("execute");
+const __s_exit = cptr.lit("exit");
+const __s_getenv = cptr.lit("getenv");
+const __s_remove = cptr.lit("remove");
+const __s_rename = cptr.lit("rename");
+const __s_setlocale = cptr.lit("setlocale");
+const __s_tmpname = cptr.lit("tmpname");
 
 /** C ref: loslib.c:142 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* os_execute(L) {
@@ -93,7 +93,7 @@ function* os_tmpname(L) {
     let buff = new Uint8Array(32);
     let err;
     {
-        cptr.strcpy(cptr.decay(buff), __sl0);
+        cptr.strcpy(cptr.decay(buff), __s_tmp_lua_xxxxxx);
         err = mkstemp(cptr.decay(buff));
         if (err != -1)
             close(err);
@@ -101,7 +101,7 @@ function* os_tmpname(L) {
     }
     ;
     if ((__builtin_expect(BigInt(((err) != 0)), 0n)))
-        return (yield* luaL_error(L, __sl1));
+        return (yield* luaL_error(L, __s_unable_to_generate_a_unique_filename));
     (yield* lua_pushstring(L, cptr.decay(buff)));
     return 1;
 }
@@ -134,15 +134,15 @@ function* setboolfield(L, key, value) {
 
 /** C ref: loslib.c:232 — @param {CPtr<lua_State>} L @param {CPtr<struct tm>} stm */
 function* setallfields(L, stm) {
-    (yield* setfield(L, __sl2, cptr.ldI32o(stm, $tm_tm_year), 1900));
-    (yield* setfield(L, __sl3, cptr.ldI32o(stm, $tm_tm_mon), 1));
-    (yield* setfield(L, __sl4, cptr.ldI32o(stm, $tm_tm_mday), 0));
-    (yield* setfield(L, __sl5, cptr.ldI32o(stm, $tm_tm_hour), 0));
-    (yield* setfield(L, __sl6, cptr.ldI32o(stm, $tm_tm_min), 0));
-    (yield* setfield(L, __sl7, cptr.ldI32(stm), 0));
-    (yield* setfield(L, __sl8, cptr.ldI32o(stm, $tm_tm_yday), 1));
-    (yield* setfield(L, __sl9, cptr.ldI32o(stm, $tm_tm_wday), 1));
-    (yield* setboolfield(L, __sl10, cptr.ldI32o(stm, $tm_tm_isdst)));
+    (yield* setfield(L, __s_year, cptr.ldI32o(stm, $tm_tm_year), 1900));
+    (yield* setfield(L, __s_month, cptr.ldI32o(stm, $tm_tm_mon), 1));
+    (yield* setfield(L, __s_day, cptr.ldI32o(stm, $tm_tm_mday), 0));
+    (yield* setfield(L, __s_hour, cptr.ldI32o(stm, $tm_tm_hour), 0));
+    (yield* setfield(L, __s_min, cptr.ldI32o(stm, $tm_tm_min), 0));
+    (yield* setfield(L, __s_sec, cptr.ldI32(stm), 0));
+    (yield* setfield(L, __s_yday, cptr.ldI32o(stm, $tm_tm_yday), 1));
+    (yield* setfield(L, __s_wday, cptr.ldI32o(stm, $tm_tm_wday), 1));
+    (yield* setboolfield(L, __s_isdst, cptr.ldI32o(stm, $tm_tm_isdst)));
 }
 
 /** C ref: loslib.c:245 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @returns {CInt} */
@@ -160,13 +160,13 @@ function* getfield(L, key, d, delta) {
     let res = (yield* lua_tointegerx(L, -1, isnum));
     if (!isnum.v) {
         if ((__builtin_expect(BigInt(((t != 0) != 0)), 0n)))
-            return (yield* luaL_error(L, __sl11, key));
+            return (yield* luaL_error(L, __s_field_s_is_not_an_integer, key));
         else if ((__builtin_expect(BigInt(((d < 0) != 0)), 0n)))
-            return (yield* luaL_error(L, __sl12, key));
+            return (yield* luaL_error(L, __s_field_s_missing_in_date_table, key));
         res = BigInt(d);
     } else {
         if (!(res >= 0n ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n : BigInt(((-2147483648 + delta) | 0)) <= res))
-            return (yield* luaL_error(L, __sl13, key));
+            return (yield* luaL_error(L, __s_field_s_is_out_of_bound, key));
         res -= BigInt(delta);
     }
     (yield* lua_settop(L, -2));
@@ -175,7 +175,7 @@ function* getfield(L, key, d, delta) {
 
 /** C ref: loslib.c:274 — @param {CPtr<lua_State>} L @param {CPtr<char>} conv @param {CLongLong} convlen @param {CPtr<char>} buff @returns {CPtr<char>} */
 function* checkoption(L, conv, convlen, buff) {
-    let option = __sl14;
+    let option = __s_aabbccddefgghhijmmnprrsttuuvwwxxyyzz;
     let oplen = 1;
     for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen; option = cptr.add(option, oplen)) {
         if (cptr.ld1s(option) == 124)
@@ -186,21 +186,21 @@ function* checkoption(L, conv, convlen, buff) {
             return cptr.add(conv, oplen);
         }
     }
-    (yield* luaL_argerror(L, 1, (yield* lua_pushfstring(L, __sl15, conv))));
+    (yield* luaL_argerror(L, 1, (yield* lua_pushfstring(L, __s_invalid_conversion_specifier_s, conv))));
     return conv;
 }
 
 /** C ref: loslib.c:293 — @param {CPtr<lua_State>} L @param {CInt} arg @returns {*} */
 function* l_checktime(L, arg) {
     let t = (yield* luaL_checkinteger(L, arg));
-    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) || (yield* luaL_argerror(L, (arg), (__sl16))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) || (yield* luaL_argerror(L, (arg), (__s_time_out_of_bounds))) ? 1 : 0));
     return t;
 }
 
 /** C ref: loslib.c:304 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* os_date(L) {
     let slen = cptr.box(0n);
-    let s = (yield* luaL_optlstring(L, 1, __sl17, slen));
+    let s = (yield* luaL_optlstring(L, 1, __s_pct_c, slen));
     let t = cptr.box(((lua_type(L, 2) <= 0) ? (time(null)) : (yield* l_checktime(L, 2))));
     let se = cptr.add(s, slen.v);
     let tmr = cptr.alloc(56);
@@ -211,8 +211,8 @@ function* os_date(L) {
     } else
         stm = localtime_r(t, tmr);
     if (cptr.eq(stm, (null)))
-        return (yield* luaL_error(L, __sl18));
-    if (strcmp(s, __sl19) == 0) {
+        return (yield* luaL_error(L, __s_date_result_cannot_be_represented_in));
+    if (strcmp(s, __s_star_t) == 0) {
         (yield* lua_createtable(L, 0, 9));
         (yield* setallfields(L, stm));
     } else {
@@ -246,18 +246,18 @@ function* os_time(L) {
         let ts = cptr.alloc(56);
         (yield* luaL_checktype(L, 1, 5));
         (yield* lua_settop(L, 1));
-        cptr.stI32o(ts, $tm_tm_year, (yield* getfield(L, __sl2, -1, 1900)));
-        cptr.stI32o(ts, $tm_tm_mon, (yield* getfield(L, __sl3, -1, 1)));
-        cptr.stI32o(ts, $tm_tm_mday, (yield* getfield(L, __sl4, -1, 0)));
-        cptr.stI32o(ts, $tm_tm_hour, (yield* getfield(L, __sl5, 12, 0)));
-        cptr.stI32o(ts, $tm_tm_min, (yield* getfield(L, __sl6, 0, 0)));
-        cptr.stI32(ts, (yield* getfield(L, __sl7, 0, 0)));
-        cptr.stI32o(ts, $tm_tm_isdst, (yield* getboolfield(L, __sl10)));
+        cptr.stI32o(ts, $tm_tm_year, (yield* getfield(L, __s_year, -1, 1900)));
+        cptr.stI32o(ts, $tm_tm_mon, (yield* getfield(L, __s_month, -1, 1)));
+        cptr.stI32o(ts, $tm_tm_mday, (yield* getfield(L, __s_day, -1, 0)));
+        cptr.stI32o(ts, $tm_tm_hour, (yield* getfield(L, __s_hour, 12, 0)));
+        cptr.stI32o(ts, $tm_tm_min, (yield* getfield(L, __s_min, 0, 0)));
+        cptr.stI32(ts, (yield* getfield(L, __s_sec, 0, 0)));
+        cptr.stI32o(ts, $tm_tm_isdst, (yield* getboolfield(L, __s_isdst)));
         t = mktime(ts);
         (yield* setallfields(L, ts));
     }
     if (t != t || t == -1n)
-        return (yield* luaL_error(L, __sl20));
+        return (yield* luaL_error(L, __s_time_result_cannot_be_represented_in));
     (yield* lua_pushinteger(L, (t)));
     return 1;
 }
@@ -278,18 +278,18 @@ cptr.stI32o(__static_os_setlocale_cat, 12, 3);
 cptr.stI32o(__static_os_setlocale_cat, 16, 4);
 cptr.stI32o(__static_os_setlocale_cat, 20, 5); /** C ref: loslib.c:383 — int[6] (function-static) */
 const __static_os_setlocale_catnames = cptr.alloc(7 * 8);
-cptr.stPtro(__static_os_setlocale_catnames, 0, __sl21);
-cptr.stPtro(__static_os_setlocale_catnames, 8, __sl22);
-cptr.stPtro(__static_os_setlocale_catnames, 16, __sl23);
-cptr.stPtro(__static_os_setlocale_catnames, 24, __sl24);
-cptr.stPtro(__static_os_setlocale_catnames, 32, __sl25);
-cptr.stPtro(__static_os_setlocale_catnames, 40, __sl26);
+cptr.stPtro(__static_os_setlocale_catnames, 0, __s_all);
+cptr.stPtro(__static_os_setlocale_catnames, 8, __s_collate);
+cptr.stPtro(__static_os_setlocale_catnames, 16, __s_ctype);
+cptr.stPtro(__static_os_setlocale_catnames, 24, __s_monetary);
+cptr.stPtro(__static_os_setlocale_catnames, 32, __s_numeric);
+cptr.stPtro(__static_os_setlocale_catnames, 40, __s_time);
 cptr.stPtro(__static_os_setlocale_catnames, 48, null); /** C ref: loslib.c:385 — char *[7] (function-static) */
 
 /** C ref: loslib.c:382 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* os_setlocale(L) {
     let l = ((yield* luaL_optlstring(L, 1, null, null)));
-    let op = (yield* luaL_checkoption(L, 2, __sl21, __static_os_setlocale_catnames));
+    let op = (yield* luaL_checkoption(L, 2, __s_all, __static_os_setlocale_catnames));
     (yield* lua_pushstring(L, setlocale(cptr.ldI32o(__static_os_setlocale_cat, op, 4), l)));
     return 1;
 }
@@ -310,27 +310,27 @@ function* os_exit(L) {
 
 /** C ref: loslib.c:407 — luaL_Reg[12] */
 const syslib = cptr.alloc(12 * 16);
-cptr.stPtro(syslib, 0, __sl27);
+cptr.stPtro(syslib, 0, __s_clock);
 cptr.stPtro(syslib, 0 + $luaL_Reg_func, os_clock);
-cptr.stPtro(syslib, 16, __sl28);
+cptr.stPtro(syslib, 16, __s_date);
 cptr.stPtro(syslib, 16 + $luaL_Reg_func, os_date);
-cptr.stPtro(syslib, 32, __sl29);
+cptr.stPtro(syslib, 32, __s_difftime);
 cptr.stPtro(syslib, 32 + $luaL_Reg_func, os_difftime);
-cptr.stPtro(syslib, 48, __sl30);
+cptr.stPtro(syslib, 48, __s_execute);
 cptr.stPtro(syslib, 48 + $luaL_Reg_func, os_execute);
-cptr.stPtro(syslib, 64, __sl31);
+cptr.stPtro(syslib, 64, __s_exit);
 cptr.stPtro(syslib, 64 + $luaL_Reg_func, os_exit);
-cptr.stPtro(syslib, 80, __sl32);
+cptr.stPtro(syslib, 80, __s_getenv);
 cptr.stPtro(syslib, 80 + $luaL_Reg_func, os_getenv);
-cptr.stPtro(syslib, 96, __sl33);
+cptr.stPtro(syslib, 96, __s_remove);
 cptr.stPtro(syslib, 96 + $luaL_Reg_func, os_remove);
-cptr.stPtro(syslib, 112, __sl34);
+cptr.stPtro(syslib, 112, __s_rename);
 cptr.stPtro(syslib, 112 + $luaL_Reg_func, os_rename);
-cptr.stPtro(syslib, 128, __sl35);
+cptr.stPtro(syslib, 128, __s_setlocale);
 cptr.stPtro(syslib, 128 + $luaL_Reg_func, os_setlocale);
-cptr.stPtro(syslib, 144, __sl26);
+cptr.stPtro(syslib, 144, __s_time);
 cptr.stPtro(syslib, 144 + $luaL_Reg_func, os_time);
-cptr.stPtro(syslib, 160, __sl36);
+cptr.stPtro(syslib, 160, __s_tmpname);
 cptr.stPtro(syslib, 160 + $luaL_Reg_func, os_tmpname);
 cptr.stPtro(syslib, 176, null);
 cptr.stPtro(syslib, 176 + $luaL_Reg_func, null);

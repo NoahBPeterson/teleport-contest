@@ -172,107 +172,107 @@ const $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mo
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Finishing off %s...");
-const __sl1 = cptr.lit("levchn-lev_count");
-const __sl2 = cptr.lit("levchn-s_level");
-const __sl3 = cptr.lit("damage-damage_count");
-const __sl4 = cptr.lit("damage");
-const __sl5 = cptr.lit("obj");
-const __sl6 = cptr.lit("obj-oname_length");
-const __sl7 = cptr.lit("obj-oname");
-const __sl8 = cptr.lit("obj-omonst_length");
-const __sl9 = cptr.lit("obj-omailcmd_length");
-const __sl10 = cptr.lit("obj-omailcmd");
-const __sl11 = cptr.lit("obj-omid");
-const __sl12 = cptr.lit("obj-obj_length");
-const __sl13 = cptr.lit("restobjchn");
-const __sl14 = cptr.lit("restore.c");
-const __sl15 = cptr.lit("otmp != 0");
-const __sl16 = cptr.lit("Restobjchn: error reading objchn.");
-const __sl17 = cptr.lit("monst");
-const __sl18 = cptr.lit("monst-mgivenname_length");
-const __sl19 = cptr.lit("monst-mgivenname");
-const __sl20 = cptr.lit("monst-egd_length");
-const __sl21 = cptr.lit("monst-egd");
-const __sl22 = cptr.lit("monst-epri_length");
-const __sl23 = cptr.lit("monst-epri");
-const __sl24 = cptr.lit("monst-eshk_length");
-const __sl25 = cptr.lit("monst-eshk");
-const __sl26 = cptr.lit("monst-emin_length");
-const __sl27 = cptr.lit("monst-emin");
-const __sl28 = cptr.lit("monst-edog_length");
-const __sl29 = cptr.lit("monst-edog");
-const __sl30 = cptr.lit("monst-ebones_length");
-const __sl31 = cptr.lit("monst-ebones");
-const __sl32 = cptr.lit("monst-mcorpsenm");
-const __sl33 = cptr.lit("monst-monst_length");
-const __sl34 = cptr.lit("restmonchn");
-const __sl35 = cptr.lit("mtmp != 0");
-const __sl36 = cptr.lit("bad monster weapon restore");
-const __sl37 = cptr.lit("Restmonchn: error reading monchn.");
-const __sl38 = cptr.lit("fruit");
-const __sl39 = cptr.lit("no old fruit?");
-const __sl40 = cptr.lit("gamestate-uid");
-const __sl41 = cptr.lit("nhuuid");
-const __sl42 = cptr.lit("gamestate-moves");
-const __sl43 = cptr.lit("Saved game was not yours.");
-const __sl44 = cptr.lit("gamestate-context");
-const __sl45 = cptr.lit("gamestate-flags");
-const __sl46 = cptr.lit("wreserve");
-const __sl47 = cptr.lit("wtreserved");
-const __sl48 = cptr.lit("gamestate-you");
-const __sl49 = cptr.lit("gamestate-ubirthday");
-const __sl50 = cptr.lit("gamestate-realtime");
-const __sl51 = cptr.lit("gamestate-start_timing");
-const __sl52 = cptr.lit("were not healthy enough to survive restoration.");
-const __sl53 = cptr.lit("gamestate-mvitals");
-const __sl54 = cptr.lit("gamestate-quest_status");
-const __sl55 = cptr.lit("gamestate-spl_book");
-const __sl56 = cptr.lit("gamestate-pl_character");
-const __sl57 = cptr.lit("gamestate-pl_fruit");
-const __sl58 = cptr.lit("restlevelfile: %s");
-const __sl59 = cptr.lit("gamestate-level_number");
-const __sl60 = cptr.lit("restgamestate: lost ball & chain");
-const __sl61 = cptr.lit("stairs-staircount");
-const __sl62 = cptr.lit("stairs-stairway");
-const __sl63 = cptr.lit("cemetery-cemetery_flag");
-const __sl64 = cptr.lit("cemetery-bonesinfo");
-const __sl65 = cptr.lit("location-rm");
-const __sl66 = cptr.lit("Strange, this map is not as I remember it.");
-const __sl67 = cptr.lit("Somebody is trying some trickery here...");
-const __sl68 = cptr.lit("This game is void.");
-const __sl69 = cptr.lit("");
-const __sl70 = cptr.lit("gamestate-hackpid");
-const __sl71 = cptr.lit("gamestate-dlvl");
-const __sl72 = cptr.lit("PID (%d) doesn't match saved PID (%d)!");
-const __sl73 = cptr.lit("This is level %d, not %d!");
-const __sl74 = cptr.lit("%s");
-const __sl75 = cptr.lit("lastseentyp");
-const __sl76 = cptr.lit("lev-timestmp");
-const __sl77 = cptr.lit("lev-updest");
-const __sl78 = cptr.lit("lev-dndest");
-const __sl79 = cptr.lit("lev-level_flags");
-const __sl80 = cptr.lit("lev-doors_alloc");
-const __sl81 = cptr.lit("lev-doors");
-const __sl82 = cptr.lit("trap");
-const __sl83 = cptr.lit("getlev");
-const __sl84 = cptr.lit("getlev: need portal but none found");
-const __sl85 = cptr.lit("plname-size");
-const __sl86 = cptr.lit("plname");
-const __sl87 = cptr.lit("bubbles-bbubbly");
-const __sl88 = cptr.lit("gamelog-length");
-const __sl89 = cptr.lit("restore_gamelog: msg too big (%d)");
-const __sl90 = cptr.lit("gamelog-gamelog_text");
-const __sl91 = cptr.lit("gamelog-gamelog_line");
-const __sl92 = cptr.lit("msghistory-length");
-const __sl93 = cptr.lit("restore_msghistory: msg too big (%d)");
-const __sl94 = cptr.lit("msghistory-msg");
-const __sl95 = cptr.lit("Read %d messages from savefile.");
-const __sl96 = cptr.lit("Select one of your saved games");
-const __sl97 = cptr.lit("%.*s");
-const __sl98 = cptr.lit("%c %.*s");
-const __sl99 = cptr.lit("Start a new character");
-const __sl100 = cptr.lit("Never mind (quit)");
+const __s_finishing_off_s = cptr.lit("Finishing off %s...");
+const __s_levchn_lev_count = cptr.lit("levchn-lev_count");
+const __s_levchn_s_level = cptr.lit("levchn-s_level");
+const __s_damage_damage_count = cptr.lit("damage-damage_count");
+const __s_damage = cptr.lit("damage");
+const __s_obj = cptr.lit("obj");
+const __s_obj_oname_length = cptr.lit("obj-oname_length");
+const __s_obj_oname = cptr.lit("obj-oname");
+const __s_obj_omonst_length = cptr.lit("obj-omonst_length");
+const __s_obj_omailcmd_length = cptr.lit("obj-omailcmd_length");
+const __s_obj_omailcmd = cptr.lit("obj-omailcmd");
+const __s_obj_omid = cptr.lit("obj-omid");
+const __s_obj_obj_length = cptr.lit("obj-obj_length");
+const __s_restobjchn = cptr.lit("restobjchn");
+const __s_restore_c = cptr.lit("restore.c");
+const __s_otmp_0 = cptr.lit("otmp != 0");
+const __s_restobjchn_error_reading_objchn = cptr.lit("Restobjchn: error reading objchn.");
+const __s_monst = cptr.lit("monst");
+const __s_monst_mgivenname_length = cptr.lit("monst-mgivenname_length");
+const __s_monst_mgivenname = cptr.lit("monst-mgivenname");
+const __s_monst_egd_length = cptr.lit("monst-egd_length");
+const __s_monst_egd = cptr.lit("monst-egd");
+const __s_monst_epri_length = cptr.lit("monst-epri_length");
+const __s_monst_epri = cptr.lit("monst-epri");
+const __s_monst_eshk_length = cptr.lit("monst-eshk_length");
+const __s_monst_eshk = cptr.lit("monst-eshk");
+const __s_monst_emin_length = cptr.lit("monst-emin_length");
+const __s_monst_emin = cptr.lit("monst-emin");
+const __s_monst_edog_length = cptr.lit("monst-edog_length");
+const __s_monst_edog = cptr.lit("monst-edog");
+const __s_monst_ebones_length = cptr.lit("monst-ebones_length");
+const __s_monst_ebones = cptr.lit("monst-ebones");
+const __s_monst_mcorpsenm = cptr.lit("monst-mcorpsenm");
+const __s_monst_monst_length = cptr.lit("monst-monst_length");
+const __s_restmonchn = cptr.lit("restmonchn");
+const __s_mtmp_0 = cptr.lit("mtmp != 0");
+const __s_bad_monster_weapon_restore = cptr.lit("bad monster weapon restore");
+const __s_restmonchn_error_reading_monchn = cptr.lit("Restmonchn: error reading monchn.");
+const __s_fruit = cptr.lit("fruit");
+const __s_no_old_fruit = cptr.lit("no old fruit?");
+const __s_gamestate_uid = cptr.lit("gamestate-uid");
+const __s_nhuuid = cptr.lit("nhuuid");
+const __s_gamestate_moves = cptr.lit("gamestate-moves");
+const __s_saved_game_was_not_yours = cptr.lit("Saved game was not yours.");
+const __s_gamestate_context = cptr.lit("gamestate-context");
+const __s_gamestate_flags = cptr.lit("gamestate-flags");
+const __s_wreserve = cptr.lit("wreserve");
+const __s_wtreserved = cptr.lit("wtreserved");
+const __s_gamestate_you = cptr.lit("gamestate-you");
+const __s_gamestate_ubirthday = cptr.lit("gamestate-ubirthday");
+const __s_gamestate_realtime = cptr.lit("gamestate-realtime");
+const __s_gamestate_start_timing = cptr.lit("gamestate-start_timing");
+const __s_were_not_healthy_enough_to_survive = cptr.lit("were not healthy enough to survive restoration.");
+const __s_gamestate_mvitals = cptr.lit("gamestate-mvitals");
+const __s_gamestate_quest_status = cptr.lit("gamestate-quest_status");
+const __s_gamestate_spl_book = cptr.lit("gamestate-spl_book");
+const __s_gamestate_pl_character = cptr.lit("gamestate-pl_character");
+const __s_gamestate_pl_fruit = cptr.lit("gamestate-pl_fruit");
+const __s_restlevelfile_s = cptr.lit("restlevelfile: %s");
+const __s_gamestate_level_number = cptr.lit("gamestate-level_number");
+const __s_restgamestate_lost_ball_chain = cptr.lit("restgamestate: lost ball & chain");
+const __s_stairs_staircount = cptr.lit("stairs-staircount");
+const __s_stairs_stairway = cptr.lit("stairs-stairway");
+const __s_cemetery_cemetery_flag = cptr.lit("cemetery-cemetery_flag");
+const __s_cemetery_bonesinfo = cptr.lit("cemetery-bonesinfo");
+const __s_location_rm = cptr.lit("location-rm");
+const __s_strange_this_map_is_not_as_i_remember_it = cptr.lit("Strange, this map is not as I remember it.");
+const __s_somebody_is_trying_some_trickery_here = cptr.lit("Somebody is trying some trickery here...");
+const __s_this_game_is_void = cptr.lit("This game is void.");
+const __s_empty = cptr.lit("");
+const __s_gamestate_hackpid = cptr.lit("gamestate-hackpid");
+const __s_gamestate_dlvl = cptr.lit("gamestate-dlvl");
+const __s_pid_d_doesn_t_match_saved_pid_d = cptr.lit("PID (%d) doesn't match saved PID (%d)!");
+const __s_this_is_level_d_not_d = cptr.lit("This is level %d, not %d!");
+const __s_pct_s = cptr.lit("%s");
+const __s_lastseentyp = cptr.lit("lastseentyp");
+const __s_lev_timestmp = cptr.lit("lev-timestmp");
+const __s_lev_updest = cptr.lit("lev-updest");
+const __s_lev_dndest = cptr.lit("lev-dndest");
+const __s_lev_level_flags = cptr.lit("lev-level_flags");
+const __s_lev_doors_alloc = cptr.lit("lev-doors_alloc");
+const __s_lev_doors = cptr.lit("lev-doors");
+const __s_trap = cptr.lit("trap");
+const __s_getlev = cptr.lit("getlev");
+const __s_getlev_need_portal_but_none_found = cptr.lit("getlev: need portal but none found");
+const __s_plname_size = cptr.lit("plname-size");
+const __s_plname = cptr.lit("plname");
+const __s_bubbles_bbubbly = cptr.lit("bubbles-bbubbly");
+const __s_gamelog_length = cptr.lit("gamelog-length");
+const __s_restore_gamelog_msg_too_big_d = cptr.lit("restore_gamelog: msg too big (%d)");
+const __s_gamelog_gamelog_text = cptr.lit("gamelog-gamelog_text");
+const __s_gamelog_gamelog_line = cptr.lit("gamelog-gamelog_line");
+const __s_msghistory_length = cptr.lit("msghistory-length");
+const __s_restore_msghistory_msg_too_big_d = cptr.lit("restore_msghistory: msg too big (%d)");
+const __s_msghistory_msg = cptr.lit("msghistory-msg");
+const __s_read_d_messages_from_savefile = cptr.lit("Read %d messages from savefile.");
+const __s_select_one_of_your_saved_games = cptr.lit("Select one of your saved games");
+const __s_pct_dot_star_s = cptr.lit("%.*s");
+const __s_c_s = cptr.lit("%c %.*s");
+const __s_start_a_new_character = cptr.lit("Start a new character");
+const __s_never_mind_quit = cptr.lit("Never mind (quit)");
 
 /** C ref: restore.c:45 — struct bucket { next, map } (memory model v0.5) */
 
@@ -309,7 +309,7 @@ export function* inven_inuse(quietly) {
         otmp2 = cptr.ldPtr(otmp);
         if ((cptr.ldI32o(otmp, $obj_in_use) & 1)) {
             if (!quietly)
-                (yield* pline(__sl0, (yield* xname(otmp))));
+                (yield* pline(__s_finishing_off_s, (yield* xname(otmp))));
             (yield* useup(otmp));
         }
     }
@@ -321,11 +321,11 @@ function* restlevchn(nhfp) {
     let tmplev;
     let x;
     cptr.stPtro(svs, $instance_globals_saved_s_sp_levchn, null);
-    (yield* sfi_int(nhfp, cnt, __sl1));
+    (yield* sfi_int(nhfp, cnt, __s_levchn_lev_count));
     ;
     for (; cnt.v > 0; cnt.v--) {
         tmplev = (yield* alloc(56));
-        (yield* sfi_s_level(nhfp, tmplev, __sl2));
+        (yield* sfi_s_level(nhfp, tmplev, __s_levchn_s_level));
         if (!cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn))
             cptr.stPtro(svs, $instance_globals_saved_s_sp_levchn, tmplev);
         else {
@@ -343,14 +343,14 @@ function* restdamage(nhfp) {
     let counter;
     let tmp_dam;
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
-    (yield* sfi_unsigned(nhfp, dmgcount, __sl3));
+    (yield* sfi_unsigned(nhfp, dmgcount, __s_damage_damage_count));
     ;
     counter = dmgcount.v | 0;
     if (!counter)
         return;
     do {
         tmp_dam = (yield* alloc(32));
-        (yield* sfi_damage(nhfp, tmp_dam, __sl4));
+        (yield* sfi_damage(nhfp, tmp_dam, __s_damage));
         if (ghostly)
             cptr.stI64o(tmp_dam, $damage_when, cptr.ldI64o(tmp_dam, $damage_when) + (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves))));
         cptr.stPtr(tmp_dam, cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist));
@@ -362,33 +362,33 @@ function* restdamage(nhfp) {
 function* restobj(nhfp, otmp) {
     let buflen = cptr.box(0);
     let omid = cptr.box(0);
-    (yield* sfi_obj(nhfp, otmp, __sl5));
+    (yield* sfi_obj(nhfp, otmp, __s_obj));
     cptr.stI32o(otmp, $obj_lua_ref_cnt, 0);
     cptr.stPtr(otmp, cptr.stPtro(otmp, $obj_v, null));
     if (cptr.ldPtro(otmp, $obj_oextra)) {
         cptr.stPtro(otmp, $obj_oextra, (yield* newoextra()));
-        (yield* sfi_int(nhfp, buflen, __sl6));
+        (yield* sfi_int(nhfp, buflen, __s_obj_oname_length));
         ;
         if (buflen.v > 0) {
             (yield* new_oname(otmp, buflen.v));
-            (yield* sfi_char(nhfp, (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), __sl7, buflen.v));
+            (yield* sfi_char(nhfp, (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), __s_obj_oname, buflen.v));
         }
-        (yield* sfi_int(nhfp, buflen, __sl8));
+        (yield* sfi_int(nhfp, buflen, __s_obj_omonst_length));
         ;
         if (buflen.v > 0) {
             (yield* newomonst(otmp));
             (yield* restmon(nhfp, (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst))));
         }
-        (yield* sfi_int(nhfp, buflen, __sl9));
+        (yield* sfi_int(nhfp, buflen, __s_obj_omailcmd_length));
         ;
         if (buflen.v > 0) {
             let omailcmd = (yield* alloc(buflen.v >>> 0));
-            (yield* sfi_char(nhfp, omailcmd, __sl10, buflen.v));
+            (yield* sfi_char(nhfp, omailcmd, __s_obj_omailcmd, buflen.v));
             (yield* new_omailcmd(otmp, omailcmd));
             cptr.free(omailcmd);
         }
         (yield* newomid(otmp));
-        (yield* sfi_unsigned(nhfp, omid, __sl11));
+        (yield* sfi_unsigned(nhfp, omid, __s_obj_omid));
         ;
         cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, omid.v);
     }
@@ -402,12 +402,12 @@ function* restobjchn(nhfp, frozen) {
     let buflen = cptr.box(0);
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
     while (1) {
-        (yield* sfi_int(nhfp, buflen, __sl12));
+        (yield* sfi_int(nhfp, buflen, __s_obj_obj_length));
         ;
         if (buflen.v == -1)
             break;
         otmp = (yield* alloc(216));
-        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__sl13, __sl14, 246, __sl15) : void 0);
+        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__s_restobjchn, __s_restore_c, 246, __s_otmp_0) : void 0);
         (yield* restobj(nhfp, otmp));
         if (!first)
             first = otmp;
@@ -441,7 +441,7 @@ function* restobjchn(nhfp, frozen) {
         otmp2 = otmp;
     }
     if (first && cptr.ldPtr(otmp2)) {
-        (yield* impossible(__sl16));
+        (yield* impossible(__s_restobjchn_error_reading_objchn));
         cptr.stPtr(otmp2, null);
     }
     return first;
@@ -451,58 +451,58 @@ function* restobjchn(nhfp, frozen) {
 function* restmon(nhfp, mtmp) {
     let buflen = cptr.box(0);
     let mc = cptr.box(0);
-    (yield* sfi_monst(nhfp, mtmp, __sl17));
+    (yield* sfi_monst(nhfp, mtmp, __s_monst));
     cptr.stPtr(mtmp, null);
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
         cptr.stPtro(mtmp, $monst_mextra, (yield* newmextra()));
-        (yield* sfi_int(nhfp, buflen, __sl18));
+        (yield* sfi_int(nhfp, buflen, __s_monst_mgivenname_length));
         ;
         if (buflen.v > 0) {
             (yield* new_mgivenname(mtmp, buflen.v));
-            (yield* sfi_char(nhfp, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), __sl19, buflen.v));
+            (yield* sfi_char(nhfp, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), __s_monst_mgivenname, buflen.v));
         }
-        (yield* sfi_int(nhfp, buflen, __sl20));
+        (yield* sfi_int(nhfp, buflen, __s_monst_egd_length));
         ;
         if (buflen.v > 0) {
             (yield* newegd(mtmp));
-            (yield* sfi_egd(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), __sl21));
+            (yield* sfi_egd(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), __s_monst_egd));
         }
-        (yield* sfi_int(nhfp, buflen, __sl22));
+        (yield* sfi_int(nhfp, buflen, __s_monst_epri_length));
         ;
         if (buflen.v > 0) {
             (yield* newepri(mtmp));
-            (yield* sfi_epri(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), __sl23));
+            (yield* sfi_epri(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), __s_monst_epri));
         }
-        (yield* sfi_int(nhfp, buflen, __sl24));
+        (yield* sfi_int(nhfp, buflen, __s_monst_eshk_length));
         ;
         if (buflen.v > 0) {
             (yield* neweshk(mtmp));
-            (yield* sfi_eshk(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), __sl25));
+            (yield* sfi_eshk(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), __s_monst_eshk));
         }
-        (yield* sfi_int(nhfp, buflen, __sl26));
+        (yield* sfi_int(nhfp, buflen, __s_monst_emin_length));
         ;
         if (buflen.v > 0) {
             (yield* newemin(mtmp));
-            (yield* sfi_emin(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), __sl27));
+            (yield* sfi_emin(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), __s_monst_emin));
         }
-        (yield* sfi_int(nhfp, buflen, __sl28));
+        (yield* sfi_int(nhfp, buflen, __s_monst_edog_length));
         ;
         if (buflen.v > 0) {
             (yield* newedog(mtmp));
-            (yield* sfi_edog(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), __sl29));
+            (yield* sfi_edog(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), __s_monst_edog));
             relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_droptime));
             relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime));
             if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_apport) <= 0) {
                 cptr.stI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_apport, 1);
             }
         }
-        (yield* sfi_int(nhfp, buflen, __sl30));
+        (yield* sfi_int(nhfp, buflen, __s_monst_ebones_length));
         ;
         if (buflen.v > 0) {
             (yield* newebones(mtmp));
-            (yield* sfi_ebones(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), __sl31));
+            (yield* sfi_ebones(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), __s_monst_ebones));
         }
-        (yield* sfi_int(nhfp, mc, __sl32));
+        (yield* sfi_int(nhfp, mc, __s_monst_mcorpsenm));
         ;
         cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, mc.v);
     }
@@ -517,12 +517,12 @@ function* restmonchn(nhfp) {
     let offset;
     let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
     while (1) {
-        (yield* sfi_int(nhfp, buflen, __sl33));
+        (yield* sfi_int(nhfp, buflen, __s_monst_monst_length));
         ;
         if (buflen.v == -1)
             break;
         mtmp = (yield* alloc(320));
-        (__builtin_expect(BigInt((!(mtmp !== null))), 0n) ? __assert_rtn(__sl34, __sl14, 392, __sl35) : void 0);
+        (__builtin_expect(BigInt((!(mtmp !== null))), 0n) ? __assert_rtn(__s_restmonchn, __s_restore_c, 392, __s_mtmp_0) : void 0);
         (yield* restmon(nhfp, mtmp));
         if (!first)
             first = mtmp;
@@ -556,7 +556,7 @@ function* restmonchn(nhfp) {
                 cptr.stPtro(mtmp, $monst_mw, obj);
             else {
                 (cptr.stPtro((mtmp), $monst_mw, null));
-                (yield* impossible(__sl36));
+                (yield* impossible(__s_bad_monster_weapon_restore));
             }
         }
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
@@ -570,7 +570,7 @@ function* restmonchn(nhfp) {
         mtmp2 = mtmp;
     }
     if (first && cptr.ldPtr(mtmp2)) {
-        (yield* impossible(__sl37));
+        (yield* impossible(__s_restmonchn_error_reading_monchn));
         cptr.stPtr(mtmp2, null);
     }
     return first;
@@ -583,7 +583,7 @@ function* loadfruitchn(nhfp) {
     flist = null;
     for (; ; ) {
         fnext = (yield* alloc(48));
-        (yield* sfi_fruit(nhfp, fnext, __sl38));
+        (yield* sfi_fruit(nhfp, fnext, __s_fruit));
         if (cptr.ldI32o(fnext, $fruit_fid) != 0) {
             cptr.stPtro(fnext, $fruit_nextf, flist);
             flist = fnext;
@@ -611,7 +611,7 @@ function* ghostfruit(otmp) {
         if (cptr.ldI32o(oldf, $fruit_fid) == cptr.ld1so(otmp, $obj_spe))
             break;
     if (!oldf)
-        (yield* impossible(__sl39));
+        (yield* impossible(__s_no_old_fruit));
     else
         cptr.st1o(otmp, $obj_spe, schar((yield* fruitadd(oldf, null))));
 }
@@ -627,14 +627,14 @@ function* restgamestate(nhfp) {
     let defer_perm_invent;
     let restoring_special;
     let otmp;
-    (yield* sfi_ulong(nhfp, uid, __sl40));
+    (yield* sfi_ulong(nhfp, uid, __s_gamestate_uid));
     ;
-    (yield* sfi_char(nhfp, cptr.add(cptr.add(svn, $instance_globals_saved_n_nhuuid), 0, 1), __sl41, 37));
-    (yield* sfi_long(nhfp, cptr.add(svm, $instance_globals_saved_m_moves), __sl42));
+    (yield* sfi_char(nhfp, cptr.add(cptr.add(svn, $instance_globals_saved_n_nhuuid), 0, 1), __s_nhuuid, 37));
+    (yield* sfi_long(nhfp, cptr.add(svm, $instance_globals_saved_m_moves), __s_gamestate_moves));
     ;
     if (cptr.ldI32o(sysopt, $sysopt_s_check_save_uid) && uid.v != BigInt(getuid() >>> 0)) {
         if (!cptr.ld1so(gc, $instance_globals_c_converted_savefile_loaded))
-            (yield* pline(__sl43));
+            (yield* pline(__s_saved_game_was_not_yours));
         if (wizard() || cptr.ld1so(gc, $instance_globals_c_converted_savefile_loaded)) {
             if (cptr.ld1so(gc, $instance_globals_c_converted_savefile_loaded))
                 cptr.st1o(gc, $instance_globals_c_converted_savefile_loaded, 0);
@@ -643,12 +643,12 @@ function* restgamestate(nhfp) {
         }
     }
     cptr.memcpy(newgamecontext, svc, 720);
-    (yield* sfi_context_info(nhfp, svc, __sl44));
+    (yield* sfi_context_info(nhfp, svc, __s_gamestate_context));
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
     cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx))) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), 96) : null);
     cptr.memcpy(newgameflags, flags, 208);
-    (yield* sfi_flag(nhfp, flags, __sl45));
+    (yield* sfi_flag(nhfp, flags, __s_gamestate_flags));
     defer_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
     cptr.st1o(iflags, $instance_flags_perm_invent, 0);
     cptr.st1o(iflags, $instance_flags_deferred_X, schar((cptr.ld1so(newgameflags, $flag_explore) && !discover() ? 1 : 0)));
@@ -659,20 +659,20 @@ function* restgamestate(nhfp) {
         set_playmode();
     }
     (yield* role_init());
-    (yield* sfi_long(nhfp, svw, __sl46));
+    (yield* sfi_long(nhfp, svw, __s_wreserve));
     ;
-    (yield* sfi_int32(nhfp, cptr.add(svw, $instance_globals_saved_w_wtreserved), __sl47));
-    (yield* sfi_you(nhfp, u, __sl48));
+    (yield* sfi_int32(nhfp, cptr.add(svw, $instance_globals_saved_w_wtreserved), __s_wtreserved));
+    (yield* sfi_you(nhfp, u, __s_gamestate_you));
     cptr.stI16o(gy, $instance_globals_y_youmonst + $monst_cham, cptr.ldI16o(u, $you_mcham));
     if (restoring_special && cptr.ld1so(iflags, $instance_flags_explore_error_flag)) {
         cptr.stI32o(u, $you_uhp, 0);
     }
-    (yield* sfi_char(nhfp, cptr.decay(timebuf), __sl49, 14));
+    (yield* sfi_char(nhfp, cptr.decay(timebuf), __s_gamestate_ubirthday, 14));
     cptr.st1o(cptr.decay(timebuf), 14, 0, 1);
     ubirthday.v = (yield* time_from_yyyymmddhhmmss(cptr.decay(timebuf)));
-    (yield* sfi_long(nhfp, urealtime, __sl50));
+    (yield* sfi_long(nhfp, urealtime, __s_gamestate_realtime));
     ;
-    (yield* sfi_char(nhfp, cptr.decay(timebuf), __sl51, 14));
+    (yield* sfi_char(nhfp, cptr.decay(timebuf), __s_gamestate_start_timing, 14));
     cptr.st1o(cptr.decay(timebuf), 14, 0, 1);
     cptr.stI64o(urealtime, $u_realtime_start_timing, (yield* time_from_yyyymmddhhmmss(cptr.decay(timebuf))));
     cptr.stI64o(urealtime, $u_realtime_start_timing, (yield* getnow()));
@@ -680,7 +680,7 @@ function* restgamestate(nhfp) {
     (yield* Y.icall(cliparound()(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
     if (cptr.ldI32o(u, $you_uhp) <= 0 && (!Upolyd() || cptr.ldI32o(u, $you_mh) <= 0)) {
         cptr.stI16(u, cptr.stI16o(u, $you_uy, 0));
-        (yield* You(__sl52));
+        (yield* You(__s_were_not_healthy_enough_to_survive));
         cptr.stI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel, 0);
         cptr.stI16o(u, $you_uz, 0);
         cptr.stI16o(u, $you_uz + $d_level_dlevel, 1);
@@ -707,7 +707,7 @@ function* restgamestate(nhfp) {
     cptr.stPtro(gm, $instance_globals_m_migrating_objs, (yield* restobjchn(nhfp, 0)));
     cptr.stPtro(gm, $instance_globals_m_migrating_mons, (yield* restmonchn(nhfp)));
     for (i = 0; i < NHC.NUMMONS; ++i) {
-        (yield* sfi_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, 12), __sl53));
+        (yield* sfi_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, 12), __s_gamestate_mvitals));
     }
     cptr.st1o(gd, $instance_globals_d_defer_see_monsters, 1);
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -721,14 +721,14 @@ function* restgamestate(nhfp) {
     (yield* restore_dungeon(nhfp));
     (yield* restlevchn(nhfp));
     cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n);
-    (yield* sfi_q_score(nhfp, svq, __sl54));
+    (yield* sfi_q_score(nhfp, svq, __s_gamestate_quest_status));
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
-        (yield* sfi_spell(nhfp, cptr.add(svs, i, 8), __sl55));
+        (yield* sfi_spell(nhfp, cptr.add(svs, i, 8), __s_gamestate_spl_book));
     }
     (yield* restore_artifacts(nhfp));
     (yield* restore_oracles(nhfp));
-    (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_character), __sl56, 32));
-    (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl57, 32));
+    (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_character), __s_gamestate_pl_character, 32));
+    (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_gamestate_pl_fruit, 32));
     freefruitchn(cptr.ldPtro(gf, $instance_globals_f_ffruit));
     cptr.stPtro(gf, $instance_globals_f_ffruit, (yield* loadfruitchn(nhfp)));
     (yield* restnames(nhfp));
@@ -754,7 +754,7 @@ function* restlevelfile(ltmp) {
     nhfp = (yield* create_levelfile(ltmp, cptr.decay(whynot)));
     if (!nhfp) {
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
-        (yield* panic(__sl58, cptr.decay(whynot)));
+        (yield* panic(__s_restlevelfile_s, cptr.decay(whynot)));
     }
     (yield* bufon(cptr.ldI32(nhfp)));
     cptr.stI32o(nhfp, $NHFILE_mode, 6);
@@ -792,7 +792,7 @@ export function* dorecover(nhfp) {
     cptr.stPtro(u, $you_usteed, null);
     cptr.stI32o(restoreinfo, $restore_info_mread_flags, 1);
     while (1) {
-        (yield* sfi_xint8(nhfp, ltmp, __sl59));
+        (yield* sfi_xint8(nhfp, ltmp, __s_gamestate_level_number));
         ;
         if (cptr.ld1so(nhfp, $NHFILE_eof))
             break;
@@ -817,7 +817,7 @@ export function* dorecover(nhfp) {
     reset_glyphmap(NHC.gm_levelchange);
     max_rank_sz();
     if ((uball.v && !uchain.v) || (uchain.v && !uball.v)) {
-        (yield* impossible(__sl60));
+        (yield* impossible(__s_restgamestate_lost_ball_chain));
         (yield* setworn(null, 4194304n));
         (yield* setworn(null, 2097152n));
     }
@@ -847,11 +847,11 @@ function* rest_stairs(nhfp) {
     let newst;
     stairway_free_all();
     while (1) {
-        (yield* sfi_int(nhfp, buflen, __sl61));
+        (yield* sfi_int(nhfp, buflen, __s_stairs_staircount));
         ;
         if (buflen.v == -1)
             break;
-        (yield* sfi_stairway(nhfp, stway, __sl62));
+        (yield* sfi_stairway(nhfp, stway, __s_stairs_stairway));
         if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)) {
             cptr.stI16o(stway, $stairway_tolev + $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
         }
@@ -867,13 +867,13 @@ export function* restcemetery(nhfp, cemeteryaddr) {
     let bonesinfo;
     let bonesaddr;
     let cflag = cptr.box(0);
-    (yield* sfi_int(nhfp, cflag, __sl63));
+    (yield* sfi_int(nhfp, cflag, __s_cemetery_cemetery_flag));
     ;
     if (cflag.v == 0) {
         bonesaddr = cemeteryaddr;
         do {
             bonesinfo = (yield* alloc(184));
-            (yield* sfi_cemetery(nhfp, bonesinfo, __sl64));
+            (yield* sfi_cemetery(nhfp, bonesinfo, __s_cemetery_bonesinfo));
             cptr.stPtr(bonesaddr, bonesinfo);
             bonesaddr = (cptr.ldPtr(bonesaddr));
         } while (cptr.ldPtr(bonesaddr));
@@ -898,17 +898,17 @@ function* rest_levl(nhfp) {
     let r;
     for (c = 0; c < NHM.COLNO; ++c) {
         for (r = 0; r < NHM.ROWNO; ++r) {
-            (yield* sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, 756), r, 36), __sl65));
+            (yield* sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, 756), r, 36), __s_location_rm));
         }
     }
 }
 
 /** C ref: restore.c:1035 — @param {CPtr<char>} reason */
 export function* trickery(reason) {
-    (yield* pline(__sl66));
-    (yield* pline(__sl67));
-    (yield* pline(__sl68));
-    void cptr.strcpy(cptr.add(svk, $kinfo_name), reason ? reason : __sl69);
+    (yield* pline(__s_strange_this_map_is_not_as_i_remember_it));
+    (yield* pline(__s_somebody_is_trying_some_trickery_here));
+    (yield* pline(__s_this_game_is_void));
+    void cptr.strcpy(cptr.add(svk, $kinfo_name), reason ? reason : __s_empty);
     (yield* done(NHC.TRICKED));
 }
 
@@ -932,46 +932,46 @@ export function* getlev(nhfp, pid, lev) {
         clear_id_mapping();
     if (ghostly)
         cptr.stPtro(go, $instance_globals_o_oldfruit, (yield* loadfruitchn(nhfp)));
-    (yield* sfi_int(nhfp, hpid, __sl70));
+    (yield* sfi_int(nhfp, hpid, __s_gamestate_hackpid));
     ;
-    (yield* sfi_xint8(nhfp, dlvl, __sl71));
+    (yield* sfi_xint8(nhfp, dlvl, __s_gamestate_dlvl));
     ;
     if ((pid && pid != hpid.v) || (lev && dlvl.v != lev)) {
         let trickbuf = new Uint8Array(256);
         if (pid && pid != hpid.v)
-            void cptr.sprintf(cptr.decay(trickbuf), __sl72, hpid.v, pid);
+            void cptr.sprintf(cptr.decay(trickbuf), __s_pid_d_doesn_t_match_saved_pid_d, hpid.v, pid);
         else
-            void cptr.sprintf(cptr.decay(trickbuf), __sl73, dlvl.v, lev);
+            void cptr.sprintf(cptr.decay(trickbuf), __s_this_is_level_d_not_d, dlvl.v, lev);
         if (wizard())
-            (yield* pline(__sl74, cptr.decay(trickbuf)));
+            (yield* pline(__s_pct_s, cptr.decay(trickbuf)));
         (yield* trickery(cptr.decay(trickbuf)));
     }
     (yield* restcemetery(nhfp, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo)));
     (yield* rest_levl(nhfp));
     for (c = 0; c < NHM.COLNO; ++c) {
         for (r = 0; r < NHM.ROWNO; ++r) {
-            (yield* sfi_schar(nhfp, cptr.add(cptr.add(svl, c, 21), r, 1), __sl75));
+            (yield* sfi_schar(nhfp, cptr.add(cptr.add(svl, c, 21), r, 1), __s_lastseentyp));
         }
     }
-    (yield* sfi_long(nhfp, cptr.add(svo, $instance_globals_saved_o_omoves), __sl76));
+    (yield* sfi_long(nhfp, cptr.add(svo, $instance_globals_saved_o_omoves), __s_lev_timestmp));
     ;
     elapsed = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves)));
     (yield* rest_stairs(nhfp));
-    (yield* sfi_dest_area(nhfp, svu, __sl77));
-    (yield* sfi_dest_area(nhfp, cptr.add(svd, $instance_globals_saved_d_dndest), __sl78));
-    (yield* sfi_levelflags(nhfp, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags), __sl79));
+    (yield* sfi_dest_area(nhfp, svu, __s_lev_updest));
+    (yield* sfi_dest_area(nhfp, cptr.add(svd, $instance_globals_saved_d_dndest), __s_lev_dndest));
+    (yield* sfi_levelflags(nhfp, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags), __s_lev_level_flags));
     rest_adjust_levelflags();
     if (cptr.ldPtro(svd, $instance_globals_saved_d_doors)) {
         cptr.free(cptr.ldPtro(svd, $instance_globals_saved_d_doors));
         cptr.stPtro(svd, $instance_globals_saved_d_doors, null);
     }
-    (yield* sfi_int(nhfp, cptr.add(svd, $instance_globals_saved_d_doors_alloc), __sl80));
+    (yield* sfi_int(nhfp, cptr.add(svd, $instance_globals_saved_d_doors_alloc), __s_lev_doors_alloc));
     ;
     if (cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc)) {
         cptr.stPtro(svd, $instance_globals_saved_d_doors, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc))) * 4n))))));
         tmpc = cptr.ldPtro(svd, $instance_globals_saved_d_doors);
         for (i = 0; i < cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc); ++i) {
-            (yield* sfi_nhcoord(nhfp, tmpc, __sl81));
+            (yield* sfi_nhcoord(nhfp, tmpc, __s_lev_doors));
             tmpc = cptr.add(tmpc, 1, 4);
         }
     }
@@ -988,7 +988,7 @@ export function* getlev(nhfp, pid, lev) {
     cptr.stPtr(gf, null);
     for (; ; ) {
         trap = (yield* alloc(40));
-        (yield* sfi_trap(nhfp, trap, __sl82));
+        (yield* sfi_trap(nhfp, trap, __s_trap));
         if (cptr.ldI16o(trap, $trap_tx) != 0) {
             if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(trap, $trap_dst) == cptr.ldI16o(u, $you_uz)) {
                 cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
@@ -1034,7 +1034,7 @@ export function* getlev(nhfp, pid, lev) {
             (yield* mon_catchup_elapsed_time(mtmp, elapsed));
         }
         (yield* restore_cham(mtmp));
-        if (ghostly || (elapsed > 0n && elapsed > BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl14, 1219, __sl83), rnd(10)) : rnd(10)))))
+        if (ghostly || (elapsed > 0n && elapsed > BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_restore_c, 1219, __s_getlev), rnd(10)) : rnd(10)))))
             (yield* hide_monst(mtmp));
     }
     (yield* restdamage(nhfp));
@@ -1084,7 +1084,7 @@ export function* getlev(nhfp, pid, lev) {
                     if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                         break;
                 if (!trap)
-                    (yield* panic(__sl84));
+                    (yield* panic(__s_getlev_need_portal_but_none_found));
                 assign_level(cptr.add(trap, $trap_dst), ltmp);
                 break;
             }
@@ -1128,9 +1128,9 @@ export function* get_plname_from_file(nhfp, outbuf, name_only) {
     let plbuf = new Uint8Array(49);
     let pltmpsiz = cptr.box(0);
     cptr.st1o(cptr.decay(plbuf), 0, 0, 1);
-    (yield* sfi_int(nhfp, pltmpsiz, __sl85));
+    (yield* sfi_int(nhfp, pltmpsiz, __s_plname_size));
     ;
-    (yield* sfi_char(nhfp, cptr.decay(plbuf), __sl86, pltmpsiz.v));
+    (yield* sfi_char(nhfp, cptr.decay(plbuf), __s_plname, pltmpsiz.v));
     if (!name_only)
         cptr.st1(eos(cptr.decay(plbuf)), 45);
     void cptr.memcpy(outbuf, cptr.decay(plbuf), 49n);
@@ -1141,7 +1141,7 @@ export function* get_plname_from_file(nhfp, outbuf, name_only) {
 function* rest_bubbles(nhfp) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
-    (yield* sfi_xint8(nhfp, bbubbly, __sl87));
+    (yield* sfi_xint8(nhfp, bbubbly, __s_bubbles_bbubbly));
     ;
     if (bbubbly.v)
         (yield* restore_waterlevel(nhfp));
@@ -1153,15 +1153,15 @@ function* restore_gamelog(nhfp) {
     let msg = new Uint8Array(512);
     let tmp = cptr.alloc(32); cptr.stI64(tmp, 0n);
     while (1) {
-        (yield* sfi_int(nhfp, slen, __sl88));
+        (yield* sfi_int(nhfp, slen, __s_gamelog_length));
         ;
         if (slen.v == -1)
             break;
         if (slen.v > 511)
-            (yield* panic(__sl89, slen.v));
-        (yield* sfi_char(nhfp, cptr.decay(msg), __sl90, slen.v));
+            (yield* panic(__s_restore_gamelog_msg_too_big_d, slen.v));
+        (yield* sfi_char(nhfp, cptr.decay(msg), __s_gamelog_gamelog_text, slen.v));
         cptr.st1o(cptr.decay(msg), slen.v, 0, 1);
-        (yield* sfi_gamelog_line(nhfp, tmp, __sl91));
+        (yield* sfi_gamelog_line(nhfp, tmp, __s_gamelog_gamelog_line));
         (yield* gamelog_add(cptr.ldI64o(tmp, $gamelog_line_flags), cptr.ldI64(tmp), cptr.decay(msg)));
     }
 }
@@ -1172,13 +1172,13 @@ function* restore_msghistory(nhfp) {
     let msgcount = 0;
     let msg = new Uint8Array(256);
     while (1) {
-        (yield* sfi_int(nhfp, msgsize, __sl92));
+        (yield* sfi_int(nhfp, msgsize, __s_msghistory_length));
         ;
         if (msgsize.v == -1)
             break;
         if (msgsize.v > 255)
-            (yield* panic(__sl93, msgsize.v));
-        (yield* sfi_char(nhfp, cptr.decay(msg), __sl94, msgsize.v));
+            (yield* panic(__s_restore_msghistory_msg_too_big_d, msgsize.v));
+        (yield* sfi_char(nhfp, cptr.decay(msg), __s_msghistory_msg, msgsize.v));
         cptr.st1o(cptr.decay(msg), msgsize.v, 0, 1);
         (yield* Y.icall(putmsghistory()(cptr.decay(msg), 1)));
         ++msgcount;
@@ -1186,9 +1186,9 @@ function* restore_msghistory(nhfp) {
     if (msgcount)
         (yield* Y.icall(putmsghistory()(null, 1)));
     {
-        if ((yield* debugcore(__sl14, 1))) {
+        if ((yield* debugcore(__s_restore_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__sl95, msgcount));
+            (yield* pline(__s_read_d_messages_from_savefile, msgcount));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -1284,9 +1284,9 @@ export function* restore_menu(bannerwin) {
             (yield* Y.icall(clear_nhwindow()(bannerwin)));
             for (k = 1; k <= 4; ++k)
                 (yield* add_menu_str(tmpwin, copyright_banner_line(k)));
-            (yield* add_menu_str(tmpwin, __sl69));
+            (yield* add_menu_str(tmpwin, __s_empty));
         }
-        (yield* add_menu_str(tmpwin, __sl96));
+        (yield* add_menu_str(tmpwin, __s_select_one_of_your_saved_games));
         for (all_normal = 1, k = 0; all_normal && cptr.ldPtro(saved, k, 8); ++k) {
             next = cptr.ldPtro(saved, k, 8);
             mode = cptr.ld1so(next, 48);
@@ -1298,17 +1298,17 @@ export function* restore_menu(bannerwin) {
             next = cptr.ldPtro(saved, k, 8);
             mode = cptr.ld1so(next, 48);
             if (all_normal)
-                void cptr.sprintf(cptr.decay(menutext), __sl97, 48, next);
+                void cptr.sprintf(cptr.decay(menutext), __s_pct_dot_star_s, 48, next);
             else
-                void cptr.sprintf(cptr.decay(menutext), __sl98, mode, 48, next);
+                void cptr.sprintf(cptr.decay(menutext), __s_c_s, mode, 48, next);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(menutext), NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS));
         }
         clet = (k <= 13) ? 110 : ((k <= 39) ? 78 : 0);
         cptr.stI32(any, -1);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __sl99, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __s_start_a_new_character, NHM.MENU_ITEMFLAGS_NONE));
         clet = (((k + 1) | 0) <= 16 && clet == 110) ? 113 : ((((k + 1) | 0) <= 42 && clet == 78) ? 81 : 0);
         cptr.stI32(any, -2);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __sl100, NHM.MENU_ITEMFLAGS_SELECTED));
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __s_never_mind_quit, NHM.MENU_ITEMFLAGS_SELECTED));
         (yield* Y.icall(end_menu()(tmpwin, null)));
         if ((yield* select_menu(tmpwin, NHM.PICK_ONE, chosen_game)) > 0) {
             ch = cptr.ldI32(chosen_game.v);

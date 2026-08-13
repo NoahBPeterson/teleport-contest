@@ -118,29 +118,29 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("bones.c");
-const __sl1 = cptr.lit("give_to_nearby_mon");
-const __sl2 = cptr.lit("drop_upon_death");
-const __sl3 = cptr.lit("can_make_bones");
-const __sl4 = cptr.lit("Bones file already exists.  Replace it?");
-const __sl5 = cptr.lit("Cannot unlink old bones.");
-const __sl6 = cptr.lit("%s-%.3s-%.3s-%.3s-%.3s");
-const __sl7 = cptr.lit("%s");
-const __sl8 = cptr.lit("savebones");
-const __sl9 = cptr.lit("ancestor-nhuuid");
-const __sl10 = cptr.lit("bones_count");
-const __sl11 = cptr.lit("bonesid");
-const __sl12 = cptr.lit("getbones");
-const __sl13 = cptr.lit("Discarding unusable bones; no need to panic...");
-const __sl14 = cptr.lit("Get bones?");
-const __sl15 = cptr.lit("Abandoning bones , %u > %u.");
-const __sl16 = cptr.lit("This is bones level '%s', not '%s'!");
-const __sl17 = cptr.lit("Removing defunct monster %s from bones.");
-const __sl18 = cptr.lit("Unlink bones?");
-const __sl19 = cptr.lit("-");
-const __sl20 = cptr.lit("make adjustments to %s to suit your %s hand.");
-const __sl21 = cptr.lit("right");
-const __sl22 = cptr.lit("left");
+const __s_bones_c = cptr.lit("bones.c");
+const __s_give_to_nearby_mon = cptr.lit("give_to_nearby_mon");
+const __s_drop_upon_death = cptr.lit("drop_upon_death");
+const __s_can_make_bones = cptr.lit("can_make_bones");
+const __s_bones_file_already_exists_replace_it = cptr.lit("Bones file already exists.  Replace it?");
+const __s_cannot_unlink_old_bones = cptr.lit("Cannot unlink old bones.");
+const __s_s_3s_3s_3s_3s = cptr.lit("%s-%.3s-%.3s-%.3s-%.3s");
+const __s_pct_s = cptr.lit("%s");
+const __s_savebones = cptr.lit("savebones");
+const __s_ancestor_nhuuid = cptr.lit("ancestor-nhuuid");
+const __s_bones_count = cptr.lit("bones_count");
+const __s_bonesid = cptr.lit("bonesid");
+const __s_getbones = cptr.lit("getbones");
+const __s_discarding_unusable_bones_no_need_to = cptr.lit("Discarding unusable bones; no need to panic...");
+const __s_get_bones = cptr.lit("Get bones?");
+const __s_abandoning_bones_u_u = cptr.lit("Abandoning bones , %u > %u.");
+const __s_this_is_bones_level_s_not_s = cptr.lit("This is bones level '%s', not '%s'!");
+const __s_removing_defunct_monster_s_from_bones = cptr.lit("Removing defunct monster %s from bones.");
+const __s_unlink_bones = cptr.lit("Unlink bones?");
+const __s_dash = cptr.lit("-");
+const __s_make_adjustments_to_s_to_suit_your_s = cptr.lit("make adjustments to %s to suit your %s hand.");
+const __s_right = cptr.lit("right");
+const __s_left = cptr.lit("left");
 
 /** C ref: bones.c:18 — @param {CPtr<d_level>} lev @returns {CInt} */
 function no_bones_level(lev) {
@@ -282,7 +282,7 @@ function give_to_nearby_mon(otmp, x, y) {
             if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2147483648n) != 0n)))
                 continue;
             nmon++;
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 247, __sl1), rn2(nmon)) : rn2(nmon)))
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 247, __s_give_to_nearby_mon), rn2(nmon)) : rn2(nmon)))
                 selected = mtmp;
         }
     }
@@ -305,13 +305,13 @@ export function drop_upon_death(mtmp, cont, x, y) {
         cptr.stI64o(otmp, $obj_owornmask, 0n);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
             goodfruit(cptr.ld1so(otmp, $obj_spe));
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 290, __sl2), rn2(5)) : rn2(5)))
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 290, __s_drop_upon_death), rn2(5)) : rn2(5)))
             curse(otmp);
         if (mtmp)
             void add_to_minv(mtmp, otmp);
         else if (cont)
             void add_to_container(cont, otmp);
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 296, __sl2), rn2(8)) : rn2(8)))
+        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 296, __s_drop_upon_death), rn2(8)) : rn2(8)))
             give_to_nearby_mon(otmp, x, y);
         else
             place_object(otmp, x, y);
@@ -364,7 +364,7 @@ export function can_make_bones() {
             if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 return 0;
     }
-    if (depth(cptr.add(u, $you_uz)) <= 0 || (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 377, __sl3), rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) : rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) && !wizard()))
+    if (depth(cptr.add(u, $you_uz)) <= 0 || (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 377, __s_can_make_bones), rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) : rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) && !wizard()))
         return 0;
     if (discover())
         return 0;
@@ -396,11 +396,11 @@ export function savebones(how, when, corpse) {
         if (nhfp) {
             close_nhfile(nhfp);
             if (wizard()) {
-                if (yn_function(__sl4, cptr.decay(ynchars), 110, 1) == 121) {
+                if (yn_function(__s_bones_file_already_exists_replace_it, cptr.decay(ynchars), 110, 1) == 121) {
                     if (delete_bonesfile(cptr.add(u, $you_uz)))
                         break __lbl_make_bones;
                     else
-                        pline(__sl5);
+                        pline(__s_cannot_unlink_old_bones);
                 }
             }
             compress_bonesfile();
@@ -509,7 +509,7 @@ export function savebones(how, when, corpse) {
         }
     newbones = alloc(184);
     void __builtin___memset_chk(newbones, 32, 184n, __builtin_object_size(newbones, 0));
-    void cptr.sprintf(cptr.add(newbones, $cemetery_who), __sl6, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode));
+    void cptr.sprintf(cptr.add(newbones, $cemetery_who), __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode));
     formatkiller(cptr.add(newbones, $cemetery_how), 101, how, 1);
     void cptr.strcpy(cptr.add(newbones, $cemetery_when), yyyymmddhhmmss(when));
     cptr.stI16o(newbones, $cemetery_frpx, cptr.ldI16o(u, $you_ux0)), cptr.stI16o(newbones, $cemetery_frpy, cptr.ldI16o(u, $you_uy0));
@@ -521,16 +521,16 @@ export function savebones(how, when, corpse) {
     nhfp = create_bonesfile(cptr.add(u, $you_uz), bonesid, cptr.decay(whynot));
     if (!nhfp) {
         if (wizard())
-            pline(__sl7, cptr.decay(whynot));
-        paniclog(__sl8, cptr.decay(whynot));
+            pline(__s_pct_s, cptr.decay(whynot));
+        paniclog(__s_savebones, cptr.decay(whynot));
         return;
     }
     c.v = Number(BigInt.asIntN(8, (BigInt.asUintN(64, cptr.strlen(bonesid.v) + 1n))));
     cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
     store_version(nhfp);
-    sfo_char(nhfp, cptr.add(cptr.add(svn, $instance_globals_saved_n_nhuuid), 0, 1), __sl9, 37);
-    sfo_char(nhfp, c, __sl10, 1);
-    sfo_char(nhfp, bonesid.v, __sl11, c.v);
+    sfo_char(nhfp, cptr.add(cptr.add(svn, $instance_globals_saved_n_nhuuid), 0, 1), __s_ancestor_nhuuid, 37);
+    sfo_char(nhfp, c, __s_bones_count, 1);
+    sfo_char(nhfp, bonesid.v, __s_bonesid, c.v);
     savefruitchn(nhfp);
     update_mlstmv();
     savelev(nhfp, schar(ledger_no(cptr.add(u, $you_uz))));
@@ -551,7 +551,7 @@ export function getbones() {
         return 0;
     if (!cptr.ld1so(flags, $flag_bones))
         return 0;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 645, __sl12), rn2(3)) : rn2(3)) && !wizard())
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 645, __s_getbones), rn2(3)) : rn2(3)) && !wizard())
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;
@@ -567,29 +567,29 @@ export function getbones() {
     cptr.stI32o(program_state, $sinfo_reading_bonesfile, 1);
     if (validate(nhfp, cptr.add(gb, $instance_globals_b_bones), 0) != NHM.SF_UPTODATE) {
         if (!wizard())
-            pline(__sl13);
+            pline(__s_discarding_unusable_bones_no_need_to);
         ok = 0;
         cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
     } else {
         ok = 1;
         if (wizard()) {
-            if (yn_function(__sl14, cptr.decay(ynchars), 110, 1) == 110) {
+            if (yn_function(__s_get_bones, cptr.decay(ynchars), 110, 1) == 110) {
                 close_nhfile(nhfp);
                 compress_bonesfile();
                 cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
                 return 0;
             }
         }
-        sfi_char(nhfp, cptr.add(cptr.decay(ancestor_nhuuid), 0, 1), __sl9, 37);
-        sfi_char(nhfp, c, __sl10, 1);
+        sfi_char(nhfp, cptr.add(cptr.decay(ancestor_nhuuid), 0, 1), __s_ancestor_nhuuid, 37);
+        sfi_char(nhfp, c, __s_bones_count, 1);
         if (BigInt(c.v >>> 0) <= 40n) {
-            sfi_char(nhfp, cptr.decay(oldbonesid), __sl11, c.v);
+            sfi_char(nhfp, cptr.decay(oldbonesid), __s_bonesid, c.v);
         } else {
             if (wizard())
                 {
-                    if (debugcore(__sl0, 1)) {
+                    if (debugcore(__s_bones_c, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        pline(__sl15, c.v, 40);
+                        pline(__s_abandoning_bones_u_u, c.v, 40);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
@@ -600,9 +600,9 @@ export function getbones() {
         }
         if (strcmp(bonesid.v, cptr.decay(oldbonesid)) != 0) {
             let errbuf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(errbuf), __sl16, cptr.decay(oldbonesid), bonesid.v);
+            void cptr.sprintf(cptr.decay(errbuf), __s_this_is_bones_level_s_not_s, cptr.decay(oldbonesid), bonesid.v);
             if (wizard()) {
-                pline(__sl7, cptr.decay(errbuf));
+                pline(__s_pct_s, cptr.decay(errbuf));
                 ok = 0;
             }
             cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
@@ -616,9 +616,9 @@ export function getbones() {
                 if (cptr.ldI32o(mtmp, $monst_mhpmax) == -100) {
                     if (wizard()) {
                         {
-                            if (debugcore(__sl0, 1)) {
+                            if (debugcore(__s_bones_c, 1)) {
                                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                                pline(__sl17, cptr.ldPtro(cptr.ldPtro(mtmp, $monst_data), NHC.NEUTRAL, 8));
+                                pline(__s_removing_defunct_monster_s_from_bones, cptr.ldPtro(cptr.ldPtro(mtmp, $monst_data), NHC.NEUTRAL, 8));
                                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                             }
                         }
@@ -637,7 +637,7 @@ export function getbones() {
     sanitize_engravings();
     (cptr.stI64o(u, $you_uroleplay + $u_roleplay_numbones, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones) + 1n)) - (1n);
     if (wizard()) {
-        if (yn_function(__sl18, cptr.decay(ynchars), 110, 1) == 110) {
+        if (yn_function(__s_unlink_bones, cptr.decay(ynchars), 110, 1) == 110) {
             compress_bonesfile();
             return ok;
         }
@@ -654,7 +654,7 @@ export function bones_include_name(name) {
     let len;
     let buf = new Uint8Array(256);
     void cptr.strcpy(cptr.decay(buf), name);
-    void cptr.strcat(cptr.decay(buf), __sl19);
+    void cptr.strcat(cptr.decay(buf), __s_dash);
     len = cptr.strlen(cptr.decay(buf));
     for (bp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo); bp; bp = cptr.ldPtr(bp)) {
         if (!cptr.strncmp(cptr.add(bp, $cemetery_who), cptr.decay(buf), len))
@@ -681,7 +681,7 @@ export function fix_ghostly_obj(obj) {
         case NHC.ORCISH_BOW:
         case NHC.YUMI:
         case NHC.BOOMERANG:
-        You(__sl20, the(xname(obj)), URIGHTY() ? __sl21 : __sl22);
+        You(__s_make_adjustments_to_s_to_suit_your_s, the(xname(obj)), URIGHTY() ? __s_right : __s_left);
         break;
         default:
         break;

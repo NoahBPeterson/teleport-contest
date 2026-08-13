@@ -282,1012 +282,1012 @@ const $Align_adj = FLD.Align_adj, $accessibility_data_glyph_updates = FLD.access
     $xtra_cntrls_desc = FLD.xtra_cntrls_desc, $you_uroleplay = FLD.you_uroleplay, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("windowtype");
-const __sl1 = cptr.lit("windowing system to use (should be specified first)");
-const __sl2 = cptr.lit("playmode");
-const __sl3 = cptr.lit("normal play, non-scoring explore mode, or debug mode");
-const __sl4 = cptr.lit("name");
-const __sl5 = cptr.lit("your character's name (e.g., name:Merlin-W)");
-const __sl6 = cptr.lit("role");
-const __sl7 = cptr.lit("character");
-const __sl8 = cptr.lit("your starting role (e.g., Barbarian, Valkyrie)");
-const __sl9 = cptr.lit("race");
-const __sl10 = cptr.lit("your starting race (e.g., Human, Elf)");
-const __sl11 = cptr.lit("gender");
-const __sl12 = cptr.lit("your starting gender (male or female)");
-const __sl13 = cptr.lit("alignment");
-const __sl14 = cptr.lit("align");
-const __sl15 = cptr.lit("your starting alignment (lawful, neutral, or chaotic)");
-const __sl16 = cptr.lit("accessiblemsg");
-const __sl17 = cptr.lit("add location information to messages");
-const __sl18 = cptr.lit("acoustics");
-const __sl19 = cptr.lit("can your character hear anything");
-const __sl20 = cptr.lit("align_message");
-const __sl21 = cptr.lit("message window alignment");
-const __sl22 = cptr.lit("align_status");
-const __sl23 = cptr.lit("status window alignment");
-const __sl24 = cptr.lit("altkeyhandling");
-const __sl25 = cptr.lit("altkeyhandler");
-const __sl26 = cptr.lit("(not applicable)");
-const __sl27 = cptr.lit("altmeta");
-const __sl28 = cptr.lit("treat \"ESC c\" as M-c (Meta+c, 8th bit set)");
-const __sl29 = cptr.lit("armorstatus");
-const __sl30 = cptr.lit("summarize currently worn armor in a status field");
-const __sl31 = cptr.lit("ascii_map");
-const __sl32 = cptr.lit("show map as text");
-const __sl33 = cptr.lit("autocompletions");
-const __sl34 = cptr.lit("edit autocompletions");
-const __sl35 = cptr.lit("autodescribe");
-const __sl36 = cptr.lit("describe terrain under cursor");
-const __sl37 = cptr.lit("autodig");
-const __sl38 = cptr.lit("dig if moving and wielding a digging tool");
-const __sl39 = cptr.lit("autoopen");
-const __sl40 = cptr.lit("walking into a door attempts to open it");
-const __sl41 = cptr.lit("autopickup");
-const __sl42 = cptr.lit("automatically pick up objects");
-const __sl43 = cptr.lit("autopickup exceptions");
-const __sl44 = cptr.lit("edit autopickup exceptions");
-const __sl45 = cptr.lit("autoquiver");
-const __sl46 = cptr.lit("fill empty quiver automatically when firing");
-const __sl47 = cptr.lit("autounlock");
-const __sl48 = cptr.lit("action to take when encountering locked door or chest");
-const __sl49 = cptr.lit("bgcolors");
-const __sl50 = cptr.lit("use background color for some map hilighting");
-const __sl51 = cptr.lit("bind keys");
-const __sl52 = cptr.lit("edit key binds");
-const __sl53 = cptr.lit("BIOS");
-const __sl54 = cptr.lit("blind");
-const __sl55 = cptr.lit("permablind");
-const __sl56 = cptr.lit("your character is permanently blind");
-const __sl57 = cptr.lit("bones");
-const __sl58 = cptr.lit("allow loading bones files");
-const __sl59 = cptr.lit("boulder");
-const __sl60 = cptr.lit("deprecated (use S_boulder in sym file instead)");
-const __sl61 = cptr.lit("catname");
-const __sl62 = cptr.lit("name of your starting pet if it is a kitten");
-const __sl63 = cptr.lit("checkpoint");
-const __sl64 = cptr.lit("save game state after each level change");
-const __sl65 = cptr.lit("cmdassist");
-const __sl66 = cptr.lit("give help for errors on direction input");
-const __sl67 = cptr.lit("color");
-const __sl68 = cptr.lit("colour");
-const __sl69 = cptr.lit("use color in map");
-const __sl70 = cptr.lit("confirm");
-const __sl71 = cptr.lit("ask before hitting tame or peaceful monsters");
-const __sl72 = cptr.lit("crash_email");
-const __sl73 = cptr.lit("email address for reporting");
-const __sl74 = cptr.lit("crash_name");
-const __sl75 = cptr.lit("your name for reporting");
-const __sl76 = cptr.lit("crash_urlmax");
-const __sl77 = cptr.lit("length of longest url we can generate");
-const __sl78 = cptr.lit("customcolors");
-const __sl79 = cptr.lit("customcolours");
-const __sl80 = cptr.lit("use custom colors in map");
-const __sl81 = cptr.lit("customsymbols");
-const __sl82 = cptr.lit("use custom utf8 symbols in map");
-const __sl83 = cptr.lit("dark_room");
-const __sl84 = cptr.lit("show floor outside line of sight differently");
-const __sl85 = cptr.lit("deaf");
-const __sl86 = cptr.lit("permadeaf");
-const __sl87 = cptr.lit("your character is permanently deaf");
-const __sl88 = cptr.lit("DECgraphics");
-const __sl89 = cptr.lit("load DECGraphics display symbols into symset");
-const __sl90 = cptr.lit("debug_hunger");
-const __sl91 = cptr.lit("no hunger");
-const __sl92 = cptr.lit("debug_mongen");
-const __sl93 = cptr.lit("no random monster generation");
-const __sl94 = cptr.lit("debug_overwrite_stairs");
-const __sl95 = cptr.lit("level generation can overwrite stairs");
-const __sl96 = cptr.lit("disclose");
-const __sl97 = cptr.lit("the kinds of information to disclose at end of game");
-const __sl98 = cptr.lit("dogname");
-const __sl99 = cptr.lit("name of your starting pet if it is a little dog");
-const __sl100 = cptr.lit("dropped_nopick");
-const __sl101 = cptr.lit("don't autopickup dropped items");
-const __sl102 = cptr.lit("dungeon");
-const __sl103 = cptr.lit("list of symbols to use in drawing the dungeon map");
-const __sl104 = cptr.lit("effects");
-const __sl105 = cptr.lit("list of symbols to use in drawing special effects");
-const __sl106 = cptr.lit("eight_bit_tty");
-const __sl107 = cptr.lit("send 8-bit characters directly to terminal");
-const __sl108 = cptr.lit("extmenu");
-const __sl109 = cptr.lit("use menu for getting extended commands");
-const __sl110 = cptr.lit("female");
-const __sl111 = cptr.lit("male");
-const __sl112 = cptr.lit("deprecated; use gender:female");
-const __sl113 = cptr.lit("fireassist");
-const __sl114 = cptr.lit("fire-command tries to be helpful");
-const __sl115 = cptr.lit("fixinv");
-const __sl116 = cptr.lit("inventory items keep their letters");
-const __sl117 = cptr.lit("font_map");
-const __sl118 = cptr.lit("font to use in the map window");
-const __sl119 = cptr.lit("font_menu");
-const __sl120 = cptr.lit("font to use in menus");
-const __sl121 = cptr.lit("font_message");
-const __sl122 = cptr.lit("font to use in the message window");
-const __sl123 = cptr.lit("font_size_map");
-const __sl124 = cptr.lit("size of the map font");
-const __sl125 = cptr.lit("font_size_menu");
-const __sl126 = cptr.lit("size of the menu font");
-const __sl127 = cptr.lit("font_size_message");
-const __sl128 = cptr.lit("size of the message font");
-const __sl129 = cptr.lit("font_size_status");
-const __sl130 = cptr.lit("size of the status font");
-const __sl131 = cptr.lit("font_size_text");
-const __sl132 = cptr.lit("size of the text font");
-const __sl133 = cptr.lit("font_status");
-const __sl134 = cptr.lit("font to use in status window");
-const __sl135 = cptr.lit("font_text");
-const __sl136 = cptr.lit("font to use in text windows");
-const __sl137 = cptr.lit("force_invmenu");
-const __sl138 = cptr.lit("commands asking for inventory item show a menu");
-const __sl139 = cptr.lit("fruit");
-const __sl140 = cptr.lit("name of a fruit you enjoy eating");
-const __sl141 = cptr.lit("fullscreen");
-const __sl142 = cptr.lit("toggle fullscreen");
-const __sl143 = cptr.lit("glyph");
-const __sl144 = cptr.lit("set representation of a glyph to a unicode value and color");
-const __sl145 = cptr.lit("goldX");
-const __sl146 = cptr.lit("classify gold as unknown or uncursed");
-const __sl147 = cptr.lit("guicolor");
-const __sl148 = cptr.lit("use color for UI");
-const __sl149 = cptr.lit("help");
-const __sl150 = cptr.lit("show all available info when using whatis-command");
-const __sl151 = cptr.lit("herecmd_menu");
-const __sl152 = cptr.lit("show commands available in this location");
-const __sl153 = cptr.lit("hilite_pet");
-const __sl154 = cptr.lit("use highlight for pets");
-const __sl155 = cptr.lit("hilite_pile");
-const __sl156 = cptr.lit("highlight piles of items");
-const __sl157 = cptr.lit("hilite_status");
-const __sl158 = cptr.lit("a status highlighting rule (can occur multiple times)");
-const __sl159 = cptr.lit("hitpointbar");
-const __sl160 = cptr.lit("show colored bar for hit points");
-const __sl161 = cptr.lit("horsename");
-const __sl162 = cptr.lit("name of your starting pet if it is a pony");
-const __sl163 = cptr.lit("IBMgraphics");
-const __sl164 = cptr.lit("load IBMGraphics display symbols into symset");
-const __sl165 = cptr.lit("idlecheckpoint");
-const __sl166 = cptr.lit("update checkpoint file if input is idle for 10 seconds");
-const __sl167 = cptr.lit("ignintr");
-const __sl168 = cptr.lit("ignore interrupt signals");
-const __sl169 = cptr.lit("implicit_uncursed");
-const __sl170 = cptr.lit("omit \"uncursed\" from inventory");
-const __sl171 = cptr.lit("legacy");
-const __sl172 = cptr.lit("show introductory message");
-const __sl173 = cptr.lit("lit_corridor");
-const __sl174 = cptr.lit("show dark corridors as lit if in sight");
-const __sl175 = cptr.lit("lootabc");
-const __sl176 = cptr.lit("use a/b/c rather than o/i/c when looting");
-const __sl177 = cptr.lit("mail");
-const __sl178 = cptr.lit("enable the mail daemon");
-const __sl179 = cptr.lit("map_mode");
-const __sl180 = cptr.lit("map display mode under Windows");
-const __sl181 = cptr.lit("mention_decor");
-const __sl182 = cptr.lit("give feedback when walking over interesting features");
-const __sl183 = cptr.lit("mention_map");
-const __sl184 = cptr.lit("give feedback when interesting map locations change");
-const __sl185 = cptr.lit("mention_walls");
-const __sl186 = cptr.lit("give feedback when walking into walls");
-const __sl187 = cptr.lit("menu_deselect_all");
-const __sl188 = cptr.lit("deselect all items in a menu");
-const __sl189 = cptr.lit("menu_deselect_page");
-const __sl190 = cptr.lit("deselect all items on this page of a menu");
-const __sl191 = cptr.lit("menu_first_page");
-const __sl192 = cptr.lit("jump to the first page in a menu");
-const __sl193 = cptr.lit("menu_headings");
-const __sl194 = cptr.lit("display style for menu headings");
-const __sl195 = cptr.lit("menu_invert_all");
-const __sl196 = cptr.lit("invert all items in a menu");
-const __sl197 = cptr.lit("menu_invert_page");
-const __sl198 = cptr.lit("invert all items on this page of a menu");
-const __sl199 = cptr.lit("menu_last_page");
-const __sl200 = cptr.lit("jump to the last page in a menu");
-const __sl201 = cptr.lit("menu_next_page");
-const __sl202 = cptr.lit("go to the next menu page");
-const __sl203 = cptr.lit("menu_objsyms");
-const __sl204 = cptr.lit("use_menu_glyphs");
-const __sl205 = cptr.lit("show object symbols in menus");
-const __sl206 = cptr.lit("menu_overlay");
-const __sl207 = cptr.lit("menus overlay and align to right");
-const __sl208 = cptr.lit("menu_previous_page");
-const __sl209 = cptr.lit("go to the previous menu page");
-const __sl210 = cptr.lit("menu_search");
-const __sl211 = cptr.lit("search for a menu item");
-const __sl212 = cptr.lit("menu_select_all");
-const __sl213 = cptr.lit("select all items in a menu");
-const __sl214 = cptr.lit("menu_select_page");
-const __sl215 = cptr.lit("select all items on this page of a menu");
-const __sl216 = cptr.lit("menu_shift_left");
-const __sl217 = cptr.lit("pan current menu page left");
-const __sl218 = cptr.lit("menu_shift_right");
-const __sl219 = cptr.lit("pan current menu page right");
-const __sl220 = cptr.lit("menu_tab_sep");
-const __sl221 = cptr.lit("menu formatting");
-const __sl222 = cptr.lit("menucolors");
-const __sl223 = cptr.lit("use colors in menus");
-const __sl224 = cptr.lit("menu colors");
-const __sl225 = cptr.lit("change colors used in menus");
-const __sl226 = cptr.lit("menuinvertmode");
-const __sl227 = cptr.lit("experimental behavior of menu inverts");
-const __sl228 = cptr.lit("menustyle");
-const __sl229 = cptr.lit("user interface for object selection");
-const __sl230 = cptr.lit("message types");
-const __sl231 = cptr.lit("edit message types");
-const __sl232 = cptr.lit("mon_movement");
-const __sl233 = cptr.lit("message when hero sees monster movement");
-const __sl234 = cptr.lit("monpolycontrol");
-const __sl235 = cptr.lit("control monster polymorphs");
-const __sl236 = cptr.lit("montelecontrol");
-const __sl237 = cptr.lit("control monster teleport destinations");
-const __sl238 = cptr.lit("monsters");
-const __sl239 = cptr.lit("list of symbols to use for monsters");
-const __sl240 = cptr.lit("mouse_support");
-const __sl241 = cptr.lit("game receives click info from mouse");
-const __sl242 = cptr.lit("msg_window");
-const __sl243 = cptr.lit("control of \"view previous message(s)\" (^P) behavior");
-const __sl244 = cptr.lit("msghistory");
-const __sl245 = cptr.lit("number of top line messages to save");
-const __sl246 = cptr.lit("news");
-const __sl247 = cptr.lit("show any news at game start");
-const __sl248 = cptr.lit("nudist");
-const __sl249 = cptr.lit("start your character without armor");
-const __sl250 = cptr.lit("null");
-const __sl251 = cptr.lit("allow nulls to be sent to terminal");
-const __sl252 = cptr.lit("number_pad");
-const __sl253 = cptr.lit("use the number pad for movement");
-const __sl254 = cptr.lit("objects");
-const __sl255 = cptr.lit("list of symbols to use for objects");
-const __sl256 = cptr.lit("packorder");
-const __sl257 = cptr.lit("the inventory order of the items in your pack");
-const __sl258 = cptr.lit("paranoid_confirmation");
-const __sl259 = cptr.lit("prayconfirm");
-const __sl260 = cptr.lit("extra prompting in certain situations");
-const __sl261 = cptr.lit("pauper");
-const __sl262 = cptr.lit("start your character without any items");
-const __sl263 = cptr.lit("perm_invent");
-const __sl264 = cptr.lit("show persistent inventory window");
-const __sl265 = cptr.lit("perminv_mode");
-const __sl266 = cptr.lit("what to show in persistent inventory window");
-const __sl267 = cptr.lit("petattr");
-const __sl268 = cptr.lit("attributes for highlighting pets");
-const __sl269 = cptr.lit("pettype");
-const __sl270 = cptr.lit("pet");
-const __sl271 = cptr.lit("your preferred initial pet type");
-const __sl272 = cptr.lit("pickup_burden");
-const __sl273 = cptr.lit("maximum burden picked up before prompt");
-const __sl274 = cptr.lit("pickup_stolen");
-const __sl275 = cptr.lit("autopickup stolen items");
-const __sl276 = cptr.lit("pickup_thrown");
-const __sl277 = cptr.lit("autopickup thrown items");
-const __sl278 = cptr.lit("pickup_types");
-const __sl279 = cptr.lit("types of objects to pick up automatically");
-const __sl280 = cptr.lit("pile_limit");
-const __sl281 = cptr.lit("threshold for \"there are many objects here\"");
-const __sl282 = cptr.lit("player_selection");
-const __sl283 = cptr.lit("choose character via dialog or prompts");
-const __sl284 = cptr.lit("popup_dialog");
-const __sl285 = cptr.lit("preload_tiles");
-const __sl286 = cptr.lit("price_quotes");
-const __sl287 = cptr.lit("display prices you have seen for unidentified objects");
-const __sl288 = cptr.lit("pushweapon");
-const __sl289 = cptr.lit("previous weapon goes to secondary slot");
-const __sl290 = cptr.lit("query_menu");
-const __sl291 = cptr.lit("use a menu for yes/no queries");
-const __sl292 = cptr.lit("quick_farsight");
-const __sl293 = cptr.lit("skip map browse when forced to looked at map");
-const __sl294 = cptr.lit("rawio");
-const __sl295 = cptr.lit("reroll");
-const __sl296 = cptr.lit("allow rerolling of starting inventory and items");
-const __sl297 = cptr.lit("rest_on_space");
-const __sl298 = cptr.lit("space bar is bound to the rest-command");
-const __sl299 = cptr.lit("roguesymset");
-const __sl300 = cptr.lit("load a set of rogue display symbols from symbols file");
-const __sl301 = cptr.lit("runmode");
-const __sl302 = cptr.lit("display frequency when `running' or `travelling'");
-const __sl303 = cptr.lit("safe_pet");
-const __sl304 = cptr.lit("prevent you from hitting pets");
-const __sl305 = cptr.lit("safe_wait");
-const __sl306 = cptr.lit("prevent waiting next to hostiles");
-const __sl307 = cptr.lit("sanity_check");
-const __sl308 = cptr.lit("perform data sanity checks");
-const __sl309 = cptr.lit("scores");
-const __sl310 = cptr.lit("the parts of the score list you wish to see");
-const __sl311 = cptr.lit("scroll_amount");
-const __sl312 = cptr.lit("amount to scroll map when scroll_margin is reached");
-const __sl313 = cptr.lit("scroll_margin");
-const __sl314 = cptr.lit("scroll map when this far from the edge");
-const __sl315 = cptr.lit("selectsaved");
-const __sl316 = cptr.lit("showdamage");
-const __sl317 = cptr.lit("show damage hero takes in message line");
-const __sl318 = cptr.lit("showexp");
-const __sl319 = cptr.lit("show experience points in status line");
-const __sl320 = cptr.lit("showrace");
-const __sl321 = cptr.lit("show your character by race rather than role");
-const __sl322 = cptr.lit("showscore");
-const __sl323 = cptr.lit("showvers");
-const __sl324 = cptr.lit("show version info on status line");
-const __sl325 = cptr.lit("silent");
-const __sl326 = cptr.lit("don't use terminal bell");
-const __sl327 = cptr.lit("softkeyboard");
-const __sl328 = cptr.lit("sortdiscoveries");
-const __sl329 = cptr.lit("preferred order when displaying discovered objects");
-const __sl330 = cptr.lit("sortloot");
-const __sl331 = cptr.lit("sort object selection lists by description");
-const __sl332 = cptr.lit("sortpack");
-const __sl333 = cptr.lit("group inventory items by type");
-const __sl334 = cptr.lit("sortvanquished");
-const __sl335 = cptr.lit("preferred order when displaying vanquished monsters");
-const __sl336 = cptr.lit("soundlib");
-const __sl337 = cptr.lit("soundlib interface to use (if any)");
-const __sl338 = cptr.lit("sounds");
-const __sl339 = cptr.lit("use sounds");
-const __sl340 = cptr.lit("sparkle");
-const __sl341 = cptr.lit("display sparkly effect when resisting magic");
-const __sl342 = cptr.lit("spot_monsters");
-const __sl343 = cptr.lit("message when hero spots a monster");
-const __sl344 = cptr.lit("splash_screen");
-const __sl345 = cptr.lit("standout");
-const __sl346 = cptr.lit("use standout for --more--");
-const __sl347 = cptr.lit("status_updates");
-const __sl348 = cptr.lit("allow the status lines to update");
-const __sl349 = cptr.lit("status condition fields");
-const __sl350 = cptr.lit("change status condition highlighting");
-const __sl351 = cptr.lit("statushilites");
-const __sl352 = cptr.lit("0=no status highlighting, N=show highlights for N turns");
-const __sl353 = cptr.lit("status highlight rules");
-const __sl354 = cptr.lit("change status line highlighting");
-const __sl355 = cptr.lit("statuslines");
-const __sl356 = cptr.lit("2 or 3 lines for status display");
-const __sl357 = cptr.lit("suppress_alert");
-const __sl358 = cptr.lit("suppress alerts about version-specific features");
-const __sl359 = cptr.lit("symset");
-const __sl360 = cptr.lit("load a set of display symbols from symbols file");
-const __sl361 = cptr.lit("term_cols");
-const __sl362 = cptr.lit("termcolumns");
-const __sl363 = cptr.lit("number of columns");
-const __sl364 = cptr.lit("term_rows");
-const __sl365 = cptr.lit("number of rows");
-const __sl366 = cptr.lit("terrainstatus");
-const __sl367 = cptr.lit("show hero's location as a status field");
-const __sl368 = cptr.lit("tile_file");
-const __sl369 = cptr.lit("name of tile file");
-const __sl370 = cptr.lit("tile_height");
-const __sl371 = cptr.lit("height of tiles");
-const __sl372 = cptr.lit("tile_width");
-const __sl373 = cptr.lit("width of tiles");
-const __sl374 = cptr.lit("tiled_map");
-const __sl375 = cptr.lit("time");
-const __sl376 = cptr.lit("display game turns in status line");
-const __sl377 = cptr.lit("timed_delay");
-const __sl378 = cptr.lit("tips");
-const __sl379 = cptr.lit("show some helpful tips during gameplay");
-const __sl380 = cptr.lit("tombstone");
-const __sl381 = cptr.lit("show tombstone when your character dies");
-const __sl382 = cptr.lit("toptenwin");
-const __sl383 = cptr.lit("show top scores in window");
-const __sl384 = cptr.lit("traps");
-const __sl385 = cptr.lit("list of symbols to use in drawing traps");
-const __sl386 = cptr.lit("travel");
-const __sl387 = cptr.lit("enable traveling via mouse click");
-const __sl388 = cptr.lit("travel_debug");
-const __sl389 = cptr.lit("tutorial");
-const __sl390 = cptr.lit("ask if you want the tutorial");
-const __sl391 = cptr.lit("use_darkgray");
-const __sl392 = cptr.lit("use bold black color instead of blue");
-const __sl393 = cptr.lit("use_inverse");
-const __sl394 = cptr.lit("display detected monsters in inverse");
-const __sl395 = cptr.lit("use_truecolor");
-const __sl396 = cptr.lit("use_truecolour");
-const __sl397 = cptr.lit("vary_msgcount");
-const __sl398 = cptr.lit("show more old messages at a time");
-const __sl399 = cptr.lit("verbose");
-const __sl400 = cptr.lit("versinfo");
-const __sl401 = cptr.lit("extra information for 'showvers'");
-const __sl402 = cptr.lit("voices");
-const __sl403 = cptr.lit("vt_tiledata");
-const __sl404 = cptr.lit("vt_sounddata");
-const __sl405 = cptr.lit("warnings");
-const __sl406 = cptr.lit("display characters for warnings");
-const __sl407 = cptr.lit("weaponstatus");
-const __sl408 = cptr.lit("show currently wielded weapon in a status field");
-const __sl409 = cptr.lit("whatis_coord");
-const __sl410 = cptr.lit("show coordinates when auto-describing cursor position");
-const __sl411 = cptr.lit("whatis_filter");
-const __sl412 = cptr.lit("filter coordinate locations when targeting next or previous");
-const __sl413 = cptr.lit("whatis_menu");
-const __sl414 = cptr.lit("show menu when getting a map location");
-const __sl415 = cptr.lit("whatis_moveskip");
-const __sl416 = cptr.lit("skip same glyph when getting map location");
-const __sl417 = cptr.lit("windowborders");
-const __sl418 = cptr.lit("0 (off), 1 (on), 2 (auto)");
-const __sl419 = cptr.lit("windowcolors");
-const __sl420 = cptr.lit("the foreground/background colors of windows");
-const __sl421 = cptr.lit("wizmgender");
-const __sl422 = cptr.lit("wizweight");
-const __sl423 = cptr.lit("wraptext");
-const __sl424 = cptr.lit("cond_");
-const __sl425 = cptr.lit("prefix for cond_ options");
-const __sl426 = cptr.lit("font");
-const __sl427 = cptr.lit("prefix for font options");
-const __sl428 = cptr.lit("General");
-const __sl429 = cptr.lit("Behavior");
-const __sl430 = cptr.lit("Map");
-const __sl431 = cptr.lit("Status");
-const __sl432 = cptr.lit("Advanced");
-const __sl433 = cptr.lit("Confirm");
-const __sl434 = cptr.lit("Paranoia");
-const __sl435 = cptr.lit("for \"yes\" confirmations, require \"no\" to reject");
-const __sl436 = cptr.lit("quit");
-const __sl437 = cptr.lit("explore");
-const __sl438 = cptr.lit("yes vs y to quit or to enter explore mode");
-const __sl439 = cptr.lit("die");
-const __sl440 = cptr.lit("death");
-const __sl441 = cptr.lit("yes vs y to die (explore mode or debug mode)");
-const __sl442 = cptr.lit("yes vs y to save bones data when dying in debug mode");
-const __sl443 = cptr.lit("attack");
-const __sl444 = cptr.lit("hit");
-const __sl445 = cptr.lit("yes vs y to attack a peaceful monster");
-const __sl446 = cptr.lit("wand-break");
-const __sl447 = cptr.lit("break-wand");
-const __sl448 = cptr.lit("yes vs y to break a wand via (a)pply");
-const __sl449 = cptr.lit("eat");
-const __sl450 = cptr.lit("continue");
-const __sl451 = cptr.lit("yes vs y to continue eating after first bite when satiated");
-const __sl452 = cptr.lit("Were-change");
-const __sl453 = cptr.lit("yes vs y to change form when lycanthropy is controllable");
-const __sl454 = cptr.lit("pray");
-const __sl455 = cptr.lit("y required to pray (supersedes old \"prayconfirm\" option)");
-const __sl456 = cptr.lit("trap");
-const __sl457 = cptr.lit("move-trap");
-const __sl458 = cptr.lit("y required to enter known trap unless considered harmless");
-const __sl459 = cptr.lit("Autoall");
-const __sl460 = cptr.lit("autoselect-all");
-const __sl461 = cptr.lit("y required to pick filter choice 'A' for menustyle:Full");
-const __sl462 = cptr.lit("swim");
-const __sl463 = cptr.lit("'m' prefix necessary to deliberately walk into lava or water");
-const __sl464 = cptr.lit("Remove");
-const __sl465 = cptr.lit("Takeoff");
-const __sl466 = cptr.lit("always pick from inventory for Remove and Takeoff");
-const __sl467 = cptr.lit("none");
-const __sl468 = cptr.lit("all");
-const __sl469 = cptr.lit("traditional");
-const __sl470 = cptr.lit("[prompt for object class(es), then");
-const __sl471 = cptr.lit(" ask y/n for each item in those classes]");
-const __sl472 = cptr.lit("combination");
-const __sl473 = cptr.lit(" use menu for items in those classes]");
-const __sl474 = cptr.lit("full");
-const __sl475 = cptr.lit("[use menu to choose class(es), then");
-const __sl476 = cptr.lit(" use another menu for items in those]");
-const __sl477 = cptr.lit("partial");
-const __sl478 = cptr.lit("[skip class filtering; always");
-const __sl479 = cptr.lit(" use menu of all available items]");
-const __sl480 = cptr.lit("single");
-const __sl481 = cptr.lit("[show one old message at a time,");
-const __sl482 = cptr.lit(" most recent first]");
-const __sl483 = cptr.lit("[for consecutive ^P requests, use");
-const __sl484 = cptr.lit(" 'single' for first two, then 'full']");
-const __sl485 = cptr.lit("[show all available messages,");
-const __sl486 = cptr.lit(" oldest first and most recent last]");
-const __sl487 = cptr.lit("reversed");
-const __sl488 = cptr.lit("untrap");
-const __sl489 = cptr.lit("(might fail)");
-const __sl490 = cptr.lit("apply-key");
-const __sl491 = cptr.lit("");
-const __sl492 = cptr.lit("kick");
-const __sl493 = cptr.lit("(doors only)");
-const __sl494 = cptr.lit("force");
-const __sl495 = cptr.lit("(chests/boxes only)");
-const __sl496 = cptr.lit("unencumbered");
-const __sl497 = cptr.lit("burdened");
-const __sl498 = cptr.lit("stressed");
-const __sl499 = cptr.lit("strained");
-const __sl500 = cptr.lit("overtaxed");
-const __sl501 = cptr.lit("overloaded");
-const __sl502 = cptr.lit("teleport");
-const __sl503 = cptr.lit("run");
-const __sl504 = cptr.lit("walk");
-const __sl505 = cptr.lit("crawl");
-const __sl506 = cptr.lit("loot");
-const __sl507 = cptr.lit("off");
-const __sl508 = cptr.lit("no permanent inventory window");
-const __sl509 = cptr.lit("on");
-const __sl510 = cptr.lit("all inventory except for gold");
-const __sl511 = cptr.lit("gold");
-const __sl512 = cptr.lit("full inventory including gold");
-const __sl513 = cptr.lit("in-use");
-const __sl514 = cptr.lit("inuse-only");
-const __sl515 = cptr.lit("subset: items currently in use");
-const __sl516 = cptr.lit("don't show object symbols in menus");
-const __sl517 = cptr.lit("headers");
-const __sl518 = cptr.lit("show object symbols in menu header lines");
-const __sl519 = cptr.lit("entries");
-const __sl520 = cptr.lit("show object symbols in individual menu entries");
-const __sl521 = cptr.lit("both");
-const __sl522 = cptr.lit("show object symbols in headers and menu entries");
-const __sl523 = cptr.lit("conditional");
-const __sl524 = cptr.lit("show objsyms in entries if no headers are shown");
-const __sl525 = cptr.lit("one-or-other");
-const __sl526 = cptr.lit("show objsyms in header, in entries if no header");
-const __sl527 = cptr.lit("Go to next page");
-const __sl528 = cptr.lit("Go to previous page");
-const __sl529 = cptr.lit("Go to first page");
-const __sl530 = cptr.lit("Go to last page");
-const __sl531 = cptr.lit("Select all items in entire menu");
-const __sl532 = cptr.lit("Invert selection for all items");
-const __sl533 = cptr.lit("Unselect all items in entire menu");
-const __sl534 = cptr.lit("Select all items on current page");
-const __sl535 = cptr.lit("Invert current page's selections");
-const __sl536 = cptr.lit("Unselect all items on current page");
-const __sl537 = cptr.lit("Search and invert matching items");
-const __sl538 = cptr.lit("Pan current page to right (perm_invent only)");
-const __sl539 = cptr.lit("Pan current page to left (perm_invent only)");
-const __sl540 = cptr.lit("/dev/null");
-const __sl541 = cptr.lit("ask_do_tutorial");
-const __sl542 = cptr.lit("Put \"OPTIONS=!tutorial\" in %s to skip this query.");
-const __sl543 = cptr.lit("your configuration file");
-const __sl544 = cptr.lit("Yes, do a tutorial");
-const __sl545 = cptr.lit("No, just start play");
-const __sl546 = cptr.lit("(Please choose 'y' or 'n'.)");
-const __sl547 = cptr.lit("Do you want a tutorial?");
-const __sl548 = cptr.lit("Option too long, max length is %i characters");
-const __sl549 = cptr.lit("Empty statement");
-const __sl550 = cptr.lit("no");
-const __sl551 = cptr.lit("Ambiguous option %s, %d characters are needed to differentiate");
-const __sl552 = cptr.lit("S_");
-const __sl553 = cptr.lit("parseoptions");
-const __sl554 = cptr.lit("%s");
-const __sl555 = cptr.lit("bad option suffix variation '%s'");
-const __sl556 = cptr.lit("Unknown option '%s'");
-const __sl557 = cptr.lit("bad index roleoptvals[%d][%d]");
-const __sl558 = cptr.lit("Unknown %s '%s'");
-const __sl559 = cptr.lit("left");
-const __sl560 = cptr.lit("top");
-const __sl561 = cptr.lit("right");
-const __sl562 = cptr.lit("bottom");
-const __sl563 = cptr.lit("Unknown %s parameter '%s'");
-const __sl564 = cptr.lit(" -_");
-const __sl565 = cptr.lit("Invalid value for \"%s\": \"%s\"");
-const __sl566 = cptr.lit("Invalid value combination for \"%s\": 'none' with some");
-const __sl567 = cptr.lit("%s%s");
-const __sl568 = cptr.lit("boulder symbol cannot be a control character");
-const __sl569 = cptr.lit("Badoption - boulder symbol '%s' would conflict with a %s symbol");
-const __sl570 = cptr.lit("monster");
-const __sl571 = cptr.lit("warning");
-const __sl572 = cptr.lit("%c");
-const __sl573 = cptr.lit("Invalid value %d for crash_urlmax.  Minimum value is 75.");
-const __sl574 = cptr.lit("%d");
-const __sl575 = cptr.lit("Failure to load symbol set %s.");
-const __sl576 = cptr.lit("bad disclosure index %d %c");
-const __sl577 = cptr.lit("Unknown %s parameter '%c'");
-const __sl578 = cptr.lit("Doing that so many times isn't very fruitful.");
-const __sl579 = cptr.lit("slime mold");
-const __sl580 = cptr.lit("Fruit is now \"%s\".");
-const __sl581 = cptr.lit("Value is mandatory for hilite_status");
-const __sl582 = cptr.lit("(see \"status highlight rules\" below)");
-const __sl583 = cptr.lit("(none)");
-const __sl584 = cptr.lit("RogueIBM");
-const __sl585 = cptr.lit("tiles");
-const __sl586 = cptr.lit("ascii4x6");
-const __sl587 = cptr.lit("ascii6x8");
-const __sl588 = cptr.lit("ascii8x8");
-const __sl589 = cptr.lit("ascii16x8");
-const __sl590 = cptr.lit("ascii7x12");
-const __sl591 = cptr.lit("ascii8x12");
-const __sl592 = cptr.lit("ascii16x12");
-const __sl593 = cptr.lit("ascii12x16");
-const __sl594 = cptr.lit("ascii10x18");
-const __sl595 = cptr.lit("fit_to_screen");
-const __sl596 = cptr.lit("ascii_fit_to_screen");
-const __sl597 = cptr.lit("tiles_fit_to_screen");
-const __sl598 = cptr.lit(" ");
-const __sl599 = cptr.lit("-");
-const __sl600 = cptr.lit("Illegal %s parameter '%s'");
-const __sl601 = cptr.lit("%i");
-const __sl602 = cptr.lit("0=off");
-const __sl603 = cptr.lit("1=on");
-const __sl604 = cptr.lit(", O/S adjusted");
-const __sl605 = cptr.lit("2=on");
-const __sl606 = cptr.lit(", O/S unchanged");
-const __sl607 = cptr.lit("%u");
-const __sl608 = cptr.lit("2=on, MSDOS compatible");
-const __sl609 = cptr.lit("3=on, phone-style layout");
-const __sl610 = cptr.lit("4=on, phone layout, MSDOS compatible");
-const __sl611 = cptr.lit("-1=off, y & z swapped");
-const __sl612 = cptr.lit("deprecated %sprayconfirm option takes no parameters (found '%s')");
-const __sl613 = cptr.lit("!");
-const __sl614 = cptr.lit("%sprayconfirm option is deprecated; switching to %s:%cpray");
-const __sl615 = cptr.lit("%cpray");
-const __sl616 = cptr.lit("!%s does not accept a value");
-const __sl617 = cptr.lit("%s requires a value; use 'none' to cancel all");
-const __sl618 = cptr.lit("optfn_paranoid_confirmation");
-const __sl619 = cptr.lit(" %s");
-const __sl620 = cptr.lit("+grid");
-const __sl621 = cptr.lit("%s: unavailable perm_invent mode '%s', using '%s'");
-const __sl622 = cptr.lit(" currently");
-const __sl623 = cptr.lit(" inventory");
-const __sl624 = cptr.lit(" invent");
-const __sl625 = cptr.lit(" (Off)");
-const __sl626 = cptr.lit(" ('perm_invent' is Off)");
-const __sl627 = cptr.lit("0x%08x");
-const __sl628 = cptr.lit("Unrecognized pet type '%s'.");
-const __sl629 = cptr.lit("cat");
-const __sl630 = cptr.lit("dog");
-const __sl631 = cptr.lit("horse");
-const __sl632 = cptr.lit("random");
-const __sl633 = cptr.lit("New %s: [%s am] (%s)");
-const __sl634 = cptr.lit("Autopickup what?");
-const __sl635 = cptr.lit("dialog");
-const __sl636 = cptr.lit("prompt");
-const __sl637 = cptr.lit("prompts");
-const __sl638 = cptr.lit("normal");
-const __sl639 = cptr.lit("play");
-const __sl640 = cptr.lit("discovery");
-const __sl641 = cptr.lit("debug");
-const __sl642 = cptr.lit("wizard");
-const __sl643 = cptr.lit("Invalid value for \"%s\":%s");
-const __sl644 = cptr.lit("Unable to load symbol set \"%s\" from \"%s\"");
-const __sl645 = cptr.lit("symbols");
-const __sl646 = cptr.lit("default");
-const __sl647 = cptr.lit(", active");
-const __sl648 = cptr.lit("Value is mandatory for %s");
-const __sl649 = cptr.lit("Values for %s:top and %s:around must not be negative");
-const __sl650 = cptr.lit("%d top");
-const __sl651 = cptr.lit("%s%d around");
-const __sl652 = cptr.lit("/");
-const __sl653 = cptr.lit("%sown");
-const __sl654 = cptr.lit("01234567");
-const __sl655 = cptr.lit(": %s");
-const __sl656 = cptr.lit("'%s' %s \"%s: %s\".");
-const __sl657 = cptr.lit("not changed, still");
-const __sl658 = cptr.lit("changed to");
-const __sl659 = cptr.lit("0 (off: don't highlight status fields)");
-const __sl660 = cptr.lit("%ld (on: highlight status for %ld turns)");
-const __sl661 = cptr.lit("%ld");
-const __sl662 = cptr.lit("'%s:%s' is invalid; must be 2 or 3");
-const __sl663 = cptr.lit("2");
-const __sl664 = cptr.lit("3");
-const __sl665 = cptr.lit("unknown");
-const __sl666 = cptr.lit("%lu.%lu.%lu");
-const __sl667 = cptr.lit(", handler=%s");
-const __sl668 = cptr.lit("Invalid %s: %ld");
-const __sl669 = cptr.lit("'%s' requires a value; defaulting to %d");
-const __sl670 = cptr.lit("'%s' must be one of 1, 2, 4, or the sum of two or all three of those");
-const __sl671 = cptr.lit("'%s' %s %u.");
-const __sl672 = cptr.lit("%u: %s%s%s%s%s (%.99s)");
-const __sl673 = cptr.lit("+");
-const __sl674 = cptr.lit("branch");
-const __sl675 = cptr.lit("number");
-const __sl676 = cptr.lit("map");
-const __sl677 = cptr.lit("compass");
-const __sl678 = cptr.lit("full compass");
-const __sl679 = cptr.lit("screen");
-const __sl680 = cptr.lit("view");
-const __sl681 = cptr.lit("area");
-const __sl682 = cptr.lit("Invalid %s (should be within 0 to 4): %s");
-const __sl683 = cptr.lit("2=auto");
-const __sl684 = cptr.lit("3=on, except off for perm_invent");
-const __sl685 = cptr.lit("4=auto, except off for perm_invent");
-const __sl686 = cptr.lit("menu");
-const __sl687 = cptr.lit("message");
-const __sl688 = cptr.lit("status");
-const __sl689 = cptr.lit("text");
-const __sl690 = cptr.lit("mnu");
-const __sl691 = cptr.lit("msg");
-const __sl692 = cptr.lit("sts");
-const __sl693 = cptr.lit("txt");
-const __sl694 = cptr.lit("Could not set %s '%s'");
-const __sl695 = cptr.lit("%s%s %s/%s");
-const __sl696 = cptr.lit("Ambiguous condition option %s");
-const __sl697 = cptr.lit("Unknown condition option %s (%d)");
-const __sl698 = cptr.lit("Negated boolean '%s' should not have a parameter");
-const __sl699 = cptr.lit("true");
-const __sl700 = cptr.lit("yes");
-const __sl701 = cptr.lit("false");
-const __sl702 = cptr.lit("'%s' is not valid for a boolean");
-const __sl703 = cptr.lit("'%s' is not anatomically possible.");
-const __sl704 = cptr.lit("There is no underlying support for 'idlecheckpoint' compiled in.");
-const __sl705 = cptr.lit("'%s' is not supported.");
-const __sl706 = cptr.lit("'%s' option toggled %s.");
-const __sl707 = cptr.lit("%-12.12s%c%.60s");
-const __sl708 = cptr.lit("%4s%-12.12s%c%.60s");
-const __sl709 = cptr.lit("Select menustyle:");
-const __sl710 = cptr.lit("'menustyle' %s \"%s\".");
-const __sl711 = cptr.lit("is still");
-const __sl712 = cptr.lit("Select %s window placement relative to the map:");
-const __sl713 = cptr.lit("%-10.10s%c%.40s");
-const __sl714 = cptr.lit("Select '%.20s' actions:");
-const __sl715 = cptr.lit("'%s' %s '%s'.");
-const __sl716 = cptr.lit("%-12s[%c%c]");
-const __sl717 = cptr.lit("Change which disclosure options categories:");
-const __sl718 = cptr.lit("Disclosure options for %s:");
-const __sl719 = cptr.lit("Never disclose, without prompting");
-const __sl720 = cptr.lit("Always disclose, without prompting");
-const __sl721 = cptr.lit("Always disclose, pick sort order from menu");
-const __sl722 = cptr.lit("Prompt, with default answer of \"No\"");
-const __sl723 = cptr.lit("Prompt, with default answer of \"Yes\"");
-const __sl724 = cptr.lit("Prompt, with default answer of \"Ask\" to request sort menu");
-const __sl725 = cptr.lit("inventory");
-const __sl726 = cptr.lit("attributes");
-const __sl727 = cptr.lit("vanquished");
-const __sl728 = cptr.lit("genocides");
-const __sl729 = cptr.lit("conduct");
-const __sl730 = cptr.lit("overview");
-const __sl731 = cptr.lit("How to highlight menu headings:");
-const __sl732 = cptr.lit("handler_menu_objsyms");
-const __sl733 = cptr.lit("Set object symbols in menus to what?");
-const __sl734 = cptr.lit("Select message history display type:");
-const __sl735 = cptr.lit("'msg_window' %.20s \"%.20s\".");
-const __sl736 = cptr.lit("'%s' option is not supported for '%s'.");
-const __sl737 = cptr.lit("Select number_pad mode:");
-const __sl738 = cptr.lit(" 0 (off)");
-const __sl739 = cptr.lit(" 1 (on)");
-const __sl740 = cptr.lit(" 2 (on, MSDOS compatible)");
-const __sl741 = cptr.lit(" 3 (on, phone-style digit layout)");
-const __sl742 = cptr.lit(" 4 (on, phone-style layout, MSDOS compatible)");
-const __sl743 = cptr.lit("-1 (off, 'z' to move upper-left, 'y' to zap wands)");
-const __sl744 = cptr.lit("'m'");
-const __sl745 = cptr.lit("'%.9s'");
-const __sl746 = cptr.lit("reqmenu");
-const __sl747 = cptr.lit("'%s%.31s'");
-const __sl748 = cptr.lit("#");
-const __sl749 = cptr.lit("Actions requiring extra confirmation:");
-const __sl750 = cptr.lit("%*s");
-const __sl751 = cptr.lit("\t");
-const __sl752 = cptr.lit("%s%s%s");
-const __sl753 = cptr.lit("Choose permanent inventory mode:");
-const __sl754 = cptr.lit("'perminv_mode' %s '%s' (%s).");
-const __sl755 = cptr.lit("ubsntl");
-const __sl756 = cptr.lit("Select encumbrance level:");
-const __sl757 = cptr.lit("Select run/travel display mode:");
-const __sl758 = cptr.lit("Select pet highlight attribute");
-const __sl759 = cptr.lit("Select loot sorting type:");
-const __sl760 = cptr.lit("compass ('east' or '3s' or '2n,4w')");
-const __sl761 = cptr.lit("full compass ('east' or '3south' or '2north,4west')");
-const __sl762 = cptr.lit("map <x,y>");
-const __sl763 = cptr.lit("screen [row,column]");
-const __sl764 = cptr.lit("none (no coordinates displayed)");
-const __sl765 = cptr.lit("map: upper-left: <%d,%d>, lower-right: <%d,%d>%s");
-const __sl766 = cptr.lit("; column 0 unused, off left edge");
-const __sl767 = cptr.lit("tty");
-const __sl768 = cptr.lit("screen: row is offset to accommodate tty interface's use of top line");
-const __sl769 = cptr.lit("screen: upper-left: [%02d,%02d], lower-right: [%d,%d]%s");
-const __sl770 = cptr.lit("; column 80 is not used");
-const __sl771 = cptr.lit("Select coordinate display when auto-describing a map position:");
-const __sl772 = cptr.lit("no filtering");
-const __sl773 = cptr.lit("in view only");
-const __sl774 = cptr.lit("in same area");
-const __sl775 = cptr.lit("Select location filtering when going for next/previous map position:");
-const __sl776 = cptr.lit("autopickup exception");
-const __sl777 = cptr.lit("What new autopickup exception pattern?");
-const __sl778 = cptr.lit("\"");
-const __sl779 = cptr.lit("Always pickup '<'; never pickup '>'");
-const __sl780 = cptr.lit("\"%c%s\"");
-const __sl781 = cptr.lit("%s autopickup exceptions");
-const __sl782 = cptr.lit("List of");
-const __sl783 = cptr.lit("Remove which");
-const __sl784 = cptr.lit("menucolor");
-const __sl785 = cptr.lit("What new menucolor pattern?");
-const __sl786 = cptr.lit("MENUCOLORS regex");
-const __sl787 = cptr.lit("Error adding the menu color.");
-const __sl788 = cptr.lit("\"\"=%s%s%s");
-const __sl789 = cptr.lit("&");
-const __sl790 = cptr.lit("handler_menu_colors");
-const __sl791 = cptr.lit("...");
-const __sl792 = cptr.lit("%s menu colors");
-const __sl793 = cptr.lit("message type");
-const __sl794 = cptr.lit("What new message pattern?");
-const __sl795 = cptr.lit("MSGTYPE regex");
-const __sl796 = cptr.lit("Error adding the message type.");
-const __sl797 = cptr.lit("%-5s \"");
-const __sl798 = cptr.lit("handler_msgtype");
-const __sl799 = cptr.lit("...\"");
-const __sl800 = cptr.lit("%s message types");
-const __sl801 = cptr.lit("version number");
-const __sl802 = cptr.lit("game name");
-const __sl803 = cptr.lit("development branch");
-const __sl804 = cptr.lit("Select version information flags:");
-const __sl805 = cptr.lit("Select window borders mode:");
-const __sl806 = cptr.lit("Off, never show borders");
-const __sl807 = cptr.lit("On, always show borders");
-const __sl808 = cptr.lit("Auto, on if display is at least (24+2)x(80+2)");
-const __sl809 = cptr.lit("On, except forced off for perm_invent");
-const __sl810 = cptr.lit("Auto, except forced off for perm_invent");
-const __sl811 = cptr.lit("Missing parameter for '%s'");
-const __sl812 = cptr.lit("The %s option may not %sbe negated.");
-const __sl813 = cptr.lit("both have a value and ");
-const __sl814 = cptr.lit("determine_ambiguities");
-const __sl815 = cptr.lit(" (via alias: %s)");
-const __sl816 = cptr.lit("%s option specified multiple times: %s%s");
-const __sl817 = cptr.lit("compound");
-const __sl818 = cptr.lit("boolean");
-const __sl819 = cptr.lit("%s can be set only from NETHACKOPTIONS or %s.");
-const __sl820 = cptr.lit("<enter>");
-const __sl821 = cptr.lit("<space>");
-const __sl822 = cptr.lit("<esc>");
-const __sl823 = cptr.lit("sysconf");
-const __sl824 = cptr.lit("command line");
-const __sl825 = cptr.lit("TERM");
-const __sl826 = cptr.lit("AT");
-const __sl827 = cptr.lit("IBMGraphics");
-const __sl828 = cptr.lit("vt");
-const __sl829 = cptr.lit("DECGraphics");
-const __sl830 = cptr.lit("Status highlighting not supported for %s interface.");
-const __sl831 = cptr.lit("Not an object class '%c'");
-const __sl832 = cptr.lit("Object class '%c' not allowed");
-const __sl833 = cptr.lit("Duplicate object class '%c'");
-const __sl834 = cptr.lit("disable new feature alerts for future versions.");
-const __sl835 = cptr.lit("%s=%s Invalid reference to a future version ignored");
-const __sl836 = cptr.lit("Feature change alerts disabled for NetHack %s features and prior.");
-const __sl837 = cptr.lit("Error binding mouse button %i");
-const __sl838 = cptr.lit("Unknown key binding key '%s'");
-const __sl839 = cptr.lit("Bad menu key %s:%s");
-const __sl840 = cptr.lit("Unknown key binding command '%s'");
-const __sl841 = cptr.lit("mouse1");
-const __sl842 = cptr.lit("mouse2");
-const __sl843 = cptr.lit("show");
-const __sl844 = cptr.lit("Show message normally");
-const __sl845 = cptr.lit("hide");
-const __sl846 = cptr.lit("Hide message");
-const __sl847 = cptr.lit("noshow");
-const __sl848 = cptr.lit("stop");
-const __sl849 = cptr.lit("Prompt for more after the message");
-const __sl850 = cptr.lit("more");
-const __sl851 = cptr.lit("norep");
-const __sl852 = cptr.lit("Do not repeat the message");
-const __sl853 = cptr.lit("How to show the message");
-const __sl854 = cptr.lit("%s: %s");
-const __sl855 = cptr.lit("MSGTYPE regex error");
-const __sl856 = cptr.lit("%10s \"%255[^\"]\"");
-const __sl857 = cptr.lit("Unknown message type '%s'");
-const __sl858 = cptr.lit("Malformed MSGTYPE");
-const __sl859 = cptr.lit("Negated nothing for '%s'");
-const __sl860 = cptr.lit("Invalid mixed negation for '%s%s'");
-const __sl861 = cptr.lit("Multiple role values only allowed when list is negated");
-const __sl862 = cptr.lit("Invalid %s '%s'");
-const __sl863 = cptr.lit("Reserved menu command key '%s'");
-const __sl864 = cptr.lit("Menu command key '%s' is an object class");
-const __sl865 = cptr.lit("oc_to_str:  illegal object class %d");
-const __sl866 = cptr.lit("out of menu map space.");
-const __sl867 = cptr.lit("small ");
-const __sl868 = cptr.lit("large ");
-const __sl869 = cptr.lit("medium ");
-const __sl870 = cptr.lit("very large ");
-const __sl871 = cptr.lit("cursed ");
-const __sl872 = cptr.lit("uncursed ");
-const __sl873 = cptr.lit("blessed ");
-const __sl874 = cptr.lit("partly eaten ");
-const __sl875 = cptr.lit("tin of ");
-const __sl876 = cptr.lit("spinach");
-const __sl877 = cptr.lit("empty tin");
-const __sl878 = cptr.lit("glob");
-const __sl879 = cptr.lit(" corpse");
-const __sl880 = cptr.lit(" egg");
-const __sl881 = cptr.lit("candied ");
-const __sl882 = cptr.lit("options.c");
-const __sl883 = cptr.lit("fruitadd");
-const __sl884 = cptr.lit("longest_option_name");
-const __sl885 = cptr.lit("%%-%us [%%s]");
-const __sl886 = cptr.lit("Use command '#optionsfull' to get the complete options list.");
-const __sl887 = cptr.lit("hide help");
-const __sl888 = cptr.lit("show help");
-const __sl889 = cptr.lit(" %-30s ");
-const __sl890 = cptr.lit("X");
-const __sl891 = cptr.lit("ERROR");
-const __sl892 = cptr.lit("  (for autopickup)");
-const __sl893 = cptr.lit("    %s");
-const __sl894 = cptr.lit("Options");
-const __sl895 = cptr.lit("Set %s to what?");
-const __sl896 = cptr.lit("%s:");
-const __sl897 = cptr.lit("disabled");
-const __sl898 = cptr.lit("excluded from build");
-const __sl899 = cptr.lit("enabled");
-const __sl900 = cptr.lit("included");
-const __sl901 = cptr.lit("%4s%.75s");
-const __sl902 = cptr.lit("view help for options menu");
-const __sl903 = cptr.lit("%%s%%-%us [%%s]");
-const __sl904 = cptr.lit("Booleans (selecting will toggle value):");
-const __sl905 = cptr.lit("    ");
-const __sl906 = cptr.lit("Compounds (selecting will prompt for new value):");
-const __sl907 = cptr.lit("Other settings:");
-const __sl908 = cptr.lit("Set what options?");
-const __sl909 = cptr.lit("optmenu");
-const __sl910 = cptr.lit("doset");
-const __sl911 = cptr.lit("IndexOk(opt_indx, allopt)");
-const __sl912 = cptr.lit("For a brief explanation of how this works, type '?' to select");
-const __sl913 = cptr.lit("the next menu choice, then press <enter> or <return>.");
-const __sl914 = cptr.lit("[To suppress this menu help, toggle off the 'cmdassist' option.]");
-const __sl915 = cptr.lit("menu_shift");
-const __sl916 = cptr.lit("Menu control keys:");
-const __sl917 = cptr.lit("%-7s %s");
-const __sl918 = cptr.lit("%s%-7s %s");
-const __sl919 = cptr.lit("Whole");
-const __sl920 = cptr.lit("Current");
-const __sl921 = cptr.lit(" Menu");
-const __sl922 = cptr.lit(" Page");
-const __sl923 = cptr.lit("Select");
-const __sl924 = cptr.lit("Invert");
-const __sl925 = cptr.lit("Deselect");
-const __sl926 = cptr.lit("Go to");
-const __sl927 = cptr.lit("Next page");
-const __sl928 = cptr.lit("Previous page");
-const __sl929 = cptr.lit("First page");
-const __sl930 = cptr.lit("Last page");
-const __sl931 = cptr.lit("Pan view");
-const __sl932 = cptr.lit("Right (perm_invent only)");
-const __sl933 = cptr.lit("Left");
-const __sl934 = cptr.lit("Search");
-const __sl935 = cptr.lit("Exter a target string and invert all matching entries");
-const __sl936 = cptr.lit("%9s  %-8s %s");
-const __sl937 = cptr.lit("Other ");
-const __sl938 = cptr.lit("Return");
-const __sl939 = cptr.lit("Accept current choice(s) and dismiss menu");
-const __sl940 = cptr.lit("Enter");
-const __sl941 = cptr.lit("Same as Return");
-const __sl942 = cptr.lit("Space");
-const __sl943 = cptr.lit("If not on last page, advance one page;");
-const __sl944 = cptr.lit("     ");
-const __sl945 = cptr.lit("when on last page, treat like Return");
-const __sl946 = cptr.lit("Escape");
-const __sl947 = cptr.lit("Cancel menu without making any choice(s)");
-const __sl948 = cptr.lit("Do what?");
-const __sl949 = cptr.lit("add new %s");
-const __sl950 = cptr.lit("list %s");
-const __sl951 = cptr.lit("remove existing %s");
-const __sl952 = cptr.lit("exit this menu");
-const __sl953 = cptr.lit("ON, for %s objects%s");
-const __sl954 = cptr.lit(", with one exception");
-const __sl955 = cptr.lit(", with some exceptions");
-const __sl956 = cptr.lit("OFF");
-const __sl957 = cptr.lit("Autopickup: %s.");
-const __sl958 = cptr.lit("\"<%253[^\"]\" %c");
-const __sl959 = cptr.lit("\">%253[^\"]\" %c");
-const __sl960 = cptr.lit("\"%253[^\"]\" %c");
-const __sl961 = cptr.lit("'\"\\");
-const __sl962 = cptr.lit("                 NetHack Options Help:");
-const __sl963 = cptr.lit("or use `NETHACKOPTIONS=\"<options>\"' in your environment");
-const __sl964 = cptr.lit("(<options> is a list of options separated by commas)");
-const __sl965 = cptr.lit("or press \"O\" while playing and use the menu.");
-const __sl966 = cptr.lit("Boolean options (which can be negated by prefixing them with '!' or \"no\"):");
-const __sl967 = cptr.lit("Some of the options can only be set before the game is started;");
-const __sl968 = cptr.lit("those items will not be selectable in the 'O' command's menu.");
-const __sl969 = cptr.lit("Some options are stored in a game's save file, and will keep saved");
-const __sl970 = cptr.lit("values when restoring that game even if you have updated your config-");
-const __sl971 = cptr.lit("uration file to change them.  Such changes will matter for new games.");
-const __sl972 = cptr.lit("The \"other settings\" can be set with 'O', but when set within the");
-const __sl973 = cptr.lit("configuration file they use their own directives rather than OPTIONS.");
-const __sl974 = cptr.lit("See NetHack's \"Guidebook\" for details.");
-const __sl975 = cptr.lit("option_help");
-const __sl976 = cptr.lit("Set options as OPTIONS=<options> in %s");
-const __sl977 = cptr.lit("Compound options:");
-const __sl978 = cptr.lit("`%s'");
-const __sl979 = cptr.lit("%-20s - %s%c");
-const __sl980 = cptr.lit("OPTIONS=");
-const __sl981 = cptr.lit("all_options_conds");
-const __sl982 = cptr.lit(",\\\n");
-const __sl983 = cptr.lit("%8s");
-const __sl984 = cptr.lit(",");
-const __sl985 = cptr.lit("\n");
-const __sl986 = cptr.lit("MENUCOLOR=\"%s\"=%s%s%s\n");
-const __sl987 = cptr.lit("MSGTYPE=%s \"%s\"\n");
-const __sl988 = cptr.lit("autopickup_exception=\"%c%s\"\n");
-const __sl989 = cptr.lit("# NetHack config, saved %s\n#\n");
-const __sl990 = cptr.lit("OPTIONS=%s%s\n");
-const __sl991 = cptr.lit("all_options_strbuf");
-const __sl992 = cptr.lit("OPTIONS=%s:%s");
-const __sl993 = cptr.lit("WIZKIT=%s\n");
-const __sl994 = cptr.lit("next_opt");
-const __sl995 = cptr.lit(", ");
-const __sl996 = cptr.lit("status hilite rules");
-const __sl997 = cptr.lit("set_option_mod_status: status out of range %d.");
-const __sl998 = cptr.lit("set_wc_option_mod_status: status out of range %d.");
-const __sl999 = cptr.lit("set_wc2_option_mod_status: status out of range %d.");
-const __sl1000 = cptr.lit("windowcolors for %s windows specified multiple times");
-const __sl1001 = cptr.lit("windowcolors for unrecognized window type: %s");
+const __s_windowtype = cptr.lit("windowtype");
+const __s_windowing_system_to_use_should_be = cptr.lit("windowing system to use (should be specified first)");
+const __s_playmode = cptr.lit("playmode");
+const __s_normal_play_non_scoring_explore_mode_or = cptr.lit("normal play, non-scoring explore mode, or debug mode");
+const __s_name = cptr.lit("name");
+const __s_your_character_s_name_e_g_name_merlin_w = cptr.lit("your character's name (e.g., name:Merlin-W)");
+const __s_role = cptr.lit("role");
+const __s_character = cptr.lit("character");
+const __s_your_starting_role_e_g_barbarian = cptr.lit("your starting role (e.g., Barbarian, Valkyrie)");
+const __s_race = cptr.lit("race");
+const __s_your_starting_race_e_g_human_elf = cptr.lit("your starting race (e.g., Human, Elf)");
+const __s_gender = cptr.lit("gender");
+const __s_your_starting_gender_male_or_female = cptr.lit("your starting gender (male or female)");
+const __s_alignment = cptr.lit("alignment");
+const __s_align = cptr.lit("align");
+const __s_your_starting_alignment_lawful_neutral = cptr.lit("your starting alignment (lawful, neutral, or chaotic)");
+const __s_accessiblemsg = cptr.lit("accessiblemsg");
+const __s_add_location_information_to_messages = cptr.lit("add location information to messages");
+const __s_acoustics = cptr.lit("acoustics");
+const __s_can_your_character_hear_anything = cptr.lit("can your character hear anything");
+const __s_align_message = cptr.lit("align_message");
+const __s_message_window_alignment = cptr.lit("message window alignment");
+const __s_align_status = cptr.lit("align_status");
+const __s_status_window_alignment = cptr.lit("status window alignment");
+const __s_altkeyhandling = cptr.lit("altkeyhandling");
+const __s_altkeyhandler = cptr.lit("altkeyhandler");
+const __s_not_applicable = cptr.lit("(not applicable)");
+const __s_altmeta = cptr.lit("altmeta");
+const __s_treat_esc_c_as_m_c_meta_c_8th_bit_set = cptr.lit("treat \"ESC c\" as M-c (Meta+c, 8th bit set)");
+const __s_armorstatus = cptr.lit("armorstatus");
+const __s_summarize_currently_worn_armor_in_a = cptr.lit("summarize currently worn armor in a status field");
+const __s_ascii_map = cptr.lit("ascii_map");
+const __s_show_map_as_text = cptr.lit("show map as text");
+const __s_autocompletions = cptr.lit("autocompletions");
+const __s_edit_autocompletions = cptr.lit("edit autocompletions");
+const __s_autodescribe = cptr.lit("autodescribe");
+const __s_describe_terrain_under_cursor = cptr.lit("describe terrain under cursor");
+const __s_autodig = cptr.lit("autodig");
+const __s_dig_if_moving_and_wielding_a_digging = cptr.lit("dig if moving and wielding a digging tool");
+const __s_autoopen = cptr.lit("autoopen");
+const __s_walking_into_a_door_attempts_to_open_it = cptr.lit("walking into a door attempts to open it");
+const __s_autopickup = cptr.lit("autopickup");
+const __s_automatically_pick_up_objects = cptr.lit("automatically pick up objects");
+const __s_autopickup_exceptions = cptr.lit("autopickup exceptions");
+const __s_edit_autopickup_exceptions = cptr.lit("edit autopickup exceptions");
+const __s_autoquiver = cptr.lit("autoquiver");
+const __s_fill_empty_quiver_automatically_when = cptr.lit("fill empty quiver automatically when firing");
+const __s_autounlock = cptr.lit("autounlock");
+const __s_action_to_take_when_encountering_locked = cptr.lit("action to take when encountering locked door or chest");
+const __s_bgcolors = cptr.lit("bgcolors");
+const __s_use_background_color_for_some_map = cptr.lit("use background color for some map hilighting");
+const __s_bind_keys = cptr.lit("bind keys");
+const __s_edit_key_binds = cptr.lit("edit key binds");
+const __s_bios = cptr.lit("BIOS");
+const __s_blind = cptr.lit("blind");
+const __s_permablind = cptr.lit("permablind");
+const __s_your_character_is_permanently_blind = cptr.lit("your character is permanently blind");
+const __s_bones = cptr.lit("bones");
+const __s_allow_loading_bones_files = cptr.lit("allow loading bones files");
+const __s_boulder = cptr.lit("boulder");
+const __s_deprecated_use_s_boulder_in_sym_file = cptr.lit("deprecated (use S_boulder in sym file instead)");
+const __s_catname = cptr.lit("catname");
+const __s_name_of_your_starting_pet_if_it_is_a = cptr.lit("name of your starting pet if it is a kitten");
+const __s_checkpoint = cptr.lit("checkpoint");
+const __s_save_game_state_after_each_level_change = cptr.lit("save game state after each level change");
+const __s_cmdassist = cptr.lit("cmdassist");
+const __s_give_help_for_errors_on_direction_input = cptr.lit("give help for errors on direction input");
+const __s_color = cptr.lit("color");
+const __s_colour = cptr.lit("colour");
+const __s_use_color_in_map = cptr.lit("use color in map");
+const __s_confirm = cptr.lit("confirm");
+const __s_ask_before_hitting_tame_or_peaceful = cptr.lit("ask before hitting tame or peaceful monsters");
+const __s_crash_email = cptr.lit("crash_email");
+const __s_email_address_for_reporting = cptr.lit("email address for reporting");
+const __s_crash_name = cptr.lit("crash_name");
+const __s_your_name_for_reporting = cptr.lit("your name for reporting");
+const __s_crash_urlmax = cptr.lit("crash_urlmax");
+const __s_length_of_longest_url_we_can_generate = cptr.lit("length of longest url we can generate");
+const __s_customcolors = cptr.lit("customcolors");
+const __s_customcolours = cptr.lit("customcolours");
+const __s_use_custom_colors_in_map = cptr.lit("use custom colors in map");
+const __s_customsymbols = cptr.lit("customsymbols");
+const __s_use_custom_utf8_symbols_in_map = cptr.lit("use custom utf8 symbols in map");
+const __s_dark_room = cptr.lit("dark_room");
+const __s_show_floor_outside_line_of_sight = cptr.lit("show floor outside line of sight differently");
+const __s_deaf = cptr.lit("deaf");
+const __s_permadeaf = cptr.lit("permadeaf");
+const __s_your_character_is_permanently_deaf = cptr.lit("your character is permanently deaf");
+const __s_decgraphics = cptr.lit("DECgraphics");
+const __s_load_decgraphics_display_symbols_into = cptr.lit("load DECGraphics display symbols into symset");
+const __s_debug_hunger = cptr.lit("debug_hunger");
+const __s_no_hunger = cptr.lit("no hunger");
+const __s_debug_mongen = cptr.lit("debug_mongen");
+const __s_no_random_monster_generation = cptr.lit("no random monster generation");
+const __s_debug_overwrite_stairs = cptr.lit("debug_overwrite_stairs");
+const __s_level_generation_can_overwrite_stairs = cptr.lit("level generation can overwrite stairs");
+const __s_disclose = cptr.lit("disclose");
+const __s_the_kinds_of_information_to_disclose_at = cptr.lit("the kinds of information to disclose at end of game");
+const __s_dogname = cptr.lit("dogname");
+const __s_name_of_your_starting_pet_if_it_is_a__2 = cptr.lit("name of your starting pet if it is a little dog");
+const __s_dropped_nopick = cptr.lit("dropped_nopick");
+const __s_don_t_autopickup_dropped_items = cptr.lit("don't autopickup dropped items");
+const __s_dungeon = cptr.lit("dungeon");
+const __s_list_of_symbols_to_use_in_drawing_the = cptr.lit("list of symbols to use in drawing the dungeon map");
+const __s_effects = cptr.lit("effects");
+const __s_list_of_symbols_to_use_in_drawing = cptr.lit("list of symbols to use in drawing special effects");
+const __s_eight_bit_tty = cptr.lit("eight_bit_tty");
+const __s_send_8_bit_characters_directly_to = cptr.lit("send 8-bit characters directly to terminal");
+const __s_extmenu = cptr.lit("extmenu");
+const __s_use_menu_for_getting_extended_commands = cptr.lit("use menu for getting extended commands");
+const __s_female = cptr.lit("female");
+const __s_male = cptr.lit("male");
+const __s_deprecated_use_gender_female = cptr.lit("deprecated; use gender:female");
+const __s_fireassist = cptr.lit("fireassist");
+const __s_fire_command_tries_to_be_helpful = cptr.lit("fire-command tries to be helpful");
+const __s_fixinv = cptr.lit("fixinv");
+const __s_inventory_items_keep_their_letters = cptr.lit("inventory items keep their letters");
+const __s_font_map = cptr.lit("font_map");
+const __s_font_to_use_in_the_map_window = cptr.lit("font to use in the map window");
+const __s_font_menu = cptr.lit("font_menu");
+const __s_font_to_use_in_menus = cptr.lit("font to use in menus");
+const __s_font_message = cptr.lit("font_message");
+const __s_font_to_use_in_the_message_window = cptr.lit("font to use in the message window");
+const __s_font_size_map = cptr.lit("font_size_map");
+const __s_size_of_the_map_font = cptr.lit("size of the map font");
+const __s_font_size_menu = cptr.lit("font_size_menu");
+const __s_size_of_the_menu_font = cptr.lit("size of the menu font");
+const __s_font_size_message = cptr.lit("font_size_message");
+const __s_size_of_the_message_font = cptr.lit("size of the message font");
+const __s_font_size_status = cptr.lit("font_size_status");
+const __s_size_of_the_status_font = cptr.lit("size of the status font");
+const __s_font_size_text = cptr.lit("font_size_text");
+const __s_size_of_the_text_font = cptr.lit("size of the text font");
+const __s_font_status = cptr.lit("font_status");
+const __s_font_to_use_in_status_window = cptr.lit("font to use in status window");
+const __s_font_text = cptr.lit("font_text");
+const __s_font_to_use_in_text_windows = cptr.lit("font to use in text windows");
+const __s_force_invmenu = cptr.lit("force_invmenu");
+const __s_commands_asking_for_inventory_item_show = cptr.lit("commands asking for inventory item show a menu");
+const __s_fruit = cptr.lit("fruit");
+const __s_name_of_a_fruit_you_enjoy_eating = cptr.lit("name of a fruit you enjoy eating");
+const __s_fullscreen = cptr.lit("fullscreen");
+const __s_toggle_fullscreen = cptr.lit("toggle fullscreen");
+const __s_glyph = cptr.lit("glyph");
+const __s_set_representation_of_a_glyph_to_a = cptr.lit("set representation of a glyph to a unicode value and color");
+const __s_goldx = cptr.lit("goldX");
+const __s_classify_gold_as_unknown_or_uncursed = cptr.lit("classify gold as unknown or uncursed");
+const __s_guicolor = cptr.lit("guicolor");
+const __s_use_color_for_ui = cptr.lit("use color for UI");
+const __s_help = cptr.lit("help");
+const __s_show_all_available_info_when_using = cptr.lit("show all available info when using whatis-command");
+const __s_herecmd_menu = cptr.lit("herecmd_menu");
+const __s_show_commands_available_in_this_location = cptr.lit("show commands available in this location");
+const __s_hilite_pet = cptr.lit("hilite_pet");
+const __s_use_highlight_for_pets = cptr.lit("use highlight for pets");
+const __s_hilite_pile = cptr.lit("hilite_pile");
+const __s_highlight_piles_of_items = cptr.lit("highlight piles of items");
+const __s_hilite_status = cptr.lit("hilite_status");
+const __s_a_status_highlighting_rule_can_occur = cptr.lit("a status highlighting rule (can occur multiple times)");
+const __s_hitpointbar = cptr.lit("hitpointbar");
+const __s_show_colored_bar_for_hit_points = cptr.lit("show colored bar for hit points");
+const __s_horsename = cptr.lit("horsename");
+const __s_name_of_your_starting_pet_if_it_is_a__3 = cptr.lit("name of your starting pet if it is a pony");
+const __s_ibmgraphics = cptr.lit("IBMgraphics");
+const __s_load_ibmgraphics_display_symbols_into = cptr.lit("load IBMGraphics display symbols into symset");
+const __s_idlecheckpoint = cptr.lit("idlecheckpoint");
+const __s_update_checkpoint_file_if_input_is_idle = cptr.lit("update checkpoint file if input is idle for 10 seconds");
+const __s_ignintr = cptr.lit("ignintr");
+const __s_ignore_interrupt_signals = cptr.lit("ignore interrupt signals");
+const __s_implicit_uncursed = cptr.lit("implicit_uncursed");
+const __s_omit_uncursed_from_inventory = cptr.lit("omit \"uncursed\" from inventory");
+const __s_legacy = cptr.lit("legacy");
+const __s_show_introductory_message = cptr.lit("show introductory message");
+const __s_lit_corridor = cptr.lit("lit_corridor");
+const __s_show_dark_corridors_as_lit_if_in_sight = cptr.lit("show dark corridors as lit if in sight");
+const __s_lootabc = cptr.lit("lootabc");
+const __s_use_a_b_c_rather_than_o_i_c_when_looting = cptr.lit("use a/b/c rather than o/i/c when looting");
+const __s_mail = cptr.lit("mail");
+const __s_enable_the_mail_daemon = cptr.lit("enable the mail daemon");
+const __s_map_mode = cptr.lit("map_mode");
+const __s_map_display_mode_under_windows = cptr.lit("map display mode under Windows");
+const __s_mention_decor = cptr.lit("mention_decor");
+const __s_give_feedback_when_walking_over = cptr.lit("give feedback when walking over interesting features");
+const __s_mention_map = cptr.lit("mention_map");
+const __s_give_feedback_when_interesting_map = cptr.lit("give feedback when interesting map locations change");
+const __s_mention_walls = cptr.lit("mention_walls");
+const __s_give_feedback_when_walking_into_walls = cptr.lit("give feedback when walking into walls");
+const __s_menu_deselect_all = cptr.lit("menu_deselect_all");
+const __s_deselect_all_items_in_a_menu = cptr.lit("deselect all items in a menu");
+const __s_menu_deselect_page = cptr.lit("menu_deselect_page");
+const __s_deselect_all_items_on_this_page_of_a = cptr.lit("deselect all items on this page of a menu");
+const __s_menu_first_page = cptr.lit("menu_first_page");
+const __s_jump_to_the_first_page_in_a_menu = cptr.lit("jump to the first page in a menu");
+const __s_menu_headings = cptr.lit("menu_headings");
+const __s_display_style_for_menu_headings = cptr.lit("display style for menu headings");
+const __s_menu_invert_all = cptr.lit("menu_invert_all");
+const __s_invert_all_items_in_a_menu = cptr.lit("invert all items in a menu");
+const __s_menu_invert_page = cptr.lit("menu_invert_page");
+const __s_invert_all_items_on_this_page_of_a_menu = cptr.lit("invert all items on this page of a menu");
+const __s_menu_last_page = cptr.lit("menu_last_page");
+const __s_jump_to_the_last_page_in_a_menu = cptr.lit("jump to the last page in a menu");
+const __s_menu_next_page = cptr.lit("menu_next_page");
+const __s_go_to_the_next_menu_page = cptr.lit("go to the next menu page");
+const __s_menu_objsyms = cptr.lit("menu_objsyms");
+const __s_use_menu_glyphs = cptr.lit("use_menu_glyphs");
+const __s_show_object_symbols_in_menus = cptr.lit("show object symbols in menus");
+const __s_menu_overlay = cptr.lit("menu_overlay");
+const __s_menus_overlay_and_align_to_right = cptr.lit("menus overlay and align to right");
+const __s_menu_previous_page = cptr.lit("menu_previous_page");
+const __s_go_to_the_previous_menu_page = cptr.lit("go to the previous menu page");
+const __s_menu_search = cptr.lit("menu_search");
+const __s_search_for_a_menu_item = cptr.lit("search for a menu item");
+const __s_menu_select_all = cptr.lit("menu_select_all");
+const __s_select_all_items_in_a_menu = cptr.lit("select all items in a menu");
+const __s_menu_select_page = cptr.lit("menu_select_page");
+const __s_select_all_items_on_this_page_of_a_menu = cptr.lit("select all items on this page of a menu");
+const __s_menu_shift_left = cptr.lit("menu_shift_left");
+const __s_pan_current_menu_page_left = cptr.lit("pan current menu page left");
+const __s_menu_shift_right = cptr.lit("menu_shift_right");
+const __s_pan_current_menu_page_right = cptr.lit("pan current menu page right");
+const __s_menu_tab_sep = cptr.lit("menu_tab_sep");
+const __s_menu_formatting = cptr.lit("menu formatting");
+const __s_menucolors = cptr.lit("menucolors");
+const __s_use_colors_in_menus = cptr.lit("use colors in menus");
+const __s_menu_colors = cptr.lit("menu colors");
+const __s_change_colors_used_in_menus = cptr.lit("change colors used in menus");
+const __s_menuinvertmode = cptr.lit("menuinvertmode");
+const __s_experimental_behavior_of_menu_inverts = cptr.lit("experimental behavior of menu inverts");
+const __s_menustyle = cptr.lit("menustyle");
+const __s_user_interface_for_object_selection = cptr.lit("user interface for object selection");
+const __s_message_types = cptr.lit("message types");
+const __s_edit_message_types = cptr.lit("edit message types");
+const __s_mon_movement = cptr.lit("mon_movement");
+const __s_message_when_hero_sees_monster_movement = cptr.lit("message when hero sees monster movement");
+const __s_monpolycontrol = cptr.lit("monpolycontrol");
+const __s_control_monster_polymorphs = cptr.lit("control monster polymorphs");
+const __s_montelecontrol = cptr.lit("montelecontrol");
+const __s_control_monster_teleport_destinations = cptr.lit("control monster teleport destinations");
+const __s_monsters = cptr.lit("monsters");
+const __s_list_of_symbols_to_use_for_monsters = cptr.lit("list of symbols to use for monsters");
+const __s_mouse_support = cptr.lit("mouse_support");
+const __s_game_receives_click_info_from_mouse = cptr.lit("game receives click info from mouse");
+const __s_msg_window = cptr.lit("msg_window");
+const __s_control_of_view_previous_message_s_p = cptr.lit("control of \"view previous message(s)\" (^P) behavior");
+const __s_msghistory = cptr.lit("msghistory");
+const __s_number_of_top_line_messages_to_save = cptr.lit("number of top line messages to save");
+const __s_news = cptr.lit("news");
+const __s_show_any_news_at_game_start = cptr.lit("show any news at game start");
+const __s_nudist = cptr.lit("nudist");
+const __s_start_your_character_without_armor = cptr.lit("start your character without armor");
+const __s_null = cptr.lit("null");
+const __s_allow_nulls_to_be_sent_to_terminal = cptr.lit("allow nulls to be sent to terminal");
+const __s_number_pad = cptr.lit("number_pad");
+const __s_use_the_number_pad_for_movement = cptr.lit("use the number pad for movement");
+const __s_objects = cptr.lit("objects");
+const __s_list_of_symbols_to_use_for_objects = cptr.lit("list of symbols to use for objects");
+const __s_packorder = cptr.lit("packorder");
+const __s_the_inventory_order_of_the_items_in = cptr.lit("the inventory order of the items in your pack");
+const __s_paranoid_confirmation = cptr.lit("paranoid_confirmation");
+const __s_prayconfirm = cptr.lit("prayconfirm");
+const __s_extra_prompting_in_certain_situations = cptr.lit("extra prompting in certain situations");
+const __s_pauper = cptr.lit("pauper");
+const __s_start_your_character_without_any_items = cptr.lit("start your character without any items");
+const __s_perm_invent = cptr.lit("perm_invent");
+const __s_show_persistent_inventory_window = cptr.lit("show persistent inventory window");
+const __s_perminv_mode = cptr.lit("perminv_mode");
+const __s_what_to_show_in_persistent_inventory = cptr.lit("what to show in persistent inventory window");
+const __s_petattr = cptr.lit("petattr");
+const __s_attributes_for_highlighting_pets = cptr.lit("attributes for highlighting pets");
+const __s_pettype = cptr.lit("pettype");
+const __s_pet = cptr.lit("pet");
+const __s_your_preferred_initial_pet_type = cptr.lit("your preferred initial pet type");
+const __s_pickup_burden = cptr.lit("pickup_burden");
+const __s_maximum_burden_picked_up_before_prompt = cptr.lit("maximum burden picked up before prompt");
+const __s_pickup_stolen = cptr.lit("pickup_stolen");
+const __s_autopickup_stolen_items = cptr.lit("autopickup stolen items");
+const __s_pickup_thrown = cptr.lit("pickup_thrown");
+const __s_autopickup_thrown_items = cptr.lit("autopickup thrown items");
+const __s_pickup_types = cptr.lit("pickup_types");
+const __s_types_of_objects_to_pick_up = cptr.lit("types of objects to pick up automatically");
+const __s_pile_limit = cptr.lit("pile_limit");
+const __s_threshold_for_there_are_many_objects = cptr.lit("threshold for \"there are many objects here\"");
+const __s_player_selection = cptr.lit("player_selection");
+const __s_choose_character_via_dialog_or_prompts = cptr.lit("choose character via dialog or prompts");
+const __s_popup_dialog = cptr.lit("popup_dialog");
+const __s_preload_tiles = cptr.lit("preload_tiles");
+const __s_price_quotes = cptr.lit("price_quotes");
+const __s_display_prices_you_have_seen_for = cptr.lit("display prices you have seen for unidentified objects");
+const __s_pushweapon = cptr.lit("pushweapon");
+const __s_previous_weapon_goes_to_secondary_slot = cptr.lit("previous weapon goes to secondary slot");
+const __s_query_menu = cptr.lit("query_menu");
+const __s_use_a_menu_for_yes_no_queries = cptr.lit("use a menu for yes/no queries");
+const __s_quick_farsight = cptr.lit("quick_farsight");
+const __s_skip_map_browse_when_forced_to_looked = cptr.lit("skip map browse when forced to looked at map");
+const __s_rawio = cptr.lit("rawio");
+const __s_reroll = cptr.lit("reroll");
+const __s_allow_rerolling_of_starting_inventory = cptr.lit("allow rerolling of starting inventory and items");
+const __s_rest_on_space = cptr.lit("rest_on_space");
+const __s_space_bar_is_bound_to_the_rest_command = cptr.lit("space bar is bound to the rest-command");
+const __s_roguesymset = cptr.lit("roguesymset");
+const __s_load_a_set_of_rogue_display_symbols = cptr.lit("load a set of rogue display symbols from symbols file");
+const __s_runmode = cptr.lit("runmode");
+const __s_display_frequency_when_running_or = cptr.lit("display frequency when `running' or `travelling'");
+const __s_safe_pet = cptr.lit("safe_pet");
+const __s_prevent_you_from_hitting_pets = cptr.lit("prevent you from hitting pets");
+const __s_safe_wait = cptr.lit("safe_wait");
+const __s_prevent_waiting_next_to_hostiles = cptr.lit("prevent waiting next to hostiles");
+const __s_sanity_check = cptr.lit("sanity_check");
+const __s_perform_data_sanity_checks = cptr.lit("perform data sanity checks");
+const __s_scores = cptr.lit("scores");
+const __s_the_parts_of_the_score_list_you_wish_to = cptr.lit("the parts of the score list you wish to see");
+const __s_scroll_amount = cptr.lit("scroll_amount");
+const __s_amount_to_scroll_map_when_scroll_margin = cptr.lit("amount to scroll map when scroll_margin is reached");
+const __s_scroll_margin = cptr.lit("scroll_margin");
+const __s_scroll_map_when_this_far_from_the_edge = cptr.lit("scroll map when this far from the edge");
+const __s_selectsaved = cptr.lit("selectsaved");
+const __s_showdamage = cptr.lit("showdamage");
+const __s_show_damage_hero_takes_in_message_line = cptr.lit("show damage hero takes in message line");
+const __s_showexp = cptr.lit("showexp");
+const __s_show_experience_points_in_status_line = cptr.lit("show experience points in status line");
+const __s_showrace = cptr.lit("showrace");
+const __s_show_your_character_by_race_rather_than = cptr.lit("show your character by race rather than role");
+const __s_showscore = cptr.lit("showscore");
+const __s_showvers = cptr.lit("showvers");
+const __s_show_version_info_on_status_line = cptr.lit("show version info on status line");
+const __s_silent = cptr.lit("silent");
+const __s_don_t_use_terminal_bell = cptr.lit("don't use terminal bell");
+const __s_softkeyboard = cptr.lit("softkeyboard");
+const __s_sortdiscoveries = cptr.lit("sortdiscoveries");
+const __s_preferred_order_when_displaying = cptr.lit("preferred order when displaying discovered objects");
+const __s_sortloot = cptr.lit("sortloot");
+const __s_sort_object_selection_lists_by = cptr.lit("sort object selection lists by description");
+const __s_sortpack = cptr.lit("sortpack");
+const __s_group_inventory_items_by_type = cptr.lit("group inventory items by type");
+const __s_sortvanquished = cptr.lit("sortvanquished");
+const __s_preferred_order_when_displaying__2 = cptr.lit("preferred order when displaying vanquished monsters");
+const __s_soundlib = cptr.lit("soundlib");
+const __s_soundlib_interface_to_use_if_any = cptr.lit("soundlib interface to use (if any)");
+const __s_sounds = cptr.lit("sounds");
+const __s_use_sounds = cptr.lit("use sounds");
+const __s_sparkle = cptr.lit("sparkle");
+const __s_display_sparkly_effect_when_resisting = cptr.lit("display sparkly effect when resisting magic");
+const __s_spot_monsters = cptr.lit("spot_monsters");
+const __s_message_when_hero_spots_a_monster = cptr.lit("message when hero spots a monster");
+const __s_splash_screen = cptr.lit("splash_screen");
+const __s_standout = cptr.lit("standout");
+const __s_use_standout_for_more = cptr.lit("use standout for --more--");
+const __s_status_updates = cptr.lit("status_updates");
+const __s_allow_the_status_lines_to_update = cptr.lit("allow the status lines to update");
+const __s_status_condition_fields = cptr.lit("status condition fields");
+const __s_change_status_condition_highlighting = cptr.lit("change status condition highlighting");
+const __s_statushilites = cptr.lit("statushilites");
+const __s_0_no_status_highlighting_n_show = cptr.lit("0=no status highlighting, N=show highlights for N turns");
+const __s_status_highlight_rules = cptr.lit("status highlight rules");
+const __s_change_status_line_highlighting = cptr.lit("change status line highlighting");
+const __s_statuslines = cptr.lit("statuslines");
+const __s_2_or_3_lines_for_status_display = cptr.lit("2 or 3 lines for status display");
+const __s_suppress_alert = cptr.lit("suppress_alert");
+const __s_suppress_alerts_about_version_specific = cptr.lit("suppress alerts about version-specific features");
+const __s_symset = cptr.lit("symset");
+const __s_load_a_set_of_display_symbols_from = cptr.lit("load a set of display symbols from symbols file");
+const __s_term_cols = cptr.lit("term_cols");
+const __s_termcolumns = cptr.lit("termcolumns");
+const __s_number_of_columns = cptr.lit("number of columns");
+const __s_term_rows = cptr.lit("term_rows");
+const __s_number_of_rows = cptr.lit("number of rows");
+const __s_terrainstatus = cptr.lit("terrainstatus");
+const __s_show_hero_s_location_as_a_status_field = cptr.lit("show hero's location as a status field");
+const __s_tile_file = cptr.lit("tile_file");
+const __s_name_of_tile_file = cptr.lit("name of tile file");
+const __s_tile_height = cptr.lit("tile_height");
+const __s_height_of_tiles = cptr.lit("height of tiles");
+const __s_tile_width = cptr.lit("tile_width");
+const __s_width_of_tiles = cptr.lit("width of tiles");
+const __s_tiled_map = cptr.lit("tiled_map");
+const __s_time = cptr.lit("time");
+const __s_display_game_turns_in_status_line = cptr.lit("display game turns in status line");
+const __s_timed_delay = cptr.lit("timed_delay");
+const __s_tips = cptr.lit("tips");
+const __s_show_some_helpful_tips_during_gameplay = cptr.lit("show some helpful tips during gameplay");
+const __s_tombstone = cptr.lit("tombstone");
+const __s_show_tombstone_when_your_character_dies = cptr.lit("show tombstone when your character dies");
+const __s_toptenwin = cptr.lit("toptenwin");
+const __s_show_top_scores_in_window = cptr.lit("show top scores in window");
+const __s_traps = cptr.lit("traps");
+const __s_list_of_symbols_to_use_in_drawing_traps = cptr.lit("list of symbols to use in drawing traps");
+const __s_travel = cptr.lit("travel");
+const __s_enable_traveling_via_mouse_click = cptr.lit("enable traveling via mouse click");
+const __s_travel_debug = cptr.lit("travel_debug");
+const __s_tutorial = cptr.lit("tutorial");
+const __s_ask_if_you_want_the_tutorial = cptr.lit("ask if you want the tutorial");
+const __s_use_darkgray = cptr.lit("use_darkgray");
+const __s_use_bold_black_color_instead_of_blue = cptr.lit("use bold black color instead of blue");
+const __s_use_inverse = cptr.lit("use_inverse");
+const __s_display_detected_monsters_in_inverse = cptr.lit("display detected monsters in inverse");
+const __s_use_truecolor = cptr.lit("use_truecolor");
+const __s_use_truecolour = cptr.lit("use_truecolour");
+const __s_vary_msgcount = cptr.lit("vary_msgcount");
+const __s_show_more_old_messages_at_a_time = cptr.lit("show more old messages at a time");
+const __s_verbose = cptr.lit("verbose");
+const __s_versinfo = cptr.lit("versinfo");
+const __s_extra_information_for_showvers = cptr.lit("extra information for 'showvers'");
+const __s_voices = cptr.lit("voices");
+const __s_vt_tiledata = cptr.lit("vt_tiledata");
+const __s_vt_sounddata = cptr.lit("vt_sounddata");
+const __s_warnings = cptr.lit("warnings");
+const __s_display_characters_for_warnings = cptr.lit("display characters for warnings");
+const __s_weaponstatus = cptr.lit("weaponstatus");
+const __s_show_currently_wielded_weapon_in_a = cptr.lit("show currently wielded weapon in a status field");
+const __s_whatis_coord = cptr.lit("whatis_coord");
+const __s_show_coordinates_when_auto_describing = cptr.lit("show coordinates when auto-describing cursor position");
+const __s_whatis_filter = cptr.lit("whatis_filter");
+const __s_filter_coordinate_locations_when = cptr.lit("filter coordinate locations when targeting next or previous");
+const __s_whatis_menu = cptr.lit("whatis_menu");
+const __s_show_menu_when_getting_a_map_location = cptr.lit("show menu when getting a map location");
+const __s_whatis_moveskip = cptr.lit("whatis_moveskip");
+const __s_skip_same_glyph_when_getting_map = cptr.lit("skip same glyph when getting map location");
+const __s_windowborders = cptr.lit("windowborders");
+const __s_0_off_1_on_2_auto = cptr.lit("0 (off), 1 (on), 2 (auto)");
+const __s_windowcolors = cptr.lit("windowcolors");
+const __s_the_foreground_background_colors_of = cptr.lit("the foreground/background colors of windows");
+const __s_wizmgender = cptr.lit("wizmgender");
+const __s_wizweight = cptr.lit("wizweight");
+const __s_wraptext = cptr.lit("wraptext");
+const __s_cond = cptr.lit("cond_");
+const __s_prefix_for_cond_options = cptr.lit("prefix for cond_ options");
+const __s_font = cptr.lit("font");
+const __s_prefix_for_font_options = cptr.lit("prefix for font options");
+const __s_general = cptr.lit("General");
+const __s_behavior = cptr.lit("Behavior");
+const __s_map = cptr.lit("Map");
+const __s_status = cptr.lit("Status");
+const __s_advanced = cptr.lit("Advanced");
+const __s_confirm__2 = cptr.lit("Confirm");
+const __s_paranoia = cptr.lit("Paranoia");
+const __s_for_yes_confirmations_require_no_to = cptr.lit("for \"yes\" confirmations, require \"no\" to reject");
+const __s_quit = cptr.lit("quit");
+const __s_explore = cptr.lit("explore");
+const __s_yes_vs_y_to_quit_or_to_enter_explore = cptr.lit("yes vs y to quit or to enter explore mode");
+const __s_die = cptr.lit("die");
+const __s_death = cptr.lit("death");
+const __s_yes_vs_y_to_die_explore_mode_or_debug = cptr.lit("yes vs y to die (explore mode or debug mode)");
+const __s_yes_vs_y_to_save_bones_data_when_dying = cptr.lit("yes vs y to save bones data when dying in debug mode");
+const __s_attack = cptr.lit("attack");
+const __s_hit = cptr.lit("hit");
+const __s_yes_vs_y_to_attack_a_peaceful_monster = cptr.lit("yes vs y to attack a peaceful monster");
+const __s_wand_break = cptr.lit("wand-break");
+const __s_break_wand = cptr.lit("break-wand");
+const __s_yes_vs_y_to_break_a_wand_via_a_pply = cptr.lit("yes vs y to break a wand via (a)pply");
+const __s_eat = cptr.lit("eat");
+const __s_continue = cptr.lit("continue");
+const __s_yes_vs_y_to_continue_eating_after_first = cptr.lit("yes vs y to continue eating after first bite when satiated");
+const __s_were_change = cptr.lit("Were-change");
+const __s_yes_vs_y_to_change_form_when = cptr.lit("yes vs y to change form when lycanthropy is controllable");
+const __s_pray = cptr.lit("pray");
+const __s_y_required_to_pray_supersedes_old = cptr.lit("y required to pray (supersedes old \"prayconfirm\" option)");
+const __s_trap = cptr.lit("trap");
+const __s_move_trap = cptr.lit("move-trap");
+const __s_y_required_to_enter_known_trap_unless = cptr.lit("y required to enter known trap unless considered harmless");
+const __s_autoall = cptr.lit("Autoall");
+const __s_autoselect_all = cptr.lit("autoselect-all");
+const __s_y_required_to_pick_filter_choice_a_for = cptr.lit("y required to pick filter choice 'A' for menustyle:Full");
+const __s_swim = cptr.lit("swim");
+const __s_m_prefix_necessary_to_deliberately_walk = cptr.lit("'m' prefix necessary to deliberately walk into lava or water");
+const __s_remove = cptr.lit("Remove");
+const __s_takeoff = cptr.lit("Takeoff");
+const __s_always_pick_from_inventory_for_remove = cptr.lit("always pick from inventory for Remove and Takeoff");
+const __s_none = cptr.lit("none");
+const __s_all = cptr.lit("all");
+const __s_traditional = cptr.lit("traditional");
+const __s_prompt_for_object_class_es_then = cptr.lit("[prompt for object class(es), then");
+const __s_ask_y_n_for_each_item_in_those_classes = cptr.lit(" ask y/n for each item in those classes]");
+const __s_combination = cptr.lit("combination");
+const __s_use_menu_for_items_in_those_classes = cptr.lit(" use menu for items in those classes]");
+const __s_full = cptr.lit("full");
+const __s_use_menu_to_choose_class_es_then = cptr.lit("[use menu to choose class(es), then");
+const __s_use_another_menu_for_items_in_those = cptr.lit(" use another menu for items in those]");
+const __s_partial = cptr.lit("partial");
+const __s_skip_class_filtering_always = cptr.lit("[skip class filtering; always");
+const __s_use_menu_of_all_available_items = cptr.lit(" use menu of all available items]");
+const __s_single = cptr.lit("single");
+const __s_show_one_old_message_at_a_time = cptr.lit("[show one old message at a time,");
+const __s_most_recent_first = cptr.lit(" most recent first]");
+const __s_for_consecutive_p_requests_use = cptr.lit("[for consecutive ^P requests, use");
+const __s_single_for_first_two_then_full = cptr.lit(" 'single' for first two, then 'full']");
+const __s_show_all_available_messages = cptr.lit("[show all available messages,");
+const __s_oldest_first_and_most_recent_last = cptr.lit(" oldest first and most recent last]");
+const __s_reversed = cptr.lit("reversed");
+const __s_untrap = cptr.lit("untrap");
+const __s_might_fail = cptr.lit("(might fail)");
+const __s_apply_key = cptr.lit("apply-key");
+const __s_empty = cptr.lit("");
+const __s_kick = cptr.lit("kick");
+const __s_doors_only = cptr.lit("(doors only)");
+const __s_force = cptr.lit("force");
+const __s_chests_boxes_only = cptr.lit("(chests/boxes only)");
+const __s_unencumbered = cptr.lit("unencumbered");
+const __s_burdened = cptr.lit("burdened");
+const __s_stressed = cptr.lit("stressed");
+const __s_strained = cptr.lit("strained");
+const __s_overtaxed = cptr.lit("overtaxed");
+const __s_overloaded = cptr.lit("overloaded");
+const __s_teleport = cptr.lit("teleport");
+const __s_run = cptr.lit("run");
+const __s_walk = cptr.lit("walk");
+const __s_crawl = cptr.lit("crawl");
+const __s_loot = cptr.lit("loot");
+const __s_off = cptr.lit("off");
+const __s_no_permanent_inventory_window = cptr.lit("no permanent inventory window");
+const __s_on = cptr.lit("on");
+const __s_all_inventory_except_for_gold = cptr.lit("all inventory except for gold");
+const __s_gold = cptr.lit("gold");
+const __s_full_inventory_including_gold = cptr.lit("full inventory including gold");
+const __s_in_use = cptr.lit("in-use");
+const __s_inuse_only = cptr.lit("inuse-only");
+const __s_subset_items_currently_in_use = cptr.lit("subset: items currently in use");
+const __s_don_t_show_object_symbols_in_menus = cptr.lit("don't show object symbols in menus");
+const __s_headers = cptr.lit("headers");
+const __s_show_object_symbols_in_menu_header_lines = cptr.lit("show object symbols in menu header lines");
+const __s_entries = cptr.lit("entries");
+const __s_show_object_symbols_in_individual_menu = cptr.lit("show object symbols in individual menu entries");
+const __s_both = cptr.lit("both");
+const __s_show_object_symbols_in_headers_and_menu = cptr.lit("show object symbols in headers and menu entries");
+const __s_conditional = cptr.lit("conditional");
+const __s_show_objsyms_in_entries_if_no_headers = cptr.lit("show objsyms in entries if no headers are shown");
+const __s_one_or_other = cptr.lit("one-or-other");
+const __s_show_objsyms_in_header_in_entries_if_no = cptr.lit("show objsyms in header, in entries if no header");
+const __s_go_to_next_page = cptr.lit("Go to next page");
+const __s_go_to_previous_page = cptr.lit("Go to previous page");
+const __s_go_to_first_page = cptr.lit("Go to first page");
+const __s_go_to_last_page = cptr.lit("Go to last page");
+const __s_select_all_items_in_entire_menu = cptr.lit("Select all items in entire menu");
+const __s_invert_selection_for_all_items = cptr.lit("Invert selection for all items");
+const __s_unselect_all_items_in_entire_menu = cptr.lit("Unselect all items in entire menu");
+const __s_select_all_items_on_current_page = cptr.lit("Select all items on current page");
+const __s_invert_current_page_s_selections = cptr.lit("Invert current page's selections");
+const __s_unselect_all_items_on_current_page = cptr.lit("Unselect all items on current page");
+const __s_search_and_invert_matching_items = cptr.lit("Search and invert matching items");
+const __s_pan_current_page_to_right_perm_invent = cptr.lit("Pan current page to right (perm_invent only)");
+const __s_pan_current_page_to_left_perm_invent = cptr.lit("Pan current page to left (perm_invent only)");
+const __s_dev_null = cptr.lit("/dev/null");
+const __s_ask_do_tutorial = cptr.lit("ask_do_tutorial");
+const __s_put_options_tutorial_in_s_to_skip_this = cptr.lit("Put \"OPTIONS=!tutorial\" in %s to skip this query.");
+const __s_your_configuration_file = cptr.lit("your configuration file");
+const __s_yes_do_a_tutorial = cptr.lit("Yes, do a tutorial");
+const __s_no_just_start_play = cptr.lit("No, just start play");
+const __s_please_choose_y_or_n = cptr.lit("(Please choose 'y' or 'n'.)");
+const __s_do_you_want_a_tutorial = cptr.lit("Do you want a tutorial?");
+const __s_option_too_long_max_length_is_i = cptr.lit("Option too long, max length is %i characters");
+const __s_empty_statement = cptr.lit("Empty statement");
+const __s_no = cptr.lit("no");
+const __s_ambiguous_option_s_d_characters_are = cptr.lit("Ambiguous option %s, %d characters are needed to differentiate");
+const __s_s_us = cptr.lit("S_");
+const __s_parseoptions = cptr.lit("parseoptions");
+const __s_pct_s = cptr.lit("%s");
+const __s_bad_option_suffix_variation_s = cptr.lit("bad option suffix variation '%s'");
+const __s_unknown_option_s = cptr.lit("Unknown option '%s'");
+const __s_bad_index_roleoptvals_d_d = cptr.lit("bad index roleoptvals[%d][%d]");
+const __s_unknown_s_s = cptr.lit("Unknown %s '%s'");
+const __s_left = cptr.lit("left");
+const __s_top = cptr.lit("top");
+const __s_right = cptr.lit("right");
+const __s_bottom = cptr.lit("bottom");
+const __s_unknown_s_parameter_s = cptr.lit("Unknown %s parameter '%s'");
+const __s_sp_dash_us = cptr.lit(" -_");
+const __s_invalid_value_for_s_s = cptr.lit("Invalid value for \"%s\": \"%s\"");
+const __s_invalid_value_combination_for_s_none = cptr.lit("Invalid value combination for \"%s\": 'none' with some");
+const __s_s_s = cptr.lit("%s%s");
+const __s_boulder_symbol_cannot_be_a_control = cptr.lit("boulder symbol cannot be a control character");
+const __s_badoption_boulder_symbol_s_would = cptr.lit("Badoption - boulder symbol '%s' would conflict with a %s symbol");
+const __s_monster = cptr.lit("monster");
+const __s_warning = cptr.lit("warning");
+const __s_pct_c = cptr.lit("%c");
+const __s_invalid_value_d_for_crash_urlmax = cptr.lit("Invalid value %d for crash_urlmax.  Minimum value is 75.");
+const __s_pct_d = cptr.lit("%d");
+const __s_failure_to_load_symbol_set_s = cptr.lit("Failure to load symbol set %s.");
+const __s_bad_disclosure_index_d_c = cptr.lit("bad disclosure index %d %c");
+const __s_unknown_s_parameter_c = cptr.lit("Unknown %s parameter '%c'");
+const __s_doing_that_so_many_times_isn_t_very = cptr.lit("Doing that so many times isn't very fruitful.");
+const __s_slime_mold = cptr.lit("slime mold");
+const __s_fruit_is_now_s = cptr.lit("Fruit is now \"%s\".");
+const __s_value_is_mandatory_for_hilite_status = cptr.lit("Value is mandatory for hilite_status");
+const __s_see_status_highlight_rules_below = cptr.lit("(see \"status highlight rules\" below)");
+const __s_none__2 = cptr.lit("(none)");
+const __s_rogueibm = cptr.lit("RogueIBM");
+const __s_tiles = cptr.lit("tiles");
+const __s_ascii4x6 = cptr.lit("ascii4x6");
+const __s_ascii6x8 = cptr.lit("ascii6x8");
+const __s_ascii8x8 = cptr.lit("ascii8x8");
+const __s_ascii16x8 = cptr.lit("ascii16x8");
+const __s_ascii7x12 = cptr.lit("ascii7x12");
+const __s_ascii8x12 = cptr.lit("ascii8x12");
+const __s_ascii16x12 = cptr.lit("ascii16x12");
+const __s_ascii12x16 = cptr.lit("ascii12x16");
+const __s_ascii10x18 = cptr.lit("ascii10x18");
+const __s_fit_to_screen = cptr.lit("fit_to_screen");
+const __s_ascii_fit_to_screen = cptr.lit("ascii_fit_to_screen");
+const __s_tiles_fit_to_screen = cptr.lit("tiles_fit_to_screen");
+const __s_sp = cptr.lit(" ");
+const __s_dash = cptr.lit("-");
+const __s_illegal_s_parameter_s = cptr.lit("Illegal %s parameter '%s'");
+const __s_pct_i = cptr.lit("%i");
+const __s_0_off = cptr.lit("0=off");
+const __s_1_on = cptr.lit("1=on");
+const __s_o_s_adjusted = cptr.lit(", O/S adjusted");
+const __s_2_on = cptr.lit("2=on");
+const __s_o_s_unchanged = cptr.lit(", O/S unchanged");
+const __s_pct_u = cptr.lit("%u");
+const __s_2_on_msdos_compatible = cptr.lit("2=on, MSDOS compatible");
+const __s_3_on_phone_style_layout = cptr.lit("3=on, phone-style layout");
+const __s_4_on_phone_layout_msdos_compatible = cptr.lit("4=on, phone layout, MSDOS compatible");
+const __s_1_off_y_z_swapped = cptr.lit("-1=off, y & z swapped");
+const __s_deprecated_sprayconfirm_option_takes_no = cptr.lit("deprecated %sprayconfirm option takes no parameters (found '%s')");
+const __s_bang = cptr.lit("!");
+const __s_sprayconfirm_option_is_deprecated = cptr.lit("%sprayconfirm option is deprecated; switching to %s:%cpray");
+const __s_cpray = cptr.lit("%cpray");
+const __s_s_does_not_accept_a_value = cptr.lit("!%s does not accept a value");
+const __s_s_requires_a_value_use_none_to_cancel = cptr.lit("%s requires a value; use 'none' to cancel all");
+const __s_optfn_paranoid_confirmation = cptr.lit("optfn_paranoid_confirmation");
+const __s_sp_pct_s = cptr.lit(" %s");
+const __s_grid = cptr.lit("+grid");
+const __s_s_unavailable_perm_invent_mode_s_using_s = cptr.lit("%s: unavailable perm_invent mode '%s', using '%s'");
+const __s_currently = cptr.lit(" currently");
+const __s_inventory = cptr.lit(" inventory");
+const __s_invent = cptr.lit(" invent");
+const __s_off__2 = cptr.lit(" (Off)");
+const __s_perm_invent_is_off = cptr.lit(" ('perm_invent' is Off)");
+const __s_0x_08x = cptr.lit("0x%08x");
+const __s_unrecognized_pet_type_s = cptr.lit("Unrecognized pet type '%s'.");
+const __s_cat = cptr.lit("cat");
+const __s_dog = cptr.lit("dog");
+const __s_horse = cptr.lit("horse");
+const __s_random = cptr.lit("random");
+const __s_new_s_s_am_s = cptr.lit("New %s: [%s am] (%s)");
+const __s_autopickup_what = cptr.lit("Autopickup what?");
+const __s_dialog = cptr.lit("dialog");
+const __s_prompt = cptr.lit("prompt");
+const __s_prompts = cptr.lit("prompts");
+const __s_normal = cptr.lit("normal");
+const __s_play = cptr.lit("play");
+const __s_discovery = cptr.lit("discovery");
+const __s_debug = cptr.lit("debug");
+const __s_wizard = cptr.lit("wizard");
+const __s_invalid_value_for_s_s__2 = cptr.lit("Invalid value for \"%s\":%s");
+const __s_unable_to_load_symbol_set_s_from_s = cptr.lit("Unable to load symbol set \"%s\" from \"%s\"");
+const __s_symbols = cptr.lit("symbols");
+const __s_default = cptr.lit("default");
+const __s_active = cptr.lit(", active");
+const __s_value_is_mandatory_for_s = cptr.lit("Value is mandatory for %s");
+const __s_values_for_s_top_and_s_around_must_not = cptr.lit("Values for %s:top and %s:around must not be negative");
+const __s_d_top = cptr.lit("%d top");
+const __s_s_d_around = cptr.lit("%s%d around");
+const __s_slash = cptr.lit("/");
+const __s_sown = cptr.lit("%sown");
+const __s_01234567 = cptr.lit("01234567");
+const __s_colon_sp_pct_s = cptr.lit(": %s");
+const __s_s_s_s_s = cptr.lit("'%s' %s \"%s: %s\".");
+const __s_not_changed_still = cptr.lit("not changed, still");
+const __s_changed_to = cptr.lit("changed to");
+const __s_0_off_don_t_highlight_status_fields = cptr.lit("0 (off: don't highlight status fields)");
+const __s_ld_on_highlight_status_for_ld_turns = cptr.lit("%ld (on: highlight status for %ld turns)");
+const __s_ld = cptr.lit("%ld");
+const __s_s_s_is_invalid_must_be_2_or_3 = cptr.lit("'%s:%s' is invalid; must be 2 or 3");
+const __s_2 = cptr.lit("2");
+const __s_3 = cptr.lit("3");
+const __s_unknown = cptr.lit("unknown");
+const __s_lu_lu_lu = cptr.lit("%lu.%lu.%lu");
+const __s_handler_s = cptr.lit(", handler=%s");
+const __s_invalid_s_ld = cptr.lit("Invalid %s: %ld");
+const __s_s_requires_a_value_defaulting_to_d = cptr.lit("'%s' requires a value; defaulting to %d");
+const __s_s_must_be_one_of_1_2_4_or_the_sum_of = cptr.lit("'%s' must be one of 1, 2, 4, or the sum of two or all three of those");
+const __s_s_s_u = cptr.lit("'%s' %s %u.");
+const __s_u_s_s_s_s_s_99s = cptr.lit("%u: %s%s%s%s%s (%.99s)");
+const __s_plus = cptr.lit("+");
+const __s_branch = cptr.lit("branch");
+const __s_number = cptr.lit("number");
+const __s_map__2 = cptr.lit("map");
+const __s_compass = cptr.lit("compass");
+const __s_full_compass = cptr.lit("full compass");
+const __s_screen = cptr.lit("screen");
+const __s_view = cptr.lit("view");
+const __s_area = cptr.lit("area");
+const __s_invalid_s_should_be_within_0_to_4_s = cptr.lit("Invalid %s (should be within 0 to 4): %s");
+const __s_2_auto = cptr.lit("2=auto");
+const __s_3_on_except_off_for_perm_invent = cptr.lit("3=on, except off for perm_invent");
+const __s_4_auto_except_off_for_perm_invent = cptr.lit("4=auto, except off for perm_invent");
+const __s_menu = cptr.lit("menu");
+const __s_message = cptr.lit("message");
+const __s_status__2 = cptr.lit("status");
+const __s_text = cptr.lit("text");
+const __s_mnu = cptr.lit("mnu");
+const __s_msg = cptr.lit("msg");
+const __s_sts = cptr.lit("sts");
+const __s_txt = cptr.lit("txt");
+const __s_could_not_set_s_s = cptr.lit("Could not set %s '%s'");
+const __s_s_s_s_s__2 = cptr.lit("%s%s %s/%s");
+const __s_ambiguous_condition_option_s = cptr.lit("Ambiguous condition option %s");
+const __s_unknown_condition_option_s_d = cptr.lit("Unknown condition option %s (%d)");
+const __s_negated_boolean_s_should_not_have_a = cptr.lit("Negated boolean '%s' should not have a parameter");
+const __s_true = cptr.lit("true");
+const __s_yes = cptr.lit("yes");
+const __s_false = cptr.lit("false");
+const __s_s_is_not_valid_for_a_boolean = cptr.lit("'%s' is not valid for a boolean");
+const __s_s_is_not_anatomically_possible = cptr.lit("'%s' is not anatomically possible.");
+const __s_there_is_no_underlying_support_for = cptr.lit("There is no underlying support for 'idlecheckpoint' compiled in.");
+const __s_s_is_not_supported = cptr.lit("'%s' is not supported.");
+const __s_s_option_toggled_s = cptr.lit("'%s' option toggled %s.");
+const __s_12_12s_c_60s = cptr.lit("%-12.12s%c%.60s");
+const __s_4s_12_12s_c_60s = cptr.lit("%4s%-12.12s%c%.60s");
+const __s_select_menustyle = cptr.lit("Select menustyle:");
+const __s_menustyle_s_s = cptr.lit("'menustyle' %s \"%s\".");
+const __s_is_still = cptr.lit("is still");
+const __s_select_s_window_placement_relative_to = cptr.lit("Select %s window placement relative to the map:");
+const __s_10_10s_c_40s = cptr.lit("%-10.10s%c%.40s");
+const __s_select_20s_actions = cptr.lit("Select '%.20s' actions:");
+const __s_s_s_s = cptr.lit("'%s' %s '%s'.");
+const __s_12s_c_c = cptr.lit("%-12s[%c%c]");
+const __s_change_which_disclosure_options = cptr.lit("Change which disclosure options categories:");
+const __s_disclosure_options_for_s = cptr.lit("Disclosure options for %s:");
+const __s_never_disclose_without_prompting = cptr.lit("Never disclose, without prompting");
+const __s_always_disclose_without_prompting = cptr.lit("Always disclose, without prompting");
+const __s_always_disclose_pick_sort_order_from = cptr.lit("Always disclose, pick sort order from menu");
+const __s_prompt_with_default_answer_of_no = cptr.lit("Prompt, with default answer of \"No\"");
+const __s_prompt_with_default_answer_of_yes = cptr.lit("Prompt, with default answer of \"Yes\"");
+const __s_prompt_with_default_answer_of_ask_to = cptr.lit("Prompt, with default answer of \"Ask\" to request sort menu");
+const __s_inventory__2 = cptr.lit("inventory");
+const __s_attributes = cptr.lit("attributes");
+const __s_vanquished = cptr.lit("vanquished");
+const __s_genocides = cptr.lit("genocides");
+const __s_conduct = cptr.lit("conduct");
+const __s_overview = cptr.lit("overview");
+const __s_how_to_highlight_menu_headings = cptr.lit("How to highlight menu headings:");
+const __s_handler_menu_objsyms = cptr.lit("handler_menu_objsyms");
+const __s_set_object_symbols_in_menus_to_what = cptr.lit("Set object symbols in menus to what?");
+const __s_select_message_history_display_type = cptr.lit("Select message history display type:");
+const __s_msg_window_20s_20s = cptr.lit("'msg_window' %.20s \"%.20s\".");
+const __s_s_option_is_not_supported_for_s = cptr.lit("'%s' option is not supported for '%s'.");
+const __s_select_number_pad_mode = cptr.lit("Select number_pad mode:");
+const __s_0_off__2 = cptr.lit(" 0 (off)");
+const __s_1_on__2 = cptr.lit(" 1 (on)");
+const __s_2_on_msdos_compatible__2 = cptr.lit(" 2 (on, MSDOS compatible)");
+const __s_3_on_phone_style_digit_layout = cptr.lit(" 3 (on, phone-style digit layout)");
+const __s_4_on_phone_style_layout_msdos_compatible = cptr.lit(" 4 (on, phone-style layout, MSDOS compatible)");
+const __s_1_off_z_to_move_upper_left_y_to_zap = cptr.lit("-1 (off, 'z' to move upper-left, 'y' to zap wands)");
+const __s_apos_m_apos = cptr.lit("'m'");
+const __s_9s = cptr.lit("'%.9s'");
+const __s_reqmenu = cptr.lit("reqmenu");
+const __s_s_31s = cptr.lit("'%s%.31s'");
+const __s_hash = cptr.lit("#");
+const __s_actions_requiring_extra_confirmation = cptr.lit("Actions requiring extra confirmation:");
+const __s_pct_star_s = cptr.lit("%*s");
+const __s_tab = cptr.lit("\t");
+const __s_s_s_s__2 = cptr.lit("%s%s%s");
+const __s_choose_permanent_inventory_mode = cptr.lit("Choose permanent inventory mode:");
+const __s_perminv_mode_s_s_s = cptr.lit("'perminv_mode' %s '%s' (%s).");
+const __s_ubsntl = cptr.lit("ubsntl");
+const __s_select_encumbrance_level = cptr.lit("Select encumbrance level:");
+const __s_select_run_travel_display_mode = cptr.lit("Select run/travel display mode:");
+const __s_select_pet_highlight_attribute = cptr.lit("Select pet highlight attribute");
+const __s_select_loot_sorting_type = cptr.lit("Select loot sorting type:");
+const __s_compass_east_or_3s_or_2n_4w = cptr.lit("compass ('east' or '3s' or '2n,4w')");
+const __s_full_compass_east_or_3south_or_2north = cptr.lit("full compass ('east' or '3south' or '2north,4west')");
+const __s_map_x_y = cptr.lit("map <x,y>");
+const __s_screen_row_column = cptr.lit("screen [row,column]");
+const __s_none_no_coordinates_displayed = cptr.lit("none (no coordinates displayed)");
+const __s_map_upper_left_d_d_lower_right_d_d_s = cptr.lit("map: upper-left: <%d,%d>, lower-right: <%d,%d>%s");
+const __s_column_0_unused_off_left_edge = cptr.lit("; column 0 unused, off left edge");
+const __s_tty = cptr.lit("tty");
+const __s_screen_row_is_offset_to_accommodate_tty = cptr.lit("screen: row is offset to accommodate tty interface's use of top line");
+const __s_screen_upper_left_02d_02d_lower_right_d = cptr.lit("screen: upper-left: [%02d,%02d], lower-right: [%d,%d]%s");
+const __s_column_80_is_not_used = cptr.lit("; column 80 is not used");
+const __s_select_coordinate_display_when_auto = cptr.lit("Select coordinate display when auto-describing a map position:");
+const __s_no_filtering = cptr.lit("no filtering");
+const __s_in_view_only = cptr.lit("in view only");
+const __s_in_same_area = cptr.lit("in same area");
+const __s_select_location_filtering_when_going = cptr.lit("Select location filtering when going for next/previous map position:");
+const __s_autopickup_exception = cptr.lit("autopickup exception");
+const __s_what_new_autopickup_exception_pattern = cptr.lit("What new autopickup exception pattern?");
+const __s_quot = cptr.lit("\"");
+const __s_always_pickup_never_pickup = cptr.lit("Always pickup '<'; never pickup '>'");
+const __s_c_s = cptr.lit("\"%c%s\"");
+const __s_s_autopickup_exceptions = cptr.lit("%s autopickup exceptions");
+const __s_list_of = cptr.lit("List of");
+const __s_remove_which = cptr.lit("Remove which");
+const __s_menucolor = cptr.lit("menucolor");
+const __s_what_new_menucolor_pattern = cptr.lit("What new menucolor pattern?");
+const __s_menucolors_regex = cptr.lit("MENUCOLORS regex");
+const __s_error_adding_the_menu_color = cptr.lit("Error adding the menu color.");
+const __s_s_s_s__3 = cptr.lit("\"\"=%s%s%s");
+const __s_amp = cptr.lit("&");
+const __s_handler_menu_colors = cptr.lit("handler_menu_colors");
+const __s_dot3 = cptr.lit("...");
+const __s_s_menu_colors = cptr.lit("%s menu colors");
+const __s_message_type = cptr.lit("message type");
+const __s_what_new_message_pattern = cptr.lit("What new message pattern?");
+const __s_msgtype_regex = cptr.lit("MSGTYPE regex");
+const __s_error_adding_the_message_type = cptr.lit("Error adding the message type.");
+const __s_5s = cptr.lit("%-5s \"");
+const __s_handler_msgtype = cptr.lit("handler_msgtype");
+const __s_dot3_quot = cptr.lit("...\"");
+const __s_s_message_types = cptr.lit("%s message types");
+const __s_version_number = cptr.lit("version number");
+const __s_game_name = cptr.lit("game name");
+const __s_development_branch = cptr.lit("development branch");
+const __s_select_version_information_flags = cptr.lit("Select version information flags:");
+const __s_select_window_borders_mode = cptr.lit("Select window borders mode:");
+const __s_off_never_show_borders = cptr.lit("Off, never show borders");
+const __s_on_always_show_borders = cptr.lit("On, always show borders");
+const __s_auto_on_if_display_is_at_least_24_2_x = cptr.lit("Auto, on if display is at least (24+2)x(80+2)");
+const __s_on_except_forced_off_for_perm_invent = cptr.lit("On, except forced off for perm_invent");
+const __s_auto_except_forced_off_for_perm_invent = cptr.lit("Auto, except forced off for perm_invent");
+const __s_missing_parameter_for_s = cptr.lit("Missing parameter for '%s'");
+const __s_the_s_option_may_not_sbe_negated = cptr.lit("The %s option may not %sbe negated.");
+const __s_both_have_a_value_and = cptr.lit("both have a value and ");
+const __s_determine_ambiguities = cptr.lit("determine_ambiguities");
+const __s_via_alias_s = cptr.lit(" (via alias: %s)");
+const __s_s_option_specified_multiple_times_s_s = cptr.lit("%s option specified multiple times: %s%s");
+const __s_compound = cptr.lit("compound");
+const __s_boolean = cptr.lit("boolean");
+const __s_s_can_be_set_only_from_nethackoptions = cptr.lit("%s can be set only from NETHACKOPTIONS or %s.");
+const __s_enter = cptr.lit("<enter>");
+const __s_space = cptr.lit("<space>");
+const __s_esc = cptr.lit("<esc>");
+const __s_sysconf = cptr.lit("sysconf");
+const __s_command_line = cptr.lit("command line");
+const __s_term = cptr.lit("TERM");
+const __s_at = cptr.lit("AT");
+const __s_ibmgraphics__2 = cptr.lit("IBMGraphics");
+const __s_vt = cptr.lit("vt");
+const __s_decgraphics__2 = cptr.lit("DECGraphics");
+const __s_status_highlighting_not_supported_for_s = cptr.lit("Status highlighting not supported for %s interface.");
+const __s_not_an_object_class_c = cptr.lit("Not an object class '%c'");
+const __s_object_class_c_not_allowed = cptr.lit("Object class '%c' not allowed");
+const __s_duplicate_object_class_c = cptr.lit("Duplicate object class '%c'");
+const __s_disable_new_feature_alerts_for_future = cptr.lit("disable new feature alerts for future versions.");
+const __s_s_s_invalid_reference_to_a_future = cptr.lit("%s=%s Invalid reference to a future version ignored");
+const __s_feature_change_alerts_disabled_for = cptr.lit("Feature change alerts disabled for NetHack %s features and prior.");
+const __s_error_binding_mouse_button_i = cptr.lit("Error binding mouse button %i");
+const __s_unknown_key_binding_key_s = cptr.lit("Unknown key binding key '%s'");
+const __s_bad_menu_key_s_s = cptr.lit("Bad menu key %s:%s");
+const __s_unknown_key_binding_command_s = cptr.lit("Unknown key binding command '%s'");
+const __s_mouse1 = cptr.lit("mouse1");
+const __s_mouse2 = cptr.lit("mouse2");
+const __s_show = cptr.lit("show");
+const __s_show_message_normally = cptr.lit("Show message normally");
+const __s_hide = cptr.lit("hide");
+const __s_hide_message = cptr.lit("Hide message");
+const __s_noshow = cptr.lit("noshow");
+const __s_stop = cptr.lit("stop");
+const __s_prompt_for_more_after_the_message = cptr.lit("Prompt for more after the message");
+const __s_more = cptr.lit("more");
+const __s_norep = cptr.lit("norep");
+const __s_do_not_repeat_the_message = cptr.lit("Do not repeat the message");
+const __s_how_to_show_the_message = cptr.lit("How to show the message");
+const __s_s_s__2 = cptr.lit("%s: %s");
+const __s_msgtype_regex_error = cptr.lit("MSGTYPE regex error");
+const __s_10s_255 = cptr.lit("%10s \"%255[^\"]\"");
+const __s_unknown_message_type_s = cptr.lit("Unknown message type '%s'");
+const __s_malformed_msgtype = cptr.lit("Malformed MSGTYPE");
+const __s_negated_nothing_for_s = cptr.lit("Negated nothing for '%s'");
+const __s_invalid_mixed_negation_for_s_s = cptr.lit("Invalid mixed negation for '%s%s'");
+const __s_multiple_role_values_only_allowed_when = cptr.lit("Multiple role values only allowed when list is negated");
+const __s_invalid_s_s = cptr.lit("Invalid %s '%s'");
+const __s_reserved_menu_command_key_s = cptr.lit("Reserved menu command key '%s'");
+const __s_menu_command_key_s_is_an_object_class = cptr.lit("Menu command key '%s' is an object class");
+const __s_oc_to_str_illegal_object_class_d = cptr.lit("oc_to_str:  illegal object class %d");
+const __s_out_of_menu_map_space = cptr.lit("out of menu map space.");
+const __s_small = cptr.lit("small ");
+const __s_large = cptr.lit("large ");
+const __s_medium = cptr.lit("medium ");
+const __s_very_large = cptr.lit("very large ");
+const __s_cursed = cptr.lit("cursed ");
+const __s_uncursed = cptr.lit("uncursed ");
+const __s_blessed = cptr.lit("blessed ");
+const __s_partly_eaten = cptr.lit("partly eaten ");
+const __s_tin_of = cptr.lit("tin of ");
+const __s_spinach = cptr.lit("spinach");
+const __s_empty_tin = cptr.lit("empty tin");
+const __s_glob = cptr.lit("glob");
+const __s_corpse = cptr.lit(" corpse");
+const __s_egg = cptr.lit(" egg");
+const __s_candied = cptr.lit("candied ");
+const __s_options_c = cptr.lit("options.c");
+const __s_fruitadd = cptr.lit("fruitadd");
+const __s_longest_option_name = cptr.lit("longest_option_name");
+const __s_us_s = cptr.lit("%%-%us [%%s]");
+const __s_use_command_optionsfull_to_get_the = cptr.lit("Use command '#optionsfull' to get the complete options list.");
+const __s_hide_help = cptr.lit("hide help");
+const __s_show_help = cptr.lit("show help");
+const __s_30s = cptr.lit(" %-30s ");
+const __s_x = cptr.lit("X");
+const __s_error = cptr.lit("ERROR");
+const __s_for_autopickup = cptr.lit("  (for autopickup)");
+const __s_sp4_pct_s = cptr.lit("    %s");
+const __s_options = cptr.lit("Options");
+const __s_set_s_to_what = cptr.lit("Set %s to what?");
+const __s_pct_s_colon = cptr.lit("%s:");
+const __s_disabled = cptr.lit("disabled");
+const __s_excluded_from_build = cptr.lit("excluded from build");
+const __s_enabled = cptr.lit("enabled");
+const __s_included = cptr.lit("included");
+const __s_4s_75s = cptr.lit("%4s%.75s");
+const __s_view_help_for_options_menu = cptr.lit("view help for options menu");
+const __s_s_us_s = cptr.lit("%%s%%-%us [%%s]");
+const __s_booleans_selecting_will_toggle_value = cptr.lit("Booleans (selecting will toggle value):");
+const __s_sp4 = cptr.lit("    ");
+const __s_compounds_selecting_will_prompt_for_new = cptr.lit("Compounds (selecting will prompt for new value):");
+const __s_other_settings = cptr.lit("Other settings:");
+const __s_set_what_options = cptr.lit("Set what options?");
+const __s_optmenu = cptr.lit("optmenu");
+const __s_doset = cptr.lit("doset");
+const __s_indexok_opt_indx_allopt = cptr.lit("IndexOk(opt_indx, allopt)");
+const __s_for_a_brief_explanation_of_how_this = cptr.lit("For a brief explanation of how this works, type '?' to select");
+const __s_the_next_menu_choice_then_press_enter = cptr.lit("the next menu choice, then press <enter> or <return>.");
+const __s_to_suppress_this_menu_help_toggle_off = cptr.lit("[To suppress this menu help, toggle off the 'cmdassist' option.]");
+const __s_menu_shift = cptr.lit("menu_shift");
+const __s_menu_control_keys = cptr.lit("Menu control keys:");
+const __s_7s_s = cptr.lit("%-7s %s");
+const __s_s_7s_s = cptr.lit("%s%-7s %s");
+const __s_whole = cptr.lit("Whole");
+const __s_current = cptr.lit("Current");
+const __s_menu__2 = cptr.lit(" Menu");
+const __s_page = cptr.lit(" Page");
+const __s_select = cptr.lit("Select");
+const __s_invert = cptr.lit("Invert");
+const __s_deselect = cptr.lit("Deselect");
+const __s_go_to = cptr.lit("Go to");
+const __s_next_page = cptr.lit("Next page");
+const __s_previous_page = cptr.lit("Previous page");
+const __s_first_page = cptr.lit("First page");
+const __s_last_page = cptr.lit("Last page");
+const __s_pan_view = cptr.lit("Pan view");
+const __s_right_perm_invent_only = cptr.lit("Right (perm_invent only)");
+const __s_left__2 = cptr.lit("Left");
+const __s_search = cptr.lit("Search");
+const __s_exter_a_target_string_and_invert_all = cptr.lit("Exter a target string and invert all matching entries");
+const __s_9s_8s_s = cptr.lit("%9s  %-8s %s");
+const __s_other = cptr.lit("Other ");
+const __s_return = cptr.lit("Return");
+const __s_accept_current_choice_s_and_dismiss_menu = cptr.lit("Accept current choice(s) and dismiss menu");
+const __s_enter__2 = cptr.lit("Enter");
+const __s_same_as_return = cptr.lit("Same as Return");
+const __s_space__2 = cptr.lit("Space");
+const __s_if_not_on_last_page_advance_one_page = cptr.lit("If not on last page, advance one page;");
+const __s_sp5 = cptr.lit("     ");
+const __s_when_on_last_page_treat_like_return = cptr.lit("when on last page, treat like Return");
+const __s_escape = cptr.lit("Escape");
+const __s_cancel_menu_without_making_any_choice_s = cptr.lit("Cancel menu without making any choice(s)");
+const __s_do_what = cptr.lit("Do what?");
+const __s_add_new_s = cptr.lit("add new %s");
+const __s_list_s = cptr.lit("list %s");
+const __s_remove_existing_s = cptr.lit("remove existing %s");
+const __s_exit_this_menu = cptr.lit("exit this menu");
+const __s_on_for_s_objects_s = cptr.lit("ON, for %s objects%s");
+const __s_with_one_exception = cptr.lit(", with one exception");
+const __s_with_some_exceptions = cptr.lit(", with some exceptions");
+const __s_off__3 = cptr.lit("OFF");
+const __s_autopickup_s = cptr.lit("Autopickup: %s.");
+const __s_253_c = cptr.lit("\"<%253[^\"]\" %c");
+const __s_253_c__2 = cptr.lit("\">%253[^\"]\" %c");
+const __s_253_c__3 = cptr.lit("\"%253[^\"]\" %c");
+const __s_apos_quot_bslash = cptr.lit("'\"\\");
+const __s_nethack_options_help = cptr.lit("                 NetHack Options Help:");
+const __s_or_use_nethackoptions_options_in_your = cptr.lit("or use `NETHACKOPTIONS=\"<options>\"' in your environment");
+const __s_options_is_a_list_of_options_separated = cptr.lit("(<options> is a list of options separated by commas)");
+const __s_or_press_o_while_playing_and_use_the = cptr.lit("or press \"O\" while playing and use the menu.");
+const __s_boolean_options_which_can_be_negated_by = cptr.lit("Boolean options (which can be negated by prefixing them with '!' or \"no\"):");
+const __s_some_of_the_options_can_only_be_set = cptr.lit("Some of the options can only be set before the game is started;");
+const __s_those_items_will_not_be_selectable_in = cptr.lit("those items will not be selectable in the 'O' command's menu.");
+const __s_some_options_are_stored_in_a_game_s = cptr.lit("Some options are stored in a game's save file, and will keep saved");
+const __s_values_when_restoring_that_game_even_if = cptr.lit("values when restoring that game even if you have updated your config-");
+const __s_uration_file_to_change_them_such = cptr.lit("uration file to change them.  Such changes will matter for new games.");
+const __s_the_other_settings_can_be_set_with_o = cptr.lit("The \"other settings\" can be set with 'O', but when set within the");
+const __s_configuration_file_they_use_their_own = cptr.lit("configuration file they use their own directives rather than OPTIONS.");
+const __s_see_nethack_s_guidebook_for_details = cptr.lit("See NetHack's \"Guidebook\" for details.");
+const __s_option_help = cptr.lit("option_help");
+const __s_set_options_as_options_options_in_s = cptr.lit("Set options as OPTIONS=<options> in %s");
+const __s_compound_options = cptr.lit("Compound options:");
+const __s_tick_pct_s_apos = cptr.lit("`%s'");
+const __s_20s_s_c = cptr.lit("%-20s - %s%c");
+const __s_options__2 = cptr.lit("OPTIONS=");
+const __s_all_options_conds = cptr.lit("all_options_conds");
+const __s_comma_bslash_nl = cptr.lit(",\\\n");
+const __s_8s = cptr.lit("%8s");
+const __s_comma = cptr.lit(",");
+const __s_nl = cptr.lit("\n");
+const __s_menucolor_s_s_s_s = cptr.lit("MENUCOLOR=\"%s\"=%s%s%s\n");
+const __s_msgtype_s_s = cptr.lit("MSGTYPE=%s \"%s\"\n");
+const __s_autopickup_exception_c_s = cptr.lit("autopickup_exception=\"%c%s\"\n");
+const __s_nethack_config_saved_s = cptr.lit("# NetHack config, saved %s\n#\n");
+const __s_options_s_s = cptr.lit("OPTIONS=%s%s\n");
+const __s_all_options_strbuf = cptr.lit("all_options_strbuf");
+const __s_options_s_s__2 = cptr.lit("OPTIONS=%s:%s");
+const __s_wizkit_s = cptr.lit("WIZKIT=%s\n");
+const __s_next_opt = cptr.lit("next_opt");
+const __s_comma_sp = cptr.lit(", ");
+const __s_status_hilite_rules = cptr.lit("status hilite rules");
+const __s_set_option_mod_status_status_out_of = cptr.lit("set_option_mod_status: status out of range %d.");
+const __s_set_wc_option_mod_status_status_out_of = cptr.lit("set_wc_option_mod_status: status out of range %d.");
+const __s_set_wc2_option_mod_status_status_out_of = cptr.lit("set_wc2_option_mod_status: status out of range %d.");
+const __s_windowcolors_for_s_windows_specified = cptr.lit("windowcolors for %s windows specified multiple times");
+const __s_windowcolors_for_unrecognized_window = cptr.lit("windowcolors for unrecognized window type: %s");
 
 /** C ref: options.c:60 — struct allopt_t[218] */
 const allopt_init = cptr.alloc(218 * 104);
-cptr.stPtro(allopt_init, 0, __sl0);
+cptr.stPtro(allopt_init, 0, __s_windowtype);
 cptr.stI32o(allopt_init, 0 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 0 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 0 + $allopt_t_expectedbuf, NHM.WINTYPELEN);
@@ -1303,13 +1303,13 @@ cptr.st1o(allopt_init, 0 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 0 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 0 + $allopt_t_optfn, optfn_windowtype);
 cptr.stPtro(allopt_init, 0 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 0 + $allopt_t_descr, __sl1);
+cptr.stPtro(allopt_init, 0 + $allopt_t_descr, __s_windowing_system_to_use_should_be);
 cptr.stPtro(allopt_init, 0 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 0 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 0 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 0 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 0 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 104, __sl2);
+cptr.stPtro(allopt_init, 104, __s_playmode);
 cptr.stI32o(allopt_init, 104 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 104 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 104 + $allopt_t_expectedbuf, 8);
@@ -1325,13 +1325,13 @@ cptr.st1o(allopt_init, 104 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 104 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 104 + $allopt_t_optfn, optfn_playmode);
 cptr.stPtro(allopt_init, 104 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 104 + $allopt_t_descr, __sl3);
+cptr.stPtro(allopt_init, 104 + $allopt_t_descr, __s_normal_play_non_scoring_explore_mode_or);
 cptr.stPtro(allopt_init, 104 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 104 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 104 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 104 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 104 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 208, __sl4);
+cptr.stPtro(allopt_init, 208, __s_name);
 cptr.stI32o(allopt_init, 208 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 208 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 208 + $allopt_t_expectedbuf, NHM.PL_NSIZ);
@@ -1347,13 +1347,13 @@ cptr.st1o(allopt_init, 208 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 208 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 208 + $allopt_t_optfn, optfn_name);
 cptr.stPtro(allopt_init, 208 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 208 + $allopt_t_descr, __sl5);
+cptr.stPtro(allopt_init, 208 + $allopt_t_descr, __s_your_character_s_name_e_g_name_merlin_w);
 cptr.stPtro(allopt_init, 208 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 208 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 208 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 208 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 208 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 312, __sl6);
+cptr.stPtro(allopt_init, 312, __s_role);
 cptr.stI32o(allopt_init, 312 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 312 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 312 + $allopt_t_expectedbuf, NHM.PL_CSIZ);
@@ -1368,14 +1368,14 @@ cptr.stI32o(allopt_init, 312 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 312 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 312 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 312 + $allopt_t_optfn, optfn_role);
-cptr.stPtro(allopt_init, 312 + $allopt_t_alias, __sl7);
-cptr.stPtro(allopt_init, 312 + $allopt_t_descr, __sl8);
+cptr.stPtro(allopt_init, 312 + $allopt_t_alias, __s_character);
+cptr.stPtro(allopt_init, 312 + $allopt_t_descr, __s_your_starting_role_e_g_barbarian);
 cptr.stPtro(allopt_init, 312 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 312 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 312 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 312 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 312 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 416, __sl9);
+cptr.stPtro(allopt_init, 416, __s_race);
 cptr.stI32o(allopt_init, 416 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 416 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 416 + $allopt_t_expectedbuf, NHM.PL_CSIZ);
@@ -1391,13 +1391,13 @@ cptr.st1o(allopt_init, 416 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 416 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 416 + $allopt_t_optfn, optfn_race);
 cptr.stPtro(allopt_init, 416 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 416 + $allopt_t_descr, __sl10);
+cptr.stPtro(allopt_init, 416 + $allopt_t_descr, __s_your_starting_race_e_g_human_elf);
 cptr.stPtro(allopt_init, 416 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 416 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 416 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 416 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 416 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 520, __sl11);
+cptr.stPtro(allopt_init, 520, __s_gender);
 cptr.stI32o(allopt_init, 520 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 520 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 520 + $allopt_t_expectedbuf, 8);
@@ -1413,13 +1413,13 @@ cptr.st1o(allopt_init, 520 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 520 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 520 + $allopt_t_optfn, optfn_gender);
 cptr.stPtro(allopt_init, 520 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 520 + $allopt_t_descr, __sl12);
+cptr.stPtro(allopt_init, 520 + $allopt_t_descr, __s_your_starting_gender_male_or_female);
 cptr.stPtro(allopt_init, 520 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 520 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 520 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 520 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 520 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 624, __sl13);
+cptr.stPtro(allopt_init, 624, __s_alignment);
 cptr.stI32o(allopt_init, 624 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 624 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 624 + $allopt_t_expectedbuf, 8);
@@ -1434,14 +1434,14 @@ cptr.stI32o(allopt_init, 624 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 624 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 624 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 624 + $allopt_t_optfn, optfn_alignment);
-cptr.stPtro(allopt_init, 624 + $allopt_t_alias, __sl14);
-cptr.stPtro(allopt_init, 624 + $allopt_t_descr, __sl15);
+cptr.stPtro(allopt_init, 624 + $allopt_t_alias, __s_align);
+cptr.stPtro(allopt_init, 624 + $allopt_t_descr, __s_your_starting_alignment_lawful_neutral);
 cptr.stPtro(allopt_init, 624 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 624 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 624 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 624 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 624 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 728, __sl16);
+cptr.stPtro(allopt_init, 728, __s_accessiblemsg);
 cptr.stI32o(allopt_init, 728 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 728 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 728 + $allopt_t_expectedbuf, 0);
@@ -1457,13 +1457,13 @@ cptr.st1o(allopt_init, 728 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 728 + $allopt_t_addr, a11y);
 cptr.stPtro(allopt_init, 728 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 728 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 728 + $allopt_t_descr, __sl17);
+cptr.stPtro(allopt_init, 728 + $allopt_t_descr, __s_add_location_information_to_messages);
 cptr.stPtro(allopt_init, 728 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 728 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 728 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 728 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 728 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 832, __sl18);
+cptr.stPtro(allopt_init, 832, __s_acoustics);
 cptr.stI32o(allopt_init, 832 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 832 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 832 + $allopt_t_expectedbuf, 0);
@@ -1479,13 +1479,13 @@ cptr.st1o(allopt_init, 832 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 832 + $allopt_t_addr, flags);
 cptr.stPtro(allopt_init, 832 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 832 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 832 + $allopt_t_descr, __sl19);
+cptr.stPtro(allopt_init, 832 + $allopt_t_descr, __s_can_your_character_hear_anything);
 cptr.stPtro(allopt_init, 832 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 832 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 832 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 832 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 832 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 936, __sl20);
+cptr.stPtro(allopt_init, 936, __s_align_message);
 cptr.stI32o(allopt_init, 936 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 936 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 936 + $allopt_t_expectedbuf, 20);
@@ -1501,13 +1501,13 @@ cptr.st1o(allopt_init, 936 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 936 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 936 + $allopt_t_optfn, optfn_align_message);
 cptr.stPtro(allopt_init, 936 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 936 + $allopt_t_descr, __sl21);
+cptr.stPtro(allopt_init, 936 + $allopt_t_descr, __s_message_window_alignment);
 cptr.stPtro(allopt_init, 936 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 936 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 936 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 936 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 936 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1040, __sl22);
+cptr.stPtro(allopt_init, 1040, __s_align_status);
 cptr.stI32o(allopt_init, 1040 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1040 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1040 + $allopt_t_expectedbuf, 20);
@@ -1523,13 +1523,13 @@ cptr.st1o(allopt_init, 1040 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1040 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 1040 + $allopt_t_optfn, optfn_align_status);
 cptr.stPtro(allopt_init, 1040 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1040 + $allopt_t_descr, __sl23);
+cptr.stPtro(allopt_init, 1040 + $allopt_t_descr, __s_status_window_alignment);
 cptr.stPtro(allopt_init, 1040 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1040 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1040 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 1040 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1040 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1144, __sl24);
+cptr.stPtro(allopt_init, 1144, __s_altkeyhandling);
 cptr.stI32o(allopt_init, 1144 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1144 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1144 + $allopt_t_expectedbuf, 20);
@@ -1544,14 +1544,14 @@ cptr.stI32o(allopt_init, 1144 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 1144 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1144 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 1144 + $allopt_t_optfn, optfn_altkeyhandling);
-cptr.stPtro(allopt_init, 1144 + $allopt_t_alias, __sl25);
-cptr.stPtro(allopt_init, 1144 + $allopt_t_descr, __sl26);
+cptr.stPtro(allopt_init, 1144 + $allopt_t_alias, __s_altkeyhandler);
+cptr.stPtro(allopt_init, 1144 + $allopt_t_descr, __s_not_applicable);
 cptr.stPtro(allopt_init, 1144 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1144 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1144 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 1144 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1144 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1248, __sl27);
+cptr.stPtro(allopt_init, 1248, __s_altmeta);
 cptr.stI32o(allopt_init, 1248 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1248 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1248 + $allopt_t_expectedbuf, 0);
@@ -1567,13 +1567,13 @@ cptr.st1o(allopt_init, 1248 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 1248 + $allopt_t_addr, cptr.add(iflags, $instance_flags_altmeta));
 cptr.stPtro(allopt_init, 1248 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1248 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1248 + $allopt_t_descr, __sl28);
+cptr.stPtro(allopt_init, 1248 + $allopt_t_descr, __s_treat_esc_c_as_m_c_meta_c_8th_bit_set);
 cptr.stPtro(allopt_init, 1248 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1248 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1248 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1248 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1248 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1352, __sl29);
+cptr.stPtro(allopt_init, 1352, __s_armorstatus);
 cptr.stI32o(allopt_init, 1352 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1352 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1352 + $allopt_t_expectedbuf, 0);
@@ -1589,13 +1589,13 @@ cptr.st1o(allopt_init, 1352 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1352 + $allopt_t_addr, cptr.add(flags, $flag_armorstatus));
 cptr.stPtro(allopt_init, 1352 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1352 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1352 + $allopt_t_descr, __sl30);
+cptr.stPtro(allopt_init, 1352 + $allopt_t_descr, __s_summarize_currently_worn_armor_in_a);
 cptr.stPtro(allopt_init, 1352 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1352 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1352 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1352 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1352 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1456, __sl31);
+cptr.stPtro(allopt_init, 1456, __s_ascii_map);
 cptr.stI32o(allopt_init, 1456 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1456 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1456 + $allopt_t_expectedbuf, 0);
@@ -1611,13 +1611,13 @@ cptr.st1o(allopt_init, 1456 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1456 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_ascii_map));
 cptr.stPtro(allopt_init, 1456 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1456 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1456 + $allopt_t_descr, __sl32);
+cptr.stPtro(allopt_init, 1456 + $allopt_t_descr, __s_show_map_as_text);
 cptr.stPtro(allopt_init, 1456 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1456 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 1456 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1456 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1456 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1560, __sl33);
+cptr.stPtro(allopt_init, 1560, __s_autocompletions);
 cptr.stI32o(allopt_init, 1560 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1560 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1560 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -1633,13 +1633,13 @@ cptr.st1o(allopt_init, 1560 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1560 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 1560 + $allopt_t_optfn, optfn_o_autocomplete);
 cptr.stPtro(allopt_init, 1560 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1560 + $allopt_t_descr, __sl34);
+cptr.stPtro(allopt_init, 1560 + $allopt_t_descr, __s_edit_autocompletions);
 cptr.stPtro(allopt_init, 1560 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1560 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 1560 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 1560 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1560 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1664, __sl35);
+cptr.stPtro(allopt_init, 1664, __s_autodescribe);
 cptr.stI32o(allopt_init, 1664 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 1664 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1664 + $allopt_t_expectedbuf, 0);
@@ -1655,13 +1655,13 @@ cptr.st1o(allopt_init, 1664 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 1664 + $allopt_t_addr, cptr.add(iflags, $instance_flags_autodescribe));
 cptr.stPtro(allopt_init, 1664 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1664 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1664 + $allopt_t_descr, __sl36);
+cptr.stPtro(allopt_init, 1664 + $allopt_t_descr, __s_describe_terrain_under_cursor);
 cptr.stPtro(allopt_init, 1664 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1664 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 1664 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1664 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1664 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1768, __sl37);
+cptr.stPtro(allopt_init, 1768, __s_autodig);
 cptr.stI32o(allopt_init, 1768 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 1768 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1768 + $allopt_t_expectedbuf, 0);
@@ -1677,13 +1677,13 @@ cptr.st1o(allopt_init, 1768 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 1768 + $allopt_t_addr, cptr.add(flags, $flag_autodig));
 cptr.stPtro(allopt_init, 1768 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1768 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1768 + $allopt_t_descr, __sl38);
+cptr.stPtro(allopt_init, 1768 + $allopt_t_descr, __s_dig_if_moving_and_wielding_a_digging);
 cptr.stPtro(allopt_init, 1768 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1768 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1768 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1768 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1768 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1872, __sl39);
+cptr.stPtro(allopt_init, 1872, __s_autoopen);
 cptr.stI32o(allopt_init, 1872 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 1872 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1872 + $allopt_t_expectedbuf, 0);
@@ -1699,13 +1699,13 @@ cptr.st1o(allopt_init, 1872 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 1872 + $allopt_t_addr, cptr.add(flags, $flag_autoopen));
 cptr.stPtro(allopt_init, 1872 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1872 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1872 + $allopt_t_descr, __sl40);
+cptr.stPtro(allopt_init, 1872 + $allopt_t_descr, __s_walking_into_a_door_attempts_to_open_it);
 cptr.stPtro(allopt_init, 1872 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1872 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 1872 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1872 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1872 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 1976, __sl41);
+cptr.stPtro(allopt_init, 1976, __s_autopickup);
 cptr.stI32o(allopt_init, 1976 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 1976 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 1976 + $allopt_t_expectedbuf, 0);
@@ -1721,13 +1721,13 @@ cptr.st1o(allopt_init, 1976 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 1976 + $allopt_t_addr, cptr.add(flags, $flag_pickup));
 cptr.stPtro(allopt_init, 1976 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 1976 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 1976 + $allopt_t_descr, __sl42);
+cptr.stPtro(allopt_init, 1976 + $allopt_t_descr, __s_automatically_pick_up_objects);
 cptr.stPtro(allopt_init, 1976 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 1976 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 1976 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 1976 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 1976 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2080, __sl43);
+cptr.stPtro(allopt_init, 2080, __s_autopickup_exceptions);
 cptr.stI32o(allopt_init, 2080 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 2080 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2080 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -1743,13 +1743,13 @@ cptr.st1o(allopt_init, 2080 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 2080 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 2080 + $allopt_t_optfn, optfn_o_autopickup_exceptions);
 cptr.stPtro(allopt_init, 2080 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2080 + $allopt_t_descr, __sl44);
+cptr.stPtro(allopt_init, 2080 + $allopt_t_descr, __s_edit_autopickup_exceptions);
 cptr.stPtro(allopt_init, 2080 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2080 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 2080 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 2080 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2080 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2184, __sl45);
+cptr.stPtro(allopt_init, 2184, __s_autoquiver);
 cptr.stI32o(allopt_init, 2184 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 2184 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2184 + $allopt_t_expectedbuf, 0);
@@ -1765,13 +1765,13 @@ cptr.st1o(allopt_init, 2184 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 2184 + $allopt_t_addr, cptr.add(flags, $flag_autoquiver));
 cptr.stPtro(allopt_init, 2184 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 2184 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2184 + $allopt_t_descr, __sl46);
+cptr.stPtro(allopt_init, 2184 + $allopt_t_descr, __s_fill_empty_quiver_automatically_when);
 cptr.stPtro(allopt_init, 2184 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2184 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 2184 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 2184 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2184 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2288, __sl47);
+cptr.stPtro(allopt_init, 2288, __s_autounlock);
 cptr.stI32o(allopt_init, 2288 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 2288 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2288 + $allopt_t_expectedbuf, 80);
@@ -1787,13 +1787,13 @@ cptr.st1o(allopt_init, 2288 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 2288 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 2288 + $allopt_t_optfn, optfn_autounlock);
 cptr.stPtro(allopt_init, 2288 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2288 + $allopt_t_descr, __sl48);
+cptr.stPtro(allopt_init, 2288 + $allopt_t_descr, __s_action_to_take_when_encountering_locked);
 cptr.stPtro(allopt_init, 2288 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2288 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 2288 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 2288 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2288 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2392, __sl49);
+cptr.stPtro(allopt_init, 2392, __s_bgcolors);
 cptr.stI32o(allopt_init, 2392 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 2392 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2392 + $allopt_t_expectedbuf, 0);
@@ -1809,13 +1809,13 @@ cptr.st1o(allopt_init, 2392 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 2392 + $allopt_t_addr, cptr.add(iflags, $instance_flags_bgcolors));
 cptr.stPtro(allopt_init, 2392 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 2392 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2392 + $allopt_t_descr, __sl50);
+cptr.stPtro(allopt_init, 2392 + $allopt_t_descr, __s_use_background_color_for_some_map);
 cptr.stPtro(allopt_init, 2392 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2392 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 2392 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 2392 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2392 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2496, __sl51);
+cptr.stPtro(allopt_init, 2496, __s_bind_keys);
 cptr.stI32o(allopt_init, 2496 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 2496 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2496 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -1831,13 +1831,13 @@ cptr.st1o(allopt_init, 2496 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 2496 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 2496 + $allopt_t_optfn, optfn_o_bind_keys);
 cptr.stPtro(allopt_init, 2496 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2496 + $allopt_t_descr, __sl52);
+cptr.stPtro(allopt_init, 2496 + $allopt_t_descr, __s_edit_key_binds);
 cptr.stPtro(allopt_init, 2496 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2496 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 2496 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 2496 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2496 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2600, __sl53);
+cptr.stPtro(allopt_init, 2600, __s_bios);
 cptr.stI32o(allopt_init, 2600 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 2600 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2600 + $allopt_t_expectedbuf, 0);
@@ -1859,7 +1859,7 @@ cptr.st1o(allopt_init, 2600 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 2600 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 2600 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2600 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2704, __sl54);
+cptr.stPtro(allopt_init, 2704, __s_blind);
 cptr.stI32o(allopt_init, 2704 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 2704 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2704 + $allopt_t_expectedbuf, 0);
@@ -1874,14 +1874,14 @@ cptr.stI32o(allopt_init, 2704 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 2704 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 2704 + $allopt_t_addr, cptr.add(u, $you_uroleplay));
 cptr.stPtro(allopt_init, 2704 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 2704 + $allopt_t_alias, __sl55);
-cptr.stPtro(allopt_init, 2704 + $allopt_t_descr, __sl56);
+cptr.stPtro(allopt_init, 2704 + $allopt_t_alias, __s_permablind);
+cptr.stPtro(allopt_init, 2704 + $allopt_t_descr, __s_your_character_is_permanently_blind);
 cptr.stPtro(allopt_init, 2704 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2704 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 2704 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 2704 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2704 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2808, __sl57);
+cptr.stPtro(allopt_init, 2808, __s_bones);
 cptr.stI32o(allopt_init, 2808 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 2808 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2808 + $allopt_t_expectedbuf, 0);
@@ -1897,13 +1897,13 @@ cptr.st1o(allopt_init, 2808 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 2808 + $allopt_t_addr, cptr.add(flags, $flag_bones));
 cptr.stPtro(allopt_init, 2808 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 2808 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2808 + $allopt_t_descr, __sl58);
+cptr.stPtro(allopt_init, 2808 + $allopt_t_descr, __s_allow_loading_bones_files);
 cptr.stPtro(allopt_init, 2808 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2808 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 2808 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 2808 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2808 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 2912, __sl59);
+cptr.stPtro(allopt_init, 2912, __s_boulder);
 cptr.stI32o(allopt_init, 2912 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 2912 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 2912 + $allopt_t_expectedbuf, 1);
@@ -1919,13 +1919,13 @@ cptr.st1o(allopt_init, 2912 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 2912 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 2912 + $allopt_t_optfn, optfn_boulder);
 cptr.stPtro(allopt_init, 2912 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 2912 + $allopt_t_descr, __sl60);
+cptr.stPtro(allopt_init, 2912 + $allopt_t_descr, __s_deprecated_use_s_boulder_in_sym_file);
 cptr.stPtro(allopt_init, 2912 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 2912 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 2912 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 2912 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 2912 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3016, __sl61);
+cptr.stPtro(allopt_init, 3016, __s_catname);
 cptr.stI32o(allopt_init, 3016 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3016 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3016 + $allopt_t_expectedbuf, NHM.PL_PSIZ);
@@ -1941,13 +1941,13 @@ cptr.st1o(allopt_init, 3016 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 3016 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 3016 + $allopt_t_optfn, optfn_catname);
 cptr.stPtro(allopt_init, 3016 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3016 + $allopt_t_descr, __sl62);
+cptr.stPtro(allopt_init, 3016 + $allopt_t_descr, __s_name_of_your_starting_pet_if_it_is_a);
 cptr.stPtro(allopt_init, 3016 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3016 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 3016 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 3016 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3016 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3120, __sl63);
+cptr.stPtro(allopt_init, 3120, __s_checkpoint);
 cptr.stI32o(allopt_init, 3120 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3120 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3120 + $allopt_t_expectedbuf, 0);
@@ -1963,13 +1963,13 @@ cptr.st1o(allopt_init, 3120 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 3120 + $allopt_t_addr, cptr.add(flags, $flag_ins_chkpt));
 cptr.stPtro(allopt_init, 3120 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 3120 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3120 + $allopt_t_descr, __sl64);
+cptr.stPtro(allopt_init, 3120 + $allopt_t_descr, __s_save_game_state_after_each_level_change);
 cptr.stPtro(allopt_init, 3120 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3120 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3120 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3120 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3120 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3224, __sl65);
+cptr.stPtro(allopt_init, 3224, __s_cmdassist);
 cptr.stI32o(allopt_init, 3224 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 3224 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3224 + $allopt_t_expectedbuf, 0);
@@ -1985,13 +1985,13 @@ cptr.st1o(allopt_init, 3224 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 3224 + $allopt_t_addr, cptr.add(iflags, $instance_flags_cmdassist));
 cptr.stPtro(allopt_init, 3224 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 3224 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3224 + $allopt_t_descr, __sl66);
+cptr.stPtro(allopt_init, 3224 + $allopt_t_descr, __s_give_help_for_errors_on_direction_input);
 cptr.stPtro(allopt_init, 3224 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3224 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3224 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3224 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3224 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3328, __sl67);
+cptr.stPtro(allopt_init, 3328, __s_color);
 cptr.stI32o(allopt_init, 3328 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 3328 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3328 + $allopt_t_expectedbuf, 0);
@@ -2006,14 +2006,14 @@ cptr.stI32o(allopt_init, 3328 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 3328 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 3328 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_color));
 cptr.stPtro(allopt_init, 3328 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 3328 + $allopt_t_alias, __sl68);
-cptr.stPtro(allopt_init, 3328 + $allopt_t_descr, __sl69);
+cptr.stPtro(allopt_init, 3328 + $allopt_t_alias, __s_colour);
+cptr.stPtro(allopt_init, 3328 + $allopt_t_descr, __s_use_color_in_map);
 cptr.stPtro(allopt_init, 3328 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3328 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3328 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3328 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3328 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3432, __sl70);
+cptr.stPtro(allopt_init, 3432, __s_confirm);
 cptr.stI32o(allopt_init, 3432 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3432 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3432 + $allopt_t_expectedbuf, 0);
@@ -2029,13 +2029,13 @@ cptr.st1o(allopt_init, 3432 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 3432 + $allopt_t_addr, cptr.add(flags, $flag_confirm));
 cptr.stPtro(allopt_init, 3432 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 3432 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3432 + $allopt_t_descr, __sl71);
+cptr.stPtro(allopt_init, 3432 + $allopt_t_descr, __s_ask_before_hitting_tame_or_peaceful);
 cptr.stPtro(allopt_init, 3432 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3432 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3432 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3432 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3432 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3536, __sl72);
+cptr.stPtro(allopt_init, 3536, __s_crash_email);
 cptr.stI32o(allopt_init, 3536 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3536 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3536 + $allopt_t_expectedbuf, NHM.PL_NSIZ);
@@ -2051,13 +2051,13 @@ cptr.st1o(allopt_init, 3536 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 3536 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 3536 + $allopt_t_optfn, optfn_crash_email);
 cptr.stPtro(allopt_init, 3536 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3536 + $allopt_t_descr, __sl73);
+cptr.stPtro(allopt_init, 3536 + $allopt_t_descr, __s_email_address_for_reporting);
 cptr.stPtro(allopt_init, 3536 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3536 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 3536 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 3536 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3536 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3640, __sl74);
+cptr.stPtro(allopt_init, 3640, __s_crash_name);
 cptr.stI32o(allopt_init, 3640 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3640 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3640 + $allopt_t_expectedbuf, NHM.PL_NSIZ);
@@ -2073,13 +2073,13 @@ cptr.st1o(allopt_init, 3640 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 3640 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 3640 + $allopt_t_optfn, optfn_crash_name);
 cptr.stPtro(allopt_init, 3640 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3640 + $allopt_t_descr, __sl75);
+cptr.stPtro(allopt_init, 3640 + $allopt_t_descr, __s_your_name_for_reporting);
 cptr.stPtro(allopt_init, 3640 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3640 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 3640 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 3640 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3640 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3744, __sl76);
+cptr.stPtro(allopt_init, 3744, __s_crash_urlmax);
 cptr.stI32o(allopt_init, 3744 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 3744 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3744 + $allopt_t_expectedbuf, NHM.PL_NSIZ);
@@ -2095,13 +2095,13 @@ cptr.st1o(allopt_init, 3744 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 3744 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 3744 + $allopt_t_optfn, optfn_crash_urlmax);
 cptr.stPtro(allopt_init, 3744 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 3744 + $allopt_t_descr, __sl77);
+cptr.stPtro(allopt_init, 3744 + $allopt_t_descr, __s_length_of_longest_url_we_can_generate);
 cptr.stPtro(allopt_init, 3744 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3744 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 3744 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 3744 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3744 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3848, __sl78);
+cptr.stPtro(allopt_init, 3848, __s_customcolors);
 cptr.stI32o(allopt_init, 3848 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 3848 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3848 + $allopt_t_expectedbuf, 0);
@@ -2116,14 +2116,14 @@ cptr.stI32o(allopt_init, 3848 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 3848 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 3848 + $allopt_t_addr, cptr.add(iflags, $instance_flags_customcolors));
 cptr.stPtro(allopt_init, 3848 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 3848 + $allopt_t_alias, __sl79);
-cptr.stPtro(allopt_init, 3848 + $allopt_t_descr, __sl80);
+cptr.stPtro(allopt_init, 3848 + $allopt_t_alias, __s_customcolours);
+cptr.stPtro(allopt_init, 3848 + $allopt_t_descr, __s_use_custom_colors_in_map);
 cptr.stPtro(allopt_init, 3848 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3848 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3848 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3848 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3848 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 3952, __sl81);
+cptr.stPtro(allopt_init, 3952, __s_customsymbols);
 cptr.stI32o(allopt_init, 3952 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 3952 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 3952 + $allopt_t_expectedbuf, 0);
@@ -2138,14 +2138,14 @@ cptr.stI32o(allopt_init, 3952 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 3952 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 3952 + $allopt_t_addr, cptr.add(iflags, $instance_flags_customsymbols));
 cptr.stPtro(allopt_init, 3952 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 3952 + $allopt_t_alias, __sl81);
-cptr.stPtro(allopt_init, 3952 + $allopt_t_descr, __sl82);
+cptr.stPtro(allopt_init, 3952 + $allopt_t_alias, __s_customsymbols);
+cptr.stPtro(allopt_init, 3952 + $allopt_t_descr, __s_use_custom_utf8_symbols_in_map);
 cptr.stPtro(allopt_init, 3952 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 3952 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 3952 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 3952 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 3952 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4056, __sl83);
+cptr.stPtro(allopt_init, 4056, __s_dark_room);
 cptr.stI32o(allopt_init, 4056 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4056 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4056 + $allopt_t_expectedbuf, 0);
@@ -2161,13 +2161,13 @@ cptr.st1o(allopt_init, 4056 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 4056 + $allopt_t_addr, cptr.add(flags, $flag_dark_room));
 cptr.stPtro(allopt_init, 4056 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4056 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4056 + $allopt_t_descr, __sl84);
+cptr.stPtro(allopt_init, 4056 + $allopt_t_descr, __s_show_floor_outside_line_of_sight);
 cptr.stPtro(allopt_init, 4056 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4056 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 4056 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4056 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4056 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4160, __sl85);
+cptr.stPtro(allopt_init, 4160, __s_deaf);
 cptr.stI32o(allopt_init, 4160 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4160 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4160 + $allopt_t_expectedbuf, 0);
@@ -2182,14 +2182,14 @@ cptr.stI32o(allopt_init, 4160 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 4160 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4160 + $allopt_t_addr, cptr.add(u, $you_uroleplay + $u_roleplay_deaf));
 cptr.stPtro(allopt_init, 4160 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 4160 + $allopt_t_alias, __sl86);
-cptr.stPtro(allopt_init, 4160 + $allopt_t_descr, __sl87);
+cptr.stPtro(allopt_init, 4160 + $allopt_t_alias, __s_permadeaf);
+cptr.stPtro(allopt_init, 4160 + $allopt_t_descr, __s_your_character_is_permanently_deaf);
 cptr.stPtro(allopt_init, 4160 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4160 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4160 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4160 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4160 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4264, __sl88);
+cptr.stPtro(allopt_init, 4264, __s_decgraphics);
 cptr.stI32o(allopt_init, 4264 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4264 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4264 + $allopt_t_expectedbuf, 70);
@@ -2205,13 +2205,13 @@ cptr.st1o(allopt_init, 4264 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4264 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 4264 + $allopt_t_optfn, optfn_DECgraphics);
 cptr.stPtro(allopt_init, 4264 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4264 + $allopt_t_descr, __sl89);
+cptr.stPtro(allopt_init, 4264 + $allopt_t_descr, __s_load_decgraphics_display_symbols_into);
 cptr.stPtro(allopt_init, 4264 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4264 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4264 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 4264 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4264 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4368, __sl90);
+cptr.stPtro(allopt_init, 4368, __s_debug_hunger);
 cptr.stI32o(allopt_init, 4368 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4368 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4368 + $allopt_t_expectedbuf, 0);
@@ -2227,13 +2227,13 @@ cptr.st1o(allopt_init, 4368 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4368 + $allopt_t_addr, cptr.add(iflags, $instance_flags_debug_hunger));
 cptr.stPtro(allopt_init, 4368 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4368 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4368 + $allopt_t_descr, __sl91);
+cptr.stPtro(allopt_init, 4368 + $allopt_t_descr, __s_no_hunger);
 cptr.stPtro(allopt_init, 4368 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4368 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4368 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4368 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4368 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4472, __sl92);
+cptr.stPtro(allopt_init, 4472, __s_debug_mongen);
 cptr.stI32o(allopt_init, 4472 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4472 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4472 + $allopt_t_expectedbuf, 0);
@@ -2249,13 +2249,13 @@ cptr.st1o(allopt_init, 4472 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4472 + $allopt_t_addr, cptr.add(iflags, $instance_flags_debug_mongen));
 cptr.stPtro(allopt_init, 4472 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4472 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4472 + $allopt_t_descr, __sl93);
+cptr.stPtro(allopt_init, 4472 + $allopt_t_descr, __s_no_random_monster_generation);
 cptr.stPtro(allopt_init, 4472 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4472 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4472 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4472 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4472 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4576, __sl94);
+cptr.stPtro(allopt_init, 4576, __s_debug_overwrite_stairs);
 cptr.stI32o(allopt_init, 4576 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4576 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4576 + $allopt_t_expectedbuf, 0);
@@ -2271,13 +2271,13 @@ cptr.st1o(allopt_init, 4576 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4576 + $allopt_t_addr, cptr.add(iflags, $instance_flags_debug_overwrite_stairs));
 cptr.stPtro(allopt_init, 4576 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4576 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4576 + $allopt_t_descr, __sl95);
+cptr.stPtro(allopt_init, 4576 + $allopt_t_descr, __s_level_generation_can_overwrite_stairs);
 cptr.stPtro(allopt_init, 4576 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4576 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4576 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4576 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4576 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4680, __sl96);
+cptr.stPtro(allopt_init, 4680, __s_disclose);
 cptr.stI32o(allopt_init, 4680 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4680 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4680 + $allopt_t_expectedbuf, 14);
@@ -2293,13 +2293,13 @@ cptr.st1o(allopt_init, 4680 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4680 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 4680 + $allopt_t_optfn, optfn_disclose);
 cptr.stPtro(allopt_init, 4680 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4680 + $allopt_t_descr, __sl97);
+cptr.stPtro(allopt_init, 4680 + $allopt_t_descr, __s_the_kinds_of_information_to_disclose_at);
 cptr.stPtro(allopt_init, 4680 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4680 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4680 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 4680 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4680 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4784, __sl98);
+cptr.stPtro(allopt_init, 4784, __s_dogname);
 cptr.stI32o(allopt_init, 4784 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4784 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4784 + $allopt_t_expectedbuf, NHM.PL_PSIZ);
@@ -2315,13 +2315,13 @@ cptr.st1o(allopt_init, 4784 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4784 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 4784 + $allopt_t_optfn, optfn_dogname);
 cptr.stPtro(allopt_init, 4784 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4784 + $allopt_t_descr, __sl99);
+cptr.stPtro(allopt_init, 4784 + $allopt_t_descr, __s_name_of_your_starting_pet_if_it_is_a__2);
 cptr.stPtro(allopt_init, 4784 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4784 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4784 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 4784 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4784 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4888, __sl100);
+cptr.stPtro(allopt_init, 4888, __s_dropped_nopick);
 cptr.stI32o(allopt_init, 4888 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 4888 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4888 + $allopt_t_expectedbuf, 0);
@@ -2337,13 +2337,13 @@ cptr.st1o(allopt_init, 4888 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 4888 + $allopt_t_addr, cptr.add(flags, $flag_nopick_dropped));
 cptr.stPtro(allopt_init, 4888 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4888 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4888 + $allopt_t_descr, __sl101);
+cptr.stPtro(allopt_init, 4888 + $allopt_t_descr, __s_don_t_autopickup_dropped_items);
 cptr.stPtro(allopt_init, 4888 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4888 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 4888 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 4888 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4888 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 4992, __sl102);
+cptr.stPtro(allopt_init, 4992, __s_dungeon);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_expectedbuf, ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0));
@@ -2359,13 +2359,13 @@ cptr.st1o(allopt_init, 4992 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 4992 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 4992 + $allopt_t_optfn, optfn_dungeon);
 cptr.stPtro(allopt_init, 4992 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 4992 + $allopt_t_descr, __sl103);
+cptr.stPtro(allopt_init, 4992 + $allopt_t_descr, __s_list_of_symbols_to_use_in_drawing_the);
 cptr.stPtro(allopt_init, 4992 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 4992 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 4992 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 4992 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 4992 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5096, __sl104);
+cptr.stPtro(allopt_init, 5096, __s_effects);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_expectedbuf, ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0));
@@ -2381,13 +2381,13 @@ cptr.st1o(allopt_init, 5096 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5096 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 5096 + $allopt_t_optfn, optfn_effects);
 cptr.stPtro(allopt_init, 5096 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5096 + $allopt_t_descr, __sl105);
+cptr.stPtro(allopt_init, 5096 + $allopt_t_descr, __s_list_of_symbols_to_use_in_drawing);
 cptr.stPtro(allopt_init, 5096 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5096 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5096 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 5096 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5096 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5200, __sl106);
+cptr.stPtro(allopt_init, 5200, __s_eight_bit_tty);
 cptr.stI32o(allopt_init, 5200 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5200 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5200 + $allopt_t_expectedbuf, 0);
@@ -2403,13 +2403,13 @@ cptr.st1o(allopt_init, 5200 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5200 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_eight_bit_input));
 cptr.stPtro(allopt_init, 5200 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 5200 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5200 + $allopt_t_descr, __sl107);
+cptr.stPtro(allopt_init, 5200 + $allopt_t_descr, __s_send_8_bit_characters_directly_to);
 cptr.stPtro(allopt_init, 5200 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5200 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5200 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 5200 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5200 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5304, __sl108);
+cptr.stPtro(allopt_init, 5304, __s_extmenu);
 cptr.stI32o(allopt_init, 5304 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5304 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5304 + $allopt_t_expectedbuf, 0);
@@ -2425,13 +2425,13 @@ cptr.st1o(allopt_init, 5304 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5304 + $allopt_t_addr, cptr.add(iflags, $instance_flags_extmenu));
 cptr.stPtro(allopt_init, 5304 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 5304 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5304 + $allopt_t_descr, __sl109);
+cptr.stPtro(allopt_init, 5304 + $allopt_t_descr, __s_use_menu_for_getting_extended_commands);
 cptr.stPtro(allopt_init, 5304 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5304 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5304 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 5304 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5304 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5408, __sl110);
+cptr.stPtro(allopt_init, 5408, __s_female);
 cptr.stI32o(allopt_init, 5408 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5408 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5408 + $allopt_t_expectedbuf, 0);
@@ -2446,14 +2446,14 @@ cptr.stI32o(allopt_init, 5408 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 5408 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5408 + $allopt_t_addr, cptr.add(flags, $flag_female));
 cptr.stPtro(allopt_init, 5408 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 5408 + $allopt_t_alias, __sl111);
-cptr.stPtro(allopt_init, 5408 + $allopt_t_descr, __sl112);
+cptr.stPtro(allopt_init, 5408 + $allopt_t_alias, __s_male);
+cptr.stPtro(allopt_init, 5408 + $allopt_t_descr, __s_deprecated_use_gender_female);
 cptr.stPtro(allopt_init, 5408 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5408 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5408 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 5408 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5408 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5512, __sl113);
+cptr.stPtro(allopt_init, 5512, __s_fireassist);
 cptr.stI32o(allopt_init, 5512 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 5512 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5512 + $allopt_t_expectedbuf, 0);
@@ -2469,13 +2469,13 @@ cptr.st1o(allopt_init, 5512 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 5512 + $allopt_t_addr, cptr.add(iflags, $instance_flags_fireassist));
 cptr.stPtro(allopt_init, 5512 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 5512 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5512 + $allopt_t_descr, __sl114);
+cptr.stPtro(allopt_init, 5512 + $allopt_t_descr, __s_fire_command_tries_to_be_helpful);
 cptr.stPtro(allopt_init, 5512 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5512 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 5512 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 5512 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5512 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5616, __sl115);
+cptr.stPtro(allopt_init, 5616, __s_fixinv);
 cptr.stI32o(allopt_init, 5616 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5616 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5616 + $allopt_t_expectedbuf, 0);
@@ -2491,13 +2491,13 @@ cptr.st1o(allopt_init, 5616 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 5616 + $allopt_t_addr, cptr.add(flags, $flag_invlet_constant));
 cptr.stPtro(allopt_init, 5616 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 5616 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5616 + $allopt_t_descr, __sl116);
+cptr.stPtro(allopt_init, 5616 + $allopt_t_descr, __s_inventory_items_keep_their_letters);
 cptr.stPtro(allopt_init, 5616 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5616 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 5616 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 5616 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5616 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5720, __sl117);
+cptr.stPtro(allopt_init, 5720, __s_font_map);
 cptr.stI32o(allopt_init, 5720 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5720 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5720 + $allopt_t_expectedbuf, 40);
@@ -2513,13 +2513,13 @@ cptr.st1o(allopt_init, 5720 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5720 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 5720 + $allopt_t_optfn, optfn_font_map);
 cptr.stPtro(allopt_init, 5720 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5720 + $allopt_t_descr, __sl118);
+cptr.stPtro(allopt_init, 5720 + $allopt_t_descr, __s_font_to_use_in_the_map_window);
 cptr.stPtro(allopt_init, 5720 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5720 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5720 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 5720 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5720 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5824, __sl119);
+cptr.stPtro(allopt_init, 5824, __s_font_menu);
 cptr.stI32o(allopt_init, 5824 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5824 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5824 + $allopt_t_expectedbuf, 40);
@@ -2535,13 +2535,13 @@ cptr.st1o(allopt_init, 5824 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5824 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 5824 + $allopt_t_optfn, optfn_font_menu);
 cptr.stPtro(allopt_init, 5824 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5824 + $allopt_t_descr, __sl120);
+cptr.stPtro(allopt_init, 5824 + $allopt_t_descr, __s_font_to_use_in_menus);
 cptr.stPtro(allopt_init, 5824 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5824 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5824 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 5824 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5824 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 5928, __sl121);
+cptr.stPtro(allopt_init, 5928, __s_font_message);
 cptr.stI32o(allopt_init, 5928 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5928 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 5928 + $allopt_t_expectedbuf, 40);
@@ -2557,13 +2557,13 @@ cptr.st1o(allopt_init, 5928 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 5928 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 5928 + $allopt_t_optfn, optfn_font_message);
 cptr.stPtro(allopt_init, 5928 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 5928 + $allopt_t_descr, __sl122);
+cptr.stPtro(allopt_init, 5928 + $allopt_t_descr, __s_font_to_use_in_the_message_window);
 cptr.stPtro(allopt_init, 5928 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 5928 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 5928 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 5928 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 5928 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6032, __sl123);
+cptr.stPtro(allopt_init, 6032, __s_font_size_map);
 cptr.stI32o(allopt_init, 6032 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6032 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6032 + $allopt_t_expectedbuf, 20);
@@ -2579,13 +2579,13 @@ cptr.st1o(allopt_init, 6032 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6032 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6032 + $allopt_t_optfn, optfn_font_size_map);
 cptr.stPtro(allopt_init, 6032 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6032 + $allopt_t_descr, __sl124);
+cptr.stPtro(allopt_init, 6032 + $allopt_t_descr, __s_size_of_the_map_font);
 cptr.stPtro(allopt_init, 6032 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6032 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6032 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6032 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6032 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6136, __sl125);
+cptr.stPtro(allopt_init, 6136, __s_font_size_menu);
 cptr.stI32o(allopt_init, 6136 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6136 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6136 + $allopt_t_expectedbuf, 20);
@@ -2601,13 +2601,13 @@ cptr.st1o(allopt_init, 6136 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6136 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6136 + $allopt_t_optfn, optfn_font_size_menu);
 cptr.stPtro(allopt_init, 6136 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6136 + $allopt_t_descr, __sl126);
+cptr.stPtro(allopt_init, 6136 + $allopt_t_descr, __s_size_of_the_menu_font);
 cptr.stPtro(allopt_init, 6136 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6136 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6136 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6136 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6136 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6240, __sl127);
+cptr.stPtro(allopt_init, 6240, __s_font_size_message);
 cptr.stI32o(allopt_init, 6240 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6240 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6240 + $allopt_t_expectedbuf, 20);
@@ -2623,13 +2623,13 @@ cptr.st1o(allopt_init, 6240 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6240 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6240 + $allopt_t_optfn, optfn_font_size_message);
 cptr.stPtro(allopt_init, 6240 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6240 + $allopt_t_descr, __sl128);
+cptr.stPtro(allopt_init, 6240 + $allopt_t_descr, __s_size_of_the_message_font);
 cptr.stPtro(allopt_init, 6240 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6240 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6240 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6240 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6240 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6344, __sl129);
+cptr.stPtro(allopt_init, 6344, __s_font_size_status);
 cptr.stI32o(allopt_init, 6344 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6344 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6344 + $allopt_t_expectedbuf, 20);
@@ -2645,13 +2645,13 @@ cptr.st1o(allopt_init, 6344 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6344 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6344 + $allopt_t_optfn, optfn_font_size_status);
 cptr.stPtro(allopt_init, 6344 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6344 + $allopt_t_descr, __sl130);
+cptr.stPtro(allopt_init, 6344 + $allopt_t_descr, __s_size_of_the_status_font);
 cptr.stPtro(allopt_init, 6344 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6344 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6344 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6344 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6344 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6448, __sl131);
+cptr.stPtro(allopt_init, 6448, __s_font_size_text);
 cptr.stI32o(allopt_init, 6448 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6448 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6448 + $allopt_t_expectedbuf, 20);
@@ -2667,13 +2667,13 @@ cptr.st1o(allopt_init, 6448 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6448 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6448 + $allopt_t_optfn, optfn_font_size_text);
 cptr.stPtro(allopt_init, 6448 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6448 + $allopt_t_descr, __sl132);
+cptr.stPtro(allopt_init, 6448 + $allopt_t_descr, __s_size_of_the_text_font);
 cptr.stPtro(allopt_init, 6448 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6448 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6448 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6448 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6448 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6552, __sl133);
+cptr.stPtro(allopt_init, 6552, __s_font_status);
 cptr.stI32o(allopt_init, 6552 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6552 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6552 + $allopt_t_expectedbuf, 40);
@@ -2689,13 +2689,13 @@ cptr.st1o(allopt_init, 6552 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6552 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6552 + $allopt_t_optfn, optfn_font_status);
 cptr.stPtro(allopt_init, 6552 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6552 + $allopt_t_descr, __sl134);
+cptr.stPtro(allopt_init, 6552 + $allopt_t_descr, __s_font_to_use_in_status_window);
 cptr.stPtro(allopt_init, 6552 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6552 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6552 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6552 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6552 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6656, __sl135);
+cptr.stPtro(allopt_init, 6656, __s_font_text);
 cptr.stI32o(allopt_init, 6656 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6656 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6656 + $allopt_t_expectedbuf, 40);
@@ -2711,13 +2711,13 @@ cptr.st1o(allopt_init, 6656 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6656 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6656 + $allopt_t_optfn, optfn_font_text);
 cptr.stPtro(allopt_init, 6656 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6656 + $allopt_t_descr, __sl136);
+cptr.stPtro(allopt_init, 6656 + $allopt_t_descr, __s_font_to_use_in_text_windows);
 cptr.stPtro(allopt_init, 6656 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6656 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6656 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6656 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6656 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6760, __sl137);
+cptr.stPtro(allopt_init, 6760, __s_force_invmenu);
 cptr.stI32o(allopt_init, 6760 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6760 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6760 + $allopt_t_expectedbuf, 0);
@@ -2733,13 +2733,13 @@ cptr.st1o(allopt_init, 6760 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6760 + $allopt_t_addr, cptr.add(iflags, $instance_flags_force_invmenu));
 cptr.stPtro(allopt_init, 6760 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 6760 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6760 + $allopt_t_descr, __sl138);
+cptr.stPtro(allopt_init, 6760 + $allopt_t_descr, __s_commands_asking_for_inventory_item_show);
 cptr.stPtro(allopt_init, 6760 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6760 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6760 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 6760 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6760 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6864, __sl139);
+cptr.stPtro(allopt_init, 6864, __s_fruit);
 cptr.stI32o(allopt_init, 6864 + $allopt_t_section, NHC.OptS_General);
 cptr.stI32o(allopt_init, 6864 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6864 + $allopt_t_expectedbuf, NHM.PL_FSIZ);
@@ -2755,13 +2755,13 @@ cptr.st1o(allopt_init, 6864 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6864 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 6864 + $allopt_t_optfn, optfn_fruit);
 cptr.stPtro(allopt_init, 6864 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6864 + $allopt_t_descr, __sl140);
+cptr.stPtro(allopt_init, 6864 + $allopt_t_descr, __s_name_of_a_fruit_you_enjoy_eating);
 cptr.stPtro(allopt_init, 6864 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6864 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6864 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 6864 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6864 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 6968, __sl141);
+cptr.stPtro(allopt_init, 6968, __s_fullscreen);
 cptr.stI32o(allopt_init, 6968 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 6968 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 6968 + $allopt_t_expectedbuf, 0);
@@ -2777,13 +2777,13 @@ cptr.st1o(allopt_init, 6968 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 6968 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc2_fullscreen));
 cptr.stPtro(allopt_init, 6968 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 6968 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 6968 + $allopt_t_descr, __sl142);
+cptr.stPtro(allopt_init, 6968 + $allopt_t_descr, __s_toggle_fullscreen);
 cptr.stPtro(allopt_init, 6968 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 6968 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 6968 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 6968 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 6968 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7072, __sl143);
+cptr.stPtro(allopt_init, 7072, __s_glyph);
 cptr.stI32o(allopt_init, 7072 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7072 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7072 + $allopt_t_expectedbuf, 40);
@@ -2799,13 +2799,13 @@ cptr.st1o(allopt_init, 7072 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7072 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 7072 + $allopt_t_optfn, optfn_glyph);
 cptr.stPtro(allopt_init, 7072 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7072 + $allopt_t_descr, __sl144);
+cptr.stPtro(allopt_init, 7072 + $allopt_t_descr, __s_set_representation_of_a_glyph_to_a);
 cptr.stPtro(allopt_init, 7072 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7072 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7072 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 7072 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7072 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7176, __sl145);
+cptr.stPtro(allopt_init, 7176, __s_goldx);
 cptr.stI32o(allopt_init, 7176 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7176 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7176 + $allopt_t_expectedbuf, 0);
@@ -2821,13 +2821,13 @@ cptr.st1o(allopt_init, 7176 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7176 + $allopt_t_addr, cptr.add(flags, $flag_goldX));
 cptr.stPtro(allopt_init, 7176 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7176 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7176 + $allopt_t_descr, __sl146);
+cptr.stPtro(allopt_init, 7176 + $allopt_t_descr, __s_classify_gold_as_unknown_or_uncursed);
 cptr.stPtro(allopt_init, 7176 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7176 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7176 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7176 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7176 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7280, __sl147);
+cptr.stPtro(allopt_init, 7280, __s_guicolor);
 cptr.stI32o(allopt_init, 7280 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7280 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7280 + $allopt_t_expectedbuf, 0);
@@ -2843,13 +2843,13 @@ cptr.st1o(allopt_init, 7280 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 7280 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc2_guicolor));
 cptr.stPtro(allopt_init, 7280 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7280 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7280 + $allopt_t_descr, __sl148);
+cptr.stPtro(allopt_init, 7280 + $allopt_t_descr, __s_use_color_for_ui);
 cptr.stPtro(allopt_init, 7280 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7280 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 7280 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7280 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7280 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7384, __sl149);
+cptr.stPtro(allopt_init, 7384, __s_help);
 cptr.stI32o(allopt_init, 7384 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7384 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7384 + $allopt_t_expectedbuf, 0);
@@ -2865,13 +2865,13 @@ cptr.st1o(allopt_init, 7384 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 7384 + $allopt_t_addr, cptr.add(flags, $flag_help));
 cptr.stPtro(allopt_init, 7384 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7384 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7384 + $allopt_t_descr, __sl150);
+cptr.stPtro(allopt_init, 7384 + $allopt_t_descr, __s_show_all_available_info_when_using);
 cptr.stPtro(allopt_init, 7384 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7384 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 7384 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7384 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7384 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7488, __sl151);
+cptr.stPtro(allopt_init, 7488, __s_herecmd_menu);
 cptr.stI32o(allopt_init, 7488 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7488 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7488 + $allopt_t_expectedbuf, 0);
@@ -2887,13 +2887,13 @@ cptr.st1o(allopt_init, 7488 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7488 + $allopt_t_addr, cptr.add(iflags, $instance_flags_herecmd_menu));
 cptr.stPtro(allopt_init, 7488 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7488 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7488 + $allopt_t_descr, __sl152);
+cptr.stPtro(allopt_init, 7488 + $allopt_t_descr, __s_show_commands_available_in_this_location);
 cptr.stPtro(allopt_init, 7488 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7488 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7488 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7488 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7488 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7592, __sl153);
+cptr.stPtro(allopt_init, 7592, __s_hilite_pet);
 cptr.stI32o(allopt_init, 7592 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 7592 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7592 + $allopt_t_expectedbuf, 0);
@@ -2909,13 +2909,13 @@ cptr.st1o(allopt_init, 7592 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7592 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_hilite_pet));
 cptr.stPtro(allopt_init, 7592 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7592 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7592 + $allopt_t_descr, __sl154);
+cptr.stPtro(allopt_init, 7592 + $allopt_t_descr, __s_use_highlight_for_pets);
 cptr.stPtro(allopt_init, 7592 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7592 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7592 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7592 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7592 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7696, __sl155);
+cptr.stPtro(allopt_init, 7696, __s_hilite_pile);
 cptr.stI32o(allopt_init, 7696 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 7696 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7696 + $allopt_t_expectedbuf, 0);
@@ -2931,13 +2931,13 @@ cptr.st1o(allopt_init, 7696 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7696 + $allopt_t_addr, cptr.add(iflags, $instance_flags_hilite_pile));
 cptr.stPtro(allopt_init, 7696 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7696 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7696 + $allopt_t_descr, __sl156);
+cptr.stPtro(allopt_init, 7696 + $allopt_t_descr, __s_highlight_piles_of_items);
 cptr.stPtro(allopt_init, 7696 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7696 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7696 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7696 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7696 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7800, __sl157);
+cptr.stPtro(allopt_init, 7800, __s_hilite_status);
 cptr.stI32o(allopt_init, 7800 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 7800 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7800 + $allopt_t_expectedbuf, 13);
@@ -2953,13 +2953,13 @@ cptr.st1o(allopt_init, 7800 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 7800 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 7800 + $allopt_t_optfn, optfn_hilite_status);
 cptr.stPtro(allopt_init, 7800 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7800 + $allopt_t_descr, __sl158);
+cptr.stPtro(allopt_init, 7800 + $allopt_t_descr, __s_a_status_highlighting_rule_can_occur);
 cptr.stPtro(allopt_init, 7800 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7800 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7800 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 7800 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7800 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 7904, __sl159);
+cptr.stPtro(allopt_init, 7904, __s_hitpointbar);
 cptr.stI32o(allopt_init, 7904 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 7904 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 7904 + $allopt_t_expectedbuf, 0);
@@ -2975,13 +2975,13 @@ cptr.st1o(allopt_init, 7904 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 7904 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc2_hitpointbar));
 cptr.stPtro(allopt_init, 7904 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 7904 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 7904 + $allopt_t_descr, __sl160);
+cptr.stPtro(allopt_init, 7904 + $allopt_t_descr, __s_show_colored_bar_for_hit_points);
 cptr.stPtro(allopt_init, 7904 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 7904 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 7904 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 7904 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 7904 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8008, __sl161);
+cptr.stPtro(allopt_init, 8008, __s_horsename);
 cptr.stI32o(allopt_init, 8008 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8008 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8008 + $allopt_t_expectedbuf, NHM.PL_PSIZ);
@@ -2997,13 +2997,13 @@ cptr.st1o(allopt_init, 8008 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8008 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 8008 + $allopt_t_optfn, optfn_horsename);
 cptr.stPtro(allopt_init, 8008 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8008 + $allopt_t_descr, __sl162);
+cptr.stPtro(allopt_init, 8008 + $allopt_t_descr, __s_name_of_your_starting_pet_if_it_is_a__3);
 cptr.stPtro(allopt_init, 8008 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8008 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8008 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 8008 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8008 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8112, __sl163);
+cptr.stPtro(allopt_init, 8112, __s_ibmgraphics);
 cptr.stI32o(allopt_init, 8112 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8112 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8112 + $allopt_t_expectedbuf, 70);
@@ -3019,13 +3019,13 @@ cptr.st1o(allopt_init, 8112 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8112 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 8112 + $allopt_t_optfn, optfn_IBMgraphics);
 cptr.stPtro(allopt_init, 8112 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8112 + $allopt_t_descr, __sl164);
+cptr.stPtro(allopt_init, 8112 + $allopt_t_descr, __s_load_ibmgraphics_display_symbols_into);
 cptr.stPtro(allopt_init, 8112 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8112 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8112 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 8112 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8112 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8216, __sl165);
+cptr.stPtro(allopt_init, 8216, __s_idlecheckpoint);
 cptr.stI32o(allopt_init, 8216 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8216 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8216 + $allopt_t_expectedbuf, 0);
@@ -3041,13 +3041,13 @@ cptr.st1o(allopt_init, 8216 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8216 + $allopt_t_addr, cptr.add(iflags, $instance_flags_idlecheckpoint));
 cptr.stPtro(allopt_init, 8216 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8216 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8216 + $allopt_t_descr, __sl166);
+cptr.stPtro(allopt_init, 8216 + $allopt_t_descr, __s_update_checkpoint_file_if_input_is_idle);
 cptr.stPtro(allopt_init, 8216 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8216 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8216 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8216 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8216 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8320, __sl167);
+cptr.stPtro(allopt_init, 8320, __s_ignintr);
 cptr.stI32o(allopt_init, 8320 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8320 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8320 + $allopt_t_expectedbuf, 0);
@@ -3063,13 +3063,13 @@ cptr.st1o(allopt_init, 8320 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8320 + $allopt_t_addr, cptr.add(flags, $flag_ignintr));
 cptr.stPtro(allopt_init, 8320 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8320 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8320 + $allopt_t_descr, __sl168);
+cptr.stPtro(allopt_init, 8320 + $allopt_t_descr, __s_ignore_interrupt_signals);
 cptr.stPtro(allopt_init, 8320 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8320 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8320 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8320 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8320 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8424, __sl169);
+cptr.stPtro(allopt_init, 8424, __s_implicit_uncursed);
 cptr.stI32o(allopt_init, 8424 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8424 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8424 + $allopt_t_expectedbuf, 0);
@@ -3085,13 +3085,13 @@ cptr.st1o(allopt_init, 8424 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 8424 + $allopt_t_addr, cptr.add(flags, $flag_implicit_uncursed));
 cptr.stPtro(allopt_init, 8424 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8424 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8424 + $allopt_t_descr, __sl170);
+cptr.stPtro(allopt_init, 8424 + $allopt_t_descr, __s_omit_uncursed_from_inventory);
 cptr.stPtro(allopt_init, 8424 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8424 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 8424 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8424 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8424 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8528, __sl171);
+cptr.stPtro(allopt_init, 8528, __s_legacy);
 cptr.stI32o(allopt_init, 8528 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8528 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8528 + $allopt_t_expectedbuf, 0);
@@ -3107,13 +3107,13 @@ cptr.st1o(allopt_init, 8528 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 8528 + $allopt_t_addr, cptr.add(flags, $flag_legacy));
 cptr.stPtro(allopt_init, 8528 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8528 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8528 + $allopt_t_descr, __sl172);
+cptr.stPtro(allopt_init, 8528 + $allopt_t_descr, __s_show_introductory_message);
 cptr.stPtro(allopt_init, 8528 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8528 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 8528 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8528 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8528 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8632, __sl173);
+cptr.stPtro(allopt_init, 8632, __s_lit_corridor);
 cptr.stI32o(allopt_init, 8632 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8632 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8632 + $allopt_t_expectedbuf, 0);
@@ -3129,13 +3129,13 @@ cptr.st1o(allopt_init, 8632 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8632 + $allopt_t_addr, cptr.add(flags, $flag_lit_corridor));
 cptr.stPtro(allopt_init, 8632 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8632 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8632 + $allopt_t_descr, __sl174);
+cptr.stPtro(allopt_init, 8632 + $allopt_t_descr, __s_show_dark_corridors_as_lit_if_in_sight);
 cptr.stPtro(allopt_init, 8632 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8632 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8632 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8632 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8632 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8736, __sl175);
+cptr.stPtro(allopt_init, 8736, __s_lootabc);
 cptr.stI32o(allopt_init, 8736 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8736 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8736 + $allopt_t_expectedbuf, 0);
@@ -3151,13 +3151,13 @@ cptr.st1o(allopt_init, 8736 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8736 + $allopt_t_addr, cptr.add(flags, $flag_lootabc));
 cptr.stPtro(allopt_init, 8736 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8736 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8736 + $allopt_t_descr, __sl176);
+cptr.stPtro(allopt_init, 8736 + $allopt_t_descr, __s_use_a_b_c_rather_than_o_i_c_when_looting);
 cptr.stPtro(allopt_init, 8736 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8736 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8736 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8736 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8736 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8840, __sl177);
+cptr.stPtro(allopt_init, 8840, __s_mail);
 cptr.stI32o(allopt_init, 8840 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8840 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8840 + $allopt_t_expectedbuf, 0);
@@ -3173,13 +3173,13 @@ cptr.st1o(allopt_init, 8840 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 8840 + $allopt_t_addr, cptr.add(flags, $flag_biff));
 cptr.stPtro(allopt_init, 8840 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 8840 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8840 + $allopt_t_descr, __sl178);
+cptr.stPtro(allopt_init, 8840 + $allopt_t_descr, __s_enable_the_mail_daemon);
 cptr.stPtro(allopt_init, 8840 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8840 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 8840 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 8840 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8840 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 8944, __sl179);
+cptr.stPtro(allopt_init, 8944, __s_map_mode);
 cptr.stI32o(allopt_init, 8944 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 8944 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 8944 + $allopt_t_expectedbuf, 20);
@@ -3195,13 +3195,13 @@ cptr.st1o(allopt_init, 8944 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 8944 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 8944 + $allopt_t_optfn, optfn_map_mode);
 cptr.stPtro(allopt_init, 8944 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 8944 + $allopt_t_descr, __sl180);
+cptr.stPtro(allopt_init, 8944 + $allopt_t_descr, __s_map_display_mode_under_windows);
 cptr.stPtro(allopt_init, 8944 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 8944 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 8944 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 8944 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 8944 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9048, __sl181);
+cptr.stPtro(allopt_init, 9048, __s_mention_decor);
 cptr.stI32o(allopt_init, 9048 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9048 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9048 + $allopt_t_expectedbuf, 0);
@@ -3217,13 +3217,13 @@ cptr.st1o(allopt_init, 9048 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9048 + $allopt_t_addr, cptr.add(flags, $flag_mention_decor));
 cptr.stPtro(allopt_init, 9048 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 9048 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9048 + $allopt_t_descr, __sl182);
+cptr.stPtro(allopt_init, 9048 + $allopt_t_descr, __s_give_feedback_when_walking_over);
 cptr.stPtro(allopt_init, 9048 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9048 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9048 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 9048 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9048 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9152, __sl183);
+cptr.stPtro(allopt_init, 9152, __s_mention_map);
 cptr.stI32o(allopt_init, 9152 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9152 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9152 + $allopt_t_expectedbuf, 0);
@@ -3239,13 +3239,13 @@ cptr.st1o(allopt_init, 9152 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9152 + $allopt_t_addr, cptr.add(a11y, $accessibility_data_glyph_updates));
 cptr.stPtro(allopt_init, 9152 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 9152 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9152 + $allopt_t_descr, __sl184);
+cptr.stPtro(allopt_init, 9152 + $allopt_t_descr, __s_give_feedback_when_interesting_map);
 cptr.stPtro(allopt_init, 9152 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9152 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9152 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 9152 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9152 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9256, __sl185);
+cptr.stPtro(allopt_init, 9256, __s_mention_walls);
 cptr.stI32o(allopt_init, 9256 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9256 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9256 + $allopt_t_expectedbuf, 0);
@@ -3261,13 +3261,13 @@ cptr.st1o(allopt_init, 9256 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9256 + $allopt_t_addr, cptr.add(flags, $flag_mention_walls));
 cptr.stPtro(allopt_init, 9256 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 9256 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9256 + $allopt_t_descr, __sl186);
+cptr.stPtro(allopt_init, 9256 + $allopt_t_descr, __s_give_feedback_when_walking_into_walls);
 cptr.stPtro(allopt_init, 9256 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9256 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9256 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 9256 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9256 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9360, __sl187);
+cptr.stPtro(allopt_init, 9360, __s_menu_deselect_all);
 cptr.stI32o(allopt_init, 9360 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9360 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9360 + $allopt_t_expectedbuf, 4);
@@ -3283,13 +3283,13 @@ cptr.st1o(allopt_init, 9360 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9360 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9360 + $allopt_t_optfn, optfn_menu_deselect_all);
 cptr.stPtro(allopt_init, 9360 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9360 + $allopt_t_descr, __sl188);
+cptr.stPtro(allopt_init, 9360 + $allopt_t_descr, __s_deselect_all_items_in_a_menu);
 cptr.stPtro(allopt_init, 9360 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9360 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9360 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9360 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9360 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9464, __sl189);
+cptr.stPtro(allopt_init, 9464, __s_menu_deselect_page);
 cptr.stI32o(allopt_init, 9464 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9464 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9464 + $allopt_t_expectedbuf, 4);
@@ -3305,13 +3305,13 @@ cptr.st1o(allopt_init, 9464 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9464 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9464 + $allopt_t_optfn, optfn_menu_deselect_page);
 cptr.stPtro(allopt_init, 9464 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9464 + $allopt_t_descr, __sl190);
+cptr.stPtro(allopt_init, 9464 + $allopt_t_descr, __s_deselect_all_items_on_this_page_of_a);
 cptr.stPtro(allopt_init, 9464 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9464 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9464 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9464 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9464 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9568, __sl191);
+cptr.stPtro(allopt_init, 9568, __s_menu_first_page);
 cptr.stI32o(allopt_init, 9568 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9568 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9568 + $allopt_t_expectedbuf, 4);
@@ -3327,13 +3327,13 @@ cptr.st1o(allopt_init, 9568 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9568 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9568 + $allopt_t_optfn, optfn_menu_first_page);
 cptr.stPtro(allopt_init, 9568 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9568 + $allopt_t_descr, __sl192);
+cptr.stPtro(allopt_init, 9568 + $allopt_t_descr, __s_jump_to_the_first_page_in_a_menu);
 cptr.stPtro(allopt_init, 9568 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9568 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9568 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9568 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9568 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9672, __sl193);
+cptr.stPtro(allopt_init, 9672, __s_menu_headings);
 cptr.stI32o(allopt_init, 9672 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9672 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9672 + $allopt_t_expectedbuf, 4);
@@ -3349,13 +3349,13 @@ cptr.st1o(allopt_init, 9672 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9672 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9672 + $allopt_t_optfn, optfn_menu_headings);
 cptr.stPtro(allopt_init, 9672 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9672 + $allopt_t_descr, __sl194);
+cptr.stPtro(allopt_init, 9672 + $allopt_t_descr, __s_display_style_for_menu_headings);
 cptr.stPtro(allopt_init, 9672 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9672 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9672 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 9672 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9672 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9776, __sl195);
+cptr.stPtro(allopt_init, 9776, __s_menu_invert_all);
 cptr.stI32o(allopt_init, 9776 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9776 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9776 + $allopt_t_expectedbuf, 4);
@@ -3371,13 +3371,13 @@ cptr.st1o(allopt_init, 9776 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9776 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9776 + $allopt_t_optfn, optfn_menu_invert_all);
 cptr.stPtro(allopt_init, 9776 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9776 + $allopt_t_descr, __sl196);
+cptr.stPtro(allopt_init, 9776 + $allopt_t_descr, __s_invert_all_items_in_a_menu);
 cptr.stPtro(allopt_init, 9776 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9776 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9776 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9776 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9776 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9880, __sl197);
+cptr.stPtro(allopt_init, 9880, __s_menu_invert_page);
 cptr.stI32o(allopt_init, 9880 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9880 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9880 + $allopt_t_expectedbuf, 4);
@@ -3393,13 +3393,13 @@ cptr.st1o(allopt_init, 9880 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9880 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9880 + $allopt_t_optfn, optfn_menu_invert_page);
 cptr.stPtro(allopt_init, 9880 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9880 + $allopt_t_descr, __sl198);
+cptr.stPtro(allopt_init, 9880 + $allopt_t_descr, __s_invert_all_items_on_this_page_of_a_menu);
 cptr.stPtro(allopt_init, 9880 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9880 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9880 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9880 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9880 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 9984, __sl199);
+cptr.stPtro(allopt_init, 9984, __s_menu_last_page);
 cptr.stI32o(allopt_init, 9984 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 9984 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 9984 + $allopt_t_expectedbuf, 4);
@@ -3415,13 +3415,13 @@ cptr.st1o(allopt_init, 9984 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 9984 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 9984 + $allopt_t_optfn, optfn_menu_last_page);
 cptr.stPtro(allopt_init, 9984 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 9984 + $allopt_t_descr, __sl200);
+cptr.stPtro(allopt_init, 9984 + $allopt_t_descr, __s_jump_to_the_last_page_in_a_menu);
 cptr.stPtro(allopt_init, 9984 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 9984 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 9984 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 9984 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 9984 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10088, __sl201);
+cptr.stPtro(allopt_init, 10088, __s_menu_next_page);
 cptr.stI32o(allopt_init, 10088 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10088 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10088 + $allopt_t_expectedbuf, 4);
@@ -3437,13 +3437,13 @@ cptr.st1o(allopt_init, 10088 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10088 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10088 + $allopt_t_optfn, optfn_menu_next_page);
 cptr.stPtro(allopt_init, 10088 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10088 + $allopt_t_descr, __sl202);
+cptr.stPtro(allopt_init, 10088 + $allopt_t_descr, __s_go_to_the_next_menu_page);
 cptr.stPtro(allopt_init, 10088 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10088 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10088 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10088 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10088 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10192, __sl203);
+cptr.stPtro(allopt_init, 10192, __s_menu_objsyms);
 cptr.stI32o(allopt_init, 10192 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10192 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10192 + $allopt_t_expectedbuf, 12);
@@ -3458,14 +3458,14 @@ cptr.stI32o(allopt_init, 10192 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 10192 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10192 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10192 + $allopt_t_optfn, optfn_menu_objsyms);
-cptr.stPtro(allopt_init, 10192 + $allopt_t_alias, __sl204);
-cptr.stPtro(allopt_init, 10192 + $allopt_t_descr, __sl205);
+cptr.stPtro(allopt_init, 10192 + $allopt_t_alias, __s_use_menu_glyphs);
+cptr.stPtro(allopt_init, 10192 + $allopt_t_descr, __s_show_object_symbols_in_menus);
 cptr.stPtro(allopt_init, 10192 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10192 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10192 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 10192 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10192 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10296, __sl206);
+cptr.stPtro(allopt_init, 10296, __s_menu_overlay);
 cptr.stI32o(allopt_init, 10296 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10296 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10296 + $allopt_t_expectedbuf, 0);
@@ -3481,13 +3481,13 @@ cptr.st1o(allopt_init, 10296 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10296 + $allopt_t_addr, cptr.add(iflags, $instance_flags_menu_overlay));
 cptr.stPtro(allopt_init, 10296 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 10296 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10296 + $allopt_t_descr, __sl207);
+cptr.stPtro(allopt_init, 10296 + $allopt_t_descr, __s_menus_overlay_and_align_to_right);
 cptr.stPtro(allopt_init, 10296 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10296 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 10296 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 10296 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10296 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10400, __sl208);
+cptr.stPtro(allopt_init, 10400, __s_menu_previous_page);
 cptr.stI32o(allopt_init, 10400 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10400 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10400 + $allopt_t_expectedbuf, 4);
@@ -3503,13 +3503,13 @@ cptr.st1o(allopt_init, 10400 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10400 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10400 + $allopt_t_optfn, optfn_menu_previous_page);
 cptr.stPtro(allopt_init, 10400 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10400 + $allopt_t_descr, __sl209);
+cptr.stPtro(allopt_init, 10400 + $allopt_t_descr, __s_go_to_the_previous_menu_page);
 cptr.stPtro(allopt_init, 10400 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10400 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10400 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10400 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10400 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10504, __sl210);
+cptr.stPtro(allopt_init, 10504, __s_menu_search);
 cptr.stI32o(allopt_init, 10504 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10504 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10504 + $allopt_t_expectedbuf, 4);
@@ -3525,13 +3525,13 @@ cptr.st1o(allopt_init, 10504 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10504 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10504 + $allopt_t_optfn, optfn_menu_search);
 cptr.stPtro(allopt_init, 10504 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10504 + $allopt_t_descr, __sl211);
+cptr.stPtro(allopt_init, 10504 + $allopt_t_descr, __s_search_for_a_menu_item);
 cptr.stPtro(allopt_init, 10504 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10504 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10504 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10504 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10504 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10608, __sl212);
+cptr.stPtro(allopt_init, 10608, __s_menu_select_all);
 cptr.stI32o(allopt_init, 10608 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10608 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10608 + $allopt_t_expectedbuf, 4);
@@ -3547,13 +3547,13 @@ cptr.st1o(allopt_init, 10608 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10608 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10608 + $allopt_t_optfn, optfn_menu_select_all);
 cptr.stPtro(allopt_init, 10608 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10608 + $allopt_t_descr, __sl213);
+cptr.stPtro(allopt_init, 10608 + $allopt_t_descr, __s_select_all_items_in_a_menu);
 cptr.stPtro(allopt_init, 10608 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10608 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10608 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10608 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10608 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10712, __sl214);
+cptr.stPtro(allopt_init, 10712, __s_menu_select_page);
 cptr.stI32o(allopt_init, 10712 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10712 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10712 + $allopt_t_expectedbuf, 4);
@@ -3569,13 +3569,13 @@ cptr.st1o(allopt_init, 10712 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10712 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10712 + $allopt_t_optfn, optfn_menu_select_page);
 cptr.stPtro(allopt_init, 10712 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10712 + $allopt_t_descr, __sl215);
+cptr.stPtro(allopt_init, 10712 + $allopt_t_descr, __s_select_all_items_on_this_page_of_a_menu);
 cptr.stPtro(allopt_init, 10712 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10712 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10712 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10712 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10712 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10816, __sl216);
+cptr.stPtro(allopt_init, 10816, __s_menu_shift_left);
 cptr.stI32o(allopt_init, 10816 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10816 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10816 + $allopt_t_expectedbuf, 4);
@@ -3591,13 +3591,13 @@ cptr.st1o(allopt_init, 10816 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10816 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10816 + $allopt_t_optfn, optfn_menu_shift_left);
 cptr.stPtro(allopt_init, 10816 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10816 + $allopt_t_descr, __sl217);
+cptr.stPtro(allopt_init, 10816 + $allopt_t_descr, __s_pan_current_menu_page_left);
 cptr.stPtro(allopt_init, 10816 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10816 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10816 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10816 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10816 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 10920, __sl218);
+cptr.stPtro(allopt_init, 10920, __s_menu_shift_right);
 cptr.stI32o(allopt_init, 10920 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 10920 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 10920 + $allopt_t_expectedbuf, 4);
@@ -3613,13 +3613,13 @@ cptr.st1o(allopt_init, 10920 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 10920 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 10920 + $allopt_t_optfn, optfn_menu_shift_right);
 cptr.stPtro(allopt_init, 10920 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 10920 + $allopt_t_descr, __sl219);
+cptr.stPtro(allopt_init, 10920 + $allopt_t_descr, __s_pan_current_menu_page_right);
 cptr.stPtro(allopt_init, 10920 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 10920 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 10920 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 10920 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 10920 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11024, __sl220);
+cptr.stPtro(allopt_init, 11024, __s_menu_tab_sep);
 cptr.stI32o(allopt_init, 11024 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11024 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11024 + $allopt_t_expectedbuf, 0);
@@ -3635,13 +3635,13 @@ cptr.st1o(allopt_init, 11024 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11024 + $allopt_t_addr, cptr.add(iflags, $instance_flags_menu_tab_sep));
 cptr.stPtro(allopt_init, 11024 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 11024 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11024 + $allopt_t_descr, __sl221);
+cptr.stPtro(allopt_init, 11024 + $allopt_t_descr, __s_menu_formatting);
 cptr.stPtro(allopt_init, 11024 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11024 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11024 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 11024 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11024 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11128, __sl222);
+cptr.stPtro(allopt_init, 11128, __s_menucolors);
 cptr.stI32o(allopt_init, 11128 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11128 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11128 + $allopt_t_expectedbuf, 0);
@@ -3657,13 +3657,13 @@ cptr.st1o(allopt_init, 11128 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11128 + $allopt_t_addr, cptr.add(iflags, $instance_flags_use_menu_color));
 cptr.stPtro(allopt_init, 11128 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 11128 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11128 + $allopt_t_descr, __sl223);
+cptr.stPtro(allopt_init, 11128 + $allopt_t_descr, __s_use_colors_in_menus);
 cptr.stPtro(allopt_init, 11128 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11128 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11128 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 11128 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11128 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11232, __sl224);
+cptr.stPtro(allopt_init, 11232, __s_menu_colors);
 cptr.stI32o(allopt_init, 11232 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 11232 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11232 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -3679,13 +3679,13 @@ cptr.st1o(allopt_init, 11232 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11232 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 11232 + $allopt_t_optfn, optfn_o_menu_colors);
 cptr.stPtro(allopt_init, 11232 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11232 + $allopt_t_descr, __sl225);
+cptr.stPtro(allopt_init, 11232 + $allopt_t_descr, __s_change_colors_used_in_menus);
 cptr.stPtro(allopt_init, 11232 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11232 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 11232 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 11232 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11232 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11336, __sl226);
+cptr.stPtro(allopt_init, 11336, __s_menuinvertmode);
 cptr.stI32o(allopt_init, 11336 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11336 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11336 + $allopt_t_expectedbuf, 5);
@@ -3701,13 +3701,13 @@ cptr.st1o(allopt_init, 11336 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11336 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 11336 + $allopt_t_optfn, optfn_menuinvertmode);
 cptr.stPtro(allopt_init, 11336 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11336 + $allopt_t_descr, __sl227);
+cptr.stPtro(allopt_init, 11336 + $allopt_t_descr, __s_experimental_behavior_of_menu_inverts);
 cptr.stPtro(allopt_init, 11336 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11336 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11336 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 11336 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11336 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11440, __sl228);
+cptr.stPtro(allopt_init, 11440, __s_menustyle);
 cptr.stI32o(allopt_init, 11440 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11440 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11440 + $allopt_t_expectedbuf, 13);
@@ -3723,13 +3723,13 @@ cptr.st1o(allopt_init, 11440 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11440 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 11440 + $allopt_t_optfn, optfn_menustyle);
 cptr.stPtro(allopt_init, 11440 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11440 + $allopt_t_descr, __sl229);
+cptr.stPtro(allopt_init, 11440 + $allopt_t_descr, __s_user_interface_for_object_selection);
 cptr.stPtro(allopt_init, 11440 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11440 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11440 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 11440 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11440 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11544, __sl230);
+cptr.stPtro(allopt_init, 11544, __s_message_types);
 cptr.stI32o(allopt_init, 11544 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11544 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11544 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -3745,13 +3745,13 @@ cptr.st1o(allopt_init, 11544 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11544 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 11544 + $allopt_t_optfn, optfn_o_message_types);
 cptr.stPtro(allopt_init, 11544 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11544 + $allopt_t_descr, __sl231);
+cptr.stPtro(allopt_init, 11544 + $allopt_t_descr, __s_edit_message_types);
 cptr.stPtro(allopt_init, 11544 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11544 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 11544 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 11544 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11544 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11648, __sl232);
+cptr.stPtro(allopt_init, 11648, __s_mon_movement);
 cptr.stI32o(allopt_init, 11648 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11648 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11648 + $allopt_t_expectedbuf, 0);
@@ -3767,13 +3767,13 @@ cptr.st1o(allopt_init, 11648 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11648 + $allopt_t_addr, cptr.add(a11y, $accessibility_data_mon_movement));
 cptr.stPtro(allopt_init, 11648 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 11648 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11648 + $allopt_t_descr, __sl233);
+cptr.stPtro(allopt_init, 11648 + $allopt_t_descr, __s_message_when_hero_sees_monster_movement);
 cptr.stPtro(allopt_init, 11648 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11648 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11648 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 11648 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11648 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11752, __sl234);
+cptr.stPtro(allopt_init, 11752, __s_monpolycontrol);
 cptr.stI32o(allopt_init, 11752 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11752 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11752 + $allopt_t_expectedbuf, 0);
@@ -3789,13 +3789,13 @@ cptr.st1o(allopt_init, 11752 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11752 + $allopt_t_addr, cptr.add(iflags, $instance_flags_mon_polycontrol));
 cptr.stPtro(allopt_init, 11752 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 11752 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11752 + $allopt_t_descr, __sl235);
+cptr.stPtro(allopt_init, 11752 + $allopt_t_descr, __s_control_monster_polymorphs);
 cptr.stPtro(allopt_init, 11752 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11752 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11752 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 11752 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11752 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11856, __sl236);
+cptr.stPtro(allopt_init, 11856, __s_montelecontrol);
 cptr.stI32o(allopt_init, 11856 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11856 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11856 + $allopt_t_expectedbuf, 0);
@@ -3811,13 +3811,13 @@ cptr.st1o(allopt_init, 11856 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11856 + $allopt_t_addr, cptr.add(iflags, $instance_flags_mon_telecontrol));
 cptr.stPtro(allopt_init, 11856 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 11856 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11856 + $allopt_t_descr, __sl237);
+cptr.stPtro(allopt_init, 11856 + $allopt_t_descr, __s_control_monster_teleport_destinations);
 cptr.stPtro(allopt_init, 11856 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11856 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11856 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 11856 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11856 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 11960, __sl238);
+cptr.stPtro(allopt_init, 11960, __s_monsters);
 cptr.stI32o(allopt_init, 11960 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 11960 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 11960 + $allopt_t_expectedbuf, NHC.MAXMCLASSES);
@@ -3833,13 +3833,13 @@ cptr.st1o(allopt_init, 11960 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 11960 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 11960 + $allopt_t_optfn, optfn_monsters);
 cptr.stPtro(allopt_init, 11960 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 11960 + $allopt_t_descr, __sl239);
+cptr.stPtro(allopt_init, 11960 + $allopt_t_descr, __s_list_of_symbols_to_use_for_monsters);
 cptr.stPtro(allopt_init, 11960 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 11960 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 11960 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 11960 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 11960 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12064, __sl240);
+cptr.stPtro(allopt_init, 12064, __s_mouse_support);
 cptr.stI32o(allopt_init, 12064 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12064 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12064 + $allopt_t_expectedbuf, 0);
@@ -3855,13 +3855,13 @@ cptr.st1o(allopt_init, 12064 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12064 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12064 + $allopt_t_optfn, optfn_mouse_support);
 cptr.stPtro(allopt_init, 12064 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12064 + $allopt_t_descr, __sl241);
+cptr.stPtro(allopt_init, 12064 + $allopt_t_descr, __s_game_receives_click_info_from_mouse);
 cptr.stPtro(allopt_init, 12064 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12064 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12064 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 12064 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12064 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12168, __sl242);
+cptr.stPtro(allopt_init, 12168, __s_msg_window);
 cptr.stI32o(allopt_init, 12168 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12168 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12168 + $allopt_t_expectedbuf, 1);
@@ -3877,13 +3877,13 @@ cptr.st1o(allopt_init, 12168 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12168 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12168 + $allopt_t_optfn, optfn_msg_window);
 cptr.stPtro(allopt_init, 12168 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12168 + $allopt_t_descr, __sl243);
+cptr.stPtro(allopt_init, 12168 + $allopt_t_descr, __s_control_of_view_previous_message_s_p);
 cptr.stPtro(allopt_init, 12168 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12168 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12168 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 12168 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12168 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12272, __sl244);
+cptr.stPtro(allopt_init, 12272, __s_msghistory);
 cptr.stI32o(allopt_init, 12272 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12272 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12272 + $allopt_t_expectedbuf, 5);
@@ -3899,13 +3899,13 @@ cptr.st1o(allopt_init, 12272 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12272 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12272 + $allopt_t_optfn, optfn_msghistory);
 cptr.stPtro(allopt_init, 12272 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12272 + $allopt_t_descr, __sl245);
+cptr.stPtro(allopt_init, 12272 + $allopt_t_descr, __s_number_of_top_line_messages_to_save);
 cptr.stPtro(allopt_init, 12272 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12272 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12272 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 12272 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12272 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12376, __sl246);
+cptr.stPtro(allopt_init, 12376, __s_news);
 cptr.stI32o(allopt_init, 12376 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12376 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12376 + $allopt_t_expectedbuf, 0);
@@ -3921,13 +3921,13 @@ cptr.st1o(allopt_init, 12376 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12376 + $allopt_t_addr, cptr.add(iflags, $instance_flags_news));
 cptr.stPtro(allopt_init, 12376 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 12376 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12376 + $allopt_t_descr, __sl247);
+cptr.stPtro(allopt_init, 12376 + $allopt_t_descr, __s_show_any_news_at_game_start);
 cptr.stPtro(allopt_init, 12376 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12376 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12376 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 12376 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12376 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12480, __sl248);
+cptr.stPtro(allopt_init, 12480, __s_nudist);
 cptr.stI32o(allopt_init, 12480 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12480 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12480 + $allopt_t_expectedbuf, 0);
@@ -3943,13 +3943,13 @@ cptr.st1o(allopt_init, 12480 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12480 + $allopt_t_addr, cptr.add(u, $you_uroleplay + $u_roleplay_nudist));
 cptr.stPtro(allopt_init, 12480 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 12480 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12480 + $allopt_t_descr, __sl249);
+cptr.stPtro(allopt_init, 12480 + $allopt_t_descr, __s_start_your_character_without_armor);
 cptr.stPtro(allopt_init, 12480 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12480 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12480 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 12480 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12480 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12584, __sl250);
+cptr.stPtro(allopt_init, 12584, __s_null);
 cptr.stI32o(allopt_init, 12584 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12584 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12584 + $allopt_t_expectedbuf, 0);
@@ -3965,13 +3965,13 @@ cptr.st1o(allopt_init, 12584 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 12584 + $allopt_t_addr, cptr.add(flags, $flag_null));
 cptr.stPtro(allopt_init, 12584 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 12584 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12584 + $allopt_t_descr, __sl251);
+cptr.stPtro(allopt_init, 12584 + $allopt_t_descr, __s_allow_nulls_to_be_sent_to_terminal);
 cptr.stPtro(allopt_init, 12584 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12584 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 12584 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 12584 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12584 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12688, __sl252);
+cptr.stPtro(allopt_init, 12688, __s_number_pad);
 cptr.stI32o(allopt_init, 12688 + $allopt_t_section, NHC.OptS_General);
 cptr.stI32o(allopt_init, 12688 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12688 + $allopt_t_expectedbuf, 1);
@@ -3987,13 +3987,13 @@ cptr.st1o(allopt_init, 12688 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12688 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12688 + $allopt_t_optfn, optfn_number_pad);
 cptr.stPtro(allopt_init, 12688 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12688 + $allopt_t_descr, __sl253);
+cptr.stPtro(allopt_init, 12688 + $allopt_t_descr, __s_use_the_number_pad_for_movement);
 cptr.stPtro(allopt_init, 12688 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12688 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12688 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 12688 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12688 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12792, __sl254);
+cptr.stPtro(allopt_init, 12792, __s_objects);
 cptr.stI32o(allopt_init, 12792 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12792 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12792 + $allopt_t_expectedbuf, NHC.MAXOCLASSES);
@@ -4009,13 +4009,13 @@ cptr.st1o(allopt_init, 12792 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12792 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12792 + $allopt_t_optfn, optfn_objects);
 cptr.stPtro(allopt_init, 12792 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12792 + $allopt_t_descr, __sl255);
+cptr.stPtro(allopt_init, 12792 + $allopt_t_descr, __s_list_of_symbols_to_use_for_objects);
 cptr.stPtro(allopt_init, 12792 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12792 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12792 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 12792 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12792 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 12896, __sl256);
+cptr.stPtro(allopt_init, 12896, __s_packorder);
 cptr.stI32o(allopt_init, 12896 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 12896 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 12896 + $allopt_t_expectedbuf, NHC.MAXOCLASSES);
@@ -4031,13 +4031,13 @@ cptr.st1o(allopt_init, 12896 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 12896 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 12896 + $allopt_t_optfn, optfn_packorder);
 cptr.stPtro(allopt_init, 12896 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 12896 + $allopt_t_descr, __sl257);
+cptr.stPtro(allopt_init, 12896 + $allopt_t_descr, __s_the_inventory_order_of_the_items_in);
 cptr.stPtro(allopt_init, 12896 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 12896 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 12896 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 12896 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 12896 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13000, __sl258);
+cptr.stPtro(allopt_init, 13000, __s_paranoid_confirmation);
 cptr.stI32o(allopt_init, 13000 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13000 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13000 + $allopt_t_expectedbuf, 28);
@@ -4052,14 +4052,14 @@ cptr.stI32o(allopt_init, 13000 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 13000 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13000 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13000 + $allopt_t_optfn, optfn_paranoid_confirmation);
-cptr.stPtro(allopt_init, 13000 + $allopt_t_alias, __sl259);
-cptr.stPtro(allopt_init, 13000 + $allopt_t_descr, __sl260);
+cptr.stPtro(allopt_init, 13000 + $allopt_t_alias, __s_prayconfirm);
+cptr.stPtro(allopt_init, 13000 + $allopt_t_descr, __s_extra_prompting_in_certain_situations);
 cptr.stPtro(allopt_init, 13000 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13000 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13000 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 13000 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13000 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13104, __sl261);
+cptr.stPtro(allopt_init, 13104, __s_pauper);
 cptr.stI32o(allopt_init, 13104 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13104 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13104 + $allopt_t_expectedbuf, 0);
@@ -4075,13 +4075,13 @@ cptr.st1o(allopt_init, 13104 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13104 + $allopt_t_addr, cptr.add(u, $you_uroleplay + $u_roleplay_pauper));
 cptr.stPtro(allopt_init, 13104 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 13104 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13104 + $allopt_t_descr, __sl262);
+cptr.stPtro(allopt_init, 13104 + $allopt_t_descr, __s_start_your_character_without_any_items);
 cptr.stPtro(allopt_init, 13104 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13104 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13104 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 13104 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13104 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13208, __sl263);
+cptr.stPtro(allopt_init, 13208, __s_perm_invent);
 cptr.stI32o(allopt_init, 13208 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13208 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13208 + $allopt_t_expectedbuf, 0);
@@ -4097,13 +4097,13 @@ cptr.st1o(allopt_init, 13208 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13208 + $allopt_t_addr, cptr.add(iflags, $instance_flags_perm_invent));
 cptr.stPtro(allopt_init, 13208 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 13208 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13208 + $allopt_t_descr, __sl264);
+cptr.stPtro(allopt_init, 13208 + $allopt_t_descr, __s_show_persistent_inventory_window);
 cptr.stPtro(allopt_init, 13208 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13208 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13208 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 13208 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13208 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13312, __sl265);
+cptr.stPtro(allopt_init, 13312, __s_perminv_mode);
 cptr.stI32o(allopt_init, 13312 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13312 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13312 + $allopt_t_expectedbuf, 20);
@@ -4119,13 +4119,13 @@ cptr.st1o(allopt_init, 13312 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13312 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13312 + $allopt_t_optfn, optfn_perminv_mode);
 cptr.stPtro(allopt_init, 13312 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13312 + $allopt_t_descr, __sl266);
+cptr.stPtro(allopt_init, 13312 + $allopt_t_descr, __s_what_to_show_in_persistent_inventory);
 cptr.stPtro(allopt_init, 13312 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13312 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13312 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 13312 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13312 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13416, __sl267);
+cptr.stPtro(allopt_init, 13416, __s_petattr);
 cptr.stI32o(allopt_init, 13416 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13416 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13416 + $allopt_t_expectedbuf, 88);
@@ -4141,13 +4141,13 @@ cptr.st1o(allopt_init, 13416 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13416 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13416 + $allopt_t_optfn, optfn_petattr);
 cptr.stPtro(allopt_init, 13416 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13416 + $allopt_t_descr, __sl268);
+cptr.stPtro(allopt_init, 13416 + $allopt_t_descr, __s_attributes_for_highlighting_pets);
 cptr.stPtro(allopt_init, 13416 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13416 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13416 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 13416 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13416 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13520, __sl269);
+cptr.stPtro(allopt_init, 13520, __s_pettype);
 cptr.stI32o(allopt_init, 13520 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13520 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13520 + $allopt_t_expectedbuf, 4);
@@ -4162,14 +4162,14 @@ cptr.stI32o(allopt_init, 13520 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 13520 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13520 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13520 + $allopt_t_optfn, optfn_pettype);
-cptr.stPtro(allopt_init, 13520 + $allopt_t_alias, __sl270);
-cptr.stPtro(allopt_init, 13520 + $allopt_t_descr, __sl271);
+cptr.stPtro(allopt_init, 13520 + $allopt_t_alias, __s_pet);
+cptr.stPtro(allopt_init, 13520 + $allopt_t_descr, __s_your_preferred_initial_pet_type);
 cptr.stPtro(allopt_init, 13520 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13520 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13520 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 13520 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13520 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13624, __sl272);
+cptr.stPtro(allopt_init, 13624, __s_pickup_burden);
 cptr.stI32o(allopt_init, 13624 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 13624 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13624 + $allopt_t_expectedbuf, 20);
@@ -4185,13 +4185,13 @@ cptr.st1o(allopt_init, 13624 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13624 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13624 + $allopt_t_optfn, optfn_pickup_burden);
 cptr.stPtro(allopt_init, 13624 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13624 + $allopt_t_descr, __sl273);
+cptr.stPtro(allopt_init, 13624 + $allopt_t_descr, __s_maximum_burden_picked_up_before_prompt);
 cptr.stPtro(allopt_init, 13624 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13624 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13624 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 13624 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13624 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13728, __sl274);
+cptr.stPtro(allopt_init, 13728, __s_pickup_stolen);
 cptr.stI32o(allopt_init, 13728 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 13728 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13728 + $allopt_t_expectedbuf, 0);
@@ -4207,13 +4207,13 @@ cptr.st1o(allopt_init, 13728 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 13728 + $allopt_t_addr, cptr.add(flags, $flag_pickup_stolen));
 cptr.stPtro(allopt_init, 13728 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 13728 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13728 + $allopt_t_descr, __sl275);
+cptr.stPtro(allopt_init, 13728 + $allopt_t_descr, __s_autopickup_stolen_items);
 cptr.stPtro(allopt_init, 13728 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13728 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 13728 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 13728 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13728 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13832, __sl276);
+cptr.stPtro(allopt_init, 13832, __s_pickup_thrown);
 cptr.stI32o(allopt_init, 13832 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 13832 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13832 + $allopt_t_expectedbuf, 0);
@@ -4229,13 +4229,13 @@ cptr.st1o(allopt_init, 13832 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 13832 + $allopt_t_addr, cptr.add(flags, $flag_pickup_thrown));
 cptr.stPtro(allopt_init, 13832 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 13832 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13832 + $allopt_t_descr, __sl277);
+cptr.stPtro(allopt_init, 13832 + $allopt_t_descr, __s_autopickup_thrown_items);
 cptr.stPtro(allopt_init, 13832 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13832 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 13832 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 13832 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13832 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 13936, __sl278);
+cptr.stPtro(allopt_init, 13936, __s_pickup_types);
 cptr.stI32o(allopt_init, 13936 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 13936 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 13936 + $allopt_t_expectedbuf, NHC.MAXOCLASSES);
@@ -4251,13 +4251,13 @@ cptr.st1o(allopt_init, 13936 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 13936 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 13936 + $allopt_t_optfn, optfn_pickup_types);
 cptr.stPtro(allopt_init, 13936 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 13936 + $allopt_t_descr, __sl279);
+cptr.stPtro(allopt_init, 13936 + $allopt_t_descr, __s_types_of_objects_to_pick_up);
 cptr.stPtro(allopt_init, 13936 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 13936 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 13936 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 13936 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 13936 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14040, __sl280);
+cptr.stPtro(allopt_init, 14040, __s_pile_limit);
 cptr.stI32o(allopt_init, 14040 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14040 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14040 + $allopt_t_expectedbuf, 24);
@@ -4273,13 +4273,13 @@ cptr.st1o(allopt_init, 14040 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14040 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 14040 + $allopt_t_optfn, optfn_pile_limit);
 cptr.stPtro(allopt_init, 14040 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14040 + $allopt_t_descr, __sl281);
+cptr.stPtro(allopt_init, 14040 + $allopt_t_descr, __s_threshold_for_there_are_many_objects);
 cptr.stPtro(allopt_init, 14040 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14040 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14040 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 14040 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14040 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14144, __sl282);
+cptr.stPtro(allopt_init, 14144, __s_player_selection);
 cptr.stI32o(allopt_init, 14144 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14144 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14144 + $allopt_t_expectedbuf, 12);
@@ -4295,13 +4295,13 @@ cptr.st1o(allopt_init, 14144 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14144 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 14144 + $allopt_t_optfn, optfn_player_selection);
 cptr.stPtro(allopt_init, 14144 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14144 + $allopt_t_descr, __sl283);
+cptr.stPtro(allopt_init, 14144 + $allopt_t_descr, __s_choose_character_via_dialog_or_prompts);
 cptr.stPtro(allopt_init, 14144 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14144 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14144 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 14144 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14144 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14248, __sl284);
+cptr.stPtro(allopt_init, 14248, __s_popup_dialog);
 cptr.stI32o(allopt_init, 14248 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14248 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14248 + $allopt_t_expectedbuf, 0);
@@ -4323,7 +4323,7 @@ cptr.st1o(allopt_init, 14248 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14248 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14248 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14248 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14352, __sl285);
+cptr.stPtro(allopt_init, 14352, __s_preload_tiles);
 cptr.stI32o(allopt_init, 14352 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14352 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14352 + $allopt_t_expectedbuf, 0);
@@ -4345,7 +4345,7 @@ cptr.st1o(allopt_init, 14352 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 14352 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14352 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14352 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14456, __sl286);
+cptr.stPtro(allopt_init, 14456, __s_price_quotes);
 cptr.stI32o(allopt_init, 14456 + $allopt_t_section, NHC.OptS_General);
 cptr.stI32o(allopt_init, 14456 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14456 + $allopt_t_expectedbuf, 0);
@@ -4361,13 +4361,13 @@ cptr.st1o(allopt_init, 14456 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14456 + $allopt_t_addr, cptr.add(iflags, $instance_flags_pricequotes));
 cptr.stPtro(allopt_init, 14456 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14456 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14456 + $allopt_t_descr, __sl287);
+cptr.stPtro(allopt_init, 14456 + $allopt_t_descr, __s_display_prices_you_have_seen_for);
 cptr.stPtro(allopt_init, 14456 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14456 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14456 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14456 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14456 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14560, __sl288);
+cptr.stPtro(allopt_init, 14560, __s_pushweapon);
 cptr.stI32o(allopt_init, 14560 + $allopt_t_section, NHC.OptS_Behavior);
 cptr.stI32o(allopt_init, 14560 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14560 + $allopt_t_expectedbuf, 0);
@@ -4383,13 +4383,13 @@ cptr.st1o(allopt_init, 14560 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14560 + $allopt_t_addr, cptr.add(flags, $flag_pushweapon));
 cptr.stPtro(allopt_init, 14560 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14560 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14560 + $allopt_t_descr, __sl289);
+cptr.stPtro(allopt_init, 14560 + $allopt_t_descr, __s_previous_weapon_goes_to_secondary_slot);
 cptr.stPtro(allopt_init, 14560 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14560 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14560 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14560 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14560 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14664, __sl290);
+cptr.stPtro(allopt_init, 14664, __s_query_menu);
 cptr.stI32o(allopt_init, 14664 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14664 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14664 + $allopt_t_expectedbuf, 0);
@@ -4405,13 +4405,13 @@ cptr.st1o(allopt_init, 14664 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14664 + $allopt_t_addr, cptr.add(iflags, $instance_flags_query_menu));
 cptr.stPtro(allopt_init, 14664 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14664 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14664 + $allopt_t_descr, __sl291);
+cptr.stPtro(allopt_init, 14664 + $allopt_t_descr, __s_use_a_menu_for_yes_no_queries);
 cptr.stPtro(allopt_init, 14664 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14664 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14664 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14664 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14664 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14768, __sl292);
+cptr.stPtro(allopt_init, 14768, __s_quick_farsight);
 cptr.stI32o(allopt_init, 14768 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14768 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14768 + $allopt_t_expectedbuf, 0);
@@ -4427,13 +4427,13 @@ cptr.st1o(allopt_init, 14768 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14768 + $allopt_t_addr, cptr.add(flags, $flag_quick_farsight));
 cptr.stPtro(allopt_init, 14768 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14768 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14768 + $allopt_t_descr, __sl293);
+cptr.stPtro(allopt_init, 14768 + $allopt_t_descr, __s_skip_map_browse_when_forced_to_looked);
 cptr.stPtro(allopt_init, 14768 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14768 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14768 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14768 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14768 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14872, __sl294);
+cptr.stPtro(allopt_init, 14872, __s_rawio);
 cptr.stI32o(allopt_init, 14872 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14872 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14872 + $allopt_t_expectedbuf, 0);
@@ -4455,7 +4455,7 @@ cptr.st1o(allopt_init, 14872 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14872 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14872 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14872 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 14976, __sl295);
+cptr.stPtro(allopt_init, 14976, __s_reroll);
 cptr.stI32o(allopt_init, 14976 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 14976 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 14976 + $allopt_t_expectedbuf, 0);
@@ -4471,13 +4471,13 @@ cptr.st1o(allopt_init, 14976 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 14976 + $allopt_t_addr, cptr.add(u, $you_uroleplay + $u_roleplay_reroll));
 cptr.stPtro(allopt_init, 14976 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14976 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 14976 + $allopt_t_descr, __sl296);
+cptr.stPtro(allopt_init, 14976 + $allopt_t_descr, __s_allow_rerolling_of_starting_inventory);
 cptr.stPtro(allopt_init, 14976 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 14976 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 14976 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 14976 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 14976 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15080, __sl297);
+cptr.stPtro(allopt_init, 15080, __s_rest_on_space);
 cptr.stI32o(allopt_init, 15080 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15080 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15080 + $allopt_t_expectedbuf, 0);
@@ -4493,13 +4493,13 @@ cptr.st1o(allopt_init, 15080 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15080 + $allopt_t_addr, cptr.add(flags, $flag_rest_on_space));
 cptr.stPtro(allopt_init, 15080 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 15080 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15080 + $allopt_t_descr, __sl298);
+cptr.stPtro(allopt_init, 15080 + $allopt_t_descr, __s_space_bar_is_bound_to_the_rest_command);
 cptr.stPtro(allopt_init, 15080 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15080 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15080 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 15080 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15080 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15184, __sl299);
+cptr.stPtro(allopt_init, 15184, __s_roguesymset);
 cptr.stI32o(allopt_init, 15184 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15184 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15184 + $allopt_t_expectedbuf, 70);
@@ -4515,13 +4515,13 @@ cptr.st1o(allopt_init, 15184 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15184 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 15184 + $allopt_t_optfn, optfn_roguesymset);
 cptr.stPtro(allopt_init, 15184 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15184 + $allopt_t_descr, __sl300);
+cptr.stPtro(allopt_init, 15184 + $allopt_t_descr, __s_load_a_set_of_rogue_display_symbols);
 cptr.stPtro(allopt_init, 15184 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15184 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15184 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 15184 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15184 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15288, __sl301);
+cptr.stPtro(allopt_init, 15288, __s_runmode);
 cptr.stI32o(allopt_init, 15288 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15288 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15288 + $allopt_t_expectedbuf, 9);
@@ -4537,13 +4537,13 @@ cptr.st1o(allopt_init, 15288 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15288 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 15288 + $allopt_t_optfn, optfn_runmode);
 cptr.stPtro(allopt_init, 15288 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15288 + $allopt_t_descr, __sl302);
+cptr.stPtro(allopt_init, 15288 + $allopt_t_descr, __s_display_frequency_when_running_or);
 cptr.stPtro(allopt_init, 15288 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15288 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15288 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 15288 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15288 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15392, __sl303);
+cptr.stPtro(allopt_init, 15392, __s_safe_pet);
 cptr.stI32o(allopt_init, 15392 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15392 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15392 + $allopt_t_expectedbuf, 0);
@@ -4559,13 +4559,13 @@ cptr.st1o(allopt_init, 15392 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 15392 + $allopt_t_addr, cptr.add(flags, $flag_safe_dog));
 cptr.stPtro(allopt_init, 15392 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 15392 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15392 + $allopt_t_descr, __sl304);
+cptr.stPtro(allopt_init, 15392 + $allopt_t_descr, __s_prevent_you_from_hitting_pets);
 cptr.stPtro(allopt_init, 15392 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15392 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 15392 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 15392 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15392 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15496, __sl305);
+cptr.stPtro(allopt_init, 15496, __s_safe_wait);
 cptr.stI32o(allopt_init, 15496 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15496 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15496 + $allopt_t_expectedbuf, 0);
@@ -4581,13 +4581,13 @@ cptr.st1o(allopt_init, 15496 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 15496 + $allopt_t_addr, cptr.add(flags, $flag_safe_wait));
 cptr.stPtro(allopt_init, 15496 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 15496 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15496 + $allopt_t_descr, __sl306);
+cptr.stPtro(allopt_init, 15496 + $allopt_t_descr, __s_prevent_waiting_next_to_hostiles);
 cptr.stPtro(allopt_init, 15496 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15496 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 15496 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 15496 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15496 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15600, __sl307);
+cptr.stPtro(allopt_init, 15600, __s_sanity_check);
 cptr.stI32o(allopt_init, 15600 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15600 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15600 + $allopt_t_expectedbuf, 0);
@@ -4603,13 +4603,13 @@ cptr.st1o(allopt_init, 15600 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15600 + $allopt_t_addr, cptr.add(iflags, $instance_flags_sanity_check));
 cptr.stPtro(allopt_init, 15600 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 15600 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15600 + $allopt_t_descr, __sl308);
+cptr.stPtro(allopt_init, 15600 + $allopt_t_descr, __s_perform_data_sanity_checks);
 cptr.stPtro(allopt_init, 15600 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15600 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15600 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 15600 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15600 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15704, __sl309);
+cptr.stPtro(allopt_init, 15704, __s_scores);
 cptr.stI32o(allopt_init, 15704 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15704 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15704 + $allopt_t_expectedbuf, 32);
@@ -4625,13 +4625,13 @@ cptr.st1o(allopt_init, 15704 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15704 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 15704 + $allopt_t_optfn, optfn_scores);
 cptr.stPtro(allopt_init, 15704 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15704 + $allopt_t_descr, __sl310);
+cptr.stPtro(allopt_init, 15704 + $allopt_t_descr, __s_the_parts_of_the_score_list_you_wish_to);
 cptr.stPtro(allopt_init, 15704 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15704 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15704 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 15704 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15704 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15808, __sl311);
+cptr.stPtro(allopt_init, 15808, __s_scroll_amount);
 cptr.stI32o(allopt_init, 15808 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15808 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15808 + $allopt_t_expectedbuf, 20);
@@ -4647,13 +4647,13 @@ cptr.st1o(allopt_init, 15808 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15808 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 15808 + $allopt_t_optfn, optfn_scroll_amount);
 cptr.stPtro(allopt_init, 15808 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15808 + $allopt_t_descr, __sl312);
+cptr.stPtro(allopt_init, 15808 + $allopt_t_descr, __s_amount_to_scroll_map_when_scroll_margin);
 cptr.stPtro(allopt_init, 15808 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15808 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15808 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 15808 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15808 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 15912, __sl313);
+cptr.stPtro(allopt_init, 15912, __s_scroll_margin);
 cptr.stI32o(allopt_init, 15912 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 15912 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 15912 + $allopt_t_expectedbuf, 20);
@@ -4669,13 +4669,13 @@ cptr.st1o(allopt_init, 15912 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 15912 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 15912 + $allopt_t_optfn, optfn_scroll_margin);
 cptr.stPtro(allopt_init, 15912 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 15912 + $allopt_t_descr, __sl314);
+cptr.stPtro(allopt_init, 15912 + $allopt_t_descr, __s_scroll_map_when_this_far_from_the_edge);
 cptr.stPtro(allopt_init, 15912 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 15912 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 15912 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 15912 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 15912 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16016, __sl315);
+cptr.stPtro(allopt_init, 16016, __s_selectsaved);
 cptr.stI32o(allopt_init, 16016 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16016 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16016 + $allopt_t_expectedbuf, 0);
@@ -4697,7 +4697,7 @@ cptr.st1o(allopt_init, 16016 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 16016 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16016 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16016 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16120, __sl316);
+cptr.stPtro(allopt_init, 16120, __s_showdamage);
 cptr.stI32o(allopt_init, 16120 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16120 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16120 + $allopt_t_expectedbuf, 0);
@@ -4713,13 +4713,13 @@ cptr.st1o(allopt_init, 16120 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16120 + $allopt_t_addr, cptr.add(iflags, $instance_flags_showdamage));
 cptr.stPtro(allopt_init, 16120 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16120 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16120 + $allopt_t_descr, __sl317);
+cptr.stPtro(allopt_init, 16120 + $allopt_t_descr, __s_show_damage_hero_takes_in_message_line);
 cptr.stPtro(allopt_init, 16120 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16120 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16120 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16120 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16120 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16224, __sl318);
+cptr.stPtro(allopt_init, 16224, __s_showexp);
 cptr.stI32o(allopt_init, 16224 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 16224 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16224 + $allopt_t_expectedbuf, 0);
@@ -4735,13 +4735,13 @@ cptr.st1o(allopt_init, 16224 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16224 + $allopt_t_addr, cptr.add(flags, $flag_showexp));
 cptr.stPtro(allopt_init, 16224 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16224 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16224 + $allopt_t_descr, __sl319);
+cptr.stPtro(allopt_init, 16224 + $allopt_t_descr, __s_show_experience_points_in_status_line);
 cptr.stPtro(allopt_init, 16224 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16224 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16224 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16224 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16224 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16328, __sl320);
+cptr.stPtro(allopt_init, 16328, __s_showrace);
 cptr.stI32o(allopt_init, 16328 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 16328 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16328 + $allopt_t_expectedbuf, 0);
@@ -4757,13 +4757,13 @@ cptr.st1o(allopt_init, 16328 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16328 + $allopt_t_addr, cptr.add(flags, $flag_showrace));
 cptr.stPtro(allopt_init, 16328 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16328 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16328 + $allopt_t_descr, __sl321);
+cptr.stPtro(allopt_init, 16328 + $allopt_t_descr, __s_show_your_character_by_race_rather_than);
 cptr.stPtro(allopt_init, 16328 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16328 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16328 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16328 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16328 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16432, __sl322);
+cptr.stPtro(allopt_init, 16432, __s_showscore);
 cptr.stI32o(allopt_init, 16432 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 16432 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16432 + $allopt_t_expectedbuf, 0);
@@ -4785,7 +4785,7 @@ cptr.st1o(allopt_init, 16432 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16432 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16432 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16432 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16536, __sl323);
+cptr.stPtro(allopt_init, 16536, __s_showvers);
 cptr.stI32o(allopt_init, 16536 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16536 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16536 + $allopt_t_expectedbuf, 0);
@@ -4801,13 +4801,13 @@ cptr.st1o(allopt_init, 16536 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16536 + $allopt_t_addr, cptr.add(flags, $flag_showvers));
 cptr.stPtro(allopt_init, 16536 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16536 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16536 + $allopt_t_descr, __sl324);
+cptr.stPtro(allopt_init, 16536 + $allopt_t_descr, __s_show_version_info_on_status_line);
 cptr.stPtro(allopt_init, 16536 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16536 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16536 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16536 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16536 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16640, __sl325);
+cptr.stPtro(allopt_init, 16640, __s_silent);
 cptr.stI32o(allopt_init, 16640 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16640 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16640 + $allopt_t_expectedbuf, 0);
@@ -4823,13 +4823,13 @@ cptr.st1o(allopt_init, 16640 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 16640 + $allopt_t_addr, cptr.add(flags, $flag_silent));
 cptr.stPtro(allopt_init, 16640 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16640 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16640 + $allopt_t_descr, __sl326);
+cptr.stPtro(allopt_init, 16640 + $allopt_t_descr, __s_don_t_use_terminal_bell);
 cptr.stPtro(allopt_init, 16640 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16640 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 16640 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16640 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16640 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16744, __sl327);
+cptr.stPtro(allopt_init, 16744, __s_softkeyboard);
 cptr.stI32o(allopt_init, 16744 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16744 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16744 + $allopt_t_expectedbuf, 0);
@@ -4851,7 +4851,7 @@ cptr.st1o(allopt_init, 16744 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16744 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 16744 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16744 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16848, __sl328);
+cptr.stPtro(allopt_init, 16848, __s_sortdiscoveries);
 cptr.stI32o(allopt_init, 16848 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16848 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16848 + $allopt_t_expectedbuf, 0);
@@ -4867,13 +4867,13 @@ cptr.st1o(allopt_init, 16848 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16848 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 16848 + $allopt_t_optfn, optfn_sortdiscoveries);
 cptr.stPtro(allopt_init, 16848 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16848 + $allopt_t_descr, __sl329);
+cptr.stPtro(allopt_init, 16848 + $allopt_t_descr, __s_preferred_order_when_displaying);
 cptr.stPtro(allopt_init, 16848 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16848 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16848 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 16848 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16848 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 16952, __sl330);
+cptr.stPtro(allopt_init, 16952, __s_sortloot);
 cptr.stI32o(allopt_init, 16952 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 16952 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 16952 + $allopt_t_expectedbuf, 4);
@@ -4889,13 +4889,13 @@ cptr.st1o(allopt_init, 16952 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 16952 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 16952 + $allopt_t_optfn, optfn_sortloot);
 cptr.stPtro(allopt_init, 16952 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 16952 + $allopt_t_descr, __sl331);
+cptr.stPtro(allopt_init, 16952 + $allopt_t_descr, __s_sort_object_selection_lists_by);
 cptr.stPtro(allopt_init, 16952 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 16952 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 16952 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 16952 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 16952 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17056, __sl332);
+cptr.stPtro(allopt_init, 17056, __s_sortpack);
 cptr.stI32o(allopt_init, 17056 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17056 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17056 + $allopt_t_expectedbuf, 0);
@@ -4911,13 +4911,13 @@ cptr.st1o(allopt_init, 17056 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 17056 + $allopt_t_addr, cptr.add(flags, $flag_sortpack));
 cptr.stPtro(allopt_init, 17056 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17056 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17056 + $allopt_t_descr, __sl333);
+cptr.stPtro(allopt_init, 17056 + $allopt_t_descr, __s_group_inventory_items_by_type);
 cptr.stPtro(allopt_init, 17056 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17056 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 17056 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17056 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17056 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17160, __sl334);
+cptr.stPtro(allopt_init, 17160, __s_sortvanquished);
 cptr.stI32o(allopt_init, 17160 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17160 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17160 + $allopt_t_expectedbuf, 0);
@@ -4933,13 +4933,13 @@ cptr.st1o(allopt_init, 17160 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17160 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 17160 + $allopt_t_optfn, optfn_sortvanquished);
 cptr.stPtro(allopt_init, 17160 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17160 + $allopt_t_descr, __sl335);
+cptr.stPtro(allopt_init, 17160 + $allopt_t_descr, __s_preferred_order_when_displaying__2);
 cptr.stPtro(allopt_init, 17160 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17160 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 17160 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 17160 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17160 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17264, __sl336);
+cptr.stPtro(allopt_init, 17264, __s_soundlib);
 cptr.stI32o(allopt_init, 17264 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17264 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17264 + $allopt_t_expectedbuf, NHM.WINTYPELEN);
@@ -4955,13 +4955,13 @@ cptr.st1o(allopt_init, 17264 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17264 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 17264 + $allopt_t_optfn, optfn_soundlib);
 cptr.stPtro(allopt_init, 17264 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17264 + $allopt_t_descr, __sl337);
+cptr.stPtro(allopt_init, 17264 + $allopt_t_descr, __s_soundlib_interface_to_use_if_any);
 cptr.stPtro(allopt_init, 17264 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17264 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 17264 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 17264 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17264 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17368, __sl338);
+cptr.stPtro(allopt_init, 17368, __s_sounds);
 cptr.stI32o(allopt_init, 17368 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17368 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17368 + $allopt_t_expectedbuf, 0);
@@ -4977,13 +4977,13 @@ cptr.st1o(allopt_init, 17368 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17368 + $allopt_t_addr, cptr.add(iflags, $instance_flags_sounds));
 cptr.stPtro(allopt_init, 17368 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17368 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17368 + $allopt_t_descr, __sl339);
+cptr.stPtro(allopt_init, 17368 + $allopt_t_descr, __s_use_sounds);
 cptr.stPtro(allopt_init, 17368 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17368 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 17368 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17368 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17368 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17472, __sl340);
+cptr.stPtro(allopt_init, 17472, __s_sparkle);
 cptr.stI32o(allopt_init, 17472 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 17472 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17472 + $allopt_t_expectedbuf, 0);
@@ -4999,13 +4999,13 @@ cptr.st1o(allopt_init, 17472 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 17472 + $allopt_t_addr, cptr.add(flags, $flag_sparkle));
 cptr.stPtro(allopt_init, 17472 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17472 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17472 + $allopt_t_descr, __sl341);
+cptr.stPtro(allopt_init, 17472 + $allopt_t_descr, __s_display_sparkly_effect_when_resisting);
 cptr.stPtro(allopt_init, 17472 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17472 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 17472 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17472 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17472 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17576, __sl342);
+cptr.stPtro(allopt_init, 17576, __s_spot_monsters);
 cptr.stI32o(allopt_init, 17576 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17576 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17576 + $allopt_t_expectedbuf, 0);
@@ -5021,13 +5021,13 @@ cptr.st1o(allopt_init, 17576 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17576 + $allopt_t_addr, cptr.add(a11y, $accessibility_data_mon_notices));
 cptr.stPtro(allopt_init, 17576 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17576 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17576 + $allopt_t_descr, __sl343);
+cptr.stPtro(allopt_init, 17576 + $allopt_t_descr, __s_message_when_hero_spots_a_monster);
 cptr.stPtro(allopt_init, 17576 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17576 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 17576 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17576 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17576 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17680, __sl344);
+cptr.stPtro(allopt_init, 17680, __s_splash_screen);
 cptr.stI32o(allopt_init, 17680 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17680 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17680 + $allopt_t_expectedbuf, 0);
@@ -5049,7 +5049,7 @@ cptr.st1o(allopt_init, 17680 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 17680 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17680 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17680 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17784, __sl345);
+cptr.stPtro(allopt_init, 17784, __s_standout);
 cptr.stI32o(allopt_init, 17784 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17784 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17784 + $allopt_t_expectedbuf, 0);
@@ -5065,13 +5065,13 @@ cptr.st1o(allopt_init, 17784 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17784 + $allopt_t_addr, cptr.add(flags, $flag_standout));
 cptr.stPtro(allopt_init, 17784 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17784 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17784 + $allopt_t_descr, __sl346);
+cptr.stPtro(allopt_init, 17784 + $allopt_t_descr, __s_use_standout_for_more);
 cptr.stPtro(allopt_init, 17784 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17784 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 17784 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17784 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17784 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17888, __sl347);
+cptr.stPtro(allopt_init, 17888, __s_status_updates);
 cptr.stI32o(allopt_init, 17888 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 17888 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17888 + $allopt_t_expectedbuf, 0);
@@ -5087,13 +5087,13 @@ cptr.st1o(allopt_init, 17888 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 17888 + $allopt_t_addr, cptr.add(iflags, $instance_flags_status_updates));
 cptr.stPtro(allopt_init, 17888 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17888 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17888 + $allopt_t_descr, __sl348);
+cptr.stPtro(allopt_init, 17888 + $allopt_t_descr, __s_allow_the_status_lines_to_update);
 cptr.stPtro(allopt_init, 17888 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17888 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 17888 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 17888 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17888 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 17992, __sl349);
+cptr.stPtro(allopt_init, 17992, __s_status_condition_fields);
 cptr.stI32o(allopt_init, 17992 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 17992 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 17992 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -5109,13 +5109,13 @@ cptr.st1o(allopt_init, 17992 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 17992 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 17992 + $allopt_t_optfn, optfn_o_status_cond);
 cptr.stPtro(allopt_init, 17992 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 17992 + $allopt_t_descr, __sl350);
+cptr.stPtro(allopt_init, 17992 + $allopt_t_descr, __s_change_status_condition_highlighting);
 cptr.stPtro(allopt_init, 17992 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 17992 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 17992 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 17992 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 17992 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18096, __sl351);
+cptr.stPtro(allopt_init, 18096, __s_statushilites);
 cptr.stI32o(allopt_init, 18096 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18096 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18096 + $allopt_t_expectedbuf, 20);
@@ -5131,13 +5131,13 @@ cptr.st1o(allopt_init, 18096 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18096 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18096 + $allopt_t_optfn, optfn_statushilites);
 cptr.stPtro(allopt_init, 18096 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18096 + $allopt_t_descr, __sl352);
+cptr.stPtro(allopt_init, 18096 + $allopt_t_descr, __s_0_no_status_highlighting_n_show);
 cptr.stPtro(allopt_init, 18096 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18096 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18096 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18096 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18096 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18200, __sl353);
+cptr.stPtro(allopt_init, 18200, __s_status_highlight_rules);
 cptr.stI32o(allopt_init, 18200 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 18200 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18200 + $allopt_t_expectedbuf, NHM.BUFSZ);
@@ -5153,13 +5153,13 @@ cptr.st1o(allopt_init, 18200 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18200 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18200 + $allopt_t_optfn, optfn_o_status_hilites);
 cptr.stPtro(allopt_init, 18200 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18200 + $allopt_t_descr, __sl354);
+cptr.stPtro(allopt_init, 18200 + $allopt_t_descr, __s_change_status_line_highlighting);
 cptr.stPtro(allopt_init, 18200 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18200 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 18200 + $allopt_t_has_handler, NHC.On);
 cptr.st1o(allopt_init, 18200 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18200 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18304, __sl355);
+cptr.stPtro(allopt_init, 18304, __s_statuslines);
 cptr.stI32o(allopt_init, 18304 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 18304 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18304 + $allopt_t_expectedbuf, 20);
@@ -5175,13 +5175,13 @@ cptr.st1o(allopt_init, 18304 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18304 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18304 + $allopt_t_optfn, optfn_statuslines);
 cptr.stPtro(allopt_init, 18304 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18304 + $allopt_t_descr, __sl356);
+cptr.stPtro(allopt_init, 18304 + $allopt_t_descr, __s_2_or_3_lines_for_status_display);
 cptr.stPtro(allopt_init, 18304 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18304 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18304 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18304 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18304 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18408, __sl357);
+cptr.stPtro(allopt_init, 18408, __s_suppress_alert);
 cptr.stI32o(allopt_init, 18408 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18408 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18408 + $allopt_t_expectedbuf, 8);
@@ -5197,13 +5197,13 @@ cptr.st1o(allopt_init, 18408 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18408 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18408 + $allopt_t_optfn, optfn_suppress_alert);
 cptr.stPtro(allopt_init, 18408 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18408 + $allopt_t_descr, __sl358);
+cptr.stPtro(allopt_init, 18408 + $allopt_t_descr, __s_suppress_alerts_about_version_specific);
 cptr.stPtro(allopt_init, 18408 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18408 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18408 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18408 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18408 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18512, __sl359);
+cptr.stPtro(allopt_init, 18512, __s_symset);
 cptr.stI32o(allopt_init, 18512 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 18512 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18512 + $allopt_t_expectedbuf, 70);
@@ -5219,13 +5219,13 @@ cptr.st1o(allopt_init, 18512 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18512 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18512 + $allopt_t_optfn, optfn_symset);
 cptr.stPtro(allopt_init, 18512 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18512 + $allopt_t_descr, __sl360);
+cptr.stPtro(allopt_init, 18512 + $allopt_t_descr, __s_load_a_set_of_display_symbols_from);
 cptr.stPtro(allopt_init, 18512 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18512 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18512 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 18512 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18512 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18616, __sl361);
+cptr.stPtro(allopt_init, 18616, __s_term_cols);
 cptr.stI32o(allopt_init, 18616 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18616 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18616 + $allopt_t_expectedbuf, 6);
@@ -5240,14 +5240,14 @@ cptr.stI32o(allopt_init, 18616 + $allopt_t_termpref, 0);
 cptr.st1o(allopt_init, 18616 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18616 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18616 + $allopt_t_optfn, optfn_term_cols);
-cptr.stPtro(allopt_init, 18616 + $allopt_t_alias, __sl362);
-cptr.stPtro(allopt_init, 18616 + $allopt_t_descr, __sl363);
+cptr.stPtro(allopt_init, 18616 + $allopt_t_alias, __s_termcolumns);
+cptr.stPtro(allopt_init, 18616 + $allopt_t_descr, __s_number_of_columns);
 cptr.stPtro(allopt_init, 18616 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18616 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18616 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18616 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18616 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18720, __sl364);
+cptr.stPtro(allopt_init, 18720, __s_term_rows);
 cptr.stI32o(allopt_init, 18720 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18720 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18720 + $allopt_t_expectedbuf, 6);
@@ -5263,13 +5263,13 @@ cptr.st1o(allopt_init, 18720 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18720 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18720 + $allopt_t_optfn, optfn_term_rows);
 cptr.stPtro(allopt_init, 18720 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18720 + $allopt_t_descr, __sl365);
+cptr.stPtro(allopt_init, 18720 + $allopt_t_descr, __s_number_of_rows);
 cptr.stPtro(allopt_init, 18720 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18720 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18720 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18720 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18720 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18824, __sl366);
+cptr.stPtro(allopt_init, 18824, __s_terrainstatus);
 cptr.stI32o(allopt_init, 18824 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18824 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18824 + $allopt_t_expectedbuf, 0);
@@ -5285,13 +5285,13 @@ cptr.st1o(allopt_init, 18824 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18824 + $allopt_t_addr, cptr.add(flags, $flag_terrainstatus));
 cptr.stPtro(allopt_init, 18824 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 18824 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18824 + $allopt_t_descr, __sl367);
+cptr.stPtro(allopt_init, 18824 + $allopt_t_descr, __s_show_hero_s_location_as_a_status_field);
 cptr.stPtro(allopt_init, 18824 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18824 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18824 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 18824 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18824 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 18928, __sl368);
+cptr.stPtro(allopt_init, 18928, __s_tile_file);
 cptr.stI32o(allopt_init, 18928 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 18928 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 18928 + $allopt_t_expectedbuf, 70);
@@ -5307,13 +5307,13 @@ cptr.st1o(allopt_init, 18928 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 18928 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 18928 + $allopt_t_optfn, optfn_tile_file);
 cptr.stPtro(allopt_init, 18928 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 18928 + $allopt_t_descr, __sl369);
+cptr.stPtro(allopt_init, 18928 + $allopt_t_descr, __s_name_of_tile_file);
 cptr.stPtro(allopt_init, 18928 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 18928 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 18928 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 18928 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 18928 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19032, __sl370);
+cptr.stPtro(allopt_init, 19032, __s_tile_height);
 cptr.stI32o(allopt_init, 19032 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19032 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19032 + $allopt_t_expectedbuf, 20);
@@ -5329,13 +5329,13 @@ cptr.st1o(allopt_init, 19032 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 19032 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 19032 + $allopt_t_optfn, optfn_tile_height);
 cptr.stPtro(allopt_init, 19032 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19032 + $allopt_t_descr, __sl371);
+cptr.stPtro(allopt_init, 19032 + $allopt_t_descr, __s_height_of_tiles);
 cptr.stPtro(allopt_init, 19032 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19032 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19032 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 19032 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19032 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19136, __sl372);
+cptr.stPtro(allopt_init, 19136, __s_tile_width);
 cptr.stI32o(allopt_init, 19136 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19136 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19136 + $allopt_t_expectedbuf, 20);
@@ -5351,13 +5351,13 @@ cptr.st1o(allopt_init, 19136 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 19136 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 19136 + $allopt_t_optfn, optfn_tile_width);
 cptr.stPtro(allopt_init, 19136 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19136 + $allopt_t_descr, __sl373);
+cptr.stPtro(allopt_init, 19136 + $allopt_t_descr, __s_width_of_tiles);
 cptr.stPtro(allopt_init, 19136 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19136 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19136 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 19136 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19136 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19240, __sl374);
+cptr.stPtro(allopt_init, 19240, __s_tiled_map);
 cptr.stI32o(allopt_init, 19240 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19240 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19240 + $allopt_t_expectedbuf, 0);
@@ -5379,7 +5379,7 @@ cptr.st1o(allopt_init, 19240 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19240 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19240 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19240 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19344, __sl375);
+cptr.stPtro(allopt_init, 19344, __s_time);
 cptr.stI32o(allopt_init, 19344 + $allopt_t_section, NHC.OptS_Status);
 cptr.stI32o(allopt_init, 19344 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19344 + $allopt_t_expectedbuf, 0);
@@ -5395,13 +5395,13 @@ cptr.st1o(allopt_init, 19344 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 19344 + $allopt_t_addr, cptr.add(flags, $flag_time));
 cptr.stPtro(allopt_init, 19344 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 19344 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19344 + $allopt_t_descr, __sl376);
+cptr.stPtro(allopt_init, 19344 + $allopt_t_descr, __s_display_game_turns_in_status_line);
 cptr.stPtro(allopt_init, 19344 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19344 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19344 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19344 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19344 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19448, __sl377);
+cptr.stPtro(allopt_init, 19448, __s_timed_delay);
 cptr.stI32o(allopt_init, 19448 + $allopt_t_section, NHC.OptS_Map);
 cptr.stI32o(allopt_init, 19448 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19448 + $allopt_t_expectedbuf, 0);
@@ -5423,7 +5423,7 @@ cptr.st1o(allopt_init, 19448 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19448 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19448 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19448 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19552, __sl378);
+cptr.stPtro(allopt_init, 19552, __s_tips);
 cptr.stI32o(allopt_init, 19552 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19552 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19552 + $allopt_t_expectedbuf, 0);
@@ -5439,13 +5439,13 @@ cptr.st1o(allopt_init, 19552 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 19552 + $allopt_t_addr, cptr.add(flags, $flag_tips));
 cptr.stPtro(allopt_init, 19552 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 19552 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19552 + $allopt_t_descr, __sl379);
+cptr.stPtro(allopt_init, 19552 + $allopt_t_descr, __s_show_some_helpful_tips_during_gameplay);
 cptr.stPtro(allopt_init, 19552 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19552 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 19552 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19552 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19552 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19656, __sl380);
+cptr.stPtro(allopt_init, 19656, __s_tombstone);
 cptr.stI32o(allopt_init, 19656 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19656 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19656 + $allopt_t_expectedbuf, 0);
@@ -5461,13 +5461,13 @@ cptr.st1o(allopt_init, 19656 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 19656 + $allopt_t_addr, cptr.add(flags, $flag_tombstone));
 cptr.stPtro(allopt_init, 19656 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 19656 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19656 + $allopt_t_descr, __sl381);
+cptr.stPtro(allopt_init, 19656 + $allopt_t_descr, __s_show_tombstone_when_your_character_dies);
 cptr.stPtro(allopt_init, 19656 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19656 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 19656 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19656 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19656 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19760, __sl382);
+cptr.stPtro(allopt_init, 19760, __s_toptenwin);
 cptr.stI32o(allopt_init, 19760 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19760 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19760 + $allopt_t_expectedbuf, 0);
@@ -5483,13 +5483,13 @@ cptr.st1o(allopt_init, 19760 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 19760 + $allopt_t_addr, cptr.add(iflags, $instance_flags_toptenwin));
 cptr.stPtro(allopt_init, 19760 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 19760 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19760 + $allopt_t_descr, __sl383);
+cptr.stPtro(allopt_init, 19760 + $allopt_t_descr, __s_show_top_scores_in_window);
 cptr.stPtro(allopt_init, 19760 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19760 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19760 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19760 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19760 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19864, __sl384);
+cptr.stPtro(allopt_init, 19864, __s_traps);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_expectedbuf, ((((NHC.TRAPNUM - 1) | 0) + 1) | 0));
@@ -5505,13 +5505,13 @@ cptr.st1o(allopt_init, 19864 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 19864 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 19864 + $allopt_t_optfn, optfn_traps);
 cptr.stPtro(allopt_init, 19864 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19864 + $allopt_t_descr, __sl385);
+cptr.stPtro(allopt_init, 19864 + $allopt_t_descr, __s_list_of_symbols_to_use_in_drawing_traps);
 cptr.stPtro(allopt_init, 19864 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19864 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 19864 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 19864 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19864 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 19968, __sl386);
+cptr.stPtro(allopt_init, 19968, __s_travel);
 cptr.stI32o(allopt_init, 19968 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19968 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 19968 + $allopt_t_expectedbuf, 0);
@@ -5527,13 +5527,13 @@ cptr.st1o(allopt_init, 19968 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 19968 + $allopt_t_addr, cptr.add(flags, $flag_travelcmd));
 cptr.stPtro(allopt_init, 19968 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 19968 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 19968 + $allopt_t_descr, __sl387);
+cptr.stPtro(allopt_init, 19968 + $allopt_t_descr, __s_enable_traveling_via_mouse_click);
 cptr.stPtro(allopt_init, 19968 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 19968 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 19968 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 19968 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 19968 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20072, __sl388);
+cptr.stPtro(allopt_init, 20072, __s_travel_debug);
 cptr.stI32o(allopt_init, 20072 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20072 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20072 + $allopt_t_expectedbuf, 0);
@@ -5555,7 +5555,7 @@ cptr.st1o(allopt_init, 20072 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 20072 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20072 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20072 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20176, __sl389);
+cptr.stPtro(allopt_init, 20176, __s_tutorial);
 cptr.stI32o(allopt_init, 20176 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20176 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20176 + $allopt_t_expectedbuf, 0);
@@ -5571,13 +5571,13 @@ cptr.st1o(allopt_init, 20176 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 20176 + $allopt_t_addr, cptr.add(flags, $flag_tutorial));
 cptr.stPtro(allopt_init, 20176 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 20176 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 20176 + $allopt_t_descr, __sl390);
+cptr.stPtro(allopt_init, 20176 + $allopt_t_descr, __s_ask_if_you_want_the_tutorial);
 cptr.stPtro(allopt_init, 20176 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20176 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 20176 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20176 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20176 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20280, __sl391);
+cptr.stPtro(allopt_init, 20280, __s_use_darkgray);
 cptr.stI32o(allopt_init, 20280 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20280 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20280 + $allopt_t_expectedbuf, 0);
@@ -5593,13 +5593,13 @@ cptr.st1o(allopt_init, 20280 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 20280 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc2_darkgray));
 cptr.stPtro(allopt_init, 20280 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 20280 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 20280 + $allopt_t_descr, __sl392);
+cptr.stPtro(allopt_init, 20280 + $allopt_t_descr, __s_use_bold_black_color_instead_of_blue);
 cptr.stPtro(allopt_init, 20280 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20280 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 20280 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20280 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20280 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20384, __sl393);
+cptr.stPtro(allopt_init, 20384, __s_use_inverse);
 cptr.stI32o(allopt_init, 20384 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20384 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20384 + $allopt_t_expectedbuf, 0);
@@ -5615,13 +5615,13 @@ cptr.st1o(allopt_init, 20384 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 20384 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_inverse));
 cptr.stPtro(allopt_init, 20384 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 20384 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 20384 + $allopt_t_descr, __sl394);
+cptr.stPtro(allopt_init, 20384 + $allopt_t_descr, __s_display_detected_monsters_in_inverse);
 cptr.stPtro(allopt_init, 20384 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20384 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 20384 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20384 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20384 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20488, __sl395);
+cptr.stPtro(allopt_init, 20488, __s_use_truecolor);
 cptr.stI32o(allopt_init, 20488 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20488 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20488 + $allopt_t_expectedbuf, 0);
@@ -5636,14 +5636,14 @@ cptr.stI32o(allopt_init, 20488 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 20488 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 20488 + $allopt_t_addr, cptr.add(iflags, $instance_flags_use_truecolor));
 cptr.stPtro(allopt_init, 20488 + $allopt_t_optfn, optfn_boolean);
-cptr.stPtro(allopt_init, 20488 + $allopt_t_alias, __sl396);
+cptr.stPtro(allopt_init, 20488 + $allopt_t_alias, __s_use_truecolour);
 cptr.stPtro(allopt_init, 20488 + $allopt_t_descr, null);
 cptr.stPtro(allopt_init, 20488 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20488 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 20488 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20488 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20488 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20592, __sl397);
+cptr.stPtro(allopt_init, 20592, __s_vary_msgcount);
 cptr.stI32o(allopt_init, 20592 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20592 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20592 + $allopt_t_expectedbuf, 20);
@@ -5659,13 +5659,13 @@ cptr.st1o(allopt_init, 20592 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 20592 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 20592 + $allopt_t_optfn, optfn_vary_msgcount);
 cptr.stPtro(allopt_init, 20592 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 20592 + $allopt_t_descr, __sl398);
+cptr.stPtro(allopt_init, 20592 + $allopt_t_descr, __s_show_more_old_messages_at_a_time);
 cptr.stPtro(allopt_init, 20592 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20592 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 20592 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 20592 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20592 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20696, __sl399);
+cptr.stPtro(allopt_init, 20696, __s_verbose);
 cptr.stI32o(allopt_init, 20696 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20696 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20696 + $allopt_t_expectedbuf, 0);
@@ -5687,7 +5687,7 @@ cptr.st1o(allopt_init, 20696 + $allopt_t_initval, NHC.On);
 cptr.st1o(allopt_init, 20696 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20696 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20696 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20800, __sl400);
+cptr.stPtro(allopt_init, 20800, __s_versinfo);
 cptr.stI32o(allopt_init, 20800 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20800 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20800 + $allopt_t_expectedbuf, 80);
@@ -5703,13 +5703,13 @@ cptr.st1o(allopt_init, 20800 + $allopt_t_opt_in_out, NHC.opt_out);
 cptr.stPtro(allopt_init, 20800 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 20800 + $allopt_t_optfn, optfn_versinfo);
 cptr.stPtro(allopt_init, 20800 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 20800 + $allopt_t_descr, __sl401);
+cptr.stPtro(allopt_init, 20800 + $allopt_t_descr, __s_extra_information_for_showvers);
 cptr.stPtro(allopt_init, 20800 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 20800 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 20800 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 20800 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20800 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 20904, __sl402);
+cptr.stPtro(allopt_init, 20904, __s_voices);
 cptr.stI32o(allopt_init, 20904 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 20904 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 20904 + $allopt_t_expectedbuf, 0);
@@ -5731,7 +5731,7 @@ cptr.st1o(allopt_init, 20904 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 20904 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 20904 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 20904 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21008, __sl403);
+cptr.stPtro(allopt_init, 21008, __s_vt_tiledata);
 cptr.stI32o(allopt_init, 21008 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21008 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21008 + $allopt_t_expectedbuf, 0);
@@ -5753,7 +5753,7 @@ cptr.st1o(allopt_init, 21008 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21008 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 21008 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21008 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21112, __sl404);
+cptr.stPtro(allopt_init, 21112, __s_vt_sounddata);
 cptr.stI32o(allopt_init, 21112 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21112 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21112 + $allopt_t_expectedbuf, 0);
@@ -5775,7 +5775,7 @@ cptr.st1o(allopt_init, 21112 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21112 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 21112 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21112 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21216, __sl405);
+cptr.stPtro(allopt_init, 21216, __s_warnings);
 cptr.stI32o(allopt_init, 21216 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21216 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21216 + $allopt_t_expectedbuf, 10);
@@ -5791,13 +5791,13 @@ cptr.st1o(allopt_init, 21216 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21216 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 21216 + $allopt_t_optfn, optfn_warnings);
 cptr.stPtro(allopt_init, 21216 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21216 + $allopt_t_descr, __sl406);
+cptr.stPtro(allopt_init, 21216 + $allopt_t_descr, __s_display_characters_for_warnings);
 cptr.stPtro(allopt_init, 21216 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21216 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21216 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 21216 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21216 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21320, __sl407);
+cptr.stPtro(allopt_init, 21320, __s_weaponstatus);
 cptr.stI32o(allopt_init, 21320 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21320 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21320 + $allopt_t_expectedbuf, 0);
@@ -5813,13 +5813,13 @@ cptr.st1o(allopt_init, 21320 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21320 + $allopt_t_addr, cptr.add(flags, $flag_weaponstatus));
 cptr.stPtro(allopt_init, 21320 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 21320 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21320 + $allopt_t_descr, __sl408);
+cptr.stPtro(allopt_init, 21320 + $allopt_t_descr, __s_show_currently_wielded_weapon_in_a);
 cptr.stPtro(allopt_init, 21320 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21320 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21320 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 21320 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21320 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21424, __sl409);
+cptr.stPtro(allopt_init, 21424, __s_whatis_coord);
 cptr.stI32o(allopt_init, 21424 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21424 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21424 + $allopt_t_expectedbuf, 1);
@@ -5835,13 +5835,13 @@ cptr.st1o(allopt_init, 21424 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21424 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 21424 + $allopt_t_optfn, optfn_whatis_coord);
 cptr.stPtro(allopt_init, 21424 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21424 + $allopt_t_descr, __sl410);
+cptr.stPtro(allopt_init, 21424 + $allopt_t_descr, __s_show_coordinates_when_auto_describing);
 cptr.stPtro(allopt_init, 21424 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21424 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21424 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 21424 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21424 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21528, __sl411);
+cptr.stPtro(allopt_init, 21528, __s_whatis_filter);
 cptr.stI32o(allopt_init, 21528 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21528 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21528 + $allopt_t_expectedbuf, 1);
@@ -5857,13 +5857,13 @@ cptr.st1o(allopt_init, 21528 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21528 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 21528 + $allopt_t_optfn, optfn_whatis_filter);
 cptr.stPtro(allopt_init, 21528 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21528 + $allopt_t_descr, __sl412);
+cptr.stPtro(allopt_init, 21528 + $allopt_t_descr, __s_filter_coordinate_locations_when);
 cptr.stPtro(allopt_init, 21528 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21528 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21528 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 21528 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21528 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21632, __sl413);
+cptr.stPtro(allopt_init, 21632, __s_whatis_menu);
 cptr.stI32o(allopt_init, 21632 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21632 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21632 + $allopt_t_expectedbuf, 0);
@@ -5879,13 +5879,13 @@ cptr.st1o(allopt_init, 21632 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21632 + $allopt_t_addr, cptr.add(iflags, $instance_flags_getloc_usemenu));
 cptr.stPtro(allopt_init, 21632 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 21632 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21632 + $allopt_t_descr, __sl414);
+cptr.stPtro(allopt_init, 21632 + $allopt_t_descr, __s_show_menu_when_getting_a_map_location);
 cptr.stPtro(allopt_init, 21632 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21632 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21632 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 21632 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21632 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21736, __sl415);
+cptr.stPtro(allopt_init, 21736, __s_whatis_moveskip);
 cptr.stI32o(allopt_init, 21736 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21736 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21736 + $allopt_t_expectedbuf, 0);
@@ -5901,13 +5901,13 @@ cptr.st1o(allopt_init, 21736 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21736 + $allopt_t_addr, cptr.add(iflags, $instance_flags_getloc_moveskip));
 cptr.stPtro(allopt_init, 21736 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 21736 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21736 + $allopt_t_descr, __sl416);
+cptr.stPtro(allopt_init, 21736 + $allopt_t_descr, __s_skip_same_glyph_when_getting_map);
 cptr.stPtro(allopt_init, 21736 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21736 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21736 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 21736 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21736 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21840, __sl417);
+cptr.stPtro(allopt_init, 21840, __s_windowborders);
 cptr.stI32o(allopt_init, 21840 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21840 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21840 + $allopt_t_expectedbuf, 9);
@@ -5923,13 +5923,13 @@ cptr.st1o(allopt_init, 21840 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21840 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 21840 + $allopt_t_optfn, optfn_windowborders);
 cptr.stPtro(allopt_init, 21840 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21840 + $allopt_t_descr, __sl418);
+cptr.stPtro(allopt_init, 21840 + $allopt_t_descr, __s_0_off_1_on_2_auto);
 cptr.stPtro(allopt_init, 21840 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21840 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21840 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 21840 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21840 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 21944, __sl419);
+cptr.stPtro(allopt_init, 21944, __s_windowcolors);
 cptr.stI32o(allopt_init, 21944 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 21944 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 21944 + $allopt_t_expectedbuf, 80);
@@ -5945,13 +5945,13 @@ cptr.st1o(allopt_init, 21944 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 21944 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 21944 + $allopt_t_optfn, optfn_windowcolors);
 cptr.stPtro(allopt_init, 21944 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 21944 + $allopt_t_descr, __sl420);
+cptr.stPtro(allopt_init, 21944 + $allopt_t_descr, __s_the_foreground_background_colors_of);
 cptr.stPtro(allopt_init, 21944 + $allopt_t_prefixgw, null);
 cptr.st1o(allopt_init, 21944 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 21944 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 21944 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 21944 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 22048, __sl421);
+cptr.stPtro(allopt_init, 22048, __s_wizmgender);
 cptr.stI32o(allopt_init, 22048 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 22048 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 22048 + $allopt_t_expectedbuf, 0);
@@ -5973,7 +5973,7 @@ cptr.st1o(allopt_init, 22048 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 22048 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 22048 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 22048 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 22152, __sl422);
+cptr.stPtro(allopt_init, 22152, __s_wizweight);
 cptr.stI32o(allopt_init, 22152 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 22152 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 22152 + $allopt_t_expectedbuf, 0);
@@ -5995,7 +5995,7 @@ cptr.st1o(allopt_init, 22152 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 22152 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 22152 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 22152 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 22256, __sl423);
+cptr.stPtro(allopt_init, 22256, __s_wraptext);
 cptr.stI32o(allopt_init, 22256 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 22256 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 22256 + $allopt_t_expectedbuf, 0);
@@ -6017,7 +6017,7 @@ cptr.st1o(allopt_init, 22256 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 22256 + $allopt_t_has_handler, 0);
 cptr.st1o(allopt_init, 22256 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 22256 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 22360, __sl424);
+cptr.stPtro(allopt_init, 22360, __s_cond);
 cptr.stI32o(allopt_init, 22360 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 22360 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 22360 + $allopt_t_expectedbuf, 0);
@@ -6033,13 +6033,13 @@ cptr.st1o(allopt_init, 22360 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 22360 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 22360 + $allopt_t_optfn, pfxfn_cond_);
 cptr.stPtro(allopt_init, 22360 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 22360 + $allopt_t_descr, __sl425);
-cptr.stPtro(allopt_init, 22360 + $allopt_t_prefixgw, __sl424);
+cptr.stPtro(allopt_init, 22360 + $allopt_t_descr, __s_prefix_for_cond_options);
+cptr.stPtro(allopt_init, 22360 + $allopt_t_prefixgw, __s_cond);
 cptr.st1o(allopt_init, 22360 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 22360 + $allopt_t_has_handler, NHC.Yes);
 cptr.st1o(allopt_init, 22360 + $allopt_t_dupdetected, 0);
 cptr.st1o(allopt_init, 22360 + $allopt_t_disregarded, 0);
-cptr.stPtro(allopt_init, 22464, __sl426);
+cptr.stPtro(allopt_init, 22464, __s_font);
 cptr.stI32o(allopt_init, 22464 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 22464 + $allopt_t_minmatch, 0);
 cptr.stI32o(allopt_init, 22464 + $allopt_t_expectedbuf, 0);
@@ -6055,8 +6055,8 @@ cptr.st1o(allopt_init, 22464 + $allopt_t_opt_in_out, NHC.opt_in);
 cptr.stPtro(allopt_init, 22464 + $allopt_t_addr, null);
 cptr.stPtro(allopt_init, 22464 + $allopt_t_optfn, pfxfn_font);
 cptr.stPtro(allopt_init, 22464 + $allopt_t_alias, (null));
-cptr.stPtro(allopt_init, 22464 + $allopt_t_descr, __sl427);
-cptr.stPtro(allopt_init, 22464 + $allopt_t_prefixgw, __sl426);
+cptr.stPtro(allopt_init, 22464 + $allopt_t_descr, __s_prefix_for_font_options);
+cptr.stPtro(allopt_init, 22464 + $allopt_t_prefixgw, __s_font);
 cptr.st1o(allopt_init, 22464 + $allopt_t_initval, NHC.Off);
 cptr.st1o(allopt_init, 22464 + $allopt_t_has_handler, NHC.No);
 cptr.st1o(allopt_init, 22464 + $allopt_t_dupdetected, 0);
@@ -6130,11 +6130,11 @@ const roleoptvals = (function () { const flat = new Uint8Array(4 * 7 * 8); const
 
 /** C ref: options.c:114 — char *[5] */
 const OptS_type = cptr.alloc(5 * 8);
-cptr.stPtro(OptS_type, 0, __sl428);
-cptr.stPtro(OptS_type, 8, __sl429);
-cptr.stPtro(OptS_type, 16, __sl430);
-cptr.stPtro(OptS_type, 24, __sl431);
-cptr.stPtro(OptS_type, 32, __sl432);
+cptr.stPtro(OptS_type, 0, __s_general);
+cptr.stPtro(OptS_type, 8, __s_behavior);
+cptr.stPtro(OptS_type, 16, __s_map);
+cptr.stPtro(OptS_type, 24, __s_status);
+cptr.stPtro(OptS_type, 32, __s_advanced);
 
 /** C ref: options.c:118 — char[18] */
 const def_inv_order = [NHC.COIN_CLASS, NHC.AMULET_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.FOOD_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.POTION_CLASS, NHC.RING_CLASS, NHC.WAND_CLASS, NHC.TOOL_CLASS, NHC.GEM_CLASS, NHC.ROCK_CLASS, NHC.BALL_CLASS, NHC.CHAIN_CLASS, 0];
@@ -6159,91 +6159,91 @@ const defbrief = cptr.bytes("def");
 /** C ref: options.c:136 — struct paranoia_opts[15] */
 const paranoia = cptr.alloc(15 * 48);
 cptr.stI32o(paranoia, 0, NHM.PARANOID_CONFIRM);
-cptr.stPtro(paranoia, 0 + $paranoia_opts_argname, __sl433);
+cptr.stPtro(paranoia, 0 + $paranoia_opts_argname, __s_confirm__2);
 cptr.stI32o(paranoia, 0 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 0 + $paranoia_opts_synonym, __sl434);
+cptr.stPtro(paranoia, 0 + $paranoia_opts_synonym, __s_paranoia);
 cptr.stI32o(paranoia, 0 + $paranoia_opts_synMinLen, 2);
-cptr.stPtro(paranoia, 0 + $paranoia_opts_explain, __sl435);
+cptr.stPtro(paranoia, 0 + $paranoia_opts_explain, __s_for_yes_confirmations_require_no_to);
 cptr.stI32o(paranoia, 48, NHM.PARANOID_QUIT);
-cptr.stPtro(paranoia, 48 + $paranoia_opts_argname, __sl436);
+cptr.stPtro(paranoia, 48 + $paranoia_opts_argname, __s_quit);
 cptr.stI32o(paranoia, 48 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 48 + $paranoia_opts_synonym, __sl437);
+cptr.stPtro(paranoia, 48 + $paranoia_opts_synonym, __s_explore);
 cptr.stI32o(paranoia, 48 + $paranoia_opts_synMinLen, 2);
-cptr.stPtro(paranoia, 48 + $paranoia_opts_explain, __sl438);
+cptr.stPtro(paranoia, 48 + $paranoia_opts_explain, __s_yes_vs_y_to_quit_or_to_enter_explore);
 cptr.stI32o(paranoia, 96, NHM.PARANOID_DIE);
-cptr.stPtro(paranoia, 96 + $paranoia_opts_argname, __sl439);
+cptr.stPtro(paranoia, 96 + $paranoia_opts_argname, __s_die);
 cptr.stI32o(paranoia, 96 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 96 + $paranoia_opts_synonym, __sl440);
+cptr.stPtro(paranoia, 96 + $paranoia_opts_synonym, __s_death);
 cptr.stI32o(paranoia, 96 + $paranoia_opts_synMinLen, 2);
-cptr.stPtro(paranoia, 96 + $paranoia_opts_explain, __sl441);
+cptr.stPtro(paranoia, 96 + $paranoia_opts_explain, __s_yes_vs_y_to_die_explore_mode_or_debug);
 cptr.stI32o(paranoia, 144, NHM.PARANOID_BONES);
-cptr.stPtro(paranoia, 144 + $paranoia_opts_argname, __sl57);
+cptr.stPtro(paranoia, 144 + $paranoia_opts_argname, __s_bones);
 cptr.stI32o(paranoia, 144 + $paranoia_opts_argMinLen, 1);
 cptr.stPtro(paranoia, 144 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 144 + $paranoia_opts_synMinLen, 0);
-cptr.stPtro(paranoia, 144 + $paranoia_opts_explain, __sl442);
+cptr.stPtro(paranoia, 144 + $paranoia_opts_explain, __s_yes_vs_y_to_save_bones_data_when_dying);
 cptr.stI32o(paranoia, 192, NHM.PARANOID_HIT);
-cptr.stPtro(paranoia, 192 + $paranoia_opts_argname, __sl443);
+cptr.stPtro(paranoia, 192 + $paranoia_opts_argname, __s_attack);
 cptr.stI32o(paranoia, 192 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 192 + $paranoia_opts_synonym, __sl444);
+cptr.stPtro(paranoia, 192 + $paranoia_opts_synonym, __s_hit);
 cptr.stI32o(paranoia, 192 + $paranoia_opts_synMinLen, 1);
-cptr.stPtro(paranoia, 192 + $paranoia_opts_explain, __sl445);
+cptr.stPtro(paranoia, 192 + $paranoia_opts_explain, __s_yes_vs_y_to_attack_a_peaceful_monster);
 cptr.stI32o(paranoia, 240, NHM.PARANOID_BREAKWAND);
-cptr.stPtro(paranoia, 240 + $paranoia_opts_argname, __sl446);
+cptr.stPtro(paranoia, 240 + $paranoia_opts_argname, __s_wand_break);
 cptr.stI32o(paranoia, 240 + $paranoia_opts_argMinLen, 2);
-cptr.stPtro(paranoia, 240 + $paranoia_opts_synonym, __sl447);
+cptr.stPtro(paranoia, 240 + $paranoia_opts_synonym, __s_break_wand);
 cptr.stI32o(paranoia, 240 + $paranoia_opts_synMinLen, 2);
-cptr.stPtro(paranoia, 240 + $paranoia_opts_explain, __sl448);
+cptr.stPtro(paranoia, 240 + $paranoia_opts_explain, __s_yes_vs_y_to_break_a_wand_via_a_pply);
 cptr.stI32o(paranoia, 288, NHM.PARANOID_EATING);
-cptr.stPtro(paranoia, 288 + $paranoia_opts_argname, __sl449);
+cptr.stPtro(paranoia, 288 + $paranoia_opts_argname, __s_eat);
 cptr.stI32o(paranoia, 288 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 288 + $paranoia_opts_synonym, __sl450);
+cptr.stPtro(paranoia, 288 + $paranoia_opts_synonym, __s_continue);
 cptr.stI32o(paranoia, 288 + $paranoia_opts_synMinLen, 4);
-cptr.stPtro(paranoia, 288 + $paranoia_opts_explain, __sl451);
+cptr.stPtro(paranoia, 288 + $paranoia_opts_explain, __s_yes_vs_y_to_continue_eating_after_first);
 cptr.stI32o(paranoia, 336, NHM.PARANOID_WERECHANGE);
-cptr.stPtro(paranoia, 336 + $paranoia_opts_argname, __sl452);
+cptr.stPtro(paranoia, 336 + $paranoia_opts_argname, __s_were_change);
 cptr.stI32o(paranoia, 336 + $paranoia_opts_argMinLen, 2);
 cptr.stPtro(paranoia, 336 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 336 + $paranoia_opts_synMinLen, 0);
-cptr.stPtro(paranoia, 336 + $paranoia_opts_explain, __sl453);
+cptr.stPtro(paranoia, 336 + $paranoia_opts_explain, __s_yes_vs_y_to_change_form_when);
 cptr.stI32o(paranoia, 384, NHM.PARANOID_PRAY);
-cptr.stPtro(paranoia, 384 + $paranoia_opts_argname, __sl454);
+cptr.stPtro(paranoia, 384 + $paranoia_opts_argname, __s_pray);
 cptr.stI32o(paranoia, 384 + $paranoia_opts_argMinLen, 1);
 cptr.stPtro(paranoia, 384 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 384 + $paranoia_opts_synMinLen, 0);
-cptr.stPtro(paranoia, 384 + $paranoia_opts_explain, __sl455);
+cptr.stPtro(paranoia, 384 + $paranoia_opts_explain, __s_y_required_to_pray_supersedes_old);
 cptr.stI32o(paranoia, 432, NHM.PARANOID_TRAP);
-cptr.stPtro(paranoia, 432 + $paranoia_opts_argname, __sl456);
+cptr.stPtro(paranoia, 432 + $paranoia_opts_argname, __s_trap);
 cptr.stI32o(paranoia, 432 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 432 + $paranoia_opts_synonym, __sl457);
+cptr.stPtro(paranoia, 432 + $paranoia_opts_synonym, __s_move_trap);
 cptr.stI32o(paranoia, 432 + $paranoia_opts_synMinLen, 1);
-cptr.stPtro(paranoia, 432 + $paranoia_opts_explain, __sl458);
+cptr.stPtro(paranoia, 432 + $paranoia_opts_explain, __s_y_required_to_enter_known_trap_unless);
 cptr.stI32o(paranoia, 480, NHM.PARANOID_AUTOALL);
-cptr.stPtro(paranoia, 480 + $paranoia_opts_argname, __sl459);
+cptr.stPtro(paranoia, 480 + $paranoia_opts_argname, __s_autoall);
 cptr.stI32o(paranoia, 480 + $paranoia_opts_argMinLen, 2);
-cptr.stPtro(paranoia, 480 + $paranoia_opts_synonym, __sl460);
+cptr.stPtro(paranoia, 480 + $paranoia_opts_synonym, __s_autoselect_all);
 cptr.stI32o(paranoia, 480 + $paranoia_opts_synMinLen, 2);
-cptr.stPtro(paranoia, 480 + $paranoia_opts_explain, __sl461);
+cptr.stPtro(paranoia, 480 + $paranoia_opts_explain, __s_y_required_to_pick_filter_choice_a_for);
 cptr.stI32o(paranoia, 528, NHM.PARANOID_SWIM);
-cptr.stPtro(paranoia, 528 + $paranoia_opts_argname, __sl462);
+cptr.stPtro(paranoia, 528 + $paranoia_opts_argname, __s_swim);
 cptr.stI32o(paranoia, 528 + $paranoia_opts_argMinLen, 1);
 cptr.stPtro(paranoia, 528 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 528 + $paranoia_opts_synMinLen, 0);
-cptr.stPtro(paranoia, 528 + $paranoia_opts_explain, __sl463);
+cptr.stPtro(paranoia, 528 + $paranoia_opts_explain, __s_m_prefix_necessary_to_deliberately_walk);
 cptr.stI32o(paranoia, 576, NHM.PARANOID_REMOVE);
-cptr.stPtro(paranoia, 576 + $paranoia_opts_argname, __sl464);
+cptr.stPtro(paranoia, 576 + $paranoia_opts_argname, __s_remove);
 cptr.stI32o(paranoia, 576 + $paranoia_opts_argMinLen, 1);
-cptr.stPtro(paranoia, 576 + $paranoia_opts_synonym, __sl465);
+cptr.stPtro(paranoia, 576 + $paranoia_opts_synonym, __s_takeoff);
 cptr.stI32o(paranoia, 576 + $paranoia_opts_synMinLen, 1);
-cptr.stPtro(paranoia, 576 + $paranoia_opts_explain, __sl466);
+cptr.stPtro(paranoia, 576 + $paranoia_opts_explain, __s_always_pick_from_inventory_for_remove);
 cptr.stI32o(paranoia, 624, 0);
-cptr.stPtro(paranoia, 624 + $paranoia_opts_argname, __sl467);
+cptr.stPtro(paranoia, 624 + $paranoia_opts_argname, __s_none);
 cptr.stI32o(paranoia, 624 + $paranoia_opts_argMinLen, 4);
 cptr.stPtro(paranoia, 624 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 624 + $paranoia_opts_synMinLen, 0);
 cptr.stPtro(paranoia, 624 + $paranoia_opts_explain, null);
 cptr.stI32o(paranoia, 672, -1);
-cptr.stPtro(paranoia, 672 + $paranoia_opts_argname, __sl468);
+cptr.stPtro(paranoia, 672 + $paranoia_opts_argname, __s_all);
 cptr.stI32o(paranoia, 672 + $paranoia_opts_argMinLen, 3);
 cptr.stPtro(paranoia, 672 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 672 + $paranoia_opts_synMinLen, 0);
@@ -6251,78 +6251,78 @@ cptr.stPtro(paranoia, 672 + $paranoia_opts_explain, null);
 
 /** C ref: options.c:184 — char *[4][3] */
 const menutype = (function () { const flat = new Uint8Array(4 * 3 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(menutype[0]), 0, __sl469);
-cptr.stPtro(cptr.decay(menutype[0]), 8, __sl470);
-cptr.stPtro(cptr.decay(menutype[0]), 16, __sl471);
-cptr.stPtro(cptr.decay(menutype[1]), 0, __sl472);
-cptr.stPtro(cptr.decay(menutype[1]), 8, __sl470);
-cptr.stPtro(cptr.decay(menutype[1]), 16, __sl473);
-cptr.stPtro(cptr.decay(menutype[2]), 0, __sl474);
-cptr.stPtro(cptr.decay(menutype[2]), 8, __sl475);
-cptr.stPtro(cptr.decay(menutype[2]), 16, __sl476);
-cptr.stPtro(cptr.decay(menutype[3]), 0, __sl477);
-cptr.stPtro(cptr.decay(menutype[3]), 8, __sl478);
-cptr.stPtro(cptr.decay(menutype[3]), 16, __sl479);
+cptr.stPtro(cptr.decay(menutype[0]), 0, __s_traditional);
+cptr.stPtro(cptr.decay(menutype[0]), 8, __s_prompt_for_object_class_es_then);
+cptr.stPtro(cptr.decay(menutype[0]), 16, __s_ask_y_n_for_each_item_in_those_classes);
+cptr.stPtro(cptr.decay(menutype[1]), 0, __s_combination);
+cptr.stPtro(cptr.decay(menutype[1]), 8, __s_prompt_for_object_class_es_then);
+cptr.stPtro(cptr.decay(menutype[1]), 16, __s_use_menu_for_items_in_those_classes);
+cptr.stPtro(cptr.decay(menutype[2]), 0, __s_full);
+cptr.stPtro(cptr.decay(menutype[2]), 8, __s_use_menu_to_choose_class_es_then);
+cptr.stPtro(cptr.decay(menutype[2]), 16, __s_use_another_menu_for_items_in_those);
+cptr.stPtro(cptr.decay(menutype[3]), 0, __s_partial);
+cptr.stPtro(cptr.decay(menutype[3]), 8, __s_skip_class_filtering_always);
+cptr.stPtro(cptr.decay(menutype[3]), 16, __s_use_menu_of_all_available_items);
 
 /** C ref: options.c:195 — char *[4][3] */
 const msgwind = (function () { const flat = new Uint8Array(4 * 3 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(msgwind[0]), 0, __sl480);
-cptr.stPtro(cptr.decay(msgwind[0]), 8, __sl481);
-cptr.stPtro(cptr.decay(msgwind[0]), 16, __sl482);
-cptr.stPtro(cptr.decay(msgwind[1]), 0, __sl472);
-cptr.stPtro(cptr.decay(msgwind[1]), 8, __sl483);
-cptr.stPtro(cptr.decay(msgwind[1]), 16, __sl484);
-cptr.stPtro(cptr.decay(msgwind[2]), 0, __sl474);
-cptr.stPtro(cptr.decay(msgwind[2]), 8, __sl485);
-cptr.stPtro(cptr.decay(msgwind[2]), 16, __sl486);
-cptr.stPtro(cptr.decay(msgwind[3]), 0, __sl487);
-cptr.stPtro(cptr.decay(msgwind[3]), 8, __sl485);
-cptr.stPtro(cptr.decay(msgwind[3]), 16, __sl482);
+cptr.stPtro(cptr.decay(msgwind[0]), 0, __s_single);
+cptr.stPtro(cptr.decay(msgwind[0]), 8, __s_show_one_old_message_at_a_time);
+cptr.stPtro(cptr.decay(msgwind[0]), 16, __s_most_recent_first);
+cptr.stPtro(cptr.decay(msgwind[1]), 0, __s_combination);
+cptr.stPtro(cptr.decay(msgwind[1]), 8, __s_for_consecutive_p_requests_use);
+cptr.stPtro(cptr.decay(msgwind[1]), 16, __s_single_for_first_two_then_full);
+cptr.stPtro(cptr.decay(msgwind[2]), 0, __s_full);
+cptr.stPtro(cptr.decay(msgwind[2]), 8, __s_show_all_available_messages);
+cptr.stPtro(cptr.decay(msgwind[2]), 16, __s_oldest_first_and_most_recent_last);
+cptr.stPtro(cptr.decay(msgwind[3]), 0, __s_reversed);
+cptr.stPtro(cptr.decay(msgwind[3]), 8, __s_show_all_available_messages);
+cptr.stPtro(cptr.decay(msgwind[3]), 16, __s_most_recent_first);
 
 /** C ref: options.c:207 — char *[4][2] */
 const unlocktypes = (function () { const flat = new Uint8Array(4 * 2 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(unlocktypes[0]), 0, __sl488);
-cptr.stPtro(cptr.decay(unlocktypes[0]), 8, __sl489);
-cptr.stPtro(cptr.decay(unlocktypes[1]), 0, __sl490);
-cptr.stPtro(cptr.decay(unlocktypes[1]), 8, __sl491);
-cptr.stPtro(cptr.decay(unlocktypes[2]), 0, __sl492);
-cptr.stPtro(cptr.decay(unlocktypes[2]), 8, __sl493);
-cptr.stPtro(cptr.decay(unlocktypes[3]), 0, __sl494);
-cptr.stPtro(cptr.decay(unlocktypes[3]), 8, __sl495);
+cptr.stPtro(cptr.decay(unlocktypes[0]), 0, __s_untrap);
+cptr.stPtro(cptr.decay(unlocktypes[0]), 8, __s_might_fail);
+cptr.stPtro(cptr.decay(unlocktypes[1]), 0, __s_apply_key);
+cptr.stPtro(cptr.decay(unlocktypes[1]), 8, __s_empty);
+cptr.stPtro(cptr.decay(unlocktypes[2]), 0, __s_kick);
+cptr.stPtro(cptr.decay(unlocktypes[2]), 8, __s_doors_only);
+cptr.stPtro(cptr.decay(unlocktypes[3]), 0, __s_force);
+cptr.stPtro(cptr.decay(unlocktypes[3]), 8, __s_chests_boxes_only);
 
 /** C ref: options.c:213 — char *[6] */
 const burdentype = cptr.alloc(6 * 8);
-cptr.stPtro(burdentype, 0, __sl496);
-cptr.stPtro(burdentype, 8, __sl497);
-cptr.stPtro(burdentype, 16, __sl498);
-cptr.stPtro(burdentype, 24, __sl499);
-cptr.stPtro(burdentype, 32, __sl500);
-cptr.stPtro(burdentype, 40, __sl501);
+cptr.stPtro(burdentype, 0, __s_unencumbered);
+cptr.stPtro(burdentype, 8, __s_burdened);
+cptr.stPtro(burdentype, 16, __s_stressed);
+cptr.stPtro(burdentype, 24, __s_strained);
+cptr.stPtro(burdentype, 32, __s_overtaxed);
+cptr.stPtro(burdentype, 40, __s_overloaded);
 
 /** C ref: options.c:217 — char *[4] */
 const runmodes = cptr.alloc(4 * 8);
-cptr.stPtro(runmodes, 0, __sl502);
-cptr.stPtro(runmodes, 8, __sl503);
-cptr.stPtro(runmodes, 16, __sl504);
-cptr.stPtro(runmodes, 24, __sl505);
+cptr.stPtro(runmodes, 0, __s_teleport);
+cptr.stPtro(runmodes, 8, __s_run);
+cptr.stPtro(runmodes, 16, __s_walk);
+cptr.stPtro(runmodes, 24, __s_crawl);
 
 /** C ref: options.c:220 — char *[3] */
 const sortltype = cptr.alloc(3 * 8);
-cptr.stPtro(sortltype, 0, __sl467);
-cptr.stPtro(sortltype, 8, __sl506);
-cptr.stPtro(sortltype, 16, __sl474);
+cptr.stPtro(sortltype, 0, __s_none);
+cptr.stPtro(sortltype, 8, __s_loot);
+cptr.stPtro(sortltype, 16, __s_full);
 
 /** C ref: options.c:225 — char *[9][3] */
 const perminv_modes = (function () { const flat = new Uint8Array(9 * 3 * 8); const a = []; for (let r = 0; r < 9; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(perminv_modes[0]), 0, __sl467);
-cptr.stPtro(cptr.decay(perminv_modes[0]), 8, __sl507);
-cptr.stPtro(cptr.decay(perminv_modes[0]), 16, __sl508);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 0, __sl468);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 8, __sl509);
-cptr.stPtro(cptr.decay(perminv_modes[1]), 16, __sl510);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 0, __sl474);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 8, __sl511);
-cptr.stPtro(cptr.decay(perminv_modes[2]), 16, __sl512);
+cptr.stPtro(cptr.decay(perminv_modes[0]), 0, __s_none);
+cptr.stPtro(cptr.decay(perminv_modes[0]), 8, __s_off);
+cptr.stPtro(cptr.decay(perminv_modes[0]), 16, __s_no_permanent_inventory_window);
+cptr.stPtro(cptr.decay(perminv_modes[1]), 0, __s_all);
+cptr.stPtro(cptr.decay(perminv_modes[1]), 8, __s_on);
+cptr.stPtro(cptr.decay(perminv_modes[1]), 16, __s_all_inventory_except_for_gold);
+cptr.stPtro(cptr.decay(perminv_modes[2]), 0, __s_full);
+cptr.stPtro(cptr.decay(perminv_modes[2]), 8, __s_gold);
+cptr.stPtro(cptr.decay(perminv_modes[2]), 16, __s_full_inventory_including_gold);
 cptr.stPtro(cptr.decay(perminv_modes[3]), 0, null);
 cptr.stPtro(cptr.decay(perminv_modes[3]), 8, null);
 cptr.stPtro(cptr.decay(perminv_modes[3]), 16, null);
@@ -6338,32 +6338,32 @@ cptr.stPtro(cptr.decay(perminv_modes[6]), 16, null);
 cptr.stPtro(cptr.decay(perminv_modes[7]), 0, null);
 cptr.stPtro(cptr.decay(perminv_modes[7]), 8, null);
 cptr.stPtro(cptr.decay(perminv_modes[7]), 16, null);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 0, __sl513);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 8, __sl514);
-cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __sl515);
+cptr.stPtro(cptr.decay(perminv_modes[8]), 0, __s_in_use);
+cptr.stPtro(cptr.decay(perminv_modes[8]), 8, __s_inuse_only);
+cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __s_subset_items_currently_in_use);
 
 /** C ref: options.c:242 — struct objsymopt { num, nam, descr } (memory model v0.5) */
 
 /** C ref: options.c:273 — struct objsymopt[6] */
 const objsymvals = cptr.alloc(6 * 24);
 cptr.stI32o(objsymvals, 0, 0);
-cptr.stPtro(objsymvals, 0 + $objsymopt_nam, __sl467);
-cptr.stPtro(objsymvals, 0 + $objsymopt_descr, __sl516);
+cptr.stPtro(objsymvals, 0 + $objsymopt_nam, __s_none);
+cptr.stPtro(objsymvals, 0 + $objsymopt_descr, __s_don_t_show_object_symbols_in_menus);
 cptr.stI32o(objsymvals, 24, 1);
-cptr.stPtro(objsymvals, 24 + $objsymopt_nam, __sl517);
-cptr.stPtro(objsymvals, 24 + $objsymopt_descr, __sl518);
+cptr.stPtro(objsymvals, 24 + $objsymopt_nam, __s_headers);
+cptr.stPtro(objsymvals, 24 + $objsymopt_descr, __s_show_object_symbols_in_menu_header_lines);
 cptr.stI32o(objsymvals, 48, 2);
-cptr.stPtro(objsymvals, 48 + $objsymopt_nam, __sl519);
-cptr.stPtro(objsymvals, 48 + $objsymopt_descr, __sl520);
+cptr.stPtro(objsymvals, 48 + $objsymopt_nam, __s_entries);
+cptr.stPtro(objsymvals, 48 + $objsymopt_descr, __s_show_object_symbols_in_individual_menu);
 cptr.stI32o(objsymvals, 72, 3);
-cptr.stPtro(objsymvals, 72 + $objsymopt_nam, __sl521);
-cptr.stPtro(objsymvals, 72 + $objsymopt_descr, __sl522);
+cptr.stPtro(objsymvals, 72 + $objsymopt_nam, __s_both);
+cptr.stPtro(objsymvals, 72 + $objsymopt_descr, __s_show_object_symbols_in_headers_and_menu);
 cptr.stI32o(objsymvals, 96, 4);
-cptr.stPtro(objsymvals, 96 + $objsymopt_nam, __sl523);
-cptr.stPtro(objsymvals, 96 + $objsymopt_descr, __sl524);
+cptr.stPtro(objsymvals, 96 + $objsymopt_nam, __s_conditional);
+cptr.stPtro(objsymvals, 96 + $objsymopt_descr, __s_show_objsyms_in_entries_if_no_headers);
 cptr.stI32o(objsymvals, 120, 5);
-cptr.stPtro(objsymvals, 120 + $objsymopt_nam, __sl525);
-cptr.stPtro(objsymvals, 120 + $objsymopt_descr, __sl526);
+cptr.stPtro(objsymvals, 120 + $objsymopt_nam, __s_one_or_other);
+cptr.stPtro(objsymvals, 120 + $objsymopt_descr, __s_show_objsyms_in_header_in_entries_if_no);
 
 /** C ref: options.c:308 — struct undefined {  } (memory model v0.5) */
 
@@ -6371,45 +6371,45 @@ cptr.stPtro(objsymvals, 120 + $objsymopt_descr, __sl526);
 
 /** C ref: options.c:314 — menu_cmd_t[14] */
 const default_menu_cmd_info = cptr.alloc(14 * 24);
-cptr.stPtro(default_menu_cmd_info, 0, __sl201);
+cptr.stPtro(default_menu_cmd_info, 0, __s_menu_next_page);
 cptr.st1o(default_menu_cmd_info, 0 + $menu_cmd_t_cmd, 62);
-cptr.stPtro(default_menu_cmd_info, 0 + $menu_cmd_t_desc, __sl527);
-cptr.stPtro(default_menu_cmd_info, 24, __sl208);
+cptr.stPtro(default_menu_cmd_info, 0 + $menu_cmd_t_desc, __s_go_to_next_page);
+cptr.stPtro(default_menu_cmd_info, 24, __s_menu_previous_page);
 cptr.st1o(default_menu_cmd_info, 24 + $menu_cmd_t_cmd, 60);
-cptr.stPtro(default_menu_cmd_info, 24 + $menu_cmd_t_desc, __sl528);
-cptr.stPtro(default_menu_cmd_info, 48, __sl191);
+cptr.stPtro(default_menu_cmd_info, 24 + $menu_cmd_t_desc, __s_go_to_previous_page);
+cptr.stPtro(default_menu_cmd_info, 48, __s_menu_first_page);
 cptr.st1o(default_menu_cmd_info, 48 + $menu_cmd_t_cmd, 94);
-cptr.stPtro(default_menu_cmd_info, 48 + $menu_cmd_t_desc, __sl529);
-cptr.stPtro(default_menu_cmd_info, 72, __sl199);
+cptr.stPtro(default_menu_cmd_info, 48 + $menu_cmd_t_desc, __s_go_to_first_page);
+cptr.stPtro(default_menu_cmd_info, 72, __s_menu_last_page);
 cptr.st1o(default_menu_cmd_info, 72 + $menu_cmd_t_cmd, 124);
-cptr.stPtro(default_menu_cmd_info, 72 + $menu_cmd_t_desc, __sl530);
-cptr.stPtro(default_menu_cmd_info, 96, __sl212);
+cptr.stPtro(default_menu_cmd_info, 72 + $menu_cmd_t_desc, __s_go_to_last_page);
+cptr.stPtro(default_menu_cmd_info, 96, __s_menu_select_all);
 cptr.st1o(default_menu_cmd_info, 96 + $menu_cmd_t_cmd, 46);
-cptr.stPtro(default_menu_cmd_info, 96 + $menu_cmd_t_desc, __sl531);
-cptr.stPtro(default_menu_cmd_info, 120, __sl195);
+cptr.stPtro(default_menu_cmd_info, 96 + $menu_cmd_t_desc, __s_select_all_items_in_entire_menu);
+cptr.stPtro(default_menu_cmd_info, 120, __s_menu_invert_all);
 cptr.st1o(default_menu_cmd_info, 120 + $menu_cmd_t_cmd, 64);
-cptr.stPtro(default_menu_cmd_info, 120 + $menu_cmd_t_desc, __sl532);
-cptr.stPtro(default_menu_cmd_info, 144, __sl187);
+cptr.stPtro(default_menu_cmd_info, 120 + $menu_cmd_t_desc, __s_invert_selection_for_all_items);
+cptr.stPtro(default_menu_cmd_info, 144, __s_menu_deselect_all);
 cptr.st1o(default_menu_cmd_info, 144 + $menu_cmd_t_cmd, 45);
-cptr.stPtro(default_menu_cmd_info, 144 + $menu_cmd_t_desc, __sl533);
-cptr.stPtro(default_menu_cmd_info, 168, __sl214);
+cptr.stPtro(default_menu_cmd_info, 144 + $menu_cmd_t_desc, __s_unselect_all_items_in_entire_menu);
+cptr.stPtro(default_menu_cmd_info, 168, __s_menu_select_page);
 cptr.st1o(default_menu_cmd_info, 168 + $menu_cmd_t_cmd, 44);
-cptr.stPtro(default_menu_cmd_info, 168 + $menu_cmd_t_desc, __sl534);
-cptr.stPtro(default_menu_cmd_info, 192, __sl197);
+cptr.stPtro(default_menu_cmd_info, 168 + $menu_cmd_t_desc, __s_select_all_items_on_current_page);
+cptr.stPtro(default_menu_cmd_info, 192, __s_menu_invert_page);
 cptr.st1o(default_menu_cmd_info, 192 + $menu_cmd_t_cmd, 126);
-cptr.stPtro(default_menu_cmd_info, 192 + $menu_cmd_t_desc, __sl535);
-cptr.stPtro(default_menu_cmd_info, 216, __sl189);
+cptr.stPtro(default_menu_cmd_info, 192 + $menu_cmd_t_desc, __s_invert_current_page_s_selections);
+cptr.stPtro(default_menu_cmd_info, 216, __s_menu_deselect_page);
 cptr.st1o(default_menu_cmd_info, 216 + $menu_cmd_t_cmd, 92);
-cptr.stPtro(default_menu_cmd_info, 216 + $menu_cmd_t_desc, __sl536);
-cptr.stPtro(default_menu_cmd_info, 240, __sl210);
+cptr.stPtro(default_menu_cmd_info, 216 + $menu_cmd_t_desc, __s_unselect_all_items_on_current_page);
+cptr.stPtro(default_menu_cmd_info, 240, __s_menu_search);
 cptr.st1o(default_menu_cmd_info, 240 + $menu_cmd_t_cmd, 58);
-cptr.stPtro(default_menu_cmd_info, 240 + $menu_cmd_t_desc, __sl537);
-cptr.stPtro(default_menu_cmd_info, 264, __sl218);
+cptr.stPtro(default_menu_cmd_info, 240 + $menu_cmd_t_desc, __s_search_and_invert_matching_items);
+cptr.stPtro(default_menu_cmd_info, 264, __s_menu_shift_right);
 cptr.st1o(default_menu_cmd_info, 264 + $menu_cmd_t_cmd, 125);
-cptr.stPtro(default_menu_cmd_info, 264 + $menu_cmd_t_desc, __sl538);
-cptr.stPtro(default_menu_cmd_info, 288, __sl216);
+cptr.stPtro(default_menu_cmd_info, 264 + $menu_cmd_t_desc, __s_pan_current_page_to_right_perm_invent);
+cptr.stPtro(default_menu_cmd_info, 288, __s_menu_shift_left);
 cptr.st1o(default_menu_cmd_info, 288 + $menu_cmd_t_cmd, 123);
-cptr.stPtro(default_menu_cmd_info, 288 + $menu_cmd_t_desc, __sl539);
+cptr.stPtro(default_menu_cmd_info, 288 + $menu_cmd_t_desc, __s_pan_current_page_to_left_perm_invent);
 cptr.stPtro(default_menu_cmd_info, 312, null);
 cptr.st1o(default_menu_cmd_info, 312 + $menu_cmd_t_cmd, 0);
 cptr.stPtro(default_menu_cmd_info, 312 + $menu_cmd_t_desc, null);
@@ -6430,21 +6430,21 @@ export function* ask_do_tutorial() {
         let n;
         let pass = 0;
         rc = nh_basename(get_configfile(), 1);
-        norc = schar((!strcmp(get_configfile(), __sl540)));
-        nh_snprintf(__sl541, 447, cptr.decay(buf), 256n, __sl542, (rc && cptr.ld1s(rc) && !norc) ? rc : __sl543);
+        norc = schar((!strcmp(get_configfile(), __s_dev_null)));
+        nh_snprintf(__s_ask_do_tutorial, 447, cptr.decay(buf), 256n, __s_put_options_tutorial_in_s_to_skip_this, (rc && cptr.ld1s(rc) && !norc) ? rc : __s_your_configuration_file);
         do {
             win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(win, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.st1(any, 121);
-            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl544, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_yes_do_a_tutorial, NHM.MENU_ITEMFLAGS_NONE));
             cptr.st1(any, 110);
-            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __sl545, NHM.MENU_ITEMFLAGS_NONE));
-            (yield* add_menu_str(win, __sl491));
+            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_no_just_start_play, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu_str(win, __s_empty));
             (yield* add_menu_str(win, cptr.decay(buf)));
             if (pass++)
-                (yield* add_menu_str(win, __sl546));
-            (yield* Y.icall(end_menu()(win, __sl547)));
+                (yield* add_menu_str(win, __s_please_choose_y_or_n));
+            (yield* Y.icall(end_menu()(win, __s_do_you_want_a_tutorial)));
             n = (yield* select_menu(win, NHM.PICK_ONE, sel));
             (yield* Y.icall(destroy_nhwindow()(win)));
         } while (!n);
@@ -6480,7 +6480,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             retval = 0;
     }
     if (cptr.strlen(opts) > 128n) {
-        (yield* config_error_add(__sl548, 128));
+        (yield* config_error_add(__s_option_too_long_max_length_is_i, 128));
         return 0;
     }
     while (isspace(uchar(cptr.ld1s(opts))))
@@ -6489,11 +6489,11 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
     if (!cptr.ld1s(opts)) {
-        (yield* config_error_add(__sl549));
+        (yield* config_error_add(__s_empty_statement));
         return 0;
     }
     negated = 0;
-    while ((cptr.ld1s(opts) == 33) || !(yield* strncmpi(opts, __sl550, 2))) {
+    while ((cptr.ld1s(opts) == 33) || !(yield* strncmpi(opts, __s_no, 2))) {
         opts = cptr.add(opts, (cptr.ld1s(opts) == 33) ? 1 : ((cptr.ld1so(opts, 2) != 45) ? 2 : 3));
         negated = schar((!negated));
     }
@@ -6514,7 +6514,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             got_match = (yield* match_optname(opts, cptr.ldPtro(allopt, i, 104), cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch), 1));
         if (got_match) {
             if (!cptr.ldI32o2(allopt, i, 104, $allopt_t_pfx) && optlen < cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch)) {
-                (yield* config_error_add(__sl551, opts, cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch)));
+                (yield* config_error_add(__s_ambiguous_option_s_d_characters_are, opts, cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch)));
                 break;
             }
             matchidx = i;
@@ -6552,7 +6552,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     if (cptr.ldI32o(program_state, $sinfo_in_parseoptions) > 0)
         (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + -1)) - (-1);
     if (!got_match) {
-        if (cptr.eq(cptr.strstr(opts, __sl552), opts) && (yield* parsesymbols(opts, NHC.PRIMARYSET))) {
+        if (cptr.eq(cptr.strstr(opts, __s_s_us), opts) && (yield* parsesymbols(opts, NHC.PRIMARYSET))) {
             (yield* switch_symbols(1));
             check_gold_symbol();
             optresult = NHC.optn_ok;
@@ -6563,17 +6563,17 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     if (pfx_match && optresult == NHC.optn_err) {
         let pfxbuf = new Uint8Array(256);
         let pfxp;
-        nh_snprintf(__sl553, 677, cptr.decay(pfxbuf), 256n, __sl554, opts);
+        nh_snprintf(__s_parseoptions, 677, cptr.decay(pfxbuf), 256n, __s_pct_s, opts);
         if ((pfxp = cptr.strchr(cptr.decay(pfxbuf), 58)) !== null)
             cptr.st1(pfxp, 0);
-        (yield* config_error_add(__sl555, cptr.decay(pfxbuf)));
+        (yield* config_error_add(__s_bad_option_suffix_variation_s, cptr.decay(pfxbuf)));
         return 0;
     }
     if (got_match && optresult == NHC.optn_err)
         return 0;
     if (optresult == NHC.optn_ok)
         return retval;
-    (yield* config_error_add(__sl556, opts));
+    (yield* config_error_add(__s_unknown_option_s, opts));
     return 0;
 }
 
@@ -6626,7 +6626,7 @@ function* getoptstr(optidx, ophase) {
     }
     if ((roleoptindx >= 0 && roleoptindx < NHC.MAX_ROLEOPT && ophase >= 0 && ophase < NHC.num_opt_phases))
         return cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8);
-    (yield* panic(__sl557, roleoptindx, ophase));
+    (yield* panic(__s_bad_index_roleoptvals_d_d, roleoptindx, ophase));
 }
 
 /** C ref: options.c:758 — @param {CInt} optidx @param {CPtr<char>} optstr */
@@ -6669,13 +6669,13 @@ function* petname_optfn(optidx, req, negated, opts, op) {
     } else if (req == NHC.do_set) {
         if (cptr.eq(op, cptr.decay(empty_optstr)) && !negated)
             return NHC.optn_err;
-        if (negated || !strcmp(op, __sl467) || !strcmp(op, cptr.decay(none)))
+        if (negated || !strcmp(op, __s_none) || !strcmp(op, cptr.decay(none)))
             op = cptr.decay(empty_optstr);
         (yield* nmcpy(petname, op, NHM.PL_PSIZ));
         sanitize_name(petname);
     } else if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(cptr.decay(failsafe), 0, 0, 1);
-        void cptr.sprintf(opts, __sl554, cptr.ld1s(petname) ? petname : ((req == NHC.get_cnf_val) ? __sl467 : cptr.decay(none)));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ld1s(petname) ? petname : ((req == NHC.get_cnf_val) ? __s_none : cptr.decay(none)));
     }
     return NHC.optn_ok;
 }
@@ -6691,7 +6691,7 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initalign, (yield* str2align(op.v)))) == -1) {
-                (yield* config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
                 return NHC.optn_err;
             }
             (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
@@ -6699,12 +6699,12 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         op.v = (yield* get_cnf_role_opt(optidx));
-        void cptr.strcpy(opts, op.v ? op.v : __sl467);
+        void cptr.strcpy(opts, op.v ? op.v : __s_none);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6718,16 +6718,16 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
-            if (!(yield* strncmpi(op, __sl559, 4)))
+            if (!(yield* strncmpi(op, __s_left, 4)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_LEFT);
-            else if (!(yield* strncmpi(op, __sl560, 3)))
+            else if (!(yield* strncmpi(op, __s_top, 3)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_TOP);
-            else if (!(yield* strncmpi(op, __sl561, 5)))
+            else if (!(yield* strncmpi(op, __s_right, 5)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_RIGHT);
-            else if (!(yield* strncmpi(op, __sl562, 6)))
+            else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else if (negated) {
@@ -6739,7 +6739,7 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_message);
-        void cptr.sprintf(opts, __sl554, (which == NHM.ALIGN_TOP) ? __sl560 : ((which == NHM.ALIGN_LEFT) ? __sl559 : ((which == NHM.ALIGN_BOTTOM) ? __sl562 : ((which == NHM.ALIGN_RIGHT) ? __sl561 : cptr.decay(defopt)))));
+        void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -6756,16 +6756,16 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
-            if (!(yield* strncmpi(op, __sl559, 4)))
+            if (!(yield* strncmpi(op, __s_left, 4)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_LEFT);
-            else if (!(yield* strncmpi(op, __sl560, 3)))
+            else if (!(yield* strncmpi(op, __s_top, 3)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_TOP);
-            else if (!(yield* strncmpi(op, __sl561, 5)))
+            else if (!(yield* strncmpi(op, __s_right, 5)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_RIGHT);
-            else if (!(yield* strncmpi(op, __sl562, 6)))
+            else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else if (negated) {
@@ -6777,7 +6777,7 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_status);
-        void cptr.sprintf(opts, __sl554, (which == NHM.ALIGN_TOP) ? __sl560 : ((which == NHM.ALIGN_LEFT) ? __sl559 : ((which == NHM.ALIGN_BOTTOM) ? __sl562 : ((which == NHM.ALIGN_RIGHT) ? __sl561 : cptr.decay(defopt)))));
+        void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -6829,10 +6829,10 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
                 cptr.st1(cptr.postinc(() => nxt, (v) => { nxt = v; }), 0);
                 op = (yield* trimspaces(op));
             }
-            if (str_start_is(__sl467, op, 1))
+            if (str_start_is(__s_none, op, 1))
                 negated = 1, matched = 1;
             for (i = 0; i < unlocktypes.length && !matched; ++i) {
-                if (str_start_is(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), op, 1) || (yield* fuzzymatch(op, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), __sl564, 1))) {
+                if (str_start_is(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), op, 1) || (yield* fuzzymatch(op, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), __s_sp_dash_us, 1))) {
                     matched = 1;
                     switch (cptr.ld1s(op)) {
                         case 117:
@@ -6854,13 +6854,13 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
                 }
             }
             if (!matched) {
-                (yield* config_error_add(__sl565, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_invalid_value_for_s_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_silenterr;
             }
             op = nxt;
         }
         if (negated && newflags != 0) {
-            (yield* config_error_add(__sl566, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_invalid_value_combination_for_s_none, cptr.ldPtro(allopt, optidx, 104)));
             return NHC.optn_silenterr;
         }
         cptr.stI32o(flags, $flag_autounlock, newflags);
@@ -6868,18 +6868,18 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (!cptr.ldI32o(flags, $flag_autounlock)) {
-            void cptr.strcpy(opts, __sl467);
+            void cptr.strcpy(opts, __s_none);
         } else {
-            let p = __sl491;
+            let p = __s_empty;
             cptr.st1(opts, 0);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
-                void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
-                void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0)
-                void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0)
-                void cptr.sprintf(eos(opts), __sl567, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));
         }
         return NHC.optn_ok;
     }
@@ -6904,10 +6904,10 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
         else if (cptr.ld1so(opts, 0) >= 49 && cptr.ld1so(opts, 0) < 54)
             clash = 2;
         if (cptr.ld1so(opts, 0) < 32) {
-            (yield* config_error_add(__sl568));
+            (yield* config_error_add(__s_boulder_symbol_cannot_be_a_control));
             return NHC.optn_ok;
         } else if (clash) {
-            (yield* config_error_add(__sl569, visctrl(cptr.ld1so(opts, 0)), (clash == 1) ? __sl570 : __sl571));
+            (yield* config_error_add(__s_badoption_boulder_symbol_s_would, visctrl(cptr.ld1so(opts, 0)), (clash == 1) ? __s_monster : __s_warning));
         } else {
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms, uchar(cptr.ld1so(opts, 0)));
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_rogue_syms, uchar(cptr.ld1so(opts, 0)));
@@ -6922,7 +6922,7 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
-        void cptr.sprintf(opts, __sl572, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, 120, $objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms));
+        void cptr.sprintf(opts, __s_pct_c, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, 120, $objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6950,7 +6950,7 @@ function* optfn_crash_email(optidx, req, negated, opts, op) {
         if (!opts)
             return NHC.optn_err;
         if (cptr.ldPtro(gc, $instance_globals_c_crash_email))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, $instance_globals_c_crash_email));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(gc, $instance_globals_c_crash_email));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6973,7 +6973,7 @@ function* optfn_crash_name(optidx, req, negated, opts, op) {
         if (!opts)
             return NHC.optn_err;
         if (cptr.ldPtro(gc, $instance_globals_c_crash_name))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(gc, $instance_globals_c_crash_name));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(gc, $instance_globals_c_crash_name));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -6988,7 +6988,7 @@ function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             let temp = atoi(op);
             if (temp < 75) {
-                (yield* config_error_add(__sl573, temp));
+                (yield* config_error_add(__s_invalid_value_d_for_crash_urlmax, temp));
                 return NHC.optn_err;
             }
             cptr.stI32o(gc, $instance_globals_c_crash_urlmax, temp);
@@ -6999,7 +6999,7 @@ function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (!opts)
             return NHC.optn_err;
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(gc, $instance_globals_c_crash_urlmax));
+        void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(gc, $instance_globals_c_crash_urlmax));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7024,7 +7024,7 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
                     (yield* switch_symbols(1));
             }
             if (badflag) {
-                (yield* config_error_add(__sl575, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_failure_to_load_symbol_set_s, cptr.ldPtro(allopt, optidx, 104)));
                 return NHC.optn_err;
             }
         }
@@ -7054,8 +7054,8 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
             return NHC.optn_err;
         }
-        if (cptr.eq(op, cptr.decay(empty_optstr)) || !(yield* strncmpi((op), (__sl468), -1)) || !(yield* strncmpi((op), (__sl467), -1))) {
-            if (!cptr.eq(op, cptr.decay(empty_optstr)) && !(yield* strncmpi((op), (__sl467), -1)))
+        if (cptr.eq(op, cptr.decay(empty_optstr)) || !(yield* strncmpi((op), (__s_all), -1)) || !(yield* strncmpi((op), (__s_none), -1))) {
+            if (!cptr.eq(op, cptr.decay(empty_optstr)) && !(yield* strncmpi((op), (__s_none), -1)))
                 negated = 1;
             for (num = 0; num < NHM.NUM_DISCLOSURE_OPTIONS; num++)
                 cptr.st1o2(flags, num, 1, $flag_end_disclose, schar((negated ? 45 : 121)));
@@ -7075,7 +7075,7 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             if (dop) {
                 idx = Number(BigInt.asIntN(32, (cptr.diff(dop, cptr.decay(disclosure_options)))));
                 if (idx < 0 || idx > 5) {
-                    (yield* impossible(__sl576, idx, c));
+                    (yield* impossible(__s_bad_disclosure_index_d_c, idx, c));
                     continue;
                 }
                 if (prefix_val != -1) {
@@ -7094,7 +7094,7 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             } else if (c == 32) {
                 ;
             } else {
-                (yield* config_error_add(__sl577, cptr.ldPtro(allopt, optidx, 104), cptr.ld1s(op)));
+                (yield* config_error_add(__s_unknown_s_parameter_c, cptr.ldPtro(allopt, optidx, 104), cptr.ld1s(op)));
                 return NHC.optn_err;
             }
             op = cptr.add(op, 1);
@@ -7131,7 +7131,7 @@ function optfn_dungeon(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7150,7 +7150,7 @@ function optfn_effects(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7221,7 +7221,7 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
             op = (yield* string_for_opt(opts, schar((negated || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
             if (negated) {
                 if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-                    (yield* bad_negation(__sl139, 1));
+                    (yield* bad_negation(__s_fruit, 1));
                     return NHC.optn_err;
                 }
                 op = cptr.decay(empty_optstr);
@@ -7238,7 +7238,7 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
                     if (!cptr.ld1so(flags, $flag_made_fruit))
                         forig = (yield* fruit_from_name(cptr.add(svp, $instance_globals_saved_p_pl_fruit), 0, null));
                     if (!forig && fnum.v >= 100) {
-                        (yield* config_error_add(__sl578));
+                        (yield* config_error_add(__s_doing_that_so_many_times_isn_t_very));
                         return NHC.optn_ok;
                     }
                 }
@@ -7247,16 +7247,16 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
         (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), op, NHM.PL_FSIZ));
         sanitize_name(cptr.add(svp, $instance_globals_saved_p_pl_fruit));
         if (!cptr.ld1so(svp, $instance_globals_saved_p_pl_fruit))
-            (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl579, NHM.PL_FSIZ));
+            (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_slime_mold, NHM.PL_FSIZ));
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
             void (yield* fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), forig));
             if (give_opt_msg)
-                (yield* pline(__sl580, cptr.add(svp, $instance_globals_saved_p_pl_fruit)));
+                (yield* pline(__s_fruit_is_now_s, cptr.add(svp, $instance_globals_saved_p_pl_fruit)));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.add(svp, $instance_globals_saved_p_pl_fruit));
+        void cptr.sprintf(opts, __s_pct_s, cptr.add(svp, $instance_globals_saved_p_pl_fruit));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7273,7 +7273,7 @@ function* optfn_gender(optidx, req, negated, opts, op) {
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initgend, (yield* str2gend(op.v)))) == -1) {
-                (yield* config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
                 return NHC.optn_err;
             }
             cptr.st1o(flags, $flag_female, schar(cptr.ldI32o(flags, $flag_initgend)));
@@ -7282,12 +7282,12 @@ function* optfn_gender(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         op.v = (yield* get_cnf_role_opt(optidx));
-        void cptr.strcpy(opts, op.v ? op.v : __sl467);
+        void cptr.strcpy(opts, op.v ? op.v : __s_none);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7302,7 +7302,7 @@ function* optfn_glyph(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (negated) {
             if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-                (yield* bad_negation(__sl143, 1));
+                (yield* bad_negation(__s_glyph, 1));
                 return NHC.optn_err;
             }
         }
@@ -7314,7 +7314,7 @@ function* optfn_glyph(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7335,7 +7335,7 @@ function* optfn_hilite_status(optidx, req, negated, opts, op) {
             clear_status_hilites();
             return NHC.optn_ok;
         } else if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            (yield* config_error_add(__sl581));
+            (yield* config_error_add(__s_value_is_mandatory_for_hilite_status));
             return NHC.optn_err;
         }
         if (!(yield* parse_status_hl1(op, cptr.ld1so(go, $instance_globals_o_opt_from_file))))
@@ -7345,7 +7345,7 @@ function* optfn_hilite_status(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
         if (req == NHC.get_val)
-            void cptr.strcpy(opts, (yield* count_status_hilites()) ? __sl582 : __sl583);
+            void cptr.strcpy(opts, (yield* count_status_hilites()) ? __s_see_status_highlight_rules_below : __s_none__2);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7371,7 +7371,7 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
                     badflag = 1;
                 } else {
                     if (i == NHC.ROGUESET)
-                        sym_name = __sl584;
+                        sym_name = __s_rogueibm;
                     cptr.stPtro2(gs, i, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(sym_name)));
                     if (!(yield* read_sym_file(i))) {
                         badflag = 1;
@@ -7381,7 +7381,7 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
                 }
             }
             if (badflag) {
-                (yield* config_error_add(__sl575, sym_name));
+                (yield* config_error_add(__s_failure_to_load_symbol_set_s, sym_name));
                 return NHC.optn_err;
             } else {
                 (yield* switch_symbols(1));
@@ -7408,39 +7408,39 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
             let save_map_mode = cptr.ldI32o(iflags, $instance_flags_wc_map_mode);
-            if (!(yield* strncmpi((op), (__sl585), -1)))
+            if (!(yield* strncmpi((op), (__s_tiles), -1)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_TILES);
-            else if (!(yield* strncmpi(op, __sl586, 8)))
+            else if (!(yield* strncmpi(op, __s_ascii4x6, 8)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII4x6);
-            else if (!(yield* strncmpi(op, __sl587, 8)))
+            else if (!(yield* strncmpi(op, __s_ascii6x8, 8)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII6x8);
-            else if (!(yield* strncmpi(op, __sl588, 8)))
+            else if (!(yield* strncmpi(op, __s_ascii8x8, 8)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII8x8);
-            else if (!(yield* strncmpi(op, __sl589, 9)))
+            else if (!(yield* strncmpi(op, __s_ascii16x8, 9)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII16x8);
-            else if (!(yield* strncmpi(op, __sl590, 9)))
+            else if (!(yield* strncmpi(op, __s_ascii7x12, 9)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII7x12);
-            else if (!(yield* strncmpi(op, __sl591, 9)))
+            else if (!(yield* strncmpi(op, __s_ascii8x12, 9)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII8x12);
-            else if (!(yield* strncmpi(op, __sl592, 10)))
+            else if (!(yield* strncmpi(op, __s_ascii16x12, 10)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII16x12);
-            else if (!(yield* strncmpi(op, __sl593, 10)))
+            else if (!(yield* strncmpi(op, __s_ascii12x16, 10)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII12x16);
-            else if (!(yield* strncmpi(op, __sl594, 10)))
+            else if (!(yield* strncmpi(op, __s_ascii10x18, 10)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII10x18);
-            else if (!(yield* strncmpi(op, __sl595, 13)))
+            else if (!(yield* strncmpi(op, __s_fit_to_screen, 13)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
-            else if (!(yield* strncmpi(op, __sl596, 19)))
+            else if (!(yield* strncmpi(op, __s_ascii_fit_to_screen, 19)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_ASCII_FIT_TO_SCREEN);
-            else if (!(yield* strncmpi(op, __sl597, 19)))
+            else if (!(yield* strncmpi(op, __s_tiles_fit_to_screen, 19)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_TILES_FIT_TO_SCREEN);
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
-            if (wc_supported(__sl179)) {
+            if (wc_supported(__s_map_mode)) {
                 if (!cptr.ldI32o(iflags, $instance_flags_wc_map_mode) || save_map_mode != cptr.ldI32o(iflags, $instance_flags_wc_map_mode))
-                    (yield* Y.icall(preference_update()(__sl179)));
+                    (yield* Y.icall(preference_update()(__s_map_mode)));
             }
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
@@ -7450,7 +7450,7 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         i = cptr.ldI32o(iflags, $instance_flags_wc_map_mode);
-        void cptr.sprintf(opts, __sl554, (i == NHM.MAP_MODE_TILES) ? __sl585 : ((i == NHM.MAP_MODE_ASCII4x6) ? __sl586 : ((i == NHM.MAP_MODE_ASCII6x8) ? __sl587 : ((i == NHM.MAP_MODE_ASCII8x8) ? __sl588 : ((i == NHM.MAP_MODE_ASCII16x8) ? __sl589 : ((i == NHM.MAP_MODE_ASCII7x12) ? __sl590 : ((i == NHM.MAP_MODE_ASCII8x12) ? __sl591 : ((i == NHM.MAP_MODE_ASCII16x12) ? __sl592 : ((i == NHM.MAP_MODE_ASCII12x16) ? __sl593 : ((i == NHM.MAP_MODE_ASCII10x18) ? __sl594 : ((i == NHM.MAP_MODE_ASCII_FIT_TO_SCREEN) ? __sl595 : cptr.decay(defopt))))))))))));
+        void cptr.sprintf(opts, __s_pct_s, (i == NHM.MAP_MODE_TILES) ? __s_tiles : ((i == NHM.MAP_MODE_ASCII4x6) ? __s_ascii4x6 : ((i == NHM.MAP_MODE_ASCII6x8) ? __s_ascii6x8 : ((i == NHM.MAP_MODE_ASCII8x8) ? __s_ascii8x8 : ((i == NHM.MAP_MODE_ASCII16x8) ? __s_ascii16x8 : ((i == NHM.MAP_MODE_ASCII7x12) ? __s_ascii7x12 : ((i == NHM.MAP_MODE_ASCII8x12) ? __s_ascii8x12 : ((i == NHM.MAP_MODE_ASCII16x12) ? __s_ascii16x12 : ((i == NHM.MAP_MODE_ASCII12x16) ? __s_ascii12x16 : ((i == NHM.MAP_MODE_ASCII10x18) ? __s_ascii10x18 : ((i == NHM.MAP_MODE_ASCII_FIT_TO_SCREEN) ? __s_fit_to_screen : cptr.decay(defopt))))))))))));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7468,7 +7468,7 @@ function* shared_menu_optfn(optidx, req, negated, opts, op) {
         return (yield* spcfn_misc_menu_cmd(res, req, negated, opts, op));
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7566,7 +7566,7 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ca_buf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(ca_buf), color_attr_to_str(cptr.add(iflags, $instance_flags_menu_headings)));
-        void (yield* strNsubst(cptr.decay(ca_buf), __sl598, __sl599, 0));
+        void (yield* strNsubst(cptr.decay(ca_buf), __s_sp, __s_dash, 0));
         void cptr.strcpy(opts, cptr.decay(ca_buf));
         return NHC.optn_ok;
     }
@@ -7592,11 +7592,11 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         if (negated) {
             osyms = 0;
         } else if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            osyms = !cptr.strncmp(opts, __sl204, 15n) ? 2 : 1;
+            osyms = !cptr.strncmp(opts, __s_use_menu_glyphs, 15n) ? 2 : 1;
         } else if (digit(cptr.ld1s(op))) {
             i = atoi(op);
             if (i >= 6) {
-                (yield* config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
             osyms = i;
@@ -7618,7 +7618,7 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, $instance_flags_menuobjsyms), 24, $objsymopt_nam));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, $instance_flags_menuobjsyms), 24, $objsymopt_nam));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7636,7 +7636,7 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let mode = atoi(op);
             if (mode < 0 || mode > 2) {
-                (yield* config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
             cptr.stI32o(iflags, $instance_flags_menuinvertmode, mode);
@@ -7644,7 +7644,7 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_menuinvertmode));
+        void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_menuinvertmode));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7681,13 +7681,13 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
             cptr.st1o(flags, $flag_menu_style, NHM.MENU_PARTIAL);
             break;
             default:
-            (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7712,12 +7712,12 @@ function optfn_monsters(optidx, req, negated, opts, op) {
 }
 
 const __static_optfn_mouse_support_mousemodes = (function () { const flat = new Uint8Array(3 * 2 * 8); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 0, __sl602);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 8, __sl491);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 0, __sl603);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 8, __sl604);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 0, __sl605);
-cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __sl606); /** C ref: options.c:2435 — char *[3][2] (function-static) */
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 0, __s_0_off);
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 8, __s_empty);
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 0, __s_1_on);
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 8, __s_o_s_adjusted);
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 0, __s_2_on);
+cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __s_o_s_unchanged); /** C ref: options.c:2435 — char *[3][2] (function-static) */
 
 /** C ref: options.c:2396 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_mouse_support(optidx, req, negated, opts, op) {
@@ -7735,7 +7735,7 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
         } else {
             let mode = atoi(op);
             if (mode < 0 || mode > 2 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc_mouse_support, mode);
@@ -7746,11 +7746,11 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
     if (req == NHC.get_val) {
         let ms = cptr.ldI32o(iflags, $instance_flags_wc_mouse_support);
         if (ms >= 0 && ms <= 2)
-            void cptr.sprintf(opts, __sl567, cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8), cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8));
+            void cptr.sprintf(opts, __s_s_s, cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8), cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, $instance_flags_wc_mouse_support));
+        void cptr.sprintf(opts, __s_pct_i, cptr.ldI32o(iflags, $instance_flags_wc_mouse_support));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7781,7 +7781,7 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             cptr.st1o(iflags, $instance_flags_prevmsg_window, schar(tmp));
             break;
             default:
-            (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
             retval = NHC.optn_err;
         }
         return retval;
@@ -7793,7 +7793,7 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             if (tmp == 115 || tmp == 99)
                 tmp = cptr.st1o(iflags, $instance_flags_prevmsg_window, 114);
         }
-        void cptr.sprintf(opts, __sl554, (tmp == 115) ? __sl480 : ((tmp == 99) ? __sl472 : ((tmp == 102) ? __sl474 : __sl487)));
+        void cptr.sprintf(opts, __s_pct_s, (tmp == 115) ? __s_single : ((tmp == 99) ? __s_combination : ((tmp == 102) ? __s_full : __s_reversed)));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7818,7 +7818,7 @@ function* optfn_msghistory(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl607, cptr.ldI32o(iflags, $instance_flags_msg_history));
+        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(iflags, $instance_flags_msg_history));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7837,19 +7837,19 @@ function* optfn_name(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, svp);
+        void cptr.sprintf(opts, __s_pct_s, svp);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
 const __static_optfn_number_pad_numpadmodes = cptr.alloc(6 * 8);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 0, __sl602);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 8, __sl603);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 16, __sl608);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 24, __sl609);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 32, __sl610);
-cptr.stPtro(__static_optfn_number_pad_numpadmodes, 40, __sl611); /** C ref: options.c:2623 — char *[6] (function-static) */
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 0, __s_0_off);
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 8, __s_1_on);
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 16, __s_2_on_msdos_compatible);
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 24, __s_3_on_phone_style_layout);
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 32, __s_4_on_phone_layout_msdos_compatible);
+cptr.stPtro(__static_optfn_number_pad_numpadmodes, 40, __s_1_off_y_z_swapped); /** C ref: options.c:2623 — char *[6] (function-static) */
 
 /** C ref: options.c:2574 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_number_pad(optidx, req, negated, opts, op) {
@@ -7871,7 +7871,7 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
         } else {
             let mode = atoi(op);
             if (mode < -1 || mode > 4 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__sl600, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             } else if (mode <= 0) {
                 cptr.st1o(iflags, $instance_flags_num_pad, 0);
@@ -7894,7 +7894,7 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
         if (req == NHC.get_val)
             void cptr.strcpy(opts, cptr.ldPtro(__static_optfn_number_pad_numpadmodes, indx, 8));
         else {
-            void cptr.sprintf(opts, __sl601, (indx == 5) ? -1 : indx);
+            void cptr.sprintf(opts, __s_pct_i, (indx == 5) ? -1 : indx);
         }
         return NHC.optn_ok;
     }
@@ -7913,7 +7913,7 @@ function optfn_objects(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7938,7 +7938,7 @@ function* optfn_packorder(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ocl = new Uint8Array(19);
         (yield* oc_to_str(cptr.add(flags, $flag_inv_order), cptr.decay(ocl)));
-        void cptr.sprintf(opts, __sl554, cptr.decay(ocl));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(ocl));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7955,13 +7955,13 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         let prayconfirm = new Uint8Array(6);
         let pp;
         let plus_or_minus = 0;
-        if (!(yield* strncmpi(opts, __sl259, 4))) {
+        if (!(yield* strncmpi(opts, __s_prayconfirm, 4))) {
             if (cptr.ld1s(op)) {
-                (yield* config_error_add(__sl612, opt_negated ? __sl613 : __sl491, op));
+                (yield* config_error_add(__s_deprecated_sprayconfirm_option_takes_no, opt_negated ? __s_bang : __s_empty, op));
                 return NHC.optn_silenterr;
             }
-            (yield* config_error_add(__sl614, opt_negated ? __sl613 : __sl491, cptr.ldPtro(allopt, optidx, 104), opt_negated ? 45 : 43));
-            void cptr.sprintf(cptr.decay(prayconfirm), __sl615, opt_negated ? 45 : 43);
+            (yield* config_error_add(__s_sprayconfirm_option_is_deprecated, opt_negated ? __s_bang : __s_empty, cptr.ldPtro(allopt, optidx, 104), opt_negated ? 45 : 43));
+            void cptr.sprintf(cptr.decay(prayconfirm), __s_cpray, opt_negated ? 45 : 43);
             op = cptr.decay(prayconfirm);
             opt_negated = 0;
         } else if (opt_negated) {
@@ -7969,11 +7969,11 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 cptr.stI32o(flags, $flag_paranoia_bits, 0);
                 return NHC.optn_ok;
             } else {
-                (yield* config_error_add(__sl616, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_s_does_not_accept_a_value, cptr.ldPtro(allopt, optidx, 104)));
                 return NHC.optn_silenterr;
             }
         } else if (!cptr.ld1s(op)) {
-            (yield* config_error_add(__sl617, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_s_requires_a_value_use_none_to_cancel, cptr.ldPtro(allopt, optidx, 104)));
             return NHC.optn_silenterr;
         }
         void (yield* mungspaces(op));
@@ -8013,7 +8013,7 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 }
             }
             if (i == 15) {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_silenterr;
             }
             if (pp)
@@ -8028,10 +8028,10 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
             if (((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
-                nh_snprintf(__sl618, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __sl619, cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname));
+                nh_snprintf(__s_optfn_paranoid_confirmation, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __s_sp_pct_s, cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname));
         }
         cptr.st1o(opts, 0, 0);
-        void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __sl467, 255n, __builtin_object_size(opts, 1));
+        void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __s_none, 255n, __builtin_object_size(opts, 1));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8062,9 +8062,9 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                     continue;
                 pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
                 if (!(yield* strncmpi(op, pi0, ln | 0)) || !(yield* strncmpi(op, pi1, ln | 0)) || cptr.ld1so(op, 0) == ((i + 48) | 0)) {
-                    if ((yield* strstri(pi0, __sl620)) && !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty)) {
+                    if ((yield* strstri(pi0, __s_grid)) && !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty)) {
                         i &= -5;
-                        (yield* config_error_add(__sl621, cptr.ldPtro(allopt, optidx, 104), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)));
+                        (yield* config_error_add(__s_s_unavailable_perm_invent_mode_s_using_s, cptr.ldPtro(allopt, optidx, 104), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)));
                     }
                     cptr.st1o(iflags, $instance_flags_perminv_mode, uchar(i));
                     cptr.st1o(iflags, $instance_flags_perm_invent, 1);
@@ -8072,7 +8072,7 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 }
             }
             if (i == perminv_modes.length) {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptNone);
                 cptr.st1o(iflags, $instance_flags_perm_invent, 0);
                 retval = NHC.optn_silenterr;
@@ -8088,16 +8088,16 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
     } else if (req == NHC.do_handler) {
         retval = (yield* handler_perminv_mode());
     } else if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 2, 8));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 2, 8));
         if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone && !cptr.ld1so(iflags, $instance_flags_perm_invent) && op) {
             if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptInUse)
-                void strsubst(opts, __sl622, __sl491);
+                void strsubst(opts, __s_currently, __s_empty);
             else
-                void strsubst(opts, __sl623, __sl624);
-            void cptr.strcat(opts, (((cptr.ld1uo(iflags, $instance_flags_perminv_mode) & NHC.InvSparse) != 0) ? __sl625 : __sl626));
+                void strsubst(opts, __s_inventory, __s_invent);
+            void cptr.strcat(opts, (((cptr.ld1uo(iflags, $instance_flags_perminv_mode) & NHC.InvSparse) != 0) ? __s_off__2 : __s_perm_invent_is_off));
         }
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 0, 8));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 0, 8));
     }
     return retval;
 }
@@ -8116,7 +8116,7 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let itmp = (yield* match_str2attr(op, 0));
             if (itmp == -1) {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), opts));
                 retval = NHC.optn_err;
             } else
                 cptr.stI32o(iflags, $instance_flags_wc2_petattr, itmp);
@@ -8134,7 +8134,7 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
         if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
             void cptr.strcpy(opts, attr2attrname(cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
         } else if (cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != 0)
-            void cptr.sprintf(opts, __sl627, cptr.ldI32o(iflags, $instance_flags_wc2_petattr));
+            void cptr.sprintf(opts, __s_0x_08x, cptr.ldI32o(iflags, $instance_flags_wc2_petattr));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8173,7 +8173,7 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
                 cptr.st1o(gp, $instance_globals_p_preferred_pet, 0);
                 break;
                 default:
-                (yield* config_error_add(__sl628, op));
+                (yield* config_error_add(__s_unrecognized_pet_type_s, op));
                 return NHC.optn_err;
             }
         } else if (negated)
@@ -8181,12 +8181,12 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 99) ? __sl629 : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 100) ? __sl630 : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 104) ? __sl631 : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 110) ? __sl467 : __sl632))));
+        void cptr.sprintf(opts, __s_pct_s, (cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 99) ? __s_cat : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 100) ? __s_dog : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 104) ? __s_horse : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 110) ? __s_none : __s_random))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         if (cptr.ld1so(gp, $instance_globals_p_preferred_pet))
-            void cptr.sprintf(opts, __sl572, cptr.ld1so(gp, $instance_globals_p_preferred_pet));
+            void cptr.sprintf(opts, __s_pct_c, cptr.ld1so(gp, $instance_globals_p_preferred_pet));
         else
             cptr.st1o(opts, 0, 0);
         return NHC.optn_ok;
@@ -8222,7 +8222,7 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
                 cptr.stI32o(flags, $flag_pickup_burden, NHC.OVERLOADED);
                 break;
                 default:
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else
@@ -8230,7 +8230,7 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(burdentype, cptr.ldI32o(flags, $flag_pickup_burden), 8));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(burdentype, cptr.ldI32o(flags, $flag_pickup_burden), 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8267,7 +8267,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
                 let wasspace;
                 use_menu = 0;
-                void cptr.sprintf(cptr.decay(qbuf), __sl633, cptr.ldPtro(allopt, optidx, 104), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __sl468);
+                void cptr.sprintf(cptr.decay(qbuf), __s_new_s_s_am_s, cptr.ldPtro(allopt, optidx, 104), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all);
                 cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                 (yield* getlin(cptr.decay(qbuf), cptr.decay(abuf)));
                 wasspace = schar((cptr.ld1so(cptr.decay(abuf), 0, 1) == 32));
@@ -8282,7 +8282,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             if (use_menu) {
                 if (wizard() && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
                     (yield* strkitten(cptr.decay(ocl), NHC.VENOM_SYM));
-                void (yield* choose_classes_menu(__sl634, 1, 1, cptr.decay(ocl), cptr.decay(tbuf)));
+                void (yield* choose_classes_menu(__s_autopickup_what, 1, 1, cptr.decay(ocl), cptr.decay(tbuf)));
                 op = cptr.decay(tbuf);
             }
         }
@@ -8304,7 +8304,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
                 op = cptr.add(op, 1);
             }
             if (badopt) {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         }
@@ -8312,7 +8312,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
-        void cptr.sprintf(opts, __sl554, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all);
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8340,7 +8340,7 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl574, cptr.ldI32o(flags, $flag_pile_limit));
+        void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(flags, $flag_pile_limit));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8354,19 +8354,19 @@ function* optfn_player_selection(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
-            if (!(yield* strncmpi(op, __sl635, 6))) {
+            if (!(yield* strncmpi(op, __s_dialog, 6))) {
                 cptr.stI32o(iflags, $instance_flags_wc_player_selection, NHM.VIA_DIALOG);
-            } else if (!(yield* strncmpi(op, __sl636, 6))) {
+            } else if (!(yield* strncmpi(op, __s_prompt, 6))) {
                 cptr.stI32o(iflags, $instance_flags_wc_player_selection, NHM.VIA_PROMPTS);
             } else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldI32o(iflags, $instance_flags_wc_player_selection) ? __sl637 : __sl635);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldI32o(iflags, $instance_flags_wc_player_selection) ? __s_prompts : __s_dialog);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8382,20 +8382,20 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
             return NHC.optn_err;
         if (cptr.eq(op, cptr.decay(empty_optstr)))
             return NHC.optn_err;
-        if (!(yield* strncmpi(op, __sl638, 6)) || !(yield* strncmpi((op), (__sl639), -1))) {
+        if (!(yield* strncmpi(op, __s_normal, 6)) || !(yield* strncmpi((op), (__s_play), -1))) {
             cptr.st1o(flags, $flag_debug, cptr.st1o(flags, $flag_explore, 0));
-        } else if (!(yield* strncmpi(op, __sl437, 6)) || !(yield* strncmpi(op, __sl640, 6))) {
+        } else if (!(yield* strncmpi(op, __s_explore, 6)) || !(yield* strncmpi(op, __s_discovery, 6))) {
             cptr.st1o(flags, $flag_debug, 0), cptr.st1o(flags, $flag_explore, 1);
-        } else if (!(yield* strncmpi(op, __sl641, 5)) || !(yield* strncmpi(op, __sl642, 6))) {
+        } else if (!(yield* strncmpi(op, __s_debug, 5)) || !(yield* strncmpi(op, __s_wizard, 6))) {
             cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
         } else {
-            (yield* config_error_add(__sl643, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_invalid_value_for_s_s__2, cptr.ldPtro(allopt, optidx, 104), op));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.strcpy(opts, wizard() ? __sl641 : (discover() ? __sl437 : __sl638));
+        void cptr.strcpy(opts, wizard() ? __s_debug : (discover() ? __s_explore : __s_normal));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8412,7 +8412,7 @@ function* optfn_race(optidx, req, negated, opts, op) {
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrace, (yield* str2race(op.v)))) == -1) {
-                (yield* config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
                 return NHC.optn_err;
             }
             cptr.st1o(gp, $instance_globals_p_pl_race, cptr.ld1s(op.v));
@@ -8421,12 +8421,12 @@ function* optfn_race(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         op.v = (yield* get_cnf_role_opt(optidx));
-        void cptr.strcpy(opts, op.v ? op.v : __sl467);
+        void cptr.strcpy(opts, op.v ? op.v : __s_none);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8444,7 +8444,7 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
             cptr.stPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
             if (!(yield* read_sym_file(NHC.ROGUESET))) {
                 clear_symsetentry(NHC.ROGUESET, 1);
-                (yield* config_error_add(__sl644, op, __sl645));
+                (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
                 return NHC.optn_err;
             } else {
                 if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
@@ -8457,9 +8457,9 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) : __sl646);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
         if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name))
-            void cptr.strcat(opts, __sl647);
+            void cptr.strcat(opts, __s_active);
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8479,7 +8479,7 @@ function* optfn_role(optidx, req, negated, opts, op) {
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrole, (yield* str2role(op.v)))) == -1) {
-                (yield* config_error_add(__sl558, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
                 return NHC.optn_err;
             }
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ));
@@ -8488,12 +8488,12 @@ function* optfn_role(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         op.v = (yield* get_cnf_role_opt(optidx));
-        void cptr.strcpy(opts, op.v ? op.v : __sl467);
+        void cptr.strcpy(opts, op.v ? op.v : __s_none);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8508,26 +8508,26 @@ function* optfn_runmode(optidx, req, negated, opts, op) {
         if (negated) {
             cptr.stI32o(flags, $flag_runmode, NHC.RUN_TPORT);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (str_start_is(__sl502, op, 1))
+            if (str_start_is(__s_teleport, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_TPORT);
-            else if (str_start_is(__sl503, op, 1))
+            else if (str_start_is(__s_run, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_LEAP);
-            else if (str_start_is(__sl504, op, 1))
+            else if (str_start_is(__s_walk, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_STEP);
-            else if (str_start_is(__sl505, op, 1))
+            else if (str_start_is(__s_crawl, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_CRAWL);
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else {
-            (yield* config_error_add(__sl648, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_value_is_mandatory_for_s, cptr.ldPtro(allopt, optidx, 104)));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(runmodes, cptr.ldI32o(flags, $flag_runmode), 8));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(runmodes, cptr.ldI32o(flags, $flag_runmode), 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8549,7 +8549,7 @@ function* optfn_scores(optidx, req, negated, opts, op) {
             op = eos(op);
         while (cptr.ld1s(op)) {
             let inum = 1;
-            negated = schar(((cptr.ld1s(op) == 33) || !(yield* strncmpi(op, __sl550, 2)) ? 1 : 0));
+            negated = schar(((cptr.ld1s(op) == 33) || !(yield* strncmpi(op, __s_no, 2)) ? 1 : 0));
             if (negated)
                 op = cptr.add(op, (cptr.ld1s(op) == 33) ? 1 : ((cptr.ld1so(op, 2) != 45) ? 2 : 3));
             if (digit(cptr.ld1s(op))) {
@@ -8574,13 +8574,13 @@ function* optfn_scores(optidx, req, negated, opts, op) {
                 break;
                 case 45:
                 if (digit(cptr.ld1s((cptr.add(op, 1))))) {
-                    (yield* config_error_add(__sl649, cptr.ldPtro(allopt, optidx, 104), cptr.ldPtro(allopt, optidx, 104)));
+                    (yield* config_error_add(__s_values_for_s_top_and_s_around_must_not, cptr.ldPtro(allopt, optidx, 104), cptr.ldPtro(allopt, optidx, 104)));
                     return NHC.optn_silenterr;
                 }
                 // @FallThrough
                 ;
                 default:
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_silenterr;
             }
             while (letter(cptr.ld1s(op)))
@@ -8595,13 +8595,13 @@ function* optfn_scores(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1(opts, 0);
         if (cptr.ldI32o(flags, $flag_end_top) > 0)
-            void cptr.sprintf(opts, __sl650, cptr.ldI32o(flags, $flag_end_top));
+            void cptr.sprintf(opts, __s_d_top, cptr.ldI32o(flags, $flag_end_top));
         if (cptr.ldI32o(flags, $flag_end_around) > 0)
-            void cptr.sprintf(eos(opts), __sl651, (cptr.ldI32o(flags, $flag_end_top) > 0) ? __sl652 : __sl491, cptr.ldI32o(flags, $flag_end_around));
+            void cptr.sprintf(eos(opts), __s_s_d_around, (cptr.ldI32o(flags, $flag_end_top) > 0) ? __s_slash : __s_empty, cptr.ldI32o(flags, $flag_end_around));
         if (cptr.ld1so(flags, $flag_end_own))
-            void cptr.sprintf(eos(opts), __sl653, (cptr.ldI32o(flags, $flag_end_top) > 0 || cptr.ldI32o(flags, $flag_end_around) > 0) ? __sl652 : __sl491);
+            void cptr.sprintf(eos(opts), __s_sown, (cptr.ldI32o(flags, $flag_end_top) > 0 || cptr.ldI32o(flags, $flag_end_around) > 0) ? __s_slash : __s_empty);
         if (!cptr.ld1s(opts))
-            void cptr.strcpy(opts, __sl467);
+            void cptr.strcpy(opts, __s_none);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8624,7 +8624,7 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount));
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -8649,7 +8649,7 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin));
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -8676,7 +8676,7 @@ function* optfn_soundlib(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         (yield* get_soundlib_name(cptr.decay(soundlibbuf), NHM.WINTYPELEN));
-        void cptr.sprintf(opts, __sl554, cptr.decay(soundlibbuf));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(soundlibbuf));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8711,7 +8711,7 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_discosort, 97);
                 break;
                 default:
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_silenterr;
             }
         } else
@@ -8745,7 +8745,7 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_sortloot, c);
                 break;
                 default:
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else
@@ -8784,10 +8784,10 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
             let vndx = 0;
             if ((p = cptr.strchr(cptr.decay(__static_optfn_sortvanquished_vanqmodes), cptr.ld1s(op))) !== null) {
                 vndx = Number(BigInt.asIntN(32, (cptr.diff(p, cptr.decay(__static_optfn_sortvanquished_vanqmodes)))));
-            } else if (cptr.strchr(__sl654, cptr.ld1s(op))) {
+            } else if (cptr.strchr(__s_01234567, cptr.ld1s(op))) {
                 vndx = (cptr.ld1s(op) - 48) | 0;
             } else {
-                (yield* config_error_add(__sl563, optname, op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, optname, op));
                 return NHC.optn_silenterr;
             }
             cptr.st1o(flags, $flag_vanq_sortmode, uchar(vndx));
@@ -8798,13 +8798,13 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         void cptr.strcpy(opts, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8));
         if (req == NHC.get_val)
-            void cptr.sprintf(eos(opts), __sl655, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8));
+            void cptr.sprintf(eos(opts), __s_colon_sp_pct_s, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
         let prev_sortmode = cptr.ld1uo(flags, $flag_vanq_sortmode);
         void (yield* set_vanq_order(1));
-        (yield* pline(__sl656, optname, (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode) ? __sl657 : __sl658, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)));
+        (yield* pline(__s_s_s_s_s, optname, (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode) ? __s_not_changed_still : __s_changed_to, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)));
     }
     return NHC.optn_ok;
 }
@@ -8829,13 +8829,13 @@ function* optfn_statushilites(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val) {
         if (!cptr.ldI64o(iflags, $instance_flags_hilite_delta))
-            void cptr.strcpy(opts, __sl659);
+            void cptr.strcpy(opts, __s_0_off_don_t_highlight_status_fields);
         else
-            void cptr.sprintf(opts, __sl660, cptr.ldI64o(iflags, $instance_flags_hilite_delta), cptr.ldI64o(iflags, $instance_flags_hilite_delta));
+            void cptr.sprintf(opts, __s_ld_on_highlight_status_for_ld_turns, cptr.ldI64o(iflags, $instance_flags_hilite_delta), cptr.ldI64o(iflags, $instance_flags_hilite_delta));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl661, cptr.ldI64o(iflags, $instance_flags_hilite_delta));
+        void cptr.sprintf(opts, __s_ld, cptr.ldI64o(iflags, $instance_flags_hilite_delta));
     }
     return NHC.optn_ok;
 }
@@ -8857,7 +8857,7 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
             itmp = atoi(op);
         }
         if (itmp < 2 || itmp > 3) {
-            (yield* config_error_add(__sl662, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_s_s_is_invalid_must_be_2_or_3, cptr.ldPtro(allopt, optidx, 104), op));
             retval = NHC.optn_silenterr;
         } else {
             cptr.stI32o(iflags, $instance_flags_wc2_statuslines, itmp);
@@ -8868,9 +8868,9 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (wc2_supported(cptr.ldPtro(allopt, optidx, 104)))
-            void cptr.strcpy(opts, (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 3) ? __sl663 : __sl664);
+            void cptr.strcpy(opts, (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 3) ? __s_2 : __s_3);
         else
-            void cptr.strcpy(opts, __sl665);
+            void cptr.strcpy(opts, __s_unknown);
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8895,7 +8895,7 @@ function* optfn_suppress_alert(optidx, req, negated, opts, op) {
         else if (cptr.ldU64o(flags, $flag_suppress_alert) == 0n)
             void cptr.strcpy(opts, cptr.decay(none));
         else
-            void cptr.sprintf(opts, __sl666, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
+            void cptr.sprintf(opts, __s_lu_lu_lu, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -8913,7 +8913,7 @@ function* optfn_symset(optidx, req, negated, opts, op) {
             cptr.stPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
             if (!(yield* read_sym_file(NHC.PRIMARYSET))) {
                 clear_symsetentry(NHC.PRIMARYSET, 1);
-                (yield* config_error_add(__sl644, op, __sl645));
+                (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
                 return NHC.optn_err;
             } else {
                 if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling)) {
@@ -8927,16 +8927,16 @@ function* optfn_symset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __sl646);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
         if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name))
-            void cptr.strcat(opts, __sl647);
+            void cptr.strcat(opts, __s_active);
         if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling)) {
-            void cptr.sprintf(eos(opts), __sl667, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling), 8));
+            void cptr.sprintf(eos(opts), __s_handler_s, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling), 8));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __sl646);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8962,7 +8962,7 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__sl668, cptr.ldPtro(allopt, optidx, 104), ltmp));
+                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, 104), ltmp));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_cols, Number(BigInt.asIntN(32, ltmp)));
@@ -8972,7 +8972,7 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc2_term_cols))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc2_term_cols));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc2_term_cols));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -8993,7 +8993,7 @@ function* optfn_term_rows(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__sl668, cptr.ldPtro(allopt, optidx, 104), ltmp));
+                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, 104), ltmp));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_rows, Number(BigInt.asIntN(32, ltmp)));
@@ -9003,7 +9003,7 @@ function* optfn_term_rows(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc2_term_rows))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc2_term_rows));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc2_term_rows));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -9028,12 +9028,12 @@ function* optfn_tile_file(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_tile_file) ? cptr.ldPtro(iflags, $instance_flags_wc_tile_file) : cptr.decay(defopt));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_tile_file) ? cptr.ldPtro(iflags, $instance_flags_wc_tile_file) : cptr.decay(defopt));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
         if (cptr.ldPtro(iflags, $instance_flags_wc_tile_file))
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_tile_file));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_tile_file));
         else
             cptr.st1o(opts, 0, 0);
         return NHC.optn_ok;
@@ -9058,7 +9058,7 @@ function* optfn_tile_height(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_tile_height))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_tile_height));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_tile_height));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -9085,7 +9085,7 @@ function* optfn_tile_width(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_tile_width))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_tile_width));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_tile_width));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -9104,7 +9104,7 @@ function optfn_traps(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, cptr.decay(to_be_done));
+        void cptr.sprintf(opts, __s_pct_s, cptr.decay(to_be_done));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -9131,7 +9131,7 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount))
-            void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount));
+            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount));
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -9158,26 +9158,26 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
         }
         op = (yield* string_for_opt(opts, 0));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
-            (yield* config_error_add(__sl669, optname, dflt));
+            (yield* config_error_add(__s_s_requires_a_value_defaulting_to_d, optname, dflt));
             return NHC.optn_silenterr;
         }
         val = atoi(op);
         if (!val || (val & -8) != 0) {
-            (yield* config_error_add(__sl670, optname));
+            (yield* config_error_add(__s_s_must_be_one_of_1_2_4_or_the_sum_of, optname));
             return NHC.optn_silenterr;
         }
         cptr.stI32o(flags, $flag_versinfo, val >>> 0);
     } else if (req == NHC.do_handler) {
         void (yield* handler_versinfo());
-        (yield* pline(__sl671, optname, (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __sl657 : __sl658, cptr.ldI32o(flags, $flag_versinfo)));
+        (yield* pline(__s_s_s_u, optname, (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __s_not_changed_still : __s_changed_to, cptr.ldI32o(flags, $flag_versinfo)));
     } else if (req == NHC.get_val) {
         let vbuf = new Uint8Array(128);
         let g = schar((((vi & NHM.VI_NAME) >>> 0) != 0));
         let b = schar((((vi & NHM.VI_BRANCH) >>> 0) != 0));
         let n = schar((((vi & NHM.VI_NUMBER) >>> 0) != 0));
-        void cptr.sprintf(opts, __sl672, cptr.ldI32o(flags, $flag_versinfo), g ? __sl4 : __sl491, (b && g) ? __sl673 : __sl491, b ? __sl674 : __sl491, (n && (b || g)) ? __sl673 : __sl491, n ? __sl675 : __sl491, (yield* status_version(cptr.decay(vbuf), 128n, 0)));
+        void cptr.sprintf(opts, __s_u_s_s_s_s_s_99s, cptr.ldI32o(flags, $flag_versinfo), g ? __s_name : __s_empty, (b && g) ? __s_plus : __s_empty, b ? __s_branch : __s_empty, (n && (b || g)) ? __s_plus : __s_empty, n ? __s_number : __s_empty, (yield* status_version(cptr.decay(vbuf), 128n, 0)));
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl607, cptr.ldI32o(flags, $flag_versinfo));
+        void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(flags, $flag_versinfo));
     }
     if (cptr.ldI32o(flags, $flag_versinfo) != vi && !cptr.ld1so(go, $instance_globals_o_opt_initial))
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
@@ -9217,7 +9217,7 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
             if (c && cptr.strchr(cptr.decay(__static_optfn_whatis_coord_gpcoords), c))
                 cptr.stI32o(iflags, $instance_flags_getpos_coords, c);
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         } else
@@ -9225,7 +9225,7 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 109) ? __sl676 : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 99) ? __sl677 : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 102) ? __sl678 : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 115) ? __sl679 : __sl467))));
+        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 109) ? __s_map__2 : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 99) ? __s_compass : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 102) ? __s_full_compass : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 115) ? __s_screen : __s_none))));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9257,7 +9257,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
                 break;
                 default:
                 {
-                    (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), op));
+                    (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
                     return NHC.optn_err;
                 }
             }
@@ -9266,7 +9266,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __sl680 : ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA) ? __sl681 : __sl467));
+        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __s_view : ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA) ? __s_area : __s_none));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9295,7 +9295,7 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
             else
                 itmp = atoi(op);
             if (itmp < 0 || itmp > 4) {
-                (yield* config_error_add(__sl682, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_invalid_s_should_be_within_0_to_4_s, cptr.ldPtro(allopt, optidx, 104), opts));
                 retval = NHC.optn_silenterr;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_windowborders, itmp);
@@ -9304,11 +9304,11 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
         return retval;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __sl554, (cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 0) ? __sl602 : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 1) ? __sl603 : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 2) ? __sl683 : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 3) ? __sl684 : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 4) ? __sl685 : cptr.decay(defopt))))));
+        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 0) ? __s_0_off : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 1) ? __s_1_on : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 2) ? __s_2_auto : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 3) ? __s_3_on_except_off_for_perm_invent : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 4) ? __s_4_auto_except_off_for_perm_invent : cptr.decay(defopt))))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl601, cptr.ldI32o(iflags, $instance_flags_wc2_windowborders));
+        void cptr.sprintf(opts, __s_pct_i, cptr.ldI32o(iflags, $instance_flags_wc2_windowborders));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9319,17 +9319,17 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
 
 /** C ref: options.c:4885 — char *[4] */
 const wcnames = cptr.alloc(4 * 8);
-cptr.stPtro(wcnames, 0, __sl686);
-cptr.stPtro(wcnames, 8, __sl687);
-cptr.stPtro(wcnames, 16, __sl688);
-cptr.stPtro(wcnames, 24, __sl689);
+cptr.stPtro(wcnames, 0, __s_menu);
+cptr.stPtro(wcnames, 8, __s_message);
+cptr.stPtro(wcnames, 16, __s_status__2);
+cptr.stPtro(wcnames, 24, __s_text);
 
 /** C ref: options.c:4888 — char *[4] */
 const wcshortnames = cptr.alloc(4 * 8);
-cptr.stPtro(wcshortnames, 0, __sl690);
-cptr.stPtro(wcshortnames, 8, __sl691);
-cptr.stPtro(wcshortnames, 16, __sl692);
-cptr.stPtro(wcshortnames, 24, __sl693);
+cptr.stPtro(wcshortnames, 0, __s_mnu);
+cptr.stPtro(wcshortnames, 8, __s_msg);
+cptr.stPtro(wcshortnames, 16, __s_sts);
+cptr.stPtro(wcshortnames, 24, __s_txt);
 
 /** C ref: options.c:4891 — int[4] */
 export const wcolors_opt = cptr.alloc(4 * 4);
@@ -9346,7 +9346,7 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             if (!(yield* wc_set_window_colors(op))) {
-                (yield* config_error_add(__sl694, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_could_not_set_s_s, cptr.ldPtro(allopt, optidx, 104), op));
                 return NHC.optn_err;
             }
         }
@@ -9363,7 +9363,7 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
                 fg = null;
             if (bg && (!cptr.ld1s(bg) || !strcmp(bg, cptr.decay(defbrief))))
                 bg = null;
-            void cptr.sprintf(eos(opts), __sl695, !wccount ? __sl491 : __sl598, (fg || bg) ? cptr.ldPtro(wcnames, wccount, 8) : cptr.ldPtro(wcshortnames, wccount, 8), fg ? fg : cptr.decay(defbrief), bg ? bg : cptr.decay(defbrief));
+            void cptr.sprintf(eos(opts), __s_s_s_s_s__2, !wccount ? __s_empty : __s_sp, (fg || bg) ? cptr.ldPtro(wcnames, wccount, 8) : cptr.ldPtro(wcshortnames, wccount, 8), fg ? fg : cptr.decay(defbrief), bg ? bg : cptr.decay(defbrief));
         }
         return NHC.optn_ok;
     }
@@ -9391,7 +9391,7 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __sl554, cptr.ldPtr(windowprocs));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtr(windowprocs));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -9410,12 +9410,12 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
             cptr.st1o(cptr.decay(opt_set_in_config), NHC.pfx_cond_, 1, 1);
             break;
             case 3:
-            (yield* config_error_add(__sl696, opts));
+            (yield* config_error_add(__s_ambiguous_condition_option_s, opts));
             break;
             case 1:
             case 2:
             default:
-            (yield* config_error_add(__sl697, opts, reslt));
+            (yield* config_error_add(__s_unknown_condition_option_s_d, opts, reslt));
             break;
         }
         if (reslt != 0)
@@ -9463,7 +9463,7 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             else if (optidx == NHC.opt_font_size_status)
                 opttype = NHC.STATUS_OPTION;
             else {
-                (yield* config_error_add(__sl563, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), opts));
                 return NHC.optn_err;
             }
             if (duplicate)
@@ -9489,7 +9489,7 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             }
             return NHC.optn_ok;
         } else {
-            (yield* config_error_add(__sl563, __sl426, opts));
+            (yield* config_error_add(__s_unknown_s_parameter_s, __s_font, opts));
             return 0;
         }
         if (opttype > 0 && !cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
@@ -9503,38 +9503,38 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (optidx == NHC.opt_font_map) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_font_map) ? cptr.ldPtro(iflags, $instance_flags_wc_font_map) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_map) ? cptr.ldPtro(iflags, $instance_flags_wc_font_map) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_message) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_font_message) ? cptr.ldPtro(iflags, $instance_flags_wc_font_message) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_message) ? cptr.ldPtro(iflags, $instance_flags_wc_font_message) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_status) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_font_status) ? cptr.ldPtro(iflags, $instance_flags_wc_font_status) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_status) ? cptr.ldPtro(iflags, $instance_flags_wc_font_status) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_menu) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_font_menu) ? cptr.ldPtro(iflags, $instance_flags_wc_font_menu) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_menu) ? cptr.ldPtro(iflags, $instance_flags_wc_font_menu) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_text) {
-            void cptr.sprintf(opts, __sl554, cptr.ldPtro(iflags, $instance_flags_wc_font_text) ? cptr.ldPtro(iflags, $instance_flags_wc_font_text) : cptr.decay(defopt));
+            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_text) ? cptr.ldPtro(iflags, $instance_flags_wc_font_text) : cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_map) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map));
+                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_message) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message));
+                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_status) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status));
+                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_menu) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu));
+                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_text) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text))
-                void cptr.sprintf(opts, __sl574, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text));
+                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text));
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         }
@@ -9560,16 +9560,16 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (negated) {
-                (yield* config_error_add(__sl698, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_negated_boolean_s_should_not_have_a, cptr.ldPtro(allopt, optidx, 104)));
                 return NHC.optn_silenterr;
             }
             ln = Number(BigInt.asIntN(32, cptr.strlen(op)));
-            if (!(yield* strncmpi(op, __sl699, ln)) || !(yield* strncmpi(op, __sl700, ln)) || !(yield* strncmpi((op), (__sl509), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 1)) {
+            if (!(yield* strncmpi(op, __s_true, ln)) || !(yield* strncmpi(op, __s_yes, ln)) || !(yield* strncmpi((op), (__s_on), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 1)) {
                 negated = 0;
-            } else if (!(yield* strncmpi(op, __sl701, ln)) || !(yield* strncmpi(op, __sl550, ln)) || !(yield* strncmpi((op), (__sl507), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
+            } else if (!(yield* strncmpi(op, __s_false, ln)) || !(yield* strncmpi(op, __s_no, ln)) || !(yield* strncmpi((op), (__s_off), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
                 negated = 1;
             } else if (!cptr.ldI32o2(allopt, optidx, 104, $allopt_t_valok)) {
-                (yield* config_error_add(__sl702, opts));
+                (yield* config_error_add(__s_s_is_not_valid_for_a_boolean, opts));
                 return NHC.optn_silenterr;
             }
         }
@@ -9579,7 +9579,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
         }
         switch (optidx) {
             case NHC.opt_female:
-            if (!(yield* strncmpi(opts, __sl110, ((ln) > 3 ? (ln) : 3)))) {
+            if (!(yield* strncmpi(opts, __s_female, ((ln) > 3 ? (ln) : 3)))) {
                 if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(flags, $flag_female) == negated) {
                     nosexchange = 1;
                 } else {
@@ -9587,7 +9587,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
                     return NHC.optn_ok;
                 }
             }
-            if (!(yield* strncmpi(opts, __sl111, ((ln) > 3 ? (ln) : 3)))) {
+            if (!(yield* strncmpi(opts, __s_male, ((ln) > 3 ? (ln) : 3)))) {
                 if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(flags, $flag_female) != negated) {
                     nosexchange = 1;
                 } else {
@@ -9604,7 +9604,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
         }
         if (nosexchange) {
-            (yield* config_error_add(__sl703, opts));
+            (yield* config_error_add(__s_s_is_not_anatomically_possible, opts));
             return NHC.optn_silenterr;
         }
         cptr.st1((cptr.ldPtro2(allopt, optidx, 104, $allopt_t_addr)), schar((!negated)));
@@ -9626,7 +9626,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
             break;
             case NHC.opt_idlecheckpoint:
-            (yield* pline(__sl704));
+            (yield* pline(__s_there_is_no_underlying_support_for));
             cptr.st1o(iflags, $instance_flags_idlecheckpoint, 0);
             give_opt_msg = 0;
             break;
@@ -9643,7 +9643,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_weaponstatus:
             case NHC.opt_armorstatus:
             if (!wc2_supported(cptr.ldPtro(allopt, optidx, 104))) {
-                (yield* config_error_add(__sl705, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_s_is_not_supported, cptr.ldPtro(allopt, optidx, 104)));
                 return NHC.optn_ok;
             }
             // @FallThrough
@@ -9716,7 +9716,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
         }
         if (give_opt_msg)
-            (yield* pline(__sl706, cptr.ldPtro(allopt, optidx, 104), !negated ? __sl509 : __sl507));
+            (yield* pline(__s_s_option_toggled_s, cptr.ldPtro(allopt, optidx, 104), !negated ? __s_on : __s_off));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -9778,13 +9778,13 @@ function* handler_menustyle() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < menutype.length; i++) {
-        void cptr.sprintf(cptr.decay(buf), __sl707, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
+        void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (i == cptr.ld1so(flags, $flag_menu_style)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-        void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
+        void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
         (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl709)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_menustyle)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, style_pick));
     if (n > 0) {
         i = (cptr.ldI32o(style_pick.v, 0, 24) - 1) | 0;
@@ -9796,7 +9796,7 @@ function* handler_menustyle() {
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     chngd = schar((cptr.ld1so(flags, $flag_menu_style) != old_menu_style));
     if (chngd || cptr.ld1so(flags, $flag_verbose))
-        (yield* pline(__sl710, chngd ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)));
+        (yield* pline(__s_menustyle_s_s, chngd ? __s_changed_to : __s_is_still, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)));
     return NHC.optn_ok;
 }
 
@@ -9811,14 +9811,14 @@ function* handler_align_misc(optidx) {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, NHM.ALIGN_TOP);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, __sl560, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, __s_top, NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, NHM.ALIGN_BOTTOM);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, 0, NHM.ATR_NONE, clr, __sl562, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, 0, NHM.ATR_NONE, clr, __s_bottom, NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, NHM.ALIGN_LEFT);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 108, 0, NHM.ATR_NONE, clr, __sl559, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 108, 0, NHM.ATR_NONE, clr, __s_left, NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, NHM.ALIGN_RIGHT);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 114, 0, NHM.ATR_NONE, clr, __sl561, NHM.MENU_ITEMFLAGS_NONE));
-    void cptr.sprintf(cptr.decay(abuf), __sl712, (optidx == NHC.opt_align_message) ? __sl687 : __sl688);
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 114, 0, NHM.ATR_NONE, clr, __s_right, NHM.MENU_ITEMFLAGS_NONE));
+    void cptr.sprintf(cptr.decay(abuf), __s_select_s_window_placement_relative_to, (optidx == NHC.opt_align_message) ? __s_message : __s_status__2);
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(abuf))));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick)) > 0) {
         if (optidx == NHC.opt_align_message)
@@ -9850,12 +9850,12 @@ function* handler_autounlock(optidx) {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < unlocktypes.length; ++i) {
-        void cptr.sprintf(cptr.decay(buf), __sl713, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8));
+        void cptr.sprintf(cptr.decay(buf), __s_10_10s_c_40s, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8));
         presel = ((cptr.ldI32o(flags, $flag_autounlock) & (1 << i) >>> 0) >>> 0) | 0;
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (presel ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE)));
     }
-    void cptr.sprintf(cptr.decay(buf), __sl714, optname);
+    void cptr.sprintf(cptr.decay(buf), __s_select_20s_actions, optname);
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, window_pick));
     if (n > 0) {
@@ -9871,18 +9871,18 @@ function* handler_autounlock(optidx) {
     chngd = schar((cptr.ldI32o(flags, $flag_autounlock) != oldflags));
     if ((chngd || cptr.ld1so(flags, $flag_verbose)) && give_opt_msg) {
         (yield* optfn_autounlock(optidx, NHC.get_val, 0, cptr.decay(buf), (null)));
-        (yield* pline(__sl715, optname, chngd ? __sl658 : __sl711, cptr.decay(buf)));
+        (yield* pline(__s_s_s_s, optname, chngd ? __s_changed_to : __s_is_still, cptr.decay(buf)));
     }
     return res;
 }
 
 const __static_handler_disclose_disclosure_names = cptr.alloc(6 * 8);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 0, __sl725);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 8, __sl726);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 16, __sl727);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 24, __sl728);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 32, __sl729);
-cptr.stPtro(__static_handler_disclose_disclosure_names, 40, __sl730); /** C ref: options.c:5683 — char *[6] (function-static) */
+cptr.stPtro(__static_handler_disclose_disclosure_names, 0, __s_inventory__2);
+cptr.stPtro(__static_handler_disclose_disclosure_names, 8, __s_attributes);
+cptr.stPtro(__static_handler_disclose_disclosure_names, 16, __s_vanquished);
+cptr.stPtro(__static_handler_disclose_disclosure_names, 24, __s_genocides);
+cptr.stPtro(__static_handler_disclose_disclosure_names, 32, __s_conduct);
+cptr.stPtro(__static_handler_disclose_disclosure_names, 40, __s_overview); /** C ref: options.c:5683 — char *[6] (function-static) */
 
 /** C ref: options.c:5675 @returns {CInt} */
 function* handler_disclose() {
@@ -9902,12 +9902,12 @@ function* handler_disclose() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
-        void cptr.sprintf(cptr.decay(buf), __sl716, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, $flag_end_disclose), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
+        void cptr.sprintf(cptr.decay(buf), __s_12s_c_c, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, $flag_end_disclose), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(disclosure_options), i, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
         cptr.stI32o(disc_cat, i, 0, 4);
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl717)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_change_which_disclosure_options)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, disclosure_pick));
     if (pick_cnt > 0) {
         for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
@@ -9921,25 +9921,25 @@ function* handler_disclose() {
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         if (cptr.ldI32o(disc_cat, i, 4)) {
             c = cptr.ld1so2(flags, i, 1, $flag_end_disclose);
-            void cptr.sprintf(cptr.decay(buf), __sl718, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8));
+            void cptr.sprintf(cptr.decay(buf), __s_disclosure_options_for_s, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8));
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.st1(any, 45);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl719, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_never_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             cptr.st1(any, 43);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl720, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
                 cptr.st1(any, 35);
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl721, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_pick_sort_order_from, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             }
             cptr.st1(any, 110);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl722, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_no, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             cptr.st1(any, 121);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl723, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_yes, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
                 cptr.st1(any, 63);
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __sl724, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_ask_to, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             }
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
             n = (yield* select_menu(tmpwin, NHM.PICK_ONE, disclosure_pick));
@@ -9957,7 +9957,7 @@ function* handler_disclose() {
 
 /** C ref: options.c:5780 @returns {CInt} */
 function* handler_menu_headings() {
-    let gotca = (yield* query_color_attr(cptr.add(iflags, $instance_flags_menu_headings), __sl731));
+    let gotca = (yield* query_color_attr(cptr.add(iflags, $instance_flags_menu_headings), __s_how_to_highlight_menu_headings));
     if (gotca) {
         if (cptr.ld1so(iflags, $instance_flags_perm_invent))
             (yield* update_inventory());
@@ -9981,12 +9981,12 @@ function* handler_menu_objsyms() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 6; ++i) {
-        nh_snprintf(__sl732, 5809, cptr.decay(buf), 256n, __sl707, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_descr));
+        nh_snprintf(__s_handler_menu_objsyms, 5809, cptr.decay(buf), 256n, __s_12_12s_c_60s, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_descr));
         cptr.stI32(any, (i + 1) | 0);
         j = cptr.ldI32o(objsymvals, i, 24);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, $instance_flags_menuobjsyms)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl733)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_set_object_symbols_in_menus_to_what)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, picklist));
     if (n > 0) {
         i = (cptr.ldI32o(picklist.v, 0, 24) - 1) | 0;
@@ -10021,13 +10021,13 @@ function* handler_msg_window() {
         for (i = 0; i < menutype.length; i++) {
             if (i < 2 && is_curses)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), __sl707, cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8));
+            void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8));
             cptr.st1(any, c = cptr.ld1s(cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8)));
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (c == cptr.ld1so(iflags, $instance_flags_prevmsg_window)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-            void cptr.sprintf(cptr.decay(buf), __sl708, __sl491, __sl491, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
+            void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
-        (yield* Y.icall(end_menu()(tmpwin, __sl734)));
+        (yield* Y.icall(end_menu()(tmpwin, __s_select_message_history_display_type)));
         n = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick));
         if (n > 0) {
             c = cptr.ld1so(window_pick.v, 0, 24);
@@ -10040,20 +10040,20 @@ function* handler_msg_window() {
         chngd = schar((cptr.ld1so(iflags, $instance_flags_prevmsg_window) != old_prevmsg_window));
         if (chngd || cptr.ld1so(flags, $flag_verbose)) {
             void (yield* optfn_msg_window(NHC.opt_msg_window, NHC.get_val, 0, cptr.decay(buf), cptr.decay(empty_optstr)));
-            (yield* pline(__sl735, chngd ? __sl658 : __sl711, cptr.decay(buf)));
+            (yield* pline(__s_msg_window_20s_20s, chngd ? __s_changed_to : __s_is_still, cptr.decay(buf)));
         }
     } else
-        (yield* pline(__sl736, cptr.ldPtro(allopt, NHC.opt_msg_window, 104), cptr.ldPtr(windowprocs)));
+        (yield* pline(__s_s_option_is_not_supported_for_s, cptr.ldPtro(allopt, NHC.opt_msg_window, 104), cptr.ldPtr(windowprocs)));
     return NHC.optn_ok;
 }
 
 const __static_handler_number_pad_npchoices = cptr.alloc(6 * 8);
-cptr.stPtro(__static_handler_number_pad_npchoices, 0, __sl738);
-cptr.stPtro(__static_handler_number_pad_npchoices, 8, __sl739);
-cptr.stPtro(__static_handler_number_pad_npchoices, 16, __sl740);
-cptr.stPtro(__static_handler_number_pad_npchoices, 24, __sl741);
-cptr.stPtro(__static_handler_number_pad_npchoices, 32, __sl742);
-cptr.stPtro(__static_handler_number_pad_npchoices, 40, __sl743); /** C ref: options.c:5898 — char *[6] (function-static) */
+cptr.stPtro(__static_handler_number_pad_npchoices, 0, __s_0_off__2);
+cptr.stPtro(__static_handler_number_pad_npchoices, 8, __s_1_on__2);
+cptr.stPtro(__static_handler_number_pad_npchoices, 16, __s_2_on_msdos_compatible__2);
+cptr.stPtro(__static_handler_number_pad_npchoices, 24, __s_3_on_phone_style_digit_layout);
+cptr.stPtro(__static_handler_number_pad_npchoices, 32, __s_4_on_phone_style_layout_msdos_compatible);
+cptr.stPtro(__static_handler_number_pad_npchoices, 40, __s_1_off_z_to_move_upper_left_y_to_zap); /** C ref: options.c:5898 — char *[6] (function-static) */
 
 /** C ref: options.c:5893 @returns {CInt} */
 function* handler_number_pad() {
@@ -10069,7 +10069,7 @@ function* handler_number_pad() {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, cptr.ldPtro(__static_handler_number_pad_npchoices, i, 8), NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl737)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_number_pad_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         switch ((cptr.ldI32(mode_pick.v) - 1) | 0) {
             case 0:
@@ -10125,21 +10125,21 @@ function* handler_paranoid_confirmation() {
         if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !wizard())
             continue;
         explain = cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_explain);
-        if ((yield* strstri(explain, __sl744)) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
+        if ((yield* strstri(explain, __s_apos_m_apos)) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
             if (mkey) {
-                void cptr.sprintf(cptr.decay(mbuf), __sl745, visctrl(mkey));
+                void cptr.sprintf(cptr.decay(mbuf), __s_9s, visctrl(mkey));
             } else {
                 cmdnm = (yield* cmdname_from_func(do_reqmenu, cptr.decay(cbuf), 1));
                 if (!cmdnm)
-                    cmdnm = __sl746;
-                void cptr.sprintf(cptr.decay(mbuf), __sl747, (cptr.ld1s(cmdnm) != 35) ? __sl748 : __sl491, cmdnm);
+                    cmdnm = __s_reqmenu;
+                void cptr.sprintf(cptr.decay(mbuf), __s_s_31s, (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty, cmdnm);
             }
-            explain = strsubst(cptr.strcpy(cptr.decay(ebuf), explain), __sl744, cptr.decay(mbuf));
+            explain = strsubst(cptr.strcpy(cptr.decay(ebuf), explain), __s_apos_m_apos, cptr.decay(mbuf));
         }
         cptr.stI32(any, cptr.ldI32o(paranoia, i, 48));
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl749)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_actions_requiring_extra_confirmation)));
     i = (yield* select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks));
     if (i >= 0) {
         cptr.stI32o(flags, $flag_paranoia_bits, 0);
@@ -10178,16 +10178,16 @@ function* handler_perminv_mode() {
         pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
             let numspaces = (widest - Number(BigInt.asIntN(32, cptr.strlen(pi0)))) | 0;
-            void cptr.sprintf(cptr.decay(sepbuf), __sl750, ((numspaces) > 1 ? (numspaces) : 1), __sl598);
+            void cptr.sprintf(cptr.decay(sepbuf), __s_pct_star_s, ((numspaces) > 1 ? (numspaces) : 1), __s_sp);
         } else {
-            void cptr.strcpy(cptr.decay(sepbuf), __sl751);
+            void cptr.strcpy(cptr.decay(sepbuf), __s_tab);
         }
-        void cptr.sprintf(cptr.decay(buf), __sl752, pi0, cptr.decay(sepbuf), cptr.ldPtro(cptr.decay(perminv_modes[i]), 2, 8));
+        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__2, pi0, cptr.decay(sepbuf), cptr.ldPtro(cptr.decay(perminv_modes[i]), 2, 8));
         let$ = schar((((i & NHC.InvSparse) != 0) ? highc(cptr.ld1so(pi1, 0)) : cptr.ld1so(pi0, 0)));
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, let$, schar(((48 + i) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), (i == old_pi) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl753)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_choose_permanent_inventory_mode)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, pi_pick));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
@@ -10200,7 +10200,7 @@ function* handler_perminv_mode() {
     if (n >= 0) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         void (yield* optfn_perminv_mode(NHC.opt_perm_invent, NHC.get_val, 0, cptr.decay(buf), null));
-        (yield* pline(__sl754, (new_pi != old_pi) ? __sl658 : __sl711, cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8), cptr.decay(buf)));
+        (yield* pline(__s_perminv_mode_s_s_s, (new_pi != old_pi) ? __s_changed_to : __s_is_still, cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8), cptr.decay(buf)));
         if (new_pi != NHC.InvOptNone && !old_perm_invent)
             cptr.st1o(iflags, $instance_flags_perm_invent, can_set_perm_invent());
         else if (new_pi == NHC.InvOptNone && old_perm_invent)
@@ -10218,7 +10218,7 @@ function* handler_pickup_burden() {
     let any = cptr.alloc(8);
     let i;
     let burden_name;
-    let burden_letters = __sl755;
+    let burden_letters = __s_ubsntl;
     let burden_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
@@ -10229,7 +10229,7 @@ function* handler_pickup_burden() {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(burden_letters, i), 0, NHM.ATR_NONE, clr, burden_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl756)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_encumbrance_level)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, burden_pick)) > 0) {
         cptr.stI32o(flags, $flag_pickup_burden, (cptr.ldI32(burden_pick.v) - 1) | 0);
         cptr.free(burden_pick.v);
@@ -10241,7 +10241,7 @@ function* handler_pickup_burden() {
 /** C ref: options.c:6114 @returns {CInt} */
 function* handler_pickup_types() {
     let buf = new Uint8Array(256);
-    void (yield* parseoptions(cptr.strcpy(cptr.decay(buf), __sl278), 0, 0));
+    void (yield* parseoptions(cptr.strcpy(cptr.decay(buf), __s_pickup_types), 0, 0));
     return NHC.optn_ok;
 }
 
@@ -10261,7 +10261,7 @@ function* handler_runmode() {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(mode_name), 0, NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl757)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_run_travel_display_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         cptr.stI32o(flags, $flag_runmode, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
@@ -10272,7 +10272,7 @@ function* handler_runmode() {
 
 /** C ref: options.c:6152 @returns {CInt} */
 function* handler_petattr() {
-    let tmp = (yield* query_attr(__sl758, cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
+    let tmp = (yield* query_attr(__s_select_pet_highlight_attribute, cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
     if (tmp != -1) {
         cptr.stI32o(iflags, $instance_flags_wc2_petattr, tmp);
         cptr.st1o(iflags, $instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE)));
@@ -10299,7 +10299,7 @@ function* handler_sortloot() {
         cptr.st1(any, cptr.ld1s(sortl_name));
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(sortl_name), 0, NHM.ATR_NONE, clr, sortl_name, (cptr.ld1so(flags, $flag_sortloot) == cptr.ld1s(sortl_name)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl759)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_loot_sorting_type)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, sortl_pick));
     if (n > 0) {
         let c = cptr.ld1so(sortl_pick.v, 0, 24);
@@ -10327,24 +10327,24 @@ function* handler_whatis_coord() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, 99);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, __sl760, (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, __s_compass_east_or_3s_or_2n_4w, (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 102);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 102, 0, NHM.ATR_NONE, clr, __sl761, (gpc == 102) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 102, 0, NHM.ATR_NONE, clr, __s_full_compass_east_or_3south_or_2north, (gpc == 102) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 109);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 109, 0, NHM.ATR_NONE, clr, __sl762, (gpc == 109) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 109, 0, NHM.ATR_NONE, clr, __s_map_x_y, (gpc == 109) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 115);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 115, 0, NHM.ATR_NONE, clr, __sl763, (gpc == 115) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 115, 0, NHM.ATR_NONE, clr, __s_screen_row_column, (gpc == 115) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, 110);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl764, (gpc == 110) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    (yield* add_menu_str(tmpwin, __sl491));
-    void cptr.sprintf(cptr.decay(buf), __sl765, 1, 0, 79, 20, cptr.ld1so(flags, $flag_verbose) ? __sl766 : __sl491);
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_none_no_coordinates_displayed, (gpc == 110) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu_str(tmpwin, __s_empty));
+    void cptr.sprintf(cptr.decay(buf), __s_map_upper_left_d_d_lower_right_d_d_s, 1, 0, 79, 20, cptr.ld1so(flags, $flag_verbose) ? __s_column_0_unused_off_left_edge : __s_empty);
     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
-    if (strcmp(cptr.ldPtr(windowprocs), __sl767))
-        (yield* add_menu_str(tmpwin, __sl768));
-    void cptr.sprintf(cptr.decay(buf), __sl769, 2, 1, 22, 79, cptr.ld1so(flags, $flag_verbose) ? __sl770 : __sl491);
+    if (strcmp(cptr.ldPtr(windowprocs), __s_tty))
+        (yield* add_menu_str(tmpwin, __s_screen_row_is_offset_to_accommodate_tty));
+    void cptr.sprintf(cptr.decay(buf), __s_screen_upper_left_02d_02d_lower_right_d, 2, 1, 22, 79, cptr.ld1so(flags, $flag_verbose) ? __s_column_80_is_not_used : __s_empty);
     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
-    (yield* add_menu_str(tmpwin, __sl491));
-    (yield* Y.icall(end_menu()(tmpwin, __sl771)));
+    (yield* add_menu_str(tmpwin, __s_empty));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_coordinate_display_when_auto)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, 24));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getpos_coords) == gpc)
@@ -10367,12 +10367,12 @@ function* handler_whatis_filter() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, (schar(((NHC.GFILTER_NONE + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl772, (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_no_filtering, (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, (schar(((NHC.GFILTER_VIEW + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, NHM.ATR_NONE, clr, __sl773, (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, NHM.ATR_NONE, clr, __s_in_view_only, (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.st1(any, (schar(((NHC.GFILTER_AREA + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __sl774, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    (yield* Y.icall(end_menu()(tmpwin, __sl775)));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __s_in_same_area, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_location_filtering_when_going)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, 24) - 1) | 0));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getloc_filter) == gfilt)
@@ -10403,19 +10403,19 @@ function* handler_autopickup_exception() {
     let clr = NHM.NO_COLOR;
     __lbl_ape_again: while (true) {
         numapes = count_apes();
-        opt_idx = (yield* handle_add_list_remove(__sl776, numapes));
+        opt_idx = (yield* handle_add_list_remove(__s_autopickup_exception, numapes));
         if (opt_idx == 3) {
             return 1;
         } else if (opt_idx == 0) {
             cptr.st1o(cptr.decay(apebuf), 0, cptr.st1o(cptr.decay(apebuf), 1, 0, 1), 1);
-            (yield* getlin(__sl777, cptr.add(cptr.decay(apebuf), 1, 1)));
+            (yield* getlin(__s_what_new_autopickup_exception_pattern, cptr.add(cptr.decay(apebuf), 1, 1)));
             (yield* mungspaces(cptr.add(cptr.decay(apebuf), 1, 1)));
             if (cptr.ld1so(cptr.decay(apebuf), 1, 1) == 27)
                 return 1;
             if (cptr.ld1so(cptr.decay(apebuf), 1, 1)) {
                 cptr.st1o(cptr.decay(apebuf), 0, 34, 1);
                 cptr.st1o(cptr.decay(apebuf), 256n, 0, 1);
-                void cptr.strcat(cptr.decay(apebuf), __sl778);
+                void cptr.strcat(cptr.decay(apebuf), __s_quot);
                 (yield* add_autopickup_exception(cptr.decay(apebuf)));
             }
             continue __lbl_ape_again;
@@ -10428,15 +10428,15 @@ function* handler_autopickup_exception() {
             if (numapes) {
                 ape = cptr.ldPtro(ga, $instance_globals_a_apelist);
                 cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-                (yield* add_menu_heading(tmpwin, __sl779));
+                (yield* add_menu_heading(tmpwin, __s_always_pickup_never_pickup));
                 for (i = 0; i < numapes && ape; i++) {
                     cptr.stPtr(any, (opt_idx == 1) ? null : ape);
-                    void cptr.sprintf(cptr.decay(apebuf), __sl780, cptr.ld1so(ape, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(ape, $autopickup_exception_pattern));
+                    void cptr.sprintf(cptr.decay(apebuf), __s_c_s, cptr.ld1so(ape, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(ape, $autopickup_exception_pattern));
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(apebuf), NHM.MENU_ITEMFLAGS_NONE));
                     ape = cptr.ldPtro(ape, $autopickup_exception_next);
                 }
             }
-            void cptr.sprintf(cptr.decay(apebuf), __sl781, (opt_idx == 1) ? __sl782 : __sl783);
+            void cptr.sprintf(cptr.decay(apebuf), __s_s_autopickup_exceptions, (opt_idx == 1) ? __s_list_of : __s_remove_which);
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(apebuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
@@ -10465,7 +10465,7 @@ function* handler_menu_colors() {
     let clr = NHM.NO_COLOR;
     __lbl_menucolors_again: while (true) {
         nmc = count_menucolors();
-        opt_idx = (yield* handle_add_list_remove(__sl784, nmc));
+        opt_idx = (yield* handle_add_list_remove(__s_menucolor, nmc));
         if (opt_idx == 3) {
             if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {
                 if (cptr.ld1so(iflags, $instance_flags_perm_invent))
@@ -10474,7 +10474,7 @@ function* handler_menu_colors() {
             return NHC.optn_ok;
         } else if (opt_idx == 0) {
             cptr.st1o(cptr.decay(mcbuf), 0, 0, 1);
-            (yield* getlin(__sl785, cptr.decay(mcbuf)));
+            (yield* getlin(__s_what_new_menucolor_pattern, cptr.decay(mcbuf)));
             if (cptr.ld1s(cptr.decay(mcbuf)) == 27)
                 {
                     if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {
@@ -10483,8 +10483,8 @@ function* handler_menu_colors() {
                     }
                     return NHC.optn_ok;
                 }
-            if (cptr.ld1s(cptr.decay(mcbuf)) && (yield* test_regex_pattern(cptr.decay(mcbuf), __sl786)) && (mcclr = (yield* query_color(null, NHM.NO_COLOR))) != -1 && (mcattr = (yield* query_attr(null, NHM.ATR_NONE))) != -1 && !(yield* add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr))) {
-                (yield* pline(__sl787));
+            if (cptr.ld1s(cptr.decay(mcbuf)) && (yield* test_regex_pattern(cptr.decay(mcbuf), __s_menucolors_regex)) && (mcclr = (yield* query_color(null, NHM.NO_COLOR))) != -1 && (mcattr = (yield* query_attr(null, NHM.ATR_NONE))) != -1 && !(yield* add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr))) {
+                (yield* pline(__s_error_adding_the_menu_color));
                 (yield* Y.icall(wait_synch()()));
             }
             continue __lbl_menucolors_again;
@@ -10505,20 +10505,20 @@ function* handler_menu_colors() {
             while (tmp) {
                 sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
                 sclr = cptr.strcpy(cptr.decay(clrbuf), clr2colorname(cptr.ldI32o(tmp, $menucoloring_color)));
-                void (yield* strNsubst(cptr.decay(clrbuf), __sl598, __sl599, 0));
+                void (yield* strNsubst(cptr.decay(clrbuf), __s_sp, __s_dash, 0));
                 cptr.stI32(any, ++mc_idx);
-                void cptr.sprintf(cptr.decay(buf), __sl788, sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
-                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(buf), __sl790, 6470)) >>> 0)) - 1n)));
-                void cptr.strcpy(cptr.decay(mcbuf), __sl778);
+                void cptr.sprintf(cptr.decay(buf), __s_s_s_s__3, sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
+                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(buf), __s_handler_menu_colors, 6470)) >>> 0)) - 1n)));
+                void cptr.strcpy(cptr.decay(mcbuf), __s_quot);
                 if (cptr.strlen(cptr.ldPtro(tmp, $menucoloring_origstr)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __sl791);
+                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __s_dot3);
                 else
                     void cptr.strcat(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr));
                 void cptr.strcat(cptr.decay(mcbuf), cptr.add(cptr.decay(buf), 1, 1));
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mcbuf), NHM.MENU_ITEMFLAGS_NONE));
                 tmp = cptr.ldPtro(tmp, $menucoloring_next);
             }
-            void cptr.sprintf(cptr.decay(mcbuf), __sl792, (opt_idx == 1) ? __sl782 : __sl783);
+            void cptr.sprintf(cptr.decay(mcbuf), __s_s_menu_colors, (opt_idx == 1) ? __s_list_of : __s_remove_which);
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mcbuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
@@ -10544,16 +10544,16 @@ function* handler_msgtype() {
     let mtbuf = new Uint8Array(256);
     __lbl_msgtypes_again: while (true) {
         nmt = msgtype_count();
-        opt_idx = (yield* handle_add_list_remove(__sl793, nmt));
+        opt_idx = (yield* handle_add_list_remove(__s_message_type, nmt));
         if (opt_idx == 3) {
             return 1;
         } else if (opt_idx == 0) {
             cptr.st1o(cptr.decay(mtbuf), 0, 0, 1);
-            (yield* getlin(__sl794, cptr.decay(mtbuf)));
+            (yield* getlin(__s_what_new_message_pattern, cptr.decay(mtbuf)));
             if (cptr.ld1s(cptr.decay(mtbuf)) == 27)
                 return 1;
-            if (cptr.ld1s(cptr.decay(mtbuf)) && (yield* test_regex_pattern(cptr.decay(mtbuf), __sl795)) && (mttyp = (yield* query_msgtype())) != -1 && !(yield* msgtype_add(mttyp, cptr.decay(mtbuf)))) {
-                (yield* pline(__sl796));
+            if (cptr.ld1s(cptr.decay(mtbuf)) && (yield* test_regex_pattern(cptr.decay(mtbuf), __s_msgtype_regex)) && (mttyp = (yield* query_msgtype())) != -1 && !(yield* msgtype_add(mttyp, cptr.decay(mtbuf)))) {
+                (yield* pline(__s_error_adding_the_message_type));
                 (yield* Y.icall(wait_synch()()));
             }
             continue __lbl_msgtypes_again;
@@ -10573,16 +10573,16 @@ function* handler_msgtype() {
             while (tmp) {
                 mtype = msgtype2name(cptr.ldI16(tmp));
                 cptr.stI32(any, ++mt_idx);
-                void cptr.sprintf(cptr.decay(mtbuf), __sl797, mtype);
-                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(mtbuf), __sl798, 6544)) >>> 0)) - 2n)));
+                void cptr.sprintf(cptr.decay(mtbuf), __s_5s, mtype);
+                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(mtbuf), __s_handler_msgtype, 6544)) >>> 0)) - 2n)));
                 if (cptr.strlen(cptr.ldPtro(tmp, $plinemsg_type_pattern)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mtbuf), 1)), __sl799);
+                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mtbuf), 1)), __s_dot3_quot);
                 else
-                    void cptr.strcat(cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern)), __sl778);
+                    void cptr.strcat(cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern)), __s_quot);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mtbuf), NHM.MENU_ITEMFLAGS_NONE));
                 tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
             }
-            void cptr.sprintf(cptr.decay(mtbuf), __sl800, (opt_idx == 1) ? __sl782 : __sl783);
+            void cptr.sprintf(cptr.decay(mtbuf), __s_s_message_types, (opt_idx == 1) ? __s_list_of : __s_remove_which);
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mtbuf))));
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
@@ -10610,12 +10610,12 @@ function* handler_versinfo() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, n = NHM.VI_NUMBER);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl801, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_version_number, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, n = NHM.VI_NAME);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __sl802, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_game_name, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     cptr.stI32(any, n = NHM.VI_BRANCH);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __sl803 : __sl26), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    (yield* Y.icall(end_menu()(tmpwin, __sl804)));
+    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __s_development_branch : __s_not_applicable), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_version_information_flags)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, vi_pick));
     if (n > 0) {
         let i;
@@ -10632,11 +10632,11 @@ function* handler_versinfo() {
 }
 
 const __static_handler_windowborders_windowborders_text = cptr.alloc(5 * 8);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 0, __sl806);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 8, __sl807);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 16, __sl808);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 24, __sl809);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 32, __sl810); /** C ref: options.c:6628 — char *[5] (function-static) */
+cptr.stPtro(__static_handler_windowborders_windowborders_text, 0, __s_off_never_show_borders);
+cptr.stPtro(__static_handler_windowborders_windowborders_text, 8, __s_on_always_show_borders);
+cptr.stPtro(__static_handler_windowborders_windowborders_text, 16, __s_auto_on_if_display_is_at_least_24_2_x);
+cptr.stPtro(__static_handler_windowborders_windowborders_text, 24, __s_on_except_forced_off_for_perm_invent);
+cptr.stPtro(__static_handler_windowborders_windowborders_text, 32, __s_auto_except_forced_off_for_perm_invent); /** C ref: options.c:6628 — char *[5] (function-static) */
 
 /** C ref: options.c:6620 @returns {CInt} */
 function* handler_windowborders() {
@@ -10654,7 +10654,7 @@ function* handler_windowborders() {
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl805)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_select_window_borders_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         cptr.stI32o(iflags, $instance_flags_wc2_windowborders, (cptr.ldI32(mode_pick.v) - 1) | 0);
         cptr.free(mode_pick.v);
@@ -10673,7 +10673,7 @@ function* string_for_opt(opts, val_optional) {
         colon = equals;
     if (!colon || !cptr.ld1s(cptr.preinc(() => colon, (v) => { colon = v; }))) {
         if (!val_optional)
-            (yield* config_error_add(__sl811, opts));
+            (yield* config_error_add(__s_missing_parameter_for_s, opts));
         return cptr.decay(empty_optstr);
     }
     return colon;
@@ -10690,7 +10690,7 @@ function* string_for_env_opt(optname, opts, val_optional) {
 
 /** C ref: options.c:6693 — @param {CPtr<char>} optname @param {CInt} with_parameter */
 function* bad_negation(optname, with_parameter) {
-    (yield* config_error_add(__sl812, optname, with_parameter ? __sl813 : __sl491));
+    (yield* config_error_add(__s_the_s_option_may_not_sbe_negated, optname, with_parameter ? __s_both_have_a_value_and : __s_empty));
 }
 
 /** C ref: options.c:6703 */
@@ -10724,7 +10724,7 @@ function* determine_ambiguities() {
         }
     }
     for (i = 0; i < ((218 - 1) | 0); ++i) {
-        len = (yield* Strlen_(cptr.ldPtro(allopt, i, 104), __sl814, 6732)) | 0;
+        len = (yield* Strlen_(cptr.ldPtro(allopt, i, 104), __s_determine_ambiguities, 6732)) | 0;
         cptr.stI32o2(allopt, i, 104, $allopt_t_minmatch, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
     }
 }
@@ -10770,14 +10770,14 @@ function* complain_about_duplicate(optidx) {
     let buf = new Uint8Array(256);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (using_alias)
-        void cptr.sprintf(cptr.decay(buf), __sl815, cptr.ldPtro2(allopt, optidx, 104, $allopt_t_alias));
-    (yield* config_error_add(__sl816, (cptr.ldI32o2(allopt, optidx, 104, $allopt_t_opttyp) == NHC.CompOpt) ? __sl817 : __sl818, cptr.ldPtro(allopt, optidx, 104), cptr.decay(buf)));
+        void cptr.sprintf(cptr.decay(buf), __s_via_alias_s, cptr.ldPtro2(allopt, optidx, 104, $allopt_t_alias));
+    (yield* config_error_add(__s_s_option_specified_multiple_times_s_s, (cptr.ldI32o2(allopt, optidx, 104, $allopt_t_opttyp) == NHC.CompOpt) ? __s_compound : __s_boolean, cptr.ldPtro(allopt, optidx, 104), cptr.decay(buf)));
     return;
 }
 
 /** C ref: options.c:6812 — @param {CPtr<char>} optname */
 function* rejectoption(optname) {
-    (yield* pline(__sl819, optname, get_configfile()));
+    (yield* pline(__s_s_can_be_set_only_from_nethackoptions, optname, get_configfile()));
 }
 
 /** C ref: options.c:6848 — @param {CPtr<char>} ev @returns {CPtr<char>} */
@@ -10872,11 +10872,11 @@ export function* txt2key(txt) {
         return 0;
     if (!cptr.ld1so(txt, 1))
         return uchar(cptr.ld1so(txt, 0));
-    if (!strcmp(txt, __sl820))
+    if (!strcmp(txt, __s_enter))
         return 10;
-    if (!strcmp(txt, __sl821))
+    if (!strcmp(txt, __s_space))
         return 32;
-    if (!strcmp(txt, __sl822))
+    if (!strcmp(txt, __s_esc))
         return 27;
     if (cptr.ld1s(txt) == 92) {
         let tbuf = new Uint8Array(128);
@@ -10927,9 +10927,9 @@ export function* initoptions() {
     if (cptr.ldI32o(go, $instance_globals_o_opt_phase) != NHC.builtin_opt)
         (yield* initoptions_init());
     (yield* assure_syscf_file());
-    (yield* config_error_init(1, __sl823, 0));
+    (yield* config_error_init(1, __s_sysconf, 0));
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.syscf_opt);
-    if (!(yield* read_config_file(__sl823, NHC.set_in_sysconf))) {
+    if (!(yield* read_config_file(__s_sysconf, NHC.set_in_sysconf))) {
         if ((yield* config_error_done()) && !cptr.ld1so(iflags, $instance_flags_initoptions_noterminate))
             (yield* nh_terminate(1));
     }
@@ -10949,7 +10949,7 @@ export function* initoptions_init() {
     (yield* allopt_array_init());
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)) {
         (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys), NHM.WINTYPELEN));
-        (yield* config_error_init(0, __sl824, 0));
+        (yield* config_error_init(0, __s_command_line, 0));
         (yield* choose_windows(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)));
         (yield* config_error_done());
         if (cptr.ldPtr(windowprocs) && !(yield* strncmpi((cptr.ldPtr(windowprocs)), (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)), -1)))
@@ -10992,17 +10992,17 @@ export function* initoptions_init() {
         cptr.st1o2(flags, i, 1, $flag_end_disclose, 110);
     (yield* switch_symbols(0));
     init_rogue_symbols();
-    if ((opts = nh_getenv(__sl825)) && !cptr.strncmp(opts, __sl826, 2n)) {
+    if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
         if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
-            (yield* load_symset(__sl827, NHC.PRIMARYSET));
+            (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
         if (!(cptr.ldI32o2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
-            (yield* load_symset(__sl584, NHC.ROGUESET));
+            (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
         (yield* switch_symbols(1));
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
     }
-    if ((opts = nh_getenv(__sl825)) && !(yield* strncmpi(opts, __sl828, 2)) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE), 15)) {
+    if ((opts = nh_getenv(__s_term)) && !(yield* strncmpi(opts, __s_vt, 2)) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE), 15)) {
         if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
-            (yield* load_symset(__sl829, NHC.PRIMARYSET));
+            (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
         (yield* switch_symbols(1));
     }
     cptr.st1o(flags, $flag_menu_style, NHM.MENU_FULL);
@@ -11015,9 +11015,9 @@ export function* initoptions_init() {
     cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, 120);
     (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, 120))), 16)), NHM.PL_FSIZ));
     (yield* assure_syscf_file());
-    (yield* config_error_init(1, __sl823, 0));
+    (yield* config_error_init(1, __s_sysconf, 0));
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.syscf_opt);
-    if (!(yield* read_config_file(__sl823, NHC.set_in_sysconf))) {
+    if (!(yield* read_config_file(__s_sysconf, NHC.set_in_sysconf))) {
         if ((yield* config_error_done()) && !cptr.ld1so(iflags, $instance_flags_initoptions_noterminate))
             (yield* nh_terminate(1));
     }
@@ -11029,20 +11029,20 @@ export function* initoptions_finish() {
     let sym = 0;
     (yield* rcfile());
     void (yield* fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null));
-    cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __sl139, 16);
+    cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __s_fruit, 16);
     sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
         cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
     reglyph_darkroom();
     reset_glyphmap(NHC.gm_optionchange);
-    if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) && !wc2_supported(__sl351)) {
-        (yield* raw_printf(__sl830, cptr.ldPtr(windowprocs)));
+    if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) && !wc2_supported(__s_statushilites)) {
+        (yield* raw_printf(__s_status_highlighting_not_supported_for_s, cptr.ldPtr(windowprocs)));
         cptr.stI64o(iflags, $instance_flags_hilite_delta, 0n);
     }
     (yield* update_rest_on_space());
-    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && !wc_supported(__sl374))
+    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && !wc_supported(__s_tiled_map))
         cptr.st1o(iflags, $instance_flags_wc_tiled_map, 0), cptr.st1o(iflags, $instance_flags_wc_ascii_map, 1);
-    else if (cptr.ld1so(iflags, $instance_flags_wc_ascii_map) && !wc_supported(__sl31) && wc_supported(__sl374))
+    else if (cptr.ld1so(iflags, $instance_flags_wc_ascii_map) && !wc_supported(__s_ascii_map) && wc_supported(__s_tiled_map))
         cptr.st1o(iflags, $instance_flags_wc_ascii_map, 0), cptr.st1o(iflags, $instance_flags_wc_tiled_map, 1);
     if (glyphid_cache_status())
         free_glyphid_cache();
@@ -11093,15 +11093,15 @@ function* change_inv_order(op) {
         let fail = 0;
         oc_sym = def_char_to_objclass(cptr.ld1s(sp));
         if (oc_sym == NHC.MAXOCLASSES) {
-            (yield* config_error_add(__sl831, cptr.ld1s(sp)));
+            (yield* config_error_add(__s_not_an_object_class_c, cptr.ld1s(sp)));
             retval = 0;
             fail = 1;
         } else if (!cptr.strchr(cptr.add(flags, $flag_inv_order), oc_sym)) {
-            (yield* config_error_add(__sl832, cptr.ld1s(sp)));
+            (yield* config_error_add(__s_object_class_c_not_allowed, cptr.ld1s(sp)));
             retval = 0;
             fail = 1;
         } else if (cptr.strchr(cptr.add(sp, 1), cptr.ld1s(sp))) {
-            (yield* config_error_add(__sl833, cptr.ld1s(sp)));
+            (yield* config_error_add(__s_duplicate_object_class_c, cptr.ld1s(sp)));
             retval = 0;
             fail = 1;
         }
@@ -11148,23 +11148,23 @@ function* feature_alert_opts(op, optn) {
         return 0;
     if (fnv > get_current_feature_ver()) {
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-            (yield* You_cant(__sl834));
+            (yield* You_cant(__s_disable_new_feature_alerts_for_future));
         } else {
-            (yield* config_error_add(__sl835, optn, op));
+            (yield* config_error_add(__s_s_s_invalid_reference_to_a_future, optn, op));
         }
         return 0;
     }
     cptr.stU64o(flags, $flag_suppress_alert, fnv);
     if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-        void cptr.sprintf(cptr.decay(buf), __sl666, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
-        (yield* pline(__sl836, cptr.decay(buf)));
+        void cptr.sprintf(cptr.decay(buf), __s_lu_lu_lu, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
+        (yield* pline(__s_feature_change_alerts_disabled_for, cptr.decay(buf)));
     }
     return 1;
 }
 
 const __static_parsebindings_mousebtn_names = cptr.alloc(2 * 8);
-cptr.stPtro(__static_parsebindings_mousebtn_names, 0, __sl841);
-cptr.stPtro(__static_parsebindings_mousebtn_names, 8, __sl842); /** C ref: options.c:7602 — char *[2] (function-static) */
+cptr.stPtro(__static_parsebindings_mousebtn_names, 0, __s_mouse1);
+cptr.stPtro(__static_parsebindings_mousebtn_names, 8, __s_mouse2); /** C ref: options.c:7602 — char *[2] (function-static) */
 
 /** C ref: options.c:7596 — @param {CPtr<char>} bindings @returns {CInt} */
 export function* parsebindings(bindings) {
@@ -11190,14 +11190,14 @@ export function* parsebindings(bindings) {
     for (i = 0; i < 2; i++)
         if (!strcmp(bindings, cptr.ldPtro(__static_parsebindings_mousebtn_names, i, 8))) {
             if (!(yield* bind_mousebtn((i + 1) | 0, bind))) {
-                (yield* config_error_add(__sl837, (i + 1) | 0));
+                (yield* config_error_add(__s_error_binding_mouse_button_i, (i + 1) | 0));
             } else {
                 return ret;
             }
         }
     key = (yield* txt2key(bindings));
     if (!key) {
-        (yield* config_error_add(__sl838, bindings));
+        (yield* config_error_add(__s_unknown_key_binding_key_s, bindings));
         return 0;
     }
     if (bind_specialkey(key, bind))
@@ -11205,7 +11205,7 @@ export function* parsebindings(bindings) {
     for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, 24); i++) {
         if (!strcmp(cptr.ldPtro(default_menu_cmd_info, i, 24), bind)) {
             if ((yield* illegal_menu_cmd_key(key))) {
-                (yield* config_error_add(__sl839, visctrl(schar(key)), bind));
+                (yield* config_error_add(__s_bad_menu_key_s_s, visctrl(schar(key)), bind));
                 return 0;
             } else {
                 (yield* add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, 24, $menu_cmd_t_cmd)));
@@ -11214,7 +11214,7 @@ export function* parsebindings(bindings) {
         }
     }
     if (!(yield* bind_key(key, bind, 1))) {
-        (yield* config_error_add(__sl840, bind));
+        (yield* config_error_add(__s_unknown_key_binding_command_s, bind));
         return 0;
     }
     return ret;
@@ -11224,24 +11224,24 @@ export function* parsebindings(bindings) {
 
 /** C ref: options.c:7680 — struct (unnamed struct at options.c:7676:14)[6] */
 const msgtype_names = cptr.alloc(6 * 24);
-cptr.stPtro(msgtype_names, 0, __sl843);
+cptr.stPtro(msgtype_names, 0, __s_show);
 cptr.st1o(msgtype_names, 8, NHM.MSGTYP_NORMAL);
-cptr.stPtro(msgtype_names, 16, __sl844);
-cptr.stPtro(msgtype_names, 24, __sl845);
+cptr.stPtro(msgtype_names, 16, __s_show_message_normally);
+cptr.stPtro(msgtype_names, 24, __s_hide);
 cptr.st1o(msgtype_names, 32, NHM.MSGTYP_NOSHOW);
-cptr.stPtro(msgtype_names, 40, __sl846);
-cptr.stPtro(msgtype_names, 48, __sl847);
+cptr.stPtro(msgtype_names, 40, __s_hide_message);
+cptr.stPtro(msgtype_names, 48, __s_noshow);
 cptr.st1o(msgtype_names, 56, NHM.MSGTYP_NOSHOW);
 cptr.stPtro(msgtype_names, 64, null);
-cptr.stPtro(msgtype_names, 72, __sl848);
+cptr.stPtro(msgtype_names, 72, __s_stop);
 cptr.st1o(msgtype_names, 80, NHM.MSGTYP_STOP);
-cptr.stPtro(msgtype_names, 88, __sl849);
-cptr.stPtro(msgtype_names, 96, __sl850);
+cptr.stPtro(msgtype_names, 88, __s_prompt_for_more_after_the_message);
+cptr.stPtro(msgtype_names, 96, __s_more);
 cptr.st1o(msgtype_names, 104, NHM.MSGTYP_STOP);
 cptr.stPtro(msgtype_names, 112, null);
-cptr.stPtro(msgtype_names, 120, __sl851);
+cptr.stPtro(msgtype_names, 120, __s_norep);
 cptr.st1o(msgtype_names, 128, NHM.MSGTYP_NOREP);
-cptr.stPtro(msgtype_names, 136, __sl852);
+cptr.stPtro(msgtype_names, 136, __s_do_not_repeat_the_message);
 
 /** C ref: options.c:7690 — @param {CInt} typ @returns {CPtr<char>} */
 function msgtype2name(typ) {
@@ -11268,7 +11268,7 @@ function* query_msgtype() {
             cptr.stI32(any, (cptr.ld1so2(msgtype_names, i, 24, 8) + 1) | 0);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro2(msgtype_names, i, 24, 16), NHM.MENU_ITEMFLAGS_NONE));
         }
-    (yield* Y.icall(end_menu()(tmpwin, __sl853)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_how_to_show_the_message)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
@@ -11279,7 +11279,7 @@ function* query_msgtype() {
     return -1;
 }
 
-let __static_msgtype_add_re_error = __sl855; /** C ref: options.c:7733 — char * (function-static) */
+let __static_msgtype_add_re_error = __s_msgtype_regex_error; /** C ref: options.c:7733 — char * (function-static) */
 
 /** C ref: options.c:7731 — @param {CInt} typ @param {CPtr<char>} pattern @returns {CInt} */
 function* msgtype_add(typ, pattern) {
@@ -11291,7 +11291,7 @@ function* msgtype_add(typ, pattern) {
         let re_error_desc = regex_error_desc(cptr.ldPtro(tmp, $plinemsg_type_regex), cptr.decay(errbuf));
         regex_free(cptr.ldPtro(tmp, $plinemsg_type_regex));
         cptr.free(tmp);
-        (yield* config_error_add(__sl854, __static_msgtype_add_re_error, re_error_desc));
+        (yield* config_error_add(__s_s_s__2, __static_msgtype_add_re_error, re_error_desc));
         return 0;
     }
     cptr.stPtro(tmp, $plinemsg_type_pattern, (yield* dupstr(pattern)));
@@ -11375,7 +11375,7 @@ function msgtype_count() {
 export function* msgtype_parse_add(str) {
     let pattern = new Uint8Array(256);
     let msgtype = new Uint8Array(11);
-    if (sscanf(str, __sl856, cptr.decay(msgtype), cptr.decay(pattern)) == 2) {
+    if (sscanf(str, __s_10s_255, cptr.decay(msgtype), cptr.decay(pattern)) == 2) {
         let typ = -1;
         let i;
         for (i = 0; i < 6; i++)
@@ -11386,9 +11386,9 @@ export function* msgtype_parse_add(str) {
         if (typ != -1)
             return (yield* msgtype_add(typ, cptr.decay(pattern)));
         else
-            (yield* config_error_add(__sl857, cptr.decay(msgtype)));
+            (yield* config_error_add(__s_unknown_message_type_s, cptr.decay(msgtype)));
     } else {
-        (yield* config_error_add(__sl858));
+        (yield* config_error_add(__s_malformed_msgtype));
     }
     return 0;
 }
@@ -11407,14 +11407,14 @@ function* test_regex_pattern(str, errmsg) {
         errmsg = cptr.decay(__static_test_regex_pattern_def_errmsg);
     match = (yield* regex_init());
     if (!match) {
-        (yield* config_error_add(__sl554, errmsg));
+        (yield* config_error_add(__s_pct_s, errmsg));
         return 0;
     }
     retval = regex_compile(str, match);
     re_error_desc = !retval ? regex_error_desc(match, cptr.decay(errbuf)) : null;
     regex_free(match);
     if (!retval)
-        (yield* config_error_add(__sl854, errmsg, re_error_desc));
+        (yield* config_error_add(__s_s_s__2, errmsg, re_error_desc));
     return retval;
 }
 
@@ -11436,20 +11436,20 @@ function* parse_role_opt(optidx, negated, fullname, opts, opp) {
             if (cptr.ld1s(op) == 32)
                 op = cptr.add(op, 1);
             val_negated = 0;
-            while (cptr.ld1s(op) == 33 || !(yield* strncmpi(op, __sl550, 2))) {
+            while (cptr.ld1s(op) == 33 || !(yield* strncmpi(op, __s_no, 2))) {
                 val_negated = schar((!val_negated));
                 op = cptr.add(op, (cptr.ld1s(op) == 33) ? 1 : ((cptr.ld1so(op, 2) != 45) ? 2 : 3));
             }
             if (!cptr.ld1s(op) || cptr.ld1s(op) == 32) {
-                (yield* config_error_add(__sl859, fullname));
+                (yield* config_error_add(__s_negated_nothing_for_s, fullname));
                 return 0;
             }
             if (!first) {
                 if ((val_negated ^ prev_negated) || (negated && val_negated)) {
-                    (yield* config_error_add(__sl860, negated ? __sl613 : __sl491, fullname));
+                    (yield* config_error_add(__s_invalid_mixed_negation_for_s_s, negated ? __s_bang : __s_empty, fullname));
                     return 0;
                 } else if (!negated && !val_negated) {
-                    (yield* config_error_add(__sl861));
+                    (yield* config_error_add(__s_multiple_role_values_only_allowed_when));
                     return 0;
                 }
             }
@@ -11464,7 +11464,7 @@ function* parse_role_opt(optidx, negated, fullname, opts, opp) {
                 if (!preval || cptr.ld1s(preval) != 33)
                     clearrolefilter(which);
                 if (!(yield* setrolefilter(op))) {
-                    (yield* config_error_add(__sl862, fullname, op));
+                    (yield* config_error_add(__s_invalid_s_s, fullname, op));
                     return 0;
                 }
                 (yield* saveoptstr(optidx, (yield* rolefilterstring(cptr.decay(negbuf), which))));
@@ -11506,13 +11506,13 @@ function* get_cnf_role_opt(optidx) {
 /** C ref: options.c:8037 — @param {CUInt} c @returns {CInt} */
 function* illegal_menu_cmd_key(c) {
     if (c == 0 || c == 13 || c == 10 || c == 27 || c == 32 || digit(schar(c)) || (letter(schar(c)) && c != 64)) {
-        (yield* config_error_add(__sl863, visctrl(schar(c))));
+        (yield* config_error_add(__s_reserved_menu_command_key_s, visctrl(schar(c))));
         return 1;
     } else {
         let j;
         for (j = 1; j < NHC.MAXOCLASSES; j++)
             if (c == uchar(cptr.ld1so(def_oc_syms, j, 24))) {
-                (yield* config_error_add(__sl864, visctrl(schar(c))));
+                (yield* config_error_add(__s_menu_command_key_s_is_an_object_class, visctrl(schar(c))));
                 return 1;
             }
     }
@@ -11524,7 +11524,7 @@ export function* oc_to_str(src, dest) {
     let i;
     while ((i = cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))) != 0) {
         if (i < 0 || i >= NHC.MAXOCLASSES)
-            (yield* impossible(__sl865, i));
+            (yield* impossible(__s_oc_to_str_illegal_object_class_d, i));
         else
             cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1so(def_oc_syms, i, 24));
     }
@@ -11534,7 +11534,7 @@ export function* oc_to_str(src, dest) {
 /** C ref: options.c:8080 — @param {CInt} from_ch @param {CInt} to_ch */
 export function* add_menu_cmd_alias(from_ch, to_ch) {
     if (cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) >= NHM.MAX_MENU_MAPPED_CMDS) {
-        (yield* pline(__sl866));
+        (yield* pline(__s_out_of_menu_map_space));
     } else {
         cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_cmds, from_ch);
         cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_op, to_ch);
@@ -11608,7 +11608,7 @@ export function* fruitadd(str, replace_fruit) {
             let found = 0;
             let numeric = 0;
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (yield* makesingular(str)), NHM.PL_FSIZ));
-            globpfx = (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl867, 6n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl868, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl869, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl870, 11n)) ? 11 : 0));
+            globpfx = (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_small, 6n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_large, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_medium, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_very_large, 11n)) ? 11 : 0));
             for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases); cptr.ld1so2(objects, i, 120, $objclass_oc_class) == NHC.FOOD_CLASS; i++) {
                 if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(svp, $instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
                     found = 1;
@@ -11622,9 +11622,9 @@ export function* fruitadd(str, replace_fruit) {
                 if (!cptr.ld1s(c) || isspace(uchar(cptr.ld1s(c))))
                     numeric = 1;
             }
-            if (found || numeric || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl871, 7n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl872, 9n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl873, 8n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl874, 13n) || (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl875, 7n) && (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), __sl876) || (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) < NHC.NUMMONS))) || !strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl877) || (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl878) || (globpfx > 0 && !strcmp(__sl878, cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) || ((str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl879) || str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl880)) && (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) < NHC.NUMMONS))) {
+            if (found || numeric || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_cursed, 7n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_uncursed, 9n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_blessed, 8n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_partly_eaten, 13n) || (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_tin_of, 7n) && (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), __s_spinach) || (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) < NHC.NUMMONS))) || !strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_empty_tin) || (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_glob) || (globpfx > 0 && !strcmp(__s_glob, cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) || ((str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_corpse) || str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_egg)) && (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) < NHC.NUMMONS))) {
                 void cptr.strcpy(cptr.decay(buf), cptr.add(svp, $instance_globals_saved_p_pl_fruit));
-                void cptr.strcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl881);
+                void cptr.strcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_candied);
                 (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 8), cptr.decay(buf), 24));
             }
             cptr.st1(cptr.decay(altname), 0);
@@ -11643,7 +11643,7 @@ export function* fruitadd(str, replace_fruit) {
         if (f)
             break __lbl_nonew;
         if (highest_fruit_id.v >= 127)
-            return (rng_log_enabled() ? (rng_log_set_caller(__sl882, 8273, __sl883), rnd(127)) : rnd(127));
+            return (rng_log_enabled() ? (rng_log_set_caller(__s_options_c, 8273, __s_fruitadd), rnd(127)) : rnd(127));
         f = (yield* alloc(48));
         void __builtin___memset_chk(f, 0, 48n, __builtin_object_size(f, 0));
         (yield* copynchars(f, cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 31));
@@ -11793,8 +11793,8 @@ function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
         if (!(yield* status_hilite_menu())) {
             return NHC.optn_err;
         } else {
-            if (wc2_supported(__sl157))
-                (yield* Y.icall(preference_update()(__sl157)));
+            if (wc2_supported(__s_hilite_status))
+                (yield* Y.icall(preference_update()(__s_hilite_status)));
         }
         return NHC.optn_ok;
     }
@@ -11810,7 +11810,7 @@ export function* get_option_value(optname, cnfvalid) {
     for (i = 0; cptr.ldPtro(allopt, i, 104) !== null; i++)
         if (!strcmp(optname, cptr.ldPtro(allopt, i, 104))) {
             if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) !== null) {
-                void cptr.sprintf(cptr.decay(__static_get_option_value_retbuf), __sl554, cptr.ld1s(bool_p) ? __sl699 : __sl701);
+                void cptr.sprintf(cptr.decay(__static_get_option_value_retbuf), __s_pct_s, cptr.ld1s(bool_p) ? __s_true : __s_false);
                 return cptr.decay(__static_get_option_value_retbuf);
             } else if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn)) {
                 let reslt = NHC.optn_err;
@@ -11839,7 +11839,7 @@ function* longest_option_name(startpass, endpass) {
                 continue;
             if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                 continue;
-            let len = (yield* Strlen_(name, __sl884, 8527));
+            let len = (yield* Strlen_(name, __s_longest_option_name, 8527));
             if (len > longest_name_len)
                 longest_name_len = len;
         }
@@ -11867,7 +11867,7 @@ function* doset_simple_menu() {
     let reslt;
     let toggled_help = 0;
     if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
-        void cptr.sprintf(cptr.decay(fmtstr_doset_simple), __sl885, (yield* longest_option_name(NHC.set_gameview, NHC.set_in_game)));
+        void cptr.sprintf(cptr.decay(fmtstr_doset_simple), __s_us_s, (yield* longest_option_name(NHC.set_gameview, NHC.set_in_game)));
     else
         void cptr.strcpy(cptr.decay(fmtstr_doset_simple), cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple));
     fmtstr = cptr.decay(fmtstr_doset_simple);
@@ -11875,16 +11875,16 @@ function* doset_simple_menu() {
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
         if (cptr.ld1so(gs, $instance_globals_s_simple_options_help)) {
-            void cptr.strcpy(cptr.decay(buf), __sl886);
+            void cptr.strcpy(cptr.decay(buf), __s_use_command_optionsfull_to_get_the);
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, -1);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, $instance_globals_s_simple_options_help) ? __sl887 : __sl888, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, $instance_globals_s_simple_options_help) ? __s_hide_help : __s_show_help, NHM.MENU_ITEMFLAGS_NONE));
         for (section = NHC.OptS_General; section < NHC.OptS_Advanced; section++) {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-            (yield* add_menu_str(tmpwin, __sl491));
-            void cptr.sprintf(cptr.decay(buf), __sl889, cptr.ldPtro(OptS_type, section, 8));
+            (yield* add_menu_str(tmpwin, __s_empty));
+            void cptr.sprintf(cptr.decay(buf), __s_30s, cptr.ldPtro(OptS_type, section, 8));
             (yield* add_menu_heading(tmpwin, cptr.decay(buf)));
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, 104, $allopt_t_section) != section)
@@ -11899,7 +11899,7 @@ function* doset_simple_menu() {
                         continue;
                     if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_color)
                         continue;
-                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, cptr.ld1s(bool_p) ? __sl890 : __sl598);
+                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, cptr.ld1s(bool_p) ? __s_x : __s_sp);
                     break;
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
@@ -11913,23 +11913,23 @@ function* doset_simple_menu() {
                     reslt = NHC.optn_err;
                     if (cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))
                         reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
-                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1)) ? cptr.decay(buf2) : __sl665));
+                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1)) ? cptr.decay(buf2) : __s_unknown));
                     break;
                     default:
-                    void cptr.sprintf(cptr.decay(buf), __sl891);
+                    void cptr.sprintf(cptr.decay(buf), __s_error);
                     break;
                 }
                 if (cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_dropped_nopick)
-                    void cptr.strcat(cptr.decay(buf), __sl892);
+                    void cptr.strcat(cptr.decay(buf), __s_for_autopickup);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
                 if (cptr.ld1so(gs, $instance_globals_s_simple_options_help) && cptr.ldPtro2(allopt, i, 104, $allopt_t_descr)) {
-                    void cptr.sprintf(cptr.decay(buf), __sl893, cptr.ldPtro2(allopt, i, 104, $allopt_t_descr));
+                    void cptr.sprintf(cptr.decay(buf), __s_sp4_pct_s, cptr.ldPtro2(allopt, i, 104, $allopt_t_descr));
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
-                    (yield* add_menu_str(tmpwin, __sl491));
+                    (yield* add_menu_str(tmpwin, __s_empty));
                 }
             }
         }
-        (yield* Y.icall(end_menu()(tmpwin, __sl894)));
+        (yield* Y.icall(end_menu()(tmpwin, __s_options)));
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 0);
         cptr.st1o(go, $instance_globals_o_opt_reset_customcolors, 0);
@@ -11943,7 +11943,7 @@ function* doset_simple_menu() {
                 cptr.st1o(gs, $instance_globals_s_simple_options_help, schar((!cptr.ld1so(gs, $instance_globals_s_simple_options_help))));
                 toggled_help = 1;
             } else if (cptr.ldI32o2(allopt, k, 104, $allopt_t_opttyp) == NHC.BoolOpt) {
-                void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, k, 104, $allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, k, 104));
+                void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, k, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, k, 104));
                 void (yield* parseoptions(cptr.decay(buf), 0, 0));
             } else {
                 if (cptr.ld1so2(allopt, k, 104, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn)) {
@@ -11951,10 +11951,10 @@ function* doset_simple_menu() {
                     if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, 104, $allopt_t_idx) != NHC.pfx_cond_)
                         cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                 } else {
-                    void cptr.sprintf(cptr.decay(buf), __sl895, cptr.ldPtro(allopt, k, 104));
+                    void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, k, 104));
                     (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                     if (cptr.ld1so(cptr.decay(abuf), 0, 1) != 27) {
-                        void cptr.sprintf(cptr.decay(buf), __sl896, cptr.ldPtro(allopt, k, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, k, 104));
                         (yield* copynchars(eos(cptr.decay(buf)), cptr.decay(abuf), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
@@ -11997,14 +11997,14 @@ export function* doset_simple() {
 }
 
 const __static_term_for_boolean_booleanterms = (function () { const flat = new Uint8Array(2 * 4 * 8); const a = []; for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 0, __sl701);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 8, __sl507);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 16, __sl897);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 24, __sl898);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 0, __sl699);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 8, __sl509);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 16, __sl899);
-cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 24, __sl900); /** C ref: options.c:8742 — char *[2][4] (function-static) */
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 0, __s_false);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 8, __s_off);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 16, __s_disabled);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 24, __s_excluded_from_build);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 0, __s_true);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 8, __s_on);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 16, __s_enabled);
+cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 24, __s_included); /** C ref: options.c:8742 — char *[2][4] (function-static) */
 
 /** C ref: options.c:8738 — @param {CInt} idx @param {CPtr<boolean>} b @returns {CPtr<char>} */
 function term_for_boolean(idx, b) {
@@ -12020,11 +12020,11 @@ function term_for_boolean(idx, b) {
 
 const __static_doset_fmtstr_tab_doset = cptr.bytes("%s%s\t[%s]"); /** C ref: options.c:8760 — char[10] (function-static) */
 const __static_doset_helptext = cptr.alloc(5 * 8);
-cptr.stPtro(__static_doset_helptext, 0, __sl912);
-cptr.stPtro(__static_doset_helptext, 8, __sl913);
+cptr.stPtro(__static_doset_helptext, 0, __s_for_a_brief_explanation_of_how_this);
+cptr.stPtro(__static_doset_helptext, 8, __s_the_next_menu_choice_then_press_enter);
 cptr.stPtro(__static_doset_helptext, 16, null);
-cptr.stPtro(__static_doset_helptext, 24, (__sl914));
-cptr.stPtro(__static_doset_helptext, 32, __sl491); /** C ref: options.c:8790 — char *[5] (function-static) */
+cptr.stPtro(__static_doset_helptext, 24, (__s_to_suppress_this_menu_help_toggle_off));
+cptr.stPtro(__static_doset_helptext, 32, __s_empty); /** C ref: options.c:8790 — char *[5] (function-static) */
 
 /** C ref: options.c:8758 @returns {CInt} */
 export function* doset() {
@@ -12059,23 +12059,23 @@ export function* doset() {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             for (i = 0; i < 5; ++i) {
                 if (cptr.ldPtro(__static_doset_helptext, i, 8)) {
-                    void cptr.sprintf(cptr.decay(buf), __sl901, __sl491, cptr.ldPtro(__static_doset_helptext, i, 8));
+                    void cptr.sprintf(cptr.decay(buf), __s_4s_75s, __s_empty, cptr.ldPtro(__static_doset_helptext, i, 8));
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
                 } else {
                     cptr.stI32(any, ((218) + 1) | 0);
-                    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 63, NHM.ATR_NONE, clr, __sl902, NHM.MENU_ITEMFLAGS_SKIPINVERT));
+                    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 63, NHM.ATR_NONE, clr, __s_view_help_for_options_menu, NHM.MENU_ITEMFLAGS_SKIPINVERT));
                 }
             }
         }
         startpass = NHC.set_gameview;
         endpass = (wizard()) ? NHC.set_wiznofuz : NHC.set_in_game;
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
-            void cptr.sprintf(cptr.decay(fmtstr_doset), __sl903, (yield* longest_option_name(startpass, endpass)));
+            void cptr.sprintf(cptr.decay(fmtstr_doset), __s_s_us_s, (yield* longest_option_name(startpass, endpass)));
         else
             void cptr.strcpy(cptr.decay(fmtstr_doset), cptr.decay(__static_doset_fmtstr_tab_doset));
         indexoffset = 1;
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-        (yield* add_menu_heading(tmpwin, __sl904));
+        (yield* add_menu_heading(tmpwin, __s_booleans_selecting_will_toggle_value));
         cptr.stI32(any, 0);
         for (pass = 0; pass <= 1; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++)
@@ -12089,14 +12089,14 @@ export function* doset() {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     cptr.stI32(any, (pass == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
-                    indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) ? __sl905 : __sl491;
+                    indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) ? __s_sp4 : __s_empty;
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr_doset), indent, name, term_for_boolean(i, bool_p));
                     if (pass == 0)
                         enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, 104));
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
                 }
-        (yield* add_menu_str(tmpwin, __sl491));
-        (yield* add_menu_heading(tmpwin, __sl906));
+        (yield* add_menu_str(tmpwin, __s_empty));
+        (yield* add_menu_heading(tmpwin, __s_compounds_selecting_will_prompt_for_new));
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.CompOpt)
@@ -12107,8 +12107,8 @@ export function* doset() {
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
                 }
             }
-        (yield* add_menu_str(tmpwin, __sl491));
-        (yield* add_menu_heading(tmpwin, __sl907));
+        (yield* add_menu_str(tmpwin, __s_empty));
+        (yield* add_menu_heading(tmpwin, __s_other_settings));
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.OthrOpt)
@@ -12119,23 +12119,23 @@ export function* doset() {
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
                 }
             }
-        (yield* Y.icall(end_menu()(tmpwin, __sl908)));
+        (yield* Y.icall(end_menu()(tmpwin, __s_set_what_options)));
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 0);
         if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, pick_list))) > 0) {
             for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
                 opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0;
                 if (opt_indx == (218)) {
-                    (yield* Y.icall(display_file()(__sl909, 0)));
+                    (yield* Y.icall(display_file()(__s_optmenu, 0)));
                     gavehelp = 1;
                     continue;
                 }
                 if (opt_indx < -1)
                     opt_indx++;
                 opt_indx = (opt_indx - indexoffset) | 0;
-                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__sl910, __sl882, 8924, __sl911) : void 0);
+                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__s_doset, __s_options_c, 8924, __s_indexok_opt_indx_allopt) : void 0);
                 if (cptr.ldI32o2(allopt, opt_indx, 104, $allopt_t_opttyp) == NHC.BoolOpt) {
-                    void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, $allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, opt_indx, 104));
+                    void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, opt_indx, 104));
                     void (yield* parseoptions(cptr.decay(buf), 0, 0));
                 } else {
                     let k = opt_indx;
@@ -12146,12 +12146,12 @@ export function* doset() {
                             cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                     } else {
                         let abuf = new Uint8Array(256);
-                        void cptr.sprintf(cptr.decay(buf), __sl895, cptr.ldPtro(allopt, opt_indx, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, opt_indx, 104));
                         cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                         (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                         if (cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
                             continue;
-                        void cptr.sprintf(cptr.decay(buf), __sl896, cptr.ldPtro(allopt, opt_indx, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, opt_indx, 104));
                         void __builtin___strncat_chk(eos(cptr.decay(buf)), cptr.decay(abuf), (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))), __builtin_object_size(eos(cptr.decay(buf)), 1));
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
@@ -12206,7 +12206,7 @@ function* reset_needed_visuals() {
 
 /** C ref: options.c:9018 — @param {CInt} win @param {CPtr<char>} option @param {CPtr<char>} fmtstr @param {CInt} idx @param {CInt} indexoffset */
 function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
-    let value = __sl665;
+    let value = __s_unknown;
     let indent;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
@@ -12225,25 +12225,25 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     } else {
         cptr.stI32(any, 0);
         if (!cptr.ld1so(cptr.decay(buf2), 0, 1))
-            void cptr.strcpy(cptr.decay(buf2), __sl665);
+            void cptr.strcpy(cptr.decay(buf2), __s_unknown);
         value = cptr.decay(buf2);
     }
-    indent = !cptr.ldI32(any) ? __sl905 : __sl491;
+    indent = !cptr.ldI32(any) ? __s_sp4 : __s_empty;
     void cptr.sprintf(cptr.decay(buf), fmtstr, indent, option, value);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
 }
 
 const __static_show_menu_controls_hardcoded = cptr.alloc(6 * 16);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __sl938);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __sl939);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __sl940);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + $xtra_cntrls_desc, __sl941);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __sl942);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + $xtra_cntrls_desc, __sl943);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __sl944);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + $xtra_cntrls_desc, __sl945);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __sl946);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + $xtra_cntrls_desc, __sl947);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __s_return);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __s_accept_current_choice_s_and_dismiss_menu);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __s_enter__2);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + $xtra_cntrls_desc, __s_same_as_return);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __s_space__2);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + $xtra_cntrls_desc, __s_if_not_on_last_page_advance_one_page);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __s_sp5);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + $xtra_cntrls_desc, __s_when_on_last_page_treat_like_return);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __s_escape);
+cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + $xtra_cntrls_desc, __s_cancel_menu_without_making_any_choice_s);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80, null);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80 + $xtra_cntrls_desc, null); /** C ref: options.c:9075 — struct xtra_cntrls[6] (function-static) */
 const __static_show_menu_controls_mc_fmt = cptr.bytes("%8s     %-6s %s"); /** C ref: options.c:9083 — char[16] (function-static) */
@@ -12255,12 +12255,12 @@ export function* show_menu_controls(win, dolist) {
     let fmt;
     let arg;
     let xcp;
-    let has_menu_shift = wc2_supported(__sl915);
-    (yield* Y.icall(putstr()(win, 0, __sl916)));
+    let has_menu_shift = wc2_supported(__s_menu_shift);
+    (yield* Y.icall(putstr()(win, 0, __s_menu_control_keys)));
     if (dolist) {
         let i;
         let ch;
-        fmt = __sl917;
+        fmt = __s_7s_s;
         for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc); i++) {
             ch = cptr.ld1so2(default_menu_cmd_info, i, 24, $menu_cmd_t_cmd);
             if ((ch == 125 || ch == 123) && !has_menu_shift)
@@ -12268,46 +12268,46 @@ export function* show_menu_controls(win, dolist) {
             void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc));
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
-        fmt = __sl918;
-        arg = __sl491;
+        fmt = __s_s_7s_s;
+        arg = __s_empty;
     } else {
-        (yield* Y.icall(putstr()(win, 0, __sl491)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl919, __sl920);
+        (yield* Y.icall(putstr()(win, 0, __s_empty)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __s_empty, __s_whole, __s_current);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __sl491, __sl921, __sl922);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __s_empty, __s_menu__2, __s_page);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl923, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_select, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl924, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_invert, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl925, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_deselect, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        (yield* Y.icall(putstr()(win, 0, __sl491)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl926, visctrl(get_menu_cmd_key(62)), __sl927);
+        (yield* Y.icall(putstr()(win, 0, __s_empty)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_go_to, visctrl(get_menu_cmd_key(62)), __s_next_page);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(60)), __sl928);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(60)), __s_previous_page);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(94)), __sl929);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(94)), __s_first_page);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(124)), __sl930);
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(124)), __s_last_page);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         if (has_menu_shift) {
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl931, visctrl(get_menu_cmd_key(125)), __sl932);
+            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_pan_view, visctrl(get_menu_cmd_key(125)), __s_right_perm_invent_only);
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl491, visctrl(get_menu_cmd_key(123)), __sl933);
+            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(123)), __s_left__2);
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
-        (yield* Y.icall(putstr()(win, 0, __sl491)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __sl934, visctrl(get_menu_cmd_key(58)), __sl935);
+        (yield* Y.icall(putstr()(win, 0, __s_empty)));
+        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_search, visctrl(get_menu_cmd_key(58)), __s_exter_a_target_string_and_invert_all);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        (yield* Y.icall(putstr()(win, 0, __sl491)));
-        fmt = __sl936;
-        arg = __sl937;
+        (yield* Y.icall(putstr()(win, 0, __s_empty)));
+        fmt = __s_9s_8s_s;
+        arg = __s_other;
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
         void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, $xtra_cntrls_desc));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        arg = __sl491;
+        arg = __s_empty;
     }
 }
 
@@ -12335,13 +12335,13 @@ function count_apes() {
 
 const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * 16);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 0, 97);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __sl949);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __s_add_new_s);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 16, 108);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + $action_desc, __sl950);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + $action_desc, __s_list_s);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 32, 114);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __sl951);
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __s_remove_existing_s);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 48, 120);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __sl952); /** C ref: options.c:9217 — struct action[4] (function-static) */
+cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __s_exit_this_menu); /** C ref: options.c:9217 — struct action[4] (function-static) */
 
 /** C ref: options.c:9208 — @param {CPtr<char>} optname @param {CInt} numtotal @returns {CInt} */
 function* handle_add_list_remove(optname, numtotal) {
@@ -12363,7 +12363,7 @@ function* handle_add_list_remove(optname, numtotal) {
         void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, $action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, 16), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
-    (yield* Y.icall(end_menu()(tmpwin, __sl948)));
+    (yield* Y.icall(end_menu()(tmpwin, __s_do_what)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list))) > 0) {
         opt_idx = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
         if (pick_cnt > 1 && opt_idx == 3)
@@ -12382,11 +12382,11 @@ export function* dotogglepickup() {
     cptr.st1o(flags, $flag_pickup, schar((!cptr.ld1so(flags, $flag_pickup))));
     if (cptr.ld1so(flags, $flag_pickup)) {
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
-        void cptr.sprintf(cptr.decay(buf), __sl953, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __sl468, (cptr.ldPtro(ga, $instance_globals_a_apelist)) ? ((count_apes() == 1) ? __sl954 : __sl955) : __sl491);
+        void cptr.sprintf(cptr.decay(buf), __s_on_for_s_objects_s, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all, (cptr.ldPtro(ga, $instance_globals_a_apelist)) ? ((count_apes() == 1) ? __s_with_one_exception : __s_with_some_exceptions) : __s_empty);
     } else {
-        void cptr.strcpy(cptr.decay(buf), __sl956);
+        void cptr.strcpy(cptr.decay(buf), __s_off__3);
     }
-    (yield* pline(__sl957, cptr.decay(buf)));
+    (yield* pline(__s_autopickup_s, cptr.decay(buf)));
     return NHM.ECMD_OK;
 }
 
@@ -12397,7 +12397,7 @@ export function* toggle_bool_option(p) {
     for (i = 0; i < NHC.OPTCOUNT; i++)
         if (!(yield* strncmpi(cptr.ldPtro(allopt, i, 104), p, Number(BigInt.asIntN(32, cptr.strlen(p))))) && cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, 104, $allopt_t_addr) !== null) {
             let buf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(buf), __sl567, cptr.ld1s(cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) ? __sl613 : __sl491, cptr.ldPtro(allopt, i, 104));
+            void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, i, 104));
             if ((yield* parseoptions(cptr.decay(buf), 0, 0)))
                 ret = NHM.ECMD_OK;
             (yield* reset_needed_visuals());
@@ -12416,12 +12416,12 @@ export function* add_autopickup_exception(mapping) {
     let n;
     let grab = 0;
     end.v = 0;
-    if ((n = sscanf(mapping, __sl958, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
+    if ((n = sscanf(mapping, __s_253_c, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 1;
-    } else if ((n = sscanf(mapping, __sl959, cptr.decay(text), end)) == 1 || (n = sscanf(mapping, __sl960, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
+    } else if ((n = sscanf(mapping, __s_253_c__2, cptr.decay(text), end)) == 1 || (n = sscanf(mapping, __s_253_c__3, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 0;
     } else {
-        (yield* config_error_add(__sl554, cptr.decay(__static_add_autopickup_exception_APE_syntax_error)));
+        (yield* config_error_add(__s_pct_s, cptr.decay(__static_add_autopickup_exception_APE_syntax_error)));
         return 0;
     }
     ape = (yield* alloc(32));
@@ -12431,7 +12431,7 @@ export function* add_autopickup_exception(mapping) {
         let re_error_desc = regex_error_desc(cptr.ldPtr(ape), cptr.decay(errbuf));
         regex_free(cptr.ldPtr(ape));
         cptr.free(ape);
-        (yield* config_error_add(__sl854, cptr.decay(__static_add_autopickup_exception_APE_regex_error), re_error_desc));
+        (yield* config_error_add(__s_s_s__2, cptr.decay(__static_add_autopickup_exception_APE_regex_error), re_error_desc));
         return 0;
     }
     cptr.stPtro(ape, $autopickup_exception_pattern, (yield* dupstr(cptr.decay(text))));
@@ -12486,7 +12486,7 @@ export function* sym_val(strval) {
     } else if (cptr.ld1so(strval, 0) == 39) {
         if (cptr.ld1so(strval, 2) == 39 && !cptr.ld1so(strval, 3)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 1), 1);
-        } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__sl961, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
+        } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__s_apos_quot_bslash, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 2), 1);
         } else {
             let p;
@@ -12507,28 +12507,28 @@ export function* sym_val(strval) {
 
 /** C ref: options.c:9429 — char *[10] */
 const opt_intro = cptr.alloc(10 * 8);
-cptr.stPtro(opt_intro, 0, __sl491);
-cptr.stPtro(opt_intro, 8, __sl962);
-cptr.stPtro(opt_intro, 16, __sl491);
+cptr.stPtro(opt_intro, 0, __s_empty);
+cptr.stPtro(opt_intro, 8, __s_nethack_options_help);
+cptr.stPtro(opt_intro, 16, __s_empty);
 cptr.stPtro(opt_intro, 24, null);
-cptr.stPtro(opt_intro, 32, __sl963);
-cptr.stPtro(opt_intro, 40, __sl964);
-cptr.stPtro(opt_intro, 48, __sl965);
-cptr.stPtro(opt_intro, 56, __sl491);
-cptr.stPtro(opt_intro, 64, (__sl966));
+cptr.stPtro(opt_intro, 32, __s_or_use_nethackoptions_options_in_your);
+cptr.stPtro(opt_intro, 40, __s_options_is_a_list_of_options_separated);
+cptr.stPtro(opt_intro, 48, __s_or_press_o_while_playing_and_use_the);
+cptr.stPtro(opt_intro, 56, __s_empty);
+cptr.stPtro(opt_intro, 64, (__s_boolean_options_which_can_be_negated_by));
 cptr.stPtro(opt_intro, 72, null);
 
 /** C ref: options.c:9448 — char *[10] */
 const opt_epilog = cptr.alloc(10 * 8);
-cptr.stPtro(opt_epilog, 0, __sl491);
-cptr.stPtro(opt_epilog, 8, __sl967);
-cptr.stPtro(opt_epilog, 16, __sl968);
-cptr.stPtro(opt_epilog, 24, __sl969);
-cptr.stPtro(opt_epilog, 32, __sl970);
-cptr.stPtro(opt_epilog, 40, __sl971);
-cptr.stPtro(opt_epilog, 48, __sl972);
-cptr.stPtro(opt_epilog, 56, __sl973);
-cptr.stPtro(opt_epilog, 64, __sl974);
+cptr.stPtro(opt_epilog, 0, __s_empty);
+cptr.stPtro(opt_epilog, 8, __s_some_of_the_options_can_only_be_set);
+cptr.stPtro(opt_epilog, 16, __s_those_items_will_not_be_selectable_in);
+cptr.stPtro(opt_epilog, 24, __s_some_options_are_stored_in_a_game_s);
+cptr.stPtro(opt_epilog, 32, __s_values_when_restoring_that_game_even_if);
+cptr.stPtro(opt_epilog, 40, __s_uration_file_to_change_them_such);
+cptr.stPtro(opt_epilog, 48, __s_the_other_settings_can_be_set_with_o);
+cptr.stPtro(opt_epilog, 56, __s_configuration_file_they_use_their_own);
+cptr.stPtro(opt_epilog, 64, __s_see_nethack_s_guidebook_for_details);
 cptr.stPtro(opt_epilog, 72, null);
 
 /** C ref: options.c:9462 */
@@ -12539,7 +12539,7 @@ export function* option_help() {
     let i;
     let datawin;
     datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
-    nh_snprintf(__sl975, 9471, cptr.decay(buf), 256n, __sl976, get_configfile());
+    nh_snprintf(__s_option_help, 9471, cptr.decay(buf), 256n, __s_set_options_as_options_options_in_s, get_configfile());
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
@@ -12553,8 +12553,8 @@ export function* option_help() {
             continue;
         (yield* next_opt(datawin, optname));
     }
-    (yield* next_opt(datawin, __sl491));
-    (yield* Y.icall(putstr()(datawin, 0, __sl977)));
+    (yield* next_opt(datawin, __s_empty));
+    (yield* Y.icall(putstr()(datawin, 0, __s_compound_options)));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
         if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
@@ -12563,19 +12563,19 @@ export function* option_help() {
         optname = cptr.ldPtro(allopt, i, 104);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
-        void cptr.sprintf(cptr.decay(buf2), __sl978, optname);
-        nh_snprintf(__sl975, 9507, cptr.decay(buf), 256n, __sl979, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
+        void cptr.sprintf(cptr.decay(buf2), __s_tick_pct_s_apos, optname);
+        nh_snprintf(__s_option_help, 9507, cptr.decay(buf), 256n, __s_20s_s_c, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
-    (yield* Y.icall(putstr()(datawin, 0, __sl491)));
-    (yield* Y.icall(putstr()(datawin, 0, __sl907)));
+    (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
+    (yield* Y.icall(putstr()(datawin, 0, __s_other_settings)));
     for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
         if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.OthrOpt)
             continue;
-        void cptr.sprintf(cptr.decay(buf), __sl619, cptr.ldPtro(allopt, i, 104));
+        void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, cptr.ldPtro(allopt, i, 104));
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
-    (yield* Y.icall(putstr()(datawin, 0, __sl491)));
+    (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     for (i = 0; cptr.ldPtro(opt_epilog, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_epilog, i, 8))));
     (yield* Y.icall(display_nhwindow()(datawin, 0)));
@@ -12592,13 +12592,13 @@ function* all_options_conds(sbuf) {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     while (opt_next_cond(idx, cptr.decay(nextcond))) {
         if (idx == 0) {
-            void cptr.strcpy(cptr.decay(buf), __sl980);
-        } else if (((((yield* Strlen_(cptr.decay(buf), __sl981, 9568)) + 1) >>> 0) + (yield* Strlen_(cptr.decay(nextcond), __sl981, 9568))) >>> 0 >= 75) {
-            void cptr.strcat(cptr.decay(buf), __sl982);
+            void cptr.strcpy(cptr.decay(buf), __s_options__2);
+        } else if (((((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1) >>> 0) + (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>> 0 >= 75) {
+            void cptr.strcat(cptr.decay(buf), __s_comma_bslash_nl);
             (yield* strbuf_append(sbuf, cptr.decay(buf)));
-            void cptr.sprintf(cptr.decay(buf), __sl983, __sl598);
+            void cptr.sprintf(cptr.decay(buf), __s_8s, __s_sp);
         } else if (cptr.ld1so(cptr.decay(nextcond), 0, 1) && gotone) {
-            void cptr.strcat(cptr.decay(buf), __sl984);
+            void cptr.strcat(cptr.decay(buf), __s_comma);
         }
         if (cptr.ld1so(cptr.decay(nextcond), 0, 1)) {
             gotone = 1;
@@ -12606,8 +12606,8 @@ function* all_options_conds(sbuf) {
         }
         ++idx;
     }
-    if (strcmp(cptr.decay(buf), __sl980)) {
-        void cptr.strcat(cptr.decay(buf), __sl985);
+    if (strcmp(cptr.decay(buf), __s_options__2)) {
+        void cptr.strcat(cptr.decay(buf), __s_nl);
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
     }
 }
@@ -12630,7 +12630,7 @@ function* all_options_menucolors(sbuf) {
         tmp = cptr.ldPtro(arr, (i - 1) | 0, 8);
         let sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
         let sclr = clr2colorname(cptr.ldI32o(tmp, $menucoloring_color));
-        void cptr.sprintf(cptr.decay(buf), __sl986, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __sl789 : __sl491, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __sl491);
+        void cptr.sprintf(cptr.decay(buf), __s_menucolor_s_s_s_s, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
     }
     cptr.free(arr);
@@ -12642,7 +12642,7 @@ function* all_options_msgtypes(sbuf) {
     let buf = new Uint8Array(256);
     while (tmp) {
         let mtype = msgtype2name(cptr.ldI16(tmp));
-        void cptr.sprintf(cptr.decay(buf), __sl987, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
+        void cptr.sprintf(cptr.decay(buf), __s_msgtype_s_s, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
         tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
     }
@@ -12653,7 +12653,7 @@ function* all_options_apes(sbuf) {
     let tmp = cptr.ldPtro(ga, $instance_globals_a_apelist);
     let buf = new Uint8Array(256);
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __sl988, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
+        void cptr.sprintf(cptr.decay(buf), __s_autopickup_exception_c_s, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
         tmp = cptr.ldPtro(tmp, $autopickup_exception_next);
     }
@@ -12667,7 +12667,7 @@ export function* all_options_strbuf(sbuf) {
     let bool_p;
     let i;
     strbuf_init(sbuf);
-    void cptr.sprintf(cptr.decay(tmp), __sl989, (yield* yyyymmddhhmmss(0n)));
+    void cptr.sprintf(cptr.decay(tmp), __s_nethack_config_saved_s, (yield* yyyymmddhhmmss(0n)));
     (yield* strbuf_append(sbuf, cptr.decay(tmp)));
     for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
         if (!cptr.ld1so(cptr.decay(opt_set_in_config), i, 1))
@@ -12678,7 +12678,7 @@ export function* all_options_strbuf(sbuf) {
             if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                 break;
             if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, 104, $allopt_t_initval)) {
-                void cptr.sprintf(cptr.decay(tmp), __sl990, cptr.ld1s(bool_p) ? __sl491 : __sl613, name);
+                void cptr.sprintf(cptr.decay(tmp), __s_options_s_s, cptr.ld1s(bool_p) ? __s_empty : __s_bang, name);
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
             break;
@@ -12687,8 +12687,8 @@ export function* all_options_strbuf(sbuf) {
                 break;
             buf2 = (yield* get_option_value(name, 1));
             if (buf2) {
-                nh_snprintf(__sl991, 9714, cptr.decay(tmp), 255n, __sl992, name, buf2);
-                void cptr.strcat(cptr.decay(tmp), __sl985);
+                nh_snprintf(__s_all_options_strbuf, 9714, cptr.decay(tmp), 255n, __s_options_s_s__2, name, buf2);
+                void cptr.strcat(cptr.decay(tmp), __s_nl);
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
             break;
@@ -12706,7 +12706,7 @@ export function* all_options_strbuf(sbuf) {
     (yield* all_options_autocomplete(sbuf));
     (yield* all_options_statushilites(sbuf));
     if (cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit)) {
-        void cptr.sprintf(cptr.decay(tmp), __sl993, cptr.add(gw, $instance_globals_w_wizkit));
+        void cptr.sprintf(cptr.decay(tmp), __s_wizkit_s, cptr.add(gw, $instance_globals_w_wizkit));
         (yield* strbuf_append(sbuf, cptr.decay(tmp)));
     }
 }
@@ -12725,7 +12725,7 @@ export function* next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);
         i = NHM.COLNO;
     } else {
-        i = (((((yield* Strlen_(__static_next_opt_buf, __sl994, 9770)) + (yield* Strlen_(str, __sl994, 9770))) >>> 0) + 2) >>> 0) | 0;
+        i = (((((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) + (yield* Strlen_(str, __s_next_opt, 9770))) >>> 0) + 2) >>> 0) | 0;
     }
     if (i > 78) {
         (yield* Y.icall(putstr()(datawin, 0, __static_next_opt_buf)));
@@ -12733,7 +12733,7 @@ export function* next_opt(datawin, str) {
     }
     if (cptr.ld1s(str)) {
         void cptr.strcat(__static_next_opt_buf, str);
-        void cptr.strcat(__static_next_opt_buf, __sl995);
+        void cptr.strcat(__static_next_opt_buf, __s_comma_sp);
     } else {
         (yield* Y.icall(putstr()(datawin, 0, str)));
         cptr.free(__static_next_opt_buf), __static_next_opt_buf = null;
@@ -12743,112 +12743,112 @@ export function* next_opt(datawin, str) {
 
 /** C ref: options.c:9787 — struct wc_Opt[34] */
 const wc_options = cptr.alloc(34 * 16);
-cptr.stPtro(wc_options, 0, __sl31);
+cptr.stPtro(wc_options, 0, __s_ascii_map);
 cptr.stU64o(wc_options, 0 + $wc_Opt_wc_bit, 4n);
-cptr.stPtro(wc_options, 16, __sl67);
+cptr.stPtro(wc_options, 16, __s_color);
 cptr.stU64o(wc_options, 16 + $wc_Opt_wc_bit, 1n);
-cptr.stPtro(wc_options, 32, __sl106);
+cptr.stPtro(wc_options, 32, __s_eight_bit_tty);
 cptr.stU64o(wc_options, 32 + $wc_Opt_wc_bit, 67108864n);
-cptr.stPtro(wc_options, 48, __sl153);
+cptr.stPtro(wc_options, 48, __s_hilite_pet);
 cptr.stU64o(wc_options, 48 + $wc_Opt_wc_bit, 2n);
-cptr.stPtro(wc_options, 64, __sl263);
+cptr.stPtro(wc_options, 64, __s_perm_invent);
 cptr.stU64o(wc_options, 64 + $wc_Opt_wc_bit, 134217728n);
-cptr.stPtro(wc_options, 80, __sl265);
+cptr.stPtro(wc_options, 80, __s_perminv_mode);
 cptr.stU64o(wc_options, 80 + $wc_Opt_wc_bit, 134217728n);
-cptr.stPtro(wc_options, 96, __sl284);
+cptr.stPtro(wc_options, 96, __s_popup_dialog);
 cptr.stU64o(wc_options, 96 + $wc_Opt_wc_bit, 16777216n);
-cptr.stPtro(wc_options, 112, __sl282);
+cptr.stPtro(wc_options, 112, __s_player_selection);
 cptr.stU64o(wc_options, 112 + $wc_Opt_wc_bit, 1073741824n);
-cptr.stPtro(wc_options, 128, __sl285);
+cptr.stPtro(wc_options, 128, __s_preload_tiles);
 cptr.stU64o(wc_options, 128 + $wc_Opt_wc_bit, 16n);
-cptr.stPtro(wc_options, 144, __sl374);
+cptr.stPtro(wc_options, 144, __s_tiled_map);
 cptr.stU64o(wc_options, 144 + $wc_Opt_wc_bit, 8n);
-cptr.stPtro(wc_options, 160, __sl368);
+cptr.stPtro(wc_options, 160, __s_tile_file);
 cptr.stU64o(wc_options, 160 + $wc_Opt_wc_bit, 128n);
-cptr.stPtro(wc_options, 176, __sl372);
+cptr.stPtro(wc_options, 176, __s_tile_width);
 cptr.stU64o(wc_options, 176 + $wc_Opt_wc_bit, 32n);
-cptr.stPtro(wc_options, 192, __sl370);
+cptr.stPtro(wc_options, 192, __s_tile_height);
 cptr.stU64o(wc_options, 192 + $wc_Opt_wc_bit, 64n);
-cptr.stPtro(wc_options, 208, __sl20);
+cptr.stPtro(wc_options, 208, __s_align_message);
 cptr.stU64o(wc_options, 208 + $wc_Opt_wc_bit, 512n);
-cptr.stPtro(wc_options, 224, __sl22);
+cptr.stPtro(wc_options, 224, __s_align_status);
 cptr.stU64o(wc_options, 224 + $wc_Opt_wc_bit, 1024n);
-cptr.stPtro(wc_options, 240, __sl117);
+cptr.stPtro(wc_options, 240, __s_font_map);
 cptr.stU64o(wc_options, 240 + $wc_Opt_wc_bit, 4096n);
-cptr.stPtro(wc_options, 256, __sl119);
+cptr.stPtro(wc_options, 256, __s_font_menu);
 cptr.stU64o(wc_options, 256 + $wc_Opt_wc_bit, 32768n);
-cptr.stPtro(wc_options, 272, __sl121);
+cptr.stPtro(wc_options, 272, __s_font_message);
 cptr.stU64o(wc_options, 272 + $wc_Opt_wc_bit, 8192n);
-cptr.stPtro(wc_options, 288, __sl123);
+cptr.stPtro(wc_options, 288, __s_font_size_map);
 cptr.stU64o(wc_options, 288 + $wc_Opt_wc_bit, 131072n);
-cptr.stPtro(wc_options, 304, __sl125);
+cptr.stPtro(wc_options, 304, __s_font_size_menu);
 cptr.stU64o(wc_options, 304 + $wc_Opt_wc_bit, 1048576n);
-cptr.stPtro(wc_options, 320, __sl127);
+cptr.stPtro(wc_options, 320, __s_font_size_message);
 cptr.stU64o(wc_options, 320 + $wc_Opt_wc_bit, 262144n);
-cptr.stPtro(wc_options, 336, __sl129);
+cptr.stPtro(wc_options, 336, __s_font_size_status);
 cptr.stU64o(wc_options, 336 + $wc_Opt_wc_bit, 524288n);
-cptr.stPtro(wc_options, 352, __sl131);
+cptr.stPtro(wc_options, 352, __s_font_size_text);
 cptr.stU64o(wc_options, 352 + $wc_Opt_wc_bit, 2097152n);
-cptr.stPtro(wc_options, 368, __sl133);
+cptr.stPtro(wc_options, 368, __s_font_status);
 cptr.stU64o(wc_options, 368 + $wc_Opt_wc_bit, 16384n);
-cptr.stPtro(wc_options, 384, __sl135);
+cptr.stPtro(wc_options, 384, __s_font_text);
 cptr.stU64o(wc_options, 384 + $wc_Opt_wc_bit, 65536n);
-cptr.stPtro(wc_options, 400, __sl179);
+cptr.stPtro(wc_options, 400, __s_map_mode);
 cptr.stU64o(wc_options, 400 + $wc_Opt_wc_bit, 268435456n);
-cptr.stPtro(wc_options, 416, __sl311);
+cptr.stPtro(wc_options, 416, __s_scroll_amount);
 cptr.stU64o(wc_options, 416 + $wc_Opt_wc_bit, 33554432n);
-cptr.stPtro(wc_options, 432, __sl313);
+cptr.stPtro(wc_options, 432, __s_scroll_margin);
 cptr.stU64o(wc_options, 432 + $wc_Opt_wc_bit, 4194304n);
-cptr.stPtro(wc_options, 448, __sl344);
+cptr.stPtro(wc_options, 448, __s_splash_screen);
 cptr.stU64o(wc_options, 448 + $wc_Opt_wc_bit, 8388608n);
-cptr.stPtro(wc_options, 464, __sl393);
+cptr.stPtro(wc_options, 464, __s_use_inverse);
 cptr.stU64o(wc_options, 464 + $wc_Opt_wc_bit, 256n);
-cptr.stPtro(wc_options, 480, __sl397);
+cptr.stPtro(wc_options, 480, __s_vary_msgcount);
 cptr.stU64o(wc_options, 480 + $wc_Opt_wc_bit, 2048n);
-cptr.stPtro(wc_options, 496, __sl419);
+cptr.stPtro(wc_options, 496, __s_windowcolors);
 cptr.stU64o(wc_options, 496 + $wc_Opt_wc_bit, 536870912n);
-cptr.stPtro(wc_options, 512, __sl240);
+cptr.stPtro(wc_options, 512, __s_mouse_support);
 cptr.stU64o(wc_options, 512 + $wc_Opt_wc_bit, 2147483648n);
 cptr.stPtro(wc_options, 528, null);
 cptr.stU64o(wc_options, 528 + $wc_Opt_wc_bit, 0n);
 
 /** C ref: options.c:9823 — struct wc_Opt[19] */
 const wc2_options = cptr.alloc(19 * 16);
-cptr.stPtro(wc2_options, 0, __sl29);
+cptr.stPtro(wc2_options, 0, __s_armorstatus);
 cptr.stU64o(wc2_options, 0 + $wc_Opt_wc_bit, 524288n);
-cptr.stPtro(wc2_options, 16, __sl141);
+cptr.stPtro(wc2_options, 16, __s_fullscreen);
 cptr.stU64o(wc2_options, 16 + $wc_Opt_wc_bit, 1n);
-cptr.stPtro(wc2_options, 32, __sl147);
+cptr.stPtro(wc2_options, 32, __s_guicolor);
 cptr.stU64o(wc2_options, 32 + $wc_Opt_wc_bit, 8192n);
-cptr.stPtro(wc2_options, 48, __sl157);
+cptr.stPtro(wc2_options, 48, __s_hilite_status);
 cptr.stU64o(wc2_options, 48 + $wc_Opt_wc_bit, 8n);
-cptr.stPtro(wc2_options, 64, __sl159);
+cptr.stPtro(wc2_options, 64, __s_hitpointbar);
 cptr.stU64o(wc2_options, 64 + $wc_Opt_wc_bit, 64n);
-cptr.stPtro(wc2_options, 80, __sl915);
+cptr.stPtro(wc2_options, 80, __s_menu_shift);
 cptr.stU64o(wc2_options, 80 + $wc_Opt_wc_bit, 65536n);
-cptr.stPtro(wc2_options, 96, __sl267);
+cptr.stPtro(wc2_options, 96, __s_petattr);
 cptr.stU64o(wc2_options, 96 + $wc_Opt_wc_bit, 4096n);
-cptr.stPtro(wc2_options, 112, __sl327);
+cptr.stPtro(wc2_options, 112, __s_softkeyboard);
 cptr.stU64o(wc2_options, 112 + $wc_Opt_wc_bit, 2n);
-cptr.stPtro(wc2_options, 128, __sl996);
+cptr.stPtro(wc2_options, 128, __s_status_hilite_rules);
 cptr.stU64o(wc2_options, 128 + $wc_Opt_wc_bit, 8n);
-cptr.stPtro(wc2_options, 144, __sl351);
+cptr.stPtro(wc2_options, 144, __s_statushilites);
 cptr.stU64o(wc2_options, 144 + $wc_Opt_wc_bit, 8n);
-cptr.stPtro(wc2_options, 160, __sl355);
+cptr.stPtro(wc2_options, 160, __s_statuslines);
 cptr.stU64o(wc2_options, 160 + $wc_Opt_wc_bit, 1024n);
-cptr.stPtro(wc2_options, 176, __sl361);
+cptr.stPtro(wc2_options, 176, __s_term_cols);
 cptr.stU64o(wc2_options, 176 + $wc_Opt_wc_bit, 512n);
-cptr.stPtro(wc2_options, 192, __sl364);
+cptr.stPtro(wc2_options, 192, __s_term_rows);
 cptr.stU64o(wc2_options, 192 + $wc_Opt_wc_bit, 512n);
-cptr.stPtro(wc2_options, 208, __sl366);
+cptr.stPtro(wc2_options, 208, __s_terrainstatus);
 cptr.stU64o(wc2_options, 208 + $wc_Opt_wc_bit, 524288n);
-cptr.stPtro(wc2_options, 224, __sl391);
+cptr.stPtro(wc2_options, 224, __s_use_darkgray);
 cptr.stU64o(wc2_options, 224 + $wc_Opt_wc_bit, 32n);
-cptr.stPtro(wc2_options, 240, __sl407);
+cptr.stPtro(wc2_options, 240, __s_weaponstatus);
 cptr.stU64o(wc2_options, 240 + $wc_Opt_wc_bit, 524288n);
-cptr.stPtro(wc2_options, 256, __sl417);
+cptr.stPtro(wc2_options, 256, __s_windowborders);
 cptr.stU64o(wc2_options, 256 + $wc_Opt_wc_bit, 2048n);
-cptr.stPtro(wc2_options, 272, __sl423);
+cptr.stPtro(wc2_options, 272, __s_wraptext);
 cptr.stU64o(wc2_options, 272 + $wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc2_options, 288, null);
 cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
@@ -12857,7 +12857,7 @@ cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 export function* set_option_mod_status(optnam, status) {
     let k;
     if (SET__IS_VALUE_VALID(status)) {
-        (yield* impossible(__sl997, status));
+        (yield* impossible(__s_set_option_mod_status_status_out_of, status));
         return;
     }
     for (k = 0; cptr.ldPtro(allopt, k, 104); k++) {
@@ -12872,7 +12872,7 @@ export function* set_option_mod_status(optnam, status) {
 export function* set_wc_option_mod_status(optmask, status) {
     let k = 0;
     if (SET__IS_VALUE_VALID(status)) {
-        (yield* impossible(__sl998, status));
+        (yield* impossible(__s_set_wc_option_mod_status_status_out_of, status));
         return;
     }
     while (cptr.ldPtro(wc_options, k, 16)) {
@@ -12908,7 +12908,7 @@ function wc_supported(optnam) {
 export function* set_wc2_option_mod_status(optmask, status) {
     let k = 0;
     if (SET__IS_VALUE_VALID(status)) {
-        (yield* impossible(__sl999, status));
+        (yield* impossible(__s_set_wc2_option_mod_status_status_out_of, status));
         return;
     }
     while (cptr.ldPtro(wc2_options, k, 16)) {
@@ -13033,27 +13033,27 @@ function* wc_set_window_colors(op) {
             cptr.st1(cptr.postinc(() => newop, (v) => { newop = v; }), 0);
         for (j = 0; j < NHC.WC_COUNT; ++j) {
             if (!(yield* strncmpi((wn), (cptr.ldPtro(wcnames, j, 8)), -1)) || !(yield* strncmpi((wn), (cptr.ldPtro(wcshortnames, j, 8)), -1))) {
-                if (!(yield* strstri(tfg, __sl598))) {
+                if (!(yield* strstri(tfg, __s_sp))) {
                     if (cptr.ldPtr(cptr.ldPtro(fgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(fgp, j, 8)));
                     clr = (yield* check_enhanced_colors(tfg));
                     cptr.stPtr(cptr.ldPtro(fgp, j, 8), (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tfg)));
                 }
-                if (!(yield* strstri(tbg, __sl598))) {
+                if (!(yield* strstri(tbg, __s_sp))) {
                     if (cptr.ldPtr(cptr.ldPtro(bgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(bgp, j, 8)));
                     clr = (yield* check_enhanced_colors(tbg));
                     cptr.stPtr(cptr.ldPtro(bgp, j, 8), (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tbg)));
                 }
                 if (cptr.ldI32o(wcolors_opt, j, 4) != 0) {
-                    (yield* config_error_add(__sl1000, cptr.ldPtro(wcnames, j, 8)));
+                    (yield* config_error_add(__s_windowcolors_for_s_windows_specified, cptr.ldPtro(wcnames, j, 8)));
                 }
                 (cptr.stI32o(wcolors_opt, j, cptr.ldI32o(wcolors_opt, j, 4) + 1, 4)) - (1);
                 break;
             }
         }
         if (j == NHC.WC_COUNT) {
-            (yield* config_error_add(__sl1001, wn));
+            (yield* config_error_add(__s_windowcolors_for_unrecognized_window, wn));
         }
     }
     options_set_window_colors_flag = 1;
@@ -13076,7 +13076,7 @@ export function options_free_window_colors() {
 export function set_playmode() {
     if (wizard()) {
         if (authorize_wizard_mode())
-            cptr.stI32o(gp, $instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __sl642)))));
+            cptr.stI32o(gp, $instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __s_wizard)))));
         else
             cptr.st1o(flags, $flag_debug, 0);
         cptr.st1o(flags, $flag_explore, schar((!wizard())));

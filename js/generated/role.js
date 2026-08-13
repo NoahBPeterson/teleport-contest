@@ -77,411 +77,411 @@ const $Align_adj = FLD.Align_adj, $Align_allow = FLD.Align_allow, $Align_filecod
     $window_procs_win_start_menu = FLD.window_procs_win_start_menu;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Archeologist");
-const __sl1 = cptr.lit("Digger");
-const __sl2 = cptr.lit("Field Worker");
-const __sl3 = cptr.lit("Investigator");
-const __sl4 = cptr.lit("Exhumer");
-const __sl5 = cptr.lit("Excavator");
-const __sl6 = cptr.lit("Spelunker");
-const __sl7 = cptr.lit("Speleologist");
-const __sl8 = cptr.lit("Collector");
-const __sl9 = cptr.lit("Curator");
-const __sl10 = cptr.lit("Quetzalcoatl");
-const __sl11 = cptr.lit("Camaxtli");
-const __sl12 = cptr.lit("Huhetotl");
-const __sl13 = cptr.lit("Arc");
-const __sl14 = cptr.lit("the College of Archeology");
-const __sl15 = cptr.lit("the Tomb of the Toltec Kings");
-const __sl16 = cptr.lit("Barbarian");
-const __sl17 = cptr.lit("Plunderer");
-const __sl18 = cptr.lit("Plunderess");
-const __sl19 = cptr.lit("Pillager");
-const __sl20 = cptr.lit("Bandit");
-const __sl21 = cptr.lit("Brigand");
-const __sl22 = cptr.lit("Raider");
-const __sl23 = cptr.lit("Reaver");
-const __sl24 = cptr.lit("Slayer");
-const __sl25 = cptr.lit("Chieftain");
-const __sl26 = cptr.lit("Chieftainess");
-const __sl27 = cptr.lit("Conqueror");
-const __sl28 = cptr.lit("Conqueress");
-const __sl29 = cptr.lit("Mitra");
-const __sl30 = cptr.lit("Crom");
-const __sl31 = cptr.lit("Set");
-const __sl32 = cptr.lit("Bar");
-const __sl33 = cptr.lit("the Camp of the Duali Tribe");
-const __sl34 = cptr.lit("the Duali Oasis");
-const __sl35 = cptr.lit("Caveman");
-const __sl36 = cptr.lit("Cavewoman");
-const __sl37 = cptr.lit("Troglodyte");
-const __sl38 = cptr.lit("Aborigine");
-const __sl39 = cptr.lit("Wanderer");
-const __sl40 = cptr.lit("Vagrant");
-const __sl41 = cptr.lit("Wayfarer");
-const __sl42 = cptr.lit("Roamer");
-const __sl43 = cptr.lit("Nomad");
-const __sl44 = cptr.lit("Rover");
-const __sl45 = cptr.lit("Pioneer");
-const __sl46 = cptr.lit("Anu");
-const __sl47 = cptr.lit("_Ishtar");
-const __sl48 = cptr.lit("Anshar");
-const __sl49 = cptr.lit("Cav");
-const __sl50 = cptr.lit("the Caves of the Ancestors");
-const __sl51 = cptr.lit("the Dragon's Lair");
-const __sl52 = cptr.lit("Healer");
-const __sl53 = cptr.lit("Rhizotomist");
-const __sl54 = cptr.lit("Empiric");
-const __sl55 = cptr.lit("Embalmer");
-const __sl56 = cptr.lit("Dresser");
-const __sl57 = cptr.lit("Medicus ossium");
-const __sl58 = cptr.lit("Medica ossium");
-const __sl59 = cptr.lit("Herbalist");
-const __sl60 = cptr.lit("Magister");
-const __sl61 = cptr.lit("Magistra");
-const __sl62 = cptr.lit("Physician");
-const __sl63 = cptr.lit("Chirurgeon");
-const __sl64 = cptr.lit("_Athena");
-const __sl65 = cptr.lit("Hermes");
-const __sl66 = cptr.lit("Poseidon");
-const __sl67 = cptr.lit("Hea");
-const __sl68 = cptr.lit("the Temple of Epidaurus");
-const __sl69 = cptr.lit("the Temple of Coeus");
-const __sl70 = cptr.lit("Knight");
-const __sl71 = cptr.lit("Gallant");
-const __sl72 = cptr.lit("Esquire");
-const __sl73 = cptr.lit("Bachelor");
-const __sl74 = cptr.lit("Sergeant");
-const __sl75 = cptr.lit("Banneret");
-const __sl76 = cptr.lit("Chevalier");
-const __sl77 = cptr.lit("Chevaliere");
-const __sl78 = cptr.lit("Seignieur");
-const __sl79 = cptr.lit("Dame");
-const __sl80 = cptr.lit("Paladin");
-const __sl81 = cptr.lit("Lugh");
-const __sl82 = cptr.lit("_Brigit");
-const __sl83 = cptr.lit("Manannan Mac Lir");
-const __sl84 = cptr.lit("Kni");
-const __sl85 = cptr.lit("Camelot Castle");
-const __sl86 = cptr.lit("the Isle of Glass");
-const __sl87 = cptr.lit("Monk");
-const __sl88 = cptr.lit("Candidate");
-const __sl89 = cptr.lit("Novice");
-const __sl90 = cptr.lit("Initiate");
-const __sl91 = cptr.lit("Student of Stones");
-const __sl92 = cptr.lit("Student of Waters");
-const __sl93 = cptr.lit("Student of Metals");
-const __sl94 = cptr.lit("Student of Winds");
-const __sl95 = cptr.lit("Student of Fire");
-const __sl96 = cptr.lit("Master");
-const __sl97 = cptr.lit("Shan Lai Ching");
-const __sl98 = cptr.lit("Chih Sung-tzu");
-const __sl99 = cptr.lit("Huan Ti");
-const __sl100 = cptr.lit("Mon");
-const __sl101 = cptr.lit("the Monastery of Chan-Sune");
-const __sl102 = cptr.lit("the Monastery of the Earth-Lord");
-const __sl103 = cptr.lit("Priest");
-const __sl104 = cptr.lit("Priestess");
-const __sl105 = cptr.lit("Aspirant");
-const __sl106 = cptr.lit("Acolyte");
-const __sl107 = cptr.lit("Adept");
-const __sl108 = cptr.lit("Curate");
-const __sl109 = cptr.lit("Canon");
-const __sl110 = cptr.lit("Canoness");
-const __sl111 = cptr.lit("Lama");
-const __sl112 = cptr.lit("Patriarch");
-const __sl113 = cptr.lit("Matriarch");
-const __sl114 = cptr.lit("High Priest");
-const __sl115 = cptr.lit("High Priestess");
-const __sl116 = cptr.lit("Pri");
-const __sl117 = cptr.lit("the Great Temple");
-const __sl118 = cptr.lit("the Temple of Nalzok");
-const __sl119 = cptr.lit("Rogue");
-const __sl120 = cptr.lit("Footpad");
-const __sl121 = cptr.lit("Cutpurse");
-const __sl122 = cptr.lit("Pilferer");
-const __sl123 = cptr.lit("Robber");
-const __sl124 = cptr.lit("Burglar");
-const __sl125 = cptr.lit("Filcher");
-const __sl126 = cptr.lit("Magsman");
-const __sl127 = cptr.lit("Magswoman");
-const __sl128 = cptr.lit("Thief");
-const __sl129 = cptr.lit("Issek");
-const __sl130 = cptr.lit("Mog");
-const __sl131 = cptr.lit("Kos");
-const __sl132 = cptr.lit("Rog");
-const __sl133 = cptr.lit("the Thieves' Guild Hall");
-const __sl134 = cptr.lit("the Assassins' Guild Hall");
-const __sl135 = cptr.lit("Ranger");
-const __sl136 = cptr.lit("Tenderfoot");
-const __sl137 = cptr.lit("Lookout");
-const __sl138 = cptr.lit("Trailblazer");
-const __sl139 = cptr.lit("Reconnoiterer");
-const __sl140 = cptr.lit("Reconnoiteress");
-const __sl141 = cptr.lit("Scout");
-const __sl142 = cptr.lit("Arbalester");
-const __sl143 = cptr.lit("Archer");
-const __sl144 = cptr.lit("Sharpshooter");
-const __sl145 = cptr.lit("Marksman");
-const __sl146 = cptr.lit("Markswoman");
-const __sl147 = cptr.lit("Mercury");
-const __sl148 = cptr.lit("_Venus");
-const __sl149 = cptr.lit("Mars");
-const __sl150 = cptr.lit("Ran");
-const __sl151 = cptr.lit("Orion's camp");
-const __sl152 = cptr.lit("the cave of the wumpus");
-const __sl153 = cptr.lit("Samurai");
-const __sl154 = cptr.lit("Hatamoto");
-const __sl155 = cptr.lit("Ronin");
-const __sl156 = cptr.lit("Ninja");
-const __sl157 = cptr.lit("Kunoichi");
-const __sl158 = cptr.lit("Joshu");
-const __sl159 = cptr.lit("Ryoshu");
-const __sl160 = cptr.lit("Kokushu");
-const __sl161 = cptr.lit("Daimyo");
-const __sl162 = cptr.lit("Kuge");
-const __sl163 = cptr.lit("Shogun");
-const __sl164 = cptr.lit("_Amaterasu Omikami");
-const __sl165 = cptr.lit("Raijin");
-const __sl166 = cptr.lit("Susanowo");
-const __sl167 = cptr.lit("Sam");
-const __sl168 = cptr.lit("the Castle of the Taro Clan");
-const __sl169 = cptr.lit("the Shogun's Castle");
-const __sl170 = cptr.lit("Tourist");
-const __sl171 = cptr.lit("Rambler");
-const __sl172 = cptr.lit("Sightseer");
-const __sl173 = cptr.lit("Excursionist");
-const __sl174 = cptr.lit("Peregrinator");
-const __sl175 = cptr.lit("Peregrinatrix");
-const __sl176 = cptr.lit("Traveler");
-const __sl177 = cptr.lit("Journeyer");
-const __sl178 = cptr.lit("Voyager");
-const __sl179 = cptr.lit("Explorer");
-const __sl180 = cptr.lit("Adventurer");
-const __sl181 = cptr.lit("Blind Io");
-const __sl182 = cptr.lit("_The Lady");
-const __sl183 = cptr.lit("Offler");
-const __sl184 = cptr.lit("Tou");
-const __sl185 = cptr.lit("Ankh-Morpork");
-const __sl186 = cptr.lit("Valkyrie");
-const __sl187 = cptr.lit("Stripling");
-const __sl188 = cptr.lit("Skirmisher");
-const __sl189 = cptr.lit("Fighter");
-const __sl190 = cptr.lit("Man-at-arms");
-const __sl191 = cptr.lit("Woman-at-arms");
-const __sl192 = cptr.lit("Warrior");
-const __sl193 = cptr.lit("Swashbuckler");
-const __sl194 = cptr.lit("Hero");
-const __sl195 = cptr.lit("Heroine");
-const __sl196 = cptr.lit("Champion");
-const __sl197 = cptr.lit("Lord");
-const __sl198 = cptr.lit("Lady");
-const __sl199 = cptr.lit("Tyr");
-const __sl200 = cptr.lit("Odin");
-const __sl201 = cptr.lit("Loki");
-const __sl202 = cptr.lit("Val");
-const __sl203 = cptr.lit("the Shrine of Destiny");
-const __sl204 = cptr.lit("the cave of Surtur");
-const __sl205 = cptr.lit("Wizard");
-const __sl206 = cptr.lit("Evoker");
-const __sl207 = cptr.lit("Conjurer");
-const __sl208 = cptr.lit("Thaumaturge");
-const __sl209 = cptr.lit("Magician");
-const __sl210 = cptr.lit("Enchanter");
-const __sl211 = cptr.lit("Enchantress");
-const __sl212 = cptr.lit("Sorcerer");
-const __sl213 = cptr.lit("Sorceress");
-const __sl214 = cptr.lit("Necromancer");
-const __sl215 = cptr.lit("Mage");
-const __sl216 = cptr.lit("Ptah");
-const __sl217 = cptr.lit("Thoth");
-const __sl218 = cptr.lit("Anhur");
-const __sl219 = cptr.lit("Wiz");
-const __sl220 = cptr.lit("the Lonely Tower");
-const __sl221 = cptr.lit("the Tower of Darkness");
-const __sl222 = cptr.lit("human");
-const __sl223 = cptr.lit("humanity");
-const __sl224 = cptr.lit("Hum");
-const __sl225 = cptr.lit("man");
-const __sl226 = cptr.lit("woman");
-const __sl227 = cptr.lit("elf");
-const __sl228 = cptr.lit("elven");
-const __sl229 = cptr.lit("elvenkind");
-const __sl230 = cptr.lit("Elf");
-const __sl231 = cptr.lit("dwarf");
-const __sl232 = cptr.lit("dwarven");
-const __sl233 = cptr.lit("dwarvenkind");
-const __sl234 = cptr.lit("Dwa");
-const __sl235 = cptr.lit("gnome");
-const __sl236 = cptr.lit("gnomish");
-const __sl237 = cptr.lit("gnomehood");
-const __sl238 = cptr.lit("Gno");
-const __sl239 = cptr.lit("orc");
-const __sl240 = cptr.lit("orcish");
-const __sl241 = cptr.lit("orcdom");
-const __sl242 = cptr.lit("Orc");
-const __sl243 = cptr.lit("male");
-const __sl244 = cptr.lit("he");
-const __sl245 = cptr.lit("him");
-const __sl246 = cptr.lit("his");
-const __sl247 = cptr.lit("Mal");
-const __sl248 = cptr.lit("female");
-const __sl249 = cptr.lit("she");
-const __sl250 = cptr.lit("her");
-const __sl251 = cptr.lit("Fem");
-const __sl252 = cptr.lit("neuter");
-const __sl253 = cptr.lit("it");
-const __sl254 = cptr.lit("its");
-const __sl255 = cptr.lit("Ntr");
-const __sl256 = cptr.lit("group");
-const __sl257 = cptr.lit("they");
-const __sl258 = cptr.lit("them");
-const __sl259 = cptr.lit("their");
-const __sl260 = cptr.lit("Grp");
-const __sl261 = cptr.lit("law");
-const __sl262 = cptr.lit("lawful");
-const __sl263 = cptr.lit("Law");
-const __sl264 = cptr.lit("balance");
-const __sl265 = cptr.lit("neutral");
-const __sl266 = cptr.lit("Neu");
-const __sl267 = cptr.lit("chaos");
-const __sl268 = cptr.lit("chaotic");
-const __sl269 = cptr.lit("Cha");
-const __sl270 = cptr.lit("evil");
-const __sl271 = cptr.lit("unaligned");
-const __sl272 = cptr.lit("Una");
-const __sl273 = cptr.lit("role.c");
-const __sl274 = cptr.lit("randrole");
-const __sl275 = cptr.lit("randrole_filtered");
-const __sl276 = cptr.lit("str2role");
-const __sl277 = cptr.lit("randrace");
-const __sl278 = cptr.lit("str2race");
-const __sl279 = cptr.lit("randgend");
-const __sl280 = cptr.lit("str2gend");
-const __sl281 = cptr.lit("randalign");
-const __sl282 = cptr.lit("str2align");
-const __sl283 = cptr.lit("pick_role");
-const __sl284 = cptr.lit("pick_race");
-const __sl285 = cptr.lit("pick_gend");
-const __sl286 = cptr.lit("pick_align");
-const __sl287 = cptr.lit(" !%.3s");
-const __sl288 = cptr.lit(" !%s");
-const __sl289 = cptr.lit("rolefilterstring: bad role aspect (%d)");
-const __sl290 = cptr.lit(" ?");
-const __sl291 = cptr.lit("and ");
-const __sl292 = cptr.lit(",");
-const __sl293 = cptr.lit(" ");
-const __sl294 = cptr.lit("root_plselection_prompt");
-const __sl295 = cptr.lit("IndexOkT(rolenum, roles)");
-const __sl296 = cptr.lit("/");
-const __sl297 = cptr.lit("character");
-const __sl298 = cptr.lit("Shall I pick a character for you? [ynaq] ");
-const __sl299 = cptr.lit("Shall I pick ");
-const __sl300 = cptr.lit("your ");
-const __sl301 = cptr.lit("a ");
-const __sl302 = cptr.lit("build_plselection_prompt");
-const __sl303 = cptr.lit("pick a character");
-const __sl304 = cptr.lit("pick character");
-const __sl305 = cptr.lit("%s");
-const __sl306 = cptr.lit("priest/priestess'");
-const __sl307 = cptr.lit("race");
-const __sl308 = cptr.lit("role");
-const __sl309 = cptr.lit("gender");
-const __sl310 = cptr.lit("alignment");
-const __sl311 = cptr.lit(" for you? [ynaq] ");
-const __sl312 = cptr.lit("plnamesuffix");
-const __sl313 = cptr.lit("role_selection_prolog");
-const __sl314 = cptr.lit("IndexOkT(r, roles)");
-const __sl315 = cptr.lit("IndexOkT(c, races)");
-const __sl316 = cptr.lit("%12s ");
-const __sl317 = cptr.lit("name:");
-const __sl318 = cptr.lit("role:");
-const __sl319 = cptr.lit("which == RS_ROLE || r == ROLE_NONE || r == ROLE_RANDOM || IndexOkT(r, roles)");
-const __sl320 = cptr.lit(": %s");
-const __sl321 = cptr.lit("/%s");
-const __sl322 = cptr.lit("race:");
-const __sl323 = cptr.lit("which == RS_RACE || c == ROLE_NONE || c == ROLE_RANDOM || IndexOkT(c, races)");
-const __sl324 = cptr.lit("gender:");
-const __sl325 = cptr.lit("alignment:");
-const __sl326 = cptr.lit("name");
-const __sl327 = cptr.lit("filter");
-const __sl328 = cptr.lit("%4s%s forces %s");
-const __sl329 = cptr.lit("");
-const __sl330 = cptr.lit("Pick%s %s first");
-const __sl331 = cptr.lit(" another");
-const __sl332 = cptr.lit("%s role/race/&c filtering");
-const __sl333 = cptr.lit("Reset");
-const __sl334 = cptr.lit("Random");
-const __sl335 = cptr.lit("Quit");
-const __sl336 = cptr.lit("role_menu_extra: bad arg (%d)");
-const __sl337 = cptr.lit("role_init");
-const __sl338 = cptr.lit("goddess");
-const __sl339 = cptr.lit("Salutations");
-const __sl340 = cptr.lit("Irasshaimase");
-const __sl341 = cptr.lit("Konnichi wa");
-const __sl342 = cptr.lit("Aloha");
-const __sl343 = cptr.lit("Hallo");
-const __sl344 = cptr.lit("Velkommen");
-const __sl345 = cptr.lit("Hello");
-const __sl346 = cptr.lit("Fare thee well");
-const __sl347 = cptr.lit("Sayonara");
-const __sl348 = cptr.lit("Farvel");
-const __sl349 = cptr.lit("Goodbye");
-const __sl350 = cptr.lit("Incompatible role!");
-const __sl351 = cptr.lit("Pick a role or profession");
-const __sl352 = cptr.lit("Incompatible race!");
-const __sl353 = cptr.lit("Pick a race or species");
-const __sl354 = cptr.lit("Incompatible gender!");
-const __sl355 = cptr.lit("Pick a gender or sex");
-const __sl356 = cptr.lit("Incompatible alignment!");
-const __sl357 = cptr.lit("Pick an alignment or creed");
-const __sl358 = cptr.lit("Yes; start game");
-const __sl359 = cptr.lit("No; choose role again");
-const __sl360 = cptr.lit("Not yet; choose another name");
-const __sl361 = cptr.lit("Is this ok? [yn%sq]");
-const __sl362 = cptr.lit("a");
-const __sl363 = cptr.lit("Unacceptable roles");
-const __sl364 = cptr.lit("Unacceptable races");
-const __sl365 = cptr.lit("Unacceptable genders");
-const __sl366 = cptr.lit("Unacceptable alignments");
-const __sl367 = cptr.lit("Pick all that apply%s");
-const __sl368 = cptr.lit(" and/or unpick any that no longer apply");
-const __sl369 = cptr.lit("<role>");
-const __sl370 = cptr.lit("%.20s %.20s %.20s %.20s");
-const __sl371 = cptr.lit("<race>");
-const __sl372 = cptr.lit("<gender>");
-const __sl373 = cptr.lit("<alignment>");
-const __sl374 = cptr.lit("%.20s the %.20s %.20s %.20s %.20s");
-const __sl375 = cptr.lit("could not create role selection window");
+const __s_archeologist = cptr.lit("Archeologist");
+const __s_digger = cptr.lit("Digger");
+const __s_field_worker = cptr.lit("Field Worker");
+const __s_investigator = cptr.lit("Investigator");
+const __s_exhumer = cptr.lit("Exhumer");
+const __s_excavator = cptr.lit("Excavator");
+const __s_spelunker = cptr.lit("Spelunker");
+const __s_speleologist = cptr.lit("Speleologist");
+const __s_collector = cptr.lit("Collector");
+const __s_curator = cptr.lit("Curator");
+const __s_quetzalcoatl = cptr.lit("Quetzalcoatl");
+const __s_camaxtli = cptr.lit("Camaxtli");
+const __s_huhetotl = cptr.lit("Huhetotl");
+const __s_arc = cptr.lit("Arc");
+const __s_the_college_of_archeology = cptr.lit("the College of Archeology");
+const __s_the_tomb_of_the_toltec_kings = cptr.lit("the Tomb of the Toltec Kings");
+const __s_barbarian = cptr.lit("Barbarian");
+const __s_plunderer = cptr.lit("Plunderer");
+const __s_plunderess = cptr.lit("Plunderess");
+const __s_pillager = cptr.lit("Pillager");
+const __s_bandit = cptr.lit("Bandit");
+const __s_brigand = cptr.lit("Brigand");
+const __s_raider = cptr.lit("Raider");
+const __s_reaver = cptr.lit("Reaver");
+const __s_slayer = cptr.lit("Slayer");
+const __s_chieftain = cptr.lit("Chieftain");
+const __s_chieftainess = cptr.lit("Chieftainess");
+const __s_conqueror = cptr.lit("Conqueror");
+const __s_conqueress = cptr.lit("Conqueress");
+const __s_mitra = cptr.lit("Mitra");
+const __s_crom = cptr.lit("Crom");
+const __s_set = cptr.lit("Set");
+const __s_bar = cptr.lit("Bar");
+const __s_the_camp_of_the_duali_tribe = cptr.lit("the Camp of the Duali Tribe");
+const __s_the_duali_oasis = cptr.lit("the Duali Oasis");
+const __s_caveman = cptr.lit("Caveman");
+const __s_cavewoman = cptr.lit("Cavewoman");
+const __s_troglodyte = cptr.lit("Troglodyte");
+const __s_aborigine = cptr.lit("Aborigine");
+const __s_wanderer = cptr.lit("Wanderer");
+const __s_vagrant = cptr.lit("Vagrant");
+const __s_wayfarer = cptr.lit("Wayfarer");
+const __s_roamer = cptr.lit("Roamer");
+const __s_nomad = cptr.lit("Nomad");
+const __s_rover = cptr.lit("Rover");
+const __s_pioneer = cptr.lit("Pioneer");
+const __s_anu = cptr.lit("Anu");
+const __s_ishtar = cptr.lit("_Ishtar");
+const __s_anshar = cptr.lit("Anshar");
+const __s_cav = cptr.lit("Cav");
+const __s_the_caves_of_the_ancestors = cptr.lit("the Caves of the Ancestors");
+const __s_the_dragon_s_lair = cptr.lit("the Dragon's Lair");
+const __s_healer = cptr.lit("Healer");
+const __s_rhizotomist = cptr.lit("Rhizotomist");
+const __s_empiric = cptr.lit("Empiric");
+const __s_embalmer = cptr.lit("Embalmer");
+const __s_dresser = cptr.lit("Dresser");
+const __s_medicus_ossium = cptr.lit("Medicus ossium");
+const __s_medica_ossium = cptr.lit("Medica ossium");
+const __s_herbalist = cptr.lit("Herbalist");
+const __s_magister = cptr.lit("Magister");
+const __s_magistra = cptr.lit("Magistra");
+const __s_physician = cptr.lit("Physician");
+const __s_chirurgeon = cptr.lit("Chirurgeon");
+const __s_athena = cptr.lit("_Athena");
+const __s_hermes = cptr.lit("Hermes");
+const __s_poseidon = cptr.lit("Poseidon");
+const __s_hea = cptr.lit("Hea");
+const __s_the_temple_of_epidaurus = cptr.lit("the Temple of Epidaurus");
+const __s_the_temple_of_coeus = cptr.lit("the Temple of Coeus");
+const __s_knight = cptr.lit("Knight");
+const __s_gallant = cptr.lit("Gallant");
+const __s_esquire = cptr.lit("Esquire");
+const __s_bachelor = cptr.lit("Bachelor");
+const __s_sergeant = cptr.lit("Sergeant");
+const __s_banneret = cptr.lit("Banneret");
+const __s_chevalier = cptr.lit("Chevalier");
+const __s_chevaliere = cptr.lit("Chevaliere");
+const __s_seignieur = cptr.lit("Seignieur");
+const __s_dame = cptr.lit("Dame");
+const __s_paladin = cptr.lit("Paladin");
+const __s_lugh = cptr.lit("Lugh");
+const __s_brigit = cptr.lit("_Brigit");
+const __s_manannan_mac_lir = cptr.lit("Manannan Mac Lir");
+const __s_kni = cptr.lit("Kni");
+const __s_camelot_castle = cptr.lit("Camelot Castle");
+const __s_the_isle_of_glass = cptr.lit("the Isle of Glass");
+const __s_monk = cptr.lit("Monk");
+const __s_candidate = cptr.lit("Candidate");
+const __s_novice = cptr.lit("Novice");
+const __s_initiate = cptr.lit("Initiate");
+const __s_student_of_stones = cptr.lit("Student of Stones");
+const __s_student_of_waters = cptr.lit("Student of Waters");
+const __s_student_of_metals = cptr.lit("Student of Metals");
+const __s_student_of_winds = cptr.lit("Student of Winds");
+const __s_student_of_fire = cptr.lit("Student of Fire");
+const __s_master = cptr.lit("Master");
+const __s_shan_lai_ching = cptr.lit("Shan Lai Ching");
+const __s_chih_sung_tzu = cptr.lit("Chih Sung-tzu");
+const __s_huan_ti = cptr.lit("Huan Ti");
+const __s_mon = cptr.lit("Mon");
+const __s_the_monastery_of_chan_sune = cptr.lit("the Monastery of Chan-Sune");
+const __s_the_monastery_of_the_earth_lord = cptr.lit("the Monastery of the Earth-Lord");
+const __s_priest = cptr.lit("Priest");
+const __s_priestess = cptr.lit("Priestess");
+const __s_aspirant = cptr.lit("Aspirant");
+const __s_acolyte = cptr.lit("Acolyte");
+const __s_adept = cptr.lit("Adept");
+const __s_curate = cptr.lit("Curate");
+const __s_canon = cptr.lit("Canon");
+const __s_canoness = cptr.lit("Canoness");
+const __s_lama = cptr.lit("Lama");
+const __s_patriarch = cptr.lit("Patriarch");
+const __s_matriarch = cptr.lit("Matriarch");
+const __s_high_priest = cptr.lit("High Priest");
+const __s_high_priestess = cptr.lit("High Priestess");
+const __s_pri = cptr.lit("Pri");
+const __s_the_great_temple = cptr.lit("the Great Temple");
+const __s_the_temple_of_nalzok = cptr.lit("the Temple of Nalzok");
+const __s_rogue = cptr.lit("Rogue");
+const __s_footpad = cptr.lit("Footpad");
+const __s_cutpurse = cptr.lit("Cutpurse");
+const __s_pilferer = cptr.lit("Pilferer");
+const __s_robber = cptr.lit("Robber");
+const __s_burglar = cptr.lit("Burglar");
+const __s_filcher = cptr.lit("Filcher");
+const __s_magsman = cptr.lit("Magsman");
+const __s_magswoman = cptr.lit("Magswoman");
+const __s_thief = cptr.lit("Thief");
+const __s_issek = cptr.lit("Issek");
+const __s_mog = cptr.lit("Mog");
+const __s_kos = cptr.lit("Kos");
+const __s_rog = cptr.lit("Rog");
+const __s_the_thieves_guild_hall = cptr.lit("the Thieves' Guild Hall");
+const __s_the_assassins_guild_hall = cptr.lit("the Assassins' Guild Hall");
+const __s_ranger = cptr.lit("Ranger");
+const __s_tenderfoot = cptr.lit("Tenderfoot");
+const __s_lookout = cptr.lit("Lookout");
+const __s_trailblazer = cptr.lit("Trailblazer");
+const __s_reconnoiterer = cptr.lit("Reconnoiterer");
+const __s_reconnoiteress = cptr.lit("Reconnoiteress");
+const __s_scout = cptr.lit("Scout");
+const __s_arbalester = cptr.lit("Arbalester");
+const __s_archer = cptr.lit("Archer");
+const __s_sharpshooter = cptr.lit("Sharpshooter");
+const __s_marksman = cptr.lit("Marksman");
+const __s_markswoman = cptr.lit("Markswoman");
+const __s_mercury = cptr.lit("Mercury");
+const __s_venus = cptr.lit("_Venus");
+const __s_mars = cptr.lit("Mars");
+const __s_ran = cptr.lit("Ran");
+const __s_orion_s_camp = cptr.lit("Orion's camp");
+const __s_the_cave_of_the_wumpus = cptr.lit("the cave of the wumpus");
+const __s_samurai = cptr.lit("Samurai");
+const __s_hatamoto = cptr.lit("Hatamoto");
+const __s_ronin = cptr.lit("Ronin");
+const __s_ninja = cptr.lit("Ninja");
+const __s_kunoichi = cptr.lit("Kunoichi");
+const __s_joshu = cptr.lit("Joshu");
+const __s_ryoshu = cptr.lit("Ryoshu");
+const __s_kokushu = cptr.lit("Kokushu");
+const __s_daimyo = cptr.lit("Daimyo");
+const __s_kuge = cptr.lit("Kuge");
+const __s_shogun = cptr.lit("Shogun");
+const __s_amaterasu_omikami = cptr.lit("_Amaterasu Omikami");
+const __s_raijin = cptr.lit("Raijin");
+const __s_susanowo = cptr.lit("Susanowo");
+const __s_sam = cptr.lit("Sam");
+const __s_the_castle_of_the_taro_clan = cptr.lit("the Castle of the Taro Clan");
+const __s_the_shogun_s_castle = cptr.lit("the Shogun's Castle");
+const __s_tourist = cptr.lit("Tourist");
+const __s_rambler = cptr.lit("Rambler");
+const __s_sightseer = cptr.lit("Sightseer");
+const __s_excursionist = cptr.lit("Excursionist");
+const __s_peregrinator = cptr.lit("Peregrinator");
+const __s_peregrinatrix = cptr.lit("Peregrinatrix");
+const __s_traveler = cptr.lit("Traveler");
+const __s_journeyer = cptr.lit("Journeyer");
+const __s_voyager = cptr.lit("Voyager");
+const __s_explorer = cptr.lit("Explorer");
+const __s_adventurer = cptr.lit("Adventurer");
+const __s_blind_io = cptr.lit("Blind Io");
+const __s_the_lady = cptr.lit("_The Lady");
+const __s_offler = cptr.lit("Offler");
+const __s_tou = cptr.lit("Tou");
+const __s_ankh_morpork = cptr.lit("Ankh-Morpork");
+const __s_valkyrie = cptr.lit("Valkyrie");
+const __s_stripling = cptr.lit("Stripling");
+const __s_skirmisher = cptr.lit("Skirmisher");
+const __s_fighter = cptr.lit("Fighter");
+const __s_man_at_arms = cptr.lit("Man-at-arms");
+const __s_woman_at_arms = cptr.lit("Woman-at-arms");
+const __s_warrior = cptr.lit("Warrior");
+const __s_swashbuckler = cptr.lit("Swashbuckler");
+const __s_hero = cptr.lit("Hero");
+const __s_heroine = cptr.lit("Heroine");
+const __s_champion = cptr.lit("Champion");
+const __s_lord = cptr.lit("Lord");
+const __s_lady = cptr.lit("Lady");
+const __s_tyr = cptr.lit("Tyr");
+const __s_odin = cptr.lit("Odin");
+const __s_loki = cptr.lit("Loki");
+const __s_val = cptr.lit("Val");
+const __s_the_shrine_of_destiny = cptr.lit("the Shrine of Destiny");
+const __s_the_cave_of_surtur = cptr.lit("the cave of Surtur");
+const __s_wizard = cptr.lit("Wizard");
+const __s_evoker = cptr.lit("Evoker");
+const __s_conjurer = cptr.lit("Conjurer");
+const __s_thaumaturge = cptr.lit("Thaumaturge");
+const __s_magician = cptr.lit("Magician");
+const __s_enchanter = cptr.lit("Enchanter");
+const __s_enchantress = cptr.lit("Enchantress");
+const __s_sorcerer = cptr.lit("Sorcerer");
+const __s_sorceress = cptr.lit("Sorceress");
+const __s_necromancer = cptr.lit("Necromancer");
+const __s_mage = cptr.lit("Mage");
+const __s_ptah = cptr.lit("Ptah");
+const __s_thoth = cptr.lit("Thoth");
+const __s_anhur = cptr.lit("Anhur");
+const __s_wiz = cptr.lit("Wiz");
+const __s_the_lonely_tower = cptr.lit("the Lonely Tower");
+const __s_the_tower_of_darkness = cptr.lit("the Tower of Darkness");
+const __s_human = cptr.lit("human");
+const __s_humanity = cptr.lit("humanity");
+const __s_hum = cptr.lit("Hum");
+const __s_man = cptr.lit("man");
+const __s_woman = cptr.lit("woman");
+const __s_elf = cptr.lit("elf");
+const __s_elven = cptr.lit("elven");
+const __s_elvenkind = cptr.lit("elvenkind");
+const __s_elf__2 = cptr.lit("Elf");
+const __s_dwarf = cptr.lit("dwarf");
+const __s_dwarven = cptr.lit("dwarven");
+const __s_dwarvenkind = cptr.lit("dwarvenkind");
+const __s_dwa = cptr.lit("Dwa");
+const __s_gnome = cptr.lit("gnome");
+const __s_gnomish = cptr.lit("gnomish");
+const __s_gnomehood = cptr.lit("gnomehood");
+const __s_gno = cptr.lit("Gno");
+const __s_orc = cptr.lit("orc");
+const __s_orcish = cptr.lit("orcish");
+const __s_orcdom = cptr.lit("orcdom");
+const __s_orc__2 = cptr.lit("Orc");
+const __s_male = cptr.lit("male");
+const __s_he = cptr.lit("he");
+const __s_him = cptr.lit("him");
+const __s_his = cptr.lit("his");
+const __s_mal = cptr.lit("Mal");
+const __s_female = cptr.lit("female");
+const __s_she = cptr.lit("she");
+const __s_her = cptr.lit("her");
+const __s_fem = cptr.lit("Fem");
+const __s_neuter = cptr.lit("neuter");
+const __s_it = cptr.lit("it");
+const __s_its = cptr.lit("its");
+const __s_ntr = cptr.lit("Ntr");
+const __s_group = cptr.lit("group");
+const __s_they = cptr.lit("they");
+const __s_them = cptr.lit("them");
+const __s_their = cptr.lit("their");
+const __s_grp = cptr.lit("Grp");
+const __s_law = cptr.lit("law");
+const __s_lawful = cptr.lit("lawful");
+const __s_law__2 = cptr.lit("Law");
+const __s_balance = cptr.lit("balance");
+const __s_neutral = cptr.lit("neutral");
+const __s_neu = cptr.lit("Neu");
+const __s_chaos = cptr.lit("chaos");
+const __s_chaotic = cptr.lit("chaotic");
+const __s_cha = cptr.lit("Cha");
+const __s_evil = cptr.lit("evil");
+const __s_unaligned = cptr.lit("unaligned");
+const __s_una = cptr.lit("Una");
+const __s_role_c = cptr.lit("role.c");
+const __s_randrole = cptr.lit("randrole");
+const __s_randrole_filtered = cptr.lit("randrole_filtered");
+const __s_str2role = cptr.lit("str2role");
+const __s_randrace = cptr.lit("randrace");
+const __s_str2race = cptr.lit("str2race");
+const __s_randgend = cptr.lit("randgend");
+const __s_str2gend = cptr.lit("str2gend");
+const __s_randalign = cptr.lit("randalign");
+const __s_str2align = cptr.lit("str2align");
+const __s_pick_role = cptr.lit("pick_role");
+const __s_pick_race = cptr.lit("pick_race");
+const __s_pick_gend = cptr.lit("pick_gend");
+const __s_pick_align = cptr.lit("pick_align");
+const __s_3s = cptr.lit(" !%.3s");
+const __s_sp_bang_pct_s = cptr.lit(" !%s");
+const __s_rolefilterstring_bad_role_aspect_d = cptr.lit("rolefilterstring: bad role aspect (%d)");
+const __s_sp_query = cptr.lit(" ?");
+const __s_and = cptr.lit("and ");
+const __s_comma = cptr.lit(",");
+const __s_sp = cptr.lit(" ");
+const __s_root_plselection_prompt = cptr.lit("root_plselection_prompt");
+const __s_indexokt_rolenum_roles = cptr.lit("IndexOkT(rolenum, roles)");
+const __s_slash = cptr.lit("/");
+const __s_character = cptr.lit("character");
+const __s_shall_i_pick_a_character_for_you_ynaq = cptr.lit("Shall I pick a character for you? [ynaq] ");
+const __s_shall_i_pick = cptr.lit("Shall I pick ");
+const __s_your = cptr.lit("your ");
+const __s_a_sp = cptr.lit("a ");
+const __s_build_plselection_prompt = cptr.lit("build_plselection_prompt");
+const __s_pick_a_character = cptr.lit("pick a character");
+const __s_pick_character = cptr.lit("pick character");
+const __s_pct_s = cptr.lit("%s");
+const __s_priest_priestess = cptr.lit("priest/priestess'");
+const __s_race = cptr.lit("race");
+const __s_role = cptr.lit("role");
+const __s_gender = cptr.lit("gender");
+const __s_alignment = cptr.lit("alignment");
+const __s_for_you_ynaq = cptr.lit(" for you? [ynaq] ");
+const __s_plnamesuffix = cptr.lit("plnamesuffix");
+const __s_role_selection_prolog = cptr.lit("role_selection_prolog");
+const __s_indexokt_r_roles = cptr.lit("IndexOkT(r, roles)");
+const __s_indexokt_c_races = cptr.lit("IndexOkT(c, races)");
+const __s_12s = cptr.lit("%12s ");
+const __s_name = cptr.lit("name:");
+const __s_role__2 = cptr.lit("role:");
+const __s_which_rs_role_r_role_none_r_role_random = cptr.lit("which == RS_ROLE || r == ROLE_NONE || r == ROLE_RANDOM || IndexOkT(r, roles)");
+const __s_colon_sp_pct_s = cptr.lit(": %s");
+const __s_slash_pct_s = cptr.lit("/%s");
+const __s_race__2 = cptr.lit("race:");
+const __s_which_rs_race_c_role_none_c_role_random = cptr.lit("which == RS_RACE || c == ROLE_NONE || c == ROLE_RANDOM || IndexOkT(c, races)");
+const __s_gender__2 = cptr.lit("gender:");
+const __s_alignment__2 = cptr.lit("alignment:");
+const __s_name__2 = cptr.lit("name");
+const __s_filter = cptr.lit("filter");
+const __s_4s_s_forces_s = cptr.lit("%4s%s forces %s");
+const __s_empty = cptr.lit("");
+const __s_pick_s_s_first = cptr.lit("Pick%s %s first");
+const __s_another = cptr.lit(" another");
+const __s_s_role_race_c_filtering = cptr.lit("%s role/race/&c filtering");
+const __s_reset = cptr.lit("Reset");
+const __s_random = cptr.lit("Random");
+const __s_quit = cptr.lit("Quit");
+const __s_role_menu_extra_bad_arg_d = cptr.lit("role_menu_extra: bad arg (%d)");
+const __s_role_init = cptr.lit("role_init");
+const __s_goddess = cptr.lit("goddess");
+const __s_salutations = cptr.lit("Salutations");
+const __s_irasshaimase = cptr.lit("Irasshaimase");
+const __s_konnichi_wa = cptr.lit("Konnichi wa");
+const __s_aloha = cptr.lit("Aloha");
+const __s_hallo = cptr.lit("Hallo");
+const __s_velkommen = cptr.lit("Velkommen");
+const __s_hello = cptr.lit("Hello");
+const __s_fare_thee_well = cptr.lit("Fare thee well");
+const __s_sayonara = cptr.lit("Sayonara");
+const __s_farvel = cptr.lit("Farvel");
+const __s_goodbye = cptr.lit("Goodbye");
+const __s_incompatible_role = cptr.lit("Incompatible role!");
+const __s_pick_a_role_or_profession = cptr.lit("Pick a role or profession");
+const __s_incompatible_race = cptr.lit("Incompatible race!");
+const __s_pick_a_race_or_species = cptr.lit("Pick a race or species");
+const __s_incompatible_gender = cptr.lit("Incompatible gender!");
+const __s_pick_a_gender_or_sex = cptr.lit("Pick a gender or sex");
+const __s_incompatible_alignment = cptr.lit("Incompatible alignment!");
+const __s_pick_an_alignment_or_creed = cptr.lit("Pick an alignment or creed");
+const __s_yes_start_game = cptr.lit("Yes; start game");
+const __s_no_choose_role_again = cptr.lit("No; choose role again");
+const __s_not_yet_choose_another_name = cptr.lit("Not yet; choose another name");
+const __s_is_this_ok_yn_sq = cptr.lit("Is this ok? [yn%sq]");
+const __s_a = cptr.lit("a");
+const __s_unacceptable_roles = cptr.lit("Unacceptable roles");
+const __s_unacceptable_races = cptr.lit("Unacceptable races");
+const __s_unacceptable_genders = cptr.lit("Unacceptable genders");
+const __s_unacceptable_alignments = cptr.lit("Unacceptable alignments");
+const __s_pick_all_that_apply_s = cptr.lit("Pick all that apply%s");
+const __s_and_or_unpick_any_that_no_longer_apply = cptr.lit(" and/or unpick any that no longer apply");
+const __s_role__3 = cptr.lit("<role>");
+const __s_20s_20s_20s_20s = cptr.lit("%.20s %.20s %.20s %.20s");
+const __s_race__3 = cptr.lit("<race>");
+const __s_gender__3 = cptr.lit("<gender>");
+const __s_alignment__3 = cptr.lit("<alignment>");
+const __s_20s_the_20s_20s_20s_20s = cptr.lit("%.20s the %.20s %.20s %.20s %.20s");
+const __s_could_not_create_role_selection_window = cptr.lit("could not create role selection window");
 
 /** C ref: role.c:30 — struct Role[14] */
 export const roles = cptr.alloc(14 * 312);
-cptr.stPtro(roles, 0, __sl0);
+cptr.stPtro(roles, 0, __s_archeologist);
 cptr.stPtro(roles, 0 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 0, __sl1);
+cptr.stPtro(roles, 0 + $Role_rank + 0, __s_digger);
 cptr.stPtro(roles, 0 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 16, __sl2);
+cptr.stPtro(roles, 0 + $Role_rank + 16, __s_field_worker);
 cptr.stPtro(roles, 0 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 32, __sl3);
+cptr.stPtro(roles, 0 + $Role_rank + 32, __s_investigator);
 cptr.stPtro(roles, 0 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 48, __sl4);
+cptr.stPtro(roles, 0 + $Role_rank + 48, __s_exhumer);
 cptr.stPtro(roles, 0 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 64, __sl5);
+cptr.stPtro(roles, 0 + $Role_rank + 64, __s_excavator);
 cptr.stPtro(roles, 0 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 80, __sl6);
+cptr.stPtro(roles, 0 + $Role_rank + 80, __s_spelunker);
 cptr.stPtro(roles, 0 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 96, __sl7);
+cptr.stPtro(roles, 0 + $Role_rank + 96, __s_speleologist);
 cptr.stPtro(roles, 0 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 112, __sl8);
+cptr.stPtro(roles, 0 + $Role_rank + 112, __s_collector);
 cptr.stPtro(roles, 0 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_rank + 128, __sl9);
+cptr.stPtro(roles, 0 + $Role_rank + 128, __s_curator);
 cptr.stPtro(roles, 0 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 0 + $Role_lgod, __sl10);
-cptr.stPtro(roles, 0 + $Role_ngod, __sl11);
-cptr.stPtro(roles, 0 + $Role_cgod, __sl12);
-cptr.stPtro(roles, 0 + $Role_filecode, __sl13);
-cptr.stPtro(roles, 0 + $Role_homebase, __sl14);
-cptr.stPtro(roles, 0 + $Role_intermed, __sl15);
+cptr.stPtro(roles, 0 + $Role_lgod, __s_quetzalcoatl);
+cptr.stPtro(roles, 0 + $Role_ngod, __s_camaxtli);
+cptr.stPtro(roles, 0 + $Role_cgod, __s_huhetotl);
+cptr.stPtro(roles, 0 + $Role_filecode, __s_arc);
+cptr.stPtro(roles, 0 + $Role_homebase, __s_the_college_of_archeology);
+cptr.stPtro(roles, 0 + $Role_intermed, __s_the_tomb_of_the_toltec_kings);
 cptr.stI16o(roles, 0 + $Role_mnum, NHC.PM_ARCHEOLOGIST);
 cptr.stI16o(roles, 0 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 0 + $Role_ldrnum, NHC.PM_LORD_CARNARVON);
@@ -526,32 +526,32 @@ cptr.stI32o(roles, 0 + $Role_spelarmr, 10);
 cptr.stI32o(roles, 0 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 0 + $Role_spelspec, NHC.SPE_MAGIC_MAPPING);
 cptr.stI32o(roles, 0 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 312, __sl16);
+cptr.stPtro(roles, 312, __s_barbarian);
 cptr.stPtro(roles, 312 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 0, __sl17);
-cptr.stPtro(roles, 312 + $Role_rank + 0 + $RoleName_f, __sl18);
-cptr.stPtro(roles, 312 + $Role_rank + 16, __sl19);
+cptr.stPtro(roles, 312 + $Role_rank + 0, __s_plunderer);
+cptr.stPtro(roles, 312 + $Role_rank + 0 + $RoleName_f, __s_plunderess);
+cptr.stPtro(roles, 312 + $Role_rank + 16, __s_pillager);
 cptr.stPtro(roles, 312 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 32, __sl20);
+cptr.stPtro(roles, 312 + $Role_rank + 32, __s_bandit);
 cptr.stPtro(roles, 312 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 48, __sl21);
+cptr.stPtro(roles, 312 + $Role_rank + 48, __s_brigand);
 cptr.stPtro(roles, 312 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 64, __sl22);
+cptr.stPtro(roles, 312 + $Role_rank + 64, __s_raider);
 cptr.stPtro(roles, 312 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 80, __sl23);
+cptr.stPtro(roles, 312 + $Role_rank + 80, __s_reaver);
 cptr.stPtro(roles, 312 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 96, __sl24);
+cptr.stPtro(roles, 312 + $Role_rank + 96, __s_slayer);
 cptr.stPtro(roles, 312 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 312 + $Role_rank + 112, __sl25);
-cptr.stPtro(roles, 312 + $Role_rank + 112 + $RoleName_f, __sl26);
-cptr.stPtro(roles, 312 + $Role_rank + 128, __sl27);
-cptr.stPtro(roles, 312 + $Role_rank + 128 + $RoleName_f, __sl28);
-cptr.stPtro(roles, 312 + $Role_lgod, __sl29);
-cptr.stPtro(roles, 312 + $Role_ngod, __sl30);
-cptr.stPtro(roles, 312 + $Role_cgod, __sl31);
-cptr.stPtro(roles, 312 + $Role_filecode, __sl32);
-cptr.stPtro(roles, 312 + $Role_homebase, __sl33);
-cptr.stPtro(roles, 312 + $Role_intermed, __sl34);
+cptr.stPtro(roles, 312 + $Role_rank + 112, __s_chieftain);
+cptr.stPtro(roles, 312 + $Role_rank + 112 + $RoleName_f, __s_chieftainess);
+cptr.stPtro(roles, 312 + $Role_rank + 128, __s_conqueror);
+cptr.stPtro(roles, 312 + $Role_rank + 128 + $RoleName_f, __s_conqueress);
+cptr.stPtro(roles, 312 + $Role_lgod, __s_mitra);
+cptr.stPtro(roles, 312 + $Role_ngod, __s_crom);
+cptr.stPtro(roles, 312 + $Role_cgod, __s_set);
+cptr.stPtro(roles, 312 + $Role_filecode, __s_bar);
+cptr.stPtro(roles, 312 + $Role_homebase, __s_the_camp_of_the_duali_tribe);
+cptr.stPtro(roles, 312 + $Role_intermed, __s_the_duali_oasis);
 cptr.stI16o(roles, 312 + $Role_mnum, NHC.PM_BARBARIAN);
 cptr.stI16o(roles, 312 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 312 + $Role_ldrnum, NHC.PM_PELIAS);
@@ -596,32 +596,32 @@ cptr.stI32o(roles, 312 + $Role_spelarmr, 8);
 cptr.stI32o(roles, 312 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 312 + $Role_spelspec, NHC.SPE_HASTE_SELF);
 cptr.stI32o(roles, 312 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 624, __sl35);
-cptr.stPtro(roles, 624 + $RoleName_f, __sl36);
-cptr.stPtro(roles, 624 + $Role_rank + 0, __sl37);
+cptr.stPtro(roles, 624, __s_caveman);
+cptr.stPtro(roles, 624 + $RoleName_f, __s_cavewoman);
+cptr.stPtro(roles, 624 + $Role_rank + 0, __s_troglodyte);
 cptr.stPtro(roles, 624 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 16, __sl38);
+cptr.stPtro(roles, 624 + $Role_rank + 16, __s_aborigine);
 cptr.stPtro(roles, 624 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 32, __sl39);
+cptr.stPtro(roles, 624 + $Role_rank + 32, __s_wanderer);
 cptr.stPtro(roles, 624 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 48, __sl40);
+cptr.stPtro(roles, 624 + $Role_rank + 48, __s_vagrant);
 cptr.stPtro(roles, 624 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 64, __sl41);
+cptr.stPtro(roles, 624 + $Role_rank + 64, __s_wayfarer);
 cptr.stPtro(roles, 624 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 80, __sl42);
+cptr.stPtro(roles, 624 + $Role_rank + 80, __s_roamer);
 cptr.stPtro(roles, 624 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 96, __sl43);
+cptr.stPtro(roles, 624 + $Role_rank + 96, __s_nomad);
 cptr.stPtro(roles, 624 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 112, __sl44);
+cptr.stPtro(roles, 624 + $Role_rank + 112, __s_rover);
 cptr.stPtro(roles, 624 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_rank + 128, __sl45);
+cptr.stPtro(roles, 624 + $Role_rank + 128, __s_pioneer);
 cptr.stPtro(roles, 624 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 624 + $Role_lgod, __sl46);
-cptr.stPtro(roles, 624 + $Role_ngod, __sl47);
-cptr.stPtro(roles, 624 + $Role_cgod, __sl48);
-cptr.stPtro(roles, 624 + $Role_filecode, __sl49);
-cptr.stPtro(roles, 624 + $Role_homebase, __sl50);
-cptr.stPtro(roles, 624 + $Role_intermed, __sl51);
+cptr.stPtro(roles, 624 + $Role_lgod, __s_anu);
+cptr.stPtro(roles, 624 + $Role_ngod, __s_ishtar);
+cptr.stPtro(roles, 624 + $Role_cgod, __s_anshar);
+cptr.stPtro(roles, 624 + $Role_filecode, __s_cav);
+cptr.stPtro(roles, 624 + $Role_homebase, __s_the_caves_of_the_ancestors);
+cptr.stPtro(roles, 624 + $Role_intermed, __s_the_dragon_s_lair);
 cptr.stI16o(roles, 624 + $Role_mnum, NHC.PM_CAVE_DWELLER);
 cptr.stI16o(roles, 624 + $Role_petnum, NHC.PM_LITTLE_DOG);
 cptr.stI16o(roles, 624 + $Role_ldrnum, NHC.PM_SHAMAN_KARNOV);
@@ -666,32 +666,32 @@ cptr.stI32o(roles, 624 + $Role_spelarmr, 8);
 cptr.stI32o(roles, 624 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 624 + $Role_spelspec, NHC.SPE_DIG);
 cptr.stI32o(roles, 624 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 936, __sl52);
+cptr.stPtro(roles, 936, __s_healer);
 cptr.stPtro(roles, 936 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 0, __sl53);
+cptr.stPtro(roles, 936 + $Role_rank + 0, __s_rhizotomist);
 cptr.stPtro(roles, 936 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 16, __sl54);
+cptr.stPtro(roles, 936 + $Role_rank + 16, __s_empiric);
 cptr.stPtro(roles, 936 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 32, __sl55);
+cptr.stPtro(roles, 936 + $Role_rank + 32, __s_embalmer);
 cptr.stPtro(roles, 936 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 48, __sl56);
+cptr.stPtro(roles, 936 + $Role_rank + 48, __s_dresser);
 cptr.stPtro(roles, 936 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 64, __sl57);
-cptr.stPtro(roles, 936 + $Role_rank + 64 + $RoleName_f, __sl58);
-cptr.stPtro(roles, 936 + $Role_rank + 80, __sl59);
+cptr.stPtro(roles, 936 + $Role_rank + 64, __s_medicus_ossium);
+cptr.stPtro(roles, 936 + $Role_rank + 64 + $RoleName_f, __s_medica_ossium);
+cptr.stPtro(roles, 936 + $Role_rank + 80, __s_herbalist);
 cptr.stPtro(roles, 936 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 96, __sl60);
-cptr.stPtro(roles, 936 + $Role_rank + 96 + $RoleName_f, __sl61);
-cptr.stPtro(roles, 936 + $Role_rank + 112, __sl62);
+cptr.stPtro(roles, 936 + $Role_rank + 96, __s_magister);
+cptr.stPtro(roles, 936 + $Role_rank + 96 + $RoleName_f, __s_magistra);
+cptr.stPtro(roles, 936 + $Role_rank + 112, __s_physician);
 cptr.stPtro(roles, 936 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_rank + 128, __sl63);
+cptr.stPtro(roles, 936 + $Role_rank + 128, __s_chirurgeon);
 cptr.stPtro(roles, 936 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 936 + $Role_lgod, __sl64);
-cptr.stPtro(roles, 936 + $Role_ngod, __sl65);
-cptr.stPtro(roles, 936 + $Role_cgod, __sl66);
-cptr.stPtro(roles, 936 + $Role_filecode, __sl67);
-cptr.stPtro(roles, 936 + $Role_homebase, __sl68);
-cptr.stPtro(roles, 936 + $Role_intermed, __sl69);
+cptr.stPtro(roles, 936 + $Role_lgod, __s_athena);
+cptr.stPtro(roles, 936 + $Role_ngod, __s_hermes);
+cptr.stPtro(roles, 936 + $Role_cgod, __s_poseidon);
+cptr.stPtro(roles, 936 + $Role_filecode, __s_hea);
+cptr.stPtro(roles, 936 + $Role_homebase, __s_the_temple_of_epidaurus);
+cptr.stPtro(roles, 936 + $Role_intermed, __s_the_temple_of_coeus);
 cptr.stI16o(roles, 936 + $Role_mnum, NHC.PM_HEALER);
 cptr.stI16o(roles, 936 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 936 + $Role_ldrnum, NHC.PM_HIPPOCRATES);
@@ -736,32 +736,32 @@ cptr.stI32o(roles, 936 + $Role_spelarmr, 10);
 cptr.stI32o(roles, 936 + $Role_spelstat, NHC.A_WIS);
 cptr.stI32o(roles, 936 + $Role_spelspec, NHC.SPE_CURE_SICKNESS);
 cptr.stI32o(roles, 936 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 1248, __sl70);
+cptr.stPtro(roles, 1248, __s_knight);
 cptr.stPtro(roles, 1248 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 0, __sl71);
+cptr.stPtro(roles, 1248 + $Role_rank + 0, __s_gallant);
 cptr.stPtro(roles, 1248 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 16, __sl72);
+cptr.stPtro(roles, 1248 + $Role_rank + 16, __s_esquire);
 cptr.stPtro(roles, 1248 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 32, __sl73);
+cptr.stPtro(roles, 1248 + $Role_rank + 32, __s_bachelor);
 cptr.stPtro(roles, 1248 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 48, __sl74);
+cptr.stPtro(roles, 1248 + $Role_rank + 48, __s_sergeant);
 cptr.stPtro(roles, 1248 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 64, __sl70);
+cptr.stPtro(roles, 1248 + $Role_rank + 64, __s_knight);
 cptr.stPtro(roles, 1248 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 80, __sl75);
+cptr.stPtro(roles, 1248 + $Role_rank + 80, __s_banneret);
 cptr.stPtro(roles, 1248 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_rank + 96, __sl76);
-cptr.stPtro(roles, 1248 + $Role_rank + 96 + $RoleName_f, __sl77);
-cptr.stPtro(roles, 1248 + $Role_rank + 112, __sl78);
-cptr.stPtro(roles, 1248 + $Role_rank + 112 + $RoleName_f, __sl79);
-cptr.stPtro(roles, 1248 + $Role_rank + 128, __sl80);
+cptr.stPtro(roles, 1248 + $Role_rank + 96, __s_chevalier);
+cptr.stPtro(roles, 1248 + $Role_rank + 96 + $RoleName_f, __s_chevaliere);
+cptr.stPtro(roles, 1248 + $Role_rank + 112, __s_seignieur);
+cptr.stPtro(roles, 1248 + $Role_rank + 112 + $RoleName_f, __s_dame);
+cptr.stPtro(roles, 1248 + $Role_rank + 128, __s_paladin);
 cptr.stPtro(roles, 1248 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 1248 + $Role_lgod, __sl81);
-cptr.stPtro(roles, 1248 + $Role_ngod, __sl82);
-cptr.stPtro(roles, 1248 + $Role_cgod, __sl83);
-cptr.stPtro(roles, 1248 + $Role_filecode, __sl84);
-cptr.stPtro(roles, 1248 + $Role_homebase, __sl85);
-cptr.stPtro(roles, 1248 + $Role_intermed, __sl86);
+cptr.stPtro(roles, 1248 + $Role_lgod, __s_lugh);
+cptr.stPtro(roles, 1248 + $Role_ngod, __s_brigit);
+cptr.stPtro(roles, 1248 + $Role_cgod, __s_manannan_mac_lir);
+cptr.stPtro(roles, 1248 + $Role_filecode, __s_kni);
+cptr.stPtro(roles, 1248 + $Role_homebase, __s_camelot_castle);
+cptr.stPtro(roles, 1248 + $Role_intermed, __s_the_isle_of_glass);
 cptr.stI16o(roles, 1248 + $Role_mnum, NHC.PM_KNIGHT);
 cptr.stI16o(roles, 1248 + $Role_petnum, NHC.PM_PONY);
 cptr.stI16o(roles, 1248 + $Role_ldrnum, NHC.PM_KING_ARTHUR);
@@ -806,32 +806,32 @@ cptr.stI32o(roles, 1248 + $Role_spelarmr, 9);
 cptr.stI32o(roles, 1248 + $Role_spelstat, NHC.A_WIS);
 cptr.stI32o(roles, 1248 + $Role_spelspec, NHC.SPE_TURN_UNDEAD);
 cptr.stI32o(roles, 1248 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 1560, __sl87);
+cptr.stPtro(roles, 1560, __s_monk);
 cptr.stPtro(roles, 1560 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 0, __sl88);
+cptr.stPtro(roles, 1560 + $Role_rank + 0, __s_candidate);
 cptr.stPtro(roles, 1560 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 16, __sl89);
+cptr.stPtro(roles, 1560 + $Role_rank + 16, __s_novice);
 cptr.stPtro(roles, 1560 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 32, __sl90);
+cptr.stPtro(roles, 1560 + $Role_rank + 32, __s_initiate);
 cptr.stPtro(roles, 1560 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 48, __sl91);
+cptr.stPtro(roles, 1560 + $Role_rank + 48, __s_student_of_stones);
 cptr.stPtro(roles, 1560 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 64, __sl92);
+cptr.stPtro(roles, 1560 + $Role_rank + 64, __s_student_of_waters);
 cptr.stPtro(roles, 1560 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 80, __sl93);
+cptr.stPtro(roles, 1560 + $Role_rank + 80, __s_student_of_metals);
 cptr.stPtro(roles, 1560 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 96, __sl94);
+cptr.stPtro(roles, 1560 + $Role_rank + 96, __s_student_of_winds);
 cptr.stPtro(roles, 1560 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 112, __sl95);
+cptr.stPtro(roles, 1560 + $Role_rank + 112, __s_student_of_fire);
 cptr.stPtro(roles, 1560 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_rank + 128, __sl96);
+cptr.stPtro(roles, 1560 + $Role_rank + 128, __s_master);
 cptr.stPtro(roles, 1560 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 1560 + $Role_lgod, __sl97);
-cptr.stPtro(roles, 1560 + $Role_ngod, __sl98);
-cptr.stPtro(roles, 1560 + $Role_cgod, __sl99);
-cptr.stPtro(roles, 1560 + $Role_filecode, __sl100);
-cptr.stPtro(roles, 1560 + $Role_homebase, __sl101);
-cptr.stPtro(roles, 1560 + $Role_intermed, __sl102);
+cptr.stPtro(roles, 1560 + $Role_lgod, __s_shan_lai_ching);
+cptr.stPtro(roles, 1560 + $Role_ngod, __s_chih_sung_tzu);
+cptr.stPtro(roles, 1560 + $Role_cgod, __s_huan_ti);
+cptr.stPtro(roles, 1560 + $Role_filecode, __s_mon);
+cptr.stPtro(roles, 1560 + $Role_homebase, __s_the_monastery_of_chan_sune);
+cptr.stPtro(roles, 1560 + $Role_intermed, __s_the_monastery_of_the_earth_lord);
 cptr.stI16o(roles, 1560 + $Role_mnum, NHC.PM_MONK);
 cptr.stI16o(roles, 1560 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 1560 + $Role_ldrnum, NHC.PM_GRAND_MASTER);
@@ -876,32 +876,32 @@ cptr.stI32o(roles, 1560 + $Role_spelarmr, 20);
 cptr.stI32o(roles, 1560 + $Role_spelstat, NHC.A_WIS);
 cptr.stI32o(roles, 1560 + $Role_spelspec, NHC.SPE_RESTORE_ABILITY);
 cptr.stI32o(roles, 1560 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 1872, __sl103);
-cptr.stPtro(roles, 1872 + $RoleName_f, __sl104);
-cptr.stPtro(roles, 1872 + $Role_rank + 0, __sl105);
+cptr.stPtro(roles, 1872, __s_priest);
+cptr.stPtro(roles, 1872 + $RoleName_f, __s_priestess);
+cptr.stPtro(roles, 1872 + $Role_rank + 0, __s_aspirant);
 cptr.stPtro(roles, 1872 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 1872 + $Role_rank + 16, __sl106);
+cptr.stPtro(roles, 1872 + $Role_rank + 16, __s_acolyte);
 cptr.stPtro(roles, 1872 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 1872 + $Role_rank + 32, __sl107);
+cptr.stPtro(roles, 1872 + $Role_rank + 32, __s_adept);
 cptr.stPtro(roles, 1872 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 1872 + $Role_rank + 48, __sl103);
-cptr.stPtro(roles, 1872 + $Role_rank + 48 + $RoleName_f, __sl104);
-cptr.stPtro(roles, 1872 + $Role_rank + 64, __sl108);
+cptr.stPtro(roles, 1872 + $Role_rank + 48, __s_priest);
+cptr.stPtro(roles, 1872 + $Role_rank + 48 + $RoleName_f, __s_priestess);
+cptr.stPtro(roles, 1872 + $Role_rank + 64, __s_curate);
 cptr.stPtro(roles, 1872 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 1872 + $Role_rank + 80, __sl109);
-cptr.stPtro(roles, 1872 + $Role_rank + 80 + $RoleName_f, __sl110);
-cptr.stPtro(roles, 1872 + $Role_rank + 96, __sl111);
+cptr.stPtro(roles, 1872 + $Role_rank + 80, __s_canon);
+cptr.stPtro(roles, 1872 + $Role_rank + 80 + $RoleName_f, __s_canoness);
+cptr.stPtro(roles, 1872 + $Role_rank + 96, __s_lama);
 cptr.stPtro(roles, 1872 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 1872 + $Role_rank + 112, __sl112);
-cptr.stPtro(roles, 1872 + $Role_rank + 112 + $RoleName_f, __sl113);
-cptr.stPtro(roles, 1872 + $Role_rank + 128, __sl114);
-cptr.stPtro(roles, 1872 + $Role_rank + 128 + $RoleName_f, __sl115);
+cptr.stPtro(roles, 1872 + $Role_rank + 112, __s_patriarch);
+cptr.stPtro(roles, 1872 + $Role_rank + 112 + $RoleName_f, __s_matriarch);
+cptr.stPtro(roles, 1872 + $Role_rank + 128, __s_high_priest);
+cptr.stPtro(roles, 1872 + $Role_rank + 128 + $RoleName_f, __s_high_priestess);
 cptr.stPtro(roles, 1872 + $Role_lgod, null);
 cptr.stPtro(roles, 1872 + $Role_ngod, null);
 cptr.stPtro(roles, 1872 + $Role_cgod, null);
-cptr.stPtro(roles, 1872 + $Role_filecode, __sl116);
-cptr.stPtro(roles, 1872 + $Role_homebase, __sl117);
-cptr.stPtro(roles, 1872 + $Role_intermed, __sl118);
+cptr.stPtro(roles, 1872 + $Role_filecode, __s_pri);
+cptr.stPtro(roles, 1872 + $Role_homebase, __s_the_great_temple);
+cptr.stPtro(roles, 1872 + $Role_intermed, __s_the_temple_of_nalzok);
 cptr.stI16o(roles, 1872 + $Role_mnum, NHC.PM_CLERIC);
 cptr.stI16o(roles, 1872 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 1872 + $Role_ldrnum, NHC.PM_ARCH_PRIEST);
@@ -946,32 +946,32 @@ cptr.stI32o(roles, 1872 + $Role_spelarmr, 10);
 cptr.stI32o(roles, 1872 + $Role_spelstat, NHC.A_WIS);
 cptr.stI32o(roles, 1872 + $Role_spelspec, NHC.SPE_REMOVE_CURSE);
 cptr.stI32o(roles, 1872 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 2184, __sl119);
+cptr.stPtro(roles, 2184, __s_rogue);
 cptr.stPtro(roles, 2184 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 0, __sl120);
+cptr.stPtro(roles, 2184 + $Role_rank + 0, __s_footpad);
 cptr.stPtro(roles, 2184 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 16, __sl121);
+cptr.stPtro(roles, 2184 + $Role_rank + 16, __s_cutpurse);
 cptr.stPtro(roles, 2184 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 32, __sl119);
+cptr.stPtro(roles, 2184 + $Role_rank + 32, __s_rogue);
 cptr.stPtro(roles, 2184 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 48, __sl122);
+cptr.stPtro(roles, 2184 + $Role_rank + 48, __s_pilferer);
 cptr.stPtro(roles, 2184 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 64, __sl123);
+cptr.stPtro(roles, 2184 + $Role_rank + 64, __s_robber);
 cptr.stPtro(roles, 2184 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 80, __sl124);
+cptr.stPtro(roles, 2184 + $Role_rank + 80, __s_burglar);
 cptr.stPtro(roles, 2184 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 96, __sl125);
+cptr.stPtro(roles, 2184 + $Role_rank + 96, __s_filcher);
 cptr.stPtro(roles, 2184 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_rank + 112, __sl126);
-cptr.stPtro(roles, 2184 + $Role_rank + 112 + $RoleName_f, __sl127);
-cptr.stPtro(roles, 2184 + $Role_rank + 128, __sl128);
+cptr.stPtro(roles, 2184 + $Role_rank + 112, __s_magsman);
+cptr.stPtro(roles, 2184 + $Role_rank + 112 + $RoleName_f, __s_magswoman);
+cptr.stPtro(roles, 2184 + $Role_rank + 128, __s_thief);
 cptr.stPtro(roles, 2184 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 2184 + $Role_lgod, __sl129);
-cptr.stPtro(roles, 2184 + $Role_ngod, __sl130);
-cptr.stPtro(roles, 2184 + $Role_cgod, __sl131);
-cptr.stPtro(roles, 2184 + $Role_filecode, __sl132);
-cptr.stPtro(roles, 2184 + $Role_homebase, __sl133);
-cptr.stPtro(roles, 2184 + $Role_intermed, __sl134);
+cptr.stPtro(roles, 2184 + $Role_lgod, __s_issek);
+cptr.stPtro(roles, 2184 + $Role_ngod, __s_mog);
+cptr.stPtro(roles, 2184 + $Role_cgod, __s_kos);
+cptr.stPtro(roles, 2184 + $Role_filecode, __s_rog);
+cptr.stPtro(roles, 2184 + $Role_homebase, __s_the_thieves_guild_hall);
+cptr.stPtro(roles, 2184 + $Role_intermed, __s_the_assassins_guild_hall);
 cptr.stI16o(roles, 2184 + $Role_mnum, NHC.PM_ROGUE);
 cptr.stI16o(roles, 2184 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 2184 + $Role_ldrnum, NHC.PM_MASTER_OF_THIEVES);
@@ -1016,32 +1016,32 @@ cptr.stI32o(roles, 2184 + $Role_spelarmr, 9);
 cptr.stI32o(roles, 2184 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 2184 + $Role_spelspec, NHC.SPE_DETECT_TREASURE);
 cptr.stI32o(roles, 2184 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 2496, __sl135);
+cptr.stPtro(roles, 2496, __s_ranger);
 cptr.stPtro(roles, 2496 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 0, __sl136);
+cptr.stPtro(roles, 2496 + $Role_rank + 0, __s_tenderfoot);
 cptr.stPtro(roles, 2496 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 16, __sl137);
+cptr.stPtro(roles, 2496 + $Role_rank + 16, __s_lookout);
 cptr.stPtro(roles, 2496 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 32, __sl138);
+cptr.stPtro(roles, 2496 + $Role_rank + 32, __s_trailblazer);
 cptr.stPtro(roles, 2496 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 48, __sl139);
-cptr.stPtro(roles, 2496 + $Role_rank + 48 + $RoleName_f, __sl140);
-cptr.stPtro(roles, 2496 + $Role_rank + 64, __sl141);
+cptr.stPtro(roles, 2496 + $Role_rank + 48, __s_reconnoiterer);
+cptr.stPtro(roles, 2496 + $Role_rank + 48 + $RoleName_f, __s_reconnoiteress);
+cptr.stPtro(roles, 2496 + $Role_rank + 64, __s_scout);
 cptr.stPtro(roles, 2496 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 80, __sl142);
+cptr.stPtro(roles, 2496 + $Role_rank + 80, __s_arbalester);
 cptr.stPtro(roles, 2496 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 96, __sl143);
+cptr.stPtro(roles, 2496 + $Role_rank + 96, __s_archer);
 cptr.stPtro(roles, 2496 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 112, __sl144);
+cptr.stPtro(roles, 2496 + $Role_rank + 112, __s_sharpshooter);
 cptr.stPtro(roles, 2496 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 2496 + $Role_rank + 128, __sl145);
-cptr.stPtro(roles, 2496 + $Role_rank + 128 + $RoleName_f, __sl146);
-cptr.stPtro(roles, 2496 + $Role_lgod, __sl147);
-cptr.stPtro(roles, 2496 + $Role_ngod, __sl148);
-cptr.stPtro(roles, 2496 + $Role_cgod, __sl149);
-cptr.stPtro(roles, 2496 + $Role_filecode, __sl150);
-cptr.stPtro(roles, 2496 + $Role_homebase, __sl151);
-cptr.stPtro(roles, 2496 + $Role_intermed, __sl152);
+cptr.stPtro(roles, 2496 + $Role_rank + 128, __s_marksman);
+cptr.stPtro(roles, 2496 + $Role_rank + 128 + $RoleName_f, __s_markswoman);
+cptr.stPtro(roles, 2496 + $Role_lgod, __s_mercury);
+cptr.stPtro(roles, 2496 + $Role_ngod, __s_venus);
+cptr.stPtro(roles, 2496 + $Role_cgod, __s_mars);
+cptr.stPtro(roles, 2496 + $Role_filecode, __s_ran);
+cptr.stPtro(roles, 2496 + $Role_homebase, __s_orion_s_camp);
+cptr.stPtro(roles, 2496 + $Role_intermed, __s_the_cave_of_the_wumpus);
 cptr.stI16o(roles, 2496 + $Role_mnum, NHC.PM_RANGER);
 cptr.stI16o(roles, 2496 + $Role_petnum, NHC.PM_LITTLE_DOG);
 cptr.stI16o(roles, 2496 + $Role_ldrnum, NHC.PM_ORION);
@@ -1086,32 +1086,32 @@ cptr.stI32o(roles, 2496 + $Role_spelarmr, 10);
 cptr.stI32o(roles, 2496 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 2496 + $Role_spelspec, NHC.SPE_INVISIBILITY);
 cptr.stI32o(roles, 2496 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 2808, __sl153);
+cptr.stPtro(roles, 2808, __s_samurai);
 cptr.stPtro(roles, 2808 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 0, __sl154);
+cptr.stPtro(roles, 2808 + $Role_rank + 0, __s_hatamoto);
 cptr.stPtro(roles, 2808 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 16, __sl155);
+cptr.stPtro(roles, 2808 + $Role_rank + 16, __s_ronin);
 cptr.stPtro(roles, 2808 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 32, __sl156);
-cptr.stPtro(roles, 2808 + $Role_rank + 32 + $RoleName_f, __sl157);
-cptr.stPtro(roles, 2808 + $Role_rank + 48, __sl158);
+cptr.stPtro(roles, 2808 + $Role_rank + 32, __s_ninja);
+cptr.stPtro(roles, 2808 + $Role_rank + 32 + $RoleName_f, __s_kunoichi);
+cptr.stPtro(roles, 2808 + $Role_rank + 48, __s_joshu);
 cptr.stPtro(roles, 2808 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 64, __sl159);
+cptr.stPtro(roles, 2808 + $Role_rank + 64, __s_ryoshu);
 cptr.stPtro(roles, 2808 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 80, __sl160);
+cptr.stPtro(roles, 2808 + $Role_rank + 80, __s_kokushu);
 cptr.stPtro(roles, 2808 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 96, __sl161);
+cptr.stPtro(roles, 2808 + $Role_rank + 96, __s_daimyo);
 cptr.stPtro(roles, 2808 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 112, __sl162);
+cptr.stPtro(roles, 2808 + $Role_rank + 112, __s_kuge);
 cptr.stPtro(roles, 2808 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_rank + 128, __sl163);
+cptr.stPtro(roles, 2808 + $Role_rank + 128, __s_shogun);
 cptr.stPtro(roles, 2808 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 2808 + $Role_lgod, __sl164);
-cptr.stPtro(roles, 2808 + $Role_ngod, __sl165);
-cptr.stPtro(roles, 2808 + $Role_cgod, __sl166);
-cptr.stPtro(roles, 2808 + $Role_filecode, __sl167);
-cptr.stPtro(roles, 2808 + $Role_homebase, __sl168);
-cptr.stPtro(roles, 2808 + $Role_intermed, __sl169);
+cptr.stPtro(roles, 2808 + $Role_lgod, __s_amaterasu_omikami);
+cptr.stPtro(roles, 2808 + $Role_ngod, __s_raijin);
+cptr.stPtro(roles, 2808 + $Role_cgod, __s_susanowo);
+cptr.stPtro(roles, 2808 + $Role_filecode, __s_sam);
+cptr.stPtro(roles, 2808 + $Role_homebase, __s_the_castle_of_the_taro_clan);
+cptr.stPtro(roles, 2808 + $Role_intermed, __s_the_shogun_s_castle);
 cptr.stI16o(roles, 2808 + $Role_mnum, NHC.PM_SAMURAI);
 cptr.stI16o(roles, 2808 + $Role_petnum, NHC.PM_LITTLE_DOG);
 cptr.stI16o(roles, 2808 + $Role_ldrnum, NHC.PM_LORD_SATO);
@@ -1156,32 +1156,32 @@ cptr.stI32o(roles, 2808 + $Role_spelarmr, 8);
 cptr.stI32o(roles, 2808 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 2808 + $Role_spelspec, NHC.SPE_CLAIRVOYANCE);
 cptr.stI32o(roles, 2808 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 3120, __sl170);
+cptr.stPtro(roles, 3120, __s_tourist);
 cptr.stPtro(roles, 3120 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 0, __sl171);
+cptr.stPtro(roles, 3120 + $Role_rank + 0, __s_rambler);
 cptr.stPtro(roles, 3120 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 16, __sl172);
+cptr.stPtro(roles, 3120 + $Role_rank + 16, __s_sightseer);
 cptr.stPtro(roles, 3120 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 32, __sl173);
+cptr.stPtro(roles, 3120 + $Role_rank + 32, __s_excursionist);
 cptr.stPtro(roles, 3120 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 48, __sl174);
-cptr.stPtro(roles, 3120 + $Role_rank + 48 + $RoleName_f, __sl175);
-cptr.stPtro(roles, 3120 + $Role_rank + 64, __sl176);
+cptr.stPtro(roles, 3120 + $Role_rank + 48, __s_peregrinator);
+cptr.stPtro(roles, 3120 + $Role_rank + 48 + $RoleName_f, __s_peregrinatrix);
+cptr.stPtro(roles, 3120 + $Role_rank + 64, __s_traveler);
 cptr.stPtro(roles, 3120 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 80, __sl177);
+cptr.stPtro(roles, 3120 + $Role_rank + 80, __s_journeyer);
 cptr.stPtro(roles, 3120 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 96, __sl178);
+cptr.stPtro(roles, 3120 + $Role_rank + 96, __s_voyager);
 cptr.stPtro(roles, 3120 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 112, __sl179);
+cptr.stPtro(roles, 3120 + $Role_rank + 112, __s_explorer);
 cptr.stPtro(roles, 3120 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_rank + 128, __sl180);
+cptr.stPtro(roles, 3120 + $Role_rank + 128, __s_adventurer);
 cptr.stPtro(roles, 3120 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 3120 + $Role_lgod, __sl181);
-cptr.stPtro(roles, 3120 + $Role_ngod, __sl182);
-cptr.stPtro(roles, 3120 + $Role_cgod, __sl183);
-cptr.stPtro(roles, 3120 + $Role_filecode, __sl184);
-cptr.stPtro(roles, 3120 + $Role_homebase, __sl185);
-cptr.stPtro(roles, 3120 + $Role_intermed, __sl133);
+cptr.stPtro(roles, 3120 + $Role_lgod, __s_blind_io);
+cptr.stPtro(roles, 3120 + $Role_ngod, __s_the_lady);
+cptr.stPtro(roles, 3120 + $Role_cgod, __s_offler);
+cptr.stPtro(roles, 3120 + $Role_filecode, __s_tou);
+cptr.stPtro(roles, 3120 + $Role_homebase, __s_ankh_morpork);
+cptr.stPtro(roles, 3120 + $Role_intermed, __s_the_thieves_guild_hall);
 cptr.stI16o(roles, 3120 + $Role_mnum, NHC.PM_TOURIST);
 cptr.stI16o(roles, 3120 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 3120 + $Role_ldrnum, NHC.PM_TWOFLOWER);
@@ -1226,32 +1226,32 @@ cptr.stI32o(roles, 3120 + $Role_spelarmr, 10);
 cptr.stI32o(roles, 3120 + $Role_spelstat, NHC.A_INT);
 cptr.stI32o(roles, 3120 + $Role_spelspec, NHC.SPE_CHARM_MONSTER);
 cptr.stI32o(roles, 3120 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 3432, __sl186);
+cptr.stPtro(roles, 3432, __s_valkyrie);
 cptr.stPtro(roles, 3432 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 0, __sl187);
+cptr.stPtro(roles, 3432 + $Role_rank + 0, __s_stripling);
 cptr.stPtro(roles, 3432 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 16, __sl188);
+cptr.stPtro(roles, 3432 + $Role_rank + 16, __s_skirmisher);
 cptr.stPtro(roles, 3432 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 32, __sl189);
+cptr.stPtro(roles, 3432 + $Role_rank + 32, __s_fighter);
 cptr.stPtro(roles, 3432 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 48, __sl190);
-cptr.stPtro(roles, 3432 + $Role_rank + 48 + $RoleName_f, __sl191);
-cptr.stPtro(roles, 3432 + $Role_rank + 64, __sl192);
+cptr.stPtro(roles, 3432 + $Role_rank + 48, __s_man_at_arms);
+cptr.stPtro(roles, 3432 + $Role_rank + 48 + $RoleName_f, __s_woman_at_arms);
+cptr.stPtro(roles, 3432 + $Role_rank + 64, __s_warrior);
 cptr.stPtro(roles, 3432 + $Role_rank + 64 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 80, __sl193);
+cptr.stPtro(roles, 3432 + $Role_rank + 80, __s_swashbuckler);
 cptr.stPtro(roles, 3432 + $Role_rank + 80 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 96, __sl194);
-cptr.stPtro(roles, 3432 + $Role_rank + 96 + $RoleName_f, __sl195);
-cptr.stPtro(roles, 3432 + $Role_rank + 112, __sl196);
+cptr.stPtro(roles, 3432 + $Role_rank + 96, __s_hero);
+cptr.stPtro(roles, 3432 + $Role_rank + 96 + $RoleName_f, __s_heroine);
+cptr.stPtro(roles, 3432 + $Role_rank + 112, __s_champion);
 cptr.stPtro(roles, 3432 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 3432 + $Role_rank + 128, __sl197);
-cptr.stPtro(roles, 3432 + $Role_rank + 128 + $RoleName_f, __sl198);
-cptr.stPtro(roles, 3432 + $Role_lgod, __sl199);
-cptr.stPtro(roles, 3432 + $Role_ngod, __sl200);
-cptr.stPtro(roles, 3432 + $Role_cgod, __sl201);
-cptr.stPtro(roles, 3432 + $Role_filecode, __sl202);
-cptr.stPtro(roles, 3432 + $Role_homebase, __sl203);
-cptr.stPtro(roles, 3432 + $Role_intermed, __sl204);
+cptr.stPtro(roles, 3432 + $Role_rank + 128, __s_lord);
+cptr.stPtro(roles, 3432 + $Role_rank + 128 + $RoleName_f, __s_lady);
+cptr.stPtro(roles, 3432 + $Role_lgod, __s_tyr);
+cptr.stPtro(roles, 3432 + $Role_ngod, __s_odin);
+cptr.stPtro(roles, 3432 + $Role_cgod, __s_loki);
+cptr.stPtro(roles, 3432 + $Role_filecode, __s_val);
+cptr.stPtro(roles, 3432 + $Role_homebase, __s_the_shrine_of_destiny);
+cptr.stPtro(roles, 3432 + $Role_intermed, __s_the_cave_of_surtur);
 cptr.stI16o(roles, 3432 + $Role_mnum, NHC.PM_VALKYRIE);
 cptr.stI16o(roles, 3432 + $Role_petnum, NHC.NON_PM);
 cptr.stI16o(roles, 3432 + $Role_ldrnum, NHC.PM_NORN);
@@ -1296,32 +1296,32 @@ cptr.stI32o(roles, 3432 + $Role_spelarmr, 9);
 cptr.stI32o(roles, 3432 + $Role_spelstat, NHC.A_WIS);
 cptr.stI32o(roles, 3432 + $Role_spelspec, NHC.SPE_CONE_OF_COLD);
 cptr.stI32o(roles, 3432 + $Role_spelsbon, -4);
-cptr.stPtro(roles, 3744, __sl205);
+cptr.stPtro(roles, 3744, __s_wizard);
 cptr.stPtro(roles, 3744 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 0, __sl206);
+cptr.stPtro(roles, 3744 + $Role_rank + 0, __s_evoker);
 cptr.stPtro(roles, 3744 + $Role_rank + 0 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 16, __sl207);
+cptr.stPtro(roles, 3744 + $Role_rank + 16, __s_conjurer);
 cptr.stPtro(roles, 3744 + $Role_rank + 16 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 32, __sl208);
+cptr.stPtro(roles, 3744 + $Role_rank + 32, __s_thaumaturge);
 cptr.stPtro(roles, 3744 + $Role_rank + 32 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 48, __sl209);
+cptr.stPtro(roles, 3744 + $Role_rank + 48, __s_magician);
 cptr.stPtro(roles, 3744 + $Role_rank + 48 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 64, __sl210);
-cptr.stPtro(roles, 3744 + $Role_rank + 64 + $RoleName_f, __sl211);
-cptr.stPtro(roles, 3744 + $Role_rank + 80, __sl212);
-cptr.stPtro(roles, 3744 + $Role_rank + 80 + $RoleName_f, __sl213);
-cptr.stPtro(roles, 3744 + $Role_rank + 96, __sl214);
+cptr.stPtro(roles, 3744 + $Role_rank + 64, __s_enchanter);
+cptr.stPtro(roles, 3744 + $Role_rank + 64 + $RoleName_f, __s_enchantress);
+cptr.stPtro(roles, 3744 + $Role_rank + 80, __s_sorcerer);
+cptr.stPtro(roles, 3744 + $Role_rank + 80 + $RoleName_f, __s_sorceress);
+cptr.stPtro(roles, 3744 + $Role_rank + 96, __s_necromancer);
 cptr.stPtro(roles, 3744 + $Role_rank + 96 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 112, __sl205);
+cptr.stPtro(roles, 3744 + $Role_rank + 112, __s_wizard);
 cptr.stPtro(roles, 3744 + $Role_rank + 112 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_rank + 128, __sl215);
+cptr.stPtro(roles, 3744 + $Role_rank + 128, __s_mage);
 cptr.stPtro(roles, 3744 + $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(roles, 3744 + $Role_lgod, __sl216);
-cptr.stPtro(roles, 3744 + $Role_ngod, __sl217);
-cptr.stPtro(roles, 3744 + $Role_cgod, __sl218);
-cptr.stPtro(roles, 3744 + $Role_filecode, __sl219);
-cptr.stPtro(roles, 3744 + $Role_homebase, __sl220);
-cptr.stPtro(roles, 3744 + $Role_intermed, __sl221);
+cptr.stPtro(roles, 3744 + $Role_lgod, __s_ptah);
+cptr.stPtro(roles, 3744 + $Role_ngod, __s_thoth);
+cptr.stPtro(roles, 3744 + $Role_cgod, __s_anhur);
+cptr.stPtro(roles, 3744 + $Role_filecode, __s_wiz);
+cptr.stPtro(roles, 3744 + $Role_homebase, __s_the_lonely_tower);
+cptr.stPtro(roles, 3744 + $Role_intermed, __s_the_tower_of_darkness);
 cptr.stI16o(roles, 3744 + $Role_mnum, NHC.PM_WIZARD);
 cptr.stI16o(roles, 3744 + $Role_petnum, NHC.PM_KITTEN);
 cptr.stI16o(roles, 3744 + $Role_ldrnum, NHC.PM_NEFERET_THE_GREEN);
@@ -1403,12 +1403,12 @@ cptr.stI32o(roles, 4056 + $Role_spelsbon, 0);
 
 /** C ref: role.c:581 — struct Race[6] */
 export const races = cptr.alloc(6 * 112);
-cptr.stPtro(races, 0, __sl222);
-cptr.stPtro(races, 0 + $Race_adj, __sl222);
-cptr.stPtro(races, 0 + $Race_coll, __sl223);
-cptr.stPtro(races, 0 + $Race_filecode, __sl224);
-cptr.stPtro(races, 0 + $Race_individual, __sl225);
-cptr.stPtro(races, 0 + $Race_individual + $RoleName_f, __sl226);
+cptr.stPtro(races, 0, __s_human);
+cptr.stPtro(races, 0 + $Race_adj, __s_human);
+cptr.stPtro(races, 0 + $Race_coll, __s_humanity);
+cptr.stPtro(races, 0 + $Race_filecode, __s_hum);
+cptr.stPtro(races, 0 + $Race_individual, __s_man);
+cptr.stPtro(races, 0 + $Race_individual + $RoleName_f, __s_woman);
 cptr.stI16o(races, 0 + $Race_mnum, NHC.PM_HUMAN);
 cptr.stI16o(races, 0 + $Race_mummynum, NHC.PM_HUMAN_MUMMY);
 cptr.stI16o(races, 0 + $Race_zombienum, NHC.PM_HUMAN_ZOMBIE);
@@ -1440,10 +1440,10 @@ cptr.stI16o(races, 0 + $Race_enadv + $RoleAdvance_lofix, 2);
 cptr.stI16o(races, 0 + $Race_enadv + $RoleAdvance_lornd, 0);
 cptr.stI16o(races, 0 + $Race_enadv + $RoleAdvance_hifix, 2);
 cptr.stI16o(races, 0 + $Race_enadv + $RoleAdvance_hirnd, 0);
-cptr.stPtro(races, 112, __sl227);
-cptr.stPtro(races, 112 + $Race_adj, __sl228);
-cptr.stPtro(races, 112 + $Race_coll, __sl229);
-cptr.stPtro(races, 112 + $Race_filecode, __sl230);
+cptr.stPtro(races, 112, __s_elf);
+cptr.stPtro(races, 112 + $Race_adj, __s_elven);
+cptr.stPtro(races, 112 + $Race_coll, __s_elvenkind);
+cptr.stPtro(races, 112 + $Race_filecode, __s_elf__2);
 cptr.stPtro(races, 112 + $Race_individual, null);
 cptr.stPtro(races, 112 + $Race_individual + $RoleName_f, null);
 cptr.stI16o(races, 112 + $Race_mnum, NHC.PM_ELF);
@@ -1477,10 +1477,10 @@ cptr.stI16o(races, 112 + $Race_enadv + $RoleAdvance_lofix, 3);
 cptr.stI16o(races, 112 + $Race_enadv + $RoleAdvance_lornd, 0);
 cptr.stI16o(races, 112 + $Race_enadv + $RoleAdvance_hifix, 3);
 cptr.stI16o(races, 112 + $Race_enadv + $RoleAdvance_hirnd, 0);
-cptr.stPtro(races, 224, __sl231);
-cptr.stPtro(races, 224 + $Race_adj, __sl232);
-cptr.stPtro(races, 224 + $Race_coll, __sl233);
-cptr.stPtro(races, 224 + $Race_filecode, __sl234);
+cptr.stPtro(races, 224, __s_dwarf);
+cptr.stPtro(races, 224 + $Race_adj, __s_dwarven);
+cptr.stPtro(races, 224 + $Race_coll, __s_dwarvenkind);
+cptr.stPtro(races, 224 + $Race_filecode, __s_dwa);
 cptr.stPtro(races, 224 + $Race_individual, null);
 cptr.stPtro(races, 224 + $Race_individual + $RoleName_f, null);
 cptr.stI16o(races, 224 + $Race_mnum, NHC.PM_DWARF);
@@ -1514,10 +1514,10 @@ cptr.stI16o(races, 224 + $Race_enadv + $RoleAdvance_lofix, 0);
 cptr.stI16o(races, 224 + $Race_enadv + $RoleAdvance_lornd, 0);
 cptr.stI16o(races, 224 + $Race_enadv + $RoleAdvance_hifix, 0);
 cptr.stI16o(races, 224 + $Race_enadv + $RoleAdvance_hirnd, 0);
-cptr.stPtro(races, 336, __sl235);
-cptr.stPtro(races, 336 + $Race_adj, __sl236);
-cptr.stPtro(races, 336 + $Race_coll, __sl237);
-cptr.stPtro(races, 336 + $Race_filecode, __sl238);
+cptr.stPtro(races, 336, __s_gnome);
+cptr.stPtro(races, 336 + $Race_adj, __s_gnomish);
+cptr.stPtro(races, 336 + $Race_coll, __s_gnomehood);
+cptr.stPtro(races, 336 + $Race_filecode, __s_gno);
 cptr.stPtro(races, 336 + $Race_individual, null);
 cptr.stPtro(races, 336 + $Race_individual + $RoleName_f, null);
 cptr.stI16o(races, 336 + $Race_mnum, NHC.PM_GNOME);
@@ -1551,10 +1551,10 @@ cptr.stI16o(races, 336 + $Race_enadv + $RoleAdvance_lofix, 2);
 cptr.stI16o(races, 336 + $Race_enadv + $RoleAdvance_lornd, 0);
 cptr.stI16o(races, 336 + $Race_enadv + $RoleAdvance_hifix, 2);
 cptr.stI16o(races, 336 + $Race_enadv + $RoleAdvance_hirnd, 0);
-cptr.stPtro(races, 448, __sl239);
-cptr.stPtro(races, 448 + $Race_adj, __sl240);
-cptr.stPtro(races, 448 + $Race_coll, __sl241);
-cptr.stPtro(races, 448 + $Race_filecode, __sl242);
+cptr.stPtro(races, 448, __s_orc);
+cptr.stPtro(races, 448 + $Race_adj, __s_orcish);
+cptr.stPtro(races, 448 + $Race_coll, __s_orcdom);
+cptr.stPtro(races, 448 + $Race_filecode, __s_orc__2);
 cptr.stPtro(races, 448 + $Race_individual, null);
 cptr.stPtro(races, 448 + $Race_individual + $RoleName_f, null);
 cptr.stI16o(races, 448 + $Race_mnum, NHC.PM_ORC);
@@ -1608,51 +1608,51 @@ cptr.stI16o(races, 560 + $Race_enadv, 0);
 
 /** C ref: role.c:688 — struct Gender[4] */
 export const genders = cptr.alloc(4 * 48);
-cptr.stPtro(genders, 0, __sl243);
-cptr.stPtro(genders, 0 + $Gender_he, __sl244);
-cptr.stPtro(genders, 0 + $Gender_him, __sl245);
-cptr.stPtro(genders, 0 + $Gender_his, __sl246);
-cptr.stPtro(genders, 0 + $Gender_filecode, __sl247);
+cptr.stPtro(genders, 0, __s_male);
+cptr.stPtro(genders, 0 + $Gender_he, __s_he);
+cptr.stPtro(genders, 0 + $Gender_him, __s_him);
+cptr.stPtro(genders, 0 + $Gender_his, __s_his);
+cptr.stPtro(genders, 0 + $Gender_filecode, __s_mal);
 cptr.stI16o(genders, 0 + $Gender_allow, NHM.ROLE_MALE);
-cptr.stPtro(genders, 48, __sl248);
-cptr.stPtro(genders, 48 + $Gender_he, __sl249);
-cptr.stPtro(genders, 48 + $Gender_him, __sl250);
-cptr.stPtro(genders, 48 + $Gender_his, __sl250);
-cptr.stPtro(genders, 48 + $Gender_filecode, __sl251);
+cptr.stPtro(genders, 48, __s_female);
+cptr.stPtro(genders, 48 + $Gender_he, __s_she);
+cptr.stPtro(genders, 48 + $Gender_him, __s_her);
+cptr.stPtro(genders, 48 + $Gender_his, __s_her);
+cptr.stPtro(genders, 48 + $Gender_filecode, __s_fem);
 cptr.stI16o(genders, 48 + $Gender_allow, NHM.ROLE_FEMALE);
-cptr.stPtro(genders, 96, __sl252);
-cptr.stPtro(genders, 96 + $Gender_he, __sl253);
-cptr.stPtro(genders, 96 + $Gender_him, __sl253);
-cptr.stPtro(genders, 96 + $Gender_his, __sl254);
-cptr.stPtro(genders, 96 + $Gender_filecode, __sl255);
+cptr.stPtro(genders, 96, __s_neuter);
+cptr.stPtro(genders, 96 + $Gender_he, __s_it);
+cptr.stPtro(genders, 96 + $Gender_him, __s_it);
+cptr.stPtro(genders, 96 + $Gender_his, __s_its);
+cptr.stPtro(genders, 96 + $Gender_filecode, __s_ntr);
 cptr.stI16o(genders, 96 + $Gender_allow, NHM.ROLE_NEUTER);
-cptr.stPtro(genders, 144, __sl256);
-cptr.stPtro(genders, 144 + $Gender_he, __sl257);
-cptr.stPtro(genders, 144 + $Gender_him, __sl258);
-cptr.stPtro(genders, 144 + $Gender_his, __sl259);
-cptr.stPtro(genders, 144 + $Gender_filecode, __sl260);
+cptr.stPtro(genders, 144, __s_group);
+cptr.stPtro(genders, 144 + $Gender_he, __s_they);
+cptr.stPtro(genders, 144 + $Gender_him, __s_them);
+cptr.stPtro(genders, 144 + $Gender_his, __s_their);
+cptr.stPtro(genders, 144 + $Gender_filecode, __s_grp);
 cptr.stI16o(genders, 144 + $Gender_allow, 0);
 
 /** C ref: role.c:697 — struct Align[4] */
 export const aligns = cptr.alloc(4 * 32);
-cptr.stPtro(aligns, 0, __sl261);
-cptr.stPtro(aligns, 0 + $Align_adj, __sl262);
-cptr.stPtro(aligns, 0 + $Align_filecode, __sl263);
+cptr.stPtro(aligns, 0, __s_law);
+cptr.stPtro(aligns, 0 + $Align_adj, __s_lawful);
+cptr.stPtro(aligns, 0 + $Align_filecode, __s_law__2);
 cptr.stI16o(aligns, 0 + $Align_allow, NHM.AM_LAWFUL);
 cptr.st1o(aligns, 0 + $Align_value, NHM.A_LAWFUL);
-cptr.stPtro(aligns, 32, __sl264);
-cptr.stPtro(aligns, 32 + $Align_adj, __sl265);
-cptr.stPtro(aligns, 32 + $Align_filecode, __sl266);
+cptr.stPtro(aligns, 32, __s_balance);
+cptr.stPtro(aligns, 32 + $Align_adj, __s_neutral);
+cptr.stPtro(aligns, 32 + $Align_filecode, __s_neu);
 cptr.stI16o(aligns, 32 + $Align_allow, NHM.AM_NEUTRAL);
 cptr.st1o(aligns, 32 + $Align_value, NHM.A_NEUTRAL);
-cptr.stPtro(aligns, 64, __sl267);
-cptr.stPtro(aligns, 64 + $Align_adj, __sl268);
-cptr.stPtro(aligns, 64 + $Align_filecode, __sl269);
+cptr.stPtro(aligns, 64, __s_chaos);
+cptr.stPtro(aligns, 64 + $Align_adj, __s_chaotic);
+cptr.stPtro(aligns, 64 + $Align_filecode, __s_cha);
 cptr.stI16o(aligns, 64 + $Align_allow, NHM.AM_CHAOTIC);
 cptr.st1o(aligns, 64 + $Align_value, -1);
-cptr.stPtro(aligns, 96, __sl270);
-cptr.stPtro(aligns, 96 + $Align_adj, __sl271);
-cptr.stPtro(aligns, 96 + $Align_filecode, __sl272);
+cptr.stPtro(aligns, 96, __s_evil);
+cptr.stPtro(aligns, 96 + $Align_adj, __s_unaligned);
+cptr.stPtro(aligns, 96 + $Align_filecode, __s_una);
 cptr.stI16o(aligns, 96 + $Align_allow, 0);
 cptr.st1o(aligns, 96 + $Align_value, -128);
 
@@ -1670,7 +1670,7 @@ export function randrole(for_display) {
     if (for_display)
         res = rn2_on_display_rng(res);
     else
-        res = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 726, __sl274), rn2(res)) : rn2(res));
+        res = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 726, __s_randrole), rn2(res)) : rn2(res));
     return res;
 }
 
@@ -1682,7 +1682,7 @@ function randrole_filtered() {
     for (i = 0; i < ((14 - 1) | 0); ++i)
         if (ok_role(i, -1, -1, -1) && ok_race(i, -2, -1, -1) && ok_gend(i, -1, -2, -1) && ok_align(i, -1, -1, -2))
             cptr.stI32o(set, n++, i, 4);
-    return n ? cptr.ldI32o(set, (rng_log_enabled() ? (rng_log_set_caller(__sl273, 743, __sl275), rn2(n)) : rn2(n)), 4) : randrole(0);
+    return n ? cptr.ldI32o(set, (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 743, __s_randrole_filtered), rn2(n)) : rn2(n)), 4) : randrole(0);
 }
 
 /** C ref: role.c:747 — @param {CPtr<char>} str @returns {CInt} */
@@ -1691,7 +1691,7 @@ export function str2role(str) {
     let len;
     if (!str || !cptr.ld1so(str, 0))
         return -1;
-    len = Strlen_(str, __sl276, 756) | 0;
+    len = Strlen_(str, __s_str2role, 756) | 0;
     for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
         if (!strncmpi(str, cptr.ldPtro(roles, i, 312), len))
             return i;
@@ -1718,7 +1718,7 @@ export function randrace(rolenum) {
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, i, 112, $Race_allow) & NHM.ROLE_RACEMASK)
             n++;
     if (n)
-        n = ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 799, __sl277), rn2(Math.imul(n, 100))) : rn2(Math.imul(n, 100))) / 100) | 0;
+        n = ((rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 799, __s_randrace), rn2(Math.imul(n, 100))) : rn2(Math.imul(n, 100))) / 100) | 0;
     for (i = 0; cptr.ldPtro(races, i, 112); i++)
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, i, 112, $Race_allow) & NHM.ROLE_RACEMASK) {
             if (n)
@@ -1726,7 +1726,7 @@ export function randrace(rolenum) {
             else
                 return i;
         }
-    return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 809, __sl277), rn2((6 - 1) | 0)) : rn2((6 - 1) | 0));
+    return (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 809, __s_randrace), rn2((6 - 1) | 0)) : rn2((6 - 1) | 0));
 }
 
 /** C ref: role.c:813 — @param {CPtr<char>} str @returns {CInt} */
@@ -1735,7 +1735,7 @@ export function str2race(str) {
     let len;
     if (!str || !cptr.ld1so(str, 0))
         return -1;
-    len = Strlen_(str, __sl278, 822) | 0;
+    len = Strlen_(str, __s_str2race, 822) | 0;
     for (i = 0; cptr.ldPtro(races, i, 112); i++) {
         if (!strncmpi(str, cptr.ldPtro(races, i, 112), len))
             return i;
@@ -1762,7 +1762,7 @@ export function randgend(rolenum, racenum) {
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, racenum, 112, $Race_allow) & cptr.ldI16o2(genders, i, 48, $Gender_allow) & NHM.ROLE_GENDMASK)
             n++;
     if (n)
-        n = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 865, __sl279), rn2(n)) : rn2(n));
+        n = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 865, __s_randgend), rn2(n)) : rn2(n));
     for (i = 0; i < NHM.ROLE_GENDERS; i++)
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, racenum, 112, $Race_allow) & cptr.ldI16o2(genders, i, 48, $Gender_allow) & NHM.ROLE_GENDMASK) {
             if (n)
@@ -1770,7 +1770,7 @@ export function randgend(rolenum, racenum) {
             else
                 return i;
         }
-    return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 876, __sl279), rn2(NHM.ROLE_GENDERS)) : rn2(NHM.ROLE_GENDERS));
+    return (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 876, __s_randgend), rn2(NHM.ROLE_GENDERS)) : rn2(NHM.ROLE_GENDERS));
 }
 
 /** C ref: role.c:880 — @param {CPtr<char>} str @returns {CInt} */
@@ -1779,7 +1779,7 @@ export function str2gend(str) {
     let len;
     if (!str || !cptr.ld1so(str, 0))
         return -1;
-    len = Strlen_(str, __sl280, 889) | 0;
+    len = Strlen_(str, __s_str2gend, 889) | 0;
     for (i = 0; i < NHM.ROLE_GENDERS; i++) {
         if (!strncmpi(str, cptr.ldPtro(genders, i, 48), len))
             return i;
@@ -1804,7 +1804,7 @@ export function randalign(rolenum, racenum) {
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, racenum, 112, $Race_allow) & cptr.ldI16o2(aligns, i, 32, $Align_allow) & NHM.AM_MASK)
             n++;
     if (n)
-        n = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 928, __sl281), rn2(n)) : rn2(n));
+        n = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 928, __s_randalign), rn2(n)) : rn2(n));
     for (i = 0; i < NHM.ROLE_ALIGNS; i++)
         if (cptr.ldI16o2(roles, rolenum, 312, $Role_allow) & cptr.ldI16o2(races, racenum, 112, $Race_allow) & cptr.ldI16o2(aligns, i, 32, $Align_allow) & NHM.AM_MASK) {
             if (n)
@@ -1812,7 +1812,7 @@ export function randalign(rolenum, racenum) {
             else
                 return i;
         }
-    return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 939, __sl281), rn2(NHM.ROLE_ALIGNS)) : rn2(NHM.ROLE_ALIGNS));
+    return (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 939, __s_randalign), rn2(NHM.ROLE_ALIGNS)) : rn2(NHM.ROLE_ALIGNS));
 }
 
 /** C ref: role.c:943 — @param {CPtr<char>} str @returns {CInt} */
@@ -1821,7 +1821,7 @@ export function str2align(str) {
     let len;
     if (!str || !cptr.ld1so(str, 0))
         return -1;
-    len = Strlen_(str, __sl282, 952) | 0;
+    len = Strlen_(str, __s_str2align, 952) | 0;
     for (i = 0; i < NHM.ROLE_ALIGNS; i++) {
         if (!strncmpi(str, cptr.ldPtro2(aligns, i, 32, $Align_adj), len))
             return i;
@@ -1876,7 +1876,7 @@ export function pick_role(racenum, gendnum, alignnum, pickhow) {
     }
     if (roles_ok == 0 || (roles_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    return cptr.ldI32o(set, (rng_log_enabled() ? (rng_log_set_caller(__sl273, 1032, __sl283), rn2(roles_ok)) : rn2(roles_ok)), 4);
+    return cptr.ldI32o(set, (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 1032, __s_pick_role), rn2(roles_ok)) : rn2(roles_ok)), 4);
 }
 
 /** C ref: role.c:1037 — @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CInt} */
@@ -1921,7 +1921,7 @@ export function pick_race(rolenum, gendnum, alignnum, pickhow) {
     }
     if (races_ok == 0 || (races_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    races_ok = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 1092, __sl284), rn2(races_ok)) : rn2(races_ok));
+    races_ok = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 1092, __s_pick_race), rn2(races_ok)) : rn2(races_ok));
     for (i = 0; i < ((6 - 1) | 0); i++) {
         if (ok_race(rolenum, i, gendnum, alignnum)) {
             if (races_ok == 0)
@@ -1971,7 +1971,7 @@ export function pick_gend(rolenum, racenum, alignnum, pickhow) {
     }
     if (gends_ok == 0 || (gends_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    gends_ok = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 1157, __sl285), rn2(gends_ok)) : rn2(gends_ok));
+    gends_ok = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 1157, __s_pick_gend), rn2(gends_ok)) : rn2(gends_ok));
     for (i = 0; i < NHM.ROLE_GENDERS; i++) {
         if (ok_gend(rolenum, racenum, i, alignnum)) {
             if (gends_ok == 0)
@@ -2021,7 +2021,7 @@ export function pick_align(rolenum, racenum, gendnum, pickhow) {
     }
     if (aligns_ok == 0 || (aligns_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    aligns_ok = (rng_log_enabled() ? (rng_log_set_caller(__sl273, 1222, __sl286), rn2(aligns_ok)) : rn2(aligns_ok));
+    aligns_ok = (rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 1222, __s_pick_align), rn2(aligns_ok)) : rn2(aligns_ok));
     for (i = 0; i < NHM.ROLE_ALIGNS; i++) {
         if (ok_align(rolenum, racenum, gendnum, i)) {
             if (aligns_ok == 0)
@@ -2093,30 +2093,30 @@ export function rolefilterstring(outbuf, which) {
         case NHM.RS_ROLE:
         for (i = 0; i < ((14 - 1) | 0); ++i) {
             if (cptr.ld1so2(gr, i, 1, $instance_globals_r_rfilter))
-                void cptr.sprintf(eos(outbuf), __sl287, cptr.ldPtro(roles, i, 312));
+                void cptr.sprintf(eos(outbuf), __s_3s, cptr.ldPtro(roles, i, 312));
         }
         break;
         case NHM.RS_RACE:
         for (i = 0; i < ((6 - 1) | 0); ++i) {
             if ((cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask) & cptr.ldI16o2(races, i, 112, $Race_selfmask)) != 0)
-                void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro(races, i, 112));
+                void cptr.sprintf(eos(outbuf), __s_sp_bang_pct_s, cptr.ldPtro(races, i, 112));
         }
         break;
         case NHM.RS_GENDER:
         for (i = 0; i < ((4 - 1) | 0); ++i) {
             if ((cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask) & cptr.ldI16o2(genders, i, 48, $Gender_allow)) != 0)
-                void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro(genders, i, 48));
+                void cptr.sprintf(eos(outbuf), __s_sp_bang_pct_s, cptr.ldPtro(genders, i, 48));
         }
         break;
         case NHM.RS_ALGNMNT:
         for (i = 0; i < ((4 - 1) | 0); ++i) {
             if ((cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask) & cptr.ldI16o2(aligns, i, 32, $Align_allow)) != 0)
-                void cptr.sprintf(eos(outbuf), __sl288, cptr.ldPtro2(aligns, i, 32, $Align_adj));
+                void cptr.sprintf(eos(outbuf), __s_sp_bang_pct_s, cptr.ldPtro2(aligns, i, 32, $Align_adj));
         }
         break;
         default:
-        impossible(__sl289, which);
-        void cptr.strcpy(outbuf, __sl290);
+        impossible(__s_rolefilterstring_bad_role_aspect_d, which);
+        void cptr.strcpy(outbuf, __s_sp_query);
         break;
     }
     return cptr.add(outbuf, 1);
@@ -2148,10 +2148,10 @@ export function clearrolefilter(which) {
 
 /** C ref: role.c:1384 — @param {CPtr<char>} buf @param {CInt} num_post_attribs @returns {CPtr<char>} */
 function promptsep(buf, num_post_attribs) {
-    let conjuct = __sl291;
+    let conjuct = __s_and;
     if (num_post_attribs > 1 && cptr.ld1so(gr, $instance_globals_r_role_post_attribs) < num_post_attribs && cptr.ld1so(gr, $instance_globals_r_role_post_attribs) > 1)
-        void cptr.strcat(buf, __sl292);
-    void cptr.strcat(buf, __sl293);
+        void cptr.strcat(buf, __s_comma);
+    void cptr.strcat(buf, __s_sp);
     cptr.st1o(gr, $instance_globals_r_role_post_attribs, cptr.ld1so(gr, $instance_globals_r_role_post_attribs) + -1);
     if (!cptr.ld1so(gr, $instance_globals_r_role_post_attribs) && num_post_attribs > 1)
         void cptr.strcat(buf, conjuct);
@@ -2206,7 +2206,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         aligncount = race_alignmentcount(racenum);
     if (alignnum != -1 && alignnum != -2 && ok_align(rolenum, racenum, gendnum, alignnum)) {
         if (donefirst)
-            void cptr.strcat(cptr.decay(buf), __sl293);
+            void cptr.strcat(cptr.decay(buf), __s_sp);
         void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(aligns, alignnum, 32, $Align_adj));
         donefirst = 1;
     } else {
@@ -2223,13 +2223,13 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         if (validrole(rolenum)) {
             if ((rolenum != -1) && (gendercount > 1) && !cptr.ldPtro2(roles, rolenum, 312, $RoleName_f)) {
                 if (donefirst)
-                    void cptr.strcat(cptr.decay(buf), __sl293);
+                    void cptr.strcat(cptr.decay(buf), __s_sp);
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(genders, gendnum, 48));
                 donefirst = 1;
             }
         } else {
             if (donefirst)
-                void cptr.strcat(cptr.decay(buf), __sl293);
+                void cptr.strcat(cptr.decay(buf), __s_sp);
             void cptr.strcat(cptr.decay(buf), cptr.ldPtro(genders, gendnum, 48));
             donefirst = 1;
         }
@@ -2242,12 +2242,12 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
     if (racenum != -1 && racenum != -2) {
         if (validrole(rolenum) && ok_race(rolenum, racenum, gendnum, alignnum)) {
             if (donefirst)
-                void cptr.strcat(cptr.decay(buf), __sl293);
+                void cptr.strcat(cptr.decay(buf), __s_sp);
             void cptr.strcat(cptr.decay(buf), (rolenum == -1) ? cptr.ldPtro(races, racenum, 112) : cptr.ldPtro2(races, racenum, 112, $Race_adj));
             donefirst = 1;
         } else if (!validrole(rolenum)) {
             if (donefirst)
-                void cptr.strcat(cptr.decay(buf), __sl293);
+                void cptr.strcat(cptr.decay(buf), __s_sp);
             void cptr.strcat(cptr.decay(buf), cptr.ldPtro(races, racenum, 112));
             donefirst = 1;
         } else {
@@ -2259,9 +2259,9 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         cptr.postinc1(cptr.add(gr, $instance_globals_r_role_post_attribs));
     }
     if (validrole(rolenum)) {
-        (__builtin_expect(BigInt((!(((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__sl294, __sl273, 1543, __sl295) : void 0);
+        (__builtin_expect(BigInt((!(((rolenum) >= 0 && (rolenum) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__s_root_plselection_prompt, __s_role_c, 1543, __s_indexokt_rolenum_roles) : void 0);
         if (donefirst)
-            void cptr.strcat(cptr.decay(buf), __sl293);
+            void cptr.strcat(cptr.decay(buf), __s_sp);
         if (gendnum != -1) {
             if (gendnum == 1 && cptr.ldPtro2(roles, rolenum, 312, $RoleName_f))
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(roles, rolenum, 312, $RoleName_f));
@@ -2270,7 +2270,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         } else {
             if (cptr.ldPtro2(roles, rolenum, 312, $RoleName_f)) {
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(roles, rolenum, 312));
-                void cptr.strcat(cptr.decay(buf), __sl296);
+                void cptr.strcat(cptr.decay(buf), __s_slash);
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro2(roles, rolenum, 312, $RoleName_f));
             } else
                 void cptr.strcat(cptr.decay(buf), cptr.ldPtro(roles, rolenum, 312));
@@ -2282,8 +2282,8 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
     }
     if ((racenum == -1 || racenum == -2) && !validrole(rolenum)) {
         if (donefirst)
-            void cptr.strcat(cptr.decay(buf), __sl293);
-        void cptr.strcat(cptr.decay(buf), __sl297);
+            void cptr.strcat(cptr.decay(buf), __s_sp);
+        void cptr.strcat(cptr.decay(buf), __s_character);
     }
     if (buflen > Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 1n))))) {
         void cptr.strcpy(suppliedbuf, cptr.decay(buf));
@@ -2294,21 +2294,21 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
 
 /** C ref: role.c:1583 — @param {CPtr<char>} buf @param {CInt} buflen @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CPtr<char>} */
 export function build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum, alignnum) {
-    let defprompt = __sl298;
+    let defprompt = __s_shall_i_pick_a_character_for_you_ynaq;
     let num_post_attribs = 0;
     let tmpbuf = new Uint8Array(256);
     let p;
     if (buflen < NHM.QBUFSZ)
         return defprompt;
-    void cptr.strcpy(cptr.decay(tmpbuf), __sl299);
+    void cptr.strcpy(cptr.decay(tmpbuf), __s_shall_i_pick);
     if (racenum != -1 || validrole(rolenum))
-        void cptr.strcat(cptr.decay(tmpbuf), __sl300);
+        void cptr.strcat(cptr.decay(tmpbuf), __s_your);
     else
-        void cptr.strcat(cptr.decay(tmpbuf), __sl301);
-    void root_plselection_prompt(eos(cptr.decay(tmpbuf)), (((buflen >>> 0) - Strlen_(cptr.decay(tmpbuf), __sl302, 1601)) >>> 0) | 0, rolenum, racenum, gendnum, alignnum);
-    strsubst(cptr.decay(tmpbuf), __sl303, __sl304);
-    void cptr.sprintf(buf, __sl305, s_suffix(cptr.decay(tmpbuf)));
-    if ((p = strstri(buf, __sl306)) !== null && cptr.ld1so(p, 17n) == 0)
+        void cptr.strcat(cptr.decay(tmpbuf), __s_a_sp);
+    void root_plselection_prompt(eos(cptr.decay(tmpbuf)), (((buflen >>> 0) - Strlen_(cptr.decay(tmpbuf), __s_build_plselection_prompt, 1601)) >>> 0) | 0, rolenum, racenum, gendnum, alignnum);
+    strsubst(cptr.decay(tmpbuf), __s_pick_a_character, __s_pick_character);
+    void cptr.sprintf(buf, __s_pct_s, s_suffix(cptr.decay(tmpbuf)));
+    if ((p = strstri(buf, __s_priest_priestess)) !== null && cptr.ld1so(p, 17n) == 0)
         strkitten(buf, 115);
     num_post_attribs = cptr.ld1so(gr, $instance_globals_r_role_post_attribs);
     if (!num_post_attribs) {
@@ -2325,22 +2325,22 @@ export function build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum,
     if (num_post_attribs) {
         if (cptr.ld1so2(gr, NHM.BP_RACE, 1, $instance_globals_r_role_pa)) {
             void promptsep(eos(buf), num_post_attribs);
-            void cptr.strcat(buf, __sl307);
+            void cptr.strcat(buf, __s_race);
         }
         if (cptr.ld1so2(gr, NHM.BP_ROLE, 1, $instance_globals_r_role_pa)) {
             void promptsep(eos(buf), num_post_attribs);
-            void cptr.strcat(buf, __sl308);
+            void cptr.strcat(buf, __s_role);
         }
         if (cptr.ld1so2(gr, NHM.BP_GEND, 1, $instance_globals_r_role_pa)) {
             void promptsep(eos(buf), num_post_attribs);
-            void cptr.strcat(buf, __sl309);
+            void cptr.strcat(buf, __s_gender);
         }
         if (cptr.ld1so2(gr, NHM.BP_ALIGN, 1, $instance_globals_r_role_pa)) {
             void promptsep(eos(buf), num_post_attribs);
-            void cptr.strcat(buf, __sl310);
+            void cptr.strcat(buf, __s_alignment);
         }
     }
-    void cptr.strcat(buf, __sl311);
+    void cptr.strcat(buf, __s_for_you_ynaq);
     return buf;
 }
 
@@ -2353,7 +2353,7 @@ export function plnamesuffix() {
         if (cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_genericusers)) == 42) {
             cptr.st1o(svp, 0, 0, 1);
         } else {
-            i = ((eptr = cptr.strchr(cptr.add(svp, cptr.ldI32o(gp, $instance_globals_p_plnamelen)), 45)) !== null) ? Number(BigInt.asIntN(32, (cptr.diff(eptr, svp)))) : Strlen_(svp, __sl312, 1680) | 0;
+            i = ((eptr = cptr.strchr(cptr.add(svp, cptr.ldI32o(gp, $instance_globals_p_plnamelen)), 45)) !== null) ? Number(BigInt.asIntN(32, (cptr.diff(eptr, svp)))) : Strlen_(svp, __s_plnamesuffix, 1680) | 0;
             if (findword(cptr.ldPtro(sysopt, $sysopt_s_genericusers), svp, i, 0))
                 cptr.st1o(svp, 0, 0, 1);
         }
@@ -2382,7 +2382,7 @@ export function plnamesuffix() {
                 cptr.stI32o(flags, $flag_initalign, i);
         }
     } while (!cptr.ld1so(svp, 0, 1) && !cptr.ld1s(iflags));
-    void strNsubst(svp, __sl292, __sl293, 0);
+    void strNsubst(svp, __s_comma, __s_sp, 0);
 }
 
 const __static_role_selection_prolog_choosing = cptr.bytes(" choosing now"); /** C ref: role.c:1728 — char[14] (function-static) */
@@ -2402,7 +2402,7 @@ export function role_selection_prolog(which, where) {
     gend = cptr.ldI32o(flags, $flag_initgend);
     a = cptr.ldI32o(flags, $flag_initalign);
     if (r >= 0) {
-        (__builtin_expect(BigInt((!(((r) >= 0 && (r) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__sl313, __sl273, 1739, __sl314) : void 0);
+        (__builtin_expect(BigInt((!(((r) >= 0 && (r) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__s_role_selection_prolog, __s_role_c, 1739, __s_indexokt_r_roles) : void 0);
         allowmask = cptr.ldI16o2(roles, r, 312, $Role_allow);
         if (BigInt((allowmask & NHM.ROLE_RACEMASK)) == 8n)
             c = 0;
@@ -2420,7 +2420,7 @@ export function role_selection_prolog(which, where) {
             a = 2;
     }
     if (c >= 0) {
-        (__builtin_expect(BigInt((!(((c) >= 0 && (c) < ((6 - 1) | 0))))), 0n) ? __assert_rtn(__sl313, __sl273, 1758, __sl315) : void 0);
+        (__builtin_expect(BigInt((!(((c) >= 0 && (c) < ((6 - 1) | 0))))), 0n) ? __assert_rtn(__s_role_selection_prolog, __s_role_c, 1758, __s_indexokt_c_races) : void 0);
         allowmask = cptr.ldI16o2(races, c, 112, $Race_allow);
         if ((allowmask & NHM.AM_MASK) == NHM.AM_LAWFUL)
             a = 0;
@@ -2429,27 +2429,27 @@ export function role_selection_prolog(which, where) {
         else if ((allowmask & NHM.AM_MASK) == NHM.AM_CHAOTIC)
             a = 2;
     }
-    void cptr.sprintf(cptr.decay(buf), __sl316, __sl317);
+    void cptr.sprintf(cptr.decay(buf), __s_12s, __s_name);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_NAME) ? cptr.decay(__static_role_selection_prolog_choosing) : (!cptr.ld1s(svp) ? cptr.decay(__static_role_selection_prolog_not_yet) : svp));
     putstr()(where, 0, cptr.decay(buf));
-    void cptr.sprintf(cptr.decay(buf), __sl316, __sl318);
-    (__builtin_expect(BigInt((!(which == NHM.RS_ROLE || r == -1 || r == -2 || ((r) >= 0 && (r) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__sl313, __sl273, 1777, __sl319) : void 0);
+    void cptr.sprintf(cptr.decay(buf), __s_12s, __s_role__2);
+    (__builtin_expect(BigInt((!(which == NHM.RS_ROLE || r == -1 || r == -2 || ((r) >= 0 && (r) < ((14 - 1) | 0))))), 0n) ? __assert_rtn(__s_role_selection_prolog, __s_role_c, 1777, __s_which_rs_role_r_role_none_r_role_random) : void 0);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ROLE) ? cptr.decay(__static_role_selection_prolog_choosing) : ((r == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((r == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(roles, r, 312))));
     if (r >= 0 && cptr.ldPtro2(roles, r, 312, $RoleName_f)) {
         if (gend == 1)
-            void cptr.sprintf(cptr.strchr(cptr.decay(buf), 58), __sl320, cptr.ldPtro2(roles, r, 312, $RoleName_f));
+            void cptr.sprintf(cptr.strchr(cptr.decay(buf), 58), __s_colon_sp_pct_s, cptr.ldPtro2(roles, r, 312, $RoleName_f));
         else if (gend < 0)
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl321, cptr.ldPtro2(roles, r, 312, $RoleName_f));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_slash_pct_s, cptr.ldPtro2(roles, r, 312, $RoleName_f));
     }
     putstr()(where, 0, cptr.decay(buf));
-    void cptr.sprintf(cptr.decay(buf), __sl316, __sl322);
-    (__builtin_expect(BigInt((!(which == NHM.RS_RACE || c == -1 || c == -2 || ((c) >= 0 && (c) < ((6 - 1) | 0))))), 0n) ? __assert_rtn(__sl313, __sl273, 1794, __sl323) : void 0);
+    void cptr.sprintf(cptr.decay(buf), __s_12s, __s_race__2);
+    (__builtin_expect(BigInt((!(which == NHM.RS_RACE || c == -1 || c == -2 || ((c) >= 0 && (c) < ((6 - 1) | 0))))), 0n) ? __assert_rtn(__s_role_selection_prolog, __s_role_c, 1794, __s_which_rs_race_c_role_none_c_role_random) : void 0);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_RACE) ? cptr.decay(__static_role_selection_prolog_choosing) : ((c == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((c == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(races, c, 112))));
     putstr()(where, 0, cptr.decay(buf));
-    void cptr.sprintf(cptr.decay(buf), __sl316, __sl324);
+    void cptr.sprintf(cptr.decay(buf), __s_12s, __s_gender__2);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_GENDER) ? cptr.decay(__static_role_selection_prolog_choosing) : ((gend == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((gend == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro(genders, gend, 48))));
     putstr()(where, 0, cptr.decay(buf));
-    void cptr.sprintf(cptr.decay(buf), __sl316, __sl325);
+    void cptr.sprintf(cptr.decay(buf), __s_12s, __s_alignment__2);
     void cptr.strcat(cptr.decay(buf), (which == NHM.RS_ALGNMNT) ? cptr.decay(__static_role_selection_prolog_choosing) : ((a == -1) ? cptr.decay(__static_role_selection_prolog_not_yet) : ((a == -2) ? cptr.decay(__static_role_selection_prolog_rand_choice) : cptr.ldPtro2(aligns, a, 32, $Align_adj))));
     putstr()(where, 0, cptr.decay(buf));
 }
@@ -2475,21 +2475,21 @@ export function role_menu_extra(which, where, preselect) {
     c = cptr.ldI32o(flags, $flag_initrace);
     switch (which) {
         case NHM.RS_NAME:
-        what = __sl326;
+        what = __s_name__2;
         break;
         case NHM.RS_ROLE:
-        what = __sl308;
+        what = __s_role;
         f = r;
         for (i = 0; i < ((14 - 1) | 0); ++i)
             if (i != f && !cptr.ld1so2(gr, i, 1, $instance_globals_r_rfilter))
                 break;
         if (i == ((14 - 1) | 0)) {
-            constrainer = __sl327;
-            forcedvalue = __sl308;
+            constrainer = __s_filter;
+            forcedvalue = __s_role;
         }
         break;
         case NHM.RS_RACE:
-        what = __sl307;
+        what = __s_race;
         f = cptr.ldI32o(flags, $flag_initrace);
         c = -1;
         if (r >= 0) {
@@ -2497,16 +2497,16 @@ export function role_menu_extra(which, where, preselect) {
             if (BigInt(allowmask) == 8n)
                 c = 0;
             if (c >= 0) {
-                constrainer = __sl308;
+                constrainer = __s_role;
                 forcedvalue = cptr.ldPtro(races, c, 112);
             } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask)) == cptr.ldI16o2(races, f, 112, $Race_selfmask))) {
-                constrainer = __sl327;
-                forcedvalue = __sl307;
+                constrainer = __s_filter;
+                forcedvalue = __s_race;
             }
         }
         break;
         case NHM.RS_GENDER:
-        what = __sl309;
+        what = __s_gender;
         f = cptr.ldI32o(flags, $flag_initgend);
         gend = -1;
         if (r >= 0) {
@@ -2516,16 +2516,16 @@ export function role_menu_extra(which, where, preselect) {
             else if (allowmask == NHM.ROLE_FEMALE)
                 gend = 1;
             if (gend >= 0) {
-                constrainer = __sl308;
+                constrainer = __s_role;
                 forcedvalue = cptr.ldPtro(genders, gend, 48);
             } else if (f >= 0 && ((allowmask & ~cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask)) == cptr.ldI16o2(genders, f, 48, $Gender_allow))) {
-                constrainer = __sl327;
-                forcedvalue = __sl309;
+                constrainer = __s_filter;
+                forcedvalue = __s_gender;
             }
         }
         break;
         case NHM.RS_ALGNMNT:
-        what = __sl310;
+        what = __s_alignment;
         f = cptr.ldI32o(flags, $flag_initalign);
         a = -1;
         if (r >= 0) {
@@ -2537,7 +2537,7 @@ export function role_menu_extra(which, where, preselect) {
             else if (allowmask == NHM.AM_CHAOTIC)
                 a = 2;
             if (a >= 0)
-                constrainer = __sl308;
+                constrainer = __s_role;
         }
         if (c >= 0 && !constrainer) {
             allowmask = cptr.ldI16o2(races, c, 112, $Race_allow) & NHM.AM_MASK;
@@ -2548,11 +2548,11 @@ export function role_menu_extra(which, where, preselect) {
             else if (allowmask == NHM.AM_CHAOTIC)
                 a = 2;
             if (a >= 0)
-                constrainer = __sl307;
+                constrainer = __s_race;
         }
         if (f >= 0 && !constrainer && (NHM.AM_MASK & ~cptr.ldI16o(gr, $instance_globals_r_rfilter + $role_filter_mask)) == cptr.ldI16o2(aligns, f, 32, $Align_allow)) {
-            constrainer = __sl327;
-            forcedvalue = __sl310;
+            constrainer = __s_filter;
+            forcedvalue = __s_alignment;
         }
         if (a >= 0)
             forcedvalue = cptr.ldPtro2(aligns, a, 32, $Align_adj);
@@ -2561,25 +2561,25 @@ export function role_menu_extra(which, where, preselect) {
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (constrainer) {
         cptr.stI32(any, 0);
-        void cptr.sprintf(cptr.decay(buf), __sl328, __sl329, constrainer, forcedvalue);
+        void cptr.sprintf(cptr.decay(buf), __s_4s_s_forces_s, __s_empty, constrainer, forcedvalue);
         add_menu_str(where, cptr.decay(buf));
     } else if (what) {
         cptr.stI32(any, ((-2 - (((which) + 1) | 0)) | 0));
-        void cptr.sprintf(cptr.decay(buf), __sl330, (f >= 0) ? __sl331 : __sl329, what);
+        void cptr.sprintf(cptr.decay(buf), __s_pick_s_s_first, (f >= 0) ? __s_another : __s_empty, what);
         add_menu(where, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(__static_role_menu_extra_RS_menu_let), which, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     } else if (which == NHM.RS_filter) {
         let setfiltering = new Uint8Array(40);
         cptr.stI32(any, -8);
-        void cptr.sprintf(cptr.decay(setfiltering), __sl332, gotrolefilter() ? __sl333 : __sl31);
+        void cptr.sprintf(cptr.decay(setfiltering), __s_s_role_race_c_filtering, gotrolefilter() ? __s_reset : __s_set);
         add_menu(where, nul_glyphinfo.v, any, 126, 0, NHM.ATR_NONE, clr, cptr.decay(setfiltering), NHM.MENU_ITEMFLAGS_NONE);
     } else if (which == -2) {
         cptr.stI32(any, -2);
-        add_menu(where, nul_glyphinfo.v, any, 42, 0, NHM.ATR_NONE, clr, __sl334, preselect ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(where, nul_glyphinfo.v, any, 42, 0, NHM.ATR_NONE, clr, __s_random, preselect ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     } else if (which == -1) {
         cptr.stI32(any, -1);
-        add_menu(where, nul_glyphinfo.v, any, 113, 0, NHM.ATR_NONE, clr, __sl335, preselect ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(where, nul_glyphinfo.v, any, 113, 0, NHM.ATR_NONE, clr, __s_quit, preselect ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     } else {
-        impossible(__sl336, which);
+        impossible(__s_role_menu_extra_bad_arg_d, which);
     }
 }
 
@@ -2613,7 +2613,7 @@ export function role_init() {
         cptr.stU64o(pm, $permonst_mflags2, cptr.ldU64o(pm, $permonst_mflags2) | 2097152n);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | NHM.M3_CLOSE);
         cptr.st1o(pm, $permonst_maligntyp, schar(Math.imul(alignmnt, 3)));
-        cptr.stI32o(svq, $q_score_ldrgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2039, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_ldrgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 2039, __s_role_init), rn2(100)) : rn2(100)) < 50)))) >>> 0);
     }
     if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum) != NHC.NON_PM) {
         pm = cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), 96);
@@ -2627,7 +2627,7 @@ export function role_init() {
         cptr.stU64o(pm, $permonst_mflags2, cptr.ldU64o(pm, $permonst_mflags2) | 51380224n);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) & -129);
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | 80);
-        cptr.stI32o(svq, $q_score_nemgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__sl273, 2060, __sl337), rn2(100)) : rn2(100)) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_nemgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : ((rng_log_enabled() ? (rng_log_set_caller(__s_role_c, 2060, __s_role_init), rn2(100)) : rn2(100)) < 50)))) >>> 0);
     }
     if (cptr.ldI32o(flags, $flag_pantheon) == -1) {
         let trycnt = 0;
@@ -2648,7 +2648,7 @@ export function role_init() {
         cptr.stPtro(gu, $instance_globals_u_urole + $Role_ngod, cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_pantheon), 312, $Role_ngod));
         cptr.stPtro(gu, $instance_globals_u_urole + $Role_cgod, cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_pantheon), 312, $Role_cgod));
     }
-    cptr.stI32o(svq, $q_score_godgend, (!strncmpi((align_gtitle(schar(alignmnt))), (__sl338), -1)) >>> 0);
+    cptr.stI32o(svq, $q_score_godgend, (!strncmpi((align_gtitle(schar(alignmnt))), (__s_goddess), -1)) >>> 0);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
         cptr.st1o2(objects, NHC.SPE_LIGHT, 120, $objclass_oc_subtyp, NHC.P_CLERIC_SPELL);
     return;
@@ -2658,15 +2658,15 @@ export function role_init() {
 export function Hello(mtmp) {
     switch (Role_switch()) {
         case NHC.PM_KNIGHT:
-        return __sl339;
+        return __s_salutations;
         case NHC.PM_SAMURAI:
-        return (mtmp && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_SHOPKEEPER, 96))) ? __sl340 : __sl341;
+        return (mtmp && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_SHOPKEEPER, 96))) ? __s_irasshaimase : __s_konnichi_wa;
         case NHC.PM_TOURIST:
-        return __sl342;
+        return __s_aloha;
         case NHC.PM_VALKYRIE:
-        return (mtmp && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96))) ? __sl343 : __sl344;
+        return (mtmp && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96))) ? __s_hallo : __s_velkommen;
         default:
-        return __sl345;
+        return __s_hello;
     }
 }
 
@@ -2674,15 +2674,15 @@ export function Hello(mtmp) {
 export function Goodbye() {
     switch (Role_switch()) {
         case NHC.PM_KNIGHT:
-        return __sl346;
+        return __s_fare_thee_well;
         case NHC.PM_SAMURAI:
-        return __sl347;
+        return __s_sayonara;
         case NHC.PM_TOURIST:
-        return __sl342;
+        return __s_aloha;
         case NHC.PM_VALKYRIE:
-        return __sl348;
+        return __s_farvel;
         default:
-        return __sl349;
+        return __s_goodbye;
     }
 }
 
@@ -2757,7 +2757,7 @@ export function genl_player_setup(screenheight) {
                     if (pick4u == 121 || pick4u == 97 || cptr.ldI32o(flags, $flag_initrole) == -2) {
                         k = pick_role(cptr.ldI32o(flags, $flag_initrace), cptr.ldI32o(flags, $flag_initgend), cptr.ldI32o(flags, $flag_initalign), NHM.PICK_RANDOM);
                         if (k < 0) {
-                            pline(__sl350);
+                            pline(__s_incompatible_role);
                             k = randrole(0);
                         }
                     } else {
@@ -2767,13 +2767,13 @@ export function genl_player_setup(screenheight) {
                         role_menu_extra(-2, win, 1);
                         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                         if (excess < 1 || excess > 2)
-                            add_menu_str(win, __sl329);
+                            add_menu_str(win, __s_empty);
                         role_menu_extra(NHM.RS_RACE, win, 0);
                         role_menu_extra(NHM.RS_GENDER, win, 0);
                         role_menu_extra(NHM.RS_ALGNMNT, win, 0);
                         role_menu_extra(NHM.RS_filter, win, 0);
                         role_menu_extra(-1, win, 0);
-                        void cptr.strcpy(cptr.decay(pbuf), __sl351);
+                        void cptr.strcpy(cptr.decay(pbuf), __s_pick_a_role_or_profession);
                         end_menu()(win, cptr.decay(pbuf));
                         n = select_menu(win, NHM.PICK_ONE, selected);
                         if (n > 0) {
@@ -2820,7 +2820,7 @@ export function genl_player_setup(screenheight) {
                     if (pick4u == 121 || pick4u == 97 || cptr.ldI32o(flags, $flag_initrace) == -2) {
                         k = pick_race(cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initgend), cptr.ldI32o(flags, $flag_initalign), NHM.PICK_RANDOM);
                         if (k < 0) {
-                            pline(__sl352);
+                            pline(__s_incompatible_race);
                             k = randrace(cptr.ldI32o(flags, $flag_initrole));
                         }
                     } else {
@@ -2844,13 +2844,13 @@ export function genl_player_setup(screenheight) {
                             setup_racemenu(win, 1, cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initgend), cptr.ldI32o(flags, $flag_initalign));
                             role_menu_extra(-2, win, 1);
                             cptr.stI32(any, 0);
-                            add_menu_str(win, __sl329);
+                            add_menu_str(win, __s_empty);
                             role_menu_extra(NHM.RS_ROLE, win, 0);
                             role_menu_extra(NHM.RS_GENDER, win, 0);
                             role_menu_extra(NHM.RS_ALGNMNT, win, 0);
                             role_menu_extra(NHM.RS_filter, win, 0);
                             role_menu_extra(-1, win, 0);
-                            void cptr.strcpy(cptr.decay(pbuf), __sl353);
+                            void cptr.strcpy(cptr.decay(pbuf), __s_pick_a_race_or_species);
                             end_menu()(win, cptr.decay(pbuf));
                             n = select_menu(win, NHM.PICK_ONE, selected);
                             if (n > 0) {
@@ -2900,7 +2900,7 @@ export function genl_player_setup(screenheight) {
                     if (pick4u == 121 || pick4u == 97 || cptr.ldI32o(flags, $flag_initgend) == -2) {
                         k = pick_gend(cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace), cptr.ldI32o(flags, $flag_initalign), NHM.PICK_RANDOM);
                         if (k < 0) {
-                            pline(__sl354);
+                            pline(__s_incompatible_gender);
                             k = randgend(cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace));
                         }
                     } else {
@@ -2924,13 +2924,13 @@ export function genl_player_setup(screenheight) {
                             setup_gendmenu(win, 1, cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace), cptr.ldI32o(flags, $flag_initalign));
                             role_menu_extra(-2, win, 1);
                             cptr.stI32(any, 0);
-                            add_menu_str(win, __sl329);
+                            add_menu_str(win, __s_empty);
                             role_menu_extra(NHM.RS_ROLE, win, 0);
                             role_menu_extra(NHM.RS_RACE, win, 0);
                             role_menu_extra(NHM.RS_ALGNMNT, win, 0);
                             role_menu_extra(NHM.RS_filter, win, 0);
                             role_menu_extra(-1, win, 0);
-                            void cptr.strcpy(cptr.decay(pbuf), __sl355);
+                            void cptr.strcpy(cptr.decay(pbuf), __s_pick_a_gender_or_sex);
                             end_menu()(win, cptr.decay(pbuf));
                             n = select_menu(win, NHM.PICK_ONE, selected);
                             if (n > 0) {
@@ -2980,7 +2980,7 @@ export function genl_player_setup(screenheight) {
                     if (pick4u == 121 || pick4u == 97 || cptr.ldI32o(flags, $flag_initalign) == -2) {
                         k = pick_align(cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace), cptr.ldI32o(flags, $flag_initgend), NHM.PICK_RANDOM);
                         if (k < 0) {
-                            pline(__sl356);
+                            pline(__s_incompatible_alignment);
                             k = randalign(cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace));
                         }
                     } else {
@@ -3004,13 +3004,13 @@ export function genl_player_setup(screenheight) {
                             setup_algnmenu(win, 1, cptr.ldI32o(flags, $flag_initrole), cptr.ldI32o(flags, $flag_initrace), cptr.ldI32o(flags, $flag_initgend));
                             role_menu_extra(-2, win, 1);
                             cptr.stI32(any, 0);
-                            add_menu_str(win, __sl329);
+                            add_menu_str(win, __s_empty);
                             role_menu_extra(NHM.RS_ROLE, win, 0);
                             role_menu_extra(NHM.RS_RACE, win, 0);
                             role_menu_extra(NHM.RS_GENDER, win, 0);
                             role_menu_extra(NHM.RS_filter, win, 0);
                             role_menu_extra(-1, win, 0);
-                            void cptr.strcpy(cptr.decay(pbuf), __sl357);
+                            void cptr.strcpy(cptr.decay(pbuf), __s_pick_an_alignment_or_creed);
                             end_menu()(win, cptr.decay(pbuf));
                             n = select_menu(win, NHM.PICK_ONE, selected);
                             if (n > 0) {
@@ -3060,16 +3060,16 @@ export function genl_player_setup(screenheight) {
             win = plsel_startmenu(screenheight, NHM.RS_filter);
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, 1);
-            add_menu(win, nul_glyphinfo.v, any, 121, 0, NHM.ATR_NONE, clr, __sl358, NHM.MENU_ITEMFLAGS_SELECTED);
+            add_menu(win, nul_glyphinfo.v, any, 121, 0, NHM.ATR_NONE, clr, __s_yes_start_game, NHM.MENU_ITEMFLAGS_SELECTED);
             cptr.stI32(any, 2);
-            add_menu(win, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __sl359, NHM.MENU_ITEMFLAGS_NONE);
+            add_menu(win, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_no_choose_role_again, NHM.MENU_ITEMFLAGS_NONE);
             if (cptr.ld1so(iflags, $instance_flags_renameallowed)) {
                 cptr.stI32(any, 3);
-                add_menu(win, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __sl360, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(win, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __s_not_yet_choose_another_name, NHM.MENU_ITEMFLAGS_NONE);
             }
             cptr.stI32(any, -1);
-            add_menu(win, nul_glyphinfo.v, any, 113, 0, NHM.ATR_NONE, clr, __sl335, NHM.MENU_ITEMFLAGS_NONE);
-            void cptr.sprintf(cptr.decay(pbuf), __sl361, cptr.ld1so(iflags, $instance_flags_renameallowed) ? __sl362 : __sl329);
+            add_menu(win, nul_glyphinfo.v, any, 113, 0, NHM.ATR_NONE, clr, __s_quit, NHM.MENU_ITEMFLAGS_NONE);
+            void cptr.sprintf(cptr.decay(pbuf), __s_is_this_ok_yn_sq, cptr.ld1so(iflags, $instance_flags_renameallowed) ? __s_a : __s_empty);
             end_menu()(win, cptr.decay(pbuf));
             n = select_menu(win, NHM.PICK_ONE, selected);
             choice = (n > 0) ? cptr.ldI32o(selected.v, (n - 1) | 0, 24) : ((n == 0) ? 1 : -1);
@@ -3119,18 +3119,18 @@ function reset_role_filtering() {
     let selected = cptr.box(null);
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
-    add_menu_str(win, __sl363);
+    add_menu_str(win, __s_unacceptable_roles);
     setup_rolemenu(win, 0, -1, -1, -1);
-    add_menu_str(win, __sl329);
-    add_menu_str(win, __sl364);
+    add_menu_str(win, __s_empty);
+    add_menu_str(win, __s_unacceptable_races);
     setup_racemenu(win, 0, -1, -1, -1);
-    add_menu_str(win, __sl329);
-    add_menu_str(win, __sl365);
+    add_menu_str(win, __s_empty);
+    add_menu_str(win, __s_unacceptable_genders);
     setup_gendmenu(win, 0, -1, -1, -1);
-    add_menu_str(win, __sl329);
-    add_menu_str(win, __sl366);
+    add_menu_str(win, __s_empty);
+    add_menu_str(win, __s_unacceptable_alignments);
     setup_algnmenu(win, 0, -1, -1, -1);
-    void cptr.sprintf(cptr.decay(filterprompt), __sl367, gotrolefilter() ? __sl368 : __sl329);
+    void cptr.sprintf(cptr.decay(filterprompt), __s_pick_all_that_apply_s, gotrolefilter() ? __s_and_or_unpick_any_that_no_longer_apply : __s_empty);
     end_menu()(win, cptr.decay(filterprompt));
     n = select_menu(win, NHM.PICK_ANY, selected);
     if (n >= 0) {
@@ -3169,19 +3169,19 @@ function plsel_startmenu(ttyrows, aspect) {
     let win;
     let rolename;
     rigid_role_checks();
-    rolename = (cptr.ldI32o(flags, $flag_initrole) < 0) ? __sl369 : ((cptr.ldI32o(flags, $flag_initgend) == 1 && cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_initrole), 312, $RoleName_f)) ? cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_initrole), 312, $RoleName_f) : cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312));
+    rolename = (cptr.ldI32o(flags, $flag_initrole) < 0) ? __s_role__3 : ((cptr.ldI32o(flags, $flag_initgend) == 1 && cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_initrole), 312, $RoleName_f)) ? cptr.ldPtro2(roles, cptr.ldI32o(flags, $flag_initrole), 312, $RoleName_f) : cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312));
     if (!cptr.ld1so(svp, 0, 1) || cptr.ldI32o(flags, $flag_initrole) < 0 || cptr.ldI32o(flags, $flag_initrace) < 0 || cptr.ldI32o(flags, $flag_initgend) < 0 || cptr.ldI32o(flags, $flag_initalign) < 0) {
-        void cptr.sprintf(cptr.decay(qbuf), __sl370, rolename, (cptr.ldI32o(flags, $flag_initrace) < 0) ? __sl371 : cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112), (cptr.ldI32o(flags, $flag_initgend) < 0) ? __sl372 : cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48), (cptr.ldI32o(flags, $flag_initalign) < 0) ? __sl373 : cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj));
+        void cptr.sprintf(cptr.decay(qbuf), __s_20s_20s_20s_20s, rolename, (cptr.ldI32o(flags, $flag_initrace) < 0) ? __s_race__3 : cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112), (cptr.ldI32o(flags, $flag_initgend) < 0) ? __s_gender__3 : cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48), (cptr.ldI32o(flags, $flag_initalign) < 0) ? __s_alignment__3 : cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj));
     } else {
-        void cptr.sprintf(cptr.decay(qbuf), __sl374, svp, cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj), cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48), cptr.ldPtro2(races, cptr.ldI32o(flags, $flag_initrace), 112, $Race_adj), rolename);
+        void cptr.sprintf(cptr.decay(qbuf), __s_20s_the_20s_20s_20s_20s, svp, cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj), cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48), cptr.ldPtro2(races, cptr.ldI32o(flags, $flag_initrace), 112, $Race_adj), rolename);
     }
     win = create_nhwindow()(NHM.NHW_MENU);
     if (win == -1)
-        panic(__sl375);
+        panic(__s_could_not_create_role_selection_window);
     start_menu()(win, 0n);
     add_menu_str(win, cptr.decay(qbuf));
     if (maybe_skip_seps(ttyrows, aspect) != 2)
-        add_menu_str(win, __sl329);
+        add_menu_str(win, __s_empty);
     return win;
 }
 
@@ -3211,7 +3211,7 @@ function setup_rolemenu(win, filtering, race, gend, algn) {
             if (gend == 1) {
                 void cptr.strcpy(cptr.decay(rolenamebuf), cptr.ldPtro2(roles, i, 312, $RoleName_f));
             } else if (gend < 0) {
-                void cptr.strcat(cptr.decay(rolenamebuf), __sl296);
+                void cptr.strcat(cptr.decay(rolenamebuf), __s_slash);
                 void cptr.strcat(cptr.decay(rolenamebuf), cptr.ldPtro2(roles, i, 312, $RoleName_f));
             }
         }

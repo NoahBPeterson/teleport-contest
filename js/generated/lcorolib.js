@@ -16,26 +16,26 @@ import { lua_getstack } from './ldebug.js';
 const $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("thread");
-const __sl1 = cptr.lit("too many arguments to resume");
-const __sl2 = cptr.lit("too many results to resume");
-const __sl3 = cptr.lit("running");
-const __sl4 = cptr.lit("dead");
-const __sl5 = cptr.lit("suspended");
-const __sl6 = cptr.lit("normal");
-const __sl7 = cptr.lit("cannot close a %s coroutine");
-const __sl8 = cptr.lit("create");
-const __sl9 = cptr.lit("resume");
-const __sl10 = cptr.lit("status");
-const __sl11 = cptr.lit("wrap");
-const __sl12 = cptr.lit("yield");
-const __sl13 = cptr.lit("isyieldable");
-const __sl14 = cptr.lit("close");
+const __s_thread = cptr.lit("thread");
+const __s_too_many_arguments_to_resume = cptr.lit("too many arguments to resume");
+const __s_too_many_results_to_resume = cptr.lit("too many results to resume");
+const __s_running = cptr.lit("running");
+const __s_dead = cptr.lit("dead");
+const __s_suspended = cptr.lit("suspended");
+const __s_normal = cptr.lit("normal");
+const __s_cannot_close_a_s_coroutine = cptr.lit("cannot close a %s coroutine");
+const __s_create = cptr.lit("create");
+const __s_resume = cptr.lit("resume");
+const __s_status = cptr.lit("status");
+const __s_wrap = cptr.lit("wrap");
+const __s_yield = cptr.lit("yield");
+const __s_isyieldable = cptr.lit("isyieldable");
+const __s_close = cptr.lit("close");
 
 /** C ref: lcorolib.c:21 — @param {CPtr<lua_State>} L @returns {CPtr<lua_State>} */
 function getco(L) {
     let co = lua_tothread(L, 1);
-    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__sl0)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__s_thread)) ? 1 : 0));
     return co;
 }
 
@@ -44,7 +44,7 @@ function auxresume(L, co, narg) {
     let status;
     let nres = cptr.box(0);
     if ((__builtin_expect(BigInt(((!lua_checkstack(co, narg)) != 0)), 0n))) {
-        lua_pushstring(L, __sl1);
+        lua_pushstring(L, __s_too_many_arguments_to_resume);
         return -1;
     }
     lua_xmove(L, co, narg);
@@ -52,7 +52,7 @@ function auxresume(L, co, narg) {
     if ((__builtin_expect(BigInt(((status == 0 || status == 1 ? 1 : 0) != 0)), 1n))) {
         if ((__builtin_expect(BigInt(((!lua_checkstack(L, (nres.v + 1) | 0)) != 0)), 0n))) {
             lua_settop(co, (-(nres.v) - 1) | 0);
-            lua_pushstring(L, __sl2);
+            lua_pushstring(L, __s_too_many_results_to_resume);
             return -1;
         }
         lua_xmove(co, L, nres.v);
@@ -124,10 +124,10 @@ function luaB_yield(L) {
 
 /** C ref: lcorolib.c:123 — char *[4] */
 const statname = cptr.alloc(4 * 8);
-cptr.stPtro(statname, 0, __sl3);
-cptr.stPtro(statname, 8, __sl4);
-cptr.stPtro(statname, 16, __sl5);
-cptr.stPtro(statname, 24, __sl6);
+cptr.stPtro(statname, 0, __s_running);
+cptr.stPtro(statname, 8, __s_dead);
+cptr.stPtro(statname, 16, __s_suspended);
+cptr.stPtro(statname, 24, __s_normal);
 
 /** C ref: lcorolib.c:127 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @returns {CInt} */
 function auxstatus(L, co) {
@@ -193,27 +193,27 @@ function luaB_close(L) {
             }
         }
         default:
-        return luaL_error(L, __sl7, cptr.ldPtro(statname, status, 8));
+        return luaL_error(L, __s_cannot_close_a_s_coroutine, cptr.ldPtro(statname, status, 8));
     }
 }
 
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
 const co_funcs = cptr.alloc(9 * 16);
-cptr.stPtro(co_funcs, 0, __sl8);
+cptr.stPtro(co_funcs, 0, __s_create);
 cptr.stPtro(co_funcs, 0 + $luaL_Reg_func, luaB_cocreate);
-cptr.stPtro(co_funcs, 16, __sl9);
+cptr.stPtro(co_funcs, 16, __s_resume);
 cptr.stPtro(co_funcs, 16 + $luaL_Reg_func, luaB_coresume);
-cptr.stPtro(co_funcs, 32, __sl3);
+cptr.stPtro(co_funcs, 32, __s_running);
 cptr.stPtro(co_funcs, 32 + $luaL_Reg_func, luaB_corunning);
-cptr.stPtro(co_funcs, 48, __sl10);
+cptr.stPtro(co_funcs, 48, __s_status);
 cptr.stPtro(co_funcs, 48 + $luaL_Reg_func, luaB_costatus);
-cptr.stPtro(co_funcs, 64, __sl11);
+cptr.stPtro(co_funcs, 64, __s_wrap);
 cptr.stPtro(co_funcs, 64 + $luaL_Reg_func, luaB_cowrap);
-cptr.stPtro(co_funcs, 80, __sl12);
+cptr.stPtro(co_funcs, 80, __s_yield);
 cptr.stPtro(co_funcs, 80 + $luaL_Reg_func, luaB_yield);
-cptr.stPtro(co_funcs, 96, __sl13);
+cptr.stPtro(co_funcs, 96, __s_isyieldable);
 cptr.stPtro(co_funcs, 96 + $luaL_Reg_func, luaB_yieldable);
-cptr.stPtro(co_funcs, 112, __sl14);
+cptr.stPtro(co_funcs, 112, __s_close);
 cptr.stPtro(co_funcs, 112 + $luaL_Reg_func, luaB_close);
 cptr.stPtro(co_funcs, 128, null);
 cptr.stPtro(co_funcs, 128 + $luaL_Reg_func, null);

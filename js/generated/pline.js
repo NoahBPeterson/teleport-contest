@@ -61,45 +61,45 @@ const $accessibility_data_msg_loc = FLD.accessibility_data_msg_loc,
     $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Unknown command");
-const __sl1 = cptr.lit(": ");
-const __sl2 = cptr.lit("pline attempting to print %d characters!");
-const __sl3 = cptr.lit("You ");
-const __sl4 = cptr.lit("Your ");
-const __sl5 = cptr.lit("You dream that you feel ");
-const __sl6 = cptr.lit("You feel ");
-const __sl7 = cptr.lit("You can't ");
-const __sl8 = cptr.lit("The ");
-const __sl9 = cptr.lit("There ");
-const __sl10 = cptr.lit("You barely hear ");
-const __sl11 = cptr.lit("You dream that you hear ");
-const __sl12 = cptr.lit("You hear ");
-const __sl13 = cptr.lit("You dream that you see ");
-const __sl14 = cptr.lit("You sense ");
-const __sl15 = cptr.lit("You see ");
-const __sl16 = cptr.lit("\"");
-const __sl17 = cptr.lit("\t");
-const __sl18 = cptr.lit("_");
-const __sl19 = cptr.lit("impossible called impossible");
-const __sl20 = cptr.lit("impossible");
-const __sl21 = cptr.lit("%s");
-const __sl22 = cptr.lit("Program in disorder!");
-const __sl23 = cptr.lit("  (Saving and reloading may fix this problem.)");
-const __sl24 = cptr.lit("Please report these messages to %s.");
-const __sl25 = cptr.lit("devteam@nethack.org");
-const __sl26 = cptr.lit("Alternatively, contact local support: %s");
-const __sl27 = cptr.lit("Report now?");
-const __sl28 = cptr.lit("");
-const __sl29 = cptr.lit("Impossible");
-const __sl30 = cptr.lit("Exec to message handler %s failed.\n");
-const __sl31 = cptr.lit("Fork to message handler failed.");
-const __sl32 = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
+const __s_unknown_command = cptr.lit("Unknown command");
+const __s_colon_sp = cptr.lit(": ");
+const __s_pline_attempting_to_print_d_characters = cptr.lit("pline attempting to print %d characters!");
+const __s_you = cptr.lit("You ");
+const __s_your = cptr.lit("Your ");
+const __s_you_dream_that_you_feel = cptr.lit("You dream that you feel ");
+const __s_you_feel = cptr.lit("You feel ");
+const __s_you_can_t = cptr.lit("You can't ");
+const __s_the = cptr.lit("The ");
+const __s_there = cptr.lit("There ");
+const __s_you_barely_hear = cptr.lit("You barely hear ");
+const __s_you_dream_that_you_hear = cptr.lit("You dream that you hear ");
+const __s_you_hear = cptr.lit("You hear ");
+const __s_you_dream_that_you_see = cptr.lit("You dream that you see ");
+const __s_you_sense = cptr.lit("You sense ");
+const __s_you_see = cptr.lit("You see ");
+const __s_quot = cptr.lit("\"");
+const __s_tab = cptr.lit("\t");
+const __s_us = cptr.lit("_");
+const __s_impossible_called_impossible = cptr.lit("impossible called impossible");
+const __s_impossible = cptr.lit("impossible");
+const __s_pct_s = cptr.lit("%s");
+const __s_program_in_disorder = cptr.lit("Program in disorder!");
+const __s_saving_and_reloading_may_fix_this = cptr.lit("  (Saving and reloading may fix this problem.)");
+const __s_please_report_these_messages_to_s = cptr.lit("Please report these messages to %s.");
+const __s_devteam_nethack_org = cptr.lit("devteam@nethack.org");
+const __s_alternatively_contact_local_support_s = cptr.lit("Alternatively, contact local support: %s");
+const __s_report_now = cptr.lit("Report now?");
+const __s_empty = cptr.lit("");
+const __s_impossible__2 = cptr.lit("Impossible");
+const __s_exec_to_message_handler_s_failed = cptr.lit("Exec to message handler %s failed.\n");
+const __s_fork_to_message_handler_failed = cptr.lit("Fork to message handler failed.");
+const __s_nhassert_s_failed_in_file_s_at_line_d = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
 
 /** C ref: pline.c:22 — @param {CPtr<char>} line */
 export function dumplogmsg(line) {
     let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
     let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);
-    if (!cptr.strncmp(line, __sl0, 15n))
+    if (!cptr.strncmp(line, __s_unknown_command, 15n))
         return;
     if (oldest && cptr.strlen(oldest) >= cptr.strlen(line)) {
         void cptr.strcpy(oldest, line);
@@ -209,7 +209,7 @@ function vpline(line, the_args) {
             dirstr = coord_desc(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, $nhcoord_y), cptr.decay(dirstrbuf), schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? 102 : cptr.ldI32o(iflags, $instance_flags_getpos_coords))));
             tmp = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(line) + 3n) + cptr.strlen(dirstr)))));
             void cptr.strcpy(tmp, dirstr);
-            void cptr.strcat(tmp, __sl1);
+            void cptr.strcat(tmp, __s_colon_sp);
             void cptr.strcat(tmp, line);
             vpline(tmp, the_args);
             cptr.free(tmp);
@@ -225,7 +225,7 @@ function vpline(line, the_args) {
             line = cptr.decay(pbuf);
         }
         if (ln > 1279)
-            panic(__sl2, ln);
+            panic(__s_pline_attempting_to_print_d_characters, ln);
         if (ln > 255) {
             if (!cptr.eq(line, cptr.decay(pbuf)))
                 void __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
@@ -321,7 +321,7 @@ export function You(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __sl3), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __s_you), tmp), line), the_args);
     the_args = null;
 }
 
@@ -330,7 +330,7 @@ export function Your(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 6n)))))), __sl4), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 6n)))))), __s_your), tmp), line), the_args);
     the_args = null;
 }
 
@@ -340,9 +340,9 @@ export function You_feel(line, ...__va) {
     let tmp;
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl5);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __s_you_dream_that_you_feel);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl6);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __s_you_feel);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -352,7 +352,7 @@ export function You_cant(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl7), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __s_you_can_t), tmp), line), the_args);
     the_args = null;
 }
 
@@ -361,7 +361,7 @@ export function pline_The(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __sl8), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n)))))), __s_the), tmp), line), the_args);
     the_args = null;
 }
 
@@ -370,7 +370,7 @@ export function There(line, ...__va) {
     let the_args;
     let tmp;
     the_args = cptr.vaList(__va);
-    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 7n)))))), __sl9), tmp), line), the_args);
+    vpline(cptr.strcat((void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 7n)))))), __s_there), tmp), line), the_args);
     the_args = null;
 }
 
@@ -382,11 +382,11 @@ export function You_hear(line, ...__va) {
         return;
     the_args = cptr.vaList(__va);
     if (Underwater())
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n)))))), __sl10);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 17n)))))), __s_you_barely_hear);
     else if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __sl11);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n)))))), __s_you_dream_that_you_hear);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __sl12);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n)))))), __s_you_hear);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -397,11 +397,11 @@ export function You_see(line, ...__va) {
     let tmp;
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __sl13);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n)))))), __s_you_dream_that_you_see);
     else if (Blind())
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __sl14);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n)))))), __s_you_sense);
     else
-        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __sl15);
+        void cptr.strcpy((tmp = You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 9n)))))), __s_you_see);
     vpline(cptr.strcat(tmp, line), the_args);
     the_args = null;
 }
@@ -413,9 +413,9 @@ export function verbalize(line, ...__va) {
     the_args = cptr.vaList(__va);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, cptr.ldI32o(gp, $instance_globals_p_pline_flags) | NHM.PLINE_VERBALIZE);
     tmp = You_buf(Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n))));
-    void cptr.strcpy(tmp, __sl16);
+    void cptr.strcpy(tmp, __s_quot);
     void cptr.strcat(tmp, line);
-    void cptr.strcat(tmp, __sl16);
+    void cptr.strcat(tmp, __s_quot);
     vpline(tmp, the_args);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, cptr.ldI32o(gp, $instance_globals_p_pline_flags) & 4294967279);
     the_args = null;
@@ -446,7 +446,7 @@ export function livelog_printf(ll_type, line, ...__va) {
     void cptr.vsnprintf(cptr.decay(gamelogbuf), 512n, line, the_args);
     the_args = null;
     gamelog_add(ll_type, cptr.ldI64o(svm, $instance_globals_saved_m_moves), cptr.decay(gamelogbuf));
-    strNsubst(cptr.decay(gamelogbuf), __sl17, __sl18, 0);
+    strNsubst(cptr.decay(gamelogbuf), __s_tab, __s_us, 0);
     livelog_add(ll_type, cptr.decay(gamelogbuf));
 }
 
@@ -485,34 +485,34 @@ export function impossible(s, ...__va) {
     let pbuf2 = new Uint8Array(256);
     the_args = cptr.vaList(__va);
     if (cptr.ldI32o(program_state, $sinfo_in_impossible))
-        panic(__sl19);
+        panic(__s_impossible_called_impossible);
     cptr.stI32o(program_state, $sinfo_in_impossible, 1);
     void cptr.vsnprintf(cptr.decay(pbuf), 1280n, s, the_args);
     the_args = null;
     cptr.st1o(cptr.decay(pbuf), 255, 0, 1);
-    paniclog(__sl20, cptr.decay(pbuf));
+    paniclog(__s_impossible, cptr.decay(pbuf));
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) == NHC.fuzzer_impossible_panic)
-        panic(__sl21, cptr.decay(pbuf));
+        panic(__s_pct_s, cptr.decay(pbuf));
     cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
-    pline(__sl21, cptr.decay(pbuf));
+    pline(__s_pct_s, cptr.decay(pbuf));
     cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
     if (cptr.ldI32o(program_state, $sinfo_in_sanity_check)) {
         cptr.stI32o(program_state, $sinfo_in_impossible, 0);
         return;
     }
-    void cptr.strcpy(cptr.decay(pbuf2), __sl22);
+    void cptr.strcpy(cptr.decay(pbuf2), __s_program_in_disorder);
     if (cptr.ldI32o(program_state, $sinfo_something_worth_saving))
-        void cptr.strcat(cptr.decay(pbuf2), __sl23);
-    pline(__sl21, cptr.decay(pbuf2));
-    pline(__sl24, __sl25);
+        void cptr.strcat(cptr.decay(pbuf2), __s_saving_and_reloading_may_fix_this);
+    pline(__s_pct_s, cptr.decay(pbuf2));
+    pline(__s_please_report_these_messages_to_s, __s_devteam_nethack_org);
     if (cptr.ldPtr(sysopt)) {
-        pline(__sl26, cptr.ldPtr(sysopt));
+        pline(__s_alternatively_contact_local_support_s, cptr.ldPtr(sysopt));
     }
     if (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl)) {
-        let report = schar((121 == yn_function(__sl27, cptr.decay(ynchars), 110, 0)));
-        raw_print()(__sl28);
+        let report = schar((121 == yn_function(__s_report_now, cptr.decay(ynchars), 110, 0)));
+        raw_print()(__s_empty);
         if (report) {
-            submit_web_report(1, __sl29, cptr.decay(pbuf));
+            submit_web_report(1, __s_impossible__2, cptr.decay(pbuf));
         }
     }
     cptr.stI32o(program_state, $sinfo_in_impossible, 0);
@@ -536,7 +536,7 @@ function execplinehandler(line) {
         void setuid(getuid());
         void execv(cptr.ldPtro(args, 0, 8), args);
         perror(null);
-        void fprintf(__stderrp, __sl30, cptr.ldPtro(sysopt, $sysopt_s_msghandler));
+        void fprintf(__stderrp, __s_exec_to_message_handler_s_failed, cptr.ldPtro(sysopt, $sysopt_s_msghandler));
         nh_terminate(1);
     } else if (f > 0) {
         let status = cptr.box(0);
@@ -544,7 +544,7 @@ function execplinehandler(line) {
     } else if (f == -1) {
         perror(null);
         use_pline_handler = 0;
-        pline(__sl21, __sl31);
+        pline(__s_pct_s, __s_fork_to_message_handler_failed);
     }
 }
 
@@ -557,7 +557,7 @@ export function nhassert_failed(expression, filepath, line) {
         filename = cptr.add(p, 1);
     if ((p = cptr.strrchr(filename, 92)) !== null)
         filename = cptr.add(p, 1);
-    impossible(__sl32, expression, filename, line);
+    impossible(__s_nhassert_s_failed_in_file_s_at_line_d, expression, filename, line);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

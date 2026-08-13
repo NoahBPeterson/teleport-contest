@@ -15,7 +15,7 @@ import { lowc } from './hacklib.js';
 const $strbuf_t_buf = FLD.strbuf_t_buf, $strbuf_t_str = FLD.strbuf_t_str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s:%d string too long");
+const __s_s_d_string_too_long = cptr.lit("%s:%d string too long");
 
 /** C ref: strutil.c:9 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_init(strbuf) {
@@ -82,7 +82,7 @@ export function Strlen_(str, file, line) {
         if (cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; })) == 0)
             break;
     if (len == 32767n)
-        panic(__sl0, file, line);
+        panic(__s_s_d_string_too_long, file, line);
     return Number(BigInt.asUintN(32, len));
 }
 

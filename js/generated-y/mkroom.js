@@ -67,25 +67,25 @@ const $coord_y = FLD.coord_y, $dgn_topology_d_astral_level = FLD.dgn_topology_d_
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Tried to make a room of type %d.");
-const __sl1 = cptr.lit("SHOPTYPE");
-const __sl2 = cptr.lit("rooms[] not closed by -1?");
-const __sl3 = cptr.lit("mkroom.c");
-const __sl4 = cptr.lit("mkshop");
-const __sl5 = cptr.lit("pick_room");
-const __sl6 = cptr.lit("mk_zoo_thronemon");
-const __sl7 = cptr.lit("fill_zoo");
-const __sl8 = cptr.lit("mkundead");
-const __sl9 = cptr.lit("morguemon");
-const __sl10 = cptr.lit("mkswamp");
-const __sl11 = cptr.lit("shrine_pos");
-const __sl12 = cptr.lit("somex");
-const __sl13 = cptr.lit("somey");
-const __sl14 = cptr.lit("courtmon");
-const __sl15 = cptr.lit("squadmon");
-const __sl16 = cptr.lit("room-mkroom");
-const __sl17 = cptr.lit("room-nroom");
-const __sl18 = cptr.lit("invalid_shop_shape: no squares inside door?");
+const __s_tried_to_make_a_room_of_type_d = cptr.lit("Tried to make a room of type %d.");
+const __s_shoptype = cptr.lit("SHOPTYPE");
+const __s_rooms_not_closed_by_1 = cptr.lit("rooms[] not closed by -1?");
+const __s_mkroom_c = cptr.lit("mkroom.c");
+const __s_mkshop = cptr.lit("mkshop");
+const __s_pick_room = cptr.lit("pick_room");
+const __s_mk_zoo_thronemon = cptr.lit("mk_zoo_thronemon");
+const __s_fill_zoo = cptr.lit("fill_zoo");
+const __s_mkundead = cptr.lit("mkundead");
+const __s_morguemon = cptr.lit("morguemon");
+const __s_mkswamp = cptr.lit("mkswamp");
+const __s_shrine_pos = cptr.lit("shrine_pos");
+const __s_somex = cptr.lit("somex");
+const __s_somey = cptr.lit("somey");
+const __s_courtmon = cptr.lit("courtmon");
+const __s_squadmon = cptr.lit("squadmon");
+const __s_room_mkroom = cptr.lit("room-mkroom");
+const __s_room_nroom = cptr.lit("room-nroom");
+const __s_invalid_shop_shape_no_squares_inside = cptr.lit("invalid_shop_shape: no squares inside door?");
 
 /** C ref: mkroom.c:42 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function isbig(sroom) {
@@ -130,7 +130,7 @@ export function* do_mkroom(roomtype) {
             mkzoo(NHC.ANTHOLE);
             break;
             default:
-            (yield* impossible(__sl0, roomtype));
+            (yield* impossible(__s_tried_to_make_a_room_of_type_d, roomtype));
         }
     }
 }
@@ -142,7 +142,7 @@ function* mkshop() {
     let ep = null;
     __lbl_gottype: {
         if (wizard()) {
-            ep = nh_getenv(__sl1);
+            ep = nh_getenv(__s_shoptype);
             if (ep) {
                 if (cptr.ld1s(ep) == 122 || cptr.ld1s(ep) == 90) {
                     mkzoo(NHC.ZOO);
@@ -200,7 +200,7 @@ function* mkshop() {
         if (cptr.ldI16o(sroom, $mkroom_hx) < 0)
             return;
         if (cptr.diff(sroom, svr) / 224n >= BigInt(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) {
-            (yield* impossible(__sl2));
+            (yield* impossible(__s_rooms_not_closed_by_1));
             return;
         }
         if (cptr.ld1so(sroom, $mkroom_rtype) != NHC.OROOM)
@@ -224,7 +224,7 @@ function* mkshop() {
     }
     if (i < 0) {
         let j;
-        for (j = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 193, __sl4), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shtypes, i, 112, $shclass_prob)) | 0) > 0; i++)
+        for (j = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 193, __s_mkshop), rnd(100)) : rnd(100)), i = 0; (j = (j - cptr.ldI32o2(shtypes, i, 112, $shclass_prob)) | 0) > 0; i++)
             continue;
         if (isbig(sroom) && (cptr.ld1so2(shtypes, i, 112, $shclass_symb) == NHC.WAND_CLASS || cptr.ld1so2(shtypes, i, 112, $shclass_symb) == NHC.SPBOOK_CLASS))
             i = 0;
@@ -238,7 +238,7 @@ function* mkshop() {
 function pick_room(strict) {
     let sroom;
     let i = cptr.ldI32o(svn, $instance_globals_saved_n_nroom);
-    for (sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 225, __sl5), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224); i--; sroom = cptr.add(sroom, 1, 224)) {
+    for (sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 225, __s_pick_room), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224); i--; sroom = cptr.add(sroom, 1, 224)) {
         if (cptr.eq(sroom, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224)))
             sroom = cptr.add(svr, 0, 224);
         if (cptr.ldI16o(sroom, $mkroom_hx) < 0)
@@ -246,11 +246,11 @@ function pick_room(strict) {
         if (cptr.ld1so(sroom, $mkroom_rtype) != NHC.OROOM)
             continue;
         if (!strict) {
-            if (has_upstairs(sroom) || (has_dnstairs(sroom) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 233, __sl5), rn2(3)) : rn2(3))))
+            if (has_upstairs(sroom) || (has_dnstairs(sroom) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 233, __s_pick_room), rn2(3)) : rn2(3))))
                 continue;
         } else if (has_upstairs(sroom) || has_dnstairs(sroom))
             continue;
-        if (cptr.ld1so(sroom, $mkroom_doorct) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 237, __sl5), rn2(5)) : rn2(5)) || wizard())
+        if (cptr.ld1so(sroom, $mkroom_doorct) == 1 || !(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 237, __s_pick_room), rn2(5)) : rn2(5)) || wizard())
             return sroom;
     }
     return null;
@@ -267,7 +267,7 @@ function mkzoo(type) {
 
 /** C ref: mkroom.c:257 — @param {CInt} x @param {CInt} y */
 function* mk_zoo_thronemon(x, y) {
-    let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 259, __sl6), rnd((yield* level_difficulty()))) : rnd((yield* level_difficulty())));
+    let i = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 259, __s_mk_zoo_thronemon), rnd((yield* level_difficulty()))) : rnd((yield* level_difficulty())));
     let pm = (i > 9) ? NHC.PM_OGRE_TYRANT : ((i > 5) ? NHC.PM_ELVEN_MONARCH : ((i > 2) ? NHC.PM_DWARF_RULER : NHC.PM_GNOME_RULER));
     let mon = (yield* makemon(cptr.add(mons, pm, 96), x, y, NHM.NO_MM_FLAGS));
     if (mon) {
@@ -355,36 +355,36 @@ export function* fill_zoo(sroom) {
                 if (i >= goldlim)
                     i = Math.imul(5, (yield* level_difficulty()));
                 goldlim = (goldlim - i) | 0;
-                void (yield* mkgold(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 381, __sl7), rn2(i)) : rn2(i)) + 10) | 0)), i16(sx), i16(sy)));
+                void (yield* mkgold(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 381, __s_fill_zoo), rn2(i)) : rn2(i)) + 10) | 0)), i16(sx), i16(sy)));
                 break;
                 case NHC.MORGUE:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 384, __sl7), rn2(5)) : rn2(5)))
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 384, __s_fill_zoo), rn2(5)) : rn2(5)))
                     void (yield* mk_tt_object(NHC.CORPSE, i16(sx), i16(sy)));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 386, __sl7), rn2(10)) : rn2(10)))
-                    void (yield* mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 387, __sl7), rn2(3)) : rn2(3))) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 389, __sl7), rn2(5)) : rn2(5)))
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 386, __s_fill_zoo), rn2(10)) : rn2(10)))
+                    void (yield* mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 387, __s_fill_zoo), rn2(3)) : rn2(3))) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 389, __s_fill_zoo), rn2(5)) : rn2(5)))
                     (yield* make_grave(i16(sx), i16(sy), null));
                 break;
                 case NHC.BEEHIVE:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 393, __sl7), rn2(3)) : rn2(3)))
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 393, __s_fill_zoo), rn2(3)) : rn2(3)))
                     void (yield* mksobj_at(NHC.LUMP_OF_ROYAL_JELLY, i16(sx), i16(sy), 1, 0));
                 break;
                 case NHC.BARRACKS:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 398, __sl7), rn2(20)) : rn2(20)))
-                    void (yield* mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__sl3, 399, __sl7), rn2(3)) : rn2(3))) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 398, __s_fill_zoo), rn2(20)) : rn2(20)))
+                    void (yield* mksobj_at(((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 399, __s_fill_zoo), rn2(3)) : rn2(3))) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
                 break;
                 case NHC.COCKNEST:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 403, __sl7), rn2(3)) : rn2(3))) {
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 403, __s_fill_zoo), rn2(3)) : rn2(3))) {
                     let sobj = (yield* mk_tt_object(NHC.STATUE, i16(sx), i16(sy)));
                     if (sobj) {
-                        for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 407, __sl7), rn2(5)) : rn2(5)); i; i--)
+                        for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 407, __s_fill_zoo), rn2(5)) : rn2(5)); i; i--)
                             void (yield* add_to_container(sobj, (yield* mkobj(NHC.RANDOM_CLASS, 0))));
                         cptr.stI32o(sobj, $obj_owt, (yield* weight(sobj)) >>> 0);
                     }
                 }
                 break;
                 case NHC.ANTHOLE:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 415, __sl7), rn2(3)) : rn2(3)))
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 415, __s_fill_zoo), rn2(3)) : rn2(3)))
                     void (yield* mkobj_at(NHC.FOOD_CLASS, i16(sx), i16(sy), 0));
                 break;
             }
@@ -397,7 +397,7 @@ export function* fill_zoo(sroom) {
             cptr.st1o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ, NHC.THRONE);
             void somexyspace(sroom, mm);
             gold = (yield* mksobj(NHC.GOLD_PIECE, 1, 0));
-            cptr.stI64o(gold, $obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl3, 426, __sl7), rn2(Math.imul(50, (yield* level_difficulty())))) : rn2(Math.imul(50, (yield* level_difficulty())))) + 10) | 0)));
+            cptr.stI64o(gold, $obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 426, __s_fill_zoo), rn2(Math.imul(50, (yield* level_difficulty())))) : rn2(Math.imul(50, (yield* level_difficulty())))) + 10) | 0)));
             cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
             chest = (yield* mksobj_at(NHC.CHEST, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0));
             (yield* add_to_container(chest, gold));
@@ -426,7 +426,7 @@ export function* fill_zoo(sroom) {
 
 /** C ref: mkroom.c:456 — @param {CPtr<coord>} mm @param {CInt} revive_corpses @param {CInt} mm_flags */
 export function* mkundead(mm, revive_corpses, mm_flags) {
-    let cnt = ((((((yield* level_difficulty()) + 1) | 0) / 10) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 461, __sl8), rnd(5)) : rnd(5))) | 0;
+    let cnt = ((((((yield* level_difficulty()) + 1) | 0) / 10) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 461, __s_mkundead), rnd(5)) : rnd(5))) | 0;
     let mdat;
     let otmp;
     let cc = cptr.alloc(4);
@@ -440,8 +440,8 @@ export function* mkundead(mm, revive_corpses, mm_flags) {
 
 /** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
 function* morguemon() {
-    let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(100)) : rn2(100));
-    let hd = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2((yield* level_difficulty()))) : rn2((yield* level_difficulty())));
+    let i = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 480, __s_morguemon), rn2(100)) : rn2(100));
+    let hd = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 480, __s_morguemon), rn2((yield* level_difficulty()))) : rn2((yield* level_difficulty())));
     if (hd > 10 && i < 10) {
         if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
             return (yield* mkclass(NHC.S_DEMON, 0));
@@ -488,7 +488,7 @@ function* mkswamp() {
     let sy;
     let rmno;
     for (i = 0; i < 5; i++) {
-        sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 538, __sl10), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224);
+        sroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 538, __s_mkswamp), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224);
         if (cptr.ldI16o(sroom, $mkroom_hx) < 0 || cptr.ld1so(sroom, $mkroom_rtype) != NHC.OROOM || has_upstairs(sroom) || has_dnstairs(sroom))
             continue;
         rmno = (Number(BigInt.asIntN(32, (cptr.diff(sroom, svr) / 224n))) + NHM.ROOMOFFSET) | 0;
@@ -501,11 +501,11 @@ function* mkswamp() {
                     if (((sx + sy) | 0) % 2) {
                         (yield* del_engr_at(sx, sy));
                         cptr.st1o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_typ, NHC.POOL);
-                        if (!eelct || !(rng_log_enabled() ? (rng_log_set_caller(__sl3, 557, __sl10), rn2(4)) : rn2(4))) {
-                            void (yield* makemon((rng_log_enabled() ? (rng_log_set_caller(__sl3, 559, __sl10), rn2(5)) : rn2(5)) ? cptr.add(mons, NHC.PM_GIANT_EEL, 96) : ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 561, __sl10), rn2(2)) : rn2(2)) ? cptr.add(mons, NHC.PM_PIRANHA, 96) : cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96)), sx, sy, NHM.NO_MM_FLAGS));
+                        if (!eelct || !(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 557, __s_mkswamp), rn2(4)) : rn2(4))) {
+                            void (yield* makemon((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 559, __s_mkswamp), rn2(5)) : rn2(5)) ? cptr.add(mons, NHC.PM_GIANT_EEL, 96) : ((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 561, __s_mkswamp), rn2(2)) : rn2(2)) ? cptr.add(mons, NHC.PM_PIRANHA, 96) : cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96)), sx, sy, NHM.NO_MM_FLAGS));
                             eelct++;
                         }
-                    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl3, 567, __sl10), rn2(4)) : rn2(4)))
+                    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 567, __s_mkswamp), rn2(4)) : rn2(4)))
                         void (yield* makemon((yield* mkclass(NHC.S_FUNGUS, 0)), sx, sy, NHM.NO_MM_FLAGS));
                 }
             }
@@ -521,11 +521,11 @@ function shrine_pos(roomno) {
     let troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, 224);
     delta = (cptr.ldI16o(troom, $mkroom_hx) - cptr.ldI16(troom)) | 0;
     cptr.stI16(__static_shrine_pos_buf, i16(((cptr.ldI16(troom) + ((delta / 2) | 0)) | 0)));
-    if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 588, __sl11), rn2(2)) : rn2(2)))
+    if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 588, __s_shrine_pos), rn2(2)) : rn2(2)))
         (cptr.stI16(__static_shrine_pos_buf, cptr.ldI16(__static_shrine_pos_buf) + 1)) - (1);
     delta = (cptr.ldI16o(troom, $mkroom_hy) - cptr.ldI16o(troom, $mkroom_ly)) | 0;
     cptr.stI16o(__static_shrine_pos_buf, $nhcoord_y, i16(((cptr.ldI16o(troom, $mkroom_ly) + ((delta / 2) | 0)) | 0)));
-    if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__sl3, 592, __sl11), rn2(2)) : rn2(2)))
+    if ((delta % 2) && (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 592, __s_shrine_pos), rn2(2)) : rn2(2)))
         (cptr.stI16o(__static_shrine_pos_buf, $nhcoord_y, cptr.ldI16o(__static_shrine_pos_buf, $nhcoord_y) + 1)) - (1);
     return __static_shrine_pos_buf;
 }
@@ -587,12 +587,12 @@ export function has_upstairs(sroom) {
 
 /** C ref: mkroom.c:666 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somex(croom) {
-    return (((rng_log_enabled() ? (rng_log_set_caller(__sl3, 668, __sl12), rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) + (cptr.ldI16(croom))) | 0);
+    return (((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 668, __s_somex), rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) + (cptr.ldI16(croom))) | 0);
 }
 
 /** C ref: mkroom.c:672 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somey(croom) {
-    return (((rng_log_enabled() ? (rng_log_set_caller(__sl3, 674, __sl13), rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) + (cptr.ldI16o(croom, $mkroom_ly))) | 0);
+    return (((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 674, __s_somey), rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) + (cptr.ldI16o(croom, $mkroom_ly))) | 0);
 }
 
 /** C ref: mkroom.c:678 — @param {CPtr<struct mkroom>} croom @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -669,7 +669,7 @@ export function search_special(type) {
 
 /** C ref: mkroom.c:783 @returns {CPtr<struct permonst>} */
 export function* courtmon() {
-    let i = ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(60)) : rn2(60)) + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(Math.imul(3, (yield* level_difficulty())))) : rn2(Math.imul(3, (yield* level_difficulty()))))) | 0;
+    let i = ((rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 785, __s_courtmon), rn2(60)) : rn2(60)) + (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 785, __s_courtmon), rn2(Math.imul(3, (yield* level_difficulty())))) : rn2(Math.imul(3, (yield* level_difficulty()))))) | 0;
     if (i > 100)
         return (yield* mkclass(NHC.S_DRAGON, 0));
     else if (i > 95)
@@ -710,7 +710,7 @@ function* squadmon() {
     let cpro;
     let mndx;
     __lbl_gotone: {
-        sel_prob = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 821, __sl15), rnd((80 + (yield* level_difficulty())) | 0)) : rnd((80 + (yield* level_difficulty())) | 0));
+        sel_prob = (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 821, __s_squadmon), rnd((80 + (yield* level_difficulty())) | 0)) : rnd((80 + (yield* level_difficulty())) | 0));
         cpro = 0;
         for (i = 0; i < 4; i++) {
             cpro = (cpro + cptr.ldI32o2(squadprob, i, 8, 4)) | 0;
@@ -719,7 +719,7 @@ function* squadmon() {
                 break __lbl_gotone;
             }
         }
-        mndx = cptr.ldI32o(squadprob, (rng_log_enabled() ? (rng_log_set_caller(__sl3, 831, __sl15), rn2(4)) : rn2(4)), 8) | 0;
+        mndx = cptr.ldI32o(squadprob, (rng_log_enabled() ? (rng_log_set_caller(__s_mkroom_c, 831, __s_squadmon), rn2(4)) : rn2(4)), 8) | 0;
     }
     if (!(cptr.ld1uo2(svm, mndx, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
         return cptr.add(mons, mndx, 96);
@@ -730,7 +730,7 @@ function* squadmon() {
 /** C ref: mkroom.c:844 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} r */
 function* save_room(nhfp, r) {
     let i;
-    (yield* sfo_mkroom(nhfp, r, __sl16));
+    (yield* sfo_mkroom(nhfp, r, __s_room_mkroom));
     for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i++) {
         (yield* save_room(nhfp, cptr.ldPtro2(r, i, 8, $mkroom_sbrooms)));
     }
@@ -739,7 +739,7 @@ function* save_room(nhfp, r) {
 /** C ref: mkroom.c:863 — @param {CPtr<NHFILE>} nhfp */
 export function* save_rooms(nhfp) {
     let i;
-    (yield* sfo_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __sl17));
+    (yield* sfo_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __s_room_nroom));
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++)
         (yield* save_room(nhfp, cptr.add(svr, i, 224)));
 }
@@ -747,7 +747,7 @@ export function* save_rooms(nhfp) {
 /** C ref: mkroom.c:875 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} r */
 function* rest_room(nhfp, r) {
     let i;
-    (yield* sfi_mkroom(nhfp, r, __sl16));
+    (yield* sfi_mkroom(nhfp, r, __s_room_mkroom));
     for (i = 0; i < cptr.ld1so(r, $mkroom_nsubrooms); i++) {
         cptr.stPtro2(r, i, 8, $mkroom_sbrooms, cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), 224));
         (yield* rest_room(nhfp, cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), 224)));
@@ -758,7 +758,7 @@ function* rest_room(nhfp, r) {
 /** C ref: mkroom.c:893 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_rooms(nhfp) {
     let i;
-    (yield* sfi_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __sl17));
+    (yield* sfi_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __s_room_nroom));
     ;
     cptr.stI32o(gn, $instance_globals_n_nsubroom, 0);
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++) {
@@ -907,7 +907,7 @@ function* invalid_shop_shape(sroom) {
         }
     }
     if (insidect < 1) {
-        (yield* impossible(__sl18));
+        (yield* impossible(__s_invalid_shop_shape_no_squares_inside));
         return 1;
     }
     if (insidect == 1) {

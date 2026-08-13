@@ -21,65 +21,65 @@ const $FILE__r = FLD.FILE__r, $LStream_closef = FLD.LStream_closef, $RN_buff = F
     $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("rwa");
-const __sl1 = cptr.lit("b");
-const __sl2 = cptr.lit("FILE*");
-const __sl3 = cptr.lit("closed file");
-const __sl4 = cptr.lit("file");
-const __sl5 = cptr.lit("file (closed)");
-const __sl6 = cptr.lit("file (%p)");
-const __sl7 = cptr.lit("attempt to use a closed file");
-const __sl8 = cptr.lit("_IO_output");
-const __sl9 = cptr.lit("cannot open file '%s' (%s)");
-const __sl10 = cptr.lit("r");
-const __sl11 = cptr.lit("invalid mode");
-const __sl12 = cptr.lit("default %s file is closed");
-const __sl13 = cptr.lit("_IO_input");
-const __sl14 = cptr.lit("w");
-const __sl15 = cptr.lit("too many arguments");
-const __sl16 = cptr.lit("-+");
-const __sl17 = cptr.lit("00");
-const __sl18 = cptr.lit("xX");
-const __sl19 = cptr.lit("pP");
-const __sl20 = cptr.lit("eE");
-const __sl21 = cptr.lit("");
-const __sl22 = cptr.lit("invalid format");
-const __sl23 = cptr.lit("file is already closed");
-const __sl24 = cptr.lit("%s");
-const __sl25 = cptr.lit("%lld");
-const __sl26 = cptr.lit("%.14g");
-const __sl27 = cptr.lit("cur");
-const __sl28 = cptr.lit("not an integer in proper range");
-const __sl29 = cptr.lit("set");
-const __sl30 = cptr.lit("end");
-const __sl31 = cptr.lit("no");
-const __sl32 = cptr.lit("full");
-const __sl33 = cptr.lit("line");
-const __sl34 = cptr.lit("close");
-const __sl35 = cptr.lit("flush");
-const __sl36 = cptr.lit("input");
-const __sl37 = cptr.lit("lines");
-const __sl38 = cptr.lit("open");
-const __sl39 = cptr.lit("output");
-const __sl40 = cptr.lit("popen");
-const __sl41 = cptr.lit("read");
-const __sl42 = cptr.lit("tmpfile");
-const __sl43 = cptr.lit("type");
-const __sl44 = cptr.lit("write");
-const __sl45 = cptr.lit("seek");
-const __sl46 = cptr.lit("setvbuf");
-const __sl47 = cptr.lit("__index");
-const __sl48 = cptr.lit("__gc");
-const __sl49 = cptr.lit("__close");
-const __sl50 = cptr.lit("__tostring");
-const __sl51 = cptr.lit("cannot close standard file");
-const __sl52 = cptr.lit("stdin");
-const __sl53 = cptr.lit("stdout");
-const __sl54 = cptr.lit("stderr");
+const __s_rwa = cptr.lit("rwa");
+const __s_b = cptr.lit("b");
+const __s_file = cptr.lit("FILE*");
+const __s_closed_file = cptr.lit("closed file");
+const __s_file__2 = cptr.lit("file");
+const __s_file_closed = cptr.lit("file (closed)");
+const __s_file_p = cptr.lit("file (%p)");
+const __s_attempt_to_use_a_closed_file = cptr.lit("attempt to use a closed file");
+const __s_io_output = cptr.lit("_IO_output");
+const __s_cannot_open_file_s_s = cptr.lit("cannot open file '%s' (%s)");
+const __s_r = cptr.lit("r");
+const __s_invalid_mode = cptr.lit("invalid mode");
+const __s_default_s_file_is_closed = cptr.lit("default %s file is closed");
+const __s_io_input = cptr.lit("_IO_input");
+const __s_w = cptr.lit("w");
+const __s_too_many_arguments = cptr.lit("too many arguments");
+const __s_dash_plus = cptr.lit("-+");
+const __s_00 = cptr.lit("00");
+const __s_xx = cptr.lit("xX");
+const __s_pp = cptr.lit("pP");
+const __s_ee = cptr.lit("eE");
+const __s_empty = cptr.lit("");
+const __s_invalid_format = cptr.lit("invalid format");
+const __s_file_is_already_closed = cptr.lit("file is already closed");
+const __s_pct_s = cptr.lit("%s");
+const __s_lld = cptr.lit("%lld");
+const __s_14g = cptr.lit("%.14g");
+const __s_cur = cptr.lit("cur");
+const __s_not_an_integer_in_proper_range = cptr.lit("not an integer in proper range");
+const __s_set = cptr.lit("set");
+const __s_end = cptr.lit("end");
+const __s_no = cptr.lit("no");
+const __s_full = cptr.lit("full");
+const __s_line = cptr.lit("line");
+const __s_close = cptr.lit("close");
+const __s_flush = cptr.lit("flush");
+const __s_input = cptr.lit("input");
+const __s_lines = cptr.lit("lines");
+const __s_open = cptr.lit("open");
+const __s_output = cptr.lit("output");
+const __s_popen = cptr.lit("popen");
+const __s_read = cptr.lit("read");
+const __s_tmpfile = cptr.lit("tmpfile");
+const __s_type = cptr.lit("type");
+const __s_write = cptr.lit("write");
+const __s_seek = cptr.lit("seek");
+const __s_setvbuf = cptr.lit("setvbuf");
+const __s_index = cptr.lit("__index");
+const __s_gc = cptr.lit("__gc");
+const __s_close__2 = cptr.lit("__close");
+const __s_tostring = cptr.lit("__tostring");
+const __s_cannot_close_standard_file = cptr.lit("cannot close standard file");
+const __s_stdin = cptr.lit("stdin");
+const __s_stdout = cptr.lit("stdout");
+const __s_stderr = cptr.lit("stderr");
 
 /** C ref: liolib.c:40 — @param {CPtr<char>} mode @returns {CInt} */
 function* l_checkmode(mode) {
-    return (cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__sl0, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) && (strspn(mode, __sl1) == cptr.strlen(mode)) ? 1 : 0);
+    return (cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__s_rwa, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) && (strspn(mode, __s_b) == cptr.strlen(mode)) ? 1 : 0);
 }
 
 /** C ref: liolib.c:155 — typedef LStream (type alias only, no runtime output) */
@@ -88,31 +88,31 @@ function* l_checkmode(mode) {
 function* io_type(L) {
     let p;
     (yield* luaL_checkany(L, 1));
-    p = (yield* luaL_testudata(L, 1, __sl2));
+    p = (yield* luaL_testudata(L, 1, __s_file));
     if (cptr.eq(p, (null)))
         (yield* lua_pushnil(L));
     else if ((cptr.ldPtro((p), $LStream_closef) === (null)))
-        (yield* lua_pushstring(L, __sl3));
+        (yield* lua_pushstring(L, __s_closed_file));
     else
-        (yield* lua_pushstring(L, __sl4));
+        (yield* lua_pushstring(L, __s_file__2));
     return 1;
 }
 
 /** C ref: liolib.c:177 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_tostring(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     if ((cptr.ldPtro((p), $LStream_closef) === (null)))
-        (yield* lua_pushstring(L, __sl5));
+        (yield* lua_pushstring(L, __s_file_closed));
     else
-        (yield* lua_pushfstring(L, __sl6, cptr.ldPtr(p)));
+        (yield* lua_pushfstring(L, __s_file_p, cptr.ldPtr(p)));
     return 1;
 }
 
 /** C ref: liolib.c:187 — @param {CPtr<lua_State>} L @returns {CPtr<FILE>} */
 function* tofile(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     if ((__builtin_expect(BigInt((((cptr.ldPtro((p), $LStream_closef) === (null))) != 0)), 0n)))
-        (yield* luaL_error(L, __sl7));
+        (yield* luaL_error(L, __s_attempt_to_use_a_closed_file));
     (void 0);
     return cptr.ldPtr(p);
 }
@@ -121,13 +121,13 @@ function* tofile(L) {
 function* newprefile(L) {
     let p = (yield* lua_newuserdatauv(L, 16n, 0));
     cptr.stPtro(p, $LStream_closef, null);
-    (yield* luaL_setmetatable(L, __sl2));
+    (yield* luaL_setmetatable(L, __s_file));
     return p;
 }
 
 /** C ref: liolib.c:214 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* aux_close(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     let cf = cptr.ldPtro(p, $LStream_closef);
     cptr.stPtro(p, $LStream_closef, null);
     return (yield* Y.icall((cf)(L)));
@@ -142,13 +142,13 @@ function* f_close(L) {
 /** C ref: liolib.c:228 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_close(L) {
     if ((lua_type(L, 1) == -1))
-        (yield* lua_getfield(L, -1001000, (__sl8)));
+        (yield* lua_getfield(L, -1001000, (__s_io_output)));
     return (yield* f_close(L));
 }
 
 /** C ref: liolib.c:235 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_gc(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     if (!(cptr.ldPtro((p), $LStream_closef) === (null)) && !cptr.eq(cptr.ldPtr(p), (null)))
         (yield* aux_close(L));
     return 0;
@@ -156,7 +156,7 @@ function* f_gc(L) {
 
 /** C ref: liolib.c:246 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_fclose(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_fileresult(L, (fclose(cptr.ldPtr(p)) == 0), null));
 }
@@ -174,16 +174,16 @@ function* opencheck(L, fname, mode) {
     let p = (yield* newfile(L));
     cptr.stPtr(p, fopen(fname, mode));
     if ((__builtin_expect(BigInt(((cptr.eq(cptr.ldPtr(p), (null))) != 0)), 0n)))
-        (yield* luaL_error(L, __sl9, fname, strerror((cptr.ldI32(__error())))));
+        (yield* luaL_error(L, __s_cannot_open_file_s_s, fname, strerror((cptr.ldI32(__error())))));
 }
 
 /** C ref: liolib.c:269 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_open(L) {
     let filename = ((yield* luaL_checklstring(L, 1, null)));
-    let mode = ((yield* luaL_optlstring(L, 2, (__sl10), null)));
+    let mode = ((yield* luaL_optlstring(L, 2, (__s_r), null)));
     let p = (yield* newfile(L));
     let md = mode;
-    (void ((__builtin_expect(BigInt((((yield* l_checkmode(md))) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__sl11))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt((((yield* l_checkmode(md))) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__s_invalid_mode))) ? 1 : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, fopen(filename, mode));
     return (cptr.eq(cptr.ldPtr(p), (null))) ? (yield* luaL_fileresult(L, 0, filename)) : 1;
@@ -191,7 +191,7 @@ function* io_open(L) {
 
 /** C ref: liolib.c:284 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_pclose(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_execresult(L, (pclose(cptr.ldPtr(p)))));
 }
@@ -199,9 +199,9 @@ function* io_pclose(L) {
 /** C ref: liolib.c:291 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_popen(L) {
     let filename = ((yield* luaL_checklstring(L, 1, null)));
-    let mode = ((yield* luaL_optlstring(L, 2, (__sl10), null)));
+    let mode = ((yield* luaL_optlstring(L, 2, (__s_r), null)));
     let p = (yield* newprefile(L));
-    (void ((__builtin_expect(BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) && cptr.ld1so(mode, 1) == 0 ? 1 : 0)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__sl11))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) && cptr.ld1so(mode, 1) == 0 ? 1 : 0)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__s_invalid_mode))) ? 1 : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, (fflush(null), popen(filename, mode)));
     cptr.stPtro(p, $LStream_closef, io_pclose);
@@ -222,7 +222,7 @@ function* getiofile(L, findex) {
     (yield* lua_getfield(L, -1001000, findex));
     p = lua_touserdata(L, -1);
     if ((__builtin_expect(BigInt((((cptr.ldPtro((p), $LStream_closef) === (null))) != 0)), 0n)))
-        (yield* luaL_error(L, __sl12, cptr.add(findex, (BigInt.asUintN(64, 5n / 1n - 1n)))));
+        (yield* luaL_error(L, __s_default_s_file_is_closed, cptr.add(findex, (BigInt.asUintN(64, 5n / 1n - 1n)))));
     return cptr.ldPtr(p);
 }
 
@@ -244,18 +244,18 @@ function* g_iofile(L, f, mode) {
 
 /** C ref: liolib.c:338 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_input(L) {
-    return (yield* g_iofile(L, (__sl13), __sl10));
+    return (yield* g_iofile(L, (__s_io_input), __s_r));
 }
 
 /** C ref: liolib.c:343 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_output(L) {
-    return (yield* g_iofile(L, (__sl8), __sl14));
+    return (yield* g_iofile(L, (__s_io_output), __s_w));
 }
 
 /** C ref: liolib.c:366 — @param {CPtr<lua_State>} L @param {CInt} toclose */
 function* aux_lines(L, toclose) {
     let n = (lua_gettop(L) - 1) | 0;
-    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || (yield* luaL_argerror(L, 252, (__sl15))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || (yield* luaL_argerror(L, 252, (__s_too_many_arguments))) ? 1 : 0));
     (yield* lua_pushvalue(L, 1));
     (yield* lua_pushinteger(L, BigInt(n)));
     (yield* lua_pushboolean(L, toclose));
@@ -276,13 +276,13 @@ function* io_lines(L) {
     if ((lua_type(L, 1) == -1))
         (yield* lua_pushnil(L));
     if ((lua_type(L, 1) == 0)) {
-        (yield* lua_getfield(L, -1001000, (__sl13)));
+        (yield* lua_getfield(L, -1001000, (__s_io_input)));
         (lua_copy(L, -1, 1), (yield* lua_settop(L, -2)));
         (yield* tofile(L));
         toclose = 0;
     } else {
         let filename = ((yield* luaL_checklstring(L, 1, null)));
-        (yield* opencheck(L, filename, __sl10));
+        (yield* opencheck(L, filename, __s_r));
         (lua_copy(L, -1, 1), (yield* lua_settop(L, -2)));
         toclose = 1;
     }
@@ -342,9 +342,9 @@ function* read_number(L, f) {
     do {
         cptr.stI32o(rn, $RN_c, (cptr.stI32o((cptr.ldPtr(rn)), $FILE__r, cptr.ldI32o((cptr.ldPtr(rn)), $FILE__r) + -1) < 0 ? __srget(cptr.ldPtr(rn)) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((cptr.ldPtr(rn))), (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); })))));
     } while (isspace(cptr.ldI32o(rn, $RN_c)));
-    (yield* test2(rn, __sl16));
-    if ((yield* test2(rn, __sl17))) {
-        if ((yield* test2(rn, __sl18)))
+    (yield* test2(rn, __s_dash_plus));
+    if ((yield* test2(rn, __s_00))) {
+        if ((yield* test2(rn, __s_xx)))
             hex = 1;
         else
             count = 1;
@@ -352,8 +352,8 @@ function* read_number(L, f) {
     count = (count + (yield* readdigits(rn, hex))) | 0;
     if ((yield* test2(rn, cptr.decay(decp))))
         count = (count + (yield* readdigits(rn, hex))) | 0;
-    if (count > 0 && (yield* test2(rn, (hex ? __sl19 : __sl20)))) {
-        (yield* test2(rn, __sl16));
+    if (count > 0 && (yield* test2(rn, (hex ? __s_pp : __s_ee)))) {
+        (yield* test2(rn, __s_dash_plus));
         (yield* readdigits(rn, 0));
     }
     ungetc(cptr.ldI32o(rn, $RN_c), cptr.ldPtr(rn));
@@ -371,7 +371,7 @@ function* read_number(L, f) {
 function* test_eof(L, f) {
     let c = getc(f);
     ungetc(c, f);
-    (yield* lua_pushstring(L, __sl21));
+    (yield* lua_pushstring(L, __s_empty));
     return (c != -1);
 }
 
@@ -432,7 +432,7 @@ function* g_read(L, f, first) {
         success = (yield* read_line(L, f, 1));
         n = (first + 1) | 0;
     } else {
-        (yield* luaL_checkstack(L, (nargs + 20) | 0, __sl15));
+        (yield* luaL_checkstack(L, (nargs + 20) | 0, __s_too_many_arguments));
         success = 1;
         for (n = first; nargs-- && success; n++) {
             if (lua_type(L, n) == 3) {
@@ -457,7 +457,7 @@ function* g_read(L, f, first) {
                     success = 1;
                     break;
                     default:
-                    return (yield* luaL_argerror(L, n, __sl22));
+                    return (yield* luaL_argerror(L, n, __s_invalid_format));
                 }
             }
         }
@@ -473,7 +473,7 @@ function* g_read(L, f, first) {
 
 /** C ref: liolib.c:620 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_read(L) {
-    return (yield* g_read(L, (yield* getiofile(L, (__sl13))), 1));
+    return (yield* g_read(L, (yield* getiofile(L, (__s_io_input))), 1));
 }
 
 /** C ref: liolib.c:625 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -487,9 +487,9 @@ function* io_readline(L) {
     let i;
     let n = Number(BigInt.asIntN(32, (yield* lua_tointegerx(L, -1001002, null))));
     if ((cptr.ldPtro((p), $LStream_closef) === (null)))
-        return (yield* luaL_error(L, __sl23));
+        return (yield* luaL_error(L, __s_file_is_already_closed));
     (yield* lua_settop(L, 1));
-    (yield* luaL_checkstack(L, n, __sl15));
+    (yield* luaL_checkstack(L, n, __s_too_many_arguments));
     for (i = 1; i <= n; i++)
         (yield* lua_pushvalue(L, ((-1001000 - ((3 + i) | 0)) | 0)));
     n = (yield* g_read(L, cptr.ldPtr(p), 2));
@@ -498,7 +498,7 @@ function* io_readline(L) {
         return n;
     else {
         if (n > 1) {
-            return (yield* luaL_error(L, __sl24, (yield* lua_tolstring(L, ((-n + 1) | 0), null))));
+            return (yield* luaL_error(L, __s_pct_s, (yield* lua_tolstring(L, ((-n + 1) | 0), null))));
         }
         if (lua_toboolean(L, -1001003)) {
             (yield* lua_settop(L, 0));
@@ -516,7 +516,7 @@ function* g_write(L, f, arg) {
     cptr.stI32(__error(), 0);
     for (; nargs--; arg++) {
         if (lua_type(L, arg) == 3) {
-            let len = lua_isinteger(L, arg) ? fprintf(f, __sl25, (yield* lua_tointegerx(L, (arg), null))) : fprintf(f, __sl26, (yield* lua_tonumberx(L, (arg), null)));
+            let len = lua_isinteger(L, arg) ? fprintf(f, __s_lld, (yield* lua_tointegerx(L, (arg), null))) : fprintf(f, __s_14g, (yield* lua_tonumberx(L, (arg), null)));
             status = status && (len > 0) ? 1 : 0;
         } else {
             let l = cptr.box(0n);
@@ -532,7 +532,7 @@ function* g_write(L, f, arg) {
 
 /** C ref: liolib.c:691 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_write(L) {
-    return (yield* g_write(L, (yield* getiofile(L, (__sl8))), 1));
+    return (yield* g_write(L, (yield* getiofile(L, (__s_io_output))), 1));
 }
 
 /** C ref: liolib.c:696 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -547,18 +547,18 @@ cptr.stI32o(__static_f_seek_mode, 0, 0);
 cptr.stI32o(__static_f_seek_mode, 4, 1);
 cptr.stI32o(__static_f_seek_mode, 8, 2); /** C ref: liolib.c:704 — int[3] (function-static) */
 const __static_f_seek_modenames = cptr.alloc(4 * 8);
-cptr.stPtro(__static_f_seek_modenames, 0, __sl29);
-cptr.stPtro(__static_f_seek_modenames, 8, __sl27);
-cptr.stPtro(__static_f_seek_modenames, 16, __sl30);
+cptr.stPtro(__static_f_seek_modenames, 0, __s_set);
+cptr.stPtro(__static_f_seek_modenames, 8, __s_cur);
+cptr.stPtro(__static_f_seek_modenames, 16, __s_end);
 cptr.stPtro(__static_f_seek_modenames, 24, null); /** C ref: liolib.c:705 — char *[4] (function-static) */
 
 /** C ref: liolib.c:703 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_seek(L) {
     let f = (yield* tofile(L));
-    let op = (yield* luaL_checkoption(L, 2, __sl27, __static_f_seek_modenames));
+    let op = (yield* luaL_checkoption(L, 2, __s_cur, __static_f_seek_modenames));
     let p3 = (yield* luaL_optinteger(L, 3, 0n));
     let offset = p3;
-    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__sl28))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__s_not_an_integer_in_proper_range))) ? 1 : 0));
     cptr.stI32(__error(), 0);
     op = fseeko(f, offset, cptr.ldI32o(__static_f_seek_mode, op, 4));
     if ((__builtin_expect(BigInt(((op) != 0)), 0n)))
@@ -574,9 +574,9 @@ cptr.stI32o(__static_f_setvbuf_mode, 0, 2);
 cptr.stI32o(__static_f_setvbuf_mode, 4, 0);
 cptr.stI32o(__static_f_setvbuf_mode, 8, 1); /** C ref: liolib.c:724 — int[3] (function-static) */
 const __static_f_setvbuf_modenames = cptr.alloc(4 * 8);
-cptr.stPtro(__static_f_setvbuf_modenames, 0, __sl31);
-cptr.stPtro(__static_f_setvbuf_modenames, 8, __sl32);
-cptr.stPtro(__static_f_setvbuf_modenames, 16, __sl33);
+cptr.stPtro(__static_f_setvbuf_modenames, 0, __s_no);
+cptr.stPtro(__static_f_setvbuf_modenames, 8, __s_full);
+cptr.stPtro(__static_f_setvbuf_modenames, 16, __s_line);
 cptr.stPtro(__static_f_setvbuf_modenames, 24, null); /** C ref: liolib.c:725 — char *[4] (function-static) */
 
 /** C ref: liolib.c:723 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -592,7 +592,7 @@ function* f_setvbuf(L) {
 
 /** C ref: liolib.c:737 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_flush(L) {
-    let f = (yield* getiofile(L, (__sl8)));
+    let f = (yield* getiofile(L, (__s_io_output)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_fileresult(L, fflush(f) == 0, null));
 }
@@ -606,79 +606,79 @@ function* f_flush(L) {
 
 /** C ref: liolib.c:754 — luaL_Reg[12] */
 const iolib = cptr.alloc(12 * 16);
-cptr.stPtro(iolib, 0, __sl34);
+cptr.stPtro(iolib, 0, __s_close);
 cptr.stPtro(iolib, 0 + $luaL_Reg_func, io_close);
-cptr.stPtro(iolib, 16, __sl35);
+cptr.stPtro(iolib, 16, __s_flush);
 cptr.stPtro(iolib, 16 + $luaL_Reg_func, io_flush);
-cptr.stPtro(iolib, 32, __sl36);
+cptr.stPtro(iolib, 32, __s_input);
 cptr.stPtro(iolib, 32 + $luaL_Reg_func, io_input);
-cptr.stPtro(iolib, 48, __sl37);
+cptr.stPtro(iolib, 48, __s_lines);
 cptr.stPtro(iolib, 48 + $luaL_Reg_func, io_lines);
-cptr.stPtro(iolib, 64, __sl38);
+cptr.stPtro(iolib, 64, __s_open);
 cptr.stPtro(iolib, 64 + $luaL_Reg_func, io_open);
-cptr.stPtro(iolib, 80, __sl39);
+cptr.stPtro(iolib, 80, __s_output);
 cptr.stPtro(iolib, 80 + $luaL_Reg_func, io_output);
-cptr.stPtro(iolib, 96, __sl40);
+cptr.stPtro(iolib, 96, __s_popen);
 cptr.stPtro(iolib, 96 + $luaL_Reg_func, io_popen);
-cptr.stPtro(iolib, 112, __sl41);
+cptr.stPtro(iolib, 112, __s_read);
 cptr.stPtro(iolib, 112 + $luaL_Reg_func, io_read);
-cptr.stPtro(iolib, 128, __sl42);
+cptr.stPtro(iolib, 128, __s_tmpfile);
 cptr.stPtro(iolib, 128 + $luaL_Reg_func, io_tmpfile);
-cptr.stPtro(iolib, 144, __sl43);
+cptr.stPtro(iolib, 144, __s_type);
 cptr.stPtro(iolib, 144 + $luaL_Reg_func, io_type);
-cptr.stPtro(iolib, 160, __sl44);
+cptr.stPtro(iolib, 160, __s_write);
 cptr.stPtro(iolib, 160 + $luaL_Reg_func, io_write);
 cptr.stPtro(iolib, 176, null);
 cptr.stPtro(iolib, 176 + $luaL_Reg_func, null);
 
 /** C ref: liolib.c:773 — luaL_Reg[8] */
 const meth = cptr.alloc(8 * 16);
-cptr.stPtro(meth, 0, __sl41);
+cptr.stPtro(meth, 0, __s_read);
 cptr.stPtro(meth, 0 + $luaL_Reg_func, f_read);
-cptr.stPtro(meth, 16, __sl44);
+cptr.stPtro(meth, 16, __s_write);
 cptr.stPtro(meth, 16 + $luaL_Reg_func, f_write);
-cptr.stPtro(meth, 32, __sl37);
+cptr.stPtro(meth, 32, __s_lines);
 cptr.stPtro(meth, 32 + $luaL_Reg_func, f_lines);
-cptr.stPtro(meth, 48, __sl35);
+cptr.stPtro(meth, 48, __s_flush);
 cptr.stPtro(meth, 48 + $luaL_Reg_func, f_flush);
-cptr.stPtro(meth, 64, __sl45);
+cptr.stPtro(meth, 64, __s_seek);
 cptr.stPtro(meth, 64 + $luaL_Reg_func, f_seek);
-cptr.stPtro(meth, 80, __sl34);
+cptr.stPtro(meth, 80, __s_close);
 cptr.stPtro(meth, 80 + $luaL_Reg_func, f_close);
-cptr.stPtro(meth, 96, __sl46);
+cptr.stPtro(meth, 96, __s_setvbuf);
 cptr.stPtro(meth, 96 + $luaL_Reg_func, f_setvbuf);
 cptr.stPtro(meth, 112, null);
 cptr.stPtro(meth, 112 + $luaL_Reg_func, null);
 
 /** C ref: liolib.c:788 — luaL_Reg[5] */
 const metameth = cptr.alloc(5 * 16);
-cptr.stPtro(metameth, 0, __sl47);
+cptr.stPtro(metameth, 0, __s_index);
 cptr.stPtro(metameth, 0 + $luaL_Reg_func, null);
-cptr.stPtro(metameth, 16, __sl48);
+cptr.stPtro(metameth, 16, __s_gc);
 cptr.stPtro(metameth, 16 + $luaL_Reg_func, f_gc);
-cptr.stPtro(metameth, 32, __sl49);
+cptr.stPtro(metameth, 32, __s_close__2);
 cptr.stPtro(metameth, 32 + $luaL_Reg_func, f_gc);
-cptr.stPtro(metameth, 48, __sl50);
+cptr.stPtro(metameth, 48, __s_tostring);
 cptr.stPtro(metameth, 48 + $luaL_Reg_func, f_tostring);
 cptr.stPtro(metameth, 64, null);
 cptr.stPtro(metameth, 64 + $luaL_Reg_func, null);
 
 /** C ref: liolib.c:797 — @param {CPtr<lua_State>} L */
 function* createmeta(L) {
-    (yield* luaL_newmetatable(L, __sl2));
+    (yield* luaL_newmetatable(L, __s_file));
     (yield* luaL_setfuncs(L, metameth, 0));
     (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n)))));
     (yield* luaL_setfuncs(L, meth, 0));
-    (yield* lua_setfield(L, -2, __sl47));
+    (yield* lua_setfield(L, -2, __s_index));
     (yield* lua_settop(L, -2));
 }
 
 /** C ref: liolib.c:810 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_noclose(L) {
-    let p = ((yield* luaL_checkudata(L, 1, __sl2)));
+    let p = ((yield* luaL_checkudata(L, 1, __s_file)));
     cptr.stPtro(p, $LStream_closef, io_noclose);
     (yield* lua_pushnil(L));
-    (yield* lua_pushstring(L, __sl51));
+    (yield* lua_pushstring(L, __s_cannot_close_standard_file));
     return 2;
 }
 
@@ -698,8 +698,8 @@ function* createstdfile(L, f, k, fname) {
 export function* luaopen_io(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n))))), (yield* luaL_setfuncs(L, iolib, 0)));
     (yield* createmeta(L));
-    (yield* createstdfile(L, __stdinp, (__sl13), __sl52));
-    (yield* createstdfile(L, __stdoutp, (__sl8), __sl53));
-    (yield* createstdfile(L, __stderrp, null, __sl54));
+    (yield* createstdfile(L, __stdinp, (__s_io_input), __s_stdin));
+    (yield* createstdfile(L, __stdoutp, (__s_io_output), __s_stdout));
+    (yield* createstdfile(L, __stderrp, null, __s_stderr));
     return 1;
 }

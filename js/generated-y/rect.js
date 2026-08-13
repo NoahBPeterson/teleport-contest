@@ -22,10 +22,10 @@ const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.N
     $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Could not alloc rect");
-const __sl1 = cptr.lit("rect.c");
-const __sl2 = cptr.lit("rnd_rect");
-const __sl3 = cptr.lit("n_rects may be too small.");
+const __s_could_not_alloc_rect = cptr.lit("Could not alloc rect");
+const __s_rect_c = cptr.lit("rect.c");
+const __s_rnd_rect = cptr.lit("rnd_rect");
+const __s_n_rects_may_be_too_small = cptr.lit("n_rects may be too small.");
 
 /** C ref: rect.c:19 — NhRect * */
 let rect = null;
@@ -42,7 +42,7 @@ export function* init_rect() {
         n_rects = 56;
         rect = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt.asUintN(64, BigInt(n_rects)))))));
         if (!rect)
-            (yield* panic(__sl0));
+            (yield* panic(__s_could_not_alloc_rect));
     }
     rect_cnt = 1;
     cptr.stI16o(rect, 0, cptr.stI16o2(rect, 0, 8, $nhrect_ly, 0), 8);
@@ -96,7 +96,7 @@ export function get_rect(r) {
 
 /** C ref: rect.c:104 @returns {CPtr<NhRect>} */
 export function rnd_rect() {
-    return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 106, __sl2), rn2(rect_cnt)) : rn2(rect_cnt)), 8) : null;
+    return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__s_rect_c, 106, __s_rnd_rect), rn2(rect_cnt)) : rn2(rect_cnt)), 8) : null;
 }
 
 /** C ref: rect.c:116 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 @param {CPtr<NhRect>} r3 @returns {CInt} */
@@ -133,7 +133,7 @@ export function remove_rect(r) {
 /** C ref: rect.c:161 — @param {CPtr<NhRect>} r */
 export function* add_rect(r) {
     if (rect_cnt >= n_rects) {
-        (yield* impossible(__sl3));
+        (yield* impossible(__s_n_rects_may_be_too_small));
         return;
     }
     if (get_rect(r))

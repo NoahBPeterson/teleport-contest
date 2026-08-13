@@ -69,7 +69,7 @@ const $CClosure_gclist = FLD.CClosure_gclist, $CClosure_nupvalues = FLD.CClosure
     $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("__gc");
+const __s_gc = cptr.lit("__gc");
 
 /** C ref: lgc.c:125 — @param {CPtr<GCObject>} o @returns {CPtr<GCObject *>} */
 function getgclist(o) {
@@ -845,7 +845,7 @@ function GCTM(L) {
         cptr.st1o(L, $lua_State_allowhook, oldah);
         cptr.st1o(g, $global_State_gcstp, uchar(oldgcstp));
         if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
-            luaE_warnerror(L, __sl0);
+            luaE_warnerror(L, __s_gc);
             cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
         }
     }

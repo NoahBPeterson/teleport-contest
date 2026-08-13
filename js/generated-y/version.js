@@ -55,119 +55,119 @@ const $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel, $NHFILE_fnidx = FLD.NHFILE_fni
     $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("version_string");
-const __sl1 = cptr.lit("%s");
-const __sl2 = cptr.lit(".");
-const __sl3 = cptr.lit(" (");
-const __sl4 = cptr.lit("getversionstring");
-const __sl5 = cptr.lit("%s%s");
-const __sl6 = cptr.lit(",");
-const __sl7 = cptr.lit("");
-const __sl8 = cptr.lit("%sprefix:%s");
-const __sl9 = cptr.lit(")");
-const __sl10 = cptr.lit(" ");
-const __sl11 = cptr.lit("status_version");
-const __sl12 = cptr.lit("options");
-const __sl13 = cptr.lit("r");
-const __sl14 = cptr.lit("[Configuration '%s' not available?]");
-const __sl15 = cptr.lit("early_version_info");
-const __sl16 = cptr.lit("test");
-const __sl17 = cptr.lit("%s\n%s");
-const __sl18 = cptr.lit(":PATMATCH:");
-const __sl19 = cptr.lit(":LUAVERSION:");
-const __sl20 = cptr.lit(":LUACOPYRIGHT:");
-const __sl21 = cptr.lit("Version mismatch for file \"%s\".");
-const __sl22 = cptr.lit("Configuration incompatibility for file \"%s\".");
-const __sl23 = cptr.lit("0123456789");
-const __sl24 = cptr.lit("NetHack, Copyright 1985-2026");
-const __sl25 = cptr.lit("         By Stichting Mathematisch Centrum and M. Stephenson.");
-const __sl26 = cptr.lit("         See license for details.");
-const __sl27 = cptr.lit("nethack");
-const __sl28 = cptr.lit("dump_version_info");
-const __sl29 = cptr.lit("%-12.33s %08lx %08lx %08lx");
-const __sl30 = cptr.lit("version_info");
-const __sl31 = cptr.lit("unused");
-const __sl32 = cptr.lit("short");
-const __sl33 = cptr.lit("int");
-const __sl34 = cptr.lit("long");
-const __sl35 = cptr.lit("long long");
-const __sl36 = cptr.lit("genericptr_t");
-const __sl37 = cptr.lit("aligntyp");
-const __sl38 = cptr.lit("boolean");
-const __sl39 = cptr.lit("coordxy");
-const __sl40 = cptr.lit("int16");
-const __sl41 = cptr.lit("int32");
-const __sl42 = cptr.lit("int64");
-const __sl43 = cptr.lit("schar");
-const __sl44 = cptr.lit("size_t");
-const __sl45 = cptr.lit("uchar");
-const __sl46 = cptr.lit("uint16");
-const __sl47 = cptr.lit("uint32");
-const __sl48 = cptr.lit("uint64");
-const __sl49 = cptr.lit("ulong");
-const __sl50 = cptr.lit("unsigned");
-const __sl51 = cptr.lit("ushort");
-const __sl52 = cptr.lit("xint16");
-const __sl53 = cptr.lit("xint8");
-const __sl54 = cptr.lit("struct arti_info");
-const __sl55 = cptr.lit("struct nhrect");
-const __sl56 = cptr.lit("struct branch");
-const __sl57 = cptr.lit("struct bubble");
-const __sl58 = cptr.lit("struct cemetery");
-const __sl59 = cptr.lit("struct context_info");
-const __sl60 = cptr.lit("struct nhcoord");
-const __sl61 = cptr.lit("struct damage");
-const __sl62 = cptr.lit("struct dest_area");
-const __sl63 = cptr.lit("struct dgn_topology");
-const __sl64 = cptr.lit("struct dungeon");
-const __sl65 = cptr.lit("struct d_level");
-const __sl66 = cptr.lit("struct ebones");
-const __sl67 = cptr.lit("struct edog");
-const __sl68 = cptr.lit("struct egd");
-const __sl69 = cptr.lit("struct emin");
-const __sl70 = cptr.lit("struct engr");
-const __sl71 = cptr.lit("struct epri");
-const __sl72 = cptr.lit("struct eshk");
-const __sl73 = cptr.lit("struct fe");
-const __sl74 = cptr.lit("struct flag");
-const __sl75 = cptr.lit("struct fruit");
-const __sl76 = cptr.lit("struct gamelog_line");
-const __sl77 = cptr.lit("struct kinfo");
-const __sl78 = cptr.lit("struct levelflags");
-const __sl79 = cptr.lit("struct ls_t");
-const __sl80 = cptr.lit("struct linfo");
-const __sl81 = cptr.lit("struct mapseen_feat");
-const __sl82 = cptr.lit("struct mapseen_flags");
-const __sl83 = cptr.lit("struct mapseen_rooms");
-const __sl84 = cptr.lit("struct mextra");
-const __sl85 = cptr.lit("struct mkroom");
-const __sl86 = cptr.lit("struct monst");
-const __sl87 = cptr.lit("struct mvitals");
-const __sl88 = cptr.lit("struct obj");
-const __sl89 = cptr.lit("struct objclass");
-const __sl90 = cptr.lit("struct oextra");
-const __sl91 = cptr.lit("struct q_score");
-const __sl92 = cptr.lit("struct rm");
-const __sl93 = cptr.lit("struct spell");
-const __sl94 = cptr.lit("struct stairway");
-const __sl95 = cptr.lit("struct s_level");
-const __sl96 = cptr.lit("struct trap");
-const __sl97 = cptr.lit("struct version_info");
-const __sl98 = cptr.lit("anything");
-const __sl99 = cptr.lit("you_LO");
-const __sl100 = cptr.lit("you_HI");
-const __sl101 = cptr.lit("indicate-format");
-const __sl102 = cptr.lit("count-critical_sizes");
-const __sl103 = cptr.lit("critical_sizes");
-const __sl104 = cptr.lit("comparison of critical bytes mismatched at %d (%s).");
-const __sl105 = cptr.lit("critical byte counts do not match, file:%d, critical_sizes:%d.");
-const __sl106 = cptr.lit("IL32LLP64");
-const __sl107 = cptr.lit("ILP32LL64");
-const __sl108 = cptr.lit("I32LP64");
+const __s_version_string = cptr.lit("version_string");
+const __s_pct_s = cptr.lit("%s");
+const __s_dot = cptr.lit(".");
+const __s_sp_lparen = cptr.lit(" (");
+const __s_getversionstring = cptr.lit("getversionstring");
+const __s_s_s = cptr.lit("%s%s");
+const __s_comma = cptr.lit(",");
+const __s_empty = cptr.lit("");
+const __s_sprefix_s = cptr.lit("%sprefix:%s");
+const __s_rparen = cptr.lit(")");
+const __s_sp = cptr.lit(" ");
+const __s_status_version = cptr.lit("status_version");
+const __s_options = cptr.lit("options");
+const __s_r = cptr.lit("r");
+const __s_configuration_s_not_available = cptr.lit("[Configuration '%s' not available?]");
+const __s_early_version_info = cptr.lit("early_version_info");
+const __s_test = cptr.lit("test");
+const __s_s_s__2 = cptr.lit("%s\n%s");
+const __s_patmatch = cptr.lit(":PATMATCH:");
+const __s_luaversion = cptr.lit(":LUAVERSION:");
+const __s_luacopyright = cptr.lit(":LUACOPYRIGHT:");
+const __s_version_mismatch_for_file_s = cptr.lit("Version mismatch for file \"%s\".");
+const __s_configuration_incompatibility_for_file_s = cptr.lit("Configuration incompatibility for file \"%s\".");
+const __s_0123456789 = cptr.lit("0123456789");
+const __s_nethack_copyright_1985_2026 = cptr.lit("NetHack, Copyright 1985-2026");
+const __s_by_stichting_mathematisch_centrum_and_m = cptr.lit("         By Stichting Mathematisch Centrum and M. Stephenson.");
+const __s_see_license_for_details = cptr.lit("         See license for details.");
+const __s_nethack = cptr.lit("nethack");
+const __s_dump_version_info = cptr.lit("dump_version_info");
+const __s_12_33s_08lx_08lx_08lx = cptr.lit("%-12.33s %08lx %08lx %08lx");
+const __s_version_info = cptr.lit("version_info");
+const __s_unused = cptr.lit("unused");
+const __s_short = cptr.lit("short");
+const __s_int = cptr.lit("int");
+const __s_long = cptr.lit("long");
+const __s_long_long = cptr.lit("long long");
+const __s_genericptr_t = cptr.lit("genericptr_t");
+const __s_aligntyp = cptr.lit("aligntyp");
+const __s_boolean = cptr.lit("boolean");
+const __s_coordxy = cptr.lit("coordxy");
+const __s_int16 = cptr.lit("int16");
+const __s_int32 = cptr.lit("int32");
+const __s_int64 = cptr.lit("int64");
+const __s_schar = cptr.lit("schar");
+const __s_size_t = cptr.lit("size_t");
+const __s_uchar = cptr.lit("uchar");
+const __s_uint16 = cptr.lit("uint16");
+const __s_uint32 = cptr.lit("uint32");
+const __s_uint64 = cptr.lit("uint64");
+const __s_ulong = cptr.lit("ulong");
+const __s_unsigned = cptr.lit("unsigned");
+const __s_ushort = cptr.lit("ushort");
+const __s_xint16 = cptr.lit("xint16");
+const __s_xint8 = cptr.lit("xint8");
+const __s_struct_arti_info = cptr.lit("struct arti_info");
+const __s_struct_nhrect = cptr.lit("struct nhrect");
+const __s_struct_branch = cptr.lit("struct branch");
+const __s_struct_bubble = cptr.lit("struct bubble");
+const __s_struct_cemetery = cptr.lit("struct cemetery");
+const __s_struct_context_info = cptr.lit("struct context_info");
+const __s_struct_nhcoord = cptr.lit("struct nhcoord");
+const __s_struct_damage = cptr.lit("struct damage");
+const __s_struct_dest_area = cptr.lit("struct dest_area");
+const __s_struct_dgn_topology = cptr.lit("struct dgn_topology");
+const __s_struct_dungeon = cptr.lit("struct dungeon");
+const __s_struct_d_level = cptr.lit("struct d_level");
+const __s_struct_ebones = cptr.lit("struct ebones");
+const __s_struct_edog = cptr.lit("struct edog");
+const __s_struct_egd = cptr.lit("struct egd");
+const __s_struct_emin = cptr.lit("struct emin");
+const __s_struct_engr = cptr.lit("struct engr");
+const __s_struct_epri = cptr.lit("struct epri");
+const __s_struct_eshk = cptr.lit("struct eshk");
+const __s_struct_fe = cptr.lit("struct fe");
+const __s_struct_flag = cptr.lit("struct flag");
+const __s_struct_fruit = cptr.lit("struct fruit");
+const __s_struct_gamelog_line = cptr.lit("struct gamelog_line");
+const __s_struct_kinfo = cptr.lit("struct kinfo");
+const __s_struct_levelflags = cptr.lit("struct levelflags");
+const __s_struct_ls_t = cptr.lit("struct ls_t");
+const __s_struct_linfo = cptr.lit("struct linfo");
+const __s_struct_mapseen_feat = cptr.lit("struct mapseen_feat");
+const __s_struct_mapseen_flags = cptr.lit("struct mapseen_flags");
+const __s_struct_mapseen_rooms = cptr.lit("struct mapseen_rooms");
+const __s_struct_mextra = cptr.lit("struct mextra");
+const __s_struct_mkroom = cptr.lit("struct mkroom");
+const __s_struct_monst = cptr.lit("struct monst");
+const __s_struct_mvitals = cptr.lit("struct mvitals");
+const __s_struct_obj = cptr.lit("struct obj");
+const __s_struct_objclass = cptr.lit("struct objclass");
+const __s_struct_oextra = cptr.lit("struct oextra");
+const __s_struct_q_score = cptr.lit("struct q_score");
+const __s_struct_rm = cptr.lit("struct rm");
+const __s_struct_spell = cptr.lit("struct spell");
+const __s_struct_stairway = cptr.lit("struct stairway");
+const __s_struct_s_level = cptr.lit("struct s_level");
+const __s_struct_trap = cptr.lit("struct trap");
+const __s_struct_version_info = cptr.lit("struct version_info");
+const __s_anything = cptr.lit("anything");
+const __s_you_lo = cptr.lit("you_LO");
+const __s_you_hi = cptr.lit("you_HI");
+const __s_indicate_format = cptr.lit("indicate-format");
+const __s_count_critical_sizes = cptr.lit("count-critical_sizes");
+const __s_critical_sizes = cptr.lit("critical_sizes");
+const __s_comparison_of_critical_bytes_mismatched = cptr.lit("comparison of critical bytes mismatched at %d (%s).");
+const __s_critical_byte_counts_do_not_match_file = cptr.lit("critical byte counts do not match, file:%d, critical_sizes:%d.");
+const __s_il32llp64 = cptr.lit("IL32LLP64");
+const __s_ilp32ll64 = cptr.lit("ILP32LL64");
+const __s_i32lp64 = cptr.lit("I32LP64");
 
 /** C ref: version.c:22 — @param {CPtr<char>} buf @param {CLongLong} bufsz @returns {CPtr<char>} */
 export function version_string(buf, bufsz) {
-    nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __sl2)));
+    nh_snprintf(__s_version_string, 29, buf, bufsz, __s_pct_s, ((cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __s_dot)));
     return buf;
 }
 
@@ -180,17 +180,17 @@ export function getversionstring(buf, bufsz) {
         let dotoff = schar((cptr.cmp(p, buf) > 0 && cptr.ld1so(p, -1) == 46 ? 1 : 0));
         if (dotoff)
             p = cptr.add(p, -1);
-        void cptr.strcpy(p, __sl3);
+        void cptr.strcpy(p, __s_sp_lparen);
         if (cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha))
-            nh_snprintf(__sl4, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl5, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha));
+            nh_snprintf(__s_getversionstring, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_s_s, c++ ? __s_comma : __s_empty, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha));
         if (cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix))
-            nh_snprintf(__sl4, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl8, c++ ? __sl6 : __sl7, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix));
+            nh_snprintf(__s_getversionstring, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_sprefix_s, c++ ? __s_comma : __s_empty, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix));
         if (c)
-            nh_snprintf(__sl4, 71, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl1, __sl9);
+            nh_snprintf(__s_getversionstring, 71, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_pct_s, __s_rparen);
         else
             cptr.st1(p, 0);
         if (dotoff)
-            nh_snprintf(__sl4, 76, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __sl1, __sl2);
+            nh_snprintf(__s_getversionstring, 76, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_pct_s, __s_dot);
     }
     return buf;
 }
@@ -221,17 +221,17 @@ export function* status_version(buf, bufsz, indent) {
         shownum = 1;
     }
     cptr.st1(buf, 0);
-    indentation = indent ? __sl10 : __sl7;
+    indentation = indent ? __s_sp : __s_empty;
     if (showname) {
-        nh_snprintf(__sl11, 137, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, name);
-        indentation = __sl10;
+        nh_snprintf(__s_status_version, 137, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, name);
+        indentation = __s_sp;
     }
     if (showbranch) {
-        nh_snprintf(__sl11, 141, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, altname);
-        indentation = __sl10;
+        nh_snprintf(__s_status_version, 141, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, altname);
+        indentation = __s_sp;
     }
     if (shownum) {
-        nh_snprintf(__sl11, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __sl5, indentation, (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __sl2));
+        nh_snprintf(__s_status_version, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __s_dot));
     }
     return buf;
 }
@@ -241,7 +241,7 @@ export function* doversion() {
     let buf = new Uint8Array(256);
     if (cptr.ld1so(iflags, $instance_flags_menu_requested))
         return (yield* doextversion());
-    (yield* pline(__sl1, getversionstring(cptr.decay(buf), 256n)));
+    (yield* pline(__s_pct_s, getversionstring(cptr.decay(buf), 256n)));
     return NHM.ECMD_OK;
 }
 
@@ -271,10 +271,10 @@ export function* doextversion() {
         (yield* Y.icall(putstr()(win, 0, p)));
     }
     if (use_dlb) {
-        f = fopen(__sl12, __sl13);
+        f = fopen(__s_options, __s_r);
         if (!f) {
-            (yield* Y.icall(putstr()(win, 0, __sl7)));
-            void cptr.sprintf(cptr.decay(buf), __sl14, __sl12);
+            (yield* Y.icall(putstr()(win, 0, __s_empty)));
+            void cptr.sprintf(cptr.decay(buf), __s_configuration_s_not_available, __s_options);
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             done_dlb = 1;
         }
@@ -300,7 +300,7 @@ export function* doextversion() {
         if (cptr.strchr(cptr.decay(buf), 9) !== null)
             void (yield* tabexpand(cptr.decay(buf)));
         if (cptr.ld1s(cptr.decay(buf)) && cptr.ld1s(cptr.decay(buf)) != 32) {
-            (yield* Y.icall(putstr()(win, 0, __sl7)));
+            (yield* Y.icall(putstr()(win, 0, __s_empty)));
             prolog = 0;
         }
         if (prolog || !cptr.ld1s(cptr.decay(buf)))
@@ -323,17 +323,17 @@ export function* early_version_info(pastebuf) {
     let buf2 = new Uint8Array(256);
     let buf;
     let tmp;
-    nh_snprintf(__sl15, 285, cptr.decay(buf1), 256n, __sl16);
+    nh_snprintf(__s_early_version_info, 285, cptr.decay(buf1), 256n, __s_test);
     getversionstring(cptr.decay(buf1), 256n);
-    tmp = (yield* strstri(cptr.decay(buf1), __sl3));
+    tmp = (yield* strstri(cptr.decay(buf1), __s_sp_lparen));
     if (tmp) {
         cptr.st1(cptr.postinc(() => tmp, (v) => { tmp = v; }), 0);
-        nh_snprintf(__sl15, 292, cptr.decay(buf2), 256n, __sl17, cptr.decay(buf1), tmp);
+        nh_snprintf(__s_early_version_info, 292, cptr.decay(buf2), 256n, __s_s_s__2, cptr.decay(buf1), tmp);
         buf = cptr.decay(buf2);
     } else {
         buf = cptr.decay(buf1);
     }
-    (yield* raw_printf(__sl1, buf));
+    (yield* raw_printf(__s_pct_s, buf));
     if (pastebuf) {
         (yield* port_insert_pastebuf(buf));
     }
@@ -343,11 +343,11 @@ export function* early_version_info(pastebuf) {
 
 /** C ref: version.c:326 — struct rt_opt[3] */
 const rt_opts = cptr.alloc(3 * 16);
-cptr.stPtro(rt_opts, 0, __sl18);
+cptr.stPtro(rt_opts, 0, __s_patmatch);
 cptr.stPtro(rt_opts, 0 + $rt_opt_value, cptr.decay(regex_id));
-cptr.stPtro(rt_opts, 16, __sl19);
+cptr.stPtro(rt_opts, 16, __s_luaversion);
 cptr.stPtro(rt_opts, 16 + $rt_opt_value, cptr.add(gl, $instance_globals_l_lua_ver));
-cptr.stPtro(rt_opts, 32, __sl20);
+cptr.stPtro(rt_opts, 32, __s_luacopyright);
 cptr.stPtro(rt_opts, 32 + $rt_opt_value, cptr.add(gl, $instance_globals_l_lua_copyright));
 
 /** C ref: version.c:339 — @param {CPtr<char>} buf */
@@ -373,14 +373,14 @@ export function* check_version(version_data, filename, complain, utdflags) {
     }
     if (cptr.ldU64(version_data) != cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number)) {
         if (complain) {
-            (yield* pline(__sl21, filename));
+            (yield* pline(__s_version_mismatch_for_file_s, filename));
             if (WIN_MESSAGE.v != -1)
                 (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         }
         return 0;
     } else if ((cptr.ldU64o(version_data, $version_info_feature_set) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) != (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, $version_info_entity_count) != cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1))) {
         if (complain) {
-            (yield* pline(__sl22, filename));
+            (yield* pline(__s_configuration_incompatibility_for_file_s, filename));
             (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         }
         return 0;
@@ -407,7 +407,7 @@ export function* get_feature_notice_ver(str) {
             cptr.stPtro(istr, j, str, 8);
             if (j == 2)
                 break;
-        } else if (cptr.strchr(__sl23, cptr.ld1s(str)) !== null) {
+        } else if (cptr.strchr(__s_0123456789, cptr.ld1s(str)) !== null) {
             str = cptr.add(str, 1);
         } else
             return 0n;
@@ -428,24 +428,24 @@ export function get_current_feature_ver() {
 /** C ref: version.c:471 — @param {CInt} indx @returns {CPtr<char>} */
 export function copyright_banner_line(indx) {
     if (indx == 1)
-        return __sl24;
+        return __s_nethack_copyright_1985_2026;
     if (indx == 2)
-        return __sl25;
+        return __s_by_stichting_mathematisch_centrum_and_m;
     if (indx == 3)
         return cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c);
     if (indx == 4)
-        return __sl26;
-    return __sl7;
+        return __s_see_license_for_details;
+    return __s_empty;
 }
 
 /** C ref: version.c:494 */
 export function* dump_version_info() {
     let buf = new Uint8Array(256);
-    let hname = cptr.ldPtr(gh) ? cptr.ldPtr(gh) : __sl27;
+    let hname = cptr.ldPtr(gh) ? cptr.ldPtr(gh) : __s_nethack;
     if (cptr.strlen(hname) > 33n)
         hname = cptr.add(eos((hname)), -(33));
     (yield* runtime_info_init());
-    nh_snprintf(__sl28, 506, cptr.decay(buf), 256n, __sl29, hname, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number), (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))), cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1));
+    nh_snprintf(__s_dump_version_info, 506, cptr.decay(buf), 256n, __s_12_33s_08lx_08lx_08lx, hname, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number), (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))), cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1));
     (yield* Y.icall(raw_print()(cptr.decay(buf))));
     release_runtime_info();
     return;
@@ -460,7 +460,7 @@ export function* store_version(nhfp) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
         (yield* bufoff(cptr.ldI32(nhfp)));
     (yield* store_critical_bytes(nhfp));
-    (yield* sfo_version_info(nhfp, version_data, __sl30));
+    (yield* sfo_version_info(nhfp, version_data, __s_version_info));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
         (yield* bufon(cptr.ldI32(nhfp)));
     return;
@@ -471,165 +471,165 @@ export function* store_version(nhfp) {
 /** C ref: version.c:546 — struct critical_sizes_with_names[80] */
 export const critical_sizes = cptr.alloc(80 * 16);
 cptr.st1o(critical_sizes, 0, 0);
-cptr.stPtro(critical_sizes, 0 + $critical_sizes_with_names_nm, __sl31);
+cptr.stPtro(critical_sizes, 0 + $critical_sizes_with_names_nm, __s_unused);
 cptr.st1o(critical_sizes, 16, 2);
-cptr.stPtro(critical_sizes, 16 + $critical_sizes_with_names_nm, __sl32);
+cptr.stPtro(critical_sizes, 16 + $critical_sizes_with_names_nm, __s_short);
 cptr.st1o(critical_sizes, 32, 4);
-cptr.stPtro(critical_sizes, 32 + $critical_sizes_with_names_nm, __sl33);
+cptr.stPtro(critical_sizes, 32 + $critical_sizes_with_names_nm, __s_int);
 cptr.st1o(critical_sizes, 48, 8);
-cptr.stPtro(critical_sizes, 48 + $critical_sizes_with_names_nm, __sl34);
+cptr.stPtro(critical_sizes, 48 + $critical_sizes_with_names_nm, __s_long);
 cptr.st1o(critical_sizes, 64, 8);
-cptr.stPtro(critical_sizes, 64 + $critical_sizes_with_names_nm, __sl35);
+cptr.stPtro(critical_sizes, 64 + $critical_sizes_with_names_nm, __s_long_long);
 cptr.st1o(critical_sizes, 80, 8);
-cptr.stPtro(critical_sizes, 80 + $critical_sizes_with_names_nm, __sl36);
+cptr.stPtro(critical_sizes, 80 + $critical_sizes_with_names_nm, __s_genericptr_t);
 cptr.st1o(critical_sizes, 96, 1);
-cptr.stPtro(critical_sizes, 96 + $critical_sizes_with_names_nm, __sl37);
+cptr.stPtro(critical_sizes, 96 + $critical_sizes_with_names_nm, __s_aligntyp);
 cptr.st1o(critical_sizes, 112, 1);
-cptr.stPtro(critical_sizes, 112 + $critical_sizes_with_names_nm, __sl38);
+cptr.stPtro(critical_sizes, 112 + $critical_sizes_with_names_nm, __s_boolean);
 cptr.st1o(critical_sizes, 128, 2);
-cptr.stPtro(critical_sizes, 128 + $critical_sizes_with_names_nm, __sl39);
+cptr.stPtro(critical_sizes, 128 + $critical_sizes_with_names_nm, __s_coordxy);
 cptr.st1o(critical_sizes, 144, 2);
-cptr.stPtro(critical_sizes, 144 + $critical_sizes_with_names_nm, __sl40);
+cptr.stPtro(critical_sizes, 144 + $critical_sizes_with_names_nm, __s_int16);
 cptr.st1o(critical_sizes, 160, 4);
-cptr.stPtro(critical_sizes, 160 + $critical_sizes_with_names_nm, __sl41);
+cptr.stPtro(critical_sizes, 160 + $critical_sizes_with_names_nm, __s_int32);
 cptr.st1o(critical_sizes, 176, 8);
-cptr.stPtro(critical_sizes, 176 + $critical_sizes_with_names_nm, __sl42);
+cptr.stPtro(critical_sizes, 176 + $critical_sizes_with_names_nm, __s_int64);
 cptr.st1o(critical_sizes, 192, 1);
-cptr.stPtro(critical_sizes, 192 + $critical_sizes_with_names_nm, __sl43);
+cptr.stPtro(critical_sizes, 192 + $critical_sizes_with_names_nm, __s_schar);
 cptr.st1o(critical_sizes, 208, 8);
-cptr.stPtro(critical_sizes, 208 + $critical_sizes_with_names_nm, __sl44);
+cptr.stPtro(critical_sizes, 208 + $critical_sizes_with_names_nm, __s_size_t);
 cptr.st1o(critical_sizes, 224, 1);
-cptr.stPtro(critical_sizes, 224 + $critical_sizes_with_names_nm, __sl45);
+cptr.stPtro(critical_sizes, 224 + $critical_sizes_with_names_nm, __s_uchar);
 cptr.st1o(critical_sizes, 240, 2);
-cptr.stPtro(critical_sizes, 240 + $critical_sizes_with_names_nm, __sl46);
+cptr.stPtro(critical_sizes, 240 + $critical_sizes_with_names_nm, __s_uint16);
 cptr.st1o(critical_sizes, 256, 4);
-cptr.stPtro(critical_sizes, 256 + $critical_sizes_with_names_nm, __sl47);
+cptr.stPtro(critical_sizes, 256 + $critical_sizes_with_names_nm, __s_uint32);
 cptr.st1o(critical_sizes, 272, 8);
-cptr.stPtro(critical_sizes, 272 + $critical_sizes_with_names_nm, __sl48);
+cptr.stPtro(critical_sizes, 272 + $critical_sizes_with_names_nm, __s_uint64);
 cptr.st1o(critical_sizes, 288, 8);
-cptr.stPtro(critical_sizes, 288 + $critical_sizes_with_names_nm, __sl49);
+cptr.stPtro(critical_sizes, 288 + $critical_sizes_with_names_nm, __s_ulong);
 cptr.st1o(critical_sizes, 304, 4);
-cptr.stPtro(critical_sizes, 304 + $critical_sizes_with_names_nm, __sl50);
+cptr.stPtro(critical_sizes, 304 + $critical_sizes_with_names_nm, __s_unsigned);
 cptr.st1o(critical_sizes, 320, 2);
-cptr.stPtro(critical_sizes, 320 + $critical_sizes_with_names_nm, __sl51);
+cptr.stPtro(critical_sizes, 320 + $critical_sizes_with_names_nm, __s_ushort);
 cptr.st1o(critical_sizes, 336, 2);
-cptr.stPtro(critical_sizes, 336 + $critical_sizes_with_names_nm, __sl52);
+cptr.stPtro(critical_sizes, 336 + $critical_sizes_with_names_nm, __s_xint16);
 cptr.st1o(critical_sizes, 352, 1);
-cptr.stPtro(critical_sizes, 352 + $critical_sizes_with_names_nm, __sl53);
+cptr.stPtro(critical_sizes, 352 + $critical_sizes_with_names_nm, __s_xint8);
 cptr.st1o(critical_sizes, 368, 36);
-cptr.stPtro(critical_sizes, 368 + $critical_sizes_with_names_nm, __sl54);
+cptr.stPtro(critical_sizes, 368 + $critical_sizes_with_names_nm, __s_struct_arti_info);
 cptr.st1o(critical_sizes, 384, 8);
-cptr.stPtro(critical_sizes, 384 + $critical_sizes_with_names_nm, __sl55);
+cptr.stPtro(critical_sizes, 384 + $critical_sizes_with_names_nm, __s_struct_nhrect);
 cptr.st1o(critical_sizes, 400, 32);
-cptr.stPtro(critical_sizes, 400 + $critical_sizes_with_names_nm, __sl56);
+cptr.stPtro(critical_sizes, 400 + $critical_sizes_with_names_nm, __s_struct_branch);
 cptr.st1o(critical_sizes, 416, 40);
-cptr.stPtro(critical_sizes, 416 + $critical_sizes_with_names_nm, __sl57);
+cptr.stPtro(critical_sizes, 416 + $critical_sizes_with_names_nm, __s_struct_bubble);
 cptr.st1o(critical_sizes, 432, 184);
-cptr.stPtro(critical_sizes, 432 + $critical_sizes_with_names_nm, __sl58);
+cptr.stPtro(critical_sizes, 432 + $critical_sizes_with_names_nm, __s_struct_cemetery);
 cptr.st1o(critical_sizes, 448, 208);
-cptr.stPtro(critical_sizes, 448 + $critical_sizes_with_names_nm, __sl59);
+cptr.stPtro(critical_sizes, 448 + $critical_sizes_with_names_nm, __s_struct_context_info);
 cptr.st1o(critical_sizes, 464, 4);
-cptr.stPtro(critical_sizes, 464 + $critical_sizes_with_names_nm, __sl60);
+cptr.stPtro(critical_sizes, 464 + $critical_sizes_with_names_nm, __s_struct_nhcoord);
 cptr.st1o(critical_sizes, 480, 32);
-cptr.stPtro(critical_sizes, 480 + $critical_sizes_with_names_nm, __sl61);
+cptr.stPtro(critical_sizes, 480 + $critical_sizes_with_names_nm, __s_struct_damage);
 cptr.st1o(critical_sizes, 496, 16);
-cptr.stPtro(critical_sizes, 496 + $critical_sizes_with_names_nm, __sl62);
+cptr.stPtro(critical_sizes, 496 + $critical_sizes_with_names_nm, __s_struct_dest_area);
 cptr.st1o(critical_sizes, 512, 114);
-cptr.stPtro(critical_sizes, 512 + $critical_sizes_with_names_nm, __sl63);
+cptr.stPtro(critical_sizes, 512 + $critical_sizes_with_names_nm, __s_struct_dgn_topology);
 cptr.st1o(critical_sizes, 528, 112);
-cptr.stPtro(critical_sizes, 528 + $critical_sizes_with_names_nm, __sl64);
+cptr.stPtro(critical_sizes, 528 + $critical_sizes_with_names_nm, __s_struct_dungeon);
 cptr.st1o(critical_sizes, 544, 4);
-cptr.stPtro(critical_sizes, 544 + $critical_sizes_with_names_nm, __sl65);
+cptr.stPtro(critical_sizes, 544 + $critical_sizes_with_names_nm, __s_struct_d_level);
 cptr.st1o(critical_sizes, 560, 36);
-cptr.stPtro(critical_sizes, 560 + $critical_sizes_with_names_nm, __sl66);
+cptr.stPtro(critical_sizes, 560 + $critical_sizes_with_names_nm, __s_struct_ebones);
 cptr.st1o(critical_sizes, 576, 64);
-cptr.stPtro(critical_sizes, 576 + $critical_sizes_with_names_nm, __sl67);
+cptr.stPtro(critical_sizes, 576 + $critical_sizes_with_names_nm, __s_struct_edog);
 cptr.st1o(critical_sizes, 592, 140);
-cptr.stPtro(critical_sizes, 592 + $critical_sizes_with_names_nm, __sl68);
+cptr.stPtro(critical_sizes, 592 + $critical_sizes_with_names_nm, __s_struct_egd);
 cptr.st1o(critical_sizes, 608, 8);
-cptr.stPtro(critical_sizes, 608 + $critical_sizes_with_names_nm, __sl69);
+cptr.stPtro(critical_sizes, 608 + $critical_sizes_with_names_nm, __s_struct_emin);
 cptr.st1o(critical_sizes, 624, 80);
-cptr.stPtro(critical_sizes, 624 + $critical_sizes_with_names_nm, __sl70);
+cptr.stPtro(critical_sizes, 624 + $critical_sizes_with_names_nm, __s_struct_engr);
 cptr.st1o(critical_sizes, 640, 56);
-cptr.stPtro(critical_sizes, 640 + $critical_sizes_with_names_nm, __sl71);
+cptr.stPtro(critical_sizes, 640 + $critical_sizes_with_names_nm, __s_struct_epri);
 cptr.st1o(critical_sizes, 656, 96);
-cptr.stPtro(critical_sizes, 656 + $critical_sizes_with_names_nm, __sl72);
+cptr.stPtro(critical_sizes, 656 + $critical_sizes_with_names_nm, __s_struct_eshk);
 cptr.st1o(critical_sizes, 672, 48);
-cptr.stPtro(critical_sizes, 672 + $critical_sizes_with_names_nm, __sl73);
+cptr.stPtro(critical_sizes, 672 + $critical_sizes_with_names_nm, __s_struct_fe);
 cptr.st1o(critical_sizes, 688, 208);
-cptr.stPtro(critical_sizes, 688 + $critical_sizes_with_names_nm, __sl74);
+cptr.stPtro(critical_sizes, 688 + $critical_sizes_with_names_nm, __s_struct_flag);
 cptr.st1o(critical_sizes, 704, 48);
-cptr.stPtro(critical_sizes, 704 + $critical_sizes_with_names_nm, __sl75);
+cptr.stPtro(critical_sizes, 704 + $critical_sizes_with_names_nm, __s_struct_fruit);
 cptr.st1o(critical_sizes, 720, 32);
-cptr.stPtro(critical_sizes, 720 + $critical_sizes_with_names_nm, __sl76);
+cptr.stPtro(critical_sizes, 720 + $critical_sizes_with_names_nm, __s_struct_gamelog_line);
 cptr.st1o(critical_sizes, 736, 16);
-cptr.stPtro(critical_sizes, 736 + $critical_sizes_with_names_nm, __sl77);
+cptr.stPtro(critical_sizes, 736 + $critical_sizes_with_names_nm, __s_struct_kinfo);
 cptr.st1o(critical_sizes, 752, 128);
-cptr.stPtro(critical_sizes, 752 + $critical_sizes_with_names_nm, __sl78);
+cptr.stPtro(critical_sizes, 752 + $critical_sizes_with_names_nm, __s_struct_levelflags);
 cptr.st1o(critical_sizes, 768, 32);
-cptr.stPtro(critical_sizes, 768 + $critical_sizes_with_names_nm, __sl79);
+cptr.stPtro(critical_sizes, 768 + $critical_sizes_with_names_nm, __s_struct_ls_t);
 cptr.st1o(critical_sizes, 784, 1);
-cptr.stPtro(critical_sizes, 784 + $critical_sizes_with_names_nm, __sl80);
+cptr.stPtro(critical_sizes, 784 + $critical_sizes_with_names_nm, __s_struct_linfo);
 cptr.st1o(critical_sizes, 800, 52);
-cptr.stPtro(critical_sizes, 800 + $critical_sizes_with_names_nm, __sl81);
+cptr.stPtro(critical_sizes, 800 + $critical_sizes_with_names_nm, __s_struct_mapseen_feat);
 cptr.st1o(critical_sizes, 816, 64);
-cptr.stPtro(critical_sizes, 816 + $critical_sizes_with_names_nm, __sl82);
+cptr.stPtro(critical_sizes, 816 + $critical_sizes_with_names_nm, __s_struct_mapseen_flags);
 cptr.st1o(critical_sizes, 832, 8);
-cptr.stPtro(critical_sizes, 832 + $critical_sizes_with_names_nm, __sl83);
+cptr.stPtro(critical_sizes, 832 + $critical_sizes_with_names_nm, __s_struct_mapseen_rooms);
 cptr.st1o(critical_sizes, 848, 64);
-cptr.stPtro(critical_sizes, 848 + $critical_sizes_with_names_nm, __sl84);
+cptr.stPtro(critical_sizes, 848 + $critical_sizes_with_names_nm, __s_struct_mextra);
 cptr.st1o(critical_sizes, 864, 224);
-cptr.stPtro(critical_sizes, 864 + $critical_sizes_with_names_nm, __sl85);
+cptr.stPtro(critical_sizes, 864 + $critical_sizes_with_names_nm, __s_struct_mkroom);
 cptr.st1o(critical_sizes, 880, 64);
-cptr.stPtro(critical_sizes, 880 + $critical_sizes_with_names_nm, __sl86);
+cptr.stPtro(critical_sizes, 880 + $critical_sizes_with_names_nm, __s_struct_monst);
 cptr.st1o(critical_sizes, 896, 12);
-cptr.stPtro(critical_sizes, 896 + $critical_sizes_with_names_nm, __sl87);
+cptr.stPtro(critical_sizes, 896 + $critical_sizes_with_names_nm, __s_struct_mvitals);
 cptr.st1o(critical_sizes, 912, 216);
-cptr.stPtro(critical_sizes, 912 + $critical_sizes_with_names_nm, __sl88);
+cptr.stPtro(critical_sizes, 912 + $critical_sizes_with_names_nm, __s_struct_obj);
 cptr.st1o(critical_sizes, 928, 120);
-cptr.stPtro(critical_sizes, 928 + $critical_sizes_with_names_nm, __sl89);
+cptr.stPtro(critical_sizes, 928 + $critical_sizes_with_names_nm, __s_struct_objclass);
 cptr.st1o(critical_sizes, 944, 32);
-cptr.stPtro(critical_sizes, 944 + $critical_sizes_with_names_nm, __sl90);
+cptr.stPtro(critical_sizes, 944 + $critical_sizes_with_names_nm, __s_struct_oextra);
 cptr.st1o(critical_sizes, 960, 88);
-cptr.stPtro(critical_sizes, 960 + $critical_sizes_with_names_nm, __sl91);
+cptr.stPtro(critical_sizes, 960 + $critical_sizes_with_names_nm, __s_struct_q_score);
 cptr.st1o(critical_sizes, 976, 36);
-cptr.stPtro(critical_sizes, 976 + $critical_sizes_with_names_nm, __sl92);
+cptr.stPtro(critical_sizes, 976 + $critical_sizes_with_names_nm, __s_struct_rm);
 cptr.st1o(critical_sizes, 992, 8);
-cptr.stPtro(critical_sizes, 992 + $critical_sizes_with_names_nm, __sl93);
+cptr.stPtro(critical_sizes, 992 + $critical_sizes_with_names_nm, __s_struct_spell);
 cptr.st1o(critical_sizes, 1008, 24);
-cptr.stPtro(critical_sizes, 1008 + $critical_sizes_with_names_nm, __sl94);
+cptr.stPtro(critical_sizes, 1008 + $critical_sizes_with_names_nm, __s_struct_stairway);
 cptr.st1o(critical_sizes, 1024, 56);
-cptr.stPtro(critical_sizes, 1024 + $critical_sizes_with_names_nm, __sl95);
+cptr.stPtro(critical_sizes, 1024 + $critical_sizes_with_names_nm, __s_struct_s_level);
 cptr.st1o(critical_sizes, 1040, 40);
-cptr.stPtro(critical_sizes, 1040 + $critical_sizes_with_names_nm, __sl96);
+cptr.stPtro(critical_sizes, 1040 + $critical_sizes_with_names_nm, __s_struct_trap);
 cptr.st1o(critical_sizes, 1056, 24);
-cptr.stPtro(critical_sizes, 1056 + $critical_sizes_with_names_nm, __sl97);
+cptr.stPtro(critical_sizes, 1056 + $critical_sizes_with_names_nm, __s_struct_version_info);
 cptr.st1o(critical_sizes, 1072, 8);
-cptr.stPtro(critical_sizes, 1072 + $critical_sizes_with_names_nm, __sl98);
+cptr.stPtro(critical_sizes, 1072 + $critical_sizes_with_names_nm, __s_anything);
 cptr.st1o(critical_sizes, 1088, 48);
-cptr.stPtro(critical_sizes, 1088 + $critical_sizes_with_names_nm, __sl99);
+cptr.stPtro(critical_sizes, 1088 + $critical_sizes_with_names_nm, __s_you_lo);
 cptr.st1o(critical_sizes, 1104, 11);
-cptr.stPtro(critical_sizes, 1104 + $critical_sizes_with_names_nm, __sl100);
+cptr.stPtro(critical_sizes, 1104 + $critical_sizes_with_names_nm, __s_you_hi);
 cptr.st1o(critical_sizes, 1120, 0);
-cptr.stPtro(critical_sizes, 1120 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1120 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1136, 0);
-cptr.stPtro(critical_sizes, 1136 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1136 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1152, 0);
-cptr.stPtro(critical_sizes, 1152 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1152 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1168, 0);
-cptr.stPtro(critical_sizes, 1168 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1168 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1184, 0);
-cptr.stPtro(critical_sizes, 1184 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1184 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1200, 0);
-cptr.stPtro(critical_sizes, 1200 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1200 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1216, 0);
-cptr.stPtro(critical_sizes, 1216 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1216 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1232, 0);
-cptr.stPtro(critical_sizes, 1232 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1232 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1248, 0);
-cptr.stPtro(critical_sizes, 1248 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1248 + $critical_sizes_with_names_nm, __s_empty);
 cptr.st1o(critical_sizes, 1264, 0);
-cptr.stPtro(critical_sizes, 1264 + $critical_sizes_with_names_nm, __sl7);
+cptr.stPtro(critical_sizes, 1264 + $critical_sizes_with_names_nm, __s_empty);
 
 /** C ref: version.c:666 — unsigned char[80] */
 export const cscbuf = new Uint8Array(80);
@@ -647,11 +647,11 @@ export function* store_critical_bytes(nhfp) {
     let csc_count = cptr.box(80);
     if (cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.WRITING) {
         indicate.v = schar(((cptr.ld1so(nhfp, $NHFILE_structlevel)) ? 104 : ((cptr.ldI32o(nhfp, $NHFILE_fnidx) == NHC.exportascii) ? 97 : 63)));
-        (yield* sfo_char(nhfp, indicate, __sl101, 1));
-        (yield* sfo_char(nhfp, csc_count, __sl102, 1));
+        (yield* sfo_char(nhfp, indicate, __s_indicate_format, 1));
+        (yield* sfo_char(nhfp, csc_count, __s_count_critical_sizes, 1));
         cnt = csc_count.v;
         for (i = 0; i < cnt; ++i) {
-            (yield* sfo_uchar(nhfp, cptr.add(critical_sizes, i, 16), __sl103));
+            (yield* sfo_uchar(nhfp, cptr.add(critical_sizes, i, 16), __s_critical_sizes));
         }
     }
 }
@@ -664,14 +664,14 @@ export function* uptodate(nhfp, name, utdflags) {
     let idx_1st_mismatch = cptr.box(0);
     let quietly = schar(((utdflags & 32n) != 0n));
     let verbose = schar((name ? 1 : 0));
-    (yield* sfi_char(nhfp, indicator, __sl101, 1));
+    (yield* sfi_char(nhfp, indicator, __s_indicate_format, 1));
     if ((sfstatus = (yield* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags))) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v) {
             if (!quietly)
-                (yield* raw_printf(__sl104, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, $critical_sizes_with_names_nm)));
+                (yield* raw_printf(__s_comparison_of_critical_bytes_mismatched, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, $critical_sizes_with_names_nm)));
         }
     }
-    (yield* sfi_version_info(nhfp, vers_info, __sl30));
+    (yield* sfi_version_info(nhfp, vers_info, __s_version_info));
     if (!(yield* check_version(vers_info, name, verbose, utdflags))) {
         if (verbose) {
             if ((utdflags & 16n) == 0n) {
@@ -691,31 +691,31 @@ export function* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
     let cnt = active_csc_count;
     let dmmismatch = NHM.SF_DM_MISMATCH;
     let quietly = schar(((utdflags & 32n) != 0n));
-    (yield* sfi_char(nhfp, file_csc_count, __sl102, 1));
+    (yield* sfi_char(nhfp, file_csc_count, __s_count_critical_sizes, 1));
     if (file_csc_count.v > cnt) {
         if (!quietly)
-            (yield* raw_printf(__sl105, file_csc_count.v, 80));
+            (yield* raw_printf(__s_critical_byte_counts_do_not_match_file, file_csc_count.v, 80));
         return NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH;
     }
     for (i = 0; i < file_csc_count.v; ++i) {
-        (yield* sfi_uchar(nhfp, cptr.add(cptr.decay(cscbuf), i, 1), __sl103));
+        (yield* sfi_uchar(nhfp, cptr.add(cptr.decay(cscbuf), i, 1), __s_critical_sizes));
     }
     for (i = 1; i < cnt; ++i) {
         if (cptr.ld1uo(cptr.decay(cscbuf), i, 1) != cptr.ld1uo(critical_sizes, i, 16)) {
             let dm = datamodel(0);
             let dmfile;
             dmfile = what_datamodel_is_this(0, cptr.ld1uo(cptr.decay(cscbuf), 1, 1), cptr.ld1uo(cptr.decay(cscbuf), 2, 1), cptr.ld1uo(cptr.decay(cscbuf), 3, 1), cptr.ld1uo(cptr.decay(cscbuf), 4, 1), cptr.ld1uo(cptr.decay(cscbuf), 5, 1));
-            if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl107)) {
+            if (!strcmp(dmfile, __s_il32llp64) && !strcmp(dm, __s_ilp32ll64)) {
                 dmmismatch = NHM.SF_DM_IL32LLP64_ON_ILP32LL64;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl107)) {
+            } else if (!strcmp(dmfile, __s_i32lp64) && !strcmp(dm, __s_ilp32ll64)) {
                 dmmismatch = NHM.SF_DM_I32LP64_ON_ILP32LL64;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl108)) {
+            } else if (!strcmp(dmfile, __s_ilp32ll64) && !strcmp(dm, __s_i32lp64)) {
                 dmmismatch = NHM.SF_DM_ILP32LL64_ON_I32LP64;
-            } else if (!strcmp(dmfile, __sl107) && !strcmp(dm, __sl106)) {
+            } else if (!strcmp(dmfile, __s_ilp32ll64) && !strcmp(dm, __s_il32llp64)) {
                 dmmismatch = NHM.SF_DM_ILP32LL64_ON_IL32LLP64;
-            } else if (!strcmp(dmfile, __sl108) && !strcmp(dm, __sl106)) {
+            } else if (!strcmp(dmfile, __s_i32lp64) && !strcmp(dm, __s_il32llp64)) {
                 dmmismatch = NHM.SF_DM_I32LP64_ON_IL32LLP64;
-            } else if (!strcmp(dmfile, __sl106) && !strcmp(dm, __sl108)) {
+            } else if (!strcmp(dmfile, __s_il32llp64) && !strcmp(dm, __s_i32lp64)) {
                 dmmismatch = NHM.SF_DM_IL32LLP64_ON_I32LP64;
             }
             if (idx_1st_mismatch)

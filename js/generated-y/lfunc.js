@@ -40,8 +40,8 @@ const $CClosure_nupvalues = FLD.CClosure_nupvalues, $GCObject_marked = FLD.GCObj
     $lua_State_top = FLD.lua_State_top, $lua_State_twups = FLD.lua_State_twups;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("?");
-const __sl1 = cptr.lit("variable '%s' got a non-closable value");
+const __s_query = cptr.lit("?");
+const __s_variable_s_got_a_non_closable_value = cptr.lit("variable '%s' got a non-closable value");
 
 /** C ref: lfunc.c:27 — @param {CPtr<lua_State>} L @param {CInt} nupvals @returns {CPtr<CClosure>} */
 export function* luaF_newCclosure(L, nupvals) {
@@ -152,8 +152,8 @@ function* checkclosemth(L, level) {
         let idx = (Number(BigInt.asIntN(32, ((cptr.diff(level, cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))) / 16n)))));
         let vname = luaG_findlocal(L, cptr.ldPtro(L, $lua_State_ci), idx, null);
         if (cptr.eq(vname, (null)))
-            vname = __sl0;
-        (yield* luaG_runerror(L, __sl1, vname));
+            vname = __s_query;
+        (yield* luaG_runerror(L, __s_variable_s_got_a_non_closable_value, vname));
     }
 }
 

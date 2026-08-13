@@ -470,110 +470,110 @@ const $Race_adj = FLD.Race_adj, $Race_allow = FLD.Race_allow, $Race_attrmax = FL
     $val_list_size = FLD.val_list_size, $win_settings_map_frame_color = FLD.win_settings_map_frame_color;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("cmd_before");
-const __sl1 = cptr.lit("level_enter");
-const __sl2 = cptr.lit("level_leave");
-const __sl3 = cptr.lit("end_turn");
-const __sl4 = cptr.lit("black");
-const __sl5 = cptr.lit("amber");
-const __sl6 = cptr.lit("golden");
-const __sl7 = cptr.lit("light blue");
-const __sl8 = cptr.lit("red");
-const __sl9 = cptr.lit("green");
-const __sl10 = cptr.lit("silver");
-const __sl11 = cptr.lit("blue");
-const __sl12 = cptr.lit("purple");
-const __sl13 = cptr.lit("white");
-const __sl14 = cptr.lit("orange");
-const __sl15 = cptr.lit("brown");
-const __sl16 = cptr.lit("magenta");
-const __sl17 = cptr.lit("cyan");
-const __sl18 = cptr.lit("gray");
-const __sl19 = cptr.lit("transparent");
-const __sl20 = cptr.lit("bright green");
-const __sl21 = cptr.lit("yellow");
-const __sl22 = cptr.lit("bright blue");
-const __sl23 = cptr.lit("bright magenta");
-const __sl24 = cptr.lit("bright cyan");
-const __sl25 = cptr.lit("Nothing happens.");
-const __sl26 = cptr.lit("Nothing seems to happen.");
-const __sl27 = cptr.lit("That's enough tries!");
-const __sl28 = cptr.lit("That is a silly thing to %s.");
-const __sl29 = cptr.lit("shudder for a moment.");
-const __sl30 = cptr.lit("something");
-const __sl31 = cptr.lit("Something");
-const __sl32 = cptr.lit("You can move again.");
-const __sl33 = cptr.lit("Never mind.");
-const __sl34 = cptr.lit("vision quickly clears.");
-const __sl35 = cptr.lit("the");
-const __sl36 = cptr.lit("your");
-const __sl37 = cptr.lit("mon");
-const __sl38 = cptr.lit("you");
-const __sl39 = cptr.lit("mysterious");
-const __sl40 = cptr.lit("liquid");
-const __sl41 = cptr.lit("wax");
-const __sl42 = cptr.lit("organic");
-const __sl43 = cptr.lit("flesh");
-const __sl44 = cptr.lit("paper");
-const __sl45 = cptr.lit("cloth");
-const __sl46 = cptr.lit("leather");
-const __sl47 = cptr.lit("wooden");
-const __sl48 = cptr.lit("bone");
-const __sl49 = cptr.lit("dragonhide");
-const __sl50 = cptr.lit("iron");
-const __sl51 = cptr.lit("metal");
-const __sl52 = cptr.lit("copper");
-const __sl53 = cptr.lit("gold");
-const __sl54 = cptr.lit("platinum");
-const __sl55 = cptr.lit("mithril");
-const __sl56 = cptr.lit("plastic");
-const __sl57 = cptr.lit("glass");
-const __sl58 = cptr.lit("gemstone");
-const __sl59 = cptr.lit("stone");
-const __sl60 = cptr.lit("Undefined");
-const __sl61 = cptr.lit("L");
-const __sl62 = cptr.lit("N");
-const __sl63 = cptr.lit("C");
-const __sl64 = cptr.lit("Xxx");
-const __sl65 = cptr.lit("home");
-const __sl66 = cptr.lit("locate");
-const __sl67 = cptr.lit("undefined");
-const __sl68 = cptr.lit("bonesnn.xxx.le");
-const __sl69 = cptr.lit("1lock");
-const __sl70 = cptr.lit("decl_globals_init: %s.havestate not True.");
-const __sl71 = cptr.lit("g_init_a");
-const __sl72 = cptr.lit("g_init_b");
-const __sl73 = cptr.lit("g_init_c");
-const __sl74 = cptr.lit("g_init_d");
-const __sl75 = cptr.lit("g_init_e");
-const __sl76 = cptr.lit("g_init_f");
-const __sl77 = cptr.lit("g_init_g");
-const __sl78 = cptr.lit("g_init_h");
-const __sl79 = cptr.lit("g_init_i");
-const __sl80 = cptr.lit("g_init_j");
-const __sl81 = cptr.lit("g_init_k");
-const __sl82 = cptr.lit("g_init_l");
-const __sl83 = cptr.lit("g_init_m");
-const __sl84 = cptr.lit("g_init_n");
-const __sl85 = cptr.lit("g_init_o");
-const __sl86 = cptr.lit("g_init_p");
-const __sl87 = cptr.lit("g_init_q");
-const __sl88 = cptr.lit("g_init_r");
-const __sl89 = cptr.lit("g_init_s");
-const __sl90 = cptr.lit("g_init_t");
-const __sl91 = cptr.lit("g_init_u");
-const __sl92 = cptr.lit("g_init_v");
-const __sl93 = cptr.lit("g_init_w");
-const __sl94 = cptr.lit("g_init_x");
-const __sl95 = cptr.lit("g_init_y");
-const __sl96 = cptr.lit("g_init_z");
+const __s_cmd_before = cptr.lit("cmd_before");
+const __s_level_enter = cptr.lit("level_enter");
+const __s_level_leave = cptr.lit("level_leave");
+const __s_end_turn = cptr.lit("end_turn");
+const __s_black = cptr.lit("black");
+const __s_amber = cptr.lit("amber");
+const __s_golden = cptr.lit("golden");
+const __s_light_blue = cptr.lit("light blue");
+const __s_red = cptr.lit("red");
+const __s_green = cptr.lit("green");
+const __s_silver = cptr.lit("silver");
+const __s_blue = cptr.lit("blue");
+const __s_purple = cptr.lit("purple");
+const __s_white = cptr.lit("white");
+const __s_orange = cptr.lit("orange");
+const __s_brown = cptr.lit("brown");
+const __s_magenta = cptr.lit("magenta");
+const __s_cyan = cptr.lit("cyan");
+const __s_gray = cptr.lit("gray");
+const __s_transparent = cptr.lit("transparent");
+const __s_bright_green = cptr.lit("bright green");
+const __s_yellow = cptr.lit("yellow");
+const __s_bright_blue = cptr.lit("bright blue");
+const __s_bright_magenta = cptr.lit("bright magenta");
+const __s_bright_cyan = cptr.lit("bright cyan");
+const __s_nothing_happens = cptr.lit("Nothing happens.");
+const __s_nothing_seems_to_happen = cptr.lit("Nothing seems to happen.");
+const __s_that_s_enough_tries = cptr.lit("That's enough tries!");
+const __s_that_is_a_silly_thing_to_s = cptr.lit("That is a silly thing to %s.");
+const __s_shudder_for_a_moment = cptr.lit("shudder for a moment.");
+const __s_something = cptr.lit("something");
+const __s_something__2 = cptr.lit("Something");
+const __s_you_can_move_again = cptr.lit("You can move again.");
+const __s_never_mind = cptr.lit("Never mind.");
+const __s_vision_quickly_clears = cptr.lit("vision quickly clears.");
+const __s_the = cptr.lit("the");
+const __s_your = cptr.lit("your");
+const __s_mon = cptr.lit("mon");
+const __s_you = cptr.lit("you");
+const __s_mysterious = cptr.lit("mysterious");
+const __s_liquid = cptr.lit("liquid");
+const __s_wax = cptr.lit("wax");
+const __s_organic = cptr.lit("organic");
+const __s_flesh = cptr.lit("flesh");
+const __s_paper = cptr.lit("paper");
+const __s_cloth = cptr.lit("cloth");
+const __s_leather = cptr.lit("leather");
+const __s_wooden = cptr.lit("wooden");
+const __s_bone = cptr.lit("bone");
+const __s_dragonhide = cptr.lit("dragonhide");
+const __s_iron = cptr.lit("iron");
+const __s_metal = cptr.lit("metal");
+const __s_copper = cptr.lit("copper");
+const __s_gold = cptr.lit("gold");
+const __s_platinum = cptr.lit("platinum");
+const __s_mithril = cptr.lit("mithril");
+const __s_plastic = cptr.lit("plastic");
+const __s_glass = cptr.lit("glass");
+const __s_gemstone = cptr.lit("gemstone");
+const __s_stone = cptr.lit("stone");
+const __s_undefined = cptr.lit("Undefined");
+const __s_l = cptr.lit("L");
+const __s_n = cptr.lit("N");
+const __s_c = cptr.lit("C");
+const __s_xxx = cptr.lit("Xxx");
+const __s_home = cptr.lit("home");
+const __s_locate = cptr.lit("locate");
+const __s_undefined__2 = cptr.lit("undefined");
+const __s_bonesnn_xxx_le = cptr.lit("bonesnn.xxx.le");
+const __s_1lock = cptr.lit("1lock");
+const __s_decl_globals_init_s_havestate_not_true = cptr.lit("decl_globals_init: %s.havestate not True.");
+const __s_g_init_a = cptr.lit("g_init_a");
+const __s_g_init_b = cptr.lit("g_init_b");
+const __s_g_init_c = cptr.lit("g_init_c");
+const __s_g_init_d = cptr.lit("g_init_d");
+const __s_g_init_e = cptr.lit("g_init_e");
+const __s_g_init_f = cptr.lit("g_init_f");
+const __s_g_init_g = cptr.lit("g_init_g");
+const __s_g_init_h = cptr.lit("g_init_h");
+const __s_g_init_i = cptr.lit("g_init_i");
+const __s_g_init_j = cptr.lit("g_init_j");
+const __s_g_init_k = cptr.lit("g_init_k");
+const __s_g_init_l = cptr.lit("g_init_l");
+const __s_g_init_m = cptr.lit("g_init_m");
+const __s_g_init_n = cptr.lit("g_init_n");
+const __s_g_init_o = cptr.lit("g_init_o");
+const __s_g_init_p = cptr.lit("g_init_p");
+const __s_g_init_q = cptr.lit("g_init_q");
+const __s_g_init_r = cptr.lit("g_init_r");
+const __s_g_init_s = cptr.lit("g_init_s");
+const __s_g_init_t = cptr.lit("g_init_t");
+const __s_g_init_u = cptr.lit("g_init_u");
+const __s_g_init_v = cptr.lit("g_init_v");
+const __s_g_init_w = cptr.lit("g_init_w");
+const __s_g_init_x = cptr.lit("g_init_x");
+const __s_g_init_y = cptr.lit("g_init_y");
+const __s_g_init_z = cptr.lit("g_init_z");
 
 /** C ref: decl.c:8 — char *[4] */
 export const nhcb_name = cptr.alloc(4 * 8);
-cptr.stPtro(nhcb_name, 0, __sl0);
-cptr.stPtro(nhcb_name, 8, __sl1);
-cptr.stPtro(nhcb_name, 16, __sl2);
-cptr.stPtro(nhcb_name, 24, __sl3);
+cptr.stPtro(nhcb_name, 0, __s_cmd_before);
+cptr.stPtro(nhcb_name, 8, __s_level_enter);
+cptr.stPtro(nhcb_name, 16, __s_level_leave);
+cptr.stPtro(nhcb_name, 24, __s_end_turn);
 
 /** C ref: decl.c:15 — int[4] */
 export const nhcb_counts = cptr.alloc(4 * 4);
@@ -581,53 +581,53 @@ cptr.stI32o(nhcb_counts, 0, 0);
 
 /** C ref: decl.c:16 — struct c_color_names */
 export let c_color_names = cptr.alloc(88);
-cptr.stPtr(c_color_names, __sl4);
-cptr.stPtro(c_color_names, $c_color_names_c_amber, __sl5);
-cptr.stPtro(c_color_names, $c_color_names_c_golden, __sl6);
-cptr.stPtro(c_color_names, $c_color_names_c_light_blue, __sl7);
-cptr.stPtro(c_color_names, $c_color_names_c_red, __sl8);
-cptr.stPtro(c_color_names, $c_color_names_c_green, __sl9);
-cptr.stPtro(c_color_names, $c_color_names_c_silver, __sl10);
-cptr.stPtro(c_color_names, $c_color_names_c_blue, __sl11);
-cptr.stPtro(c_color_names, $c_color_names_c_purple, __sl12);
-cptr.stPtro(c_color_names, $c_color_names_c_white, __sl13);
-cptr.stPtro(c_color_names, $c_color_names_c_orange, __sl14);
+cptr.stPtr(c_color_names, __s_black);
+cptr.stPtro(c_color_names, $c_color_names_c_amber, __s_amber);
+cptr.stPtro(c_color_names, $c_color_names_c_golden, __s_golden);
+cptr.stPtro(c_color_names, $c_color_names_c_light_blue, __s_light_blue);
+cptr.stPtro(c_color_names, $c_color_names_c_red, __s_red);
+cptr.stPtro(c_color_names, $c_color_names_c_green, __s_green);
+cptr.stPtro(c_color_names, $c_color_names_c_silver, __s_silver);
+cptr.stPtro(c_color_names, $c_color_names_c_blue, __s_blue);
+cptr.stPtro(c_color_names, $c_color_names_c_purple, __s_purple);
+cptr.stPtro(c_color_names, $c_color_names_c_white, __s_white);
+cptr.stPtro(c_color_names, $c_color_names_c_orange, __s_orange);
 
 /** C ref: decl.c:20 — char *[16] */
 export const c_obj_colors = cptr.alloc(16 * 8);
-cptr.stPtro(c_obj_colors, 0, __sl4);
-cptr.stPtro(c_obj_colors, 8, __sl8);
-cptr.stPtro(c_obj_colors, 16, __sl9);
-cptr.stPtro(c_obj_colors, 24, __sl15);
-cptr.stPtro(c_obj_colors, 32, __sl11);
-cptr.stPtro(c_obj_colors, 40, __sl16);
-cptr.stPtro(c_obj_colors, 48, __sl17);
-cptr.stPtro(c_obj_colors, 56, __sl18);
-cptr.stPtro(c_obj_colors, 64, __sl19);
-cptr.stPtro(c_obj_colors, 72, __sl14);
-cptr.stPtro(c_obj_colors, 80, __sl20);
-cptr.stPtro(c_obj_colors, 88, __sl21);
-cptr.stPtro(c_obj_colors, 96, __sl22);
-cptr.stPtro(c_obj_colors, 104, __sl23);
-cptr.stPtro(c_obj_colors, 112, __sl24);
-cptr.stPtro(c_obj_colors, 120, __sl13);
+cptr.stPtro(c_obj_colors, 0, __s_black);
+cptr.stPtro(c_obj_colors, 8, __s_red);
+cptr.stPtro(c_obj_colors, 16, __s_green);
+cptr.stPtro(c_obj_colors, 24, __s_brown);
+cptr.stPtro(c_obj_colors, 32, __s_blue);
+cptr.stPtro(c_obj_colors, 40, __s_magenta);
+cptr.stPtro(c_obj_colors, 48, __s_cyan);
+cptr.stPtro(c_obj_colors, 56, __s_gray);
+cptr.stPtro(c_obj_colors, 64, __s_transparent);
+cptr.stPtro(c_obj_colors, 72, __s_orange);
+cptr.stPtro(c_obj_colors, 80, __s_bright_green);
+cptr.stPtro(c_obj_colors, 88, __s_yellow);
+cptr.stPtro(c_obj_colors, 96, __s_bright_blue);
+cptr.stPtro(c_obj_colors, 104, __s_bright_magenta);
+cptr.stPtro(c_obj_colors, 112, __s_bright_cyan);
+cptr.stPtro(c_obj_colors, 120, __s_white);
 
 /** C ref: decl.c:39 — struct c_common_strings */
 export let c_common_strings = cptr.alloc(112);
-cptr.stPtr(c_common_strings, __sl25);
-cptr.stPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen, __sl26);
-cptr.stPtro(c_common_strings, $c_common_strings_c_thats_enough_tries, __sl27);
-cptr.stPtro(c_common_strings, $c_common_strings_c_silly_thing_to, __sl28);
-cptr.stPtro(c_common_strings, $c_common_strings_c_shudder_for_moment, __sl29);
-cptr.stPtro(c_common_strings, $c_common_strings_c_something, __sl30);
-cptr.stPtro(c_common_strings, $c_common_strings_c_Something, __sl31);
-cptr.stPtro(c_common_strings, $c_common_strings_c_You_can_move_again, __sl32);
-cptr.stPtro(c_common_strings, $c_common_strings_c_Never_mind, __sl33);
-cptr.stPtro(c_common_strings, $c_common_strings_c_vision_clears, __sl34);
-cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 0, __sl35);
-cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 8, __sl36);
-cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 0, __sl37);
-cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 8, __sl38);
+cptr.stPtr(c_common_strings, __s_nothing_happens);
+cptr.stPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen, __s_nothing_seems_to_happen);
+cptr.stPtro(c_common_strings, $c_common_strings_c_thats_enough_tries, __s_that_s_enough_tries);
+cptr.stPtro(c_common_strings, $c_common_strings_c_silly_thing_to, __s_that_is_a_silly_thing_to_s);
+cptr.stPtro(c_common_strings, $c_common_strings_c_shudder_for_moment, __s_shudder_for_a_moment);
+cptr.stPtro(c_common_strings, $c_common_strings_c_something, __s_something);
+cptr.stPtro(c_common_strings, $c_common_strings_c_Something, __s_something__2);
+cptr.stPtro(c_common_strings, $c_common_strings_c_You_can_move_again, __s_you_can_move_again);
+cptr.stPtro(c_common_strings, $c_common_strings_c_Never_mind, __s_never_mind);
+cptr.stPtro(c_common_strings, $c_common_strings_c_vision_clears, __s_vision_quickly_clears);
+cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 0, __s_the);
+cptr.stPtro(c_common_strings, $c_common_strings_c_the_your + 8, __s_your);
+cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 0, __s_mon);
+cptr.stPtro(c_common_strings, $c_common_strings_c_fakename + 8, __s_you);
 
 /** C ref: decl.c:54 — char[7] */
 export const disclosure_options = cptr.bytes("iavgco");
@@ -667,28 +667,28 @@ export let a11y = cptr.alloc(16);
 
 /** C ref: decl.c:90 — char *[22] */
 export const materialnm = cptr.alloc(22 * 8);
-cptr.stPtro(materialnm, 0, __sl39);
-cptr.stPtro(materialnm, 8, __sl40);
-cptr.stPtro(materialnm, 16, __sl41);
-cptr.stPtro(materialnm, 24, __sl42);
-cptr.stPtro(materialnm, 32, __sl43);
-cptr.stPtro(materialnm, 40, __sl44);
-cptr.stPtro(materialnm, 48, __sl45);
-cptr.stPtro(materialnm, 56, __sl46);
-cptr.stPtro(materialnm, 64, __sl47);
-cptr.stPtro(materialnm, 72, __sl48);
-cptr.stPtro(materialnm, 80, __sl49);
-cptr.stPtro(materialnm, 88, __sl50);
-cptr.stPtro(materialnm, 96, __sl51);
-cptr.stPtro(materialnm, 104, __sl52);
-cptr.stPtro(materialnm, 112, __sl10);
-cptr.stPtro(materialnm, 120, __sl53);
-cptr.stPtro(materialnm, 128, __sl54);
-cptr.stPtro(materialnm, 136, __sl55);
-cptr.stPtro(materialnm, 144, __sl56);
-cptr.stPtro(materialnm, 152, __sl57);
-cptr.stPtro(materialnm, 160, __sl58);
-cptr.stPtro(materialnm, 168, __sl59);
+cptr.stPtro(materialnm, 0, __s_mysterious);
+cptr.stPtro(materialnm, 8, __s_liquid);
+cptr.stPtro(materialnm, 16, __s_wax);
+cptr.stPtro(materialnm, 24, __s_organic);
+cptr.stPtro(materialnm, 32, __s_flesh);
+cptr.stPtro(materialnm, 40, __s_paper);
+cptr.stPtro(materialnm, 48, __s_cloth);
+cptr.stPtro(materialnm, 56, __s_leather);
+cptr.stPtro(materialnm, 64, __s_wooden);
+cptr.stPtro(materialnm, 72, __s_bone);
+cptr.stPtro(materialnm, 80, __s_dragonhide);
+cptr.stPtro(materialnm, 88, __s_iron);
+cptr.stPtro(materialnm, 96, __s_metal);
+cptr.stPtro(materialnm, 104, __s_copper);
+cptr.stPtro(materialnm, 112, __s_silver);
+cptr.stPtro(materialnm, 120, __s_gold);
+cptr.stPtro(materialnm, 128, __s_platinum);
+cptr.stPtro(materialnm, 136, __s_mithril);
+cptr.stPtro(materialnm, 144, __s_plastic);
+cptr.stPtro(materialnm, 152, __s_glass);
+cptr.stPtro(materialnm, 160, __s_gemstone);
+cptr.stPtro(materialnm, 168, __s_stone);
 
 /** C ref: decl.c:96 — char[5] */
 export const quitchars = cptr.bytes(" \r\n\x1b");
@@ -818,7 +818,7 @@ export let ARGV0 = cptr.box(null);
 
 /** C ref: decl.c:124 — struct Role */
 let urole_init_data = cptr.alloc(312);
-cptr.stPtr(urole_init_data, __sl60);
+cptr.stPtr(urole_init_data, __s_undefined);
 cptr.stPtro(urole_init_data, $RoleName_f, null);
 cptr.stPtro(urole_init_data, $Role_rank + 0, null);
 cptr.stPtro(urole_init_data, $Role_rank + 0 + $RoleName_f, null);
@@ -838,12 +838,12 @@ cptr.stPtro(urole_init_data, $Role_rank + 112, null);
 cptr.stPtro(urole_init_data, $Role_rank + 112 + $RoleName_f, null);
 cptr.stPtro(urole_init_data, $Role_rank + 128, null);
 cptr.stPtro(urole_init_data, $Role_rank + 128 + $RoleName_f, null);
-cptr.stPtro(urole_init_data, $Role_lgod, __sl61);
-cptr.stPtro(urole_init_data, $Role_ngod, __sl62);
-cptr.stPtro(urole_init_data, $Role_cgod, __sl63);
-cptr.stPtro(urole_init_data, $Role_filecode, __sl64);
-cptr.stPtro(urole_init_data, $Role_homebase, __sl65);
-cptr.stPtro(urole_init_data, $Role_intermed, __sl66);
+cptr.stPtro(urole_init_data, $Role_lgod, __s_l);
+cptr.stPtro(urole_init_data, $Role_ngod, __s_n);
+cptr.stPtro(urole_init_data, $Role_cgod, __s_c);
+cptr.stPtro(urole_init_data, $Role_filecode, __s_xxx);
+cptr.stPtro(urole_init_data, $Role_homebase, __s_home);
+cptr.stPtro(urole_init_data, $Role_intermed, __s_locate);
 cptr.stI16o(urole_init_data, $Role_mnum, NHC.NON_PM);
 cptr.stI16o(urole_init_data, $Role_petnum, NHC.NON_PM);
 cptr.stI16o(urole_init_data, $Role_ldrnum, NHC.NON_PM);
@@ -891,10 +891,10 @@ cptr.stI32o(urole_init_data, $Role_spelsbon, -3);
 
 /** C ref: decl.c:149 — struct Race */
 let urace_init_data = cptr.alloc(112);
-cptr.stPtr(urace_init_data, __sl30);
-cptr.stPtro(urace_init_data, $Race_adj, __sl67);
-cptr.stPtro(urace_init_data, $Race_coll, __sl30);
-cptr.stPtro(urace_init_data, $Race_filecode, __sl64);
+cptr.stPtr(urace_init_data, __s_something);
+cptr.stPtro(urace_init_data, $Race_adj, __s_undefined__2);
+cptr.stPtro(urace_init_data, $Race_coll, __s_something);
+cptr.stPtro(urace_init_data, $Race_filecode, __s_xxx);
 cptr.stPtro(urace_init_data, $Race_individual, null);
 cptr.stPtro(urace_init_data, $Race_individual + $RoleName_f, null);
 cptr.stI16o(urace_init_data, $Race_mnum, NHC.NON_PM);
@@ -962,7 +962,7 @@ cptr.stI64o(g_init_b, $instance_globals_b_bl_hilite_moves, 0n);
 cptr.stI16o(g_init_b, $instance_globals_b_bhitpos, 0);
 cptr.stI16o(g_init_b, $instance_globals_b_bhitpos + $nhcoord_y, 0);
 cptr.stPtro(g_init_b, $instance_globals_b_billobjs, null);
-cptr.strcpy(cptr.add(g_init_b, $instance_globals_b_bones), __sl68);
+cptr.strcpy(cptr.add(g_init_b, $instance_globals_b_bones), __s_bonesnn_xxx_le);
 cptr.stI32o(g_init_b, $instance_globals_b_bldrpush_oid, 0);
 cptr.stI64o(g_init_b, $instance_globals_b_bldrpushtime, 0n);
 cptr.stI16o(g_init_b, $instance_globals_b_bughack, NHM.COLNO);
@@ -1156,7 +1156,7 @@ let g_init_l = cptr.alloc(696);
 cptr.stI64(g_init_l, 0n);
 cptr.stI32o(g_init_l, $instance_globals_l_locknum, 0);
 cptr.stI32o(g_init_l, $instance_globals_l_lockptr, NHM.UNDEFINED_VALUE);
-cptr.strcpy(cptr.add(g_init_l, $instance_globals_l_lock), __sl69);
+cptr.strcpy(cptr.add(g_init_l, $instance_globals_l_lock), __s_1lock);
 cptr.stI32o(g_init_l, $instance_globals_l_lastinvnr, 51);
 cptr.stPtro(g_init_l, $instance_globals_l_light_base, null);
 cptr.stPtro(g_init_l, $instance_globals_l_luathemes + 0, (null));
@@ -1931,182 +1931,182 @@ export function decl_globals_init() {
     cptr.stI32o2(gv, 2, 16, $instance_globals_v_valuables + $val_list_size, 0);
     {
         if (cptr.ld1so((g_init_a), $instance_globals_a_havestate) != 1) {
-            raw_printf(__sl70, __sl71);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_a);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_b), $instance_globals_b_havestate) != 1) {
-            raw_printf(__sl70, __sl72);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_b);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_c), $instance_globals_c_havestate) != 1) {
-            raw_printf(__sl70, __sl73);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_c);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_d), $instance_globals_d_havestate) != 1) {
-            raw_printf(__sl70, __sl74);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_d);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_e), $instance_globals_e_havestate) != 1) {
-            raw_printf(__sl70, __sl75);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_e);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_f), $instance_globals_f_havestate) != 1) {
-            raw_printf(__sl70, __sl76);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_f);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_g), $instance_globals_g_havestate) != 1) {
-            raw_printf(__sl70, __sl77);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_g);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_h), $instance_globals_h_havestate) != 1) {
-            raw_printf(__sl70, __sl78);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_h);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_i), $instance_globals_i_havestate) != 1) {
-            raw_printf(__sl70, __sl79);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_i);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_j), $instance_globals_j_havestate) != 1) {
-            raw_printf(__sl70, __sl80);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_j);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_k), $instance_globals_k_havestate) != 1) {
-            raw_printf(__sl70, __sl81);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_k);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_l), $instance_globals_l_havestate) != 1) {
-            raw_printf(__sl70, __sl82);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_l);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_m), $instance_globals_m_havestate) != 1) {
-            raw_printf(__sl70, __sl83);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_m);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_n), $instance_globals_n_havestate) != 1) {
-            raw_printf(__sl70, __sl84);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_n);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_o), $instance_globals_o_havestate) != 1) {
-            raw_printf(__sl70, __sl85);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_o);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_p), $instance_globals_p_havestate) != 1) {
-            raw_printf(__sl70, __sl86);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_p);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1s((g_init_q)) != 1) {
-            raw_printf(__sl70, __sl87);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_q);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_r), $instance_globals_r_havestate) != 1) {
-            raw_printf(__sl70, __sl88);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_r);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_s), $instance_globals_s_havestate) != 1) {
-            raw_printf(__sl70, __sl89);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_s);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_t), $instance_globals_t_havestate) != 1) {
-            raw_printf(__sl70, __sl90);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_t);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_u), $instance_globals_u_havestate) != 1) {
-            raw_printf(__sl70, __sl91);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_u);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_v), $instance_globals_v_havestate) != 1) {
-            raw_printf(__sl70, __sl92);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_v);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_w), $instance_globals_w_havestate) != 1) {
-            raw_printf(__sl70, __sl93);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_w);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_x), $instance_globals_x_havestate) != 1) {
-            raw_printf(__sl70, __sl94);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_x);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_y), $instance_globals_y_havestate) != 1) {
-            raw_printf(__sl70, __sl95);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_y);
             exit(1);
         }
     }
     ;
     {
         if (cptr.ld1so((g_init_z), $instance_globals_z_havestate) != 1) {
-            raw_printf(__sl70, __sl96);
+            raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_z);
             exit(1);
         }
     }

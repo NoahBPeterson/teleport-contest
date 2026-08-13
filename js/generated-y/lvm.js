@@ -39,17 +39,17 @@ const $CallInfo_callstatus = FLD.CallInfo_callstatus, $CallInfo_nresults = FLD.C
     $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_top = FLD.lua_State_top;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("limit");
-const __sl1 = cptr.lit("'for' step is zero");
-const __sl2 = cptr.lit("step");
-const __sl3 = cptr.lit("initial value");
-const __sl4 = cptr.lit("index");
-const __sl5 = cptr.lit("'__index' chain too long; possible loop");
-const __sl6 = cptr.lit("'__newindex' chain too long; possible loop");
-const __sl7 = cptr.lit("string length overflow");
-const __sl8 = cptr.lit("get length of");
-const __sl9 = cptr.lit("attempt to divide by zero");
-const __sl10 = cptr.lit("attempt to perform 'n%%0'");
+const __s_limit = cptr.lit("limit");
+const __s_for_step_is_zero = cptr.lit("'for' step is zero");
+const __s_step = cptr.lit("step");
+const __s_initial_value = cptr.lit("initial value");
+const __s_index = cptr.lit("index");
+const __s_index_chain_too_long_possible_loop = cptr.lit("'__index' chain too long; possible loop");
+const __s_newindex_chain_too_long_possible_loop = cptr.lit("'__newindex' chain too long; possible loop");
+const __s_string_length_overflow = cptr.lit("string length overflow");
+const __s_get_length_of = cptr.lit("get length of");
+const __s_attempt_to_divide_by_zero = cptr.lit("attempt to divide by zero");
+const __s_attempt_to_perform_n_0 = cptr.lit("attempt to perform 'n%%0'");
 
 /** C ref: lvm.c:90 — @param {CPtr<TValue>} obj @param {CPtr<TValue>} result @returns {CInt} */
 function* l_strton(obj, result) {
@@ -111,7 +111,7 @@ function* forlimit(L, init, lim, p, step) {
     if (!(yield* luaV_tointeger(lim, p, (step < 0n ? NHC.F2Iceil : NHC.F2Ifloor)))) {
         let flim = cptr.box(0);
         if (!(((cptr.ld1uo(((lim)), $TValue_tt_)) == 19) ? (cptr.stF64((flim), (cptr.ldF64(((lim))))), 1) : (yield* luaV_tonumber_(lim, flim))))
-            (yield* luaG_forerror(L, lim, __sl0));
+            (yield* luaG_forerror(L, lim, __s_limit));
         if ((0 < (flim.v))) {
             if (step < 0n)
                 return 1;
@@ -135,7 +135,7 @@ function* forprep(L, ra) {
         let step = cptr.box((cptr.ldI64(((pstep)))));
         let limit = cptr.box(0n);
         if (step.v == 0n)
-            (yield* luaG_runerror(L, __sl1));
+            (yield* luaG_runerror(L, __s_for_step_is_zero));
         {
             let io = (((cptr.add(ra, 3, 16))));
             cptr.stI64(((io)), (init.v));
@@ -166,13 +166,13 @@ function* forprep(L, ra) {
         let limit = cptr.box(0);
         let step = cptr.box(0);
         if ((__builtin_expect(BigInt(((!(((cptr.ld1uo(((plimit)), $TValue_tt_)) == 19) ? (cptr.stF64((limit), (cptr.ldF64(((plimit))))), 1) : (yield* luaV_tonumber_(plimit, limit)))) != 0)), 0n)))
-            (yield* luaG_forerror(L, plimit, __sl0));
+            (yield* luaG_forerror(L, plimit, __s_limit));
         if ((__builtin_expect(BigInt(((!(((cptr.ld1uo(((pstep)), $TValue_tt_)) == 19) ? (cptr.stF64((step), (cptr.ldF64(((pstep))))), 1) : (yield* luaV_tonumber_(pstep, step)))) != 0)), 0n)))
-            (yield* luaG_forerror(L, pstep, __sl2));
+            (yield* luaG_forerror(L, pstep, __s_step));
         if ((__builtin_expect(BigInt(((!(((cptr.ld1uo(((pinit)), $TValue_tt_)) == 19) ? (cptr.stF64((init), (cptr.ldF64(((pinit))))), 1) : (yield* luaV_tonumber_(pinit, init)))) != 0)), 0n)))
-            (yield* luaG_forerror(L, pinit, __sl3));
+            (yield* luaG_forerror(L, pinit, __s_initial_value));
         if (step.v == 0)
-            (yield* luaG_runerror(L, __sl1));
+            (yield* luaG_runerror(L, __s_for_step_is_zero));
         if ((0 < (step.v)) ? ((limit.v) < (init.v)) : ((init.v) < (limit.v)))
             return 1;
         else {
@@ -238,7 +238,7 @@ export function* luaV_finishget(L, t, key, val, slot) {
             (void 0);
             tm = luaT_gettmbyobj(L, t, NHC.TM_INDEX);
             if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
-                (yield* luaG_typeerror(L, t, __sl4));
+                (yield* luaG_typeerror(L, t, __s_index));
         } else {
             (void 0);
             tm = (cptr.eq((cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_metatable)), (null)) ? null : (((cptr.ld1uo((cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_metatable)), $Table_flags) & ((1 << (NHC.TM_INDEX)) >>> 0)) >>> 0) ? null : luaT_gettm(cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_metatable), NHC.TM_INDEX, cptr.ldPtro2(((cptr.ldPtro(L, $lua_State_l_G))), NHC.TM_INDEX, 8, $global_State_tmname))));
@@ -265,7 +265,7 @@ export function* luaV_finishget(L, t, key, val, slot) {
             return;
         }
     }
-    (yield* luaG_runerror(L, __sl5));
+    (yield* luaG_runerror(L, __s_index_chain_too_long_possible_loop));
 }
 
 /** C ref: lvm.c:332 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<TValue>} key @param {CPtr<TValue>} val @param {CPtr<TValue>} slot */
@@ -296,7 +296,7 @@ export function* luaV_finishset(L, t, key, val, slot) {
         } else {
             tm = luaT_gettmbyobj(L, t, NHC.TM_NEWINDEX);
             if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
-                (yield* luaG_typeerror(L, t, __sl4));
+                (yield* luaG_typeerror(L, t, __s_index));
         }
         if ((((((cptr.ld1uo((tm), $TValue_tt_))) & 15)) == 6)) {
             (yield* luaT_callTM(L, tm, t, key, val));
@@ -320,7 +320,7 @@ export function* luaV_finishset(L, t, key, val, slot) {
             return;
         }
     }
-    (yield* luaG_runerror(L, __sl6));
+    (yield* luaG_runerror(L, __s_newindex_chain_too_long_possible_loop));
 }
 
 /** C ref: lvm.c:381 — @param {CPtr<TString>} ts1 @param {CPtr<TString>} ts2 @returns {CInt} */
@@ -573,7 +573,7 @@ export function* luaV_concat(L, total) {
                 let l = (cptr.ld1uo((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), $TString_shrlen) >>> 0) : cptr.ldU64o((((((((cptr.ldPtr(((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))))))))))), $TString_u));
                 if ((__builtin_expect(BigInt(((l >= BigInt.asUintN(64, 9223372036854775775n - tl)) != 0)), 0n))) {
                     cptr.stPtro(L, $lua_State_top, cptr.add(top, -(total), 16));
-                    (yield* luaG_runerror(L, __sl7));
+                    (yield* luaG_runerror(L, __s_string_length_overflow));
                 }
                 tl += l;
             }
@@ -641,7 +641,7 @@ export function* luaV_objlen(L, ra, rb) {
         {
             tm = luaT_gettmbyobj(L, rb, NHC.TM_LEN);
             if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
-                (yield* luaG_typeerror(L, rb, __sl8));
+                (yield* luaG_typeerror(L, rb, __s_get_length_of));
             break;
         }
     }
@@ -652,7 +652,7 @@ export function* luaV_objlen(L, ra, rb) {
 export function* luaV_idiv(L, m, n) {
     if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
-            (yield* luaG_runerror(L, __sl9));
+            (yield* luaG_runerror(L, __s_attempt_to_divide_by_zero));
         return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (m)))))));
     } else {
         let q = m / n;
@@ -666,7 +666,7 @@ export function* luaV_idiv(L, m, n) {
 export function* luaV_mod(L, m, n) {
     if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
-            (yield* luaG_runerror(L, __sl10));
+            (yield* luaG_runerror(L, __s_attempt_to_perform_n_0));
         return 0n;
     } else {
         let r = m % n;

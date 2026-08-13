@@ -27,34 +27,34 @@ const $datamodel_information_datamodel = FLD.datamodel_information_datamodel,
 // ---- end runtime prelude ----
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("it");
-const __sl1 = cptr.lit("s");
-const __sl2 = cptr.lit("you");
-const __sl3 = cptr.lit("r");
-const __sl4 = cptr.lit("'");
-const __sl5 = cptr.lit("'s");
-const __sl6 = cptr.lit(" on");
-const __sl7 = cptr.lit(" off");
-const __sl8 = cptr.lit(" with");
-const __sl9 = cptr.lit("er");
-const __sl10 = cptr.lit("ie");
-const __sl11 = cptr.lit("ing");
-const __sl12 = cptr.lit("th");
-const __sl13 = cptr.lit("st");
-const __sl14 = cptr.lit("nd");
-const __sl15 = cptr.lit("rd");
-const __sl16 = cptr.lit("%d");
-const __sl17 = cptr.lit("+%d");
-const __sl18 = cptr.lit("");
-const __sl19 = cptr.lit("ILP32LL64");
-const __sl20 = cptr.lit("x86 32-bit");
-const __sl21 = cptr.lit("IL32LLP64");
-const __sl22 = cptr.lit("Windows x64 64-bit");
-const __sl23 = cptr.lit("I32LP64");
-const __sl24 = cptr.lit("Unix 64-bit");
-const __sl25 = cptr.lit("ILP64");
-const __sl26 = cptr.lit("Unix ILP64");
-const __sl27 = cptr.lit("Unknown");
+const __s_it = cptr.lit("it");
+const __s_s = cptr.lit("s");
+const __s_you = cptr.lit("you");
+const __s_r = cptr.lit("r");
+const __s_apos = cptr.lit("'");
+const __s_apos_s = cptr.lit("'s");
+const __s_on = cptr.lit(" on");
+const __s_off = cptr.lit(" off");
+const __s_with = cptr.lit(" with");
+const __s_er = cptr.lit("er");
+const __s_ie = cptr.lit("ie");
+const __s_ing = cptr.lit("ing");
+const __s_th = cptr.lit("th");
+const __s_st = cptr.lit("st");
+const __s_nd = cptr.lit("nd");
+const __s_rd = cptr.lit("rd");
+const __s_pct_d = cptr.lit("%d");
+const __s_plus_pct_d = cptr.lit("+%d");
+const __s_empty = cptr.lit("");
+const __s_ilp32ll64 = cptr.lit("ILP32LL64");
+const __s_x86_32_bit = cptr.lit("x86 32-bit");
+const __s_il32llp64 = cptr.lit("IL32LLP64");
+const __s_windows_x64_64_bit = cptr.lit("Windows x64 64-bit");
+const __s_i32lp64 = cptr.lit("I32LP64");
+const __s_unix_64_bit = cptr.lit("Unix 64-bit");
+const __s_ilp64 = cptr.lit("ILP64");
+const __s_unix_ilp64 = cptr.lit("Unix ILP64");
+const __s_unknown = cptr.lit("Unknown");
 
 /** C ref: hacklib.c:10 — struct nh_qsort_index { idx } (memory model v0.5) */
 
@@ -326,14 +326,14 @@ const __static_s_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:411 — 
 /** C ref: hacklib.c:409 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function* s_suffix(s) {
     void cptr.strcpy(cptr.decay(__static_s_suffix_buf), s);
-    if (!(yield* strncmpi(cptr.decay((__static_s_suffix_buf)), (__sl0), -1)))
-        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __sl1);
-    else if (!(yield* strncmpi(cptr.decay((__static_s_suffix_buf)), (__sl2), -1)))
-        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __sl3);
+    if (!(yield* strncmpi(cptr.decay((__static_s_suffix_buf)), (__s_it), -1)))
+        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __s_s);
+    else if (!(yield* strncmpi(cptr.decay((__static_s_suffix_buf)), (__s_you), -1)))
+        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __s_r);
     else if (cptr.ld1s((cptr.add(eos(cptr.decay(__static_s_suffix_buf)), -(1)))) == 115)
-        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __sl4);
+        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __s_apos);
     else
-        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __sl5);
+        void cptr.strcat(cptr.decay(__static_s_suffix_buf), __s_apos_s);
     return cptr.decay(__static_s_suffix_buf);
 }
 
@@ -347,21 +347,21 @@ export function* ing_suffix(s) {
     void cptr.strcpy(cptr.decay(__static_ing_suffix_buf), s);
     p = eos(cptr.decay(__static_ing_suffix_buf));
     cptr.st1o(cptr.decay(onoff), 0, cptr.st1(p, cptr.st1((cptr.add(p, 1)), 0)), 1);
-    if ((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(3))), (__sl6), -1))) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 4, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(4))), (__sl7), -1))) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 5, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(5))), (__sl8), -1)))) {
+    if ((cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(3))), (__s_on), -1))) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 4, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(4))), (__s_off), -1))) || (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 5, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(5))), (__s_with), -1)))) {
         p = cptr.strrchr(cptr.decay(__static_ing_suffix_buf), 32);
         void cptr.strcpy(cptr.decay(onoff), p);
         cptr.st1(p, 0);
     }
-    if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__sl9), -1))) {
+    if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__s_er), -1))) {
     } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(1))))) && cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(2))))) && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(3)))))) {
         cptr.st1(p, cptr.ld1s((cptr.add(p, -(1)))));
         cptr.st1((cptr.add(p, 1)), 0);
-    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__sl10), -1))) {
+    } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__s_ie), -1))) {
         cptr.st1((cptr.add(p, -(2))), 121);
         cptr.st1((cptr.add(p, -(1))), 0);
     } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 1, 1)) >= 0 && cptr.ld1s((cptr.add(p, -(1)))) == 101)
         cptr.st1((cptr.add(p, -(1))), 0);
-    void cptr.strcat(cptr.decay(__static_ing_suffix_buf), __sl11);
+    void cptr.strcat(cptr.decay(__static_ing_suffix_buf), __s_ing);
     if (cptr.ld1so(cptr.decay(onoff), 0, 1))
         void cptr.strcat(cptr.decay(__static_ing_suffix_buf), cptr.decay(onoff));
     return cptr.decay(__static_ing_suffix_buf);
@@ -533,14 +533,14 @@ export function* findword(list, word, wordlen, ignorecase) {
 /** C ref: hacklib.c:689 — @param {CInt} n @returns {CPtr<char>} */
 export function ordin(n) {
     let dd = n % 10;
-    return (dd == 0 || dd > 3 || (((n % 100) / 10) | 0) == 1) ? __sl12 : ((dd == 1) ? __sl13 : ((dd == 2) ? __sl14 : __sl15));
+    return (dd == 0 || dd > 3 || (((n % 100) / 10) | 0) == 1) ? __s_th : ((dd == 1) ? __s_st : ((dd == 2) ? __s_nd : __s_rd));
 }
 
 const __static_sitoa_buf = new Uint8Array(13); /** C ref: hacklib.c:704 — char[13] (function-static) */
 
 /** C ref: hacklib.c:702 — @param {CInt} n @returns {CPtr<char>} */
 export function sitoa(n) {
-    void cptr.sprintf(cptr.decay(__static_sitoa_buf), (n < 0) ? __sl16 : __sl17, n);
+    void cptr.sprintf(cptr.decay(__static_sitoa_buf), (n < 0) ? __s_pct_d : __s_plus_pct_d, n);
     return cptr.decay(__static_sitoa_buf);
 }
 
@@ -742,38 +742,38 @@ cptr.stI32o(dm, 4, 4);
 cptr.stI32o(dm, 8, 8);
 cptr.stI32o(dm, 12, 8);
 cptr.stI32o(dm, 16, 8);
-cptr.stPtro(dm, 0 + $datamodel_information_datamodel, __sl18);
-cptr.stPtro(dm, 0 + $datamodel_information_dmplatform, __sl18);
+cptr.stPtro(dm, 0 + $datamodel_information_datamodel, __s_empty);
+cptr.stPtro(dm, 0 + $datamodel_information_dmplatform, __s_empty);
 cptr.stI32o(dm, 40, 2);
 cptr.stI32o(dm, 44, 4);
 cptr.stI32o(dm, 48, 4);
 cptr.stI32o(dm, 52, 8);
 cptr.stI32o(dm, 56, 4);
-cptr.stPtro(dm, 40 + $datamodel_information_datamodel, __sl19);
-cptr.stPtro(dm, 40 + $datamodel_information_dmplatform, __sl20);
+cptr.stPtro(dm, 40 + $datamodel_information_datamodel, __s_ilp32ll64);
+cptr.stPtro(dm, 40 + $datamodel_information_dmplatform, __s_x86_32_bit);
 cptr.stI32o(dm, 80, 2);
 cptr.stI32o(dm, 84, 4);
 cptr.stI32o(dm, 88, 4);
 cptr.stI32o(dm, 92, 8);
 cptr.stI32o(dm, 96, 8);
-cptr.stPtro(dm, 80 + $datamodel_information_datamodel, __sl21);
-cptr.stPtro(dm, 80 + $datamodel_information_dmplatform, __sl22);
+cptr.stPtro(dm, 80 + $datamodel_information_datamodel, __s_il32llp64);
+cptr.stPtro(dm, 80 + $datamodel_information_dmplatform, __s_windows_x64_64_bit);
 cptr.stI32o(dm, 120, 2);
 cptr.stI32o(dm, 124, 4);
 cptr.stI32o(dm, 128, 8);
 cptr.stI32o(dm, 132, 8);
 cptr.stI32o(dm, 136, 8);
-cptr.stPtro(dm, 120 + $datamodel_information_datamodel, __sl23);
-cptr.stPtro(dm, 120 + $datamodel_information_dmplatform, __sl24);
+cptr.stPtro(dm, 120 + $datamodel_information_datamodel, __s_i32lp64);
+cptr.stPtro(dm, 120 + $datamodel_information_dmplatform, __s_unix_64_bit);
 cptr.stI32o(dm, 160, 2);
 cptr.stI32o(dm, 164, 8);
 cptr.stI32o(dm, 168, 8);
 cptr.stI32o(dm, 172, 8);
 cptr.stI32o(dm, 176, 8);
-cptr.stPtro(dm, 160 + $datamodel_information_datamodel, __sl25);
-cptr.stPtro(dm, 160 + $datamodel_information_dmplatform, __sl26);
+cptr.stPtro(dm, 160 + $datamodel_information_datamodel, __s_ilp64);
+cptr.stPtro(dm, 160 + $datamodel_information_dmplatform, __s_unix_ilp64);
 
-let __static_datamodel_unknown = __sl27; /** C ref: hacklib.c:1049 — char * (function-static) */
+let __static_datamodel_unknown = __s_unknown; /** C ref: hacklib.c:1049 — char * (function-static) */
 
 /** C ref: hacklib.c:1046 — @param {CInt} retidx @returns {CPtr<char>} */
 export function datamodel(retidx) {
@@ -792,7 +792,7 @@ export function datamodel(retidx) {
     return __static_datamodel_unknown;
 }
 
-let __static_what_datamodel_is_this_unknown = __sl27; /** C ref: hacklib.c:1068 — char * (function-static) */
+let __static_what_datamodel_is_this_unknown = __s_unknown; /** C ref: hacklib.c:1068 — char * (function-static) */
 
 /** C ref: hacklib.c:1064 — @param {CInt} retidx @param {CInt} szshort @param {CInt} szint @param {CInt} szlong @param {CInt} szll @param {CInt} szptr @returns {CPtr<char>} */
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {

@@ -21,8 +21,8 @@ const $TValue_tt_ = FLD.TValue_tt_, $global_State_GCdebt = FLD.global_State_GCde
     $global_State_ud = FLD.global_State_ud, $lua_State_l_G = FLD.lua_State_l_G;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("too many %s (limit is %d)");
-const __sl1 = cptr.lit("memory allocation error: block too big");
+const __s_too_many_s_limit_is_d = cptr.lit("too many %s (limit is %d)");
+const __s_memory_allocation_error_block_too_big = cptr.lit("memory allocation error: block too big");
 
 /** C ref: lmem.c:97 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CInt} nelems @param {CPtr<int>} psize @param {CInt} size_elems @param {CInt} limit @param {CPtr<char>} what @returns {CPtr<void>} */
 export function* luaM_growaux_(L, block, nelems, psize, size_elems, limit, what) {
@@ -32,7 +32,7 @@ export function* luaM_growaux_(L, block, nelems, psize, size_elems, limit, what)
         return block;
     if (size >= ((limit / 2) | 0)) {
         if ((__builtin_expect(BigInt(((size >= limit) != 0)), 0n)))
-            (yield* luaG_runerror(L, __sl0, what, limit));
+            (yield* luaG_runerror(L, __s_too_many_s_limit_is_d, what, limit));
         size = limit;
     } else {
         size = Math.imul(size, 2);
@@ -58,7 +58,7 @@ export function* luaM_shrinkvector_(L, block, size, final_n, size_elem) {
 
 /** C ref: lmem.c:142 — @param {CPtr<lua_State>} L */
 export function* luaM_toobig(L) {
-    (yield* luaG_runerror(L, __sl1));
+    (yield* luaG_runerror(L, __s_memory_allocation_error_block_too_big));
 }
 
 /** C ref: lmem.c:150 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CLongLong} osize */

@@ -54,17 +54,17 @@ const $CClosure_f = FLD.CClosure_f, $CallInfo_callstatus = FLD.CallInfo_callstat
     $lua_longjmp_b = FLD.lua_longjmp_b, $lua_longjmp_status = FLD.lua_longjmp_status;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("error in error handling");
-const __sl1 = cptr.lit("stack overflow");
-const __sl2 = cptr.lit("cannot resume non-suspended coroutine");
-const __sl3 = cptr.lit("cannot resume dead coroutine");
-const __sl4 = cptr.lit("C stack overflow");
-const __sl5 = cptr.lit("attempt to yield across a C-call boundary");
-const __sl6 = cptr.lit("attempt to yield from outside a coroutine");
-const __sl7 = cptr.lit("attempt to load a %s chunk (mode is '%s')");
-const __sl8 = cptr.lit("\x1bLua");
-const __sl9 = cptr.lit("binary");
-const __sl10 = cptr.lit("text");
+const __s_error_in_error_handling = cptr.lit("error in error handling");
+const __s_stack_overflow = cptr.lit("stack overflow");
+const __s_cannot_resume_non_suspended_coroutine = cptr.lit("cannot resume non-suspended coroutine");
+const __s_cannot_resume_dead_coroutine = cptr.lit("cannot resume dead coroutine");
+const __s_c_stack_overflow = cptr.lit("C stack overflow");
+const __s_attempt_to_yield_across_a_c_call = cptr.lit("attempt to yield across a C-call boundary");
+const __s_attempt_to_yield_from_outside_a = cptr.lit("attempt to yield from outside a coroutine");
+const __s_attempt_to_load_a_s_chunk_mode_is_s = cptr.lit("attempt to load a %s chunk (mode is '%s')");
+const __s_lua = cptr.lit("\x1bLua");
+const __s_binary = cptr.lit("binary");
+const __s_text = cptr.lit("text");
 
 /** C ref: ldo.c:84 — struct lua_longjmp { previous, b, status } (memory model v0.5) */
 
@@ -200,7 +200,7 @@ function correctstack(L) {
 
 /** C ref: ldo.c:200 — @param {CPtr<lua_State>} L */
 export function* luaD_errerr(L) {
-    let msg = ((yield* luaS_newlstr(L, __sl0, BigInt.asUintN(64, (24n / 1n) - 1n))));
+    let msg = ((yield* luaS_newlstr(L, __s_error_in_error_handling, BigInt.asUintN(64, (24n / 1n) - 1n))));
     {
         let io = (((cptr.ldPtro(L, $lua_State_top))));
         let x_ = (msg);
@@ -259,7 +259,7 @@ export function* luaD_growstack(L, n, raiseerror) {
     }
     (yield* luaD_reallocstack(L, 1000200, raiseerror));
     if (raiseerror)
-        (yield* luaG_runerror(L, __sl1));
+        (yield* luaG_runerror(L, __s_stack_overflow));
     return 0;
 }
 
@@ -819,14 +819,14 @@ export function* lua_resume(L, from, nargs, nresults) {
     (void 0);
     if (cptr.ld1uo(L, $lua_State_status) == 0) {
         if (!cptr.eq(cptr.ldPtro(L, $lua_State_ci), cptr.add(L, $lua_State_base_ci)))
-            return (yield* resume_error(L, __sl2, nargs.v));
+            return (yield* resume_error(L, __s_cannot_resume_non_suspended_coroutine, nargs.v));
         else if (cptr.diff(cptr.ldPtro(L, $lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))) / 16n == BigInt(nargs.v))
-            return (yield* resume_error(L, __sl3, nargs.v));
+            return (yield* resume_error(L, __s_cannot_resume_dead_coroutine, nargs.v));
     } else if (cptr.ld1uo(L, $lua_State_status) != 1)
-        return (yield* resume_error(L, __sl3, nargs.v));
+        return (yield* resume_error(L, __s_cannot_resume_dead_coroutine, nargs.v));
     cptr.stI32o(L, $lua_State_nCcalls, (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0);
     if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200)
-        return (yield* resume_error(L, __sl4, nargs.v));
+        return (yield* resume_error(L, __s_c_stack_overflow, nargs.v));
     (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
     (void L);
     (void L, (void 0));
@@ -858,9 +858,9 @@ export function* lua_yieldk(L, nresults, ctx, k) {
     (void L, (void 0));
     if ((__builtin_expect(BigInt(((!(((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) != 0)), 0n))) {
         if (!cptr.eq(L, cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread)))
-            (yield* luaG_runerror(L, __sl5));
+            (yield* luaG_runerror(L, __s_attempt_to_yield_across_a_c_call));
         else
-            (yield* luaG_runerror(L, __sl6));
+            (yield* luaG_runerror(L, __s_attempt_to_yield_from_outside_a));
     }
     cptr.st1o(L, $lua_State_status, 1);
     cptr.stI32o(ci, $CallInfo_u2, nresults);
@@ -928,7 +928,7 @@ export function* luaD_pcall(L, func, u, old_top, ef) {
 /** C ref: ldo.c:990 — @param {CPtr<lua_State>} L @param {CPtr<char>} mode @param {CPtr<char>} x */
 function* checkmode(L, mode, x) {
     if (mode && cptr.eq(cptr.strchr(mode, cptr.ld1so(x, 0)), (null))) {
-        (yield* luaO_pushfstring(L, __sl7, x, mode));
+        (yield* luaO_pushfstring(L, __s_attempt_to_load_a_s_chunk_mode_is_s, x, mode));
         (yield* luaD_throw(L, 3));
     }
 }
@@ -938,11 +938,11 @@ function* f_parser(L, ud) {
     let cl;
     let p = ((ud));
     let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtr(p)), $ZIO_p, v); })))))) : (yield* luaZ_fill(cptr.ldPtr(p))));
-    if (c == cptr.ld1so(__sl8, 0, 1)) {
-        (yield* checkmode(L, cptr.ldPtro(p, $SParser_mode), __sl9));
+    if (c == cptr.ld1so(__s_lua, 0, 1)) {
+        (yield* checkmode(L, cptr.ldPtro(p, $SParser_mode), __s_binary));
         cl = (yield* luaU_undump(L, cptr.ldPtr(p), cptr.ldPtro(p, $SParser_name)));
     } else {
-        (yield* checkmode(L, cptr.ldPtro(p, $SParser_mode), __sl10));
+        (yield* checkmode(L, cptr.ldPtro(p, $SParser_mode), __s_text));
         cl = (yield* luaY_parser(L, cptr.ldPtr(p), cptr.add(p, $SParser_buff), cptr.add(p, $SParser_dyd), cptr.ldPtro(p, $SParser_name), c));
     }
     (void 0);

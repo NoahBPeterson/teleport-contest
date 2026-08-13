@@ -59,16 +59,16 @@ const $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("seethru");
-const __sl1 = cptr.lit("right_side");
-const __sl2 = cptr.lit("vision.c");
-const __sl3 = cptr.lit("rowp != NULL");
-const __sl4 = cptr.lit("row_min != NULL");
-const __sl5 = cptr.lit("row_max != NULL");
-const __sl6 = cptr.lit("left_side");
-const __sl7 = cptr.lit("view_from called with range %d");
-const __sl8 = cptr.lit("view_from");
-const __sl9 = cptr.lit("do_clear_area:  illegal range %d");
+const __s_seethru = cptr.lit("seethru");
+const __s_right_side = cptr.lit("right_side");
+const __s_vision_c = cptr.lit("vision.c");
+const __s_rowp_null = cptr.lit("rowp != NULL");
+const __s_row_min_null = cptr.lit("row_min != NULL");
+const __s_row_max_null = cptr.lit("row_max != NULL");
+const __s_left_side = cptr.lit("left_side");
+const __s_view_from_called_with_range_d = cptr.lit("view_from called with range %d");
+const __s_view_from = cptr.lit("view_from");
+const __s_do_clear_area_illegal_range_d = cptr.lit("do_clear_area:  illegal range %d");
 
 /** C ref: vision.c:27 — short[137] */
 export const circle_data = cptr.alloc(137 * 2);
@@ -290,7 +290,7 @@ export function* does_block(x, y, lev) {
     let obj;
     let mon;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 0) {
-        cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__sl0, 0))) ? 1 : -1);
+        cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__s_seethru, 0))) ? 1 : -1);
     }
     if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || cptr.ld1so(lev, $rm_typ) == NHC.TREE || (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28)))
         return 1;
@@ -621,7 +621,7 @@ export function* vision_recalc(control) {
 /** C ref: vision.c:865 — @param {CInt} x @param {CInt} y */
 export function* block_point(x, y) {
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 0) {
-        cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__sl0, 0))) ? 1 : -1);
+        cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__s_seethru, 0))) ? 1 : -1);
     }
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 1) {
         if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36))))
@@ -1028,16 +1028,16 @@ function* right_side(row, left, right_mark, limits) {
             } else {
                 for (i = left; i <= right_edge; i++)
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1735, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1735, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
                     }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1736, __sl4) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1736, __s_row_min_null) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
                 }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1737, __sl5) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1737, __s_row_max_null) : void 0);
                     if (cptr.ldI16(row_max) < (right_edge))
                         cptr.stI16(row_max, i16((right_edge)));
                 }
@@ -1150,11 +1150,11 @@ function* right_side(row, left, right_mark, limits) {
                     (yield* Y.icall((vis_func)(i16(lim_max), i16(row), varg)));
                 } else {
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1773, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1773, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, lim_max, NHM.COULD_SEE);
                     }
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1774, __sl5) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1774, __s_row_max_null) : void 0);
                         if (cptr.ldI16(row_max) < (lim_max))
                             cptr.stI16(row_max, i16((lim_max)));
                     }
@@ -1278,16 +1278,16 @@ function* right_side(row, left, right_mark, limits) {
             } else {
                 for (i = left; i <= right; i++)
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1840, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1840, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
                     }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1841, __sl4) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1841, __s_row_min_null) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
                 }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl1, __sl2, 1842, __sl5) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__s_right_side, __s_vision_c, 1842, __s_row_max_null) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
                 }
@@ -1341,16 +1341,16 @@ function* left_side(row, left_mark, right, limits) {
             } else {
                 for (i = left_edge; i <= right; i++)
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1905, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1905, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
                     }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1906, __sl4) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1906, __s_row_min_null) : void 0);
                     if (cptr.ldI16(row_min) > (left_edge))
                         cptr.stI16(row_min, i16((left_edge)));
                 }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1907, __sl5) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1907, __s_row_max_null) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
                 }
@@ -1463,11 +1463,11 @@ function* left_side(row, left_mark, right, limits) {
                     (yield* Y.icall((vis_func)(i16(lim_min), i16(row), varg)));
                 } else {
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1933, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1933, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, lim_min, NHM.COULD_SEE);
                     }
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1934, __sl4) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1934, __s_row_min_null) : void 0);
                         if (cptr.ldI16(row_min) > (lim_min))
                             cptr.stI16(row_min, i16((lim_min)));
                     }
@@ -1591,16 +1591,16 @@ function* left_side(row, left_mark, right, limits) {
             } else {
                 for (i = left; i <= right; i++)
                     {
-                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1974, __sl3) : void 0);
+                        (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1974, __s_rowp_null) : void 0);
                         cptr.st1o(rowp, i, NHM.COULD_SEE);
                     }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1975, __sl4) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_min, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1975, __s_row_min_null) : void 0);
                     if (cptr.ldI16(row_min) > (left))
                         cptr.stI16(row_min, i16((left)));
                 }
                 {
-                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__sl6, __sl2, 1976, __sl5) : void 0);
+                    (__builtin_expect(BigInt((!(!cptr.eq(row_max, (null))))), 0n) ? __assert_rtn(__s_left_side, __s_vision_c, 1976, __s_row_max_null) : void 0);
                     if (cptr.ldI16(row_max) < (right))
                         cptr.stI16(row_max, i16((right)));
                 }
@@ -1636,7 +1636,7 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
     }
     if (range) {
         if (range > NHM.MAX_RADIUS || range < 1)
-            (yield* panic(__sl7, range));
+            (yield* panic(__s_view_from_called_with_range_d, range));
         limits = cptr.add((cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2)), 1, 2);
         if (left < ((scol - range) | 0))
             left = (scol - range) | 0;
@@ -1651,7 +1651,7 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
         rowp = cptr.ldPtro(cs_rows, srow, 8);
         for (i = left; i <= right; i++)
             {
-                (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__sl8, __sl2, 2066, __sl3) : void 0);
+                (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_view_from, __s_vision_c, 2066, __s_rowp_null) : void 0);
                 cptr.st1o(rowp, i, NHM.COULD_SEE);
             }
         cptr.stI16o(cs_left, srow, i16(left), 2);
@@ -1688,7 +1688,7 @@ export function* do_clear_area(scol, srow, range, func, arg) {
         let override_vision;
         override_vision = schar((detecting(func) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? 1 : 0));
         if (range > NHM.MAX_RADIUS || range < 1)
-            (yield* panic(__sl9, range));
+            (yield* panic(__s_do_clear_area_illegal_range_d, range));
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
             (yield* vision_recalc(0));
         limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2));

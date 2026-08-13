@@ -24,38 +24,38 @@ const $instance_globals_d_done_money = FLD.instance_globals_d_done_money,
     $window_procs_win_putstr = FLD.window_procs_win_putstr;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("                       ----------");
-const __sl1 = cptr.lit("                      /          \\");
-const __sl2 = cptr.lit("                     /    REST    \\");
-const __sl3 = cptr.lit("                    /      IN      \\");
-const __sl4 = cptr.lit("                   /     PEACE      \\");
-const __sl5 = cptr.lit("                  /                  \\");
-const __sl6 = cptr.lit("                  |                  |");
-const __sl7 = cptr.lit("                  |       1001       |");
-const __sl8 = cptr.lit("                 *|     *  *  *      | *");
-const __sl9 = cptr.lit("        _________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______");
-const __sl10 = cptr.lit("%.*s");
-const __sl11 = cptr.lit("%ld Au");
-const __sl12 = cptr.lit("%4d");
-const __sl13 = cptr.lit("");
+const __s_sp23_dash10 = cptr.lit("                       ----------");
+const __s_sp22_slash_sp10_bslash = cptr.lit("                      /          \\");
+const __s_rest = cptr.lit("                     /    REST    \\");
+const __s_in = cptr.lit("                    /      IN      \\");
+const __s_peace = cptr.lit("                   /     PEACE      \\");
+const __s_sp18_slash_sp18_bslash = cptr.lit("                  /                  \\");
+const __s_sp18_bar_sp18_bar = cptr.lit("                  |                  |");
+const __s_1001 = cptr.lit("                  |       1001       |");
+const __s_sp17_star_bar_sp5_star_sp2_star_sp2 = cptr.lit("                 *|     *  *  *      | *");
+const __s_sp8_us9_rparen_slash_bslash2_us_slash2 = cptr.lit("        _________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______");
+const __s_pct_dot_star_s = cptr.lit("%.*s");
+const __s_ld_au = cptr.lit("%ld Au");
+const __s_4d = cptr.lit("%4d");
+const __s_empty = cptr.lit("");
 
 /** C ref: rip.c:27 — char *[16] */
 const rip_txt = cptr.alloc(16 * 8);
-cptr.stPtro(rip_txt, 0, __sl0);
-cptr.stPtro(rip_txt, 8, __sl1);
-cptr.stPtro(rip_txt, 16, __sl2);
-cptr.stPtro(rip_txt, 24, __sl3);
-cptr.stPtro(rip_txt, 32, __sl4);
-cptr.stPtro(rip_txt, 40, __sl5);
-cptr.stPtro(rip_txt, 48, __sl6);
-cptr.stPtro(rip_txt, 56, __sl6);
-cptr.stPtro(rip_txt, 64, __sl6);
-cptr.stPtro(rip_txt, 72, __sl6);
-cptr.stPtro(rip_txt, 80, __sl6);
-cptr.stPtro(rip_txt, 88, __sl6);
-cptr.stPtro(rip_txt, 96, __sl7);
-cptr.stPtro(rip_txt, 104, __sl8);
-cptr.stPtro(rip_txt, 112, __sl9);
+cptr.stPtro(rip_txt, 0, __s_sp23_dash10);
+cptr.stPtro(rip_txt, 8, __s_sp22_slash_sp10_bslash);
+cptr.stPtro(rip_txt, 16, __s_rest);
+cptr.stPtro(rip_txt, 24, __s_in);
+cptr.stPtro(rip_txt, 32, __s_peace);
+cptr.stPtro(rip_txt, 40, __s_sp18_slash_sp18_bslash);
+cptr.stPtro(rip_txt, 48, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 56, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 64, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 72, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 80, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 88, __s_sp18_bar_sp18_bar);
+cptr.stPtro(rip_txt, 96, __s_1001);
+cptr.stPtro(rip_txt, 104, __s_sp17_star_bar_sp5_star_sp2_star_sp2);
+cptr.stPtro(rip_txt, 112, __s_sp8_us9_rparen_slash_bslash2_us_slash2);
 cptr.stPtro(rip_txt, 120, null);
 
 /** C ref: rip.c:76 — @param {CInt} line @param {CPtr<char>} text */
@@ -81,12 +81,12 @@ export function* genl_outrip(tmpwin, how, when) {
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); ++x)
         cptr.stPtro(dp, x, (yield* dupstr(cptr.ldPtro(rip_txt, x, 8))), 8);
     cptr.stPtro(dp, x, null, 8);
-    void cptr.sprintf(cptr.decay(buf), __sl10, 16, svp);
+    void cptr.sprintf(cptr.decay(buf), __s_pct_dot_star_s, 16, svp);
     (yield* center(6, cptr.decay(buf)));
     cash = ((cptr.ldI64o(gd, $instance_globals_d_done_money)) > 0n ? (cptr.ldI64o(gd, $instance_globals_d_done_money)) : 0n);
     if (cash > 999999999n)
         cash = 999999999n;
-    void cptr.sprintf(cptr.decay(buf), __sl11, cash);
+    void cptr.sprintf(cptr.decay(buf), __s_ld_au, cash);
     (yield* center(7, cptr.decay(buf)));
     (yield* formatkiller(cptr.decay(buf), 256, how, 0));
     for (line = 8, dpx = cptr.decay(buf); line < 12; line++) {
@@ -110,13 +110,13 @@ export function* genl_outrip(tmpwin, how, when) {
             dpx = cptr.add(dpx, (i0 + 1) | 0);
     }
     year = Number(BigInt.asIntN(32, (((yield* yyyymmdd(when)) / 10000n) % 10000n)));
-    void cptr.sprintf(cptr.decay(buf), __sl12, year);
+    void cptr.sprintf(cptr.decay(buf), __s_4d, year);
     (yield* center(12, cptr.decay(buf)));
-    (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
+    (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
     for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.ldPtr(dp))));
-    (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
-    (yield* Y.icall(putstr()(tmpwin, 0, __sl13)));
+    (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
+    (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); x++) {
         cptr.free(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_rip), x, 8));
     }

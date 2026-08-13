@@ -27,8 +27,8 @@ const $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
     $winsize_ws_col = FLD.winsize_ws_col;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Suspend command not available.");
-const __sl1 = cptr.lit("I don't think your shell has job control.");
+const __s_suspend_command_not_available = cptr.lit("Suspend command not available.");
+const __s_i_don_t_think_your_shell_has_job_control = cptr.lit("I don't think your shell has job control.");
 
 /** C ref: ioctl.c:43 — struct termios */
 export let termio = cptr.alloc(72);
@@ -58,7 +58,7 @@ export function setioctls() {
 /** C ref: ioctl.c:161 @returns {CInt} */
 export function* dosuspend() {
     if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
-        (yield* Norep(__sl0));
+        (yield* Norep(__s_suspend_command_not_available));
         return 0;
     }
     if (signal(18, 1) === null) {
@@ -67,7 +67,7 @@ export function* dosuspend() {
         void kill(0, 18);
         (yield* Y.icall(resume_nhwindows()()));
     } else {
-        (yield* pline(__sl1));
+        (yield* pline(__s_i_don_t_think_your_shell_has_job_control));
     }
     return 0;
 }

@@ -61,46 +61,46 @@ const $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_fnidx = FLD.NHFILE_fnidx, $NHFILE_fp
     $version_info_feature_set = FLD.version_info_feature_set;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%08ld %s sz=%zu cnt=%d |%s|\n");
-const __sl1 = cptr.lit("sfvalue_boolean");
-const __sl2 = cptr.lit("%s");
-const __sl3 = cptr.lit("false");
-const __sl4 = cptr.lit("true");
-const __sl5 = cptr.lit("sfvalue_schar");
-const __sl6 = cptr.lit("%d");
-const __sl7 = cptr.lit("sfvalue_aligntyp");
-const __sl8 = cptr.lit("sfvalue_any");
-const __sl9 = cptr.lit("%lld");
-const __sl10 = cptr.lit("sfvalue_genericptr");
-const __sl11 = cptr.lit("0");
-const __sl12 = cptr.lit("glorkum");
-const __sl13 = cptr.lit("sfvalue_int16");
-const __sl14 = cptr.lit("sfvalue_int32");
-const __sl15 = cptr.lit("sfvalue_int64");
-const __sl16 = cptr.lit("sfvalue_uchar");
-const __sl17 = cptr.lit("%03u");
-const __sl18 = cptr.lit("sfvalue_uint16");
-const __sl19 = cptr.lit("%u");
-const __sl20 = cptr.lit("sfvalue_uint32");
-const __sl21 = cptr.lit("sfvalue_uint64");
-const __sl22 = cptr.lit("%llu");
-const __sl23 = cptr.lit("sfvalue_size_t");
-const __sl24 = cptr.lit("");
-const __sl25 = cptr.lit("sfvalue_time_t");
-const __sl26 = cptr.lit("sfvalue_short");
-const __sl27 = cptr.lit("sfvalue_ushort");
-const __sl28 = cptr.lit("sfvalue_int");
-const __sl29 = cptr.lit("sfvalue_unsigned");
-const __sl30 = cptr.lit("sfvalue_long");
-const __sl31 = cptr.lit("%ld");
-const __sl32 = cptr.lit("sfvalue_ulong");
-const __sl33 = cptr.lit("%lu");
-const __sl34 = cptr.lit("sfvalue_xint8");
-const __sl35 = cptr.lit("sfvalue_xint16");
-const __sl36 = cptr.lit("sfvalue_bitfield");
-const __sl37 = cptr.lit("bitfield_dump");
-const __sl38 = cptr.lit("complex_dump");
-const __sl39 = cptr.lit("%03x %03x %03x %03x %03x %03x %03x %03x %03x %03x");
+const __s_08ld_s_sz_zu_cnt_d_s = cptr.lit("%08ld %s sz=%zu cnt=%d |%s|\n");
+const __s_sfvalue_boolean = cptr.lit("sfvalue_boolean");
+const __s_pct_s = cptr.lit("%s");
+const __s_false = cptr.lit("false");
+const __s_true = cptr.lit("true");
+const __s_sfvalue_schar = cptr.lit("sfvalue_schar");
+const __s_pct_d = cptr.lit("%d");
+const __s_sfvalue_aligntyp = cptr.lit("sfvalue_aligntyp");
+const __s_sfvalue_any = cptr.lit("sfvalue_any");
+const __s_lld = cptr.lit("%lld");
+const __s_sfvalue_genericptr = cptr.lit("sfvalue_genericptr");
+const __s_0 = cptr.lit("0");
+const __s_glorkum = cptr.lit("glorkum");
+const __s_sfvalue_int16 = cptr.lit("sfvalue_int16");
+const __s_sfvalue_int32 = cptr.lit("sfvalue_int32");
+const __s_sfvalue_int64 = cptr.lit("sfvalue_int64");
+const __s_sfvalue_uchar = cptr.lit("sfvalue_uchar");
+const __s_03u = cptr.lit("%03u");
+const __s_sfvalue_uint16 = cptr.lit("sfvalue_uint16");
+const __s_pct_u = cptr.lit("%u");
+const __s_sfvalue_uint32 = cptr.lit("sfvalue_uint32");
+const __s_sfvalue_uint64 = cptr.lit("sfvalue_uint64");
+const __s_llu = cptr.lit("%llu");
+const __s_sfvalue_size_t = cptr.lit("sfvalue_size_t");
+const __s_empty = cptr.lit("");
+const __s_sfvalue_time_t = cptr.lit("sfvalue_time_t");
+const __s_sfvalue_short = cptr.lit("sfvalue_short");
+const __s_sfvalue_ushort = cptr.lit("sfvalue_ushort");
+const __s_sfvalue_int = cptr.lit("sfvalue_int");
+const __s_sfvalue_unsigned = cptr.lit("sfvalue_unsigned");
+const __s_sfvalue_long = cptr.lit("sfvalue_long");
+const __s_ld = cptr.lit("%ld");
+const __s_sfvalue_ulong = cptr.lit("sfvalue_ulong");
+const __s_lu = cptr.lit("%lu");
+const __s_sfvalue_xint8 = cptr.lit("sfvalue_xint8");
+const __s_sfvalue_xint16 = cptr.lit("sfvalue_xint16");
+const __s_sfvalue_bitfield = cptr.lit("sfvalue_bitfield");
+const __s_bitfield_dump = cptr.lit("bitfield_dump");
+const __s_complex_dump = cptr.lit("complex_dump");
+const __s_03x_03x_03x_03x_03x_03x_03x_03x_03x_03x = cptr.lit("%03x %03x %03x %03x %03x %03x %03x %03x %03x %03x");
 
 /** C ref: sfbase.c:17 — struct sf_structlevel_procs[3] */
 export const sfoprocs = cptr.alloc(3 * 552);
@@ -2452,7 +2452,7 @@ export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
     let dolog = schar(((cptr.ldI32o(nhfp, $NHFILE_mode) & 32) == 0));
     if (fp && dolog) {
         iocount = ((cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.WRITING) == 0) ? cptr.add(nhfp, $NHFILE_rcount) : cptr.add(nhfp, $NHFILE_wcount);
-        void fprintf(fp, __sl0, cptr.ldI64(iocount), t1, sz, cnt, txtvalue);
+        void fprintf(fp, __s_08ld_s_sz_zu_cnt_d_s, cptr.ldI64(iocount), t1, sz, cnt, txtvalue);
         fflush(fp);
     }
 }
@@ -2478,7 +2478,7 @@ const __static_sfvalue_boolean_buf = new Uint8Array(20); /** C ref: sfbase.c:425
 
 /** C ref: sfbase.c:423 — @param {CPtr<boolean>} a @returns {CPtr<char>} */
 export function sfvalue_boolean(a) {
-    nh_snprintf(__sl1, 428, cptr.decay(__static_sfvalue_boolean_buf), 20n, __sl2, (cptr.ld1s(a) == 0) ? __sl3 : __sl4);
+    nh_snprintf(__s_sfvalue_boolean, 428, cptr.decay(__static_sfvalue_boolean_buf), 20n, __s_pct_s, (cptr.ld1s(a) == 0) ? __s_false : __s_true);
     return cptr.decay(__static_sfvalue_boolean_buf);
 }
 
@@ -2486,7 +2486,7 @@ const __static_sfvalue_schar_buf = new Uint8Array(20); /** C ref: sfbase.c:434 �
 
 /** C ref: sfbase.c:432 — @param {CPtr<schar>} a @returns {CPtr<char>} */
 export function sfvalue_schar(a) {
-    nh_snprintf(__sl5, 436, cptr.decay(__static_sfvalue_schar_buf), 20n, __sl6, cptr.ld1s(a));
+    nh_snprintf(__s_sfvalue_schar, 436, cptr.decay(__static_sfvalue_schar_buf), 20n, __s_pct_d, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_schar_buf);
 }
 
@@ -2494,7 +2494,7 @@ const __static_sfvalue_aligntyp_buf = new Uint8Array(20); /** C ref: sfbase.c:44
 
 /** C ref: sfbase.c:440 — @param {CPtr<aligntyp>} a @returns {CPtr<char>} */
 export function sfvalue_aligntyp(a) {
-    nh_snprintf(__sl7, 444, cptr.decay(__static_sfvalue_aligntyp_buf), 20n, __sl6, cptr.ld1s(a));
+    nh_snprintf(__s_sfvalue_aligntyp, 444, cptr.decay(__static_sfvalue_aligntyp_buf), 20n, __s_pct_d, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_aligntyp_buf);
 }
 
@@ -2502,7 +2502,7 @@ const __static_sfvalue_any_buf = new Uint8Array(20); /** C ref: sfbase.c:451 —
 
 /** C ref: sfbase.c:449 — @param {CPtr<anything>} a @returns {CPtr<char>} */
 export function sfvalue_any(a) {
-    nh_snprintf(__sl8, 455, cptr.decay(__static_sfvalue_any_buf), 20n, __sl9, cptr.ldI64(a));
+    nh_snprintf(__s_sfvalue_any, 455, cptr.decay(__static_sfvalue_any_buf), 20n, __s_lld, cptr.ldI64(a));
     return cptr.decay(__static_sfvalue_any_buf);
 }
 
@@ -2510,7 +2510,7 @@ const __static_sfvalue_genericptr_buf = new Uint8Array(20); /** C ref: sfbase.c:
 
 /** C ref: sfbase.c:460 — @param {CPtr<void>} a @returns {CPtr<char>} */
 export function sfvalue_genericptr(a) {
-    nh_snprintf(__sl10, 465, cptr.decay(__static_sfvalue_genericptr_buf), 20n, __sl2, (a === null) ? __sl11 : __sl12);
+    nh_snprintf(__s_sfvalue_genericptr, 465, cptr.decay(__static_sfvalue_genericptr_buf), 20n, __s_pct_s, (a === null) ? __s_0 : __s_glorkum);
     return cptr.decay(__static_sfvalue_genericptr_buf);
 }
 
@@ -2518,7 +2518,7 @@ const __static_sfvalue_int16_buf = new Uint8Array(20); /** C ref: sfbase.c:471 �
 
 /** C ref: sfbase.c:469 — @param {CPtr<int16>} a @returns {CPtr<char>} */
 export function sfvalue_int16(a) {
-    nh_snprintf(__sl13, 473, cptr.decay(__static_sfvalue_int16_buf), 20n, __sl6, a);
+    nh_snprintf(__s_sfvalue_int16, 473, cptr.decay(__static_sfvalue_int16_buf), 20n, __s_pct_d, a);
     return cptr.decay(__static_sfvalue_int16_buf);
 }
 
@@ -2526,7 +2526,7 @@ const __static_sfvalue_int32_buf = new Uint8Array(20); /** C ref: sfbase.c:479 �
 
 /** C ref: sfbase.c:477 — @param {CPtr<int32>} a @returns {CPtr<char>} */
 export function sfvalue_int32(a) {
-    nh_snprintf(__sl14, 481, cptr.decay(__static_sfvalue_int32_buf), 20n, __sl6, a);
+    nh_snprintf(__s_sfvalue_int32, 481, cptr.decay(__static_sfvalue_int32_buf), 20n, __s_pct_d, a);
     return cptr.decay(__static_sfvalue_int32_buf);
 }
 
@@ -2534,7 +2534,7 @@ const __static_sfvalue_int64_buf = new Uint8Array(20); /** C ref: sfbase.c:487 �
 
 /** C ref: sfbase.c:485 — @param {CPtr<int64>} a @returns {CPtr<char>} */
 export function sfvalue_int64(a) {
-    nh_snprintf(__sl15, 488, cptr.decay(__static_sfvalue_int64_buf), 20n, __sl9, a);
+    nh_snprintf(__s_sfvalue_int64, 488, cptr.decay(__static_sfvalue_int64_buf), 20n, __s_lld, a);
     return cptr.decay(__static_sfvalue_int64_buf);
 }
 
@@ -2544,7 +2544,7 @@ const __static_sfvalue_uchar_buf = new Uint8Array(20); /** C ref: sfbase.c:494 �
 export function sfvalue_uchar(a) {
     let x;
     x = cptr.ld1u(a);
-    nh_snprintf(__sl16, 498, cptr.decay(__static_sfvalue_uchar_buf), 20n, __sl17, x);
+    nh_snprintf(__s_sfvalue_uchar, 498, cptr.decay(__static_sfvalue_uchar_buf), 20n, __s_03u, x);
     return cptr.decay(__static_sfvalue_uchar_buf);
 }
 
@@ -2552,7 +2552,7 @@ const __static_sfvalue_uint16_buf = new Uint8Array(20); /** C ref: sfbase.c:504 
 
 /** C ref: sfbase.c:502 — @param {CPtr<uint16>} a @returns {CPtr<char>} */
 export function sfvalue_uint16(a) {
-    nh_snprintf(__sl18, 506, cptr.decay(__static_sfvalue_uint16_buf), 20n, __sl19, cptr.ldU16(a));
+    nh_snprintf(__s_sfvalue_uint16, 506, cptr.decay(__static_sfvalue_uint16_buf), 20n, __s_pct_u, cptr.ldU16(a));
     return cptr.decay(__static_sfvalue_uint16_buf);
 }
 
@@ -2560,7 +2560,7 @@ const __static_sfvalue_uint32_buf = new Uint8Array(20); /** C ref: sfbase.c:512 
 
 /** C ref: sfbase.c:510 — @param {CPtr<uint32>} a @returns {CPtr<char>} */
 export function sfvalue_uint32(a) {
-    nh_snprintf(__sl20, 514, cptr.decay(__static_sfvalue_uint32_buf), 20n, __sl19, cptr.ldI32(a));
+    nh_snprintf(__s_sfvalue_uint32, 514, cptr.decay(__static_sfvalue_uint32_buf), 20n, __s_pct_u, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_uint32_buf);
 }
 
@@ -2568,7 +2568,7 @@ const __static_sfvalue_uint64_buf = new Uint8Array(20); /** C ref: sfbase.c:520 
 
 /** C ref: sfbase.c:518 — @param {CPtr<uint64>} a @returns {CPtr<char>} */
 export function sfvalue_uint64(a) {
-    nh_snprintf(__sl21, 522, cptr.decay(__static_sfvalue_uint64_buf), 20n, __sl22, cptr.ldU64(a));
+    nh_snprintf(__s_sfvalue_uint64, 522, cptr.decay(__static_sfvalue_uint64_buf), 20n, __s_llu, cptr.ldU64(a));
     return cptr.decay(__static_sfvalue_uint64_buf);
 }
 
@@ -2576,7 +2576,7 @@ const __static_sfvalue_size_t_buf = new Uint8Array(20); /** C ref: sfbase.c:528 
 
 /** C ref: sfbase.c:526 — @param {CPtr<size_t>} a @returns {CPtr<char>} */
 export function sfvalue_size_t(a) {
-    nh_snprintf(__sl23, 530, cptr.decay(__static_sfvalue_size_t_buf), 20n, __sl2, __sl24);
+    nh_snprintf(__s_sfvalue_size_t, 530, cptr.decay(__static_sfvalue_size_t_buf), 20n, __s_pct_s, __s_empty);
     return cptr.decay(__static_sfvalue_size_t_buf);
 }
 
@@ -2584,7 +2584,7 @@ const __static_sfvalue_time_t_buf = new Uint8Array(20); /** C ref: sfbase.c:536 
 
 /** C ref: sfbase.c:534 — @param {CPtr<time_t>} a @returns {CPtr<char>} */
 export function sfvalue_time_t(a) {
-    nh_snprintf(__sl25, 538, cptr.decay(__static_sfvalue_time_t_buf), 20n, __sl2, __sl24);
+    nh_snprintf(__s_sfvalue_time_t, 538, cptr.decay(__static_sfvalue_time_t_buf), 20n, __s_pct_s, __s_empty);
     return cptr.decay(__static_sfvalue_time_t_buf);
 }
 
@@ -2592,7 +2592,7 @@ const __static_sfvalue_short_buf = new Uint8Array(20); /** C ref: sfbase.c:544 �
 
 /** C ref: sfbase.c:542 — @param {CPtr<short>} a @returns {CPtr<char>} */
 export function sfvalue_short(a) {
-    nh_snprintf(__sl26, 546, cptr.decay(__static_sfvalue_short_buf), 20n, __sl6, cptr.ldI16(a));
+    nh_snprintf(__s_sfvalue_short, 546, cptr.decay(__static_sfvalue_short_buf), 20n, __s_pct_d, cptr.ldI16(a));
     return cptr.decay(__static_sfvalue_short_buf);
 }
 
@@ -2600,7 +2600,7 @@ const __static_sfvalue_ushort_buf = new Uint8Array(20); /** C ref: sfbase.c:552 
 
 /** C ref: sfbase.c:550 — @param {CPtr<ushort>} a @returns {CPtr<char>} */
 export function sfvalue_ushort(a) {
-    nh_snprintf(__sl27, 554, cptr.decay(__static_sfvalue_ushort_buf), 20n, __sl19, cptr.ldU16(a));
+    nh_snprintf(__s_sfvalue_ushort, 554, cptr.decay(__static_sfvalue_ushort_buf), 20n, __s_pct_u, cptr.ldU16(a));
     return cptr.decay(__static_sfvalue_ushort_buf);
 }
 
@@ -2608,7 +2608,7 @@ const __static_sfvalue_int_buf = new Uint8Array(20); /** C ref: sfbase.c:560 —
 
 /** C ref: sfbase.c:558 — @param {CPtr<int>} a @returns {CPtr<char>} */
 export function sfvalue_int(a) {
-    nh_snprintf(__sl28, 562, cptr.decay(__static_sfvalue_int_buf), 20n, __sl6, cptr.ldI32(a));
+    nh_snprintf(__s_sfvalue_int, 562, cptr.decay(__static_sfvalue_int_buf), 20n, __s_pct_d, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_int_buf);
 }
 
@@ -2616,7 +2616,7 @@ const __static_sfvalue_unsigned_buf = new Uint8Array(20); /** C ref: sfbase.c:56
 
 /** C ref: sfbase.c:566 — @param {CPtr<unsigned int>} a @returns {CPtr<char>} */
 export function sfvalue_unsigned(a) {
-    nh_snprintf(__sl29, 570, cptr.decay(__static_sfvalue_unsigned_buf), 20n, __sl19, cptr.ldI32(a));
+    nh_snprintf(__s_sfvalue_unsigned, 570, cptr.decay(__static_sfvalue_unsigned_buf), 20n, __s_pct_u, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_unsigned_buf);
 }
 
@@ -2624,7 +2624,7 @@ const __static_sfvalue_long_buf = new Uint8Array(20); /** C ref: sfbase.c:576 �
 
 /** C ref: sfbase.c:574 — @param {CPtr<long>} a @returns {CPtr<char>} */
 export function sfvalue_long(a) {
-    nh_snprintf(__sl30, 578, cptr.decay(__static_sfvalue_long_buf), 20n, __sl31, cptr.ldI64(a));
+    nh_snprintf(__s_sfvalue_long, 578, cptr.decay(__static_sfvalue_long_buf), 20n, __s_ld, cptr.ldI64(a));
     return cptr.decay(__static_sfvalue_long_buf);
 }
 
@@ -2632,7 +2632,7 @@ const __static_sfvalue_ulong_buf = new Uint8Array(20); /** C ref: sfbase.c:584 �
 
 /** C ref: sfbase.c:582 — @param {CPtr<ulong>} a @returns {CPtr<char>} */
 export function sfvalue_ulong(a) {
-    nh_snprintf(__sl32, 586, cptr.decay(__static_sfvalue_ulong_buf), 20n, __sl33, cptr.ldU64(a));
+    nh_snprintf(__s_sfvalue_ulong, 586, cptr.decay(__static_sfvalue_ulong_buf), 20n, __s_lu, cptr.ldU64(a));
     return cptr.decay(__static_sfvalue_ulong_buf);
 }
 
@@ -2640,7 +2640,7 @@ const __static_sfvalue_xint8_buf = new Uint8Array(20); /** C ref: sfbase.c:592 �
 
 /** C ref: sfbase.c:590 — @param {CPtr<xint8>} a @returns {CPtr<char>} */
 export function sfvalue_xint8(a) {
-    nh_snprintf(__sl34, 594, cptr.decay(__static_sfvalue_xint8_buf), 20n, __sl6, cptr.ld1s(a));
+    nh_snprintf(__s_sfvalue_xint8, 594, cptr.decay(__static_sfvalue_xint8_buf), 20n, __s_pct_d, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_xint8_buf);
 }
 
@@ -2648,7 +2648,7 @@ const __static_sfvalue_xint16_buf = new Uint8Array(20); /** C ref: sfbase.c:600 
 
 /** C ref: sfbase.c:598 — @param {CPtr<xint16>} a @returns {CPtr<char>} */
 export function sfvalue_xint16(a) {
-    nh_snprintf(__sl35, 603, cptr.decay(__static_sfvalue_xint16_buf), 20n, __sl6, cptr.ldI16(a));
+    nh_snprintf(__s_sfvalue_xint16, 603, cptr.decay(__static_sfvalue_xint16_buf), 20n, __s_pct_d, cptr.ldI16(a));
     return cptr.decay(__static_sfvalue_xint16_buf);
 }
 
@@ -2656,7 +2656,7 @@ const __static_sfvalue_bitfield_buf = new Uint8Array(20); /** C ref: sfbase.c:61
 
 /** C ref: sfbase.c:608 — @param {CPtr<uint8>} a @returns {CPtr<char>} */
 export function sfvalue_bitfield(a) {
-    nh_snprintf(__sl36, 612, cptr.decay(__static_sfvalue_bitfield_buf), 20n, __sl19, cptr.ld1u(a));
+    nh_snprintf(__s_sfvalue_bitfield, 612, cptr.decay(__static_sfvalue_bitfield_buf), 20n, __s_pct_u, cptr.ld1u(a));
     return cptr.decay(__static_sfvalue_bitfield_buf);
 }
 
@@ -2664,7 +2664,7 @@ const __static_bitfield_dump_buf = new Uint8Array(20); /** C ref: sfbase.c:619 �
 
 /** C ref: sfbase.c:617 — @param {CPtr<uint8>} a @returns {CPtr<char>} */
 export function bitfield_dump(a) {
-    nh_snprintf(__sl37, 621, cptr.decay(__static_bitfield_dump_buf), 20n, __sl19, cptr.ld1u(a));
+    nh_snprintf(__s_bitfield_dump, 621, cptr.decay(__static_bitfield_dump_buf), 20n, __s_pct_u, cptr.ld1u(a));
     return cptr.decay(__static_bitfield_dump_buf);
 }
 
@@ -2678,7 +2678,7 @@ export function* complex_dump(a) {
     for (i = 0; i < 10; ++i) {
         cptr.stI32o(x, i, cptr.ld1u(cptr.postinc(() => uc, (v) => { uc = v; })), 4);
     }
-    nh_snprintf(__sl38, 636, cptr.decay(__static_complex_dump_buf), 50n, __sl39, cptr.ldI32o(x, 0, 4), cptr.ldI32o(x, 1, 4), cptr.ldI32o(x, 2, 4), cptr.ldI32o(x, 3, 4), cptr.ldI32o(x, 4, 4), cptr.ldI32o(x, 5, 4), cptr.ldI32o(x, 6, 4), cptr.ldI32o(x, 7, 4), cptr.ldI32o(x, 8, 4), cptr.ldI32o(x, 9, 4));
+    nh_snprintf(__s_complex_dump, 636, cptr.decay(__static_complex_dump_buf), 50n, __s_03x_03x_03x_03x_03x_03x_03x_03x_03x_03x, cptr.ldI32o(x, 0, 4), cptr.ldI32o(x, 1, 4), cptr.ldI32o(x, 2, 4), cptr.ldI32o(x, 3, 4), cptr.ldI32o(x, 4, 4), cptr.ldI32o(x, 5, 4), cptr.ldI32o(x, 6, 4), cptr.ldI32o(x, 7, 4), cptr.ldI32o(x, 8, 4), cptr.ldI32o(x, 9, 4));
     cptr.st1o(cptr.decay(__static_complex_dump_buf), 40, 0, 1);
     return cptr.decay(__static_complex_dump_buf);
 }

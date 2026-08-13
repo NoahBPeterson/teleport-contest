@@ -14,39 +14,39 @@ import { d } from './rnd.js';
 const $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("zero");
-const __sl1 = cptr.lit("value expected");
-const __sl2 = cptr.lit("integer");
-const __sl3 = cptr.lit("float");
-const __sl4 = cptr.lit("wrong number of arguments");
-const __sl5 = cptr.lit("interval is empty");
-const __sl6 = cptr.lit("random");
-const __sl7 = cptr.lit("randomseed");
-const __sl8 = cptr.lit("abs");
-const __sl9 = cptr.lit("acos");
-const __sl10 = cptr.lit("asin");
-const __sl11 = cptr.lit("atan");
-const __sl12 = cptr.lit("ceil");
-const __sl13 = cptr.lit("cos");
-const __sl14 = cptr.lit("deg");
-const __sl15 = cptr.lit("exp");
-const __sl16 = cptr.lit("tointeger");
-const __sl17 = cptr.lit("floor");
-const __sl18 = cptr.lit("fmod");
-const __sl19 = cptr.lit("ult");
-const __sl20 = cptr.lit("log");
-const __sl21 = cptr.lit("max");
-const __sl22 = cptr.lit("min");
-const __sl23 = cptr.lit("modf");
-const __sl24 = cptr.lit("rad");
-const __sl25 = cptr.lit("sin");
-const __sl26 = cptr.lit("sqrt");
-const __sl27 = cptr.lit("tan");
-const __sl28 = cptr.lit("type");
-const __sl29 = cptr.lit("pi");
-const __sl30 = cptr.lit("huge");
-const __sl31 = cptr.lit("maxinteger");
-const __sl32 = cptr.lit("mininteger");
+const __s_zero = cptr.lit("zero");
+const __s_value_expected = cptr.lit("value expected");
+const __s_integer = cptr.lit("integer");
+const __s_float = cptr.lit("float");
+const __s_wrong_number_of_arguments = cptr.lit("wrong number of arguments");
+const __s_interval_is_empty = cptr.lit("interval is empty");
+const __s_random = cptr.lit("random");
+const __s_randomseed = cptr.lit("randomseed");
+const __s_abs = cptr.lit("abs");
+const __s_acos = cptr.lit("acos");
+const __s_asin = cptr.lit("asin");
+const __s_atan = cptr.lit("atan");
+const __s_ceil = cptr.lit("ceil");
+const __s_cos = cptr.lit("cos");
+const __s_deg = cptr.lit("deg");
+const __s_exp = cptr.lit("exp");
+const __s_tointeger = cptr.lit("tointeger");
+const __s_floor = cptr.lit("floor");
+const __s_fmod = cptr.lit("fmod");
+const __s_ult = cptr.lit("ult");
+const __s_log = cptr.lit("log");
+const __s_max = cptr.lit("max");
+const __s_min = cptr.lit("min");
+const __s_modf = cptr.lit("modf");
+const __s_rad = cptr.lit("rad");
+const __s_sin = cptr.lit("sin");
+const __s_sqrt = cptr.lit("sqrt");
+const __s_tan = cptr.lit("tan");
+const __s_type = cptr.lit("type");
+const __s_pi = cptr.lit("pi");
+const __s_huge = cptr.lit("huge");
+const __s_maxinteger = cptr.lit("maxinteger");
+const __s_mininteger = cptr.lit("mininteger");
 
 /** C ref: lmathlib.c:29 — @param {CPtr<lua_State>} L @returns {CInt} */
 function math_abs(L) {
@@ -147,7 +147,7 @@ function math_fmod(L) {
     if (lua_isinteger(L, 1) && lua_isinteger(L, 2)) {
         let d = lua_tointegerx(L, 2, null);
         if (BigInt.asUintN(64, BigInt.asUintN(64, d) + 1n) <= 1n) {
-            (void ((__builtin_expect(BigInt(((d != 0n) != 0)), 1n)) || luaL_argerror(L, 2, (__sl0)) ? 1 : 0));
+            (void ((__builtin_expect(BigInt(((d != 0n) != 0)), 1n)) || luaL_argerror(L, 2, (__s_zero)) ? 1 : 0));
             lua_pushinteger(L, 0n);
         } else
             lua_pushinteger(L, lua_tointegerx(L, 1, null) % d);
@@ -226,7 +226,7 @@ function math_min(L) {
     let n = lua_gettop(L);
     let imin = 1;
     let i;
-    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, 1, (__sl1)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, 1, (__s_value_expected)) ? 1 : 0));
     for (i = 2; i <= n; i++) {
         if (lua_compare(L, i, imin, 1))
             imin = i;
@@ -240,7 +240,7 @@ function math_max(L) {
     let n = lua_gettop(L);
     let imax = 1;
     let i;
-    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, 1, (__sl1)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((n >= 1) != 0)), 1n)) || luaL_argerror(L, 1, (__s_value_expected)) ? 1 : 0));
     for (i = 2; i <= n; i++) {
         if (lua_compare(L, imax, i, 1))
             imax = i;
@@ -252,7 +252,7 @@ function math_max(L) {
 /** C ref: lmathlib.c:234 — @param {CPtr<lua_State>} L @returns {CInt} */
 function math_type(L) {
     if (lua_type(L, 1) == 3)
-        lua_pushstring(L, (lua_isinteger(L, 1)) ? __sl2 : __sl3);
+        lua_pushstring(L, (lua_isinteger(L, 1)) ? __s_integer : __s_float);
     else {
         luaL_checkany(L, 1);
         lua_pushnil(L);
@@ -342,9 +342,9 @@ function math_random(L) {
             break;
         }
         default:
-        return luaL_error(L, __sl4);
+        return luaL_error(L, __s_wrong_number_of_arguments);
     }
-    (void ((__builtin_expect(BigInt(((low <= up) != 0)), 1n)) || luaL_argerror(L, 1, (__sl5)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((low <= up) != 0)), 1n)) || luaL_argerror(L, 1, (__s_interval_is_empty)) ? 1 : 0));
     p = project((((rv) & 18446744073709551615n)), BigInt.asUintN(64, BigInt.asUintN(64, up) - BigInt.asUintN(64, low)), state);
     lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, p + BigInt.asUintN(64, low))));
     return 1;
@@ -385,9 +385,9 @@ function math_randomseed(L) {
 
 /** C ref: lmathlib.c:649 — luaL_Reg[3] */
 const randfuncs = cptr.alloc(3 * 16);
-cptr.stPtro(randfuncs, 0, __sl6);
+cptr.stPtro(randfuncs, 0, __s_random);
 cptr.stPtro(randfuncs, 0 + $luaL_Reg_func, math_random);
-cptr.stPtro(randfuncs, 16, __sl7);
+cptr.stPtro(randfuncs, 16, __s_randomseed);
 cptr.stPtro(randfuncs, 16 + $luaL_Reg_func, math_randomseed);
 cptr.stPtro(randfuncs, 32, null);
 cptr.stPtro(randfuncs, 32 + $luaL_Reg_func, null);
@@ -402,59 +402,59 @@ function setrandfunc(L) {
 
 /** C ref: lmathlib.c:722 — luaL_Reg[28] */
 const mathlib = cptr.alloc(28 * 16);
-cptr.stPtro(mathlib, 0, __sl8);
+cptr.stPtro(mathlib, 0, __s_abs);
 cptr.stPtro(mathlib, 0 + $luaL_Reg_func, math_abs);
-cptr.stPtro(mathlib, 16, __sl9);
+cptr.stPtro(mathlib, 16, __s_acos);
 cptr.stPtro(mathlib, 16 + $luaL_Reg_func, math_acos);
-cptr.stPtro(mathlib, 32, __sl10);
+cptr.stPtro(mathlib, 32, __s_asin);
 cptr.stPtro(mathlib, 32 + $luaL_Reg_func, math_asin);
-cptr.stPtro(mathlib, 48, __sl11);
+cptr.stPtro(mathlib, 48, __s_atan);
 cptr.stPtro(mathlib, 48 + $luaL_Reg_func, math_atan);
-cptr.stPtro(mathlib, 64, __sl12);
+cptr.stPtro(mathlib, 64, __s_ceil);
 cptr.stPtro(mathlib, 64 + $luaL_Reg_func, math_ceil);
-cptr.stPtro(mathlib, 80, __sl13);
+cptr.stPtro(mathlib, 80, __s_cos);
 cptr.stPtro(mathlib, 80 + $luaL_Reg_func, math_cos);
-cptr.stPtro(mathlib, 96, __sl14);
+cptr.stPtro(mathlib, 96, __s_deg);
 cptr.stPtro(mathlib, 96 + $luaL_Reg_func, math_deg);
-cptr.stPtro(mathlib, 112, __sl15);
+cptr.stPtro(mathlib, 112, __s_exp);
 cptr.stPtro(mathlib, 112 + $luaL_Reg_func, math_exp);
-cptr.stPtro(mathlib, 128, __sl16);
+cptr.stPtro(mathlib, 128, __s_tointeger);
 cptr.stPtro(mathlib, 128 + $luaL_Reg_func, math_toint);
-cptr.stPtro(mathlib, 144, __sl17);
+cptr.stPtro(mathlib, 144, __s_floor);
 cptr.stPtro(mathlib, 144 + $luaL_Reg_func, math_floor);
-cptr.stPtro(mathlib, 160, __sl18);
+cptr.stPtro(mathlib, 160, __s_fmod);
 cptr.stPtro(mathlib, 160 + $luaL_Reg_func, math_fmod);
-cptr.stPtro(mathlib, 176, __sl19);
+cptr.stPtro(mathlib, 176, __s_ult);
 cptr.stPtro(mathlib, 176 + $luaL_Reg_func, math_ult);
-cptr.stPtro(mathlib, 192, __sl20);
+cptr.stPtro(mathlib, 192, __s_log);
 cptr.stPtro(mathlib, 192 + $luaL_Reg_func, math_log);
-cptr.stPtro(mathlib, 208, __sl21);
+cptr.stPtro(mathlib, 208, __s_max);
 cptr.stPtro(mathlib, 208 + $luaL_Reg_func, math_max);
-cptr.stPtro(mathlib, 224, __sl22);
+cptr.stPtro(mathlib, 224, __s_min);
 cptr.stPtro(mathlib, 224 + $luaL_Reg_func, math_min);
-cptr.stPtro(mathlib, 240, __sl23);
+cptr.stPtro(mathlib, 240, __s_modf);
 cptr.stPtro(mathlib, 240 + $luaL_Reg_func, math_modf);
-cptr.stPtro(mathlib, 256, __sl24);
+cptr.stPtro(mathlib, 256, __s_rad);
 cptr.stPtro(mathlib, 256 + $luaL_Reg_func, math_rad);
-cptr.stPtro(mathlib, 272, __sl25);
+cptr.stPtro(mathlib, 272, __s_sin);
 cptr.stPtro(mathlib, 272 + $luaL_Reg_func, math_sin);
-cptr.stPtro(mathlib, 288, __sl26);
+cptr.stPtro(mathlib, 288, __s_sqrt);
 cptr.stPtro(mathlib, 288 + $luaL_Reg_func, math_sqrt);
-cptr.stPtro(mathlib, 304, __sl27);
+cptr.stPtro(mathlib, 304, __s_tan);
 cptr.stPtro(mathlib, 304 + $luaL_Reg_func, math_tan);
-cptr.stPtro(mathlib, 320, __sl28);
+cptr.stPtro(mathlib, 320, __s_type);
 cptr.stPtro(mathlib, 320 + $luaL_Reg_func, math_type);
-cptr.stPtro(mathlib, 336, __sl6);
+cptr.stPtro(mathlib, 336, __s_random);
 cptr.stPtro(mathlib, 336 + $luaL_Reg_func, null);
-cptr.stPtro(mathlib, 352, __sl7);
+cptr.stPtro(mathlib, 352, __s_randomseed);
 cptr.stPtro(mathlib, 352 + $luaL_Reg_func, null);
-cptr.stPtro(mathlib, 368, __sl29);
+cptr.stPtro(mathlib, 368, __s_pi);
 cptr.stPtro(mathlib, 368 + $luaL_Reg_func, null);
-cptr.stPtro(mathlib, 384, __sl30);
+cptr.stPtro(mathlib, 384, __s_huge);
 cptr.stPtro(mathlib, 384 + $luaL_Reg_func, null);
-cptr.stPtro(mathlib, 400, __sl31);
+cptr.stPtro(mathlib, 400, __s_maxinteger);
 cptr.stPtro(mathlib, 400 + $luaL_Reg_func, null);
-cptr.stPtro(mathlib, 416, __sl32);
+cptr.stPtro(mathlib, 416, __s_mininteger);
 cptr.stPtro(mathlib, 416 + $luaL_Reg_func, null);
 cptr.stPtro(mathlib, 432, null);
 cptr.stPtro(mathlib, 432 + $luaL_Reg_func, null);
@@ -463,13 +463,13 @@ cptr.stPtro(mathlib, 432 + $luaL_Reg_func, null);
 export function luaopen_math(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 448n / 16n - 1n)))), luaL_setfuncs(L, mathlib, 0));
     lua_pushnumber(L, (3.1415926535897931));
-    lua_setfield(L, -2, __sl29);
+    lua_setfield(L, -2, __s_pi);
     lua_pushnumber(L, __builtin_huge_val());
-    lua_setfield(L, -2, __sl30);
+    lua_setfield(L, -2, __s_huge);
     lua_pushinteger(L, 9223372036854775807n);
-    lua_setfield(L, -2, __sl31);
+    lua_setfield(L, -2, __s_maxinteger);
     lua_pushinteger(L, -9223372036854775808n);
-    lua_setfield(L, -2, __sl32);
+    lua_setfield(L, -2, __s_mininteger);
     setrandfunc(L);
     return 1;
 }

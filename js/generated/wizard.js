@@ -79,82 +79,82 @@ const $context_info_made_amulet = FLD.context_info_made_amulet,
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("wizard.c");
-const __sl1 = cptr.lit("amulet");
-const __sl2 = cptr.lit("%s hot!");
-const __sl3 = cptr.lit("feel");
-const __sl4 = cptr.lit("%s very warm.");
-const __sl5 = cptr.lit("%s warm.");
-const __sl6 = cptr.lit("get the creepy feeling that somebody noticed your taking the Amulet.");
-const __sl7 = cptr.lit("tactics");
-const __sl8 = cptr.lit("%s picks up %s.");
-const __sl9 = cptr.lit("aggravate");
-const __sl10 = cptr.lit("clonewiz");
-const __sl11 = cptr.lit("pick_nasty");
-const __sl12 = cptr.lit("baby ");
-const __sl13 = cptr.lit(" hatchling");
-const __sl14 = cptr.lit(" pup");
-const __sl15 = cptr.lit(" cub");
-const __sl16 = cptr.lit("nasty");
-const __sl17 = cptr.lit("kill");
-const __sl18 = cptr.lit("elude");
-const __sl19 = cptr.lit("resurrect");
-const __sl20 = cptr.lit("A voice booms out...");
-const __sl21 = cptr.lit("So thou thought thou couldst %s me, fool.");
-const __sl22 = cptr.lit("intervene");
-const __sl23 = cptr.lit("vaguely nervous.");
-const __sl24 = cptr.lit("notice a %s glow surrounding you.");
-const __sl25 = cptr.lit("wizdeadorgone");
-const __sl26 = cptr.lit("antic");
-const __sl27 = cptr.lit("blackguard");
-const __sl28 = cptr.lit("caitiff");
-const __sl29 = cptr.lit("chucklehead");
-const __sl30 = cptr.lit("coistrel");
-const __sl31 = cptr.lit("craven");
-const __sl32 = cptr.lit("cretin");
-const __sl33 = cptr.lit("cur");
-const __sl34 = cptr.lit("dastard");
-const __sl35 = cptr.lit("demon fodder");
-const __sl36 = cptr.lit("dimwit");
-const __sl37 = cptr.lit("dolt");
-const __sl38 = cptr.lit("fool");
-const __sl39 = cptr.lit("footpad");
-const __sl40 = cptr.lit("imbecile");
-const __sl41 = cptr.lit("knave");
-const __sl42 = cptr.lit("maledict");
-const __sl43 = cptr.lit("miscreant");
-const __sl44 = cptr.lit("niddering");
-const __sl45 = cptr.lit("poltroon");
-const __sl46 = cptr.lit("rattlepate");
-const __sl47 = cptr.lit("reprobate");
-const __sl48 = cptr.lit("scapegrace");
-const __sl49 = cptr.lit("varlet");
-const __sl50 = cptr.lit("villein");
-const __sl51 = cptr.lit("wittol");
-const __sl52 = cptr.lit("worm");
-const __sl53 = cptr.lit("wretch");
-const __sl54 = cptr.lit("Hell shall soon claim thy remains,");
-const __sl55 = cptr.lit("I chortle at thee, thou pathetic");
-const __sl56 = cptr.lit("Prepare to die, thou");
-const __sl57 = cptr.lit("Resistance is useless,");
-const __sl58 = cptr.lit("Surrender or die, thou");
-const __sl59 = cptr.lit("There shall be no mercy, thou");
-const __sl60 = cptr.lit("Thou shalt repent of thy cunning,");
-const __sl61 = cptr.lit("Thou art as a flea to me,");
-const __sl62 = cptr.lit("Thou art doomed,");
-const __sl63 = cptr.lit("Thy fate is sealed,");
-const __sl64 = cptr.lit("Verily, thou shalt be one dead");
-const __sl65 = cptr.lit("cuss");
-const __sl66 = cptr.lit("%s laughs fiendishly.");
-const __sl67 = cptr.lit("Relinquish the amulet, %s!");
-const __sl68 = cptr.lit("Even now thy life force ebbs, %s!");
-const __sl69 = cptr.lit("Savor thy breath, %s, it be thy last!");
-const __sl70 = cptr.lit("I shall return.");
-const __sl71 = cptr.lit("I'll be back.");
-const __sl72 = cptr.lit("%s %s!");
-const __sl73 = cptr.lit("angel_cuss");
-const __sl74 = cptr.lit("%s casts aspersions on your ancestry.");
-const __sl75 = cptr.lit("demon_cuss");
+const __s_wizard_c = cptr.lit("wizard.c");
+const __s_amulet = cptr.lit("amulet");
+const __s_s_hot = cptr.lit("%s hot!");
+const __s_feel = cptr.lit("feel");
+const __s_s_very_warm = cptr.lit("%s very warm.");
+const __s_s_warm = cptr.lit("%s warm.");
+const __s_get_the_creepy_feeling_that_somebody = cptr.lit("get the creepy feeling that somebody noticed your taking the Amulet.");
+const __s_tactics = cptr.lit("tactics");
+const __s_s_picks_up_s = cptr.lit("%s picks up %s.");
+const __s_aggravate = cptr.lit("aggravate");
+const __s_clonewiz = cptr.lit("clonewiz");
+const __s_pick_nasty = cptr.lit("pick_nasty");
+const __s_baby = cptr.lit("baby ");
+const __s_hatchling = cptr.lit(" hatchling");
+const __s_pup = cptr.lit(" pup");
+const __s_cub = cptr.lit(" cub");
+const __s_nasty = cptr.lit("nasty");
+const __s_kill = cptr.lit("kill");
+const __s_elude = cptr.lit("elude");
+const __s_resurrect = cptr.lit("resurrect");
+const __s_a_voice_booms_out = cptr.lit("A voice booms out...");
+const __s_so_thou_thought_thou_couldst_s_me_fool = cptr.lit("So thou thought thou couldst %s me, fool.");
+const __s_intervene = cptr.lit("intervene");
+const __s_vaguely_nervous = cptr.lit("vaguely nervous.");
+const __s_notice_a_s_glow_surrounding_you = cptr.lit("notice a %s glow surrounding you.");
+const __s_wizdeadorgone = cptr.lit("wizdeadorgone");
+const __s_antic = cptr.lit("antic");
+const __s_blackguard = cptr.lit("blackguard");
+const __s_caitiff = cptr.lit("caitiff");
+const __s_chucklehead = cptr.lit("chucklehead");
+const __s_coistrel = cptr.lit("coistrel");
+const __s_craven = cptr.lit("craven");
+const __s_cretin = cptr.lit("cretin");
+const __s_cur = cptr.lit("cur");
+const __s_dastard = cptr.lit("dastard");
+const __s_demon_fodder = cptr.lit("demon fodder");
+const __s_dimwit = cptr.lit("dimwit");
+const __s_dolt = cptr.lit("dolt");
+const __s_fool = cptr.lit("fool");
+const __s_footpad = cptr.lit("footpad");
+const __s_imbecile = cptr.lit("imbecile");
+const __s_knave = cptr.lit("knave");
+const __s_maledict = cptr.lit("maledict");
+const __s_miscreant = cptr.lit("miscreant");
+const __s_niddering = cptr.lit("niddering");
+const __s_poltroon = cptr.lit("poltroon");
+const __s_rattlepate = cptr.lit("rattlepate");
+const __s_reprobate = cptr.lit("reprobate");
+const __s_scapegrace = cptr.lit("scapegrace");
+const __s_varlet = cptr.lit("varlet");
+const __s_villein = cptr.lit("villein");
+const __s_wittol = cptr.lit("wittol");
+const __s_worm = cptr.lit("worm");
+const __s_wretch = cptr.lit("wretch");
+const __s_hell_shall_soon_claim_thy_remains = cptr.lit("Hell shall soon claim thy remains,");
+const __s_i_chortle_at_thee_thou_pathetic = cptr.lit("I chortle at thee, thou pathetic");
+const __s_prepare_to_die_thou = cptr.lit("Prepare to die, thou");
+const __s_resistance_is_useless = cptr.lit("Resistance is useless,");
+const __s_surrender_or_die_thou = cptr.lit("Surrender or die, thou");
+const __s_there_shall_be_no_mercy_thou = cptr.lit("There shall be no mercy, thou");
+const __s_thou_shalt_repent_of_thy_cunning = cptr.lit("Thou shalt repent of thy cunning,");
+const __s_thou_art_as_a_flea_to_me = cptr.lit("Thou art as a flea to me,");
+const __s_thou_art_doomed = cptr.lit("Thou art doomed,");
+const __s_thy_fate_is_sealed = cptr.lit("Thy fate is sealed,");
+const __s_verily_thou_shalt_be_one_dead = cptr.lit("Verily, thou shalt be one dead");
+const __s_cuss = cptr.lit("cuss");
+const __s_s_laughs_fiendishly = cptr.lit("%s laughs fiendishly.");
+const __s_relinquish_the_amulet_s = cptr.lit("Relinquish the amulet, %s!");
+const __s_even_now_thy_life_force_ebbs_s = cptr.lit("Even now thy life force ebbs, %s!");
+const __s_savor_thy_breath_s_it_be_thy_last = cptr.lit("Savor thy breath, %s, it be thy last!");
+const __s_i_shall_return = cptr.lit("I shall return.");
+const __s_i_ll_be_back = cptr.lit("I'll be back.");
+const __s_s_s = cptr.lit("%s %s!");
+const __s_angel_cuss = cptr.lit("angel_cuss");
+const __s_s_casts_aspersions_on_your_ancestry = cptr.lit("%s casts aspersions on your ancestry.");
+const __s_demon_cuss = cptr.lit("demon_cuss");
 
 /** C ref: wizard.c:31 — int[44] */
 const nasties = cptr.alloc(44 * 4);
@@ -223,16 +223,16 @@ export function amulet() {
     let mtmp;
     let ttmp;
     let amu;
-    if ((((amu = uamul.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR) || ((amu = uwep.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl1), rn2(15)) : rn2(15))) {
+    if ((((amu = uamul.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR) || ((amu = uwep.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 73, __s_amulet), rn2(15)) : rn2(15))) {
         for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
             if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
                 let du = dist2((cptr.ldI16o(ttmp, $trap_tx)), (cptr.ldI16o(ttmp, $trap_ty)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                 if (du <= 9)
-                    pline(__sl2, Tobjnam(amu, __sl3));
+                    pline(__s_s_hot, Tobjnam(amu, __s_feel));
                 else if (du <= 64)
-                    pline(__sl4, Tobjnam(amu, __sl3));
+                    pline(__s_s_very_warm, Tobjnam(amu, __s_feel));
                 else if (du <= 144)
-                    pline(__sl5, Tobjnam(amu, __sl3));
+                    pline(__s_s_warm, Tobjnam(amu, __s_feel));
                 break;
             }
         }
@@ -242,10 +242,10 @@ export function amulet() {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 95, __sl1), rn2(40)) : rn2(40))) {
+        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 95, __s_amulet), rn2(40)) : rn2(40))) {
             cptr.stI32o(mtmp, $monst_msleeping, 0);
             if (!m_next2u(mtmp))
-                You(__sl6);
+                You(__s_get_the_creepy_feeling_that_somebody);
             return;
         }
     }
@@ -452,7 +452,7 @@ export function tactics(mtmp) {
         choose_stairs(sx, sy, schar((u32mod(cptr.ldI32o(mtmp, $monst_m_id), 2))));
         cptr.stI32o(mtmp, $monst_mavenge, 1);
         if (In_W_tower(mx, my, cptr.add(u, $you_uz)) || ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !sx.v && !mon_has_amulet(mtmp))) {
-            if (!noteleport_level(mtmp) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 390, __sl7), rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0)) : rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0)))
+            if (!noteleport_level(mtmp) && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 390, __s_tactics), rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0)) : rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0)))
                 void rloc(mtmp, NHM.RLOC_MSG);
         } else if (sx.v && (mx != sx.v || my != sy.v)) {
             if (!noteleport_level(mtmp) && !mnearto(mtmp, sx.v, sy.v, 1, NHM.RLOC_MSG)) {
@@ -463,13 +463,13 @@ export function tactics(mtmp) {
         }
         if (dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64)
             if (cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 8) | 0)) {
-                healmon(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 406, __sl7), rnd(8)) : rnd(8)), 0);
+                healmon(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 406, __s_tactics), rnd(8)) : rnd(8)), 0);
                 return 1;
             }
         // @FallThrough
         ;
         case 0n:
-        if (!noteleport_level(mtmp) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 413, __sl7), rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33)) : rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33)))
+        if (!noteleport_level(mtmp) && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 413, __s_tactics), rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33)) : rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33)))
             mnexto(mtmp, NHM.RLOC_MSG);
         return 0;
         default:
@@ -495,14 +495,14 @@ export function tactics(mtmp) {
                     rloc_to(mtmp, tx, ty);
                     if ((otmp = on_ground(which_arti(targ))) !== null) {
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
-                            pline(__sl8, Monnam(mtmp), distant_name(otmp, doname));
+                            pline(__s_s_picks_up_s, Monnam(mtmp), distant_name(otmp, doname));
                         obj_extract_self(otmp);
                         void mpickobj(mtmp, otmp);
                         return 1;
                     } else
                         return 0;
                 } else {
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 453, __sl7), rn2(5)) : rn2(5)) && !noteleport_level(mtmp))
+                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 453, __s_tactics), rn2(5)) : rn2(5)) && !noteleport_level(mtmp))
                         mnexto(mtmp, NHM.RLOC_MSG);
                     return 0;
                 }
@@ -545,7 +545,7 @@ export function aggravate() {
             continue;
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071025197055n);
         cptr.stI32o(mtmp, $monst_msleeping, 0);
-        if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 506, __sl9), rn2(5)) : rn2(5))) {
+        if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 506, __s_aggravate), rn2(5)) : rn2(5))) {
             cptr.stI32o(mtmp, $monst_mfrozen, 0);
             cptr.stI32o(mtmp, $monst_mcanmove, 1);
         }
@@ -557,12 +557,12 @@ export function clonewiz() {
     let mtmp2;
     if ((mtmp2 = makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT)) !== null) {
         cptr.stI32o(mtmp2, $monst_msleeping, cptr.st1o(mtmp2, $monst_mtame, schar(cptr.stI32o(mtmp2, $monst_mpeaceful, 0))));
-        if (!(cptr.ldI32o(u, $you_uhave) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 524, __sl10), rn2(2)) : rn2(2))) {
+        if (!(cptr.ldI32o(u, $you_uhave) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 524, __s_clonewiz), rn2(2)) : rn2(2))) {
             void add_to_minv(mtmp2, mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0));
         }
         if (!Protection_from_shape_changers()) {
             cptr.st1o(mtmp2, $monst_m_ap_type, NHC.M_AP_MONSTER);
-            cptr.stI32o(mtmp2, $monst_mappearance, cptr.ldI32o(wizapp, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 530, __sl10), rn2(12)) : rn2(12)), 4));
+            cptr.stI32o(mtmp2, $monst_mappearance, cptr.ldI32o(wizapp, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 530, __s_clonewiz), rn2(12)) : rn2(12)), 4));
         }
         newsym(cptr.ldI16o(mtmp2, $monst_mx), cptr.ldI16o(mtmp2, $monst_my));
     }
@@ -571,16 +571,16 @@ export function clonewiz() {
 /** C ref: wizard.c:538 — @param {CInt} difcap @returns {CInt} */
 export function pick_nasty(difcap) {
     let alt;
-    let res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 541, __sl11), rn2(44)) : rn2(44)), 4);
+    let res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 541, __s_pick_nasty), rn2(44)) : rn2(44)), 4);
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), $permonst_mlet), 24)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), $permonst_mlet), 24)) <= 90))
-        res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 551, __sl11), rn2(44)) : rn2(44)), 4);
+        res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 551, __s_pick_nasty), rn2(44)) : rn2(44)), 4);
     alt = res;
     if ((cptr.ld1uo2(svm, res, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, 96, $permonst_difficulty) >= difcap) || (cptr.ldU16o2(mons, res, 96, $permonst_geno) & (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0)
         alt = big_to_little(res);
     if (alt != res && (cptr.ld1uo2(svm, alt, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0) {
         let mnam = cptr.ldPtro3(mons, alt, 96, NHC.NEUTRAL, 8, 0);
         let lastspace = cptr.strrchr(mnam, 32);
-        if (cptr.strncmp(mnam, __sl12, 5n) && (!lastspace || (strcmp(lastspace, __sl13) && strcmp(lastspace, __sl14) && strcmp(lastspace, __sl15))))
+        if (cptr.strncmp(mnam, __s_baby, 5n) && (!lastspace || (strcmp(lastspace, __s_hatchling) && strcmp(lastspace, __s_pup) && strcmp(lastspace, __s_cub))))
             res = alt;
     }
     return res;
@@ -603,7 +603,7 @@ export function nasty(summoner) {
     let castalign;
     let mmflags = Number(BigInt.asUintN(32, (summoner ? 131072n : 0n)));
     census = monster_census(0);
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 607, __sl16), rn2(10)) : rn2(10)) && In_hell(cptr.add(u, $you_uz))) {
+    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 607, __s_nasty), rn2(10)) : rn2(10)) && In_hell(cptr.add(u, $you_uz))) {
         count = msummon(null);
     } else {
         count = 0;
@@ -613,7 +613,7 @@ export function nasty(summoner) {
         tmp = (cptr.ldI32o(u, $you_ulevel) > 3) ? (cptr.ldI32o(u, $you_ulevel) / 3) | 0 : 1;
         cptr.stI16(bypos, cptr.ldI16(u));
         cptr.stI16o(bypos, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-        for (i = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 620, __sl16), rnd(tmp)) : rnd(tmp)); i > 0 && count < 10; --i) {
+        for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 620, __s_nasty), rnd(tmp)) : rnd(tmp)); i > 0 && count < 10; --i) {
             for (j = 0; j < 20; j++) {
                 __lbl_nextj: {
                     trylimit = 11;
@@ -631,7 +631,7 @@ export function nasty(summoner) {
                     } else {
                         if ((mtmp = makemon(null, cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags)) !== null) {
                             m_cls = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet);
-                            if ((difcap > 0 && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >= difcap && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 673, __sl16), rn2((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7)) : rn2((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7)) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON))
+                            if ((difcap > 0 && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >= difcap && (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 673, __s_nasty), rn2((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7)) : rn2((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7)) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON))
                                 mtmp = unmakemon(mtmp, NHM.NO_MM_FLAGS);
                         }
                     }
@@ -641,7 +641,7 @@ export function nasty(summoner) {
                             if (!difcap || difcap > tmp)
                                 difcap = tmp;
                         }
-                        cptr.stI32o(mtmp, $monst_mspec_used, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 695, __sl16), rnd(4)) : rnd(4)));
+                        cptr.stI32o(mtmp, $monst_mspec_used, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 695, __s_nasty), rnd(4)) : rnd(4)));
                         if (++count >= 10 || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp) == 0 || sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) == castalign)
                             break;
                     }
@@ -662,12 +662,12 @@ export function resurrect() {
     let elapsed;
     let verb;
     if (!cptr.ldI32o(svc, $context_info_no_of_wizards)) {
-        verb = __sl17;
+        verb = __s_kill;
         mtmp = makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT);
         if (mtmp)
             cptr.stI32o(mtmp, $monst_mrevived, 1);
     } else {
-        verb = __sl18;
+        verb = __s_elude;
         mmtmp = cptr.add(gm, $instance_globals_m_migrating_mons);
         while ((mtmp = cptr.ldPtr(mmtmp)) !== null) {
             if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !mon_has_amulet(mtmp) && (elapsed = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(mtmp, $monst_mlstmv))) > 0n) {
@@ -675,7 +675,7 @@ export function resurrect() {
                 if (elapsed >= 32767n)
                     elapsed = 32766n;
                 elapsed /= 50n;
-                if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 742, __sl19), rn2((Number(BigInt.asIntN(32, elapsed)) + 1) | 0)) : rn2((Number(BigInt.asIntN(32, elapsed)) + 1) | 0)))
+                if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 742, __s_resurrect), rn2((Number(BigInt.asIntN(32, elapsed)) + 1) | 0)) : rn2((Number(BigInt.asIntN(32, elapsed)) + 1) | 0)))
                     cptr.stI32o(mtmp, $monst_msleeping, 0);
                 if (((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) == 1)
                     cptr.stI32o(mtmp, $monst_mfrozen, 0), cptr.stI32o(mtmp, $monst_mcanmove, 1);
@@ -695,24 +695,24 @@ export function resurrect() {
         cptr.st1o(mtmp, $monst_mtame, 0), cptr.stI32o(mtmp, $monst_mpeaceful, 0);
         set_malign(mtmp);
         if (!Deaf()) {
-            pline(__sl20);
+            pline(__s_a_voice_booms_out);
             ;
-            verbalize(__sl21, verb);
+            verbalize(__s_so_thou_thought_thou_couldst_s_me_fool, verb);
         }
     }
 }
 
 /** C ref: wizard.c:785 */
 export function intervene() {
-    let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rnd(4)) : rnd(4)) : (rng_log_enabled() ? (rng_log_set_caller(__sl0, 787, __sl22), rn2(6)) : rn2(6));
+    let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 787, __s_intervene), rnd(4)) : rnd(4)) : (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 787, __s_intervene), rn2(6)) : rn2(6));
     switch (which) {
         case 0:
         case 1:
-        You_feel(__sl23);
+        You_feel(__s_vaguely_nervous);
         break;
         case 2:
         if (!Blind())
-            You(__sl24, hcolor(cptr.ldPtr(c_color_names)));
+            You(__s_notice_a_s_glow_surrounding_you, hcolor(cptr.ldPtr(c_color_names)));
         rndcurse();
         break;
         case 3:
@@ -732,82 +732,82 @@ export function wizdeadorgone() {
     (cptr.stI32o(svc, $context_info_no_of_wizards, cptr.ldI32o(svc, $context_info_no_of_wizards) + -1)) - (-1);
     if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
-        cptr.stI32o(u, $you_udg_cnt, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 820, __sl25), rn2(250)) : rn2(250)) + 50) | 0) >>> 0);
+        cptr.stI32o(u, $you_udg_cnt, (((rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 820, __s_wizdeadorgone), rn2(250)) : rn2(250)) + 50) | 0) >>> 0);
     }
 }
 
 /** C ref: wizard.c:824 — char *[28] */
 const random_insult = cptr.alloc(28 * 8);
-cptr.stPtro(random_insult, 0, __sl26);
-cptr.stPtro(random_insult, 8, __sl27);
-cptr.stPtro(random_insult, 16, __sl28);
-cptr.stPtro(random_insult, 24, __sl29);
-cptr.stPtro(random_insult, 32, __sl30);
-cptr.stPtro(random_insult, 40, __sl31);
-cptr.stPtro(random_insult, 48, __sl32);
-cptr.stPtro(random_insult, 56, __sl33);
-cptr.stPtro(random_insult, 64, __sl34);
-cptr.stPtro(random_insult, 72, __sl35);
-cptr.stPtro(random_insult, 80, __sl36);
-cptr.stPtro(random_insult, 88, __sl37);
-cptr.stPtro(random_insult, 96, __sl38);
-cptr.stPtro(random_insult, 104, __sl39);
-cptr.stPtro(random_insult, 112, __sl40);
-cptr.stPtro(random_insult, 120, __sl41);
-cptr.stPtro(random_insult, 128, __sl42);
-cptr.stPtro(random_insult, 136, __sl43);
-cptr.stPtro(random_insult, 144, __sl44);
-cptr.stPtro(random_insult, 152, __sl45);
-cptr.stPtro(random_insult, 160, __sl46);
-cptr.stPtro(random_insult, 168, __sl47);
-cptr.stPtro(random_insult, 176, __sl48);
-cptr.stPtro(random_insult, 184, __sl49);
-cptr.stPtro(random_insult, 192, __sl50);
-cptr.stPtro(random_insult, 200, __sl51);
-cptr.stPtro(random_insult, 208, __sl52);
-cptr.stPtro(random_insult, 216, __sl53);
+cptr.stPtro(random_insult, 0, __s_antic);
+cptr.stPtro(random_insult, 8, __s_blackguard);
+cptr.stPtro(random_insult, 16, __s_caitiff);
+cptr.stPtro(random_insult, 24, __s_chucklehead);
+cptr.stPtro(random_insult, 32, __s_coistrel);
+cptr.stPtro(random_insult, 40, __s_craven);
+cptr.stPtro(random_insult, 48, __s_cretin);
+cptr.stPtro(random_insult, 56, __s_cur);
+cptr.stPtro(random_insult, 64, __s_dastard);
+cptr.stPtro(random_insult, 72, __s_demon_fodder);
+cptr.stPtro(random_insult, 80, __s_dimwit);
+cptr.stPtro(random_insult, 88, __s_dolt);
+cptr.stPtro(random_insult, 96, __s_fool);
+cptr.stPtro(random_insult, 104, __s_footpad);
+cptr.stPtro(random_insult, 112, __s_imbecile);
+cptr.stPtro(random_insult, 120, __s_knave);
+cptr.stPtro(random_insult, 128, __s_maledict);
+cptr.stPtro(random_insult, 136, __s_miscreant);
+cptr.stPtro(random_insult, 144, __s_niddering);
+cptr.stPtro(random_insult, 152, __s_poltroon);
+cptr.stPtro(random_insult, 160, __s_rattlepate);
+cptr.stPtro(random_insult, 168, __s_reprobate);
+cptr.stPtro(random_insult, 176, __s_scapegrace);
+cptr.stPtro(random_insult, 184, __s_varlet);
+cptr.stPtro(random_insult, 192, __s_villein);
+cptr.stPtro(random_insult, 200, __s_wittol);
+cptr.stPtro(random_insult, 208, __s_worm);
+cptr.stPtro(random_insult, 216, __s_wretch);
 
 /** C ref: wizard.c:835 — char *[11] */
 const random_malediction = cptr.alloc(11 * 8);
-cptr.stPtro(random_malediction, 0, __sl54);
-cptr.stPtro(random_malediction, 8, __sl55);
-cptr.stPtro(random_malediction, 16, __sl56);
-cptr.stPtro(random_malediction, 24, __sl57);
-cptr.stPtro(random_malediction, 32, __sl58);
-cptr.stPtro(random_malediction, 40, __sl59);
-cptr.stPtro(random_malediction, 48, __sl60);
-cptr.stPtro(random_malediction, 56, __sl61);
-cptr.stPtro(random_malediction, 64, __sl62);
-cptr.stPtro(random_malediction, 72, __sl63);
-cptr.stPtro(random_malediction, 80, __sl64);
+cptr.stPtro(random_malediction, 0, __s_hell_shall_soon_claim_thy_remains);
+cptr.stPtro(random_malediction, 8, __s_i_chortle_at_thee_thou_pathetic);
+cptr.stPtro(random_malediction, 16, __s_prepare_to_die_thou);
+cptr.stPtro(random_malediction, 24, __s_resistance_is_useless);
+cptr.stPtro(random_malediction, 32, __s_surrender_or_die_thou);
+cptr.stPtro(random_malediction, 40, __s_there_shall_be_no_mercy_thou);
+cptr.stPtro(random_malediction, 48, __s_thou_shalt_repent_of_thy_cunning);
+cptr.stPtro(random_malediction, 56, __s_thou_art_as_a_flea_to_me);
+cptr.stPtro(random_malediction, 64, __s_thou_art_doomed);
+cptr.stPtro(random_malediction, 72, __s_thy_fate_is_sealed);
+cptr.stPtro(random_malediction, 80, __s_verily_thou_shalt_be_one_dead);
 
 /** C ref: wizard.c:846 — @param {CPtr<struct monst>} mtmp */
 export function cuss(mtmp) {
     if (Deaf())
         return;
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1)) {
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 851, __sl65), rn2(5)) : rn2(5))) {
-            pline(__sl66, Monnam(mtmp));
-        } else if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 853, __sl65), rn2(28)) : rn2(28))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 851, __s_cuss), rn2(5)) : rn2(5))) {
+            pline(__s_s_laughs_fiendishly, Monnam(mtmp));
+        } else if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 853, __s_cuss), rn2(28)) : rn2(28))) {
             ;
-            verbalize(__sl67, cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 856, __sl65), rn2(28)) : rn2(28)), 8));
-        } else if (cptr.ldI32o(u, $you_uhp) < 5 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 857, __sl65), rn2(2)) : rn2(2))) {
+            verbalize(__s_relinquish_the_amulet_s, cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 856, __s_cuss), rn2(28)) : rn2(28)), 8));
+        } else if (cptr.ldI32o(u, $you_uhp) < 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 857, __s_cuss), rn2(2)) : rn2(2))) {
             ;
-            verbalize((rng_log_enabled() ? (rng_log_set_caller(__sl0, 859, __sl65), rn2(2)) : rn2(2)) ? __sl68 : __sl69, cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 861, __sl65), rn2(28)) : rn2(28)), 8));
-        } else if (cptr.ldI32o(mtmp, $monst_mhp) < 5 && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 862, __sl65), rn2(2)) : rn2(2))) {
+            verbalize((rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 859, __s_cuss), rn2(2)) : rn2(2)) ? __s_even_now_thy_life_force_ebbs_s : __s_savor_thy_breath_s_it_be_thy_last, cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 861, __s_cuss), rn2(28)) : rn2(28)), 8));
+        } else if (cptr.ldI32o(mtmp, $monst_mhp) < 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 862, __s_cuss), rn2(2)) : rn2(2))) {
             ;
-            verbalize((rng_log_enabled() ? (rng_log_set_caller(__sl0, 864, __sl65), rn2(2)) : rn2(2)) ? __sl70 : __sl71);
+            verbalize((rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 864, __s_cuss), rn2(2)) : rn2(2)) ? __s_i_shall_return : __s_i_ll_be_back);
         } else {
             ;
-            verbalize(__sl72, cptr.ldPtro(random_malediction, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 868, __sl65), rn2(11)) : rn2(11)), 8), cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 869, __sl65), rn2(28)) : rn2(28)), 8));
+            verbalize(__s_s_s, cptr.ldPtro(random_malediction, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 868, __s_cuss), rn2(11)) : rn2(11)), 8), cptr.ldPtro(random_insult, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 869, __s_cuss), rn2(28)) : rn2(28)), 8));
         }
     } else if (is_lminion(mtmp) && !((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_renegade))) {
-        com_pager(__sl73);
+        com_pager(__s_angel_cuss);
     } else {
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 877, __sl65), rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)) : rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)))
-            pline(__sl74, Monnam(mtmp));
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 877, __s_cuss), rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)) : rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5)))
+            pline(__s_s_casts_aspersions_on_your_ancestry, Monnam(mtmp));
         else
-            com_pager(__sl75);
+            com_pager(__s_demon_cuss);
     }
     wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 25);
 }

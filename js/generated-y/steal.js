@@ -85,83 +85,83 @@ const $dlevel_t_monlist = FLD.dlevel_t_monlist, $flag_female = FLD.flag_female,
     $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("steal.c");
-const __sl1 = cptr.lit("somegold");
-const __sl2 = cptr.lit("stealgold");
-const __sl3 = cptr.lit("your");
-const __sl4 = cptr.lit("coils");
-const __sl5 = cptr.lit("rear ");
-const __sl6 = cptr.lit("%s quickly snatches some gold from %s %s %s!");
-const __sl7 = cptr.lit("beneath");
-const __sl8 = cptr.lit("between");
-const __sl9 = cptr.lit("purse feels lighter.");
-const __sl10 = cptr.lit("frozen");
-const __sl11 = cptr.lit("paralyzed");
-const __sl12 = cptr.lit("finish taking off your %s.");
-const __sl13 = cptr.lit("stealarm(): dead monster stealing");
-const __sl14 = cptr.lit("%s steals %s!");
-const __sl15 = cptr.lit("Removing embedded scales?");
-const __sl16 = cptr.lit("remove_worn_item() \"%s\" deleted!");
-const __sl17 = cptr.lit("the ");
-const __sl18 = cptr.lit("an ");
-const __sl19 = cptr.lit("a ");
-const __sl20 = cptr.lit("your ");
-const __sl21 = cptr.lit(" (being worn)");
-const __sl22 = cptr.lit("");
-const __sl23 = cptr.lit(" (alternate weapon; not wielded)");
-const __sl24 = cptr.lit(" (on ");
-const __sl25 = cptr.lit("left ");
-const __sl26 = cptr.lit("right ");
-const __sl27 = cptr.lit("on");
-const __sl28 = cptr.lit("from");
-const __sl29 = cptr.lit("disarms");
-const __sl30 = cptr.lit("removes");
-const __sl31 = cptr.lit("takes off");
-const __sl32 = cptr.lit("%s %s %s.");
-const __sl33 = cptr.lit("steal");
-const __sl34 = cptr.lit("uball != NULL && uball->where == OBJ_FLOOR");
-const __sl35 = cptr.lit("%s takes off your unseen chain.");
-const __sl36 = cptr.lit("Somebody tries to rob you, but finds nothing to steal.");
-const __sl37 = cptr.lit("%s tries to rob you, but isn't interested in gold.");
-const __sl38 = cptr.lit("%s tries to rob you, but there is nothing to steal!");
-const __sl39 = cptr.lit("Steal fails!");
-const __sl40 = cptr.lit("%s tries to %s %s%s but gives up.");
-const __sl41 = cptr.lit("%s charms you.  You gladly %s your %s.");
-const __sl42 = cptr.lit("She");
-const __sl43 = cptr.lit("let her take");
-const __sl44 = cptr.lit("hand over");
-const __sl45 = cptr.lit("continue removing");
-const __sl46 = cptr.lit("start removing");
-const __sl47 = cptr.lit("%s seduces you and %s off your %s.");
-const __sl48 = cptr.lit("beautiful");
-const __sl49 = cptr.lit("helps you to take");
-const __sl50 = cptr.lit("you take");
-const __sl51 = cptr.lit("you continue taking");
-const __sl52 = cptr.lit("you start taking");
-const __sl53 = cptr.lit("taking off clothes");
-const __sl54 = cptr.lit("Tried to steal a strange worn thing. [%d]");
-const __sl55 = cptr.lit("%s stole %s.");
-const __sl56 = cptr.lit("snatch");
-const __sl57 = cptr.lit("grab");
-const __sl58 = cptr.lit("take");
-const __sl59 = cptr.lit("monster (%s) taking or picking up nothing?");
-const __sl60 = cptr.lit("monster (%s) taking or picking up attached %s (%s)?");
-const __sl61 = cptr.lit("chain");
-const __sl62 = cptr.lit("ball");
-const __sl63 = cptr.lit("%s out.");
-const __sl64 = cptr.lit("go");
-const __sl65 = cptr.lit("stealamulet");
-const __sl66 = cptr.lit("%s pulls %s away from you and absorbs %s!");
-const __sl67 = cptr.lit("them");
-const __sl68 = cptr.lit("it");
-const __sl69 = cptr.lit("%s %s pulled from your %s!");
-const __sl70 = cptr.lit("are");
-const __sl71 = cptr.lit("%s absorbs %s!");
-const __sl72 = cptr.lit("%s drops %s.");
-const __sl73 = cptr.lit("fall");
-const __sl74 = cptr.lit("%s gold %s.");
-const __sl75 = cptr.lit("vanishes");
-const __sl76 = cptr.lit("seems to vanish");
+const __s_steal_c = cptr.lit("steal.c");
+const __s_somegold = cptr.lit("somegold");
+const __s_stealgold = cptr.lit("stealgold");
+const __s_your = cptr.lit("your");
+const __s_coils = cptr.lit("coils");
+const __s_rear = cptr.lit("rear ");
+const __s_s_quickly_snatches_some_gold_from_s_s_s = cptr.lit("%s quickly snatches some gold from %s %s %s!");
+const __s_beneath = cptr.lit("beneath");
+const __s_between = cptr.lit("between");
+const __s_purse_feels_lighter = cptr.lit("purse feels lighter.");
+const __s_frozen = cptr.lit("frozen");
+const __s_paralyzed = cptr.lit("paralyzed");
+const __s_finish_taking_off_your_s = cptr.lit("finish taking off your %s.");
+const __s_stealarm_dead_monster_stealing = cptr.lit("stealarm(): dead monster stealing");
+const __s_s_steals_s = cptr.lit("%s steals %s!");
+const __s_removing_embedded_scales = cptr.lit("Removing embedded scales?");
+const __s_remove_worn_item_s_deleted = cptr.lit("remove_worn_item() \"%s\" deleted!");
+const __s_the = cptr.lit("the ");
+const __s_an = cptr.lit("an ");
+const __s_a_sp = cptr.lit("a ");
+const __s_your__2 = cptr.lit("your ");
+const __s_being_worn = cptr.lit(" (being worn)");
+const __s_empty = cptr.lit("");
+const __s_alternate_weapon_not_wielded = cptr.lit(" (alternate weapon; not wielded)");
+const __s_on = cptr.lit(" (on ");
+const __s_left = cptr.lit("left ");
+const __s_right = cptr.lit("right ");
+const __s_on__2 = cptr.lit("on");
+const __s_from = cptr.lit("from");
+const __s_disarms = cptr.lit("disarms");
+const __s_removes = cptr.lit("removes");
+const __s_takes_off = cptr.lit("takes off");
+const __s_s_s_s = cptr.lit("%s %s %s.");
+const __s_steal = cptr.lit("steal");
+const __s_uball_null_uball_where_obj_floor = cptr.lit("uball != NULL && uball->where == OBJ_FLOOR");
+const __s_s_takes_off_your_unseen_chain = cptr.lit("%s takes off your unseen chain.");
+const __s_somebody_tries_to_rob_you_but_finds = cptr.lit("Somebody tries to rob you, but finds nothing to steal.");
+const __s_s_tries_to_rob_you_but_isn_t_interested = cptr.lit("%s tries to rob you, but isn't interested in gold.");
+const __s_s_tries_to_rob_you_but_there_is_nothing = cptr.lit("%s tries to rob you, but there is nothing to steal!");
+const __s_steal_fails = cptr.lit("Steal fails!");
+const __s_s_tries_to_s_s_s_but_gives_up = cptr.lit("%s tries to %s %s%s but gives up.");
+const __s_s_charms_you_you_gladly_s_your_s = cptr.lit("%s charms you.  You gladly %s your %s.");
+const __s_she = cptr.lit("She");
+const __s_let_her_take = cptr.lit("let her take");
+const __s_hand_over = cptr.lit("hand over");
+const __s_continue_removing = cptr.lit("continue removing");
+const __s_start_removing = cptr.lit("start removing");
+const __s_s_seduces_you_and_s_off_your_s = cptr.lit("%s seduces you and %s off your %s.");
+const __s_beautiful = cptr.lit("beautiful");
+const __s_helps_you_to_take = cptr.lit("helps you to take");
+const __s_you_take = cptr.lit("you take");
+const __s_you_continue_taking = cptr.lit("you continue taking");
+const __s_you_start_taking = cptr.lit("you start taking");
+const __s_taking_off_clothes = cptr.lit("taking off clothes");
+const __s_tried_to_steal_a_strange_worn_thing_d = cptr.lit("Tried to steal a strange worn thing. [%d]");
+const __s_s_stole_s = cptr.lit("%s stole %s.");
+const __s_snatch = cptr.lit("snatch");
+const __s_grab = cptr.lit("grab");
+const __s_take = cptr.lit("take");
+const __s_monster_s_taking_or_picking_up_nothing = cptr.lit("monster (%s) taking or picking up nothing?");
+const __s_monster_s_taking_or_picking_up_attached = cptr.lit("monster (%s) taking or picking up attached %s (%s)?");
+const __s_chain = cptr.lit("chain");
+const __s_ball = cptr.lit("ball");
+const __s_s_out = cptr.lit("%s out.");
+const __s_go = cptr.lit("go");
+const __s_stealamulet = cptr.lit("stealamulet");
+const __s_s_pulls_s_away_from_you_and_absorbs_s = cptr.lit("%s pulls %s away from you and absorbs %s!");
+const __s_them = cptr.lit("them");
+const __s_it = cptr.lit("it");
+const __s_s_s_pulled_from_your_s = cptr.lit("%s %s pulled from your %s!");
+const __s_are = cptr.lit("are");
+const __s_s_absorbs_s = cptr.lit("%s absorbs %s!");
+const __s_s_drops_s = cptr.lit("%s drops %s.");
+const __s_fall = cptr.lit("fall");
+const __s_s_gold_s = cptr.lit("%s gold %s.");
+const __s_vanishes = cptr.lit("vanishes");
+const __s_seems_to_vanish = cptr.lit("seems to vanish");
 
 /** C ref: steal.c:14 — @param {CLongLong} lmoney @returns {CLongLong} */
 export function somegold(lmoney) {
@@ -169,17 +169,17 @@ export function somegold(lmoney) {
     if (igold < 50)
         ;
     else if (igold < 100)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 21, __sl1), rn2((((igold - 25) | 0) + 1) | 0)) : rn2((((igold - 25) | 0) + 1) | 0)) + 25) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 21, __s_somegold), rn2((((igold - 25) | 0) + 1) | 0)) : rn2((((igold - 25) | 0) + 1) | 0)) + 25) | 0);
     else if (igold < 500)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 23, __sl1), rn2((((igold - 50) | 0) + 1) | 0)) : rn2((((igold - 50) | 0) + 1) | 0)) + 50) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 23, __s_somegold), rn2((((igold - 50) | 0) + 1) | 0)) : rn2((((igold - 50) | 0) + 1) | 0)) + 50) | 0);
     else if (igold < 1000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 25, __sl1), rn2((((igold - 100) | 0) + 1) | 0)) : rn2((((igold - 100) | 0) + 1) | 0)) + 100) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 25, __s_somegold), rn2((((igold - 100) | 0) + 1) | 0)) : rn2((((igold - 100) | 0) + 1) | 0)) + 100) | 0);
     else if (igold < 5000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 27, __sl1), rn2((((igold - 500) | 0) + 1) | 0)) : rn2((((igold - 500) | 0) + 1) | 0)) + 500) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 27, __s_somegold), rn2((((igold - 500) | 0) + 1) | 0)) : rn2((((igold - 500) | 0) + 1) | 0)) + 500) | 0);
     else if (igold < 10000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 29, __sl1), rn2((((igold - 1000) | 0) + 1) | 0)) : rn2((((igold - 1000) | 0) + 1) | 0)) + 1000) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 29, __s_somegold), rn2((((igold - 1000) | 0) + 1) | 0)) : rn2((((igold - 1000) | 0) + 1) | 0)) + 1000) | 0);
     else
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 31, __sl1), rn2((((igold - 5000) | 0) + 1) | 0)) : rn2((((igold - 5000) | 0) + 1) | 0)) + 5000) | 0);
+        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 31, __s_somegold), rn2((((igold - 5000) | 0) + 1) | 0)) : rn2((((igold - 5000) | 0) + 1) | 0)) + 5000) | 0);
     return BigInt(igold);
 }
 
@@ -202,7 +202,7 @@ export function* stealgold(mtmp) {
     while (fgold && cptr.ldI16o(fgold, $obj_otyp) != NHC.GOLD_PIECE)
         fgold = cptr.ldPtro(fgold, $obj_v);
     ygold = findgold(cptr.ldPtro(gi, $instance_globals_i_invent));
-    if (fgold && (!ygold || cptr.ldI64o(fgold, $obj_quan) > cptr.ldI64o(ygold, $obj_quan) || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 73, __sl2), rn2(5)) : rn2(5)))) {
+    if (fgold && (!ygold || cptr.ldI64o(fgold, $obj_quan) > cptr.ldI64o(ygold, $obj_quan) || !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 73, __s_stealgold), rn2(5)) : rn2(5)))) {
         (yield* obj_extract_self(fgold));
         (yield* add_to_minv(mtmp, fgold));
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -212,15 +212,15 @@ export function* stealgold(mtmp) {
             what = (yield* makeplural((yield* mbodypart(who, NHC.FOOT))));
         } else {
             who = cptr.add(gy, $instance_globals_y_youmonst);
-            whose = __sl3;
+            whose = __s_your;
             what = (yield* makeplural((yield* body_part(NHC.FOOT))));
         }
         if (((cptr.ldU64o((cptr.ldPtro(who, $monst_data)), $permonst_mflags1) & 524288n) != 0n))
-            what = __sl4;
-        if (!cptr.strncmp(what, __sl5, 5n))
+            what = __s_coils;
+        if (!cptr.strncmp(what, __s_rear, 5n))
             what = cptr.add(what, 5);
-        (yield* pline(__sl6, (yield* Monnam(mtmp)), (Levitation() || Flying()) ? __sl7 : __sl8, whose, what));
-        if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 94, __sl2), rn2(5)) : rn2(5))) {
+        (yield* pline(__s_s_quickly_snatches_some_gold_from_s_s_s, (yield* Monnam(mtmp)), (Levitation() || Flying()) ? __s_beneath : __s_between, whose, what));
+        if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 94, __s_stealgold), rn2(5)) : rn2(5))) {
             if (!(yield* tele_restrict(mtmp)))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
             (yield* monflee(mtmp, 0, 0, 0));
@@ -235,7 +235,7 @@ export function* stealgold(mtmp) {
             (yield* setnotworn(ygold));
         (yield* freeinv(ygold));
         (yield* add_to_minv(mtmp, ygold));
-        (yield* Your(__sl9));
+        (yield* Your(__s_purse_feels_lighter));
         if (!(yield* tele_restrict(mtmp)))
             void (yield* rloc(mtmp, NHM.RLOC_MSG));
         (yield* monflee(mtmp, 0, 0, 0));
@@ -256,7 +256,7 @@ export function thiefdead() {
 export function unresponsive() {
     if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
         return 0;
-    return schar((unconscious() || is_fainted() || (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && (!cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __sl10, 6n) || !cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __sl11, 9n))) ? 1 : 0));
+    return schar((unconscious() || is_fainted() || (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && (!cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __s_frozen, 6n) || !cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __s_paralyzed, 9n))) ? 1 : 0));
 }
 
 /** C ref: steal.c:147 @returns {CInt} */
@@ -267,7 +267,7 @@ function* unstolenarm() {
             break;
     cptr.stI32o(gs, $instance_globals_s_stealoid, 0);
     if (obj) {
-        (yield* You(__sl12, (yield* armor_simple_name(obj))));
+        (yield* You(__s_finish_taking_off_your_s, (yield* armor_simple_name(obj))));
     }
     return 0;
 }
@@ -286,7 +286,7 @@ function* stealarm() {
                 for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
                     if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(gs, $instance_globals_s_stealmid)) {
                         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-                            (yield* impossible(__sl13));
+                            (yield* impossible(__s_stealarm_dead_monster_stealing));
                             break __lbl_botm;
                         }
                         if (!dmgtype(cptr.ldPtro(mtmp, $monst_data), NHM.AD_SITM) || dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 2)
@@ -294,7 +294,7 @@ function* stealarm() {
                         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
                             (yield* subfrombill(otmp, (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))));
                         (yield* freeinv(otmp));
-                        (yield* pline(__sl14, (yield* Monnam(mtmp)), (yield* doname(otmp))));
+                        (yield* pline(__s_s_steals_s, (yield* Monnam(mtmp)), (yield* doname(otmp))));
                         void (yield* mpickobj(mtmp, otmp));
                         (yield* monflee(mtmp, 0, 0, 0));
                         if (!(yield* tele_restrict(mtmp)))
@@ -321,7 +321,7 @@ export function* remove_worn_item(obj, unchain_ball) {
     cptr.stI32o(obj, $obj_in_use, 1);
     if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
         if (cptr.eq(obj, uskin.v)) {
-            (yield* impossible(__sl15));
+            (yield* impossible(__s_removing_embedded_scales));
             (yield* skinback(1));
         }
         if (cptr.eq(obj, uarm.v))
@@ -362,9 +362,9 @@ export function* remove_worn_item(obj, unchain_ball) {
     }
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_DELETED)
         {
-            if ((yield* debugcore(__sl0, 1))) {
+            if ((yield* debugcore(__s_steal_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl16, (yield* simpleonames(obj))));
+                (yield* pline(__s_remove_worn_item_s_deleted, (yield* simpleonames(obj))));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -379,26 +379,26 @@ function* worn_item_removal(mon, obj) {
     let verb;
     let strip_art;
     void cptr.strcpy(cptr.decay(objbuf), (yield* doname(obj)));
-    strip_art = !cptr.strncmp(cptr.decay(objbuf), __sl17, 4n) ? 4 : (!cptr.strncmp(cptr.decay(objbuf), __sl18, 3n) ? 3 : (!cptr.strncmp(cptr.decay(objbuf), __sl19, 2n) ? 2 : 0));
+    strip_art = !cptr.strncmp(cptr.decay(objbuf), __s_the, 4n) ? 4 : (!cptr.strncmp(cptr.decay(objbuf), __s_an, 3n) ? 3 : (!cptr.strncmp(cptr.decay(objbuf), __s_a_sp, 2n) ? 2 : 0));
     if (strip_art) {
         (yield* copynchars(cptr.decay(article), cptr.decay(objbuf), strip_art));
-        void strsubst(cptr.decay(objbuf), cptr.decay(article), (cptr.eq(obj, uchain.v)) ? __sl17 : __sl20);
+        void strsubst(cptr.decay(objbuf), cptr.decay(article), (cptr.eq(obj, uchain.v)) ? __s_the : __s_your__2);
     }
-    void strsubst(cptr.decay(objbuf), __sl21, __sl22);
-    void strsubst(cptr.decay(objbuf), __sl23, __sl22);
-    if ((p = (yield* strstri(cptr.decay(objbuf), __sl24))) && (!cptr.strncmp(cptr.add(p, 5), __sl25, 5n) || !cptr.strncmp(cptr.add(p, 5), __sl26, 6n)))
-        void strsubst(cptr.add(p, 2), __sl27, __sl28);
-    verb = ((cptr.ldI64o(obj, $obj_owornmask) & 1792n) != 0n) ? __sl29 : (((cptr.ldI64o(obj, $obj_owornmask) & 983040n) != 0n) ? __sl30 : __sl31);
-    (yield* pline(__sl32, (yield* Some_Monnam(mon)), verb, cptr.decay(objbuf)));
+    void strsubst(cptr.decay(objbuf), __s_being_worn, __s_empty);
+    void strsubst(cptr.decay(objbuf), __s_alternate_weapon_not_wielded, __s_empty);
+    if ((p = (yield* strstri(cptr.decay(objbuf), __s_on))) && (!cptr.strncmp(cptr.add(p, 5), __s_left, 5n) || !cptr.strncmp(cptr.add(p, 5), __s_right, 6n)))
+        void strsubst(cptr.add(p, 2), __s_on__2, __s_from);
+    verb = ((cptr.ldI64o(obj, $obj_owornmask) & 1792n) != 0n) ? __s_disarms : (((cptr.ldI64o(obj, $obj_owornmask) & 983040n) != 0n) ? __s_removes : __s_takes_off);
+    (yield* pline(__s_s_s_s, (yield* Some_Monnam(mon)), verb, cptr.decay(objbuf)));
     cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_MON_TAKES_OFF_ITEM);
     (yield* remove_worn_item(obj, 1));
 }
 
 const __static_steal_how = cptr.alloc(4 * 8);
-cptr.stPtro(__static_steal_how, 0, __sl33);
-cptr.stPtro(__static_steal_how, 8, __sl56);
-cptr.stPtro(__static_steal_how, 16, __sl57);
-cptr.stPtro(__static_steal_how, 24, __sl58); /** C ref: steal.c:476 — char *[4] (function-static) */
+cptr.stPtro(__static_steal_how, 0, __s_steal);
+cptr.stPtro(__static_steal_how, 8, __s_snatch);
+cptr.stPtro(__static_steal_how, 16, __s_grab);
+cptr.stPtro(__static_steal_how, 24, __s_take); /** C ref: steal.c:476 — char *[4] (function-static) */
 
 /** C ref: steal.c:343 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} objnambuf @returns {CInt} */
 export function* steal(mtmp, objnambuf) {
@@ -429,18 +429,18 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 1 /* nothing_to_steal: */: {
-        if (Punished() && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 379, __sl33), rn2(4)) : rn2(4))) {
-            (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__sl33, __sl0, 381, __sl34) : void 0);
+        if (Punished() && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 379, __s_steal), rn2(4)) : rn2(4))) {
+            (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__s_steal, __s_steal_c, 381, __s_uball_null_uball_where_obj_floor) : void 0);
             (yield* worn_item_removal(mtmp, uchain.v));
-        } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 384, __sl33), rn2(4)) : rn2(4))) {
-            (yield* pline(__sl35, cptr.decay(Monnambuf)));
+        } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 384, __s_steal), rn2(4)) : rn2(4))) {
+            (yield* pline(__s_s_takes_off_your_unseen_chain, cptr.decay(Monnambuf)));
             void (yield* openholdingtrap(cptr.add(gy, $instance_globals_y_youmonst), dummy));
         } else if (Blind()) {
-            (yield* pline(__sl36));
+            (yield* pline(__s_somebody_tries_to_rob_you_but_finds));
         } else if (inv_cnt(1) > inv_cnt(0)) {
-            (yield* pline(__sl37, cptr.decay(Monnambuf)));
+            (yield* pline(__s_s_tries_to_rob_you_but_isn_t_interested, cptr.decay(Monnambuf)));
         } else {
-            (yield* pline(__sl38, cptr.decay(Monnambuf)));
+            (yield* pline(__s_s_tries_to_rob_you_but_there_is_nothing, cptr.decay(Monnambuf)));
         }
         return 1;
         }
@@ -493,7 +493,7 @@ export function* steal(mtmp, objnambuf) {
         { __pc = 1; continue; }
         }
         case 15: {
-        tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 421, __sl33), rn2(tmp)) : rn2(tmp));
+        tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 421, __s_steal), rn2(tmp)) : rn2(tmp));
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS) {
                 tmp = (tmp - ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
@@ -501,7 +501,7 @@ export function* steal(mtmp, objnambuf) {
                     break;
             }
         if (!otmp) {
-            (yield* impossible(__sl39));
+            (yield* impossible(__s_steal_fails));
             return 0;
         }
         if ((cptr.eq(otmp, uleft.v) || cptr.eq(otmp, uright.v)) && uarmg.v)
@@ -552,8 +552,8 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 4 /* cant_take: */: {
-        (yield* pline(__sl40, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 481, __sl33), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __sl20 : __sl22, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))));
-        return !(rng_log_enabled() ? (rng_log_set_caller(__sl0, 488, __sl33), rn2((((inv_cnt(0) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt(0) / 5) | 0) + 2) | 0));
+        (yield* pline(__s_s_tries_to_s_s_s_but_gives_up, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 481, __s_steal), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))));
+        return !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 488, __s_steal), rn2((((inv_cnt(0) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt(0) / 5) | 0) + 2) | 0));
         }
         case 23: {
         __pc = 21;
@@ -615,7 +615,7 @@ export function* steal(mtmp, objnambuf) {
         __pc = 42; continue;
         }
         case 41: {
-        if (armordelay >= 1 && !olddelay && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 521, __sl33), rn2(10)) : rn2(10))) { __pc = 44; continue; }
+        if (armordelay >= 1 && !olddelay && (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 521, __s_steal), rn2(10)) : rn2(10))) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
@@ -630,12 +630,12 @@ export function* steal(mtmp, objnambuf) {
         cptr.stI32o(otmp, $obj_cursed, 0);
         slowly = (armordelay >= 1 || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n ? 1 : 0);
         if (cptr.ld1so(flags, $flag_female))
-            (yield* urgent_pline(__sl41, !seen ? __sl42 : cptr.decay(Monnambuf), curssv ? __sl43 : (!slowly ? __sl44 : (was_doffing ? __sl45 : __sl46)), (yield* armor_simple_name(otmp))));
+            (yield* urgent_pline(__s_s_charms_you_you_gladly_s_your_s, !seen ? __s_she : cptr.decay(Monnambuf), curssv ? __s_let_her_take : (!slowly ? __s_hand_over : (was_doffing ? __s_continue_removing : __s_start_removing)), (yield* armor_simple_name(otmp))));
         else
-            (yield* urgent_pline(__sl47, !seen ? __sl42 : (yield* Adjmonnam(mtmp, __sl48)), curssv ? __sl49 : (!slowly ? __sl50 : (was_doffing ? __sl51 : __sl52)), (yield* armor_simple_name(otmp))));
+            (yield* urgent_pline(__s_s_seduces_you_and_s_off_your_s, !seen ? __s_she : (yield* Adjmonnam(mtmp, __s_beautiful)), curssv ? __s_helps_you_to_take : (!slowly ? __s_you_take : (was_doffing ? __s_you_continue_taking : __s_you_start_taking)), (yield* armor_simple_name(otmp))));
         named++;
         nomul(-armordelay);
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl53);
+        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_taking_off_clothes);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
         (yield* remove_worn_item(otmp, 1));
         cptr.stI32o(otmp, $obj_cursed, curssv >>> 0);
@@ -652,7 +652,7 @@ export function* steal(mtmp, objnambuf) {
         { __pc = 32; continue; }
         }
         case 39: {
-        (yield* impossible(__sl54, cptr.ld1so(otmp, $obj_oclass)));
+        (yield* impossible(__s_tried_to_steal_a_strange_worn_thing_d, cptr.ld1so(otmp, $obj_oclass)));
         __pc = 32;
         continue;
         }
@@ -684,7 +684,7 @@ export function* steal(mtmp, objnambuf) {
         (yield* freeinv(otmp));
         if (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_MON_TAKES_OFF_ITEM && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH)
             ++named;
-        (yield* urgent_pline(__sl55, named ? __sl42 : cptr.decay(Monnambuf), (yield* doname(otmp))));
+        (yield* urgent_pline(__s_s_stole_s, named ? __s_she : cptr.decay(Monnambuf), (yield* doname(otmp))));
         (yield* encumber_msg());
         could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) ? 1 : 0);
         cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
@@ -705,10 +705,10 @@ export function* mpickobj(mtmp, otmp) {
     let freed_otmp;
     let snuff_otmp = 0;
     if (!otmp) {
-        (yield* impossible(__sl59, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))));
+        (yield* impossible(__s_monster_s_taking_or_picking_up_nothing, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))));
         return 1;
     } else if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v)) {
-        (yield* impossible(__sl60, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __sl61 : __sl62, (yield* simpleonames(otmp))));
+        (yield* impossible(__s_monster_s_taking_or_picking_up_attached, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __s_chain : __s_ball, (yield* simpleonames(otmp))));
         return 0;
     }
     if (cptr.eq(otmp, cptr.ldPtro(gt, $instance_globals_t_thrownobj)))
@@ -720,7 +720,7 @@ export function* mpickobj(mtmp, otmp) {
     }
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_ENGL)) {
         if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && !Blind())
-            (yield* pline(__sl63, (yield* Tobjnam(otmp, __sl64))));
+            (yield* pline(__s_s_out, (yield* Tobjnam(otmp, __s_go))));
         snuff_otmp = 1;
     }
     cptr.stI32o(otmp, $obj_no_charge, 0);
@@ -751,7 +751,7 @@ export function* stealamulet(mtmp) {
         if ((cptr.ld1so((obj), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION))
             ++n, otmp = obj;
     if (n > 1) {
-        n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 702, __sl65), rnd(n)) : rnd(n));
+        n = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 702, __s_stealamulet), rnd(n)) : rnd(n));
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if ((cptr.ld1so((otmp), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) && !--n)
                 break;
@@ -773,7 +773,7 @@ export function* stealamulet(mtmp) {
             if (cptr.ldI16o(obj, $obj_otyp) == real || (cptr.ldI16o(obj, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1)))
                 ++n, otmp = obj;
         if (n > 1) {
-            n = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 728, __sl65), rnd(n)) : rnd(n));
+            n = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 728, __s_stealamulet), rnd(n)) : rnd(n));
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if ((cptr.ldI16o(otmp, $obj_otyp) == real || (cptr.ldI16o(otmp, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1))) && !--n)
                     break;
@@ -798,7 +798,7 @@ export function* stealamulet(mtmp) {
         (yield* freeinv(otmp));
         void cptr.strcpy(cptr.decay(buf), (yield* doname(otmp)));
         void (yield* mpickobj(mtmp, otmp));
-        (yield* pline(__sl14, (yield* Some_Monnam(mtmp)), cptr.decay(buf)));
+        (yield* pline(__s_s_steals_s, (yield* Some_Monnam(mtmp)), cptr.decay(buf)));
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 33554432n) != 0n) && !(yield* tele_restrict(mtmp)))
             void (yield* rloc(mtmp, NHM.RLOC_MSG));
         (yield* encumber_msg());
@@ -815,18 +815,18 @@ export function* maybe_absorb_item(mon, obj, ochance, achance) {
         if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
             (yield* subfrombill(obj, (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))));
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
-            (yield* pline(__sl66, (yield* Some_Monnam(mon)), (yield* yname(obj)), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __sl67 : __sl68));
+            (yield* pline(__s_s_pulls_s_away_from_you_and_absorbs_s, (yield* Some_Monnam(mon)), (yield* yname(obj)), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __s_them : __s_it));
         } else {
             let hand_s = (yield* body_part(NHC.HAND));
             if (bimanual(obj))
                 hand_s = (yield* makeplural(hand_s));
-            (yield* pline(__sl69, upstart((yield* yname(obj))), (yield* otense(obj, __sl70)), hand_s));
+            (yield* pline(__s_s_s_pulled_from_your_s, upstart((yield* yname(obj))), (yield* otense(obj, __s_are)), hand_s));
         }
         (yield* freeinv(obj));
         (yield* encumber_msg());
     } else {
         if (canspotmon(mon))
-            (yield* pline(__sl71, (yield* Monnam(mon)), (yield* yname(obj))));
+            (yield* pline(__s_s_absorbs_s, (yield* Monnam(mon)), (yield* yname(obj))));
     }
     void (yield* mpickobj(mon, obj));
 }
@@ -842,8 +842,8 @@ export function* mdrop_obj(mon, obj, verbosely) {
         cptr.stI32o(obj, $obj_no_charge, 1);
     }
     if (verbosely && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))
-        (yield* pline_mon(mon, __sl72, (yield* Monnam(mon)), obj_name));
-    if (!(yield* flooreffects(obj, omx, omy, __sl73))) {
+        (yield* pline_mon(mon, __s_s_drops_s, (yield* Monnam(mon)), obj_name));
+    if (!(yield* flooreffects(obj, omx, omy, __s_fall))) {
         (yield* place_object(obj, omx, omy));
         (yield* stackobj(obj));
     }
@@ -875,7 +875,7 @@ export function* relobj(mtmp, show, is_pet) {
     let omy = cptr.ldI16o(mtmp, $monst_my);
     if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && (otmp = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
         if (canspotmon(mtmp))
-            (yield* pline(__sl74, (yield* s_suffix((yield* Monnam(mtmp)))), canseemon(mtmp) ? __sl75 : __sl76));
+            (yield* pline(__s_s_gold_s, (yield* s_suffix((yield* Monnam(mtmp)))), canseemon(mtmp) ? __s_vanishes : __s_seems_to_vanish));
         (yield* obj_extract_self(otmp));
         (yield* obfree(otmp, null));
     }

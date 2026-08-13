@@ -62,62 +62,62 @@ const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1, $branch_
     $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("firsttime");
-const __sl1 = cptr.lit("nexttime");
-const __sl2 = cptr.lit("othertime");
-const __sl3 = cptr.lit("locate_first");
-const __sl4 = cptr.lit("locate_next");
-const __sl5 = cptr.lit("goal_first");
-const __sl6 = cptr.lit("goal_next");
-const __sl7 = cptr.lit("goal_alt");
-const __sl8 = cptr.lit("killed_nemesis");
-const __sl9 = cptr.lit("gotit");
-const __sl10 = cptr.lit("are currently %s instead of %s.");
-const __sl11 = cptr.lit("have converted.");
-const __sl12 = cptr.lit("are currently %d and require %d.");
-const __sl13 = cptr.lit("adjust?");
-const __sl14 = cptr.lit("The Quest");
-const __sl15 = cptr.lit("quest portal already gone?");
-const __sl16 = cptr.lit("hasamulet");
-const __sl17 = cptr.lit("Sorry to say, this is a mere imitation of the true Amulet of Yendor.");
-const __sl18 = cptr.lit("Ah, I see you've found %s.");
-const __sl19 = cptr.lit("offeredit");
-const __sl20 = cptr.lit("offeredit2");
-const __sl21 = cptr.lit("quest_complete_no_bell");
-const __sl22 = cptr.lit("posthanks");
-const __sl23 = cptr.lit("encourage");
-const __sl24 = cptr.lit("leader_first");
-const __sl25 = cptr.lit("leader_next");
-const __sl26 = cptr.lit("badlevel");
-const __sl27 = cptr.lit("banished");
-const __sl28 = cptr.lit("%s has expelled you from the quest");
-const __sl29 = cptr.lit("badalign");
-const __sl30 = cptr.lit("assignquest");
-const __sl31 = cptr.lit("%s has granted access to proceed deeper into the quest");
-const __sl32 = cptr.lit("leader_last");
-const __sl33 = cptr.lit("discourage");
-const __sl34 = cptr.lit("nemesis_wantsit");
-const __sl35 = cptr.lit("nemesis_first");
-const __sl36 = cptr.lit("nemesis_next");
-const __sl37 = cptr.lit("nemesis_other");
-const __sl38 = cptr.lit("quest.c");
-const __sl39 = cptr.lit("nemesis_speaks");
-const __sl40 = cptr.lit("guardtalk_after");
-const __sl41 = cptr.lit("guardtalk_before");
-const __sl42 = cptr.lit("%s speaks:");
-const __sl43 = cptr.lit("I'm finally free!");
-const __sl44 = cptr.lit("quest_chat: Unknown quest character %s.");
+const __s_firsttime = cptr.lit("firsttime");
+const __s_nexttime = cptr.lit("nexttime");
+const __s_othertime = cptr.lit("othertime");
+const __s_locate_first = cptr.lit("locate_first");
+const __s_locate_next = cptr.lit("locate_next");
+const __s_goal_first = cptr.lit("goal_first");
+const __s_goal_next = cptr.lit("goal_next");
+const __s_goal_alt = cptr.lit("goal_alt");
+const __s_killed_nemesis = cptr.lit("killed_nemesis");
+const __s_gotit = cptr.lit("gotit");
+const __s_are_currently_s_instead_of_s = cptr.lit("are currently %s instead of %s.");
+const __s_have_converted = cptr.lit("have converted.");
+const __s_are_currently_d_and_require_d = cptr.lit("are currently %d and require %d.");
+const __s_adjust = cptr.lit("adjust?");
+const __s_the_quest = cptr.lit("The Quest");
+const __s_quest_portal_already_gone = cptr.lit("quest portal already gone?");
+const __s_hasamulet = cptr.lit("hasamulet");
+const __s_sorry_to_say_this_is_a_mere_imitation = cptr.lit("Sorry to say, this is a mere imitation of the true Amulet of Yendor.");
+const __s_ah_i_see_you_ve_found_s = cptr.lit("Ah, I see you've found %s.");
+const __s_offeredit = cptr.lit("offeredit");
+const __s_offeredit2 = cptr.lit("offeredit2");
+const __s_quest_complete_no_bell = cptr.lit("quest_complete_no_bell");
+const __s_posthanks = cptr.lit("posthanks");
+const __s_encourage = cptr.lit("encourage");
+const __s_leader_first = cptr.lit("leader_first");
+const __s_leader_next = cptr.lit("leader_next");
+const __s_badlevel = cptr.lit("badlevel");
+const __s_banished = cptr.lit("banished");
+const __s_s_has_expelled_you_from_the_quest = cptr.lit("%s has expelled you from the quest");
+const __s_badalign = cptr.lit("badalign");
+const __s_assignquest = cptr.lit("assignquest");
+const __s_s_has_granted_access_to_proceed_deeper = cptr.lit("%s has granted access to proceed deeper into the quest");
+const __s_leader_last = cptr.lit("leader_last");
+const __s_discourage = cptr.lit("discourage");
+const __s_nemesis_wantsit = cptr.lit("nemesis_wantsit");
+const __s_nemesis_first = cptr.lit("nemesis_first");
+const __s_nemesis_next = cptr.lit("nemesis_next");
+const __s_nemesis_other = cptr.lit("nemesis_other");
+const __s_quest_c = cptr.lit("quest.c");
+const __s_nemesis_speaks = cptr.lit("nemesis_speaks");
+const __s_guardtalk_after = cptr.lit("guardtalk_after");
+const __s_guardtalk_before = cptr.lit("guardtalk_before");
+const __s_s_speaks = cptr.lit("%s speaks:");
+const __s_i_m_finally_free = cptr.lit("I'm finally free!");
+const __s_quest_chat_unknown_quest_character_s = cptr.lit("quest_chat: Unknown quest character %s.");
 
 /** C ref: quest.c:26 */
 function* on_start() {
     if (!((cptr.ldI32(svq) & 1))) {
-        (yield* qt_pager(__sl0));
+        (yield* qt_pager(__s_firsttime));
         cptr.stI32(svq, 1);
     } else if ((cptr.ldI16o(u, $you_uz0) != cptr.ldI16o(u, $you_uz)) || (cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel))) {
         if ((((cptr.ldI32o(svq, $q_score_not_ready) & 7)) | 0) <= 2)
-            (yield* qt_pager(__sl1));
+            (yield* qt_pager(__s_nexttime));
         else
-            (yield* qt_pager(__sl2));
+            (yield* qt_pager(__s_othertime));
     }
 }
 
@@ -128,11 +128,11 @@ function* on_locate() {
         return;
     } else if (!((cptr.ldI32o(svq, $q_score_first_locate) & 1))) {
         if (from_above)
-            (yield* qt_pager(__sl3));
+            (yield* qt_pager(__s_locate_first));
         cptr.stI32o(svq, $q_score_first_locate, 1);
     } else {
         if (from_above)
-            (yield* qt_pager(__sl4));
+            (yield* qt_pager(__s_locate_next));
     }
 }
 
@@ -141,12 +141,12 @@ function* on_goal() {
     if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         return;
     } else if (!((cptr.ldI32o(svq, $q_score_made_goal) & 7))) {
-        (yield* qt_pager(__sl5));
+        (yield* qt_pager(__s_goal_first));
         cptr.stI32o(svq, $q_score_made_goal, 1);
     } else {
         let whichobjchains = 82;
         let qarti = find_quest_artifact(whichobjchains);
-        (yield* qt_pager(qarti ? __sl6 : __sl7));
+        (yield* qt_pager(qarti ? __s_goal_next : __s_goal_alt));
         if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
     }
@@ -171,7 +171,7 @@ export function* onquest() {
 export function* nemdead() {
     if (!((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         cptr.stI32o(svq, $q_score_killed_nemesis, 1);
-        (yield* qt_pager(__sl8));
+        (yield* qt_pager(__s_killed_nemesis));
     }
 }
 
@@ -187,7 +187,7 @@ export function* artitouch(obj) {
     if (!((cptr.ldI32o(svq, $q_score_touched_artifact) & 1))) {
         (yield* observe_object(obj));
         cptr.stI32o(svq, $q_score_touched_artifact, 1);
-        (yield* qt_pager(__sl9));
+        (yield* qt_pager(__s_gotit));
         (yield* exercise(NHC.A_WIS, 1));
     }
 }
@@ -208,12 +208,12 @@ function* is_pure(talk) {
     let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase);
     if (wizard() && talk) {
         if (cptr.ld1so(u, $you_ualign) != original_alignment) {
-            (yield* You(__sl10, align_str(cptr.ld1so(u, $you_ualign)), align_str(original_alignment)));
+            (yield* You(__s_are_currently_s_instead_of_s, align_str(cptr.ld1so(u, $you_ualign)), align_str(original_alignment)));
         } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) {
-            (yield* You(__sl11));
+            (yield* You(__s_have_converted));
         } else if (cptr.ldI32o(u, $you_ualign + $align_record) < NHM.MIN_QUEST_ALIGN) {
-            (yield* You(__sl12, cptr.ldI32o(u, $you_ualign + $align_record), NHM.MIN_QUEST_ALIGN));
-            if ((yield* yn_function(__sl13, null, 121, 1)) == 121)
+            (yield* You(__s_are_currently_d_and_require_d, cptr.ldI32o(u, $you_ualign + $align_record), NHM.MIN_QUEST_ALIGN));
+            if ((yield* yn_function(__s_adjust, null, 121, 1)) == 121)
                 cptr.stI32o(u, $you_ualign + $align_record, NHM.MIN_QUEST_ALIGN);
         }
     }
@@ -227,7 +227,7 @@ function* expulsion(seal) {
     let dest;
     let t;
     let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? NHC.UTOTYPE_NONE : NHC.UTOTYPE_PORTAL;
-    br = (yield* dungeon_branch(__sl14));
+    br = (yield* dungeon_branch(__s_the_quest));
     dest = (cptr.ldI16o(br, $branch_end1) == cptr.ldI16o(u, $you_uz)) ? cptr.add(br, $branch_end2) : cptr.add(br, $branch_end1);
     if (seal)
         portal_flag |= NHC.UTOTYPE_RMPORTAL;
@@ -243,7 +243,7 @@ function* expulsion(seal) {
         if (t)
             (yield* deltrap(t));
         else if (!reexpelled)
-            (yield* impossible(__sl15));
+            (yield* impossible(__s_quest_portal_already_gone));
     }
 }
 
@@ -255,24 +255,24 @@ export function* finish_quest(obj) {
             return;
         (yield* fully_identify_obj(obj));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
-            (yield* qt_pager(__sl16));
+            (yield* qt_pager(__s_hasamulet));
         } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR) {
-            (yield* verbalize(__sl17));
+            (yield* verbalize(__s_sorry_to_say_this_is_a_mere_imitation));
         } else {
-            (yield* verbalize(__sl18, (yield* the((yield* xname(obj))))));
+            (yield* verbalize(__s_ah_i_see_you_ve_found_s, (yield* the((yield* xname(obj))))));
         }
         return;
     }
     if ((cptr.ldI32o(u, $you_uhave) & 1)) {
-        (yield* qt_pager(__sl16));
+        (yield* qt_pager(__s_hasamulet));
         if ((otmp = carrying(NHC.AMULET_OF_YENDOR)) !== null) {
             (yield* fully_identify_obj(otmp));
             (yield* update_inventory());
         }
     } else {
-        (yield* qt_pager(!((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) ? __sl19 : __sl20));
+        (yield* qt_pager(!((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) ? __s_offeredit : __s_offeredit2));
         if ((otmp = carrying(NHC.BELL_OF_OPENING)) === null)
-            (yield* com_pager(__sl21));
+            (yield* com_pager(__s_quest_complete_no_bell));
     }
     cptr.stI32o(svq, $q_score_got_thanks, 1);
     if (obj) {
@@ -292,7 +292,7 @@ function* chat_with_leader(mtmp) {
         if ((cptr.ldI32o(u, $you_uhave) & 1))
             (yield* finish_quest(null));
         else
-            (yield* qt_pager(__sl22));
+            (yield* qt_pager(__s_posthanks));
     } else if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1)) {
         let otmp;
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -300,38 +300,38 @@ function* chat_with_leader(mtmp) {
                 break;
         (yield* finish_quest(otmp));
     } else if (((cptr.ldI32o(svq, $q_score_got_quest) & 1))) {
-        (yield* qt_pager(__sl23));
+        (yield* qt_pager(__s_encourage));
     } else {
         let purity = 0;
         if (!((cptr.ldI32o(svq, $q_score_met_leader) & 1))) {
-            (yield* qt_pager(__sl24));
+            (yield* qt_pager(__s_leader_first));
             cptr.stI32o(svq, $q_score_met_leader, 1);
             cptr.stI32o(svq, $q_score_not_ready, 0);
         } else
-            (yield* qt_pager(__sl25));
+            (yield* qt_pager(__s_leader_next));
         if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
             return;
         if (not_capable()) {
-            (yield* qt_pager(__sl26));
+            (yield* qt_pager(__s_badlevel));
             (yield* exercise(NHC.A_WIS, 1));
             (yield* expulsion(0));
         } else if ((purity = (yield* is_pure(1))) < 0) {
             if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
-                (yield* com_pager(__sl27));
+                (yield* com_pager(__s_banished));
                 cptr.stI32o(svq, $q_score_pissed_off, 1);
                 (yield* expulsion(0));
-                (yield* livelog_printf(2n, __sl28, (yield* noit_mon_nam(mtmp))));
+                (yield* livelog_printf(2n, __s_s_has_expelled_you_from_the_quest, (yield* noit_mon_nam(mtmp))));
             }
         } else if (purity == 0) {
-            (yield* qt_pager(__sl29));
+            (yield* qt_pager(__s_badalign));
             cptr.stI32o(svq, $q_score_not_ready, 1);
             (yield* exercise(NHC.A_WIS, 1));
             (yield* expulsion(0));
         } else {
-            (yield* qt_pager(__sl30));
+            (yield* qt_pager(__s_assignquest));
             (yield* exercise(NHC.A_WIS, 1));
             cptr.stI32o(svq, $q_score_got_quest, 1);
-            (yield* livelog_printf(2n, __sl31, (yield* noit_mon_nam(mtmp))));
+            (yield* livelog_printf(2n, __s_s_has_granted_access_to_proceed_deeper, (yield* noit_mon_nam(mtmp))));
         }
     }
 }
@@ -340,7 +340,7 @@ function* chat_with_leader(mtmp) {
 export function* leader_speaks(mtmp) {
     if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
         if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
-            (yield* qt_pager(__sl32));
+            (yield* qt_pager(__s_leader_last));
         }
         cptr.stI32o(svq, $q_score_pissed_off, 1);
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
@@ -353,7 +353,7 @@ export function* leader_speaks(mtmp) {
 
 /** C ref: quest.c:394 */
 function* chat_with_nemesis() {
-    (yield* qt_pager(__sl33));
+    (yield* qt_pager(__s_discourage));
     if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
         ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) - (1));
 }
@@ -362,20 +362,20 @@ function* chat_with_nemesis() {
 export function* nemesis_speaks() {
     if (!((cptr.ldI32o(svq, $q_score_in_battle) & 1))) {
         if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
-            (yield* qt_pager(__sl34));
+            (yield* qt_pager(__s_nemesis_wantsit));
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
-            (yield* qt_pager(__sl35));
+            (yield* qt_pager(__s_nemesis_first));
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 4)
-            (yield* qt_pager(__sl36));
+            (yield* qt_pager(__s_nemesis_next));
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
-            (yield* qt_pager(__sl37));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 414, __sl39), rn2(5)) : rn2(5)))
-            (yield* qt_pager(__sl33));
+            (yield* qt_pager(__s_nemesis_other));
+        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_quest_c, 414, __s_nemesis_speaks), rn2(5)) : rn2(5)))
+            (yield* qt_pager(__s_discourage));
         if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
         cptr.stI32o(svq, $q_score_met_nemesis, 1);
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__sl38, 420, __sl39), rn2(5)) : rn2(5)))
-        (yield* qt_pager(__sl33));
+    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_quest_c, 420, __s_nemesis_speaks), rn2(5)) : rn2(5)))
+        (yield* qt_pager(__s_discourage));
 }
 
 /** C ref: quest.c:426 — @param {CInt} mx @param {CInt} my */
@@ -389,18 +389,18 @@ export function* nemesis_stinks(mx, my) {
 /** C ref: quest.c:441 */
 function* chat_with_guardian() {
     if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
-        (yield* qt_pager(__sl40));
+        (yield* qt_pager(__s_guardtalk_after));
     else
-        (yield* qt_pager(__sl41));
+        (yield* qt_pager(__s_guardtalk_before));
 }
 
 /** C ref: quest.c:451 — @param {CPtr<struct monst>} mtmp */
 function* prisoner_speaks(mtmp) {
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         if (canseemon(mtmp))
-            (yield* pline(__sl42, (yield* Monnam(mtmp))));
+            (yield* pline(__s_s_speaks, (yield* Monnam(mtmp))));
         ;
-        (yield* verbalize(__sl43));
+        (yield* verbalize(__s_i_m_finally_free));
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
         adjalign(3);
@@ -425,7 +425,7 @@ export function* quest_chat(mtmp) {
         (yield* chat_with_guardian());
         break;
         default:
-        (yield* impossible(__sl44, (yield* mon_nam(mtmp))));
+        (yield* impossible(__s_quest_chat_unknown_quest_character_s, (yield* mon_nam(mtmp))));
     }
 }
 

@@ -86,101 +86,101 @@ const $Gender_he = FLD.Gender_he, $Role_mnum = FLD.Role_mnum,
     $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("aren't skilled enough to reach from %s.");
-const __sl1 = cptr.lit("%s");
-const __sl2 = cptr.lit("Saddle yourself?  Very funny...");
-const __sl3 = cptr.lit("I see nobody there.");
-const __sl4 = cptr.lit("%s doesn't need another one.");
-const __sl5 = cptr.lit("touch %s.");
-const __sl6 = cptr.lit("attempting to saddle %s");
-const __sl7 = cptr.lit("Shame on you!");
-const __sl8 = cptr.lit("I think %s would mind.");
-const __sl9 = cptr.lit("saddle such a creature.");
-const __sl10 = cptr.lit("riding gloves");
-const __sl11 = cptr.lit("riding boots");
-const __sl12 = cptr.lit("steed.c");
-const __sl13 = cptr.lit("use_saddle");
-const __sl14 = cptr.lit("put the saddle on %s.");
-const __sl15 = cptr.lit("%s resists!");
-const __sl16 = cptr.lit("put_saddle_on_mon: saddle obj could get orphaned");
-const __sl17 = cptr.lit("merged saddle?");
-const __sl18 = cptr.lit("Force the mount to succeed?");
-const __sl19 = cptr.lit("are already riding %s.");
-const __sl20 = cptr.lit("Maybe you should find a designated driver.");
-const __sl21 = cptr.lit("riding");
-const __sl22 = cptr.lit("Heal your leg%s?");
-const __sl23 = cptr.lit("s");
-const __sl24 = cptr.lit("");
-const __sl25 = cptr.lit("won't fit on a saddle.");
-const __sl26 = cptr.lit("do that while carrying so much stuff.");
-const __sl27 = cptr.lit("couldn't ride %s, let alone its tail.");
-const __sl28 = cptr.lit("are unable to swing your %s over.");
-const __sl29 = cptr.lit("are stuck here for now.");
-const __sl30 = cptr.lit("%s is not saddled.");
-const __sl31 = cptr.lit("attempting to ride %s");
-const __sl32 = cptr.lit("mount %s while %s's trapped in %s.");
-const __sl33 = cptr.lit("%s resists%s!");
-const __sl34 = cptr.lit(" and its leash comes off");
-const __sl35 = cptr.lit("ride that creature while under %s.");
-const __sl36 = cptr.lit("water");
-const __sl37 = cptr.lit("ride such a creature.");
-const __sl38 = cptr.lit("cannot reach %s.");
-const __sl39 = cptr.lit("%s armor is too stiff to be able to mount %s.");
-const __sl40 = cptr.lit("rusty");
-const __sl41 = cptr.lit("corroded");
-const __sl42 = cptr.lit("mount_steed");
-const __sl43 = cptr.lit("%s slips away from you.");
-const __sl44 = cptr.lit("slip while trying to get on %s.");
-const __sl45 = cptr.lit("slipped while mounting %s");
-const __sl46 = cptr.lit("%s magically floats up!");
-const __sl47 = cptr.lit("mount %s.");
-const __sl48 = cptr.lit("and %s take flight together.");
-const __sl49 = cptr.lit("aren't stealthy anymore.");
-const __sl50 = cptr.lit("kick_steed");
-const __sl51 = cptr.lit("%s stirs.");
-const __sl52 = cptr.lit("%s!");
-const __sl53 = cptr.lit("rouse");
-const __sl54 = cptr.lit("%s does not respond.");
-const __sl55 = cptr.lit("%s gallops!");
-const __sl56 = cptr.lit("landing_spot");
-const __sl57 = cptr.lit("knock from saddle: best %s, next %s or %s");
-const __sl58 = cptr.lit("fall");
-const __sl59 = cptr.lit("are thrown");
-const __sl60 = cptr.lit("%s off of %s!");
-const __sl61 = cptr.lit("dismount_steed");
-const __sl62 = cptr.lit("riding accident");
-const __sl63 = cptr.lit("can no longer ride %s.");
-const __sl64 = cptr.lit("can't.  The saddle %s cursed.");
-const __sl65 = cptr.lit("is");
-const __sl66 = cptr.lit("seems to be");
-const __sl67 = cptr.lit("can't.  There isn't anywhere for you to stand.");
-const __sl68 = cptr.lit("You've been through the dungeon on %s with no name.");
-const __sl69 = cptr.lit("It felt good to get out of the rain.");
-const __sl70 = cptr.lit("dismount %s.");
-const __sl71 = cptr.lit("seem less noisy now.");
-const __sl72 = cptr.lit("%s falls into the %s!");
-const __sl73 = cptr.lit("%s is pulled into the %s!");
-const __sl74 = cptr.lit("lava");
-const __sl75 = cptr.lit("maybewakesteed");
-const __sl76 = cptr.lit("%s wakes up.");
-const __sl77 = cptr.lit("your ");
-const __sl78 = cptr.lit("your new ");
-const __sl79 = cptr.lit("adjust yourself in the saddle on %s.");
-const __sl80 = cptr.lit("%s won't move!");
-const __sl81 = cptr.lit("%s is still eating.");
-const __sl82 = cptr.lit("trying to place %s at <%d,%d> mstate:%lx on %s");
-const __sl83 = cptr.lit("placing %s onto map, mstate:%lx, on %s?");
-const __sl84 = cptr.lit("steed");
-const __sl85 = cptr.lit("defunct monster");
-const __sl86 = cptr.lit("itself");
-const __sl87 = cptr.lit("placing %s over %s at <%d,%d>, mstates:%lx %lx on %s?");
+const __s_aren_t_skilled_enough_to_reach_from_s = cptr.lit("aren't skilled enough to reach from %s.");
+const __s_pct_s = cptr.lit("%s");
+const __s_saddle_yourself_very_funny = cptr.lit("Saddle yourself?  Very funny...");
+const __s_i_see_nobody_there = cptr.lit("I see nobody there.");
+const __s_s_doesn_t_need_another_one = cptr.lit("%s doesn't need another one.");
+const __s_touch_s = cptr.lit("touch %s.");
+const __s_attempting_to_saddle_s = cptr.lit("attempting to saddle %s");
+const __s_shame_on_you = cptr.lit("Shame on you!");
+const __s_i_think_s_would_mind = cptr.lit("I think %s would mind.");
+const __s_saddle_such_a_creature = cptr.lit("saddle such a creature.");
+const __s_riding_gloves = cptr.lit("riding gloves");
+const __s_riding_boots = cptr.lit("riding boots");
+const __s_steed_c = cptr.lit("steed.c");
+const __s_use_saddle = cptr.lit("use_saddle");
+const __s_put_the_saddle_on_s = cptr.lit("put the saddle on %s.");
+const __s_s_resists = cptr.lit("%s resists!");
+const __s_put_saddle_on_mon_saddle_obj_could_get = cptr.lit("put_saddle_on_mon: saddle obj could get orphaned");
+const __s_merged_saddle = cptr.lit("merged saddle?");
+const __s_force_the_mount_to_succeed = cptr.lit("Force the mount to succeed?");
+const __s_are_already_riding_s = cptr.lit("are already riding %s.");
+const __s_maybe_you_should_find_a_designated = cptr.lit("Maybe you should find a designated driver.");
+const __s_riding = cptr.lit("riding");
+const __s_heal_your_leg_s = cptr.lit("Heal your leg%s?");
+const __s_s = cptr.lit("s");
+const __s_empty = cptr.lit("");
+const __s_won_t_fit_on_a_saddle = cptr.lit("won't fit on a saddle.");
+const __s_do_that_while_carrying_so_much_stuff = cptr.lit("do that while carrying so much stuff.");
+const __s_couldn_t_ride_s_let_alone_its_tail = cptr.lit("couldn't ride %s, let alone its tail.");
+const __s_are_unable_to_swing_your_s_over = cptr.lit("are unable to swing your %s over.");
+const __s_are_stuck_here_for_now = cptr.lit("are stuck here for now.");
+const __s_s_is_not_saddled = cptr.lit("%s is not saddled.");
+const __s_attempting_to_ride_s = cptr.lit("attempting to ride %s");
+const __s_mount_s_while_s_s_trapped_in_s = cptr.lit("mount %s while %s's trapped in %s.");
+const __s_s_resists_s = cptr.lit("%s resists%s!");
+const __s_and_its_leash_comes_off = cptr.lit(" and its leash comes off");
+const __s_ride_that_creature_while_under_s = cptr.lit("ride that creature while under %s.");
+const __s_water = cptr.lit("water");
+const __s_ride_such_a_creature = cptr.lit("ride such a creature.");
+const __s_cannot_reach_s = cptr.lit("cannot reach %s.");
+const __s_s_armor_is_too_stiff_to_be_able_to = cptr.lit("%s armor is too stiff to be able to mount %s.");
+const __s_rusty = cptr.lit("rusty");
+const __s_corroded = cptr.lit("corroded");
+const __s_mount_steed = cptr.lit("mount_steed");
+const __s_s_slips_away_from_you = cptr.lit("%s slips away from you.");
+const __s_slip_while_trying_to_get_on_s = cptr.lit("slip while trying to get on %s.");
+const __s_slipped_while_mounting_s = cptr.lit("slipped while mounting %s");
+const __s_s_magically_floats_up = cptr.lit("%s magically floats up!");
+const __s_mount_s = cptr.lit("mount %s.");
+const __s_and_s_take_flight_together = cptr.lit("and %s take flight together.");
+const __s_aren_t_stealthy_anymore = cptr.lit("aren't stealthy anymore.");
+const __s_kick_steed = cptr.lit("kick_steed");
+const __s_s_stirs = cptr.lit("%s stirs.");
+const __s_pct_s_bang = cptr.lit("%s!");
+const __s_rouse = cptr.lit("rouse");
+const __s_s_does_not_respond = cptr.lit("%s does not respond.");
+const __s_s_gallops = cptr.lit("%s gallops!");
+const __s_landing_spot = cptr.lit("landing_spot");
+const __s_knock_from_saddle_best_s_next_s_or_s = cptr.lit("knock from saddle: best %s, next %s or %s");
+const __s_fall = cptr.lit("fall");
+const __s_are_thrown = cptr.lit("are thrown");
+const __s_s_off_of_s = cptr.lit("%s off of %s!");
+const __s_dismount_steed = cptr.lit("dismount_steed");
+const __s_riding_accident = cptr.lit("riding accident");
+const __s_can_no_longer_ride_s = cptr.lit("can no longer ride %s.");
+const __s_can_t_the_saddle_s_cursed = cptr.lit("can't.  The saddle %s cursed.");
+const __s_is = cptr.lit("is");
+const __s_seems_to_be = cptr.lit("seems to be");
+const __s_can_t_there_isn_t_anywhere_for_you_to = cptr.lit("can't.  There isn't anywhere for you to stand.");
+const __s_you_ve_been_through_the_dungeon_on_s = cptr.lit("You've been through the dungeon on %s with no name.");
+const __s_it_felt_good_to_get_out_of_the_rain = cptr.lit("It felt good to get out of the rain.");
+const __s_dismount_s = cptr.lit("dismount %s.");
+const __s_seem_less_noisy_now = cptr.lit("seem less noisy now.");
+const __s_s_falls_into_the_s = cptr.lit("%s falls into the %s!");
+const __s_s_is_pulled_into_the_s = cptr.lit("%s is pulled into the %s!");
+const __s_lava = cptr.lit("lava");
+const __s_maybewakesteed = cptr.lit("maybewakesteed");
+const __s_s_wakes_up = cptr.lit("%s wakes up.");
+const __s_your = cptr.lit("your ");
+const __s_your_new = cptr.lit("your new ");
+const __s_adjust_yourself_in_the_saddle_on_s = cptr.lit("adjust yourself in the saddle on %s.");
+const __s_s_won_t_move = cptr.lit("%s won't move!");
+const __s_s_is_still_eating = cptr.lit("%s is still eating.");
+const __s_trying_to_place_s_at_d_d_mstate_lx_on_s = cptr.lit("trying to place %s at <%d,%d> mstate:%lx on %s");
+const __s_placing_s_onto_map_mstate_lx_on_s = cptr.lit("placing %s onto map, mstate:%lx, on %s?");
+const __s_steed = cptr.lit("steed");
+const __s_defunct_monster = cptr.lit("defunct monster");
+const __s_itself = cptr.lit("itself");
+const __s_placing_s_over_s_at_d_d_mstates_lx_lx = cptr.lit("placing %s over %s at <%d,%d>, mstates:%lx %lx on %s?");
 
 /** C ref: steed.c:8 — char[7] */
 const steeds = [NHC.S_QUADRUPED, NHC.S_UNICORN, NHC.S_ANGEL, NHC.S_CENTAUR, NHC.S_DRAGON, NHC.S_JABBERWOCK, 0];
 
 /** C ref: steed.c:17 */
 export function* rider_cant_reach() {
-    (yield* You(__sl0, (yield* y_monnam(cptr.ldPtro(u, $you_usteed)))));
+    (yield* You(__s_aren_t_skilled_enough_to_reach_from_s, (yield* y_monnam(cptr.ldPtro(u, $you_usteed)))));
 }
 
 /** C ref: steed.c:26 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
@@ -197,41 +197,41 @@ export function* use_saddle(otmp) {
     if (!(yield* u_handsy()))
         return NHM.ECMD_OK;
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(yield* getdir(null))) {
-        (yield* pline(__sl1, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
+        (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
         return NHM.ECMD_CANCEL;
     }
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy)) {
-        (yield* pline(__sl2));
+        (yield* pline(__s_saddle_yourself_very_funny));
         return NHM.ECMD_OK;
     }
     if (!isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))) || !(mtmp = (cptr.ldPtro3(svl, (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, 168, (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !canspotmon(mtmp)) {
-        (yield* pline(__sl3));
+        (yield* pline(__s_i_see_nobody_there));
         return NHM.ECMD_TIME;
     }
     if ((cptr.ldI64o(mtmp, $monst_misc_worn_check) & 1048576n) != 0n || (yield* which_armor(mtmp, 1048576n))) {
-        (yield* pline(__sl4, (yield* Monnam(mtmp))));
+        (yield* pline(__s_s_doesn_t_need_another_one, (yield* Monnam(mtmp))));
         return NHM.ECMD_TIME;
     }
     ptr = cptr.ldPtro(mtmp, $monst_data);
     if (touch_petrifies(ptr) && !uarmg.v && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
-        (yield* You(__sl5, (yield* mon_nam(mtmp))));
+        (yield* You(__s_touch_s, (yield* mon_nam(mtmp))));
         if (!(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
-            void cptr.sprintf(cptr.decay(kbuf), __sl6, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))));
+            void cptr.sprintf(cptr.decay(kbuf), __s_attempting_to_saddle_s, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))));
             (yield* instapetrify(cptr.decay(kbuf)));
         }
     }
     if (cptr.eq(ptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, 96))) {
-        (yield* pline(__sl7));
+        (yield* pline(__s_shame_on_you));
         (yield* exercise(NHC.A_WIS, 0));
         return NHM.ECMD_TIME;
     }
     if ((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0) {
-        (yield* pline(__sl8, (yield* mon_nam(mtmp))));
+        (yield* pline(__s_i_think_s_would_mind, (yield* mon_nam(mtmp))));
         return NHM.ECMD_TIME;
     }
     if (!can_saddle(mtmp)) {
-        (yield* You_cant(__sl9));
+        (yield* You_cant(__s_saddle_such_a_creature));
         return NHM.ECMD_TIME;
     }
     chance = ((((acurr(NHC.A_DEX)) + (((acurr(NHC.A_CHA)) / 2) | 0)) | 0) + Math.imul(2, cptr.ld1so(mtmp, $monst_mtame))) | 0;
@@ -257,21 +257,21 @@ export function* use_saddle(otmp) {
     }
     if (HConfusion() || Fumbling() || Glib())
         chance = (chance - 20) | 0;
-    else if (uarmg.v && (yield* objdescr_is(uarmg.v, __sl10)))
+    else if (uarmg.v && (yield* objdescr_is(uarmg.v, __s_riding_gloves)))
         chance = (chance + 10) | 0;
-    else if (uarmf.v && (yield* objdescr_is(uarmf.v, __sl11)))
+    else if (uarmf.v && (yield* objdescr_is(uarmf.v, __s_riding_boots)))
         chance = (chance + 10) | 0;
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
         chance = (chance - 50) | 0;
     (yield* maybewakesteed(mtmp));
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl12, 129, __sl13), rn2(100)) : rn2(100)) < chance) {
-        (yield* You(__sl14, (yield* mon_nam(mtmp))));
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 129, __s_use_saddle), rn2(100)) : rn2(100)) < chance) {
+        (yield* You(__s_put_the_saddle_on_s, (yield* mon_nam(mtmp))));
         if (cptr.ldI64o(otmp, $obj_owornmask))
             (yield* remove_worn_item(otmp, 0));
         (yield* freeinv(otmp));
         (yield* put_saddle_on_mon(otmp, mtmp));
     } else
-        (yield* pline(__sl15, (yield* Monnam(mtmp))));
+        (yield* pline(__s_s_resists, (yield* Monnam(mtmp))));
     return NHM.ECMD_TIME;
 }
 
@@ -279,7 +279,7 @@ export function* use_saddle(otmp) {
 export function* put_saddle_on_mon(saddle, mtmp) {
     if (!can_saddle(mtmp) || (yield* which_armor(mtmp, 1048576n))) {
         if (saddle)
-            (yield* impossible(__sl16));
+            (yield* impossible(__s_put_saddle_on_mon_saddle_obj_could_get));
         return;
     }
     if (!saddle) {
@@ -290,7 +290,7 @@ export function* put_saddle_on_mon(saddle, mtmp) {
         }
     }
     if ((yield* mpickobj(mtmp, saddle)))
-        (yield* panic(__sl17));
+        (yield* panic(__s_merged_saddle));
     cptr.stI64o(mtmp, $monst_misc_worn_check, cptr.ldI64o(mtmp, $monst_misc_worn_check) | 1048576n);
     cptr.stI64o(saddle, $obj_owornmask, 1048576n);
     cptr.stI32o(saddle, $obj_corpsenm, cptr.ldI32o(mtmp, $monst_m_id) | 0);
@@ -308,7 +308,7 @@ export function* doride() {
     if (cptr.ldPtro(u, $you_usteed)) {
         (yield* dismount_steed(NHC.DISMOUNT_BYCHOICE));
     } else if ((yield* getdir(null)) && isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)))) {
-        if (wizard() && (yield* yn_function(__sl18, cptr.decay(ynchars), 110, 1)) == 121)
+        if (wizard() && (yield* yn_function(__s_force_the_mount_to_succeed, cptr.decay(ynchars), 110, 1)) == 121)
             forcemount = 1;
         return ((yield* mount_steed((cptr.ldPtro3(svl, (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, 168, (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), forcemount)) ? NHM.ECMD_TIME : NHM.ECMD_OK);
     } else {
@@ -323,106 +323,106 @@ export function* mount_steed(mtmp, force) {
     let buf = new Uint8Array(256);
     let ptr;
     if (cptr.ldPtro(u, $you_usteed)) {
-        (yield* You(__sl19, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
+        (yield* You(__s_are_already_riding_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
         return 0;
     }
     if (Hallucination() && !force) {
-        (yield* pline(__sl20));
+        (yield* pline(__s_maybe_you_should_find_a_designated));
         return 0;
     }
     if (Wounded_legs()) {
         let qbuf = new Uint8Array(128);
-        (yield* legs_in_no_shape(__sl21, 0));
-        void cptr.sprintf(cptr.decay(qbuf), __sl22, ((HWounded_legs() & 393216n) == 393216n) ? __sl23 : __sl24);
+        (yield* legs_in_no_shape(__s_riding, 0));
+        void cptr.sprintf(cptr.decay(qbuf), __s_heal_your_leg_s, ((HWounded_legs() & 393216n) == 393216n) ? __s_s : __s_empty);
         if (force && wizard() && (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) == 121)
             (yield* heal_legs(0));
         else
             return 0;
     }
     if (Upolyd() && (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n))) {
-        (yield* You(__sl25));
+        (yield* You(__s_won_t_fit_on_a_saddle));
         return 0;
     }
     if (!force && (near_capacity() > NHC.SLT_ENCUMBER)) {
-        (yield* You_cant(__sl26));
+        (yield* You_cant(__s_do_that_while_carrying_so_much_stuff));
         return 0;
     }
     if (!mtmp || (!force && ((Blind() && !Blind_telepat()) || (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))) {
-        (yield* pline(__sl3));
+        (yield* pline(__s_i_see_nobody_there));
         return 0;
     }
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0) != cptr.ldI16o(mtmp, $monst_mx) || ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0) != cptr.ldI16o(mtmp, $monst_my))) {
-        (yield* You(__sl27, (yield* a_monnam(mtmp))));
+        (yield* You(__s_couldn_t_ride_s_let_alone_its_tail, (yield* a_monnam(mtmp))));
         return 0;
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || cptr.ldPtro(u, $you_ustuck) || cptr.ldI32o(u, $you_utrap) || Punished() || !(yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), i16(((cptr.ldI16o(mtmp, $monst_mx) - cptr.ldI16(u)) | 0)), i16(((cptr.ldI16o(mtmp, $monst_my) - cptr.ldI16o(u, $you_uy)) | 0)), NHM.TEST_MOVE))) {
         if (Punished() || !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || cptr.ldPtro(u, $you_ustuck) || cptr.ldI32o(u, $you_utrap)))
-            (yield* You(__sl28, (yield* body_part(NHC.LEG))));
+            (yield* You(__s_are_unable_to_swing_your_s_over, (yield* body_part(NHC.LEG))));
         else
-            (yield* You(__sl29));
+            (yield* You(__s_are_stuck_here_for_now));
         return 0;
     }
     otmp = (yield* which_armor(mtmp, 1048576n));
     if (!otmp) {
-        (yield* pline(__sl30, (yield* Monnam(mtmp))));
+        (yield* pline(__s_s_is_not_saddled, (yield* Monnam(mtmp))));
         return 0;
     }
     ptr = cptr.ldPtro(mtmp, $monst_data);
     if (touch_petrifies(ptr) && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
-        (yield* You(__sl5, (yield* mon_nam(mtmp))));
-        void cptr.sprintf(cptr.decay(kbuf), __sl31, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))));
+        (yield* You(__s_touch_s, (yield* mon_nam(mtmp))));
+        void cptr.sprintf(cptr.decay(kbuf), __s_attempting_to_ride_s, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))));
         (yield* instapetrify(cptr.decay(kbuf)));
     }
     if (!cptr.ld1so(mtmp, $monst_mtame) || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
-        (yield* pline(__sl8, (yield* mon_nam(mtmp))));
+        (yield* pline(__s_i_think_s_would_mind, (yield* mon_nam(mtmp))));
         return 0;
     }
     if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
         let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        (yield* You_cant(__sl32, (yield* mon_nam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)), (yield* an((yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))))));
+        (yield* You_cant(__s_mount_s_while_s_s_trapped_in_s, (yield* mon_nam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)), (yield* an((yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))))));
         return 0;
     }
     if (!force && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !(cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) + -1))) {
         (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-        (yield* pline(__sl33, (yield* Monnam(mtmp)), (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 ? __sl34 : __sl24));
+        (yield* pline(__s_s_resists_s, (yield* Monnam(mtmp)), (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 ? __s_and_its_leash_comes_off : __s_empty));
         if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
             (yield* m_unleash(mtmp, 0));
         return 0;
     }
     if (!force && ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !((cptr.ldU64o((ptr), $permonst_mflags1) & 2n) != 0n)) {
-        (yield* You_cant(__sl35, hliquid(__sl36)));
+        (yield* You_cant(__s_ride_that_creature_while_under_s, hliquid(__s_water)));
         return 0;
     }
     if (!can_saddle(mtmp) || !can_ride(mtmp)) {
-        (yield* You_cant(__sl37));
+        (yield* You_cant(__s_ride_such_a_creature));
         return 0;
     }
     if (!force && !is_floater(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && Levitation() && !Lev_at_will()) {
-        (yield* You(__sl38, (yield* mon_nam(mtmp))));
+        (yield* You(__s_cannot_reach_s, (yield* mon_nam(mtmp))));
         return 0;
     }
     if (!force && uarm.v && is_metallic(uarm.v) && greatest_erosion(uarm.v)) {
-        (yield* Your(__sl39, (cptr.ldI32o(uarm.v, $obj_oeroded) & 3) | 0 ? __sl40 : __sl41, (yield* mon_nam(mtmp))));
+        (yield* Your(__s_s_armor_is_too_stiff_to_be_able_to, (cptr.ldI32o(uarm.v, $obj_oeroded) & 3) | 0 ? __s_rusty : __s_corroded, (yield* mon_nam(mtmp))));
         return 0;
     }
-    if (!force && (HConfusion() || Fumbling() || Glib() || Wounded_legs() || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 || (cptr.ldI32o(otmp, $obj_greased) & 1) | 0 || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(mtmp, $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl12, 341, __sl42), rnd(20)) : rnd(20))))) {
+    if (!force && (HConfusion() || Fumbling() || Glib() || Wounded_legs() || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 || (cptr.ldI32o(otmp, $obj_greased) & 1) | 0 || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(mtmp, $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 341, __s_mount_steed), rnd(20)) : rnd(20))))) {
         if (Levitation()) {
-            (yield* pline(__sl43, (yield* Monnam(mtmp))));
+            (yield* pline(__s_s_slips_away_from_you, (yield* Monnam(mtmp))));
             return 0;
         }
-        (yield* You(__sl44, (yield* mon_nam(mtmp))));
-        void cptr.sprintf(cptr.decay(buf), __sl45, (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, 7, 1)));
-        (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 354, __sl42), rn2(5)) : rn2(5)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 354, __sl42), rn2(5)) : rn2(5)) + 10) | 0))), cptr.decay(buf), NHM.NO_KILLER_PREFIX));
+        (yield* You(__s_slip_while_trying_to_get_on_s, (yield* mon_nam(mtmp))));
+        void cptr.sprintf(cptr.decay(buf), __s_slipped_while_mounting_s, (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, 7, 1)));
+        (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 354, __s_mount_steed), rn2(5)) : rn2(5)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 354, __s_mount_steed), rn2(5)) : rn2(5)) + 10) | 0))), cptr.decay(buf), NHM.NO_KILLER_PREFIX));
         return 0;
     }
     (yield* maybewakesteed(mtmp));
     if (!force) {
         if (Levitation() && !is_floater(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n))
-            (yield* pline(__sl46, (yield* Monnam(mtmp))));
-        (yield* You(__sl47, (yield* mon_nam(mtmp))));
+            (yield* pline(__s_s_magically_floats_up, (yield* Monnam(mtmp))));
+        (yield* You(__s_mount_s, (yield* mon_nam(mtmp))));
         if (Flying())
-            (yield* You(__sl48, (yield* mon_nam(mtmp))));
+            (yield* You(__s_and_s_take_flight_together, (yield* mon_nam(mtmp))));
     }
     if (uwep.v && is_pole(uwep.v))
         cptr.st1o(gu, $instance_globals_u_unweapon, 0);
@@ -431,7 +431,7 @@ export function* mount_steed(mtmp, force) {
         let was_stealthy = schar((Stealth() != 0));
         steed_vs_stealth();
         if (was_stealthy && !Stealth())
-            (yield* You(__sl49));
+            (yield* You(__s_aren_t_stealthy_anymore));
     }
     cptr.stPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
     (yield* teleds(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHM.TELEDS_ALLOW_DRAG));
@@ -458,7 +458,7 @@ export function* kick_steed() {
     if (helpless(cptr.ldPtro(u, $you_usteed))) {
         void cptr.strcpy(cptr.decay(He), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_usteed), NHM.PRONOUN_HALLU), 48, $Gender_he)));
         cptr.st1(cptr.decay(He), highc(cptr.ld1s(cptr.decay(He))));
-        if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__sl12, 415, __sl50), rn2(2)) : rn2(2))) {
+        if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 415, __s_kick_steed), rn2(2)) : rn2(2))) {
             if ((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1))
                 cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_msleeping, 0);
             else if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) > 2)
@@ -468,24 +468,24 @@ export function* kick_steed() {
                 cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove, 1);
             }
             if (helpless(cptr.ldPtro(u, $you_usteed)))
-                (yield* pline(__sl51, cptr.decay(He)));
+                (yield* pline(__s_s_stirs, cptr.decay(He)));
             else
-                (yield* pline(__sl52, (yield* monverbself(cptr.ldPtro(u, $you_usteed), cptr.decay(He), __sl53, null))));
+                (yield* pline(__s_pct_s_bang, (yield* monverbself(cptr.ldPtro(u, $you_usteed), cptr.decay(He), __s_rouse, null))));
         } else
-            (yield* pline(__sl54, cptr.decay(He)));
+            (yield* pline(__s_s_does_not_respond, cptr.decay(He)));
         return;
     }
     if (cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame))
         (cptr.st1o(cptr.ldPtro(u, $you_usteed), $monst_mtame, cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) + -1)) - (-1);
     if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) && (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mleashed) & 1) | 0)
         (yield* m_unleash(cptr.ldPtro(u, $you_usteed), 1));
-    if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__sl12, 441, __sl50), rnd(20)) : rnd(20)))) {
+    if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 441, __s_kick_steed), rnd(20)) : rnd(20)))) {
         (yield* newsym(cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_mx), cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_my)));
         (yield* dismount_steed(NHC.DISMOUNT_THROWN));
         return;
     }
-    (yield* pline(__sl55, (yield* Monnam(cptr.ldPtro(u, $you_usteed)))));
-    cptr.stI64o(u, $you_ugallop, cptr.ldI64o(u, $you_ugallop) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 448, __sl50), rn2(20)) : rn2(20)) + 30) | 0)));
+    (yield* pline(__s_s_gallops, (yield* Monnam(cptr.ldPtro(u, $you_usteed)))));
+    cptr.stI64o(u, $you_ugallop, cptr.ldI64o(u, $you_ugallop) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 448, __s_kick_steed), rn2(20)) : rn2(20)) + 30) | 0)));
     return;
 }
 
@@ -515,7 +515,7 @@ function* landing_spot(spot, reason, forceit) {
     if (reason == NHC.DISMOUNT_KNOCKED && j != NHC.DIR_ERR) {
         best_j = j;
         cptr.stI16o(cptr.decay(try$), 0, i16(cptr.ldI32o(u, $you_dx)), 4), cptr.stI16o2(cptr.decay(try$), 0, 4, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
-        i = (rng_log_enabled() ? (rng_log_set_caller(__sl12, 480, __sl56), rn2(2)) : rn2(2));
+        i = (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 480, __s_landing_spot), rn2(2)) : rn2(2));
         clockwise_j = ((((j) + 1) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
         dirtocoord(cc, clockwise_j);
         cptr.stI16o(cptr.decay(try$), (1 + i) | 0, cptr.ldI16(cc), 4), cptr.stI16o2(cptr.decay(try$), (1 + i) | 0, 4, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
@@ -524,9 +524,9 @@ function* landing_spot(spot, reason, forceit) {
         cptr.stI16o(cptr.decay(try$), (2 - i) | 0, cptr.ldI16(cc), 4), cptr.stI16o2(cptr.decay(try$), (2 - i) | 0, 4, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
         n = 3;
         {
-            if ((yield* debugcore(__sl12, 1))) {
+            if ((yield* debugcore(__s_steed_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl57, directionname(best_j), directionname(clockwise_j), directionname(counterclk_j)));
+                (yield* pline(__s_knock_from_saddle_best_s_next_s_or_s, directionname(best_j), directionname(clockwise_j), directionname(counterclk_j)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -553,7 +553,7 @@ function* landing_spot(spot, reason, forceit) {
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), i16(((x - cptr.ldI16(u)) | 0)), i16(((y - cptr.ldI16o(u, $you_uy)) | 0)), NHM.TEST_MOVE))) {
                 ++viable;
                 distance = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                if (min_distance < 0 || ((best_j == -1) ? (distance < min_distance) : (j < 3)) || (distance == min_distance && !(rng_log_enabled() ? (rng_log_set_caller(__sl12, 543, __sl56), rn2(viable)) : rn2(viable)))) {
+                if (min_distance < 0 || ((best_j == -1) ? (distance < min_distance) : (j < 3)) || (distance == min_distance && !(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 543, __s_landing_spot), rn2(viable)) : rn2(viable)))) {
                     kn_trap = schar((i == 0 && ((t = t_at(x, y)) !== null && (cptr.ldI32o(t, $trap_tseen) & 1) | 0 && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE) ? 1 : 0));
                     boulder = schar((i <= 1 && (sobj_at(NHC.BOULDER, x, y) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n)) ? 1 : 0));
                     if (!kn_trap && !boulder) {
@@ -591,27 +591,27 @@ export function* dismount_steed(reason) {
     cptr.stPtro(u, $you_usteed, null);
     ufly = schar((Flying() ? 1 : 0));
     ulev = schar((Levitation() ? 1 : 0));
-    verb = u_locomotion(__sl58);
+    verb = u_locomotion(__s_fall);
     cptr.stPtro(u, $you_usteed, mtmp);
     otmp = (yield* which_armor(mtmp, 1048576n));
     switch (reason) {
         case NHC.DISMOUNT_THROWN:
-        verb = __sl59;
+        verb = __s_are_thrown;
         // @FallThrough
         ;
         case NHC.DISMOUNT_KNOCKED:
         case NHC.DISMOUNT_FELL:
-        (yield* You(__sl60, verb, (yield* mon_nam(mtmp))));
+        (yield* You(__s_s_off_of_s, verb, (yield* mon_nam(mtmp))));
         if (!have_spot)
             have_spot = (yield* landing_spot(cc, reason, 1));
         if (!ulev && !ufly) {
-            (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 612, __sl61), rn2(10)) : rn2(10)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__sl12, 612, __sl61), rn2(10)) : rn2(10)) + 10) | 0))), __sl62, NHM.KILLED_BY_AN));
-            (yield* set_wounded_legs(393216n, (Number(BigInt.asIntN(32, HWounded_legs())) + (((rng_log_enabled() ? (rng_log_set_caller(__sl12, 614, __sl61), rn2(5)) : rn2(5)) + 5) | 0)) | 0));
+            (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 612, __s_dismount_steed), rn2(10)) : rn2(10)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 612, __s_dismount_steed), rn2(10)) : rn2(10)) + 10) | 0))), __s_riding_accident, NHM.KILLED_BY_AN));
+            (yield* set_wounded_legs(393216n, (Number(BigInt.asIntN(32, HWounded_legs())) + (((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 614, __s_dismount_steed), rn2(5)) : rn2(5)) + 5) | 0)) | 0));
             repair_leg_damage = 0;
         }
         break;
         case NHC.DISMOUNT_POLY:
-        (yield* You(__sl63, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
+        (yield* You(__s_can_no_longer_ride_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
         if (!have_spot)
             have_spot = (yield* landing_spot(cc, reason, 1));
         break;
@@ -624,20 +624,20 @@ export function* dismount_steed(reason) {
         case NHC.DISMOUNT_BYCHOICE:
         default:
         if (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
-            (yield* You(__sl64, (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 ? __sl65 : __sl66));
+            (yield* You(__s_can_t_the_saddle_s_cursed, (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 ? __s_is : __s_seems_to_be));
             cptr.stI32o(otmp, $obj_bknown, 1);
             return;
         }
         if (!have_spot) {
-            (yield* You(__sl67));
+            (yield* You(__s_can_t_there_isn_t_anywhere_for_you_to));
             return;
         }
         if (!has_mgivenname(mtmp)) {
-            (yield* pline(__sl68, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))))));
+            (yield* pline(__s_you_ve_been_through_the_dungeon_on_s, (yield* an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))))));
             if (Hallucination())
-                (yield* pline(__sl69));
+                (yield* pline(__s_it_felt_good_to_get_out_of_the_rain));
         } else
-            (yield* You(__sl70, (yield* mon_nam(mtmp))));
+            (yield* You(__s_dismount_s, (yield* mon_nam(mtmp))));
     }
     if (repair_leg_damage)
         (yield* heal_legs(1));
@@ -647,7 +647,7 @@ export function* dismount_steed(reason) {
         let was_stealthy = schar((Stealth() != 0));
         steed_vs_stealth();
         if (Stealth() && !was_stealthy)
-            (yield* You(__sl71));
+            (yield* You(__s_seem_less_noisy_now));
     }
     if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP || cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT || cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
         cptr.stI32o(mtmp, $monst_mtrapped, 1);
@@ -673,13 +673,13 @@ export function* dismount_steed(reason) {
             if (grounded(mdat)) {
                 if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                     if (!Underwater())
-                        (yield* pline(__sl72, (yield* Monnam(mtmp)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+                        (yield* pline(__s_s_falls_into_the_s, (yield* Monnam(mtmp)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
                     if (!cant_drown(mdat)) {
                         (yield* killed(mtmp));
                         adjalign(-1);
                     }
                 } else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-                    (yield* pline(__sl73, (yield* Monnam(mtmp)), hliquid(__sl74)));
+                    (yield* pline(__s_s_is_pulled_into_the_s, (yield* Monnam(mtmp)), hliquid(__s_lava)));
                     if (!likes_lava(mdat)) {
                         (yield* killed(mtmp));
                         adjalign(-1);
@@ -702,7 +702,7 @@ export function* dismount_steed(reason) {
                 (yield* killed(mtmp));
                 adjalign(-1);
             } else {
-                (yield* monkilled(mtmp, __sl24, 0));
+                (yield* monkilled(mtmp, __s_empty, 0));
             }
         }
     }
@@ -727,7 +727,7 @@ function* maybewakesteed(steed) {
     cptr.stI32o(steed, $monst_msleeping, 0);
     if (frozen) {
         frozen = (((frozen + 1) | 0) / 2) | 0;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl12, 836, __sl75), rn2(frozen)) : rn2(frozen))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 836, __s_maybewakesteed), rn2(frozen)) : rn2(frozen))) {
             cptr.stI32o(steed, $monst_mfrozen, 0);
             cptr.stI32o(steed, $monst_mcanmove, 1);
         } else {
@@ -735,7 +735,7 @@ function* maybewakesteed(steed) {
         }
     }
     if (wasimmobile && !helpless(steed))
-        (yield* pline(__sl76, (yield* Monnam(steed))));
+        (yield* pline(__s_s_wakes_up, (yield* Monnam(steed))));
     (yield* finish_meating(steed));
 }
 
@@ -747,8 +747,8 @@ export function* poly_steed(steed, oldshape) {
         let buf = new Uint8Array(256);
         void cptr.strcpy(cptr.decay(buf), (yield* x_monnam(steed, NHM.ARTICLE_YOUR, null, NHM.SUPPRESS_SADDLE, 0)));
         if (!cptr.eq(oldshape, cptr.ldPtro(steed, $monst_data)))
-            void strsubst(cptr.decay(buf), __sl77, __sl78);
-        (yield* You(__sl79, cptr.decay(buf)));
+            void strsubst(cptr.decay(buf), __s_your, __s_your_new);
+        (yield* You(__s_adjust_yourself_in_the_saddle_on_s, cptr.decay(buf)));
         steed_vs_stealth();
     }
 }
@@ -758,11 +758,11 @@ export function* stucksteed(checkfeeding) {
     let steed = cptr.ldPtro(u, $you_usteed);
     if (steed) {
         if (helpless(steed)) {
-            (yield* pline(__sl80, (yield* YMonnam(steed))));
+            (yield* pline(__s_s_won_t_move, (yield* YMonnam(steed))));
             return 1;
         }
         if (checkfeeding && cptr.ldI32o(steed, $monst_meating)) {
-            (yield* pline(__sl81, (yield* YMonnam(steed))));
+            (yield* pline(__s_s_is_still_eating, (yield* YMonnam(steed))));
             return 1;
         }
     }
@@ -778,19 +778,19 @@ export function* place_monster(mon, x, y) {
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (!isok(x, y) && (x != 0 || y != 0 || !(cptr.ldI32o(mon, $monst_isgd) & 1))) {
         describe_level(cptr.decay(buf), 0);
-        (yield* impossible(__sl82, minimal_monnam(mon, 1), x, y, cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
+        (yield* impossible(__s_trying_to_place_s_at_d_d_mstate_lx_on_s, minimal_monnam(mon, 1), x, y, cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
         x = (y = 0);
     }
     if ((cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) && !cptr.ld1so(gi, $instance_globals_i_in_steed_dismounting)) || ((cptr.ldI32o((mon), $monst_mhp) < 1) && !((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && x == 0 && y == 0))) {
         describe_level(cptr.decay(buf), 0);
-        (yield* impossible(__sl83, (cptr.eq(mon, cptr.ldPtro(u, $you_usteed))) ? __sl84 : __sl85, cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
+        (yield* impossible(__s_placing_s_onto_map_mstate_lx_on_s, (cptr.eq(mon, cptr.ldPtro(u, $you_usteed))) ? __s_steed : __s_defunct_monster, cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
         return;
     }
     if ((othermon = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) !== null) {
         describe_level(cptr.decay(buf), 0);
         monnm = minimal_monnam(mon, 0);
-        othnm = (!cptr.eq(mon, othermon)) ? minimal_monnam(othermon, 1) : __sl86;
-        (yield* impossible(__sl87, monnm, othnm, x, y, cptr.ldI64o(othermon, $monst_mstate), cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
+        othnm = (!cptr.eq(mon, othermon)) ? minimal_monnam(othermon, 1) : __s_itself;
+        (yield* impossible(__s_placing_s_over_s_at_d_d_mstates_lx_lx, monnm, othnm, x, y, cptr.ldI64o(othermon, $monst_mstate), cptr.ldI64o(mon, $monst_mstate), cptr.decay(buf)));
     }
     cptr.stI16o(mon, $monst_mx, x), cptr.stI16o(mon, $monst_my, y);
     cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mon);

@@ -101,218 +101,218 @@ const $Role_mnum = FLD.Role_mnum, $_cmd_queue_key = FLD._cmd_queue_key,
     $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("were wearing %s.");
-const __sl1 = cptr.lit(" around your %s");
-const __sl2 = cptr.lit("are now wearing %s%s.");
-const __sl3 = cptr.lit("move very quietly.");
-const __sl4 = cptr.lit("float imperceptibly.");
-const __sl5 = cptr.lit("walk very quietly.");
-const __sl6 = cptr.lit("%s%s are noisy.");
-const __sl7 = cptr.lit("and ");
-const __sl8 = cptr.lit("sure");
-const __sl9 = cptr.lit("");
-const __sl10 = cptr.lit("that monsters%s have difficulty pinpointing your location.");
-const __sl11 = cptr.lit(" no longer");
-const __sl12 = cptr.lit("yourself speed up%s.");
-const __sl13 = cptr.lit(" a bit more");
-const __sl14 = cptr.lit("do_wear.c");
-const __sl15 = cptr.lit("Boots_on");
-const __sl16 = cptr.lit("yourself slow down%s.");
-const __sl17 = cptr.lit(" a bit");
-const __sl18 = cptr.lit("can %s!");
-const __sl19 = cptr.lit("no longer see through yourself");
-const __sl20 = cptr.lit("Suddenly you can%s yourself.");
-const __sl21 = cptr.lit(" see through");
-const __sl22 = cptr.lit("not see");
-const __sl23 = cptr.lit("%s very tightly.");
-const __sl24 = cptr.lit("fit");
-const __sl25 = cptr.lit("can %s.");
-const __sl26 = cptr.lit("see through yourself");
-const __sl27 = cptr.lit("no longer see yourself");
-const __sl28 = cptr.lit("Suddenly you can %s.");
-const __sl29 = cptr.lit("%s for a moment.");
-const __sl30 = cptr.lit("vibrate");
-const __sl31 = cptr.lit("%s %s for a moment.");
-const __sl32 = cptr.lit("glow");
-const __sl33 = cptr.lit("My brain hurts!");
-const __sl34 = cptr.lit("%s.");
-const __sl35 = cptr.lit("like sitting in a corner");
-const __sl36 = cptr.lit("giddy");
-const __sl37 = cptr.lit("Gloves_on");
-const __sl38 = cptr.lit("%s %s in your bare %s.");
-const __sl39 = cptr.lit("now wield");
-const __sl40 = cptr.lit("are wielding");
-const __sl41 = cptr.lit("%s %s");
-const __sl42 = cptr.lit("removing");
-const __sl43 = cptr.lit("losing");
-const __sl44 = cptr.lit("set of ");
-const __sl45 = cptr.lit("resistance timing out");
-const __sl46 = cptr.lit("wielding_corpse");
-const __sl47 = cptr.lit("%s while wielding %s");
-const __sl48 = cptr.lit("speed up%s.");
-const __sl49 = cptr.lit("slow down.");
-const __sl50 = cptr.lit("%s %s to shine %s!");
-const __sl51 = cptr.lit("begin");
-const __sl52 = cptr.lit("%s shining.");
-const __sl53 = cptr.lit("stop");
-const __sl54 = cptr.lit("are no longer bothered by the poison gas.");
-const __sl55 = cptr.lit("are suddenly very %s!");
-const __sl56 = cptr.lit("feminine");
-const __sl57 = cptr.lit("masculine");
-const __sl58 = cptr.lit("don't feel like yourself.");
-const __sl59 = cptr.lit("amulet disintegrates!");
-const __sl60 = cptr.lit("It constricts your throat!");
-const __sl61 = cptr.lit("Amulet_on");
-const __sl62 = cptr.lit("are now in flight.");
-const __sl63 = cptr.lit("suddenly inhale an unhealthy amount of %s!");
-const __sl64 = cptr.lit("water");
-const __sl65 = cptr.lit("are breathing poison gas!");
-const __sl66 = cptr.lit("%s is no longer constricted!");
-const __sl67 = cptr.lit("can breathe more easily!");
-const __sl68 = cptr.lit("stop flying");
-const __sl69 = cptr.lit("land");
-const __sl70 = cptr.lit("Suddenly you are transparent, but there!");
-const __sl71 = cptr.lit("Strange... I didn't know you had that ring.");
-const __sl72 = cptr.lit("Suddenly you cannot see yourself.");
-const __sl73 = cptr.lit("body seems to unfade%s.");
-const __sl74 = cptr.lit(" completely");
-const __sl75 = cptr.lit("..");
-const __sl76 = cptr.lit("see any more.");
-const __sl77 = cptr.lit("For the first time in your life, you can see!");
-const __sl78 = cptr.lit("can see!");
-const __sl79 = cptr.lit("Blindf_off without eyewear?");
-const __sl80 = cptr.lit("still cannot see.");
-const __sl81 = cptr.lit("see anything now!");
-const __sl82 = cptr.lit("can see again.");
-const __sl83 = cptr.lit("You stop %s %s.");
-const __sl84 = cptr.lit("putting on");
-const __sl85 = cptr.lit("taking off");
-const __sl86 = cptr.lit("are not wearing that.");
-const __sl87 = cptr.lit(" and ");
-const __sl88 = cptr.lit("armor_or_accessory_off");
-const __sl89 = cptr.lit(" without taking off your %s first");
-const __sl90 = cptr.lit("; it's embedded");
-const __sl91 = cptr.lit("take that off%s.");
-const __sl92 = cptr.lit("removing strange accessory: %s");
-const __sl93 = cptr.lit("%s merged with your skin!");
-const __sl94 = cptr.lit("dragon scales are");
-const __sl95 = cptr.lit("dragon scale mail is");
-const __sl96 = cptr.lit("Not wearing any armor or accessories.");
-const __sl97 = cptr.lit("take off");
-const __sl98 = cptr.lit("Not wearing any accessories or armor.");
-const __sl99 = cptr.lit("remove");
-const __sl100 = cptr.lit("cursed without otmp");
-const __sl101 = cptr.lit("Despite your slippery %s, you can't.");
-const __sl102 = cptr.lit("can't.  %s cursed.");
-const __sl103 = cptr.lit("They are");
-const __sl104 = cptr.lit("It is");
-const __sl105 = cptr.lit("disrobing");
-const __sl106 = cptr.lit("Taking off unknown armor (%d: %d), delay %d");
-const __sl107 = cptr.lit("armoroff");
-const __sl108 = cptr.lit("You finish taking off your %s.");
-const __sl109 = cptr.lit("Taking off unknown armor (%d: %d), no delay");
-const __sl110 = cptr.lit("are already wearing %s%c");
-const __sl111 = cptr.lit("wear %s because you're wearing %s there already.");
-const __sl112 = cptr.lit("can't wear any armor in your current form.");
-const __sl113 = cptr.lit("%s will not fit on your body.");
-const __sl114 = cptr.lit("cannot do that while holding your %s.");
-const __sl115 = cptr.lit("%s won't fit over your horn%s.");
-const __sl116 = cptr.lit("s");
-const __sl117 = cptr.lit("cannot wear a shield while wielding a two-handed %s.");
-const __sl118 = cptr.lit("cannot wear a shield while wielding two weapons.");
-const __sl119 = cptr.lit("have no feet...");
-const __sl120 = cptr.lit("have too many hooves to wear %s.");
-const __sl121 = cptr.lit("%s is trapped!");
-const __sl122 = cptr.lit("%s are stuck in the %s!");
-const __sl123 = cptr.lit("%s is attached to the buried ball!");
-const __sl124 = cptr.lit("cannot wear gloves over your %s.");
-const __sl125 = cptr.lit("%s are too slippery to pull on %s.");
-const __sl126 = cptr.lit("wear that over your %s.");
-const __sl127 = cptr.lit("cannot wear armor over a %s.");
-const __sl128 = cptr.lit("some armor");
-const __sl129 = cptr.lit("wear");
-const __sl130 = cptr.lit("narrowly avoid losing all chance at your goal.");
-const __sl131 = cptr.lit("are suddenly overcome with shame and change your mind.");
-const __sl132 = cptr.lit("cannot make the ring stick to your body.");
-const __sl133 = cptr.lit("are no more %s%s to fill.");
-const __sl134 = cptr.lit("ring-");
-const __sl135 = cptr.lit("Which %s%s, Right or Left?");
-const __sl136 = cptr.lit("%s are too slippery to remove, so you cannot put on the ring.");
-const __sl137 = cptr.lit("cannot remove your %s to put on the ring.");
-const __sl138 = cptr.lit("cannot free your weapon %s to put on the ring.");
-const __sl139 = cptr.lit("an amulet");
-const __sl140 = cptr.lit("have no head to wear %s on.");
-const __sl141 = cptr.lit("%s is already covered by a towel.");
-const __sl142 = cptr.lit("lenses");
-const __sl143 = cptr.lit("a blindfold");
-const __sl144 = cptr.lit("some lenses");
-const __sl145 = cptr.lit("wear that!");
-const __sl146 = cptr.lit("wearing armor not worn as armor? [%08lx]");
-const __sl147 = cptr.lit("dressing up");
-const __sl148 = cptr.lit("You finish your dressing maneuver.");
-const __sl149 = cptr.lit("putting on unexpected type of accessory: %s");
-const __sl150 = cptr.lit("Don't even bother.");
-const __sl151 = cptr.lit("are already wearing a full complement of armor.");
-const __sl152 = cptr.lit("%s%s are full, and you're already wearing an amulet and %s.");
-const __sl153 = cptr.lit("put on");
-const __sl154 = cptr.lit("%s off your %s.");
-const __sl155 = cptr.lit("rings slip");
-const __sl156 = cptr.lit("ring slips");
-const __sl157 = cptr.lit("left ");
-const __sl158 = cptr.lit("right ");
-const __sl159 = cptr.lit("%s %s%s from your %s%s.");
-const __sl160 = cptr.lit("also ");
-const __sl161 = cptr.lit("slip");
-const __sl162 = cptr.lit("food");
-const __sl163 = cptr.lit("%s %s%s %s%s from your %s%s.");
-const __sl164 = cptr.lit("corpse");
-const __sl165 = cptr.lit("The");
-const __sl166 = cptr.lit("Your");
-const __sl167 = cptr.lit("other ");
-const __sl168 = cptr.lit("some_armor");
-const __sl169 = cptr.lit("stuck_ring: neither left nor right?");
-const __sl170 = cptr.lit("ring is stuck.");
-const __sl171 = cptr.lit("free a weapon %s");
-const __sl172 = cptr.lit("take off your %s%s");
-const __sl173 = cptr.lit("slippery ");
-const __sl174 = cptr.lit("cannot %s to remove the ring.");
-const __sl175 = cptr.lit("are unable to take off your %s while wielding that %s.");
-const __sl176 = cptr.lit("%s %s are too slippery to take off.");
-const __sl177 = cptr.lit("bear trap prevents you from pulling your %s out.");
-const __sl178 = cptr.lit("are stuck in the %s, and cannot pull your %s out.");
-const __sl179 = cptr.lit("remove your %s");
-const __sl180 = cptr.lit("release your %s");
-const __sl181 = cptr.lit("cannot %s to take off %s.");
-const __sl182 = cptr.lit("select_off: %s???");
-const __sl183 = cptr.lit("are no longer wielding either weapon.");
-const __sl184 = cptr.lit("are %s.");
-const __sl185 = cptr.lit("%sno longer %s.");
-const __sl186 = cptr.lit("are ");
-const __sl187 = cptr.lit("wielding two weapons at once");
-const __sl188 = cptr.lit("have a second weapon readied");
-const __sl189 = cptr.lit("no longer have ammunition readied.");
-const __sl190 = cptr.lit("do_takeoff: taking off %lx");
-const __sl191 = cptr.lit("finish %s.");
-const __sl192 = cptr.lit("take_off: taking off %lx");
-const __sl193 = cptr.lit("better_not_take_that_off");
-const __sl194 = cptr.lit("Take off your %s despite carrying a dead %s?");
-const __sl195 = cptr.lit("continue %s.");
-const __sl196 = cptr.lit("are not wearing anything.");
-const __sl197 = cptr.lit("disarming");
-const __sl198 = cptr.lit("What type of things do you want to take off?");
-const __sl199 = cptr.lit("What do you want to take off?");
-const __sl200 = cptr.lit("is nothing else you can remove or unwield.");
-const __sl201 = cptr.lit("Your %s crumbles and turns to dust!");
-const __sl202 = cptr.lit("Your %s %s to dust and %s to the %s!");
-const __sl203 = cptr.lit("turn");
-const __sl204 = cptr.lit("fall");
-const __sl205 = cptr.lit("Your %s crumbles into tiny threads and falls apart!");
-const __sl206 = cptr.lit("Your %s turns to dust and is blown away!");
-const __sl207 = cptr.lit("Your %s vanish!");
-const __sl208 = cptr.lit("Your %s disintegrate!");
-const __sl209 = cptr.lit("Your %s crumbles away!");
-const __sl210 = cptr.lit("You");
-const __sl211 = cptr.lit("destroy_arm");
+const __s_were_wearing_s = cptr.lit("were wearing %s.");
+const __s_around_your_s = cptr.lit(" around your %s");
+const __s_are_now_wearing_s_s = cptr.lit("are now wearing %s%s.");
+const __s_move_very_quietly = cptr.lit("move very quietly.");
+const __s_float_imperceptibly = cptr.lit("float imperceptibly.");
+const __s_walk_very_quietly = cptr.lit("walk very quietly.");
+const __s_s_s_are_noisy = cptr.lit("%s%s are noisy.");
+const __s_and = cptr.lit("and ");
+const __s_sure = cptr.lit("sure");
+const __s_empty = cptr.lit("");
+const __s_that_monsters_s_have_difficulty = cptr.lit("that monsters%s have difficulty pinpointing your location.");
+const __s_no_longer = cptr.lit(" no longer");
+const __s_yourself_speed_up_s = cptr.lit("yourself speed up%s.");
+const __s_a_bit_more = cptr.lit(" a bit more");
+const __s_do_wear_c = cptr.lit("do_wear.c");
+const __s_boots_on = cptr.lit("Boots_on");
+const __s_yourself_slow_down_s = cptr.lit("yourself slow down%s.");
+const __s_a_bit = cptr.lit(" a bit");
+const __s_can_s = cptr.lit("can %s!");
+const __s_no_longer_see_through_yourself = cptr.lit("no longer see through yourself");
+const __s_suddenly_you_can_s_yourself = cptr.lit("Suddenly you can%s yourself.");
+const __s_see_through = cptr.lit(" see through");
+const __s_not_see = cptr.lit("not see");
+const __s_s_very_tightly = cptr.lit("%s very tightly.");
+const __s_fit = cptr.lit("fit");
+const __s_can_s__2 = cptr.lit("can %s.");
+const __s_see_through_yourself = cptr.lit("see through yourself");
+const __s_no_longer_see_yourself = cptr.lit("no longer see yourself");
+const __s_suddenly_you_can_s = cptr.lit("Suddenly you can %s.");
+const __s_s_for_a_moment = cptr.lit("%s for a moment.");
+const __s_vibrate = cptr.lit("vibrate");
+const __s_s_s_for_a_moment = cptr.lit("%s %s for a moment.");
+const __s_glow = cptr.lit("glow");
+const __s_my_brain_hurts = cptr.lit("My brain hurts!");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_like_sitting_in_a_corner = cptr.lit("like sitting in a corner");
+const __s_giddy = cptr.lit("giddy");
+const __s_gloves_on = cptr.lit("Gloves_on");
+const __s_s_s_in_your_bare_s = cptr.lit("%s %s in your bare %s.");
+const __s_now_wield = cptr.lit("now wield");
+const __s_are_wielding = cptr.lit("are wielding");
+const __s_s_s = cptr.lit("%s %s");
+const __s_removing = cptr.lit("removing");
+const __s_losing = cptr.lit("losing");
+const __s_set_of = cptr.lit("set of ");
+const __s_resistance_timing_out = cptr.lit("resistance timing out");
+const __s_wielding_corpse = cptr.lit("wielding_corpse");
+const __s_s_while_wielding_s = cptr.lit("%s while wielding %s");
+const __s_speed_up_s = cptr.lit("speed up%s.");
+const __s_slow_down = cptr.lit("slow down.");
+const __s_s_s_to_shine_s = cptr.lit("%s %s to shine %s!");
+const __s_begin = cptr.lit("begin");
+const __s_s_shining = cptr.lit("%s shining.");
+const __s_stop = cptr.lit("stop");
+const __s_are_no_longer_bothered_by_the_poison_gas = cptr.lit("are no longer bothered by the poison gas.");
+const __s_are_suddenly_very_s = cptr.lit("are suddenly very %s!");
+const __s_feminine = cptr.lit("feminine");
+const __s_masculine = cptr.lit("masculine");
+const __s_don_t_feel_like_yourself = cptr.lit("don't feel like yourself.");
+const __s_amulet_disintegrates = cptr.lit("amulet disintegrates!");
+const __s_it_constricts_your_throat = cptr.lit("It constricts your throat!");
+const __s_amulet_on = cptr.lit("Amulet_on");
+const __s_are_now_in_flight = cptr.lit("are now in flight.");
+const __s_suddenly_inhale_an_unhealthy_amount_of_s = cptr.lit("suddenly inhale an unhealthy amount of %s!");
+const __s_water = cptr.lit("water");
+const __s_are_breathing_poison_gas = cptr.lit("are breathing poison gas!");
+const __s_s_is_no_longer_constricted = cptr.lit("%s is no longer constricted!");
+const __s_can_breathe_more_easily = cptr.lit("can breathe more easily!");
+const __s_stop_flying = cptr.lit("stop flying");
+const __s_land = cptr.lit("land");
+const __s_suddenly_you_are_transparent_but_there = cptr.lit("Suddenly you are transparent, but there!");
+const __s_strange_i_didn_t_know_you_had_that_ring = cptr.lit("Strange... I didn't know you had that ring.");
+const __s_suddenly_you_cannot_see_yourself = cptr.lit("Suddenly you cannot see yourself.");
+const __s_body_seems_to_unfade_s = cptr.lit("body seems to unfade%s.");
+const __s_completely = cptr.lit(" completely");
+const __s_dot2 = cptr.lit("..");
+const __s_see_any_more = cptr.lit("see any more.");
+const __s_for_the_first_time_in_your_life_you_can = cptr.lit("For the first time in your life, you can see!");
+const __s_can_see = cptr.lit("can see!");
+const __s_blindf_off_without_eyewear = cptr.lit("Blindf_off without eyewear?");
+const __s_still_cannot_see = cptr.lit("still cannot see.");
+const __s_see_anything_now = cptr.lit("see anything now!");
+const __s_can_see_again = cptr.lit("can see again.");
+const __s_you_stop_s_s = cptr.lit("You stop %s %s.");
+const __s_putting_on = cptr.lit("putting on");
+const __s_taking_off = cptr.lit("taking off");
+const __s_are_not_wearing_that = cptr.lit("are not wearing that.");
+const __s_and__2 = cptr.lit(" and ");
+const __s_armor_or_accessory_off = cptr.lit("armor_or_accessory_off");
+const __s_without_taking_off_your_s_first = cptr.lit(" without taking off your %s first");
+const __s_it_s_embedded = cptr.lit("; it's embedded");
+const __s_take_that_off_s = cptr.lit("take that off%s.");
+const __s_removing_strange_accessory_s = cptr.lit("removing strange accessory: %s");
+const __s_s_merged_with_your_skin = cptr.lit("%s merged with your skin!");
+const __s_dragon_scales_are = cptr.lit("dragon scales are");
+const __s_dragon_scale_mail_is = cptr.lit("dragon scale mail is");
+const __s_not_wearing_any_armor_or_accessories = cptr.lit("Not wearing any armor or accessories.");
+const __s_take_off = cptr.lit("take off");
+const __s_not_wearing_any_accessories_or_armor = cptr.lit("Not wearing any accessories or armor.");
+const __s_remove = cptr.lit("remove");
+const __s_cursed_without_otmp = cptr.lit("cursed without otmp");
+const __s_despite_your_slippery_s_you_can_t = cptr.lit("Despite your slippery %s, you can't.");
+const __s_can_t_s_cursed = cptr.lit("can't.  %s cursed.");
+const __s_they_are = cptr.lit("They are");
+const __s_it_is = cptr.lit("It is");
+const __s_disrobing = cptr.lit("disrobing");
+const __s_taking_off_unknown_armor_d_d_delay_d = cptr.lit("Taking off unknown armor (%d: %d), delay %d");
+const __s_armoroff = cptr.lit("armoroff");
+const __s_you_finish_taking_off_your_s = cptr.lit("You finish taking off your %s.");
+const __s_taking_off_unknown_armor_d_d_no_delay = cptr.lit("Taking off unknown armor (%d: %d), no delay");
+const __s_are_already_wearing_s_c = cptr.lit("are already wearing %s%c");
+const __s_wear_s_because_you_re_wearing_s_there = cptr.lit("wear %s because you're wearing %s there already.");
+const __s_can_t_wear_any_armor_in_your_current = cptr.lit("can't wear any armor in your current form.");
+const __s_s_will_not_fit_on_your_body = cptr.lit("%s will not fit on your body.");
+const __s_cannot_do_that_while_holding_your_s = cptr.lit("cannot do that while holding your %s.");
+const __s_s_won_t_fit_over_your_horn_s = cptr.lit("%s won't fit over your horn%s.");
+const __s_s = cptr.lit("s");
+const __s_cannot_wear_a_shield_while_wielding_a = cptr.lit("cannot wear a shield while wielding a two-handed %s.");
+const __s_cannot_wear_a_shield_while_wielding_two = cptr.lit("cannot wear a shield while wielding two weapons.");
+const __s_have_no_feet = cptr.lit("have no feet...");
+const __s_have_too_many_hooves_to_wear_s = cptr.lit("have too many hooves to wear %s.");
+const __s_s_is_trapped = cptr.lit("%s is trapped!");
+const __s_s_are_stuck_in_the_s = cptr.lit("%s are stuck in the %s!");
+const __s_s_is_attached_to_the_buried_ball = cptr.lit("%s is attached to the buried ball!");
+const __s_cannot_wear_gloves_over_your_s = cptr.lit("cannot wear gloves over your %s.");
+const __s_s_are_too_slippery_to_pull_on_s = cptr.lit("%s are too slippery to pull on %s.");
+const __s_wear_that_over_your_s = cptr.lit("wear that over your %s.");
+const __s_cannot_wear_armor_over_a_s = cptr.lit("cannot wear armor over a %s.");
+const __s_some_armor = cptr.lit("some armor");
+const __s_wear = cptr.lit("wear");
+const __s_narrowly_avoid_losing_all_chance_at = cptr.lit("narrowly avoid losing all chance at your goal.");
+const __s_are_suddenly_overcome_with_shame_and = cptr.lit("are suddenly overcome with shame and change your mind.");
+const __s_cannot_make_the_ring_stick_to_your_body = cptr.lit("cannot make the ring stick to your body.");
+const __s_are_no_more_s_s_to_fill = cptr.lit("are no more %s%s to fill.");
+const __s_ring = cptr.lit("ring-");
+const __s_which_s_s_right_or_left = cptr.lit("Which %s%s, Right or Left?");
+const __s_s_are_too_slippery_to_remove_so_you = cptr.lit("%s are too slippery to remove, so you cannot put on the ring.");
+const __s_cannot_remove_your_s_to_put_on_the_ring = cptr.lit("cannot remove your %s to put on the ring.");
+const __s_cannot_free_your_weapon_s_to_put_on_the = cptr.lit("cannot free your weapon %s to put on the ring.");
+const __s_an_amulet = cptr.lit("an amulet");
+const __s_have_no_head_to_wear_s_on = cptr.lit("have no head to wear %s on.");
+const __s_s_is_already_covered_by_a_towel = cptr.lit("%s is already covered by a towel.");
+const __s_lenses = cptr.lit("lenses");
+const __s_a_blindfold = cptr.lit("a blindfold");
+const __s_some_lenses = cptr.lit("some lenses");
+const __s_wear_that = cptr.lit("wear that!");
+const __s_wearing_armor_not_worn_as_armor_08lx = cptr.lit("wearing armor not worn as armor? [%08lx]");
+const __s_dressing_up = cptr.lit("dressing up");
+const __s_you_finish_your_dressing_maneuver = cptr.lit("You finish your dressing maneuver.");
+const __s_putting_on_unexpected_type_of_accessory = cptr.lit("putting on unexpected type of accessory: %s");
+const __s_don_t_even_bother = cptr.lit("Don't even bother.");
+const __s_are_already_wearing_a_full_complement = cptr.lit("are already wearing a full complement of armor.");
+const __s_s_s_are_full_and_you_re_already_wearing = cptr.lit("%s%s are full, and you're already wearing an amulet and %s.");
+const __s_put_on = cptr.lit("put on");
+const __s_s_off_your_s = cptr.lit("%s off your %s.");
+const __s_rings_slip = cptr.lit("rings slip");
+const __s_ring_slips = cptr.lit("ring slips");
+const __s_left = cptr.lit("left ");
+const __s_right = cptr.lit("right ");
+const __s_s_s_s_from_your_s_s = cptr.lit("%s %s%s from your %s%s.");
+const __s_also = cptr.lit("also ");
+const __s_slip = cptr.lit("slip");
+const __s_food = cptr.lit("food");
+const __s_s_s_s_s_s_from_your_s_s = cptr.lit("%s %s%s %s%s from your %s%s.");
+const __s_corpse = cptr.lit("corpse");
+const __s_the = cptr.lit("The");
+const __s_your = cptr.lit("Your");
+const __s_other = cptr.lit("other ");
+const __s_some_armor__2 = cptr.lit("some_armor");
+const __s_stuck_ring_neither_left_nor_right = cptr.lit("stuck_ring: neither left nor right?");
+const __s_ring_is_stuck = cptr.lit("ring is stuck.");
+const __s_free_a_weapon_s = cptr.lit("free a weapon %s");
+const __s_take_off_your_s_s = cptr.lit("take off your %s%s");
+const __s_slippery = cptr.lit("slippery ");
+const __s_cannot_s_to_remove_the_ring = cptr.lit("cannot %s to remove the ring.");
+const __s_are_unable_to_take_off_your_s_while = cptr.lit("are unable to take off your %s while wielding that %s.");
+const __s_s_s_are_too_slippery_to_take_off = cptr.lit("%s %s are too slippery to take off.");
+const __s_bear_trap_prevents_you_from_pulling = cptr.lit("bear trap prevents you from pulling your %s out.");
+const __s_are_stuck_in_the_s_and_cannot_pull_your = cptr.lit("are stuck in the %s, and cannot pull your %s out.");
+const __s_remove_your_s = cptr.lit("remove your %s");
+const __s_release_your_s = cptr.lit("release your %s");
+const __s_cannot_s_to_take_off_s = cptr.lit("cannot %s to take off %s.");
+const __s_select_off_s = cptr.lit("select_off: %s???");
+const __s_are_no_longer_wielding_either_weapon = cptr.lit("are no longer wielding either weapon.");
+const __s_are_s = cptr.lit("are %s.");
+const __s_sno_longer_s = cptr.lit("%sno longer %s.");
+const __s_are = cptr.lit("are ");
+const __s_wielding_two_weapons_at_once = cptr.lit("wielding two weapons at once");
+const __s_have_a_second_weapon_readied = cptr.lit("have a second weapon readied");
+const __s_no_longer_have_ammunition_readied = cptr.lit("no longer have ammunition readied.");
+const __s_do_takeoff_taking_off_lx = cptr.lit("do_takeoff: taking off %lx");
+const __s_finish_s = cptr.lit("finish %s.");
+const __s_take_off_taking_off_lx = cptr.lit("take_off: taking off %lx");
+const __s_better_not_take_that_off = cptr.lit("better_not_take_that_off");
+const __s_take_off_your_s_despite_carrying_a_dead = cptr.lit("Take off your %s despite carrying a dead %s?");
+const __s_continue_s = cptr.lit("continue %s.");
+const __s_are_not_wearing_anything = cptr.lit("are not wearing anything.");
+const __s_disarming = cptr.lit("disarming");
+const __s_what_type_of_things_do_you_want_to_take = cptr.lit("What type of things do you want to take off?");
+const __s_what_do_you_want_to_take_off = cptr.lit("What do you want to take off?");
+const __s_is_nothing_else_you_can_remove_or = cptr.lit("is nothing else you can remove or unwield.");
+const __s_your_s_crumbles_and_turns_to_dust = cptr.lit("Your %s crumbles and turns to dust!");
+const __s_your_s_s_to_dust_and_s_to_the_s = cptr.lit("Your %s %s to dust and %s to the %s!");
+const __s_turn = cptr.lit("turn");
+const __s_fall = cptr.lit("fall");
+const __s_your_s_crumbles_into_tiny_threads_and = cptr.lit("Your %s crumbles into tiny threads and falls apart!");
+const __s_your_s_turns_to_dust_and_is_blown_away = cptr.lit("Your %s turns to dust and is blown away!");
+const __s_your_s_vanish = cptr.lit("Your %s vanish!");
+const __s_your_s_disintegrate = cptr.lit("Your %s disintegrate!");
+const __s_your_s_crumbles_away = cptr.lit("Your %s crumbles away!");
+const __s_you = cptr.lit("You");
+const __s_destroy_arm = cptr.lit("destroy_arm");
 
 /** C ref: do_wear.c:8 — char[13] */
 const see_yourself = cptr.bytes("see yourself");
@@ -382,7 +382,7 @@ export function* fingers_or_gloves(check_gloves) {
 /** C ref: do_wear.c:68 — @param {CPtr<struct obj>} otmp */
 export function* off_msg(otmp) {
     if (cptr.ld1so(flags, $flag_verbose))
-        (yield* You(__sl0, (yield* doname(otmp))));
+        (yield* You(__s_were_wearing_s, (yield* doname(otmp))));
 }
 
 /** C ref: do_wear.c:76 — @param {CPtr<struct obj>} otmp */
@@ -396,8 +396,8 @@ function* on_msg(otmp) {
         let otmp_name = (yield* xname(otmp));
         cptr.st1o(cptr.decay(how), 0, 0, 1);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL)
-            void cptr.sprintf(cptr.decay(how), __sl1, (yield* body_part(NHC.HEAD)));
-        (yield* You(__sl2, obj_is_pname(otmp) ? (yield* the(otmp_name)) : (yield* an(otmp_name)), cptr.decay(how)));
+            void cptr.sprintf(cptr.decay(how), __s_around_your_s, (yield* body_part(NHC.HEAD)));
+        (yield* You(__s_are_now_wearing_s_s, obj_is_pname(otmp) ? (yield* the(otmp_name)) : (yield* an(otmp_name)), cptr.decay(how)));
     }
 }
 
@@ -412,14 +412,14 @@ function* toggle_stealth(obj, oldprop, on) {
             (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
         if (on) {
             if (!is_boots(obj))
-                (yield* You(__sl3));
+                (yield* You(__s_move_very_quietly));
             else if (Levitation() || Flying())
-                (yield* You(__sl4));
+                (yield* You(__s_float_imperceptibly));
             else
-                (yield* You(__sl5));
+                (yield* You(__s_walk_very_quietly));
         } else {
             let riding = schar((!cptr.eq(cptr.ldPtro(u, $you_usteed), (null))));
-            (yield* You(__sl6, riding ? __sl7 : __sl8, riding ? (yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_YOUR, (null), 12, 0)) : __sl9));
+            (yield* You(__s_s_s_are_noisy, riding ? __s_and : __s_sure, riding ? (yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_YOUR, (null), 12, 0)) : __s_empty));
         }
     }
 }
@@ -431,7 +431,7 @@ export function* toggle_displacement(obj, oldprop, on) {
     if (!oldprop && !(cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops + $prop_intrinsic)) && !(cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops + $prop_blocked)) && ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) || (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
         if (obj)
             (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
-        (yield* You_feel(__sl10, on ? __sl9 : __sl11));
+        (yield* You_feel(__s_that_monsters_s_have_difficulty, on ? __s_empty : __s_no_longer));
     }
 }
 
@@ -457,7 +457,7 @@ export function* Boots_on() {
         case NHC.SPEED_BOOTS:
         if (!oldprop && !(HFast() & 16777215n)) {
             (yield* discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1));
-            (yield* You_feel(__sl12, (oldprop || HFast()) ? __sl13 : __sl9));
+            (yield* You_feel(__s_yourself_speed_up_s, (oldprop || HFast()) ? __s_a_bit_more : __s_empty));
         }
         break;
         case NHC.ELVEN_BOOTS:
@@ -465,7 +465,7 @@ export function* Boots_on() {
         break;
         case NHC.FUMBLE_BOOTS:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl14, 233, __sl15), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 233, __s_boots_on), rnd(20)) : rnd(20)));
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
@@ -500,7 +500,7 @@ export function* Boots_off() {
         case NHC.SPEED_BOOTS:
         if (!Very_fast() && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
             (yield* discover_object((otyp), 1, 1, 1));
-            (yield* You_feel(__sl16, Fast() ? __sl17 : __sl9));
+            (yield* You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty));
         }
         break;
         case NHC.WATER_WALKING_BOOTS:
@@ -560,18 +560,18 @@ function* Cloak_on() {
         case NHC.MUMMY_WRAPPING:
         if ((HInvis() || EInvis()) && !Blind()) {
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* You(__sl18, See_invisible() ? __sl19 : cptr.decay(see_yourself)));
+            (yield* You(__s_can_s, See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)));
         }
         break;
         case NHC.CLOAK_OF_INVISIBILITY:
         if (!oldprop && !HInvis() && !Blind()) {
             (yield* discover_object((cptr.ldI16o(uarmc.v, $obj_otyp)), 1, 1, 1));
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__sl20, See_invisible() ? __sl21 : __sl22));
+            (yield* pline(__s_suddenly_you_can_s_yourself, See_invisible() ? __s_see_through : __s_not_see));
         }
         break;
         case NHC.OILSKIN_CLOAK:
-        (yield* pline(__sl23, (yield* Tobjnam(uarmc.v, __sl24))));
+        (yield* pline(__s_s_very_tightly, (yield* Tobjnam(uarmc.v, __s_fit))));
         break;
         case NHC.ALCHEMY_SMOCK:
         cptr.stI64o2(u, NHC.ACID_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops) | 2n);
@@ -611,14 +611,14 @@ export function* Cloak_off() {
         case NHC.MUMMY_WRAPPING:
         if (Invis() && !Blind()) {
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* You(__sl25, See_invisible() ? __sl26 : __sl27));
+            (yield* You(__s_can_s__2, See_invisible() ? __s_see_through_yourself : __s_no_longer_see_yourself));
         }
         break;
         case NHC.CLOAK_OF_INVISIBILITY:
         if (!oldprop && !HInvis() && !Blind()) {
             (yield* discover_object(NHC.CLOAK_OF_INVISIBILITY, 1, 1, 1));
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__sl28, See_invisible() ? __sl19 : cptr.decay(see_yourself)));
+            (yield* pline(__s_suddenly_you_can_s, See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)));
         }
         break;
         case NHC.ALCHEMY_SMOCK:
@@ -663,9 +663,9 @@ function* Helmet_on() {
         case NHC.DUNCE_CAP:
         if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_cursed) & 1)) {
             if (Blind())
-                (yield* pline(__sl29, (yield* Tobjnam(uarmh.v, __sl30))));
+                (yield* pline(__s_s_for_a_moment, (yield* Tobjnam(uarmh.v, __s_vibrate))));
             else
-                (yield* pline(__sl31, (yield* Tobjnam(uarmh.v, __sl32)), hcolor(cptr.ldPtr(c_color_names))));
+                (yield* pline(__s_s_s_for_a_moment, (yield* Tobjnam(uarmh.v, __s_glow)), hcolor(cptr.ldPtr(c_color_names))));
             (yield* curse(uarmh.v));
             if (Blind())
                 (yield* set_bknown(uarmh.v, 0));
@@ -676,9 +676,9 @@ function* Helmet_on() {
         }
         cptr.st1(disp, 1);
         if (Hallucination()) {
-            (yield* pline(__sl33));
+            (yield* pline(__s_my_brain_hurts));
         } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
-            (yield* You_feel(__sl34, (acurr(NHC.A_INT)) <= (((((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon))) | 0) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0) ? __sl35 : __sl36));
+            (yield* You_feel(__s_pct_s_dot, (acurr(NHC.A_INT)) <= (((((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon))) | 0) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0) ? __s_like_sitting_in_a_corner : __s_giddy));
         } else {
             (yield* discover_object(NHC.HELM_OF_OPPOSITE_ALIGNMENT, 1, 1, 1));
         }
@@ -751,7 +751,7 @@ function* Gloves_on() {
         break;
         case NHC.GAUNTLETS_OF_FUMBLING:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__sl14, 586, __sl37), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 586, __s_gloves_on), rnd(20)) : rnd(20)));
         break;
         case NHC.GAUNTLETS_OF_POWER:
         (yield* discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1));
@@ -779,12 +779,12 @@ export function* wielding_corpse(obj, how, voluntary) {
     if (touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)) && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
         let hbuf = new Uint8Array(256);
-        (yield* You(__sl38, (how && is_gloves(how)) ? __sl39 : __sl40, (yield* corpse_xname(obj, null, NHM.CXN_ARTICLE)), (yield* makeplural((yield* body_part(NHC.HAND))))));
+        (yield* You(__s_s_s_in_your_bare_s, (how && is_gloves(how)) ? __s_now_wield : __s_are_wielding, (yield* corpse_xname(obj, null, NHM.CXN_ARTICLE)), (yield* makeplural((yield* body_part(NHC.HAND))))));
         if (how)
-            void cptr.sprintf(cptr.decay(hbuf), __sl41, voluntary ? __sl42 : __sl43, is_gloves(how) ? (yield* gloves_simple_name(how)) : strsubst((yield* simpleonames(how)), __sl44, __sl9));
+            void cptr.sprintf(cptr.decay(hbuf), __s_s_s, voluntary ? __s_removing : __s_losing, is_gloves(how) ? (yield* gloves_simple_name(how)) : strsubst((yield* simpleonames(how)), __s_set_of, __s_empty));
         else
-            void cptr.strcpy(cptr.decay(hbuf), __sl45);
-        nh_snprintf(__sl46, 636, cptr.decay(kbuf), 256n, __sl47, cptr.decay(hbuf), (yield* killer_xname(obj)));
+            void cptr.strcpy(cptr.decay(hbuf), __s_resistance_timing_out);
+        nh_snprintf(__s_wielding_corpse, 636, cptr.decay(kbuf), 256n, __s_s_while_wielding_s, cptr.decay(hbuf), (yield* killer_xname(obj)));
         (yield* instapetrify(cptr.decay(kbuf)));
         if (!Stone_resistance())
             (yield* remove_worn_item(obj, 0));
@@ -920,12 +920,12 @@ function* dragon_armor_handling(otmp, puton, on_purpose) {
         case NHC.BLUE_DRAGON_SCALE_MAIL:
         if (puton) {
             if (!Very_fast())
-                (yield* You(__sl48, Fast() ? __sl13 : __sl9));
+                (yield* You(__s_speed_up_s, Fast() ? __s_a_bit_more : __s_empty));
             cptr.stI64o2(u, NHC.FAST, 24, $you_uprops, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) | 1n);
         } else {
             cptr.stI64o2(u, NHC.FAST, 24, $you_uprops, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) & (-2n));
             if (!Very_fast() && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
-                (yield* You(__sl49));
+                (yield* You(__s_slow_down));
         }
         break;
         case NHC.GREEN_DRAGON_SCALES:
@@ -992,7 +992,7 @@ function* Armor_on() {
     if (artifact_light(uarm.v) && !(cptr.ldI32o(uarm.v, $obj_lamplit) & 1)) {
         (yield* begin_burn(uarm.v, 0));
         if (!Blind())
-            (yield* pline(__sl50, (yield* Yname2(uarm.v)), (yield* otense(uarm.v, __sl51)), arti_light_description(uarm.v)));
+            (yield* pline(__s_s_s_to_shine_s, (yield* Yname2(uarm.v)), (yield* otense(uarm.v, __s_begin)), arti_light_description(uarm.v)));
     }
     return 0;
 }
@@ -1007,7 +1007,7 @@ export function* Armor_off() {
     if (was_arti_light && !artifact_light(otmp)) {
         (yield* end_burn(otmp, 0));
         if (!Blind())
-            (yield* pline(__sl52, (yield* Tobjnam(otmp, __sl53))));
+            (yield* pline(__s_s_shining, (yield* Tobjnam(otmp, __s_stop))));
     }
     (yield* dragon_armor_handling(otmp, 0, 1));
     return 0;
@@ -1023,7 +1023,7 @@ export function* Armor_gone() {
     if (was_arti_light && !artifact_light(otmp)) {
         (yield* end_burn(otmp, 0));
         if (!Blind())
-            (yield* pline(__sl52, (yield* Tobjnam(otmp, __sl53))));
+            (yield* pline(__s_s_shining, (yield* Tobjnam(otmp, __s_stop))));
     }
     (yield* dragon_armor_handling(otmp, 0, 0));
     return 0;
@@ -1051,7 +1051,7 @@ function* Amulet_on(amul) {
                 (yield* discover_object(NHC.AMULET_OF_MAGICAL_BREATHING, 1, 1, 1));
                 (yield* on_msg(uamul.v));
                 on_msg_done = 1;
-                (yield* You(__sl54));
+                (yield* You(__s_are_no_longer_bothered_by_the_poison_gas));
             }
             break;
         }
@@ -1074,13 +1074,13 @@ function* Amulet_on(amul) {
             if (new_sex != orig_sex) {
                 (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                 cptr.st1(disp, 1);
-                (yield* You(__sl55, cptr.ld1so(flags, $flag_female) ? __sl56 : __sl57));
+                (yield* You(__s_are_suddenly_very_s, cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine));
             } else {
-                (yield* You(__sl58));
+                (yield* You(__s_don_t_feel_like_yourself));
                 call_it = schar((((cptr.ldI32o(uamul.v, $obj_dknown) & 1) | 0) != 0));
             }
             (yield* livelog_newform(0, orig_sex, new_sex));
-            (yield* pline_The(__sl59));
+            (yield* pline_The(__s_amulet_disintegrates));
             if (call_it)
                 (yield* trycall(uamul.v));
             (yield* useup(uamul.v));
@@ -1093,12 +1093,12 @@ function* Amulet_on(amul) {
             cptr.st1(disp, 1);
             (yield* on_msg(uamul.v));
             on_msg_done = 1;
-            (yield* pline(__sl60));
+            (yield* pline(__s_it_constricts_your_throat));
         }
         break;
         case NHC.AMULET_OF_RESTFUL_SLEEP:
         {
-            let newnap = BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl14, 1048, __sl61), rnd(98)) : rnd(98))) + 2n);
+            let newnap = BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 1048, __s_amulet_on), rnd(98)) : rnd(98))) + 2n);
             let oldnap = (HSleepy() & 16777215n);
             if (newnap < oldnap || oldnap == 0n)
                 cptr.stI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
@@ -1116,7 +1116,7 @@ function* Amulet_on(amul) {
                 (yield* on_msg(uamul.v));
                 on_msg_done = 1;
                 cptr.st1(disp, 1);
-                (yield* You(__sl62));
+                (yield* You(__s_are_now_in_flight));
             }
         }
         break;
@@ -1157,13 +1157,13 @@ export function* Amulet_off() {
         early_off_msg = 1;
         if (Underwater()) {
             if (!cant_drown(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Swimming()) {
-                (yield* You(__sl63, hliquid(__sl64)));
+                (yield* You(__s_suddenly_inhale_an_unhealthy_amount_of_s, hliquid(__s_water)));
                 mkn = 1;
                 void (yield* drown());
             }
         }
         if (region_danger()) {
-            (yield* You(__sl65));
+            (yield* You(__s_are_breathing_poison_gas));
             mkn = 1;
         }
         break;
@@ -1175,9 +1175,9 @@ export function* Amulet_off() {
             cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 0n);
             cptr.st1(disp, 1);
             if (Breathless())
-                (yield* Your(__sl66, (yield* body_part(NHC.NECK))));
+                (yield* Your(__s_s_is_no_longer_constricted, (yield* body_part(NHC.NECK))));
             else
-                (yield* You(__sl67));
+                (yield* You(__s_can_breathe_more_easily));
             mkn = 1;
         }
         break;
@@ -1195,7 +1195,7 @@ export function* Amulet_off() {
             float_vs_flight();
             if (was_flying && !Flying()) {
                 cptr.st1(disp, 1);
-                (yield* You(__sl34, (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __sl68 : __sl69));
+                (yield* You(__s_pct_s_dot, (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __s_stop_flying : __s_land));
                 mkn = 1;
                 (yield* spoteffects(1));
             }
@@ -1286,7 +1286,7 @@ export function* Ring_on(obj) {
         (yield* see_monsters());
         if (Invis() && !oldprop && !HSee_invisible() && !Blind()) {
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__sl70));
+            (yield* pline(__s_suddenly_you_are_transparent_but_there));
             (yield* learnring(obj, 1));
         }
         break;
@@ -1340,7 +1340,7 @@ function* Ring_off_or_gone(obj, gone) {
     let observable;
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & BigInt.asIntN(64, ~mask));
     if (!(cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & mask))
-        (yield* impossible(__sl71));
+        (yield* impossible(__s_strange_i_didn_t_know_you_had_that_ring));
     if (gone)
         (yield* setnotworn(obj));
     else
@@ -1377,14 +1377,14 @@ function* Ring_off_or_gone(obj, gone) {
         }
         if (Invisible() && !Blind()) {
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__sl72));
+            (yield* pline(__s_suddenly_you_cannot_see_yourself));
             (yield* learnring(obj, 1));
         }
         break;
         case NHC.RIN_INVISIBILITY:
         if (!Invis() && !BInvis() && !Blind()) {
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* Your(__sl73, See_invisible() ? __sl74 : __sl75));
+            (yield* Your(__s_body_seems_to_unfade_s, See_invisible() ? __s_completely : __s_dot2));
             (yield* learnring(obj, 1));
         }
         break;
@@ -1445,16 +1445,16 @@ export function* Blindf_on(otmp) {
     if (Blind() && !already_blind) {
         changed = 1;
         if (cptr.ld1so(flags, $flag_verbose))
-            (yield* You_cant(__sl76));
+            (yield* You_cant(__s_see_any_more));
         if (Punished())
             (yield* set_bc(0));
     } else if (already_blind && !Blind()) {
         changed = 1;
         if (cptr.ld1so(u, $you_uroleplay)) {
-            (yield* pline(__sl77));
+            (yield* pline(__s_for_the_first_time_in_your_life_you_can));
             cptr.st1o(u, $you_uroleplay, 0);
         } else
-            (yield* You(__sl78));
+            (yield* You(__s_can_see));
     }
     if (changed) {
         (yield* toggle_blindness());
@@ -1469,7 +1469,7 @@ export function* Blindf_off(otmp) {
     if (!otmp)
         otmp = ublindf.v;
     if (!otmp) {
-        (yield* impossible(__sl79));
+        (yield* impossible(__s_blindf_off_without_eyewear));
         return;
     }
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-524289n));
@@ -1479,17 +1479,17 @@ export function* Blindf_off(otmp) {
     if (Blind()) {
         if (was_blind) {
             if (cptr.ldI16o(otmp, $obj_otyp) != NHC.LENSES)
-                (yield* You(__sl80));
+                (yield* You(__s_still_cannot_see));
         } else {
             changed = 1;
-            (yield* You_cant(__sl81));
+            (yield* You_cant(__s_see_anything_now));
             if (Punished())
                 (yield* set_bc(0));
         }
     } else if (was_blind) {
         if (!(yield* gulp_blnd_check())) {
             changed = 1;
-            (yield* You(__sl82));
+            (yield* You(__s_can_see_again));
         }
     }
     if (changed) {
@@ -1614,7 +1614,7 @@ export function* stop_donning(stolenobj) {
     cancel_don();
     cptr.stPtr(ga, null);
     if (putting_on || !cptr.eq(otmp, stolenobj)) {
-        void cptr.sprintf(cptr.decay(buf), __sl83, putting_on ? __sl84 : __sl85, (yield* thesimpleoname(otmp)));
+        void cptr.sprintf(cptr.decay(buf), __s_you_stop_s_s, putting_on ? __s_putting_on : __s_taking_off, (yield* thesimpleoname(otmp)));
     } else {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         result = Number(BigInt.asIntN(32, (-cptr.ldI64o(gm, $instance_globals_m_multi))));
@@ -1715,7 +1715,7 @@ function count_worn_stuff(which, accessorizing) {
 /** C ref: do_wear.c:1771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* armor_or_accessory_off(obj) {
     if (!(cptr.ldI64o(obj, $obj_owornmask) & 983167n)) {
-        (yield* You(__sl86));
+        (yield* You(__s_are_not_wearing_that));
         return NHM.ECMD_OK;
     }
     if (cptr.eq(obj, uskin.v) || ((cptr.eq(obj, uarm.v)) && uarmc.v) || ((cptr.eq(obj, uarmu.v)) && (uarmc.v || uarm.v))) {
@@ -1727,14 +1727,14 @@ function* armor_or_accessory_off(obj) {
                 void cptr.strcat(cptr.decay(what), cloak_simple_name(uarmc.v));
             if ((cptr.eq(obj, uarmu.v)) && uarm.v) {
                 if (uarmc.v)
-                    void cptr.strcat(cptr.decay(what), __sl87);
+                    void cptr.strcat(cptr.decay(what), __s_and__2);
                 void cptr.strcat(cptr.decay(what), suit_simple_name(uarm.v));
             }
-            nh_snprintf(__sl88, 1792, cptr.decay(why), 128n, __sl89, cptr.decay(what));
+            nh_snprintf(__s_armor_or_accessory_off, 1792, cptr.decay(why), 128n, __s_without_taking_off_your_s_first, cptr.decay(what));
         } else {
-            void cptr.strcpy(cptr.decay(why), __sl90);
+            void cptr.strcpy(cptr.decay(why), __s_it_s_embedded);
         }
-        (yield* You_cant(__sl91, cptr.decay(why)));
+        (yield* You_cant(__s_take_that_off_s, cptr.decay(why)));
         return NHM.ECMD_OK;
     }
     reset_remarm();
@@ -1752,7 +1752,7 @@ function* armor_or_accessory_off(obj) {
     } else if (cptr.eq(obj, ublindf.v)) {
         (yield* Blindf_off(obj));
     } else {
-        (yield* impossible(__sl92, (yield* safe_typename(cptr.ldI16o(obj, $obj_otyp)))));
+        (yield* impossible(__s_removing_strange_accessory_s, (yield* safe_typename(cptr.ldI16o(obj, $obj_otyp)))));
         if (cptr.ldI64o(obj, $obj_owornmask))
             (yield* remove_worn_item(obj, 0));
     }
@@ -1765,13 +1765,13 @@ export function* dotakeoff() {
     count_worn_stuff(otmp, 0);
     if (!Narmorpieces && !Naccessories) {
         if (uskin.v)
-            (yield* pline_The(__sl93, cptr.ldI16o(uskin.v, $obj_otyp) >= NHC.GRAY_DRAGON_SCALES ? __sl94 : __sl95));
+            (yield* pline_The(__s_s_merged_with_your_skin, cptr.ldI16o(uskin.v, $obj_otyp) >= NHC.GRAY_DRAGON_SCALES ? __s_dragon_scales_are : __s_dragon_scale_mail_is));
         else
-            (yield* pline(__sl96));
+            (yield* pline(__s_not_wearing_any_armor_or_accessories));
         return NHM.ECMD_OK;
     }
     if (Narmorpieces != 1 || ParanoidRemove() || cptr.ld1so(gi, $instance_globals_i_item_action_in_progress))
-        otmp.v = (yield* getobj(__sl97, takeoff_ok, NHM.GETOBJ_NOFLAGS));
+        otmp.v = (yield* getobj(__s_take_off, takeoff_ok, NHM.GETOBJ_NOFLAGS));
     if (!otmp.v)
         return NHM.ECMD_CANCEL;
     return (yield* armor_or_accessory_off(otmp.v));
@@ -1791,11 +1791,11 @@ export function* doremring() {
     let otmp = cptr.box(null);
     count_worn_stuff(otmp, 1);
     if (!Naccessories && !Narmorpieces) {
-        (yield* pline(__sl98));
+        (yield* pline(__s_not_wearing_any_accessories_or_armor));
         return NHM.ECMD_OK;
     }
     if (Naccessories != 1 || ParanoidRemove() || cmdq_peek(NHC.CQ_CANNED))
-        otmp.v = (yield* getobj(__sl99, remove_ok, NHM.GETOBJ_NOFLAGS));
+        otmp.v = (yield* getobj(__s_remove, remove_ok, NHM.GETOBJ_NOFLAGS));
     if (!otmp.v)
         return NHM.ECMD_CANCEL;
     return (yield* armor_or_accessory_off(otmp.v));
@@ -1804,15 +1804,15 @@ export function* doremring() {
 /** C ref: do_wear.c:1893 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* cursed(otmp) {
     if (!otmp) {
-        (yield* impossible(__sl100));
+        (yield* impossible(__s_cursed_without_otmp));
         return 0;
     }
     if ((cptr.eq(otmp, uwep.v)) ? (yield* welded(otmp)) : (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
         let use_plural = schar((is_boots(otmp) || is_gloves(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES || cptr.ldI64o(otmp, $obj_quan) > 1n ? 1 : 0));
         if (Glib() && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 && (uarmg.v ? (cptr.eq(otmp, uwep.v)) : ((cptr.ldI64o(otmp, $obj_owornmask) & 393472n) != 0n)))
-            (yield* pline(__sl101, (yield* fingers_or_gloves(1))));
+            (yield* pline(__s_despite_your_slippery_s_you_can_t, (yield* fingers_or_gloves(1))));
         else
-            (yield* You(__sl102, use_plural ? __sl103 : __sl104));
+            (yield* You(__s_can_t_s_cursed, use_plural ? __s_they_are : __s_it_is));
         (yield* set_bknown(otmp, 1));
         return 1;
     }
@@ -1829,7 +1829,7 @@ export function* armoroff(otmp) {
         return 0;
     if (delay) {
         nomul(delay);
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl105);
+        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_disrobing);
         switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp)) {
             case NHC.ARM_SUIT:
             what = suit_simple_name(otmp);
@@ -1860,11 +1860,11 @@ export function* armoroff(otmp) {
             cptr.stPtr(ga, Shirt_off);
             break;
             default:
-            (yield* impossible(__sl106, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp), delay));
+            (yield* impossible(__s_taking_off_unknown_armor_d_d_delay_d, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp), delay));
             break;
         }
         if (what) {
-            nh_snprintf(__sl107, 1970, cptr.decay(__static_armoroff_offdelaybuf), 60n, __sl108, what);
+            nh_snprintf(__s_armoroff, 1970, cptr.decay(__static_armoroff_offdelaybuf), 60n, __s_you_finish_taking_off_your_s, what);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.decay(__static_armoroff_offdelaybuf));
         }
     } else {
@@ -1891,7 +1891,7 @@ export function* armoroff(otmp) {
             void (yield* Shirt_off());
             break;
             default:
-            (yield* impossible(__sl109, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp)));
+            (yield* impossible(__s_taking_off_unknown_armor_d_d_no_delay, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp)));
             break;
         }
         (yield* off_msg(otmp));
@@ -1902,12 +1902,12 @@ export function* armoroff(otmp) {
 
 /** C ref: do_wear.c:2011 — @param {CPtr<char>} cc */
 function* already_wearing(cc) {
-    (yield* You(__sl110, cc, (cptr.eq(cc, cptr.decay(c_that_))) ? 33 : 46));
+    (yield* You(__s_are_already_wearing_s_c, cc, (cptr.eq(cc, cptr.decay(c_that_))) ? 33 : 46));
 }
 
 /** C ref: do_wear.c:2017 — @param {CPtr<char>} cc1 @param {CPtr<char>} cc2 */
 function* already_wearing2(cc1, cc2) {
-    (yield* You_cant(__sl111, cc1, cc2));
+    (yield* You_cant(__s_wear_s_because_you_re_wearing_s_there, cc1, cc2));
 }
 
 /** C ref: do_wear.c:2030 — @param {CPtr<struct obj>} otmp @param {CPtr<long>} mask @param {CInt} noisy @returns {CInt} */
@@ -1916,13 +1916,13 @@ export function* canwearobj(otmp, mask, noisy) {
     let which;
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         if (noisy)
-            (yield* You(__sl112));
+            (yield* You(__s_can_t_wear_any_armor_in_your_current));
         return 0;
     }
     which = is_cloak(otmp) ? cptr.decay(c_cloak) : (is_shirt(otmp) ? cptr.decay(c_shirt) : (is_suit(otmp) ? cptr.decay(c_suit) : null));
     if (which && cantweararm(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (!cptr.eq(which, cptr.decay(c_cloak)) || ((cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING) ? cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) != NHM.MZ_SMALL : !WrappingAllowed(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) && (racial_exception(cptr.add(gy, $instance_globals_y_youmonst), otmp) < 1)) {
         if (noisy)
-            (yield* pline_The(__sl113, which));
+            (yield* pline_The(__s_s_will_not_fit_on_your_body, which));
         return 0;
     } else if (cptr.ldI64o(otmp, $obj_owornmask) & 127n) {
         if (noisy)
@@ -1931,7 +1931,7 @@ export function* canwearobj(otmp, mask, noisy) {
     }
     if ((yield* welded(uwep.v)) && bimanual(uwep.v) && (is_suit(otmp) || is_shirt(otmp))) {
         if (noisy)
-            (yield* You(__sl114, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
+            (yield* You(__s_cannot_do_that_while_holding_your_s, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
         return 0;
     }
     if (is_helmet(otmp)) {
@@ -1941,7 +1941,7 @@ export function* canwearobj(otmp, mask, noisy) {
             err++;
         } else if (Upolyd() && (num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 0) && !is_flimsy(otmp)) {
             if (noisy)
-                (yield* pline_The(__sl115, helm_simple_name(otmp), (((num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) == 1) ? __sl9 : __sl116)));
+                (yield* pline_The(__s_s_won_t_fit_over_your_horn_s, helm_simple_name(otmp), (((num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) == 1) ? __s_empty : __s_s)));
             err++;
         } else
             cptr.stI64(mask, 4n);
@@ -1952,11 +1952,11 @@ export function* canwearobj(otmp, mask, noisy) {
             err++;
         } else if (uwep.v && bimanual(uwep.v)) {
             if (noisy)
-                (yield* You(__sl117, is_sword(uwep.v) ? cptr.decay(c_sword) : ((cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon))));
+                (yield* You(__s_cannot_wear_a_shield_while_wielding_a, is_sword(uwep.v) ? cptr.decay(c_sword) : ((cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon))));
             err++;
         } else if (cptr.ld1so(u, $you_twoweap)) {
             if (noisy)
-                (yield* You(__sl118));
+                (yield* You(__s_cannot_wear_a_shield_while_wielding_two));
             err++;
         } else
             cptr.stI64(mask, 8n);
@@ -1967,22 +1967,22 @@ export function* canwearobj(otmp, mask, noisy) {
             err++;
         } else if (Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n)) {
             if (noisy)
-                (yield* You(__sl119));
+                (yield* You(__s_have_no_feet));
             err++;
         } else if (Upolyd() && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_CENTAUR) {
             if (noisy)
-                (yield* You(__sl120, cptr.decay(c_boots)));
+                (yield* You(__s_have_too_many_hooves_to_wear_s, cptr.decay(c_boots)));
             err++;
         } else if (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP || cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)) {
             if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) {
                 if (noisy)
-                    (yield* Your(__sl121, (yield* body_part(NHC.FOOT))));
+                    (yield* Your(__s_s_is_trapped, (yield* body_part(NHC.FOOT))));
             } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
                 if (noisy)
-                    (yield* Your(__sl122, (yield* makeplural((yield* body_part(NHC.FOOT)))), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+                    (yield* Your(__s_s_are_stuck_in_the_s, (yield* makeplural((yield* body_part(NHC.FOOT)))), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
             } else {
                 if (noisy)
-                    (yield* Your(__sl123, (yield* body_part(NHC.LEG))));
+                    (yield* Your(__s_s_is_attached_to_the_buried_ball, (yield* body_part(NHC.LEG))));
             }
             err++;
         } else
@@ -1994,11 +1994,11 @@ export function* canwearobj(otmp, mask, noisy) {
             err++;
         } else if ((yield* welded(uwep.v))) {
             if (noisy)
-                (yield* You(__sl124, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
+                (yield* You(__s_cannot_wear_gloves_over_your_s, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
             err++;
         } else if (Glib()) {
             if (noisy)
-                (yield* Your(__sl125, (yield* fingers_or_gloves(0)), (yield* gloves_simple_name(otmp))));
+                (yield* Your(__s_s_are_too_slippery_to_pull_on_s, (yield* fingers_or_gloves(0)), (yield* gloves_simple_name(otmp))));
             err++;
         } else
             cptr.stI64(mask, 16n);
@@ -2009,7 +2009,7 @@ export function* canwearobj(otmp, mask, noisy) {
                     (yield* already_wearing((yield* an(cptr.decay(c_shirt)))));
             } else {
                 if (noisy)
-                    (yield* You_cant(__sl126, (uarm.v && !uarmc.v) ? cptr.decay(c_armor) : cloak_simple_name(uarmc.v)));
+                    (yield* You_cant(__s_wear_that_over_your_s, (uarm.v && !uarmc.v) ? cptr.decay(c_armor) : cloak_simple_name(uarmc.v)));
             }
             err++;
         } else
@@ -2024,17 +2024,17 @@ export function* canwearobj(otmp, mask, noisy) {
     } else if (is_suit(otmp)) {
         if (uarmc.v) {
             if (noisy)
-                (yield* You(__sl127, cloak_simple_name(uarmc.v)));
+                (yield* You(__s_cannot_wear_armor_over_a_s, cloak_simple_name(uarmc.v)));
             err++;
         } else if (uarm.v) {
             if (noisy)
-                (yield* already_wearing(__sl128));
+                (yield* already_wearing(__s_some_armor));
             err++;
         } else
             cptr.stI64(mask, 1n);
     } else {
         if (noisy)
-            (yield* silly_thing(__sl129, otmp));
+            (yield* silly_thing(__s_wear, otmp));
         err++;
     }
     return !err;
@@ -2061,9 +2061,9 @@ function* accessory_or_armor_on(obj) {
             return NHM.ECMD_OK;
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT && cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))) == cptr.ldI16o(u, $you_uz)) {
             if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
-                (yield* You(__sl130));
+                (yield* You(__s_narrowly_avoid_losing_all_chance_at));
             else
-                (yield* You(__sl131));
+                (yield* You(__s_are_suddenly_overcome_with_shame_and));
             cptr.stI32o(u, $you_ublessed, 0);
             (yield* discover_object((cptr.ldI16o(obj.v, $obj_otyp)), 1, 1, 1));
             cptr.st1(disp, 1);
@@ -2075,11 +2075,11 @@ function* accessory_or_armor_on(obj) {
             let qbuf = new Uint8Array(128);
             let res = 0;
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-                (yield* You(__sl132));
+                (yield* You(__s_cannot_make_the_ring_stick_to_your_body));
                 return NHM.ECMD_OK;
             }
             if (uleft.v && uright.v) {
-                (yield* There(__sl133, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* fingers_or_gloves(0))));
+                (yield* There(__s_are_no_more_s_s_to_fill, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_ring : __s_empty, (yield* fingers_or_gloves(0))));
                 return NHM.ECMD_OK;
             }
             if (uleft.v) {
@@ -2088,7 +2088,7 @@ function* accessory_or_armor_on(obj) {
                 mask.v = 131072n;
             } else {
                 do {
-                    void cptr.sprintf(cptr.decay(qbuf), __sl135, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* body_part(NHC.FINGER)));
+                    void cptr.sprintf(cptr.decay(qbuf), __s_which_s_s_right_or_left, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_ring : __s_empty, (yield* body_part(NHC.FINGER)));
                     answer = (yield* yn_function(cptr.decay(qbuf), cptr.decay(rightleftchars), 0, 1));
                     switch (answer) {
                         case 0:
@@ -2106,13 +2106,13 @@ function* accessory_or_armor_on(obj) {
                 } while (!mask.v);
             }
             if (uarmg.v && Glib()) {
-                (yield* Your(__sl136, (yield* gloves_simple_name(uarmg.v))));
+                (yield* Your(__s_s_are_too_slippery_to_remove_so_you, (yield* gloves_simple_name(uarmg.v))));
                 return NHM.ECMD_TIME;
             }
             if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0) {
                 res = !(cptr.ldI32o(uarmg.v, $obj_bknown) & 1);
                 (yield* set_bknown(uarmg.v, 1));
-                (yield* You(__sl137, cptr.decay(c_gloves)));
+                (yield* You(__s_cannot_remove_your_s_to_put_on_the_ring, cptr.decay(c_gloves)));
                 return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
             }
             if (uwep.v) {
@@ -2121,40 +2121,40 @@ function* accessory_or_armor_on(obj) {
                     let hand = (yield* body_part(NHC.HAND));
                     if (bimanual(uwep.v))
                         hand = (yield* makeplural(hand));
-                    (yield* You(__sl138, hand));
+                    (yield* You(__s_cannot_free_your_weapon_s_to_put_on_the, hand));
                     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
                 }
             }
         } else if (amulet) {
             if (uamul.v) {
-                (yield* already_wearing(__sl139));
+                (yield* already_wearing(__s_an_amulet));
                 return NHM.ECMD_OK;
             }
         } else if (eyewear) {
             if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 32768n) == 0n)) {
-                (yield* You(__sl140, (yield* ansimpleoname(obj.v))));
+                (yield* You(__s_have_no_head_to_wear_s_on, (yield* ansimpleoname(obj.v))));
                 return NHM.ECMD_OK;
             }
             if (ublindf.v) {
                 if (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.TOWEL)
-                    (yield* Your(__sl141, (yield* body_part(NHC.FACE))));
+                    (yield* Your(__s_s_is_already_covered_by_a_towel, (yield* body_part(NHC.FACE))));
                 else if (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.BLINDFOLD) {
                     if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LENSES)
-                        (yield* already_wearing2(__sl142, __sl143));
+                        (yield* already_wearing2(__s_lenses, __s_a_blindfold));
                     else
-                        (yield* already_wearing(__sl143));
+                        (yield* already_wearing(__s_a_blindfold));
                 } else if (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) {
                     if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.BLINDFOLD)
-                        (yield* already_wearing2(__sl143, __sl144));
+                        (yield* already_wearing2(__s_a_blindfold, __s_some_lenses));
                     else
-                        (yield* already_wearing(__sl144));
+                        (yield* already_wearing(__s_some_lenses));
                 } else {
                     (yield* already_wearing(cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
                 }
                 return NHM.ECMD_OK;
             }
         } else {
-            (yield* You_cant(__sl145));
+            (yield* You_cant(__s_wear_that));
             return NHM.ECMD_OK;
         }
     }
@@ -2181,14 +2181,14 @@ function* accessory_or_armor_on(obj) {
         else if (cptr.eq(obj.v, uarmu.v))
             cptr.stPtr(ga, Shirt_on);
         else
-            (yield* panic(__sl146, cptr.ldI64o(obj.v, $obj_owornmask)));
+            (yield* panic(__s_wearing_armor_not_worn_as_armor_08lx, cptr.ldI64o(obj.v, $obj_owornmask)));
         delay = -cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), 120, $objclass_oc_delay);
         if (delay) {
             nomul(delay);
-            cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl147);
-            cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl148);
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_dressing_up);
+            cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_finish_your_dressing_maneuver);
         } else {
-            (yield* unmul(__sl9));
+            (yield* unmul(__s_empty));
             (yield* on_msg(obj.v));
         }
         cptr.stI64o(svc, $context_info_takeoff, cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, 0n));
@@ -2203,7 +2203,7 @@ function* accessory_or_armor_on(obj) {
         } else if (eyewear) {
             (yield* Blindf_on(obj.v));
         } else {
-            (yield* impossible(__sl149, (yield* safe_typename(cptr.ldI16o(obj.v, $obj_otyp)))));
+            (yield* impossible(__s_putting_on_unexpected_type_of_accessory, (yield* safe_typename(cptr.ldI16o(obj.v, $obj_otyp)))));
         }
     }
     return NHM.ECMD_TIME;
@@ -2213,14 +2213,14 @@ function* accessory_or_armor_on(obj) {
 export function* dowear() {
     let otmp;
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        (yield* pline(__sl150));
+        (yield* pline(__s_don_t_even_bother));
         return NHM.ECMD_OK;
     }
     if (uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v && uleft.v && uright.v && uamul.v && ublindf.v) {
-        (yield* You(__sl151));
+        (yield* You(__s_are_already_wearing_a_full_complement));
         return NHM.ECMD_OK;
     }
-    otmp = (yield* getobj(__sl129, wear_ok, NHM.GETOBJ_NOFLAGS));
+    otmp = (yield* getobj(__s_wear, wear_ok, NHM.GETOBJ_NOFLAGS));
     return otmp ? (yield* accessory_or_armor_on(otmp)) : NHM.ECMD_CANCEL;
 }
 
@@ -2228,10 +2228,10 @@ export function* dowear() {
 export function* doputon() {
     let otmp;
     if (uleft.v && uright.v && uamul.v && ublindf.v && uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v) {
-        (yield* Your(__sl152, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl134 : __sl9, (yield* fingers_or_gloves(0)), (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? __sl144 : __sl143));
+        (yield* Your(__s_s_s_are_full_and_you_re_already_wearing, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_ring : __s_empty, (yield* fingers_or_gloves(0)), (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? __s_some_lenses : __s_a_blindfold));
         return NHM.ECMD_OK;
     }
-    otmp = (yield* getobj(__sl153, puton_ok, NHM.GETOBJ_NOFLAGS));
+    otmp = (yield* getobj(__s_put_on, puton_ok, NHM.GETOBJ_NOFLAGS));
     return otmp ? (yield* accessory_or_armor_on(otmp)) : NHM.ECMD_CANCEL;
 }
 
@@ -2283,7 +2283,7 @@ export function* glibr() {
     leftfall = schar((uleft.v && !(cptr.ldI32o(uleft.v, $obj_cursed) & 1) && (!uwep.v || !((yield* welded(uwep.v)) && ULEFTY()) || !bimanual(uwep.v)) ? 1 : 0));
     rightfall = schar((uright.v && !(cptr.ldI32o(uright.v, $obj_cursed) & 1) && (!uwep.v || !((yield* welded(uwep.v)) && URIGHTY()) || !bimanual(uwep.v)) ? 1 : 0));
     if (!uarmg.v && (leftfall || rightfall) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-        (yield* Your(__sl154, (leftfall && rightfall) ? __sl155 : __sl156, (leftfall && rightfall) ? (yield* fingers_or_gloves(0)) : (yield* body_part(NHC.FINGER))));
+        (yield* Your(__s_s_off_your_s, (leftfall && rightfall) ? __s_rings_slip : __s_ring_slips, (leftfall && rightfall) ? (yield* fingers_or_gloves(0)) : (yield* body_part(NHC.FINGER))));
         xfl++;
         if (leftfall) {
             otmp = uleft.v;
@@ -2304,13 +2304,13 @@ export function* glibr() {
         if (cptr.ldI64o(otmp, $obj_quan) > 1n)
             otherwep = (yield* makeplural(otherwep));
         hand = (yield* body_part(NHC.HAND));
-        which = URIGHTY() ? __sl157 : __sl158;
-        (yield* Your(__sl159, otherwep, xfl ? __sl160 : __sl9, (yield* otense(otmp, __sl161)), which, hand));
+        which = URIGHTY() ? __s_left : __s_right;
+        (yield* Your(__s_s_s_s_from_your_s_s, otherwep, xfl ? __s_also : __s_empty, (yield* otense(otmp, __s_slip)), which, hand));
         xfl++;
         wastwoweap = 1;
         (yield* setuswapwep(null));
         cmdq_clear(NHC.CQ_CANNED);
-        if ((yield* canletgo(otmp, __sl9)))
+        if ((yield* canletgo(otmp, __s_empty)))
             (yield* dropx(otmp));
     }
     otmp = uwep.v;
@@ -2320,23 +2320,23 @@ export function* glibr() {
         if (otherwep && strcmp(thiswep, (yield* makesingular(otherwep))))
             otherwep = null;
         if (cptr.ldI64o(otmp, $obj_quan) > 1n) {
-            if (!strcmp(thiswep, __sl162))
+            if (!strcmp(thiswep, __s_food))
                 cptr.stI64o(otmp, $obj_quan, 1n);
             else
                 thiswep = (yield* makeplural(thiswep));
         }
         hand = (yield* body_part(NHC.HAND));
-        which = __sl9;
+        which = __s_empty;
         if (bimanual(otmp)) {
             hand = (yield* makeplural(hand));
         } else if (wastwoweap) {
-            which = URIGHTY() ? __sl158 : __sl157;
+            which = URIGHTY() ? __s_right : __s_left;
         }
-        (yield* pline(__sl163, !cptr.strncmp(thiswep, __sl164, 6n) ? __sl165 : __sl166, otherwep ? __sl167 : __sl9, thiswep, xfl ? __sl160 : __sl9, (yield* otense(otmp, __sl161)), which, hand));
+        (yield* pline(__s_s_s_s_s_s_from_your_s_s, !cptr.strncmp(thiswep, __s_corpse, 6n) ? __s_the : __s_your, otherwep ? __s_other : __s_empty, thiswep, xfl ? __s_also : __s_empty, (yield* otense(otmp, __s_slip)), which, hand));
         cptr.stI64o(otmp, $obj_quan, savequan);
         (yield* setuwep(null));
         cmdq_clear(NHC.CQ_CANNED);
-        if ((yield* canletgo(otmp, __sl9)))
+        if ((yield* canletgo(otmp, __s_empty)))
             (yield* dropx(otmp));
     }
 }
@@ -2351,16 +2351,16 @@ export function* some_armor(victim) {
     if (!otmph)
         otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmu.v : (yield* which_armor(victim, 64n));
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmh.v : (yield* which_armor(victim, 4n));
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl14, 2641, __sl168), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2641, __s_some_armor__2), rn2(4)) : rn2(4))))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmg.v : (yield* which_armor(victim, 16n));
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl14, 2644, __sl168), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2644, __s_some_armor__2), rn2(4)) : rn2(4))))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmf.v : (yield* which_armor(victim, 32n));
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl14, 2647, __sl168), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2647, __s_some_armor__2), rn2(4)) : rn2(4))))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarms.v : (yield* which_armor(victim, 8n));
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__sl14, 2650, __sl168), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2650, __s_some_armor__2), rn2(4)) : rn2(4))))
         otmph = otmp;
     return otmph;
 }
@@ -2368,7 +2368,7 @@ export function* some_armor(victim) {
 /** C ref: do_wear.c:2657 — @param {CPtr<struct obj>} ring @param {CInt} otyp @returns {CPtr<struct obj>} */
 export function* stuck_ring(ring, otyp) {
     if (!cptr.eq(ring, uleft.v) && !cptr.eq(ring, uright.v)) {
-        (yield* impossible(__sl169));
+        (yield* impossible(__s_stuck_ring_neither_left_nor_right));
         return null;
     }
     if (ring && cptr.ldI16o(ring, $obj_otyp) == otyp) {
@@ -2403,31 +2403,31 @@ function* select_off(otmp) {
     if (cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) {
         let glibdummy = cptr.alloc(216);
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-            (yield* pline_The(__sl170));
+            (yield* pline_The(__s_ring_is_stuck));
             return 0;
         }
         cptr.memcpy(glibdummy, cg, 216);
         why = null;
         if ((yield* welded(uwep.v)) && ((cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v))) || bimanual(uwep.v))) {
-            void cptr.sprintf(cptr.decay(buf), __sl171, (yield* body_part(NHC.HAND)));
+            void cptr.sprintf(cptr.decay(buf), __s_free_a_weapon_s, (yield* body_part(NHC.HAND)));
             why = uwep.v;
         } else if (uarmg.v && ((cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0 || Glib())) {
-            void cptr.sprintf(cptr.decay(buf), __sl172, Glib() ? __sl173 : __sl9, (yield* gloves_simple_name(uarmg.v)));
+            void cptr.sprintf(cptr.decay(buf), __s_take_off_your_s_s, Glib() ? __s_slippery : __s_empty, (yield* gloves_simple_name(uarmg.v)));
             why = !Glib() ? uarmg.v : glibdummy;
         }
         if (why) {
-            (yield* You(__sl174, cptr.decay(buf)));
+            (yield* You(__s_cannot_s_to_remove_the_ring, cptr.decay(buf)));
             (yield* set_bknown(why, 1));
             return 0;
         }
     }
     if (cptr.eq(otmp, uarmg.v)) {
         if ((yield* welded(uwep.v))) {
-            (yield* You(__sl175, cptr.decay(c_gloves), is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
+            (yield* You(__s_are_unable_to_take_off_your_s_while, cptr.decay(c_gloves), is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon)));
             (yield* set_bknown(uwep.v, 1));
             return 0;
         } else if (Glib()) {
-            (yield* pline(__sl176, (cptr.ldI32o(uarmg.v, $obj_unpaid) & 1) | 0 ? __sl165 : __sl166, (yield* gloves_simple_name(uarmg.v))));
+            (yield* pline(__s_s_s_are_too_slippery_to_take_off, (cptr.ldI32o(uarmg.v, $obj_unpaid) & 1) | 0 ? __s_the : __s_your, (yield* gloves_simple_name(uarmg.v))));
             return 0;
         }
         if ((yield* better_not_take_that_off(otmp)))
@@ -2435,27 +2435,27 @@ function* select_off(otmp) {
     }
     if (cptr.eq(otmp, uarmf.v)) {
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) {
-            (yield* pline_The(__sl177, (yield* body_part(NHC.FOOT))));
+            (yield* pline_The(__s_bear_trap_prevents_you_from_pulling, (yield* body_part(NHC.FOOT))));
             return 0;
         } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) {
-            (yield* You(__sl178, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (yield* makeplural((yield* body_part(NHC.FOOT))))));
+            (yield* You(__s_are_stuck_in_the_s_and_cannot_pull_your, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (yield* makeplural((yield* body_part(NHC.FOOT))))));
             return 0;
         }
     }
     if (cptr.eq(otmp, uarm.v) || cptr.eq(otmp, uarmu.v)) {
         why = null;
         if (uarmc.v && (cptr.ldI32o(uarmc.v, $obj_cursed) & 1) | 0) {
-            void cptr.sprintf(cptr.decay(buf), __sl179, cloak_simple_name(uarmc.v));
+            void cptr.sprintf(cptr.decay(buf), __s_remove_your_s, cloak_simple_name(uarmc.v));
             why = uarmc.v;
         } else if (cptr.eq(otmp, uarmu.v) && uarm.v && (cptr.ldI32o(uarm.v, $obj_cursed) & 1) | 0) {
-            void cptr.sprintf(cptr.decay(buf), __sl179, cptr.decay(c_suit));
+            void cptr.sprintf(cptr.decay(buf), __s_remove_your_s, cptr.decay(c_suit));
             why = uarm.v;
         } else if ((yield* welded(uwep.v)) && bimanual(uwep.v)) {
-            void cptr.sprintf(cptr.decay(buf), __sl180, is_sword(uwep.v) ? cptr.decay(c_sword) : ((cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
+            void cptr.sprintf(cptr.decay(buf), __s_release_your_s, is_sword(uwep.v) ? cptr.decay(c_sword) : ((cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BATTLE_AXE) ? cptr.decay(c_axe) : cptr.decay(c_weapon)));
             why = uwep.v;
         }
         if (why) {
-            (yield* You(__sl181, cptr.decay(buf), (yield* the((yield* xname(otmp))))));
+            (yield* You(__s_cannot_s_to_take_off_s, cptr.decay(buf), (yield* the((yield* xname(otmp))))));
             (yield* set_bknown(why, 1));
             return 0;
         }
@@ -2495,7 +2495,7 @@ function* select_off(otmp) {
     else if (cptr.eq(otmp, uquiver.v))
         cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) | 512n);
     else
-        (yield* impossible(__sl182, (yield* doname(otmp))));
+        (yield* impossible(__s_select_off_s, (yield* doname(otmp))));
     return 0;
 }
 
@@ -2509,16 +2509,16 @@ function* do_takeoff() {
         if (!(yield* cursed(uwep.v))) {
             (yield* setuwep(null));
             if (was_twoweap)
-                (yield* You(__sl183));
+                (yield* You(__s_are_no_longer_wielding_either_weapon));
             else
-                (yield* You(__sl184, empty_handed()));
+                (yield* You(__s_are_s, empty_handed()));
         }
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 1024n) {
         (yield* setuswapwep(null));
-        (yield* You(__sl185, was_twoweap ? __sl186 : __sl9, was_twoweap ? __sl187 : __sl188));
+        (yield* You(__s_sno_longer_s, was_twoweap ? __s_are : __s_empty, was_twoweap ? __s_wielding_two_weapons_at_once : __s_have_a_second_weapon_readied));
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 512n) {
         (yield* setuqwep(null));
-        (yield* You(__sl189));
+        (yield* You(__s_no_longer_have_ammunition_readied));
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 1n) {
         otmp = uarm.v;
         if (!(yield* cursed(otmp)))
@@ -2563,7 +2563,7 @@ function* do_takeoff() {
         if (!(yield* cursed(ublindf.v)))
             (yield* Blindf_off(ublindf.v));
     } else {
-        (yield* impossible(__sl190, cptr.ldI64o(doff, $takeoff_info_what)));
+        (yield* impossible(__s_do_takeoff_taking_off_lx, cptr.ldI64o(doff, $takeoff_info_what)));
     }
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-536870913n));
     return otmp;
@@ -2592,7 +2592,7 @@ function* take_off() {
     otmp = null;
     cptr.stI32o(doff, $takeoff_info_delay, 0);
     if (cptr.ldI64o(doff, $takeoff_info_what) == 0n) {
-        (yield* You(__sl191, cptr.add(doff, $takeoff_info_disrobing)));
+        (yield* You(__s_finish_s, cptr.add(doff, $takeoff_info_disrobing)));
         return 0;
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 256n) {
         cptr.stI32o(doff, $takeoff_info_delay, 1);
@@ -2629,7 +2629,7 @@ function* take_off() {
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 524288n) {
         cptr.stI32o(doff, $takeoff_info_delay, 1);
     } else {
-        (yield* impossible(__sl192, cptr.ldI64o(doff, $takeoff_info_what)));
+        (yield* impossible(__s_take_off_taking_off_lx, cptr.ldI64o(doff, $takeoff_info_what)));
         return 0;
     }
     if (otmp)
@@ -2645,7 +2645,7 @@ function* better_not_take_that_off(otmp) {
     let corpse = carrying_stoning_corpse();
     let buf = new Uint8Array(256);
     if (corpse && !u_safe_from_fatal_corpse(corpse, (NHC.st_corpse | NHC.st_petrifies))) {
-        nh_snprintf(__sl193, 3006, cptr.decay(buf), 256n, __sl194, (yield* gloves_simple_name(otmp)), (yield* obj_pmname(corpse)));
+        nh_snprintf(__s_better_not_take_that_off, 3006, cptr.decay(buf), 256n, __s_take_off_your_s_despite_carrying_a_dead, (yield* gloves_simple_name(otmp)), (yield* obj_pmname(corpse)));
         return schar(((yield* paranoid_ynq(1, cptr.decay(buf), 0)) != 121));
     }
     return 0;
@@ -2661,18 +2661,18 @@ export function reset_remarm() {
 export function* doddoremarm() {
     let result = 0;
     if (cptr.ldI64o(svc, $context_info_takeoff + $takeoff_info_what) || cptr.ldI64o(svc, $context_info_takeoff)) {
-        (yield* You(__sl195, cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing)));
+        (yield* You(__s_continue_s, cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing)));
         set_occupation(take_off, cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), 0n);
         return NHM.ECMD_OK;
     } else if (!uwep.v && !uswapwep.v && !uquiver.v && !uamul.v && !ublindf.v && !uleft.v && !uright.v && !wearing_armor()) {
-        (yield* You(__sl196));
+        (yield* You(__s_are_not_wearing_anything));
         return NHM.ECMD_OK;
     }
     add_valid_menu_class(0);
-    if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL || (result = (yield* ggetobj(__sl97, select_off, 0, 0, null))) < -1)
+    if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL || (result = (yield* ggetobj(__s_take_off, select_off, 0, 0, null))) < -1)
         void (yield* menu_remarm(result));
     if (cptr.ldI64o(svc, $context_info_takeoff)) {
-        void __builtin___strncpy_chk(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), (((cptr.ldI64o(svc, $context_info_takeoff) & -1793n) != 0n) ? __sl105 : __sl197), 30n, __builtin_object_size(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), 1));
+        void __builtin___strncpy_chk(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), (((cptr.ldI64o(svc, $context_info_takeoff) & -1793n) != 0n) ? __s_disrobing : __s_disarming), 30n, __builtin_object_size(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), 1));
         void (yield* take_off());
     }
     return NHM.ECMD_OK;
@@ -2709,7 +2709,7 @@ function* menu_remarm(retry) {
         all_worn_categories = schar((retry == -2));
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL) {
         all_worn_categories = 0;
-        n = (yield* query_category(__sl198, cptr.ldPtro(gi, $instance_globals_i_invent), 3892, pick_list, NHM.PICK_ANY));
+        n = (yield* query_category(__s_what_type_of_things_do_you_want_to_take, cptr.ldPtro(gi, $instance_globals_i_invent), 3892, pick_list, NHM.PICK_ANY));
         if (!n)
             return 0;
         for (i = 0; i < n; i++) {
@@ -2721,20 +2721,20 @@ function* menu_remarm(retry) {
         cptr.free(pick_list.v);
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
         let ggofeedback = cptr.box(0);
-        i = (yield* ggetobj(__sl97, select_off, 0, 1, ggofeedback));
+        i = (yield* ggetobj(__s_take_off, select_off, 0, 1, ggofeedback));
         if ((ggofeedback.v & NHM.ALL_FINISHED) >>> 0)
             return 0;
         all_worn_categories = schar((i == -2));
     }
     if (menu_class_present(117) || menu_class_present(66) || menu_class_present(85) || menu_class_present(67) || menu_class_present(88))
         all_worn_categories = 0;
-    n = (yield* query_objlist(__sl199, cptr.add(gi, $instance_globals_i_invent), 56, pick_list, NHM.PICK_ANY, all_worn_categories ? is_worn : is_worn_by_type));
+    n = (yield* query_objlist(__s_what_do_you_want_to_take_off, cptr.add(gi, $instance_globals_i_invent), 56, pick_list, NHM.PICK_ANY, all_worn_categories ? is_worn : is_worn_by_type));
     if (n > 0) {
         for (i = 0; i < n; i++)
             void (yield* select_off(cptr.ldPtro(pick_list.v, i, 24)));
         cptr.free(pick_list.v);
     } else if (n < 0 && cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_COMBINATION) {
-        (yield* There(__sl200));
+        (yield* There(__s_is_nothing_else_you_can_remove_or));
     }
     return 0;
 }
@@ -2786,29 +2786,29 @@ export function* disintegrate_arm(atmp) {
     let resistedc = cptr.box(0);
     let resistedsuit = cptr.box(0);
     if ((otmp = maybe_destroy_armor(uarmc.v, atmp, resistedc)) !== null) {
-        (yield* urgent_pline(__sl201, cloak_simple_name(otmp)));
+        (yield* urgent_pline(__s_your_s_crumbles_and_turns_to_dust, cloak_simple_name(otmp)));
     } else if (!resistedc.v && (otmp = maybe_destroy_armor(uarm.v, atmp, resistedsuit)) !== null) {
         let suit = suit_simple_name(otmp);
         if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
             (yield* end_burn(otmp, 0));
-        (yield* urgent_pline(__sl202, suit, (yield* vtense(suit, __sl203)), (yield* vtense(suit, __sl204)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+        (yield* urgent_pline(__s_your_s_s_to_dust_and_s_to_the_s, suit, (yield* vtense(suit, __s_turn)), (yield* vtense(suit, __s_fall)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
     } else if (!resistedc.v && !resistedsuit.v && (otmp = maybe_destroy_armor(uarmu.v, atmp, resisted)) !== null) {
-        (yield* urgent_pline(__sl205, shirt_simple_name(otmp)));
+        (yield* urgent_pline(__s_your_s_crumbles_into_tiny_threads_and, shirt_simple_name(otmp)));
     } else if ((otmp = maybe_destroy_armor(uarmh.v, atmp, resisted)) !== null) {
-        (yield* urgent_pline(__sl206, helm_simple_name(otmp)));
+        (yield* urgent_pline(__s_your_s_turns_to_dust_and_is_blown_away, helm_simple_name(otmp)));
     } else if ((otmp = maybe_destroy_armor(uarmg.v, atmp, resisted)) !== null) {
-        (yield* urgent_pline(__sl207, (yield* gloves_simple_name(otmp))));
+        (yield* urgent_pline(__s_your_s_vanish, (yield* gloves_simple_name(otmp))));
         losing_gloves = 1;
     } else if ((otmp = maybe_destroy_armor(uarmf.v, atmp, resisted)) !== null) {
-        (yield* urgent_pline(__sl208, (yield* boots_simple_name(otmp))));
+        (yield* urgent_pline(__s_your_s_disintegrate, (yield* boots_simple_name(otmp))));
     } else if ((otmp = maybe_destroy_armor(uarms.v, atmp, resisted)) !== null) {
-        (yield* urgent_pline(__sl209, shield_simple_name(otmp)));
+        (yield* urgent_pline(__s_your_s_crumbles_away, shield_simple_name(otmp)));
     } else {
         return 0;
     }
     (yield* wornarm_destroyed(otmp));
     if (losing_gloves)
-        (yield* selftouch(__sl210));
+        (yield* selftouch(__s_you));
     (yield* stop_occupation());
     return 1;
 }
@@ -2834,7 +2834,7 @@ export function* destroy_arm() {
     let otmp;
     let i;
     let idx = 0;
-    let hits = ((rng_log_enabled() ? (rng_log_set_caller(__sl14, 3282, __sl211), rn2(4)) : rn2(4)) + 1) | 0;
+    let hits = ((rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 3282, __s_destroy_arm), rn2(4)) : rn2(4)) + 1) | 0;
     let ret = 0;
     if (uarm.v)
         cptr.stPtro(armors, idx++, uarm.v, 8);
@@ -2853,7 +2853,7 @@ export function* destroy_arm() {
     if (!idx)
         return 0;
     for (i = 0; i < hits; i++) {
-        otmp = cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__sl14, 3297, __sl211), rn2(idx)) : rn2(idx)), 8);
+        otmp = cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 3297, __s_destroy_arm), rn2(idx)) : rn2(idx)), 8);
         if (erosion_matters(otmp) && is_damageable(otmp) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);
             if (erosion != -1) {
@@ -2913,7 +2913,7 @@ export function* inaccessible_equipment(obj, verb, only_if_known_cursed) {
             if (uarmc.v)
                 void cptr.strcat(cptr.decay(buf), (yield* yname(uarmc.v)));
             if (uarm.v && uarmc.v)
-                void cptr.strcat(cptr.decay(buf), __sl87);
+                void cptr.strcat(cptr.decay(buf), __s_and__2);
             if (uarm.v)
                 void cptr.strcat(cptr.decay(buf), sameprefix ? (yield* xname(uarm.v)) : (yield* yname(uarm.v)));
             (yield* You(cptr.decay(__static_inaccessible_equipment_need_to_take_off_outer_armor), cptr.decay(buf), verb, (yield* yname(obj))));

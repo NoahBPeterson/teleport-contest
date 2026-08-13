@@ -61,141 +61,141 @@ const $const_globals_zeroany = FLD.const_globals_zeroany,
     $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s %s %s");
-const __sl1 = cptr.lit("the");
-const __sl2 = cptr.lit("this specific");
-const __sl3 = cptr.lit("this stack of");
-const __sl4 = cptr.lit("%s the type for %s");
-const __sl5 = cptr.lit("Read the message inside this cookie");
-const __sl6 = cptr.lit("Read the slogan on the shirt");
-const __sl7 = cptr.lit("Read the slogan on the apron");
-const __sl8 = cptr.lit("Look at the pattern on the shirt");
-const __sl9 = cptr.lit(" to activate its magic");
-const __sl10 = cptr.lit("");
-const __sl11 = cptr.lit("Read this scroll%s");
-const __sl12 = cptr.lit("%s this %s");
-const __sl13 = cptr.lit("Read");
-const __sl14 = cptr.lit("Examine");
-const __sl15 = cptr.lit("Study");
-const __sl16 = cptr.lit("tome");
-const __sl17 = cptr.lit("spellbook");
-const __sl18 = cptr.lit("Unknown item action %d");
-const __sl19 = cptr.lit("Extinguish");
-const __sl20 = cptr.lit("Light");
-const __sl21 = cptr.lit("Quiver");
-const __sl22 = cptr.lit("Wield");
-const __sl23 = cptr.lit("un-ready");
-const __sl24 = cptr.lit("un-wield");
-const __sl25 = cptr.lit("these");
-const __sl26 = cptr.lit("this");
-const __sl27 = cptr.lit("weapon");
-const __sl28 = cptr.lit("item");
-const __sl29 = cptr.lit("%s '%c' to %s %s %s");
-const __sl30 = cptr.lit("Flip a coin");
-const __sl31 = cptr.lit("Hit yourself with this cream pie");
-const __sl32 = cptr.lit("Lash out with this whip");
-const __sl33 = cptr.lit("Grapple something with this hook");
-const __sl34 = cptr.lit("Reach into this bag");
-const __sl35 = cptr.lit("Open this container");
-const __sl36 = cptr.lit("Use the can to grease an item");
-const __sl37 = cptr.lit("Use this tool to pick a lock");
-const __sl38 = cptr.lit("Use this kit to tin a corpse");
-const __sl39 = cptr.lit("Tie a pet to this leash");
-const __sl40 = cptr.lit("Place this saddle on a pet");
-const __sl41 = cptr.lit("Blow this whistle");
-const __sl42 = cptr.lit("Use this leaf as a whistle");
-const __sl43 = cptr.lit("Listen through the stethoscope");
-const __sl44 = cptr.lit("Show something its reflection");
-const __sl45 = cptr.lit("Ring the bell");
-const __sl46 = cptr.lit("%s the candelabrum");
-const __sl47 = cptr.lit("Attach %s to your candelabrum, or %s %s");
-const __sl48 = cptr.lit("light");
-const __sl49 = cptr.lit("extinguish");
-const __sl50 = cptr.lit("them");
-const __sl51 = cptr.lit("it");
-const __sl52 = cptr.lit("%s this light source");
-const __sl53 = cptr.lit("%s this oil");
-const __sl54 = cptr.lit("Dip something into %s potion%s");
-const __sl55 = cptr.lit("one of these");
-const __sl56 = cptr.lit("s");
-const __sl57 = cptr.lit("Take a photograph");
-const __sl58 = cptr.lit("Clean yourself off with this towel");
-const __sl59 = cptr.lit("Peer into this crystal ball");
-const __sl60 = cptr.lit("Write on something with this marker");
-const __sl61 = cptr.lit("Make this figurine transform");
-const __sl62 = cptr.lit("Use this unicorn horn");
-const __sl63 = cptr.lit("Blow into the horn of plenty");
-const __sl64 = cptr.lit("Play this musical instrument");
-const __sl65 = cptr.lit("Arm this trap");
-const __sl66 = cptr.lit("Dig with this digging tool");
-const __sl67 = cptr.lit("Break this wand");
-const __sl68 = cptr.lit("Drop this %s");
-const __sl69 = cptr.lit("stack");
-const __sl70 = cptr.lit("Open %s%s and eat the contents");
-const __sl71 = cptr.lit("one of these tins");
-const __sl72 = cptr.lit("this tin");
-const __sl73 = cptr.lit(" with your tin opener");
-const __sl74 = cptr.lit("Eat %s");
-const __sl75 = cptr.lit("Wipe the floor with this towel");
-const __sl76 = cptr.lit("Scribble graffiti on the floor");
-const __sl77 = cptr.lit("%s on the %s with %s");
-const __sl78 = cptr.lit("Engrave");
-const __sl79 = cptr.lit("Write");
-const __sl80 = cptr.lit("one of these items");
-const __sl81 = cptr.lit("this item");
-const __sl82 = cptr.lit("%s %s");
-const __sl83 = cptr.lit("Shoot");
-const __sl84 = cptr.lit("Throw");
-const __sl85 = cptr.lit("itemactions");
-const __sl86 = cptr.lit("iactions.c");
-const __sl87 = cptr.lit("uwep != NULL");
-const __sl88 = cptr.lit(" with your wielded %s");
-const __sl89 = cptr.lit("item-action");
-const __sl90 = cptr.lit("Adjust inventory by assigning new letter");
-const __sl91 = cptr.lit("Adjust inventory by splitting this stack");
-const __sl92 = cptr.lit("Offer this corpse as a sacrifice at this altar");
-const __sl93 = cptr.lit("Offer this amulet as a sacrifice at this altar");
-const __sl94 = cptr.lit("Buy this unpaid %s");
-const __sl95 = cptr.lit("Put this amulet on");
-const __sl96 = cptr.lit("[already wearing an amulet]");
-const __sl97 = cptr.lit("Put this ring on");
-const __sl98 = cptr.lit("[both ring %s in use]");
-const __sl99 = cptr.lit("[already wearing eyewear]");
-const __sl100 = cptr.lit("Put these lenses on");
-const __sl101 = cptr.lit("Put this on%s");
-const __sl102 = cptr.lit(" to blindfold yourself");
-const __sl103 = cptr.lit("Quaff (drink) %s");
-const __sl104 = cptr.lit("one of these potions");
-const __sl105 = cptr.lit("this potion");
-const __sl106 = cptr.lit("Quiver this %s for easy %s with 'f'ire");
-const __sl107 = cptr.lit("shooting");
-const __sl108 = cptr.lit("throwing");
-const __sl109 = cptr.lit("Remove this %s");
-const __sl110 = cptr.lit("amulet");
-const __sl111 = cptr.lit("ring");
-const __sl112 = cptr.lit("eyewear");
-const __sl113 = cptr.lit("accessory");
-const __sl114 = cptr.lit("Rub this %s");
-const __sl115 = cptr.lit("Rub something on this stone");
-const __sl116 = cptr.lit("%s %s%s");
-const __sl117 = cptr.lit(" (same as 'f')");
-const __sl118 = cptr.lit("Take off this armor");
-const __sl119 = cptr.lit("Tip all the contents out of this container");
-const __sl120 = cptr.lit("Try to invoke a unique power of this object");
-const __sl121 = cptr.lit("Wield this %s as your weapon");
-const __sl122 = cptr.lit("Wield the tin opener to easily open tins");
-const __sl123 = cptr.lit("Wield this %s in your %s");
-const __sl124 = cptr.lit("Wear this armor");
-const __sl125 = cptr.lit("[already wearing %s]");
-const __sl126 = cptr.lit("Swap this with your alternate weapon");
-const __sl127 = cptr.lit("Ready this as an alternate weapon");
-const __sl128 = cptr.lit("Swap this with your main weapon");
-const __sl129 = cptr.lit("Toggle two-weapon combat %s");
-const __sl130 = cptr.lit("off");
-const __sl131 = cptr.lit("on");
-const __sl132 = cptr.lit("Zap this wand to release its magic");
-const __sl133 = cptr.lit("Look up information about %s");
-const __sl134 = cptr.lit("Do what with %s?");
+const __s_s_s_s = cptr.lit("%s %s %s");
+const __s_the = cptr.lit("the");
+const __s_this_specific = cptr.lit("this specific");
+const __s_this_stack_of = cptr.lit("this stack of");
+const __s_s_the_type_for_s = cptr.lit("%s the type for %s");
+const __s_read_the_message_inside_this_cookie = cptr.lit("Read the message inside this cookie");
+const __s_read_the_slogan_on_the_shirt = cptr.lit("Read the slogan on the shirt");
+const __s_read_the_slogan_on_the_apron = cptr.lit("Read the slogan on the apron");
+const __s_look_at_the_pattern_on_the_shirt = cptr.lit("Look at the pattern on the shirt");
+const __s_to_activate_its_magic = cptr.lit(" to activate its magic");
+const __s_empty = cptr.lit("");
+const __s_read_this_scroll_s = cptr.lit("Read this scroll%s");
+const __s_s_this_s = cptr.lit("%s this %s");
+const __s_read = cptr.lit("Read");
+const __s_examine = cptr.lit("Examine");
+const __s_study = cptr.lit("Study");
+const __s_tome = cptr.lit("tome");
+const __s_spellbook = cptr.lit("spellbook");
+const __s_unknown_item_action_d = cptr.lit("Unknown item action %d");
+const __s_extinguish = cptr.lit("Extinguish");
+const __s_light = cptr.lit("Light");
+const __s_quiver = cptr.lit("Quiver");
+const __s_wield = cptr.lit("Wield");
+const __s_un_ready = cptr.lit("un-ready");
+const __s_un_wield = cptr.lit("un-wield");
+const __s_these = cptr.lit("these");
+const __s_this = cptr.lit("this");
+const __s_weapon = cptr.lit("weapon");
+const __s_item = cptr.lit("item");
+const __s_s_c_to_s_s_s = cptr.lit("%s '%c' to %s %s %s");
+const __s_flip_a_coin = cptr.lit("Flip a coin");
+const __s_hit_yourself_with_this_cream_pie = cptr.lit("Hit yourself with this cream pie");
+const __s_lash_out_with_this_whip = cptr.lit("Lash out with this whip");
+const __s_grapple_something_with_this_hook = cptr.lit("Grapple something with this hook");
+const __s_reach_into_this_bag = cptr.lit("Reach into this bag");
+const __s_open_this_container = cptr.lit("Open this container");
+const __s_use_the_can_to_grease_an_item = cptr.lit("Use the can to grease an item");
+const __s_use_this_tool_to_pick_a_lock = cptr.lit("Use this tool to pick a lock");
+const __s_use_this_kit_to_tin_a_corpse = cptr.lit("Use this kit to tin a corpse");
+const __s_tie_a_pet_to_this_leash = cptr.lit("Tie a pet to this leash");
+const __s_place_this_saddle_on_a_pet = cptr.lit("Place this saddle on a pet");
+const __s_blow_this_whistle = cptr.lit("Blow this whistle");
+const __s_use_this_leaf_as_a_whistle = cptr.lit("Use this leaf as a whistle");
+const __s_listen_through_the_stethoscope = cptr.lit("Listen through the stethoscope");
+const __s_show_something_its_reflection = cptr.lit("Show something its reflection");
+const __s_ring_the_bell = cptr.lit("Ring the bell");
+const __s_s_the_candelabrum = cptr.lit("%s the candelabrum");
+const __s_attach_s_to_your_candelabrum_or_s_s = cptr.lit("Attach %s to your candelabrum, or %s %s");
+const __s_light__2 = cptr.lit("light");
+const __s_extinguish__2 = cptr.lit("extinguish");
+const __s_them = cptr.lit("them");
+const __s_it = cptr.lit("it");
+const __s_s_this_light_source = cptr.lit("%s this light source");
+const __s_s_this_oil = cptr.lit("%s this oil");
+const __s_dip_something_into_s_potion_s = cptr.lit("Dip something into %s potion%s");
+const __s_one_of_these = cptr.lit("one of these");
+const __s_s = cptr.lit("s");
+const __s_take_a_photograph = cptr.lit("Take a photograph");
+const __s_clean_yourself_off_with_this_towel = cptr.lit("Clean yourself off with this towel");
+const __s_peer_into_this_crystal_ball = cptr.lit("Peer into this crystal ball");
+const __s_write_on_something_with_this_marker = cptr.lit("Write on something with this marker");
+const __s_make_this_figurine_transform = cptr.lit("Make this figurine transform");
+const __s_use_this_unicorn_horn = cptr.lit("Use this unicorn horn");
+const __s_blow_into_the_horn_of_plenty = cptr.lit("Blow into the horn of plenty");
+const __s_play_this_musical_instrument = cptr.lit("Play this musical instrument");
+const __s_arm_this_trap = cptr.lit("Arm this trap");
+const __s_dig_with_this_digging_tool = cptr.lit("Dig with this digging tool");
+const __s_break_this_wand = cptr.lit("Break this wand");
+const __s_drop_this_s = cptr.lit("Drop this %s");
+const __s_stack = cptr.lit("stack");
+const __s_open_s_s_and_eat_the_contents = cptr.lit("Open %s%s and eat the contents");
+const __s_one_of_these_tins = cptr.lit("one of these tins");
+const __s_this_tin = cptr.lit("this tin");
+const __s_with_your_tin_opener = cptr.lit(" with your tin opener");
+const __s_eat_s = cptr.lit("Eat %s");
+const __s_wipe_the_floor_with_this_towel = cptr.lit("Wipe the floor with this towel");
+const __s_scribble_graffiti_on_the_floor = cptr.lit("Scribble graffiti on the floor");
+const __s_s_on_the_s_with_s = cptr.lit("%s on the %s with %s");
+const __s_engrave = cptr.lit("Engrave");
+const __s_write = cptr.lit("Write");
+const __s_one_of_these_items = cptr.lit("one of these items");
+const __s_this_item = cptr.lit("this item");
+const __s_s_s = cptr.lit("%s %s");
+const __s_shoot = cptr.lit("Shoot");
+const __s_throw = cptr.lit("Throw");
+const __s_itemactions = cptr.lit("itemactions");
+const __s_iactions_c = cptr.lit("iactions.c");
+const __s_uwep_null = cptr.lit("uwep != NULL");
+const __s_with_your_wielded_s = cptr.lit(" with your wielded %s");
+const __s_item_action = cptr.lit("item-action");
+const __s_adjust_inventory_by_assigning_new_letter = cptr.lit("Adjust inventory by assigning new letter");
+const __s_adjust_inventory_by_splitting_this_stack = cptr.lit("Adjust inventory by splitting this stack");
+const __s_offer_this_corpse_as_a_sacrifice_at = cptr.lit("Offer this corpse as a sacrifice at this altar");
+const __s_offer_this_amulet_as_a_sacrifice_at = cptr.lit("Offer this amulet as a sacrifice at this altar");
+const __s_buy_this_unpaid_s = cptr.lit("Buy this unpaid %s");
+const __s_put_this_amulet_on = cptr.lit("Put this amulet on");
+const __s_already_wearing_an_amulet = cptr.lit("[already wearing an amulet]");
+const __s_put_this_ring_on = cptr.lit("Put this ring on");
+const __s_both_ring_s_in_use = cptr.lit("[both ring %s in use]");
+const __s_already_wearing_eyewear = cptr.lit("[already wearing eyewear]");
+const __s_put_these_lenses_on = cptr.lit("Put these lenses on");
+const __s_put_this_on_s = cptr.lit("Put this on%s");
+const __s_to_blindfold_yourself = cptr.lit(" to blindfold yourself");
+const __s_quaff_drink_s = cptr.lit("Quaff (drink) %s");
+const __s_one_of_these_potions = cptr.lit("one of these potions");
+const __s_this_potion = cptr.lit("this potion");
+const __s_quiver_this_s_for_easy_s_with_f_ire = cptr.lit("Quiver this %s for easy %s with 'f'ire");
+const __s_shooting = cptr.lit("shooting");
+const __s_throwing = cptr.lit("throwing");
+const __s_remove_this_s = cptr.lit("Remove this %s");
+const __s_amulet = cptr.lit("amulet");
+const __s_ring = cptr.lit("ring");
+const __s_eyewear = cptr.lit("eyewear");
+const __s_accessory = cptr.lit("accessory");
+const __s_rub_this_s = cptr.lit("Rub this %s");
+const __s_rub_something_on_this_stone = cptr.lit("Rub something on this stone");
+const __s_s_s_s__2 = cptr.lit("%s %s%s");
+const __s_same_as_f = cptr.lit(" (same as 'f')");
+const __s_take_off_this_armor = cptr.lit("Take off this armor");
+const __s_tip_all_the_contents_out_of_this = cptr.lit("Tip all the contents out of this container");
+const __s_try_to_invoke_a_unique_power_of_this = cptr.lit("Try to invoke a unique power of this object");
+const __s_wield_this_s_as_your_weapon = cptr.lit("Wield this %s as your weapon");
+const __s_wield_the_tin_opener_to_easily_open_tins = cptr.lit("Wield the tin opener to easily open tins");
+const __s_wield_this_s_in_your_s = cptr.lit("Wield this %s in your %s");
+const __s_wear_this_armor = cptr.lit("Wear this armor");
+const __s_already_wearing_s = cptr.lit("[already wearing %s]");
+const __s_swap_this_with_your_alternate_weapon = cptr.lit("Swap this with your alternate weapon");
+const __s_ready_this_as_an_alternate_weapon = cptr.lit("Ready this as an alternate weapon");
+const __s_swap_this_with_your_main_weapon = cptr.lit("Swap this with your main weapon");
+const __s_toggle_two_weapon_combat_s = cptr.lit("Toggle two-weapon combat %s");
+const __s_off = cptr.lit("off");
+const __s_on = cptr.lit("on");
+const __s_zap_this_wand_to_release_its_magic = cptr.lit("Zap this wand to release its magic");
+const __s_look_up_information_about_s = cptr.lit("Look up information about %s");
+const __s_do_what_with_s = cptr.lit("Do what with %s?");
 
 /** C ref: iactions.c:13 — enum */
 export const IA_NONE = 0;
@@ -236,7 +236,7 @@ const __static_item_naming_classification_Recall = cptr.bytes("Re-call or un-cal
 function item_naming_classification(obj, onamebuf, ocallbuf) {
     cptr.st1o(onamebuf, 0, cptr.st1o(ocallbuf, 0, 0));
     if (name_ok(obj) == NHC.GETOBJ_SUGGEST) {
-        void cptr.sprintf(onamebuf, __sl0, (!has_oname(obj) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))))) ? cptr.decay(__static_item_naming_classification_Name) : cptr.decay(__static_item_naming_classification_Rename), the_unique_obj(obj) ? __sl1 : (!is_plural(obj) ? __sl2 : __sl3), simpleonames(obj));
+        void cptr.sprintf(onamebuf, __s_s_s_s, (!has_oname(obj) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))))) ? cptr.decay(__static_item_naming_classification_Name) : cptr.decay(__static_item_naming_classification_Rename), the_unique_obj(obj) ? __s_the : (!is_plural(obj) ? __s_this_specific : __s_this_stack_of), simpleonames(obj));
     }
     if (call_ok(obj) == NHC.GETOBJ_SUGGEST) {
         let callname = simpleonames(obj);
@@ -244,7 +244,7 @@ function item_naming_classification(obj, onamebuf, ocallbuf) {
             callname = the(callname);
         else if (!is_plural(obj))
             callname = makeplural(callname);
-        void cptr.sprintf(ocallbuf, __sl4, (!cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname) || !cptr.ld1s(cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
+        void cptr.sprintf(ocallbuf, __s_s_the_type_for_s, (!cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname) || !cptr.ld1s(cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
     }
     return schar(((cptr.ld1s(onamebuf) || cptr.ld1s(ocallbuf)) ? 1 : 0));
 }
@@ -255,21 +255,21 @@ function item_reading_classification(obj, outbuf) {
     let res = NHC.IA_READ_OBJ;
     cptr.st1(outbuf, 0);
     if (otyp == NHC.FORTUNE_COOKIE) {
-        void cptr.strcpy(outbuf, __sl5);
+        void cptr.strcpy(outbuf, __s_read_the_message_inside_this_cookie);
     } else if (otyp == NHC.T_SHIRT) {
-        void cptr.strcpy(outbuf, __sl6);
+        void cptr.strcpy(outbuf, __s_read_the_slogan_on_the_shirt);
     } else if (otyp == NHC.ALCHEMY_SMOCK) {
-        void cptr.strcpy(outbuf, __sl7);
+        void cptr.strcpy(outbuf, __s_read_the_slogan_on_the_apron);
     } else if (otyp == NHC.HAWAIIAN_SHIRT) {
-        void cptr.strcpy(outbuf, __sl8);
+        void cptr.strcpy(outbuf, __s_look_at_the_pattern_on_the_shirt);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS) {
-        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && otyp != NHC.SCR_MAIL && (otyp != NHC.SCR_BLANK_PAPER || !(cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1))) ? __sl9 : __sl10);
-        void cptr.sprintf(outbuf, __sl11, magic);
+        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && otyp != NHC.SCR_MAIL && (otyp != NHC.SCR_BLANK_PAPER || !(cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1))) ? __s_to_activate_its_magic : __s_empty);
+        void cptr.sprintf(outbuf, __s_read_this_scroll_s, magic);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
         let novel = schar((otyp == NHC.SPE_NOVEL));
         let blank = schar((otyp == NHC.SPE_BLANK_PAPER && (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
         let tome = schar((otyp == NHC.SPE_BOOK_OF_THE_DEAD && (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
-        void cptr.sprintf(outbuf, __sl12, (novel || blank) ? __sl13 : (tome ? __sl14 : __sl15), novel ? simpleonames(obj) : (tome ? __sl16 : __sl17));
+        void cptr.sprintf(outbuf, __s_s_this_s, (novel || blank) ? __s_read : (tome ? __s_examine : __s_study), novel ? simpleonames(obj) : (tome ? __s_tome : __s_spellbook));
     } else {
         res = NHC.IA_NONE;
     }
@@ -289,7 +289,7 @@ function ia_addmenu(win, act, let$, txt) {
 function itemactions_pushkeys(otmp, act) {
     switch (act) {
         default:
-        impossible(__sl18, act);
+        impossible(__s_unknown_item_action_d, act);
         break;
         case NHC.IA_NONE:
         break;
@@ -412,93 +412,93 @@ export function itemactions(otmp) {
     let buf2 = new Uint8Array(256);
     let selected = cptr.box(0);
     let mtmp;
-    let light = (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 ? __sl19 : __sl20;
+    let light = (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 ? __s_extinguish : __s_light;
     let already_worn = schar(((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) != 0n));
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
     if (cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v) || cptr.eq(otmp, uquiver.v)) {
-        let verb = (cptr.eq(otmp, uquiver.v)) ? __sl21 : __sl22;
-        let action = (cptr.eq(otmp, uquiver.v)) ? __sl23 : __sl24;
-        let which = is_plural(otmp) ? __sl25 : __sl26;
-        let what = ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp)) ? __sl27 : __sl28);
-        void cptr.sprintf(cptr.decay(buf), __sl29, verb, 45, action, which, is_plural(otmp) ? makeplural(what) : what);
+        let verb = (cptr.eq(otmp, uquiver.v)) ? __s_quiver : __s_wield;
+        let action = (cptr.eq(otmp, uquiver.v)) ? __s_un_ready : __s_un_wield;
+        let which = is_plural(otmp) ? __s_these : __s_this;
+        let what = ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp)) ? __s_weapon : __s_item);
+        void cptr.sprintf(cptr.decay(buf), __s_s_c_to_s_s_s, verb, 45, action, which, is_plural(otmp) ? makeplural(what) : what);
         ia_addmenu(win, NHC.IA_UNWIELD, 45, cptr.decay(buf));
     }
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl30);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_flip_a_coin);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CREAM_PIE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl31);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_hit_yourself_with_this_cream_pie);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BULLWHIP)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl32);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_lash_out_with_this_whip);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.GRAPPLING_HOOK)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl33);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_grapple_something_with_this_hook);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl34);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_reach_into_this_bag);
     else if (Is_container(otmp))
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl35);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_open_this_container);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CAN_OF_GREASE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl36);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_the_can_to_grease_an_item);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOCK_PICK || cptr.ldI16o(otmp, $obj_otyp) == NHC.CREDIT_CARD || cptr.ldI16o(otmp, $obj_otyp) == NHC.SKELETON_KEY)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl37);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_tool_to_pick_a_lock);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TINNING_KIT)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl38);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_kit_to_tin_a_corpse);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LEASH)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl39);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_tie_a_pet_to_this_leash);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SADDLE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl40);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_place_this_saddle_on_a_pet);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_WHISTLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN_WHISTLE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl41);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_blow_this_whistle);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EUCALYPTUS_LEAF)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl42);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_leaf_as_a_whistle);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STETHOSCOPE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl43);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_listen_through_the_stethoscope);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MIRROR)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl44);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_show_something_its_reflection);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL || cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl45);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_ring_the_bell);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
-        void cptr.sprintf(cptr.decay(buf), __sl46, light);
+        void cptr.sprintf(cptr.decay(buf), __s_s_the_candelabrum, light);
         ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.TALLOW_CANDLE) {
         let multiple = schar(((cptr.ldI64o(otmp, $obj_quan) == 1n) ? 0 : 1));
-        let s = multiple ? __sl25 : __sl26;
+        let s = multiple ? __s_these : __s_this;
         let o = carrying(NHC.CANDELABRUM_OF_INVOCATION);
         if (o && cptr.ld1so(o, $obj_spe) < 7)
-            void cptr.sprintf(cptr.decay(buf), __sl47, s, !(cptr.ldI32o(otmp, $obj_lamplit) & 1) ? __sl48 : __sl49, multiple ? __sl50 : __sl51);
+            void cptr.sprintf(cptr.decay(buf), __s_attach_s_to_your_candelabrum_or_s_s, s, !(cptr.ldI32o(otmp, $obj_lamplit) & 1) ? __s_light__2 : __s_extinguish__2, multiple ? __s_them : __s_it);
         else
-            void cptr.sprintf(cptr.decay(buf), __sl0, light, s, simpleonames(otmp));
+            void cptr.sprintf(cptr.decay(buf), __s_s_s_s, light, s, simpleonames(otmp));
         ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
-        void cptr.sprintf(cptr.decay(buf), __sl52, light);
+        void cptr.sprintf(cptr.decay(buf), __s_s_this_light_source, light);
         ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0) {
-        void cptr.sprintf(cptr.decay(buf), __sl53, light);
+        void cptr.sprintf(cptr.decay(buf), __s_s_this_oil, light);
         ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __sl54, is_plural(otmp) ? __sl55 : __sl26, (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __sl10 : __sl56));
+        void cptr.sprintf(cptr.decay(buf), __s_dip_something_into_s_potion_s, is_plural(otmp) ? __s_one_of_these : __s_this, (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __s_empty : __s_s));
         ia_addmenu(win, NHC.IA_DIP_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EXPENSIVE_CAMERA)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl57);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_take_a_photograph);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl58);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_clean_yourself_off_with_this_towel);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl59);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_peer_into_this_crystal_ball);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_MARKER)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl60);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_write_on_something_with_this_marker);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.FIGURINE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl61);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_make_this_figurine_transform);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.UNICORN_HORN)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl62);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_unicorn_horn);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl63);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_blow_into_the_horn_of_plenty);
     else if (cptr.ldI16o(otmp, $obj_otyp) >= NHC.WOODEN_FLUTE && cptr.ldI16o(otmp, $obj_otyp) <= NHC.DRUM_OF_EARTHQUAKE)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl64);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_play_this_musical_instrument);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LAND_MINE || cptr.ldI16o(otmp, $obj_otyp) == NHC.BEARTRAP)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl65);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_arm_this_trap);
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.PICK_AXE || cptr.ldI16o(otmp, $obj_otyp) == NHC.DWARVISH_MATTOCK)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl66);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_dig_with_this_digging_tool);
     else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS)
-        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __sl67);
+        ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_break_this_wand);
     if (item_naming_classification(otmp, cptr.decay(buf), cptr.decay(buf2))) {
         if (cptr.ld1s(cptr.decay(buf)))
             ia_addmenu(win, NHC.IA_NAME_OBJ, 99, cptr.decay(buf));
@@ -506,106 +506,106 @@ export function itemactions(otmp) {
             ia_addmenu(win, NHC.IA_NAME_OTYP, 67, cptr.decay(buf2));
     }
     if (!already_worn) {
-        void cptr.sprintf(cptr.decay(buf), __sl68, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28);
+        void cptr.sprintf(cptr.decay(buf), __s_drop_this_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
         ia_addmenu(win, NHC.IA_DROP_OBJ, 100, cptr.decay(buf));
     }
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
-        void cptr.sprintf(cptr.decay(buf), __sl70, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl71 : __sl72, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN && uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? __sl73 : __sl10);
+        void cptr.sprintf(cptr.decay(buf), __s_open_s_s_and_eat_the_contents, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_tins : __s_this_tin, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN && uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? __s_with_your_tin_opener : __s_empty);
         ia_addmenu(win, NHC.IA_EAT_OBJ, 101, cptr.decay(buf));
     } else if (is_edible(otmp)) {
-        void cptr.sprintf(cptr.decay(buf), __sl74, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl55 : __sl26);
+        void cptr.sprintf(cptr.decay(buf), __s_eat_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this);
         ia_addmenu(win, NHC.IA_EAT_OBJ, 101, cptr.decay(buf));
     }
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL) {
-        ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __sl75);
+        ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __s_wipe_the_floor_with_this_towel);
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_MARKER) {
-        ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __sl76);
+        ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __s_scribble_graffiti_on_the_floor);
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __sl77, (is_blade(otmp) || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_tough) & 1) | 0)) ? __sl78 : __sl79, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl80 : __sl81);
+        void cptr.sprintf(cptr.decay(buf), __s_s_on_the_s_with_s, (is_blade(otmp) || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_tough) & 1) | 0)) ? __s_engrave : __s_write, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_items : __s_this_item);
         ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, cptr.decay(buf));
     }
     if (cptr.eq(otmp, uquiver.v)) {
         let shoot = schar(ammo_and_launcher(otmp, uwep.v));
-        void cptr.sprintf(cptr.decay(buf), __sl82, shoot ? __sl83 : __sl84, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl55 : __sl26);
+        void cptr.sprintf(cptr.decay(buf), __s_s_s, shoot ? __s_shoot : __s_throw, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this);
         if (shoot) {
-            (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__sl85, __sl86, 456, __sl87) : void 0);
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl88, simpleonames(uwep.v));
+            (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__s_itemactions, __s_iactions_c, 456, __s_uwep_null) : void 0);
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_with_your_wielded_s, simpleonames(uwep.v));
         }
         ia_addmenu(win, NHC.IA_FIRE_OBJ, 102, cptr.decay(buf));
     }
-    if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS || check_invent_gold(__sl89))
-        ia_addmenu(win, NHC.IA_ADJUST_OBJ, 105, __sl90);
+    if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS || check_invent_gold(__s_item_action))
+        ia_addmenu(win, NHC.IA_ADJUST_OBJ, 105, __s_adjust_inventory_by_assigning_new_letter);
     if (cptr.ldI64o(otmp, $obj_quan) > 1n && cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
-        ia_addmenu(win, NHC.IA_ADJUST_STACK, 73, __sl91);
+        ia_addmenu(win, NHC.IA_ADJUST_STACK, 73, __s_adjust_inventory_by_splitting_this_stack);
     if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
-            ia_addmenu(win, NHC.IA_SACRIFICE, 79, __sl92);
+            ia_addmenu(win, NHC.IA_SACRIFICE, 79, __s_offer_this_corpse_as_a_sacrifice_at);
         else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR)
-            ia_addmenu(win, NHC.IA_SACRIFICE, 79, __sl93);
+            ia_addmenu(win, NHC.IA_SACRIFICE, 79, __s_offer_this_amulet_as_a_sacrifice_at);
     }
     if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 && (mtmp = shop_keeper(cptr.ld1s(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE)))) !== null && inhishop(mtmp)) {
-        void cptr.sprintf(cptr.decay(buf), __sl94, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28);
+        void cptr.sprintf(cptr.decay(buf), __s_buy_this_unpaid_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
         ia_addmenu(win, NHC.IA_BUY_OBJ, 112, cptr.decay(buf));
     }
     if (!already_worn) {
         cptr.st1(cptr.decay(buf), 0);
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.AMULET_CLASS) {
-            void cptr.strcpy(cptr.decay(buf), !uamul.v ? __sl95 : __sl96);
+            void cptr.strcpy(cptr.decay(buf), !uamul.v ? __s_put_this_amulet_on : __s_already_wearing_an_amulet);
         } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.MEAT_RING) {
             if (!uleft.v || !uright.v)
-                void cptr.strcpy(cptr.decay(buf), __sl97);
+                void cptr.strcpy(cptr.decay(buf), __s_put_this_ring_on);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl98, makeplural(body_part(NHC.FINGER)));
+                void cptr.sprintf(cptr.decay(buf), __s_both_ring_s_in_use, makeplural(body_part(NHC.FINGER)));
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BLINDFOLD || cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL || cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES) {
             if (ublindf.v)
-                void cptr.strcpy(cptr.decay(buf), __sl99);
+                void cptr.strcpy(cptr.decay(buf), __s_already_wearing_eyewear);
             else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES)
-                void cptr.strcpy(cptr.decay(buf), __sl100);
+                void cptr.strcpy(cptr.decay(buf), __s_put_these_lenses_on);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl101, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL) ? __sl102 : __sl10);
+                void cptr.sprintf(cptr.decay(buf), __s_put_this_on_s, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL) ? __s_to_blindfold_yourself : __s_empty);
         }
         if (cptr.ld1s(cptr.decay(buf)))
             ia_addmenu(win, NHC.IA_WEAR_OBJ, 80, cptr.decay(buf));
     }
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __sl103, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl104 : __sl105);
+        void cptr.sprintf(cptr.decay(buf), __s_quaff_drink_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_potions : __s_this_potion);
         ia_addmenu(win, NHC.IA_QUAFF_OBJ, 113, cptr.decay(buf));
     }
     if ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS) && !cptr.eq(otmp, uquiver.v)) {
-        void cptr.sprintf(cptr.decay(buf), __sl106, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28, ammo_and_launcher(otmp, uwep.v) ? __sl107 : __sl108);
+        void cptr.sprintf(cptr.decay(buf), __s_quiver_this_s_for_easy_s_with_f_ire, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item, ammo_and_launcher(otmp, uwep.v) ? __s_shooting : __s_throwing);
         ia_addmenu(win, NHC.IA_QUIVER_OBJ, 81, cptr.decay(buf));
     }
     if (item_reading_classification(otmp, cptr.decay(buf)) == NHC.IA_READ_OBJ)
         ia_addmenu(win, NHC.IA_READ_OBJ, 114, cptr.decay(buf));
     if (cptr.ldI64o(otmp, $obj_owornmask) & 983040n) {
-        void cptr.sprintf(cptr.decay(buf), __sl109, (cptr.ldI64o(otmp, $obj_owornmask) & 65536n) ? __sl110 : ((cptr.ldI64o(otmp, $obj_owornmask) & 393216n) ? __sl111 : ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) ? __sl112 : __sl113)));
+        void cptr.sprintf(cptr.decay(buf), __s_remove_this_s, (cptr.ldI64o(otmp, $obj_owornmask) & 65536n) ? __s_amulet : ((cptr.ldI64o(otmp, $obj_owornmask) & 393216n) ? __s_ring : ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) ? __s_eyewear : __s_accessory)));
         ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 82, cptr.decay(buf));
     }
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
-        void cptr.sprintf(cptr.decay(buf), __sl114, simpleonames(otmp));
+        void cptr.sprintf(cptr.decay(buf), __s_rub_this_s, simpleonames(otmp));
         ia_addmenu(win, NHC.IA_RUB_OBJ, 82, cptr.decay(buf));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && is_graystone(otmp))
-        ia_addmenu(win, NHC.IA_RUB_OBJ, 82, __sl115);
+        ia_addmenu(win, NHC.IA_RUB_OBJ, 82, __s_rub_something_on_this_stone);
     if (!already_worn) {
         let shoot = schar(ammo_and_launcher(otmp, uwep.v));
-        void cptr.sprintf(cptr.decay(buf), __sl116, shoot ? __sl83 : __sl84, (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __sl81 : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.GOLD_PIECE) ? __sl50 : __sl55), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16o(otmp, $obj_otyp) != NHC.GOLD_PIECE || cptr.ldI64o(otmp, $obj_quan) == 1n)) ? __sl117 : __sl10);
+        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__2, shoot ? __s_shoot : __s_throw, (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_this_item : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.GOLD_PIECE) ? __s_them : __s_one_of_these), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16o(otmp, $obj_otyp) != NHC.GOLD_PIECE || cptr.ldI64o(otmp, $obj_quan) == 1n)) ? __s_same_as_f : __s_empty);
         ia_addmenu(win, NHC.IA_THROW_OBJ, 116, cptr.decay(buf));
     }
     if (cptr.ldI64o(otmp, $obj_owornmask) & 127n)
-        ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __sl118);
+        ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __s_take_off_this_armor);
     if ((Is_container(otmp) && ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
-        ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __sl119);
+        ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __s_tip_all_the_contents_out_of_this);
     if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1)) || cptr.ld1so(otmp, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_unique) & 1) | 0 || cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
-        ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __sl120);
+        ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __s_try_to_invoke_a_unique_power_of_this);
     if (cptr.eq(otmp, uwep.v) || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         ;
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp) || is_wet_towel(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.HEAVY_IRON_BALL) {
-        void cptr.sprintf(cptr.decay(buf), __sl121, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28);
+        void cptr.sprintf(cptr.decay(buf), __s_wield_this_s_as_your_weapon, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
         ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, cptr.decay(buf));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN_OPENER) {
-        ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, __sl122);
+        ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, __s_wield_the_tin_opener_to_easily_open_tins);
     } else if (!already_worn) {
-        void cptr.sprintf(cptr.decay(buf), __sl123, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl69 : __sl28, makeplural(body_part(NHC.HAND)));
+        void cptr.sprintf(cptr.decay(buf), __s_wield_this_s_in_your_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item, makeplural(body_part(NHC.HAND)));
         ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, cptr.decay(buf));
     }
     if (!already_worn) {
@@ -613,29 +613,29 @@ export function itemactions(otmp) {
             let Wmask = armcat_to_wornmask(cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp));
             let o = wearmask_to_obj(Wmask);
             if (!o)
-                void cptr.strcpy(cptr.decay(buf), __sl124);
+                void cptr.strcpy(cptr.decay(buf), __s_wear_this_armor);
             else
-                void cptr.sprintf(cptr.decay(buf), __sl125, an(armor_simple_name(o)));
+                void cptr.sprintf(cptr.decay(buf), __s_already_wearing_s, an(armor_simple_name(o)));
             ia_addmenu(win, NHC.IA_WEAR_OBJ, 87, cptr.decay(buf));
         }
     }
     if (cptr.eq(otmp, uwep.v) && uswapwep.v)
-        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __sl126);
+        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __s_swap_this_with_your_alternate_weapon);
     else if (cptr.eq(otmp, uwep.v))
-        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __sl127);
+        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __s_ready_this_as_an_alternate_weapon);
     else if (cptr.eq(otmp, uswapwep.v))
-        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __sl128);
+        ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __s_swap_this_with_your_main_weapon);
     if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) && (cptr.ld1so(u, $you_twoweap) || (could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !uarms.v && uwep.v && (((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v)) : is_weptool(uwep.v)) && !bimanual(uwep.v)) && uswapwep.v && (((cptr.ld1so((uswapwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v)) : is_weptool(uswapwep.v)) && !bimanual(uswapwep.v))))) {
-        void cptr.sprintf(cptr.decay(buf), __sl129, cptr.ld1so(u, $you_twoweap) ? __sl130 : __sl131);
+        void cptr.sprintf(cptr.decay(buf), __s_toggle_two_weapon_combat_s, cptr.ld1so(u, $you_twoweap) ? __s_off : __s_on);
         ia_addmenu(win, NHC.IA_TWOWEAPON, 88, cptr.decay(buf));
     }
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS)
-        ia_addmenu(win, NHC.IA_ZAP_OBJ, 122, __sl132);
+        ia_addmenu(win, NHC.IA_ZAP_OBJ, 122, __s_zap_this_wand_to_release_its_magic);
     if (ia_checkfile(otmp)) {
-        void cptr.sprintf(cptr.decay(buf), __sl133, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __sl25 : __sl26);
+        void cptr.sprintf(cptr.decay(buf), __s_look_up_information_about_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_these : __s_this);
         ia_addmenu(win, NHC.IA_WHATIS_OBJ, 47, cptr.decay(buf));
     }
-    void cptr.sprintf(cptr.decay(buf), __sl134, the(cxname(otmp)));
+    void cptr.sprintf(cptr.decay(buf), __s_do_what_with_s, the(cxname(otmp)));
     end_menu()(win, cptr.decay(buf));
     n = select_menu(win, NHM.PICK_ONE, selected);
     if (n > 0) {

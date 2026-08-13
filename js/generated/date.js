@@ -26,41 +26,41 @@ const $nomakedefs_s_build_time = FLD.nomakedefs_s_build_time,
     $version_info_feature_set = FLD.version_info_feature_set;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Tue, 28-Jul-87 13:18:57 EDT");
-const __sl1 = cptr.lit("Version 1.0, built Jul 28 13:18:57 1987.");
-const __sl2 = cptr.lit("1.0.0-0");
-const __sl3 = cptr.lit("NetHack Version 1.0.0-0 - last build Tue Jul 28 13:18:57 1987.");
-const __sl4 = cptr.lit("Jan");
-const __sl5 = cptr.lit("Feb");
-const __sl6 = cptr.lit("Mar");
-const __sl7 = cptr.lit("Apr");
-const __sl8 = cptr.lit("May");
-const __sl9 = cptr.lit("Jun");
-const __sl10 = cptr.lit("Jul");
-const __sl11 = cptr.lit("Aug");
-const __sl12 = cptr.lit("Sep");
-const __sl13 = cptr.lit("Oct");
-const __sl14 = cptr.lit("Nov");
-const __sl15 = cptr.lit("Dec");
-const __sl16 = cptr.lit("populate_nomakedefs");
-const __sl17 = cptr.lit("%s");
-const __sl18 = cptr.lit("NETHACK_REAL_BUILD_DATE");
-const __sl19 = cptr.lit("Aug  3 2026 19:27:05");
-const __sl20 = cptr.lit("May  2 2026 12:00:00");
-const __sl21 = cptr.lit(".");
+const __s_tue_28_jul_87_13_18_57_edt = cptr.lit("Tue, 28-Jul-87 13:18:57 EDT");
+const __s_version_1_0_built_jul_28_13_18_57_1987 = cptr.lit("Version 1.0, built Jul 28 13:18:57 1987.");
+const __s_1_0_0_0 = cptr.lit("1.0.0-0");
+const __s_nethack_version_1_0_0_0_last_build_tue = cptr.lit("NetHack Version 1.0.0-0 - last build Tue Jul 28 13:18:57 1987.");
+const __s_jan = cptr.lit("Jan");
+const __s_feb = cptr.lit("Feb");
+const __s_mar = cptr.lit("Mar");
+const __s_apr = cptr.lit("Apr");
+const __s_may = cptr.lit("May");
+const __s_jun = cptr.lit("Jun");
+const __s_jul = cptr.lit("Jul");
+const __s_aug = cptr.lit("Aug");
+const __s_sep = cptr.lit("Sep");
+const __s_oct = cptr.lit("Oct");
+const __s_nov = cptr.lit("Nov");
+const __s_dec = cptr.lit("Dec");
+const __s_populate_nomakedefs = cptr.lit("populate_nomakedefs");
+const __s_pct_s = cptr.lit("%s");
+const __s_nethack_real_build_date = cptr.lit("NETHACK_REAL_BUILD_DATE");
+const __s_aug_3_2026_19_27_05 = cptr.lit("Aug  3 2026 19:27:05");
+const __s_may_2_2026_12_00_00 = cptr.lit("May  2 2026 12:00:00");
+const __s_dot = cptr.lit(".");
 
 /** C ref: date.c:23 — int */
 let nomakedefs_populated = 0;
 
 /** C ref: date.c:25 — struct nomakedefs_s */
 export let nomakedefs = cptr.alloc(96);
-cptr.stPtr(nomakedefs, __sl0);
-cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, __sl1);
+cptr.stPtr(nomakedefs, __s_tue_28_jul_87_13_18_57_edt);
+cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, __s_version_1_0_built_jul_28_13_18_57_1987);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_sha, null);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_branch, null);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_prefix, null);
-cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, __sl2);
-cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, __sl3);
+cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, __s_1_0_0_0);
+cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, __s_nethack_version_1_0_0_0_last_build_tue);
 cptr.stU64o(nomakedefs, $nomakedefs_s_version_number, 16842752n);
 cptr.stU64o(nomakedefs, $nomakedefs_s_version_features, 0n);
 cptr.stU64o(nomakedefs, $nomakedefs_s_ignored_features, 0n);
@@ -73,10 +73,10 @@ export function populate_nomakedefs(version) {
     let tmpbuf1 = new Uint8Array(256);
     let tmpbuf2 = new Uint8Array(256);
     let strp;
-    let mth = cptr.alloc(12 * 8); cptr.stPtro(mth, 0, __sl4); cptr.stPtro(mth, 8, __sl5); cptr.stPtro(mth, 16, __sl6); cptr.stPtro(mth, 24, __sl7); cptr.stPtro(mth, 32, __sl8); cptr.stPtro(mth, 40, __sl9); cptr.stPtro(mth, 48, __sl10); cptr.stPtro(mth, 56, __sl11); cptr.stPtro(mth, 64, __sl12); cptr.stPtro(mth, 72, __sl13); cptr.stPtro(mth, 80, __sl14); cptr.stPtro(mth, 88, __sl15);
+    let mth = cptr.alloc(12 * 8); cptr.stPtro(mth, 0, __s_jan); cptr.stPtro(mth, 8, __s_feb); cptr.stPtro(mth, 16, __s_mar); cptr.stPtro(mth, 24, __s_apr); cptr.stPtro(mth, 32, __s_may); cptr.stPtro(mth, 40, __s_jun); cptr.stPtro(mth, 48, __s_jul); cptr.stPtro(mth, 56, __s_aug); cptr.stPtro(mth, 64, __s_sep); cptr.stPtro(mth, 72, __s_oct); cptr.stPtro(mth, 80, __s_nov); cptr.stPtro(mth, 88, __s_dec);
     let t = cptr.alloc(56); cptr.stI32(t, 0);
     let timeresult;
-    nh_snprintf(__sl16, 90, cptr.decay(tmpbuf1), 256n, __sl17, getenv(__sl18) ? __sl19 : __sl20);
+    nh_snprintf(__s_populate_nomakedefs, 90, cptr.decay(tmpbuf1), 256n, __s_pct_s, getenv(__s_nethack_real_build_date) ? __s_aug_3_2026_19_27_05 : __s_may_2_2026_12_00_00);
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
         {
             for (i = 0; i < 4; ++i)
@@ -129,7 +129,7 @@ export function populate_nomakedefs(version) {
     cptr.stU64o(nomakedefs, $nomakedefs_s_version_features, cptr.ldU64o(version, $version_info_feature_set));
     cptr.stU64o(nomakedefs, $nomakedefs_s_ignored_features, md_ignored_features());
     cptr.stU64o(nomakedefs, $nomakedefs_s_version_sanity1, cptr.ldU64o(version, $version_info_entity_count));
-    cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __sl21)));
+    cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __s_dot)));
     cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
     cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
     nomakedefs_populated = 1;

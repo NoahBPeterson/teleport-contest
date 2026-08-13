@@ -132,82 +132,82 @@ const $NhRegion_visible = FLD.NhRegion_visible, $Race_mnum = FLD.Race_mnum,
     $you_uz0 = FLD.you_uz0, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("display_monster:  bad m_ap_type value [ = %d ]");
-const __sl1 = cptr.lit("display_warning did not match warning type?");
-const __sl2 = cptr.lit("newsym: attempting screen update for <%d,%d>");
-const __sl3 = cptr.lit("tmp_at: tglyph not initialized");
-const __sl4 = cptr.lit("");
-const __sl5 = cptr.lit("invalid");
-const __sl6 = cptr.lit("nothing");
-const __sl7 = cptr.lit("unexplored");
-const __sl8 = cptr.lit("statue of a female monster at top of a pile");
-const __sl9 = cptr.lit("statue of a male monster at top of a pile");
-const __sl10 = cptr.lit("body at top of a pile");
-const __sl11 = cptr.lit("generic object at top of a pile");
-const __sl12 = cptr.lit("object at top of a pile");
-const __sl13 = cptr.lit("statue of female monster");
-const __sl14 = cptr.lit("statue of male monster");
-const __sl15 = cptr.lit("warning explosion");
-const __sl16 = cptr.lit("frosty explosion");
-const __sl17 = cptr.lit("fiery explosion");
-const __sl18 = cptr.lit("magical explosion");
-const __sl19 = cptr.lit("wet explosion");
-const __sl20 = cptr.lit("muddy explosion");
-const __sl21 = cptr.lit("noxious explosion");
-const __sl22 = cptr.lit("dark explosion");
-const __sl23 = cptr.lit("swallow");
-const __sl24 = cptr.lit("cmap C");
-const __sl25 = cptr.lit("zap");
-const __sl26 = cptr.lit("cmap B");
-const __sl27 = cptr.lit("altar");
-const __sl28 = cptr.lit("cmap A");
-const __sl29 = cptr.lit("sokoban dungeon walls");
-const __sl30 = cptr.lit("knox dungeon walls");
-const __sl31 = cptr.lit("gehennom dungeon walls");
-const __sl32 = cptr.lit("gnomish mines dungeon walls");
-const __sl33 = cptr.lit("main dungeon walls");
-const __sl34 = cptr.lit("stone");
-const __sl35 = cptr.lit("generic object");
-const __sl36 = cptr.lit("object");
-const __sl37 = cptr.lit("ridden female monster");
-const __sl38 = cptr.lit("ridden male monster");
-const __sl39 = cptr.lit("body");
-const __sl40 = cptr.lit("detected female monster");
-const __sl41 = cptr.lit("detected male monster");
-const __sl42 = cptr.lit("invisible monster");
-const __sl43 = cptr.lit("female pet");
-const __sl44 = cptr.lit("male pet");
-const __sl45 = cptr.lit("female monster");
-const __sl46 = cptr.lit("male monster");
-const __sl47 = cptr.lit("show_glyph:  bad pos <%d,%d> with glyph %d [%s %d].");
-const __sl48 = cptr.lit("show_glyph:  bad glyph %d [max %d] at <%d,%d>.");
-const __sl49 = cptr.lit("%s.");
-const __sl50 = cptr.lit("Strange db-under: %d");
-const __sl51 = cptr.lit("back_to_glyph:  unknown level type [ = %d ]");
-const __sl52 = cptr.lit("swallow_to_glyph: bad swallow location");
-const __sl53 = cptr.lit("zapdir_to_glyph:  illegal beam type");
-const __sl54 = cptr.lit("tuwall");
-const __sl55 = cptr.lit("tlwall");
-const __sl56 = cptr.lit("trwall");
-const __sl57 = cptr.lit("tdwall");
-const __sl58 = cptr.lit("vwall");
-const __sl59 = cptr.lit("hwall");
-const __sl60 = cptr.lit("tlcorner");
-const __sl61 = cptr.lit("trcorner");
-const __sl62 = cptr.lit("blcorner");
-const __sl63 = cptr.lit("brcorner");
-const __sl64 = cptr.lit("unknown");
-const __sl65 = cptr.lit("wall_angle: unknown T wall mode %d");
-const __sl66 = cptr.lit("wall_angle: unknown hwall mode %d");
-const __sl67 = cptr.lit("wall_angle: unknown vwall mode %d");
-const __sl68 = cptr.lit("wall_angle: unknown %s mode %d");
-const __sl69 = cptr.lit("tlcorn");
-const __sl70 = cptr.lit("trcorn");
-const __sl71 = cptr.lit("blcorn");
-const __sl72 = cptr.lit("brcorn");
-const __sl73 = cptr.lit("wall_angle: bottom of crwall check");
-const __sl74 = cptr.lit("wall_angle: unknown crosswall mode");
-const __sl75 = cptr.lit("wall_angle: unexpected wall type %d");
+const __s_display_monster_bad_m_ap_type_value_d = cptr.lit("display_monster:  bad m_ap_type value [ = %d ]");
+const __s_display_warning_did_not_match_warning = cptr.lit("display_warning did not match warning type?");
+const __s_newsym_attempting_screen_update_for_d_d = cptr.lit("newsym: attempting screen update for <%d,%d>");
+const __s_tmp_at_tglyph_not_initialized = cptr.lit("tmp_at: tglyph not initialized");
+const __s_empty = cptr.lit("");
+const __s_invalid = cptr.lit("invalid");
+const __s_nothing = cptr.lit("nothing");
+const __s_unexplored = cptr.lit("unexplored");
+const __s_statue_of_a_female_monster_at_top_of_a = cptr.lit("statue of a female monster at top of a pile");
+const __s_statue_of_a_male_monster_at_top_of_a = cptr.lit("statue of a male monster at top of a pile");
+const __s_body_at_top_of_a_pile = cptr.lit("body at top of a pile");
+const __s_generic_object_at_top_of_a_pile = cptr.lit("generic object at top of a pile");
+const __s_object_at_top_of_a_pile = cptr.lit("object at top of a pile");
+const __s_statue_of_female_monster = cptr.lit("statue of female monster");
+const __s_statue_of_male_monster = cptr.lit("statue of male monster");
+const __s_warning_explosion = cptr.lit("warning explosion");
+const __s_frosty_explosion = cptr.lit("frosty explosion");
+const __s_fiery_explosion = cptr.lit("fiery explosion");
+const __s_magical_explosion = cptr.lit("magical explosion");
+const __s_wet_explosion = cptr.lit("wet explosion");
+const __s_muddy_explosion = cptr.lit("muddy explosion");
+const __s_noxious_explosion = cptr.lit("noxious explosion");
+const __s_dark_explosion = cptr.lit("dark explosion");
+const __s_swallow = cptr.lit("swallow");
+const __s_cmap_c = cptr.lit("cmap C");
+const __s_zap = cptr.lit("zap");
+const __s_cmap_b = cptr.lit("cmap B");
+const __s_altar = cptr.lit("altar");
+const __s_cmap_a = cptr.lit("cmap A");
+const __s_sokoban_dungeon_walls = cptr.lit("sokoban dungeon walls");
+const __s_knox_dungeon_walls = cptr.lit("knox dungeon walls");
+const __s_gehennom_dungeon_walls = cptr.lit("gehennom dungeon walls");
+const __s_gnomish_mines_dungeon_walls = cptr.lit("gnomish mines dungeon walls");
+const __s_main_dungeon_walls = cptr.lit("main dungeon walls");
+const __s_stone = cptr.lit("stone");
+const __s_generic_object = cptr.lit("generic object");
+const __s_object = cptr.lit("object");
+const __s_ridden_female_monster = cptr.lit("ridden female monster");
+const __s_ridden_male_monster = cptr.lit("ridden male monster");
+const __s_body = cptr.lit("body");
+const __s_detected_female_monster = cptr.lit("detected female monster");
+const __s_detected_male_monster = cptr.lit("detected male monster");
+const __s_invisible_monster = cptr.lit("invisible monster");
+const __s_female_pet = cptr.lit("female pet");
+const __s_male_pet = cptr.lit("male pet");
+const __s_female_monster = cptr.lit("female monster");
+const __s_male_monster = cptr.lit("male monster");
+const __s_show_glyph_bad_pos_d_d_with_glyph_d_s_d = cptr.lit("show_glyph:  bad pos <%d,%d> with glyph %d [%s %d].");
+const __s_show_glyph_bad_glyph_d_max_d_at_d_d = cptr.lit("show_glyph:  bad glyph %d [max %d] at <%d,%d>.");
+const __s_pct_s_dot = cptr.lit("%s.");
+const __s_strange_db_under_d = cptr.lit("Strange db-under: %d");
+const __s_back_to_glyph_unknown_level_type_d = cptr.lit("back_to_glyph:  unknown level type [ = %d ]");
+const __s_swallow_to_glyph_bad_swallow_location = cptr.lit("swallow_to_glyph: bad swallow location");
+const __s_zapdir_to_glyph_illegal_beam_type = cptr.lit("zapdir_to_glyph:  illegal beam type");
+const __s_tuwall = cptr.lit("tuwall");
+const __s_tlwall = cptr.lit("tlwall");
+const __s_trwall = cptr.lit("trwall");
+const __s_tdwall = cptr.lit("tdwall");
+const __s_vwall = cptr.lit("vwall");
+const __s_hwall = cptr.lit("hwall");
+const __s_tlcorner = cptr.lit("tlcorner");
+const __s_trcorner = cptr.lit("trcorner");
+const __s_blcorner = cptr.lit("blcorner");
+const __s_brcorner = cptr.lit("brcorner");
+const __s_unknown = cptr.lit("unknown");
+const __s_wall_angle_unknown_t_wall_mode_d = cptr.lit("wall_angle: unknown T wall mode %d");
+const __s_wall_angle_unknown_hwall_mode_d = cptr.lit("wall_angle: unknown hwall mode %d");
+const __s_wall_angle_unknown_vwall_mode_d = cptr.lit("wall_angle: unknown vwall mode %d");
+const __s_wall_angle_unknown_s_mode_d = cptr.lit("wall_angle: unknown %s mode %d");
+const __s_tlcorn = cptr.lit("tlcorn");
+const __s_trcorn = cptr.lit("trcorn");
+const __s_blcorn = cptr.lit("blcorn");
+const __s_brcorn = cptr.lit("brcorn");
+const __s_wall_angle_bottom_of_crwall_check = cptr.lit("wall_angle: bottom of crwall check");
+const __s_wall_angle_unknown_crosswall_mode = cptr.lit("wall_angle: unknown crosswall mode");
+const __s_wall_angle_unexpected_wall_type_d = cptr.lit("wall_angle: unexpected wall type %d");
 
 /** C ref: display.c:166 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tp_sensemon(mon) {
@@ -405,7 +405,7 @@ function display_monster(x, y, mon, sightflags, worm_tail) {
     if (mon_mimic && (sightflags == 1)) {
         switch ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
             default:
-            impossible(__sl0, cptr.ld1uo(mon, $monst_m_ap_type));
+            impossible(__s_display_monster_bad_m_ap_type_value_d, cptr.ld1uo(mon, $monst_m_ap_type));
             // @FallThrough
             ;
             case NHC.M_AP_NOTHING:
@@ -475,7 +475,7 @@ function display_warning(mon) {
     } else if ((Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))) {
         glyph = (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mon), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
     } else {
-        impossible(__sl1);
+        impossible(__s_display_warning_did_not_match_warning);
         return;
     }
     show_mon_or_warn(x, y, glyph);
@@ -617,7 +617,7 @@ export function newsym(x, y) {
     if (!isok(x, y)) {
         let errfunc;
         errfunc = (x < 0 || y < 0 || x > 79 || y > 20) ? panic : impossible;
-        (errfunc)(__sl2, x, y);
+        (errfunc)(__s_newsym_attempting_screen_update_for_d_d, x, y);
         return;
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -817,7 +817,7 @@ export function tmp_at(x, y) {
         break;
     }
     if (!__static_tmp_at_tglyph) {
-        panic(__sl3);
+        panic(__s_tmp_at_tglyph_not_initialized);
     } else {
         switch (x) {
             case -6:
@@ -1255,95 +1255,95 @@ export function show_glyph(x, y, glyph) {
     if ((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)))
         return;
     if (!isok(x, y)) {
-        let text = __sl4;
+        let text = __s_empty;
         let offset = -1;
         if (x == 0)
             return;
         if (glyph < 0 || glyph >= NHC.MAX_GLYPH) {
-            text = __sl5;
+            text = __s_invalid;
         } else if ((offset = ((glyph - NHC.GLYPH_NOTHING_OFF) | 0)) >= 0) {
-            text = __sl6;
+            text = __s_nothing;
         } else if ((offset = ((glyph - NHC.GLYPH_UNEXPLORED_OFF) | 0)) >= 0) {
-            text = __sl7;
+            text = __s_unexplored;
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_FEM_PILETOP_OFF) | 0)) >= 0) {
-            text = __sl8;
+            text = __s_statue_of_a_female_monster_at_top_of_a;
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_MALE_PILETOP_OFF) | 0)) >= 0) {
-            text = __sl9;
+            text = __s_statue_of_a_male_monster_at_top_of_a;
         } else if ((offset = ((glyph - NHC.GLYPH_BODY_PILETOP_OFF) | 0)) >= 0) {
-            text = __sl10;
+            text = __s_body_at_top_of_a_pile;
         } else if ((offset = ((glyph - NHC.GLYPH_OBJ_PILETOP_OFF) | 0)) >= 0) {
-            text = (glyph_is_piletop_generic_obj(glyph) ? __sl11 : __sl12);
+            text = (glyph_is_piletop_generic_obj(glyph) ? __s_generic_object_at_top_of_a_pile : __s_object_at_top_of_a_pile);
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_FEM_OFF) | 0)) >= 0) {
-            text = __sl13;
+            text = __s_statue_of_female_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_MALE_OFF) | 0)) >= 0) {
-            text = __sl14;
+            text = __s_statue_of_male_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_WARNING_OFF) | 0)) >= 0) {
-            text = __sl15;
+            text = __s_warning_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)) >= 0) {
-            text = __sl16;
+            text = __s_frosty_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_FIERY_OFF) | 0)) >= 0) {
-            text = __sl17;
+            text = __s_fiery_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_MAGICAL_OFF) | 0)) >= 0) {
-            text = __sl18;
+            text = __s_magical_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_WET_OFF) | 0)) >= 0) {
-            text = __sl19;
+            text = __s_wet_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_MUDDY_OFF) | 0)) >= 0) {
-            text = __sl20;
+            text = __s_muddy_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_NOXIOUS_OFF) | 0)) >= 0) {
-            text = __sl21;
+            text = __s_noxious_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_DARK_OFF) | 0)) >= 0) {
-            text = __sl22;
+            text = __s_dark_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_SWALLOW_OFF) | 0)) >= 0) {
-            text = __sl23;
+            text = __s_swallow;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_C_OFF) | 0)) >= 0) {
-            text = __sl24;
+            text = __s_cmap_c;
         } else if ((offset = ((glyph - NHC.GLYPH_ZAP_OFF) | 0)) >= 0) {
-            text = __sl25;
+            text = __s_zap;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_B_OFF) | 0)) >= 0) {
-            text = __sl26;
+            text = __s_cmap_b;
         } else if ((offset = ((glyph - NHC.GLYPH_ALTAR_OFF) | 0)) >= 0) {
-            text = __sl27;
+            text = __s_altar;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_A_OFF) | 0)) >= 0) {
-            text = __sl28;
+            text = __s_cmap_a;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_SOKO_OFF) | 0)) >= 0) {
-            text = __sl29;
+            text = __s_sokoban_dungeon_walls;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_KNOX_OFF) | 0)) >= 0) {
-            text = __sl30;
+            text = __s_knox_dungeon_walls;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_GEH_OFF) | 0)) >= 0) {
-            text = __sl31;
+            text = __s_gehennom_dungeon_walls;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_MINES_OFF) | 0)) >= 0) {
-            text = __sl32;
+            text = __s_gnomish_mines_dungeon_walls;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_MAIN_OFF) | 0)) >= 0) {
-            text = __sl33;
+            text = __s_main_dungeon_walls;
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_STONE_OFF) | 0)) >= 0) {
-            text = __sl34;
+            text = __s_stone;
         } else if ((offset = ((glyph - NHC.GLYPH_OBJ_OFF) | 0)) >= 0) {
-            text = (glyph_is_normal_generic_obj(glyph) ? __sl35 : __sl36);
+            text = (glyph_is_normal_generic_obj(glyph) ? __s_generic_object : __s_object);
         } else if ((offset = ((glyph - NHC.GLYPH_RIDDEN_FEM_OFF) | 0)) >= 0) {
-            text = __sl37;
+            text = __s_ridden_female_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_RIDDEN_MALE_OFF) | 0)) >= 0) {
-            text = __sl38;
+            text = __s_ridden_male_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_BODY_OFF) | 0)) >= 0) {
-            text = __sl39;
+            text = __s_body;
         } else if ((offset = ((glyph - NHC.GLYPH_DETECT_FEM_OFF) | 0)) >= 0) {
-            text = __sl40;
+            text = __s_detected_female_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_DETECT_MALE_OFF) | 0)) >= 0) {
-            text = __sl41;
+            text = __s_detected_male_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_INVIS_OFF) | 0)) >= 0) {
-            text = __sl42;
+            text = __s_invisible_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_PET_FEM_OFF) | 0)) >= 0) {
-            text = __sl43;
+            text = __s_female_pet;
         } else if ((offset = ((glyph - NHC.GLYPH_PET_MALE_OFF) | 0)) >= 0) {
-            text = __sl44;
+            text = __s_male_pet;
         } else if ((offset = ((glyph - NHC.GLYPH_MON_FEM_OFF) | 0)) >= 0) {
-            text = __sl45;
+            text = __s_female_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_MON_MALE_OFF) | 0)) >= 0) {
-            text = __sl46;
+            text = __s_male_monster;
         }
-        impossible(__sl47, x, y, glyph, text, offset);
+        impossible(__s_show_glyph_bad_pos_d_d_with_glyph_d_s_d, x, y, glyph, text, offset);
         return;
     } else if (glyph < 0 || glyph >= NHC.MAX_GLYPH) {
-        impossible(__sl48, glyph, NHC.MAX_GLYPH, x, y);
+        impossible(__s_show_glyph_bad_glyph_d_max_d_at_d_d, glyph, NHC.MAX_GLYPH, x, y);
         return;
     }
     map_glyphinfo(x, y, glyph, 0, glyphinfo);
@@ -1378,7 +1378,7 @@ export function show_glyph(x, y, glyph) {
         cptr.st1(a11y, 1);
         cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
         do_screen_description(cc, 1, sym, cptr.decay(buf), firstmatch, null);
-        pline_xy(x, y, __sl49, firstmatch.v);
+        pline_xy(x, y, __s_pct_s_dot, firstmatch.v);
         cptr.st1(a11y, tmp_accessiblemsg);
     }
 }
@@ -1620,7 +1620,7 @@ export function back_to_glyph(x, y) {
             idx = NHC.S_room;
             break;
             default:
-            impossible(__sl50, ((cptr.ldI32o(ptr, $rm_flags) & 31) | 0) & NHM.DB_UNDER);
+            impossible(__s_strange_db_under_d, ((cptr.ldI32o(ptr, $rm_flags) & 31) | 0) & NHM.DB_UNDER);
             idx = NHC.S_room;
             break;
         }
@@ -1629,7 +1629,7 @@ export function back_to_glyph(x, y) {
         idx = ((cptr.ldI32o(ptr, $rm_horizontal) & 1)) | 0 ? NHC.S_hodbridge : NHC.S_vodbridge;
         break;
         default:
-        impossible(__sl51, cptr.ld1so(ptr, $rm_typ));
+        impossible(__s_back_to_glyph_unknown_level_type_d, cptr.ld1so(ptr, $rm_typ));
         idx = NHC.S_room;
         break;
     }
@@ -1640,7 +1640,7 @@ export function back_to_glyph(x, y) {
 function swallow_to_glyph(mnum, loc) {
     let m_3 = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : mnum) << 3;
     if (loc < NHC.S_sw_tl || NHC.S_sw_br < loc) {
-        impossible(__sl52);
+        impossible(__s_swallow_to_glyph_bad_swallow_location);
         loc = NHC.S_sw_br;
     }
     return ((m_3 | ((loc - NHC.S_sw_tl) | 0)) + NHC.GLYPH_SWALLOW_OFF) | 0;
@@ -1649,7 +1649,7 @@ function swallow_to_glyph(mnum, loc) {
 /** C ref: display.c:2461 — @param {CInt} dx @param {CInt} dy @param {CInt} beam_type @returns {CInt} */
 export function zapdir_to_glyph(dx, dy, beam_type) {
     if (beam_type >= NHM.NUM_ZAP) {
-        impossible(__sl53);
+        impossible(__s_zapdir_to_glyph_illegal_beam_type);
         beam_type = 0;
     }
     dx = (dx == dy) ? 2 : ((dx && dy) ? 3 : (dx ? 1 : 0));
@@ -2330,37 +2330,37 @@ function t_warn(lev) {
     let wname;
     switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
-        wname = __sl54;
+        wname = __s_tuwall;
         break;
         case NHC.TLWALL:
-        wname = __sl55;
+        wname = __s_tlwall;
         break;
         case NHC.TRWALL:
-        wname = __sl56;
+        wname = __s_trwall;
         break;
         case NHC.TDWALL:
-        wname = __sl57;
+        wname = __s_tdwall;
         break;
         case NHC.VWALL:
-        wname = __sl58;
+        wname = __s_vwall;
         break;
         case NHC.HWALL:
-        wname = __sl59;
+        wname = __s_hwall;
         break;
         case NHC.TLCORNER:
-        wname = __sl60;
+        wname = __s_tlcorner;
         break;
         case NHC.TRCORNER:
-        wname = __sl61;
+        wname = __s_trcorner;
         break;
         case NHC.BLCORNER:
-        wname = __sl62;
+        wname = __s_blcorner;
         break;
         case NHC.BRCORNER:
-        wname = __sl63;
+        wname = __s_brcorner;
         break;
         default:
-        wname = __sl64;
+        wname = __s_unknown;
         break;
     }
     impossible(cptr.decay(__static_t_warn_warn_str), wname, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK, cptr.ld1uo(lev, $rm_seenv));
@@ -2426,7 +2426,7 @@ function wall_angle(lev) {
                     col = 4;
                 break;
                 default:
-                impossible(__sl65, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+                impossible(__s_wall_angle_unknown_t_wall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
                 col = 0;
                 break;
             }
@@ -2486,7 +2486,7 @@ function wall_angle(lev) {
                     col = 4;
                 break;
                 default:
-                impossible(__sl65, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+                impossible(__s_wall_angle_unknown_t_wall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
                 col = 0;
                 break;
             }
@@ -2546,7 +2546,7 @@ function wall_angle(lev) {
                     col = 4;
                 break;
                 default:
-                impossible(__sl65, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+                impossible(__s_wall_angle_unknown_t_wall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
                 col = 0;
                 break;
             }
@@ -2604,7 +2604,7 @@ function wall_angle(lev) {
                 col = 4;
             break;
             default:
-            impossible(__sl65, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_t_wall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
             col = 0;
             break;
         }
@@ -2628,7 +2628,7 @@ function wall_angle(lev) {
                     idx = (seenv & 143) >>> 0 ? NHC.S_hwall : NHC.S_stone;
                     break;
                     default:
-                    impossible(__sl66, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+                    impossible(__s_wall_angle_unknown_hwall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
                     idx = NHC.S_stone;
                     break;
                 }
@@ -2648,7 +2648,7 @@ function wall_angle(lev) {
             idx = (seenv & 227) >>> 0 ? NHC.S_vwall : NHC.S_stone;
             break;
             default:
-            impossible(__sl67, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_vwall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2665,7 +2665,7 @@ function wall_angle(lev) {
             idx = (seenv & 143) >>> 0 ? NHC.S_hwall : NHC.S_stone;
             break;
             default:
-            impossible(__sl66, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_hwall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2682,7 +2682,7 @@ function wall_angle(lev) {
             idx = (seenv & 4294967279) >>> 0 ? NHC.S_tlcorn : NHC.S_stone;
             break;
             default:
-            impossible(__sl68, __sl69, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_s_mode_d, __s_tlcorn, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2700,7 +2700,7 @@ function wall_angle(lev) {
             idx = (seenv & 4294967231) >>> 0 ? NHC.S_trcorn : NHC.S_stone;
             break;
             default:
-            impossible(__sl68, __sl70, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_s_mode_d, __s_trcorn, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2718,7 +2718,7 @@ function wall_angle(lev) {
             idx = (seenv & 4294967291) >>> 0 ? NHC.S_blcorn : NHC.S_stone;
             break;
             default:
-            impossible(__sl68, __sl71, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_s_mode_d, __s_blcorn, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2736,7 +2736,7 @@ function wall_angle(lev) {
             idx = (seenv & 4294967294) >>> 0 ? NHC.S_brcorn : NHC.S_stone;
             break;
             default:
-            impossible(__sl68, __sl72, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
+            impossible(__s_wall_angle_unknown_s_mode_d, __s_brcorn, ((cptr.ldI32o((lev), $rm_flags) & 31) | 0) & NHM.WM_MASK);
             idx = NHC.S_stone;
             break;
         }
@@ -2793,7 +2793,7 @@ function wall_angle(lev) {
                     } else if ((seenv & 128) >>> 0) {
                         col = (seenv & 2) >>> 0 ? 5 : 3;
                     } else {
-                        impossible(__sl73);
+                        impossible(__s_wall_angle_bottom_of_crwall_check);
                         col = 5;
                     }
                     idx = cptr.ldI32o(row, col, 4);
@@ -2829,7 +2829,7 @@ function wall_angle(lev) {
                     } else if ((seenv & 128) >>> 0) {
                         col = (seenv & 2) >>> 0 ? 5 : 3;
                     } else {
-                        impossible(__sl73);
+                        impossible(__s_wall_angle_bottom_of_crwall_check);
                         col = 5;
                     }
                     idx = cptr.ldI32o(row, col, 4);
@@ -2865,7 +2865,7 @@ function wall_angle(lev) {
                     } else if ((seenv & 128) >>> 0) {
                         col = (seenv & 2) >>> 0 ? 5 : 3;
                     } else {
-                        impossible(__sl73);
+                        impossible(__s_wall_angle_bottom_of_crwall_check);
                         col = 5;
                     }
                     idx = cptr.ldI32o(row, col, 4);
@@ -2899,7 +2899,7 @@ function wall_angle(lev) {
                 } else if ((seenv & 128) >>> 0) {
                     col = (seenv & 2) >>> 0 ? 5 : 3;
                 } else {
-                    impossible(__sl73);
+                    impossible(__s_wall_angle_bottom_of_crwall_check);
                     col = 5;
                 }
                 idx = cptr.ldI32o(row, col, 4);
@@ -2926,13 +2926,13 @@ function wall_angle(lev) {
                 idx = NHC.S_crwall;
             break;
             default:
-            impossible(__sl74);
+            impossible(__s_wall_angle_unknown_crosswall_mode);
             idx = NHC.S_stone;
             break;
         }
         break;
         default:
-        impossible(__sl75, cptr.ld1so(lev, $rm_typ));
+        impossible(__s_wall_angle_unexpected_wall_type_d, cptr.ld1so(lev, $rm_typ));
         idx = NHC.S_stone;
     }
     return idx;

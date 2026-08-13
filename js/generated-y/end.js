@@ -165,183 +165,183 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum, $Race_mummynum
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("died");
-const __sl1 = cptr.lit("choked");
-const __sl2 = cptr.lit("poisoned");
-const __sl3 = cptr.lit("starvation");
-const __sl4 = cptr.lit("drowning");
-const __sl5 = cptr.lit("burning");
-const __sl6 = cptr.lit("dissolving under the heat and pressure");
-const __sl7 = cptr.lit("crushed");
-const __sl8 = cptr.lit("turned to stone");
-const __sl9 = cptr.lit("turned into slime");
-const __sl10 = cptr.lit("genocided");
-const __sl11 = cptr.lit("panic");
-const __sl12 = cptr.lit("trickery");
-const __sl13 = cptr.lit("quit");
-const __sl14 = cptr.lit("escaped");
-const __sl15 = cptr.lit("ascended");
-const __sl16 = cptr.lit("were poisoned");
-const __sl17 = cptr.lit("starved");
-const __sl18 = cptr.lit("drowned");
-const __sl19 = cptr.lit("burned");
-const __sl20 = cptr.lit("dissolved in the lava");
-const __sl21 = cptr.lit("were crushed");
-const __sl22 = cptr.lit("were genocided");
-const __sl23 = cptr.lit("panicked");
-const __sl24 = cptr.lit("were tricked");
-const __sl25 = cptr.lit("Switch from the tutorial back to regular play?");
-const __sl26 = cptr.lit("Really quit without saving?");
-const __sl27 = cptr.lit("Resuming regular play.");
-const __sl28 = cptr.lit("Dump core?");
-const __sl29 = cptr.lit("done2");
-const __sl30 = cptr.lit("turn to stone...");
-const __sl31 = cptr.lit("die...");
-const __sl32 = cptr.lit("the ");
-const __sl33 = cptr.lit("invisible ");
-const __sl34 = cptr.lit("hallucinogen-distorted ");
-const __sl35 = cptr.lit("vampire");
-const __sl36 = cptr.lit("vampire bat");
-const __sl37 = cptr.lit("bat");
-const __sl38 = cptr.lit("the %s");
-const __sl39 = cptr.lit("%s in %s form");
-const __sl40 = cptr.lit("%s disguised as %s");
-const __sl41 = cptr.lit("%s imitating %s");
-const __sl42 = cptr.lit("ghost");
-const __sl43 = cptr.lit(" of %s");
-const __sl44 = cptr.lit("");
-const __sl45 = cptr.lit("Ms. ");
-const __sl46 = cptr.lit("Mr. ");
-const __sl47 = cptr.lit("%s%s, the shopkeeper");
-const __sl48 = cptr.lit(" %s %s");
-const __sl49 = cptr.lit("of");
-const __sl50 = cptr.lit("called");
-const __sl51 = cptr.lit("%u:%c");
-const __sl52 = cptr.lit("getting stoned");
-const __sl53 = cptr.lit("fainted from lack of food");
-const __sl54 = cptr.lit("fainted");
-const __sl55 = cptr.lit("\r\nOops...");
-const __sl56 = cptr.lit("Postgame wrapup disrupted.");
-const __sl57 = cptr.lit("Program initialization has failed.");
-const __sl58 = cptr.lit("Suddenly, the dungeon collapses.");
-const __sl59 = cptr.lit(".");
-const __sl60 = cptr.lit("\nand it may be possible to rebuild.");
-const __sl61 = cptr.lit("To report this error, %s%s");
-const __sl62 = cptr.lit("To report this error, contact %s%s");
-const __sl63 = cptr.lit("Report error to \"%s\"%s");
-const __sl64 = cptr.lit("wizard");
-const __sl65 = cptr.lit("%s");
-const __sl66 = cptr.lit("should_query_disclose_option: bad disclosure index %d %c");
-const __sl67 = cptr.lit("should_query_disclose_option: bad category %c");
-const __sl68 = cptr.lit("Do you want to see what you had when you %s?");
-const __sl69 = cptr.lit("Do you want your possessions identified?");
-const __sl70 = cptr.lit("Do you want to see your attributes?");
-const __sl71 = cptr.lit("Do you want to see your conduct%s?");
-const __sl72 = cptr.lit(" and achievements");
-const __sl73 = cptr.lit("Do you want to see the dungeon overview?");
-const __sl74 = cptr.lit("You survived that attempt on your life.");
-const __sl75 = cptr.lit("being toyed with by Fate");
-const __sl76 = cptr.lit("attempting to cheat Death");
-const __sl77 = cptr.lit("release %s.");
-const __sl78 = cptr.lit("%s releases you.");
-const __sl79 = cptr.lit("%s%s (worth %ld %s and %ld points)");
-const __sl80 = cptr.lit("The ");
-const __sl81 = cptr.lit("end.c");
-const __sl82 = cptr.lit("fuzzer_savelife");
-const __sl83 = cptr.lit("But wait...");
-const __sl84 = cptr.lit("medallion %s!");
-const __sl85 = cptr.lit("begins to glow");
-const __sl86 = cptr.lit("feels warm");
-const __sl87 = cptr.lit("vomit ...");
-const __sl88 = cptr.lit("much better!");
-const __sl89 = cptr.lit("medallion crumbles to dust!");
-const __sl90 = cptr.lit("Unfortunately you are still genocided...");
-const __sl91 = cptr.lit("averted death (%s)");
-const __sl92 = cptr.lit("Die?");
-const __sl93 = cptr.lit("OK, so you don't %s.");
-const __sl94 = cptr.lit("choke");
-const __sl95 = cptr.lit("die");
-const __sl96 = cptr.lit("Do not pass Go.  Do not collect 200 %s.");
-const __sl97 = cptr.lit("quit while already on Charon's boat");
-const __sl98 = cptr.lit("none");
-const __sl99 = cptr.lit("%s, ");
-const __sl100 = cptr.lit("really_done");
-const __sl101 = cptr.lit("%s as %s...");
-const __sl102 = cptr.lit("body rises from the dead");
-const __sl103 = cptr.lit("revenant persists");
-const __sl104 = cptr.lit("Save bones?");
-const __sl105 = cptr.lit(" (with the Amulet)");
-const __sl106 = cptr.lit(" (in celestial disgrace)");
-const __sl107 = cptr.lit(" (with a fake Amulet)");
-const __sl108 = cptr.lit("%s %s the %s...");
-const __sl109 = cptr.lit("Demigoddess");
-const __sl110 = cptr.lit("Demigod");
-const __sl111 = cptr.lit("You");
-const __sl112 = cptr.lit(" and %s");
-const __sl113 = cptr.lit(" and Schroedinger's cat");
-const __sl114 = cptr.lit(" ");
-const __sl115 = cptr.lit("%s with %ld point%s,");
-const __sl116 = cptr.lit("went to your reward");
-const __sl117 = cptr.lit("escaped from the dungeon");
-const __sl118 = cptr.lit("s");
-const __sl119 = cptr.lit("%8ld %s (worth %ld %s),");
-const __sl120 = cptr.lit("%8ld worthless piece%s of colored glass,");
-const __sl121 = cptr.lit("You %s beyond the confines of the dungeon");
-const __sl122 = cptr.lit("passed away");
-const __sl123 = cptr.lit("The Astral Plane");
-const __sl124 = cptr.lit("You %s in %s");
-const __sl125 = cptr.lit(" on dungeon level %d");
-const __sl126 = cptr.lit(" with %ld point%s,");
-const __sl127 = cptr.lit("and %ld piece%s of gold, after %ld move%s.");
-const __sl128 = cptr.lit("You were level %d with a maximum of %d hit point%s when you %s.");
-const __sl129 = cptr.lit("Contents of %s:");
-const __sl130 = cptr.lit("Schroedinger's cat!");
-const __sl131 = cptr.lit("%s is empty.");
-const __sl132 = cptr.lit("dealloc_killer (#%d) not on list");
-const __sl133 = cptr.lit("freed delayed killer #%d");
-const __sl134 = cptr.lit("kinfo");
-const __sl135 = cptr.lit("no words in list");
-const __sl136 = cptr.lit(", ");
-const __sl137 = cptr.lit("or ");
-const __sl138 = cptr.lit("Panic");
+const __s_died = cptr.lit("died");
+const __s_choked = cptr.lit("choked");
+const __s_poisoned = cptr.lit("poisoned");
+const __s_starvation = cptr.lit("starvation");
+const __s_drowning = cptr.lit("drowning");
+const __s_burning = cptr.lit("burning");
+const __s_dissolving_under_the_heat_and_pressure = cptr.lit("dissolving under the heat and pressure");
+const __s_crushed = cptr.lit("crushed");
+const __s_turned_to_stone = cptr.lit("turned to stone");
+const __s_turned_into_slime = cptr.lit("turned into slime");
+const __s_genocided = cptr.lit("genocided");
+const __s_panic = cptr.lit("panic");
+const __s_trickery = cptr.lit("trickery");
+const __s_quit = cptr.lit("quit");
+const __s_escaped = cptr.lit("escaped");
+const __s_ascended = cptr.lit("ascended");
+const __s_were_poisoned = cptr.lit("were poisoned");
+const __s_starved = cptr.lit("starved");
+const __s_drowned = cptr.lit("drowned");
+const __s_burned = cptr.lit("burned");
+const __s_dissolved_in_the_lava = cptr.lit("dissolved in the lava");
+const __s_were_crushed = cptr.lit("were crushed");
+const __s_were_genocided = cptr.lit("were genocided");
+const __s_panicked = cptr.lit("panicked");
+const __s_were_tricked = cptr.lit("were tricked");
+const __s_switch_from_the_tutorial_back_to = cptr.lit("Switch from the tutorial back to regular play?");
+const __s_really_quit_without_saving = cptr.lit("Really quit without saving?");
+const __s_resuming_regular_play = cptr.lit("Resuming regular play.");
+const __s_dump_core = cptr.lit("Dump core?");
+const __s_done2 = cptr.lit("done2");
+const __s_turn_to_stone = cptr.lit("turn to stone...");
+const __s_die = cptr.lit("die...");
+const __s_the = cptr.lit("the ");
+const __s_invisible = cptr.lit("invisible ");
+const __s_hallucinogen_distorted = cptr.lit("hallucinogen-distorted ");
+const __s_vampire = cptr.lit("vampire");
+const __s_vampire_bat = cptr.lit("vampire bat");
+const __s_bat = cptr.lit("bat");
+const __s_the_s = cptr.lit("the %s");
+const __s_s_in_s_form = cptr.lit("%s in %s form");
+const __s_s_disguised_as_s = cptr.lit("%s disguised as %s");
+const __s_s_imitating_s = cptr.lit("%s imitating %s");
+const __s_ghost = cptr.lit("ghost");
+const __s_of_s = cptr.lit(" of %s");
+const __s_empty = cptr.lit("");
+const __s_ms = cptr.lit("Ms. ");
+const __s_mr = cptr.lit("Mr. ");
+const __s_s_s_the_shopkeeper = cptr.lit("%s%s, the shopkeeper");
+const __s_s_s = cptr.lit(" %s %s");
+const __s_of = cptr.lit("of");
+const __s_called = cptr.lit("called");
+const __s_u_c = cptr.lit("%u:%c");
+const __s_getting_stoned = cptr.lit("getting stoned");
+const __s_fainted_from_lack_of_food = cptr.lit("fainted from lack of food");
+const __s_fainted = cptr.lit("fainted");
+const __s_oops = cptr.lit("\r\nOops...");
+const __s_postgame_wrapup_disrupted = cptr.lit("Postgame wrapup disrupted.");
+const __s_program_initialization_has_failed = cptr.lit("Program initialization has failed.");
+const __s_suddenly_the_dungeon_collapses = cptr.lit("Suddenly, the dungeon collapses.");
+const __s_dot = cptr.lit(".");
+const __s_and_it_may_be_possible_to_rebuild = cptr.lit("\nand it may be possible to rebuild.");
+const __s_to_report_this_error_s_s = cptr.lit("To report this error, %s%s");
+const __s_to_report_this_error_contact_s_s = cptr.lit("To report this error, contact %s%s");
+const __s_report_error_to_s_s = cptr.lit("Report error to \"%s\"%s");
+const __s_wizard = cptr.lit("wizard");
+const __s_pct_s = cptr.lit("%s");
+const __s_should_query_disclose_option_bad = cptr.lit("should_query_disclose_option: bad disclosure index %d %c");
+const __s_should_query_disclose_option_bad__2 = cptr.lit("should_query_disclose_option: bad category %c");
+const __s_do_you_want_to_see_what_you_had_when = cptr.lit("Do you want to see what you had when you %s?");
+const __s_do_you_want_your_possessions_identified = cptr.lit("Do you want your possessions identified?");
+const __s_do_you_want_to_see_your_attributes = cptr.lit("Do you want to see your attributes?");
+const __s_do_you_want_to_see_your_conduct_s = cptr.lit("Do you want to see your conduct%s?");
+const __s_and_achievements = cptr.lit(" and achievements");
+const __s_do_you_want_to_see_the_dungeon_overview = cptr.lit("Do you want to see the dungeon overview?");
+const __s_you_survived_that_attempt_on_your_life = cptr.lit("You survived that attempt on your life.");
+const __s_being_toyed_with_by_fate = cptr.lit("being toyed with by Fate");
+const __s_attempting_to_cheat_death = cptr.lit("attempting to cheat Death");
+const __s_release_s = cptr.lit("release %s.");
+const __s_s_releases_you = cptr.lit("%s releases you.");
+const __s_s_s_worth_ld_s_and_ld_points = cptr.lit("%s%s (worth %ld %s and %ld points)");
+const __s_the__2 = cptr.lit("The ");
+const __s_end_c = cptr.lit("end.c");
+const __s_fuzzer_savelife = cptr.lit("fuzzer_savelife");
+const __s_but_wait = cptr.lit("But wait...");
+const __s_medallion_s = cptr.lit("medallion %s!");
+const __s_begins_to_glow = cptr.lit("begins to glow");
+const __s_feels_warm = cptr.lit("feels warm");
+const __s_vomit = cptr.lit("vomit ...");
+const __s_much_better = cptr.lit("much better!");
+const __s_medallion_crumbles_to_dust = cptr.lit("medallion crumbles to dust!");
+const __s_unfortunately_you_are_still_genocided = cptr.lit("Unfortunately you are still genocided...");
+const __s_averted_death_s = cptr.lit("averted death (%s)");
+const __s_die__2 = cptr.lit("Die?");
+const __s_ok_so_you_don_t_s = cptr.lit("OK, so you don't %s.");
+const __s_choke = cptr.lit("choke");
+const __s_die__3 = cptr.lit("die");
+const __s_do_not_pass_go_do_not_collect_200_s = cptr.lit("Do not pass Go.  Do not collect 200 %s.");
+const __s_quit_while_already_on_charon_s_boat = cptr.lit("quit while already on Charon's boat");
+const __s_none = cptr.lit("none");
+const __s_pct_s_comma_sp = cptr.lit("%s, ");
+const __s_really_done = cptr.lit("really_done");
+const __s_s_as_s = cptr.lit("%s as %s...");
+const __s_body_rises_from_the_dead = cptr.lit("body rises from the dead");
+const __s_revenant_persists = cptr.lit("revenant persists");
+const __s_save_bones = cptr.lit("Save bones?");
+const __s_with_the_amulet = cptr.lit(" (with the Amulet)");
+const __s_in_celestial_disgrace = cptr.lit(" (in celestial disgrace)");
+const __s_with_a_fake_amulet = cptr.lit(" (with a fake Amulet)");
+const __s_s_s_the_s = cptr.lit("%s %s the %s...");
+const __s_demigoddess = cptr.lit("Demigoddess");
+const __s_demigod = cptr.lit("Demigod");
+const __s_you = cptr.lit("You");
+const __s_and_s = cptr.lit(" and %s");
+const __s_and_schroedinger_s_cat = cptr.lit(" and Schroedinger's cat");
+const __s_sp = cptr.lit(" ");
+const __s_s_with_ld_point_s = cptr.lit("%s with %ld point%s,");
+const __s_went_to_your_reward = cptr.lit("went to your reward");
+const __s_escaped_from_the_dungeon = cptr.lit("escaped from the dungeon");
+const __s_s = cptr.lit("s");
+const __s_8ld_s_worth_ld_s = cptr.lit("%8ld %s (worth %ld %s),");
+const __s_8ld_worthless_piece_s_of_colored_glass = cptr.lit("%8ld worthless piece%s of colored glass,");
+const __s_you_s_beyond_the_confines_of_the_dungeon = cptr.lit("You %s beyond the confines of the dungeon");
+const __s_passed_away = cptr.lit("passed away");
+const __s_the_astral_plane = cptr.lit("The Astral Plane");
+const __s_you_s_in_s = cptr.lit("You %s in %s");
+const __s_on_dungeon_level_d = cptr.lit(" on dungeon level %d");
+const __s_with_ld_point_s = cptr.lit(" with %ld point%s,");
+const __s_and_ld_piece_s_of_gold_after_ld_move_s = cptr.lit("and %ld piece%s of gold, after %ld move%s.");
+const __s_you_were_level_d_with_a_maximum_of_d = cptr.lit("You were level %d with a maximum of %d hit point%s when you %s.");
+const __s_contents_of_s = cptr.lit("Contents of %s:");
+const __s_schroedinger_s_cat = cptr.lit("Schroedinger's cat!");
+const __s_s_is_empty = cptr.lit("%s is empty.");
+const __s_dealloc_killer_d_not_on_list = cptr.lit("dealloc_killer (#%d) not on list");
+const __s_freed_delayed_killer_d = cptr.lit("freed delayed killer #%d");
+const __s_kinfo = cptr.lit("kinfo");
+const __s_no_words_in_list = cptr.lit("no words in list");
+const __s_comma_sp = cptr.lit(", ");
+const __s_or = cptr.lit("or ");
+const __s_panic__2 = cptr.lit("Panic");
 
 /** C ref: end.c:45 — char *[16] */
 const deaths = cptr.alloc(16 * 8);
-cptr.stPtro(deaths, 0, __sl0);
-cptr.stPtro(deaths, 8, __sl1);
-cptr.stPtro(deaths, 16, __sl2);
-cptr.stPtro(deaths, 24, __sl3);
-cptr.stPtro(deaths, 32, __sl4);
-cptr.stPtro(deaths, 40, __sl5);
-cptr.stPtro(deaths, 48, __sl6);
-cptr.stPtro(deaths, 56, __sl7);
-cptr.stPtro(deaths, 64, __sl8);
-cptr.stPtro(deaths, 72, __sl9);
-cptr.stPtro(deaths, 80, __sl10);
-cptr.stPtro(deaths, 88, __sl11);
-cptr.stPtro(deaths, 96, __sl12);
-cptr.stPtro(deaths, 104, __sl13);
-cptr.stPtro(deaths, 112, __sl14);
-cptr.stPtro(deaths, 120, __sl15);
+cptr.stPtro(deaths, 0, __s_died);
+cptr.stPtro(deaths, 8, __s_choked);
+cptr.stPtro(deaths, 16, __s_poisoned);
+cptr.stPtro(deaths, 24, __s_starvation);
+cptr.stPtro(deaths, 32, __s_drowning);
+cptr.stPtro(deaths, 40, __s_burning);
+cptr.stPtro(deaths, 48, __s_dissolving_under_the_heat_and_pressure);
+cptr.stPtro(deaths, 56, __s_crushed);
+cptr.stPtro(deaths, 64, __s_turned_to_stone);
+cptr.stPtro(deaths, 72, __s_turned_into_slime);
+cptr.stPtro(deaths, 80, __s_genocided);
+cptr.stPtro(deaths, 88, __s_panic);
+cptr.stPtro(deaths, 96, __s_trickery);
+cptr.stPtro(deaths, 104, __s_quit);
+cptr.stPtro(deaths, 112, __s_escaped);
+cptr.stPtro(deaths, 120, __s_ascended);
 
 /** C ref: end.c:53 — char *[16] */
 const ends = cptr.alloc(16 * 8);
-cptr.stPtro(ends, 0, __sl0);
-cptr.stPtro(ends, 8, __sl1);
-cptr.stPtro(ends, 16, __sl16);
-cptr.stPtro(ends, 24, __sl17);
-cptr.stPtro(ends, 32, __sl18);
-cptr.stPtro(ends, 40, __sl19);
-cptr.stPtro(ends, 48, __sl20);
-cptr.stPtro(ends, 56, __sl21);
-cptr.stPtro(ends, 64, __sl8);
-cptr.stPtro(ends, 72, __sl9);
-cptr.stPtro(ends, 80, __sl22);
-cptr.stPtro(ends, 88, __sl23);
-cptr.stPtro(ends, 96, __sl24);
-cptr.stPtro(ends, 104, __sl13);
-cptr.stPtro(ends, 112, __sl14);
-cptr.stPtro(ends, 120, __sl15);
+cptr.stPtro(ends, 0, __s_died);
+cptr.stPtro(ends, 8, __s_choked);
+cptr.stPtro(ends, 16, __s_were_poisoned);
+cptr.stPtro(ends, 24, __s_starved);
+cptr.stPtro(ends, 32, __s_drowned);
+cptr.stPtro(ends, 40, __s_burned);
+cptr.stPtro(ends, 48, __s_dissolved_in_the_lava);
+cptr.stPtro(ends, 56, __s_were_crushed);
+cptr.stPtro(ends, 64, __s_turned_to_stone);
+cptr.stPtro(ends, 72, __s_turned_into_slime);
+cptr.stPtro(ends, 80, __s_were_genocided);
+cptr.stPtro(ends, 88, __s_panicked);
+cptr.stPtro(ends, 96, __s_were_tricked);
+cptr.stPtro(ends, 104, __s_quit);
+cptr.stPtro(ends, 112, __s_escaped);
+cptr.stPtro(ends, 120, __s_ascended);
 
 /** C ref: end.c:64 — signed char */
 let Schroedingers_cat = 0;
@@ -365,9 +365,9 @@ export function* done1(sig_unused) {
 /** C ref: end.c:91 @returns {CInt} */
 export function* done2() {
     let abandon_tutorial = 0;
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()) && (yield* yn_function(__sl25, cptr.decay(ynchars), 110, 1)) == 121)
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()) && (yield* yn_function(__s_switch_from_the_tutorial_back_to, cptr.decay(ynchars), 110, 1)) == 121)
         abandon_tutorial = 1;
-    if (abandon_tutorial || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __sl26))) {
+    if (abandon_tutorial || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __s_really_quit_without_saving))) {
         void signal(2, done1);
         (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         (yield* curs_on_u());
@@ -379,16 +379,16 @@ export function* done2() {
             cptr.stI64o(u, $you_usleep, 0n);
         }
         if (abandon_tutorial)
-            (yield* schedule_goto(cptr.add(u, $you_ucamefrom), NHC.UTOTYPE_ATSTAIRS, __sl27, null));
+            (yield* schedule_goto(cptr.add(u, $you_ucamefrom), NHC.UTOTYPE_ATSTAIRS, __s_resuming_regular_play, null));
         return NHM.ECMD_OK;
     }
     if (wizard()) {
         let c;
-        c = (yield* yn_function(__sl28, cptr.decay(ynqchars), 113, 1));
+        c = (yield* yn_function(__s_dump_core, cptr.decay(ynqchars), 113, 1));
         if (c == 121) {
             void signal(2, done1);
             if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
-                (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__sl29)));
+                (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_done2)));
             (yield* Y.icall(exit_nhwindows()(null)));
             (yield* NH_abort(null));
         } else if (c == 113)
@@ -422,24 +422,24 @@ export function* done_in_by(mtmp, how) {
     let distorted = schar((Hallucination() && canspotmon(mtmp) ? 1 : 0));
     let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
-    (yield* You((how == NHC.STONING) ? __sl30 : __sl31));
+    (yield* You((how == NHC.STONING) ? __s_turn_to_stone : __s_die));
     (yield* Y.icall(mark_synch()()));
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
     if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !(imitator && !mimicker) && !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
         if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
-            void cptr.strcat(cptr.decay(buf), __sl32);
+            void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96)) && has_mgivenname(mtmp)) {
-        void cptr.strcat(cptr.decay(buf), __sl32);
+        void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
     void monhealthdescr(mtmp, 1, eos(cptr.decay(buf)));
     if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
-        void cptr.strcat(cptr.decay(buf), __sl33);
+        void cptr.strcat(cptr.decay(buf), __s_invisible);
     if (distorted)
-        void cptr.strcat(cptr.decay(buf), __sl34);
+        void cptr.strcat(cptr.decay(buf), __s_hallucinogen_distorted);
     if (imitator) {
         let shape = new Uint8Array(256);
         let realnm = pmname(champtr, Mgender(mtmp));
@@ -448,32 +448,32 @@ export function* done_in_by(mtmp, how) {
         if (mimicker) {
             mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), 96);
             fakenm = pmname(mptr, Mgender(mtmp));
-        } else if (alt && (yield* strstri(realnm, __sl35)) && !strcmp(fakenm, __sl36)) {
-            fakenm = __sl37;
+        } else if (alt && (yield* strstri(realnm, __s_vampire)) && !strcmp(fakenm, __s_vampire_bat)) {
+            fakenm = __s_bat;
         }
         if (alt || ((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcpy(cptr.decay(shape), fakenm);
         else if (the_unique_pm(mptr))
-            void cptr.sprintf(cptr.decay(shape), __sl38, fakenm);
+            void cptr.sprintf(cptr.decay(shape), __s_the_s, fakenm);
         else
             void cptr.strcpy(cptr.decay(shape), (yield* an(fakenm)));
-        void cptr.sprintf(eos(cptr.decay(buf)), alt ? __sl39 : (mimicker ? __sl40 : __sl41), realnm, cptr.decay(shape));
+        void cptr.sprintf(eos(cptr.decay(buf)), alt ? __s_s_in_s_form : (mimicker ? __s_s_disguised_as_s : __s_s_imitating_s), realnm, cptr.decay(shape));
         mptr = cptr.ldPtro(mtmp, $monst_data);
     } else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96))) {
-        void cptr.strcat(cptr.decay(buf), __sl42);
+        void cptr.strcat(cptr.decay(buf), __s_ghost);
         if (has_mgivenname(mtmp))
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl43, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_of_s, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
     } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         let shknm = (yield* shkname(mtmp));
-        let honorific = shkname_is_pname(mtmp) ? __sl44 : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __sl45 : __sl46);
-        void cptr.sprintf(eos(cptr.decay(buf)), __sl47, honorific, shknm);
+        let honorific = shkname_is_pname(mtmp) ? __s_empty : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_ms : __s_mr);
+        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_the_shopkeeper, honorific, shknm);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
         void cptr.strcat(cptr.decay(buf), (yield* m_monnam(mtmp)));
     } else {
         void cptr.strcat(cptr.decay(buf), pmname(mptr, Mgender(mtmp)));
         if (has_mgivenname(mtmp)) {
-            void cptr.sprintf(eos(cptr.decay(buf)), __sl48, has_ebones(mtmp) ? __sl49 : __sl50, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, has_ebones(mtmp) ? __s_of : __s_called, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
         }
     }
     void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(buf));
@@ -481,7 +481,7 @@ export function* done_in_by(mtmp, how) {
         let reasondummy = cptr.box(0);
         let p;
         let reasonmid = cptr.box(0);
-        if (sscanf(cptr.add(gm, $instance_globals_m_multireasonbuf), __sl51, reasonmid, reasondummy) == 2 && cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
+        if (sscanf(cptr.add(gm, $instance_globals_m_multireasonbuf), __s_u_c, reasonmid, reasondummy) == 2 && cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
             if ((p = cptr.strchr(cptr.add(gm, $instance_globals_m_multireasonbuf), 32)) !== null)
                 cptr.st1(p, 0);
         }
@@ -508,12 +508,12 @@ export function* done_in_by(mtmp, how) {
 const death_fixups = cptr.alloc(2 * 24);
 cptr.stI32o(death_fixups, 0, NHC.STONING);
 cptr.stI32o(death_fixups, 4, 1);
-cptr.stPtro(death_fixups, 8, __sl52);
+cptr.stPtro(death_fixups, 8, __s_getting_stoned);
 cptr.stPtro(death_fixups, 16, null);
 cptr.stI32o(death_fixups, 24, NHC.STARVING);
 cptr.stI32o(death_fixups, 28, 0);
-cptr.stPtro(death_fixups, 32, __sl53);
-cptr.stPtro(death_fixups, 40, __sl54);
+cptr.stPtro(death_fixups, 32, __s_fainted_from_lack_of_food);
+cptr.stPtro(death_fixups, 40, __s_fainted);
 
 /** C ref: end.c:367 — @param {CInt} how */
 function fixup_death(how) {
@@ -544,33 +544,33 @@ export function* panic(str, ...__va) {
             (yield* NH_abort(null));
         cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
         if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
-            (yield* Y.icall(raw_print()(__sl55)));
+            (yield* Y.icall(raw_print()(__s_oops)));
             (yield* Y.icall(wait_synch()()));
             if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
-                (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__sl11)));
+                (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_panic)));
             (yield* Y.icall(exit_nhwindows()(null)));
             cptr.st1o(iflags, $instance_flags_window_inited, 0);
         }
-        (yield* Y.icall(raw_print()(cptr.ldI32(program_state) ? __sl56 : (!cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __sl57 : __sl58))));
+        (yield* Y.icall(raw_print()(cptr.ldI32(program_state) ? __s_postgame_wrapup_disrupted : (!cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __s_program_initialization_has_failed : __s_suddenly_the_dungeon_collapses))));
         if (!wizard()) {
-            let maybe_rebuild = !cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __sl59 : __sl60;
+            let maybe_rebuild = !cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __s_dot : __s_and_it_may_be_possible_to_rebuild;
             if (cptr.ldPtr(sysopt))
-                (yield* raw_printf(__sl61, cptr.ldPtr(sysopt), maybe_rebuild));
+                (yield* raw_printf(__s_to_report_this_error_s_s, cptr.ldPtr(sysopt), maybe_rebuild));
             else if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list))
-                (yield* raw_printf(__sl62, cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list), maybe_rebuild));
+                (yield* raw_printf(__s_to_report_this_error_contact_s_s, cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list), maybe_rebuild));
             else
-                (yield* raw_printf(__sl63, __sl64, maybe_rebuild));
+                (yield* raw_printf(__s_report_error_to_s_s, __s_wizard, maybe_rebuild));
         }
         if (cptr.ldI32o(program_state, $sinfo_something_worth_saving) && !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             set_error_savefile();
             if ((yield* dosave0())) {
                 if (cptr.ldPtro(sysopt, $sysopt_s_recover))
-                    (yield* raw_printf(__sl65, cptr.ldPtro(sysopt, $sysopt_s_recover)));
+                    (yield* raw_printf(__s_pct_s, cptr.ldPtro(sysopt, $sysopt_s_recover)));
             }
         }
         void cptr.vsnprintf(cptr.decay(buf), 256n, str, the_args);
         (yield* Y.icall(raw_print()(cptr.decay(buf))));
-        (yield* paniclog(__sl11, cptr.decay(buf)));
+        (yield* paniclog(__s_panic, cptr.decay(buf)));
         (yield* NH_abort(cptr.decay(buf)));
         the_args = null;
     }
@@ -587,7 +587,7 @@ function* should_query_disclose_option(category, defquery) {
     if ((dop = cptr.strchr(cptr.decay(disclosure_options), category)) !== null) {
         idx = Number(BigInt.asIntN(32, (cptr.diff(dop, cptr.decay(disclosure_options)))));
         if (idx < 0 || idx >= NHM.NUM_DISCLOSURE_OPTIONS) {
-            (yield* impossible(__sl66, idx, category));
+            (yield* impossible(__s_should_query_disclose_option_bad, idx, category));
             cptr.st1(defquery, 121);
             return 1;
         }
@@ -612,7 +612,7 @@ function* should_query_disclose_option(category, defquery) {
             return 1;
         }
     }
-    (yield* impossible(__sl67, category));
+    (yield* impossible(__s_should_query_disclose_option_bad__2, category));
     return 1;
 }
 
@@ -630,9 +630,9 @@ function* disclose(how, taken) {
     let ask = 0;
     if (cptr.ldPtro(gi, $instance_globals_i_invent) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
         if (taken)
-            void cptr.sprintf(cptr.decay(qbuf), __sl68, (how == NHC.QUIT) ? __sl13 : __sl0);
+            void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_see_what_you_had_when, (how == NHC.QUIT) ? __s_quit : __s_died);
         else
-            void cptr.strcpy(cptr.decay(qbuf), __sl69);
+            void cptr.strcpy(cptr.decay(qbuf), __s_do_you_want_your_possessions_identified);
         ask = (yield* should_query_disclose_option(105, defquery));
         c = schar((ask ? (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), defquery.v, 1)) : defquery.v));
         if (c == 121) {
@@ -645,7 +645,7 @@ function* disclose(how, taken) {
     }
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
         ask = (yield* should_query_disclose_option(97, defquery));
-        c = schar((ask ? (yield* yn_function(__sl70, cptr.decay(ynqchars), defquery.v, 1)) : defquery.v));
+        c = schar((ask ? (yield* yn_function(__s_do_you_want_to_see_your_attributes, cptr.decay(ynqchars), defquery.v, 1)) : defquery.v));
         if (c == 121)
             (yield* enlightenment(3, (how >= NHC.PANICKED) ? NHM.ENL_GAMEOVERALIVE : NHM.ENL_GAMEOVERDEAD));
         if (c == 113)
@@ -662,7 +662,7 @@ function* disclose(how, taken) {
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
         if ((yield* should_query_disclose_option(99, defquery))) {
             let acnt = count_achievements();
-            void cptr.sprintf(cptr.decay(qbuf), __sl71, (acnt > 0) ? __sl72 : __sl44);
+            void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_see_your_conduct_s, (acnt > 0) ? __s_and_achievements : __s_empty);
             c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), defquery.v, 1));
         } else {
             c = defquery.v;
@@ -674,7 +674,7 @@ function* disclose(how, taken) {
     }
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
         ask = (yield* should_query_disclose_option(111, defquery));
-        c = schar((ask ? (yield* yn_function(__sl73, cptr.decay(ynqchars), defquery.v, 1)) : defquery.v));
+        c = schar((ask ? (yield* yn_function(__s_do_you_want_to_see_the_dungeon_overview, cptr.decay(ynqchars), defquery.v, 1)) : defquery.v));
         if (c == 121)
             (yield* show_overview((how >= NHC.PANICKED) ? 1 : 2, how));
         if (c == 113)
@@ -700,10 +700,10 @@ function* savelife(how) {
     if ((Sick() & 16777215n) == 1n) {
         (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
     }
-    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl74);
+    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_survived_that_attempt_on_your_life);
     cptr.st1o(svc, $context_info_move, 0);
     cptr.stI64o(gm, $instance_globals_m_multi, -1n);
-    cptr.stPtro(gm, $instance_globals_m_multi_reason, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST) ? __sl75 : __sl76);
+    cptr.stPtro(gm, $instance_globals_m_multi_reason, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST) ? __s_being_toyed_with_by_fate : __s_attempting_to_cheat_death);
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
         (yield* reset_utrap(0));
     cptr.st1(disp, 1);
@@ -716,9 +716,9 @@ function* savelife(how) {
         (yield* expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), 1));
     } else if (cptr.ldPtro(u, $you_ustuck)) {
         if (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
-            (yield* You(__sl77, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
+            (yield* You(__s_release_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         else
-            (yield* pline(__sl78, (yield* Monnam(cptr.ldPtro(u, $you_ustuck)))));
+            (yield* pline(__s_s_releases_you, (yield* Monnam(cptr.ldPtro(u, $you_ustuck)))));
         (yield* unstuck(cptr.ldPtro(u, $you_ustuck)));
     }
 }
@@ -810,7 +810,7 @@ function* artifact_score(list, counting, endwin) {
             } else {
                 (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
                 cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))));
-                void cptr.sprintf(cptr.decay(pbuf), __sl79, the_unique_obj(otmp) ? __sl80 : __sl44, cptr.ld1so(otmp, $obj_oartifact) ? artiname(cptr.ld1so(otmp, $obj_oartifact)) : (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), 120))), 16)), value, (yield* currency(value)), points);
+                void cptr.sprintf(cptr.decay(pbuf), __s_s_s_worth_ld_s_and_ld_points, the_unique_obj(otmp) ? __s_the__2 : __s_empty, cptr.ld1so(otmp, $obj_oartifact) ? artiname(cptr.ld1so(otmp, $obj_oartifact)) : (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), 120))), 16)), value, (yield* currency(value)), points);
                 (yield* Y.icall(putstr()(endwin, 0, cptr.decay(pbuf))));
             }
         }
@@ -823,33 +823,33 @@ function* artifact_score(list, counting, endwin) {
 function* fuzzer_savelife(how) {
     if (!cptr.ldI32o(program_state, $sinfo_panicking) && how != NHC.PANICKED && how != NHC.TRICKED) {
         (yield* savelife(how));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__sl81, 959, __sl82), rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10)) : rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10))) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 959, __s_fuzzer_savelife), rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10)) : rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10))) {
             let potion;
             let propidx;
             let proptim;
             let remedies = 0;
-            if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl81, 965, __sl82), rn2(3)) : rn2(3))) {
+            if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 965, __s_fuzzer_savelife), rn2(3)) : rn2(3))) {
                 potion = (yield* mksobj(NHC.POT_WATER, 1, 0));
                 (yield* bless(potion));
                 void (yield* peffects(potion));
                 (yield* obfree(potion, null));
                 ++remedies;
             }
-            if (!remedies || (rng_log_enabled() ? (rng_log_set_caller(__sl81, 972, __sl82), rn2(3)) : rn2(3))) {
+            if (!remedies || (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 972, __s_fuzzer_savelife), rn2(3)) : rn2(3))) {
                 potion = (yield* mksobj(NHC.POT_RESTORE_ABILITY, 1, 0));
                 (yield* bless(potion));
                 void (yield* peffects(potion));
                 (yield* obfree(potion, null));
                 ++remedies;
             }
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl81, 979, __sl82), rn2((3 + Math.imul(3, remedies)) | 0)) : rn2((3 + Math.imul(3, remedies)) | 0))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 979, __s_fuzzer_savelife), rn2((3 + Math.imul(3, remedies)) | 0)) : rn2((3 + Math.imul(3, remedies)) | 0))) {
                 for (propidx = 1; propidx <= 8; ++propidx) {
-                    if (!cptr.ldI64o2(u, propidx, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, 24, $you_uprops) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 985, __sl82), rn2(3)) : rn2(3))) > 0)
+                    if (!cptr.ldI64o2(u, propidx, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, 24, $you_uprops) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 985, __s_fuzzer_savelife), rn2(3)) : rn2(3))) > 0)
                         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, 24), $prop_intrinsic), BigInt(((Math.imul(2, proptim) + 1) | 0)));
                 }
                 ++remedies;
             }
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__sl81, 991, __sl82), rn2((5 + Math.imul(5, remedies)) | 0)) : rn2((5 + Math.imul(5, remedies)) | 0))) {
+            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 991, __s_fuzzer_savelife), rn2((5 + Math.imul(5, remedies)) | 0)) : rn2((5 + Math.imul(5, remedies)) | 0))) {
                 ;
             }
         }
@@ -870,7 +870,7 @@ export function* done(how) {
     let survive = 0;
     if (how == NHC.TRICKED) {
         if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
-            (yield* paniclog(__sl12, cptr.add(svk, $kinfo_name)));
+            (yield* paniclog(__s_trickery, cptr.add(svk, $kinfo_name)));
             cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
         }
         if (wizard()) {
@@ -904,28 +904,28 @@ export function* done(how) {
         }
     }
     if (Lifesaved() && (how <= NHC.GENOCIDED)) {
-        (yield* pline(__sl83));
+        (yield* pline(__s_but_wait));
         (yield* discover_object(NHC.AMULET_OF_LIFE_SAVING, 1, 1, 1));
-        (yield* Your(__sl84, !Blind() ? __sl85 : __sl86));
+        (yield* Your(__s_medallion_s, !Blind() ? __s_begins_to_glow : __s_feels_warm));
         if (how == NHC.CHOKING)
-            (yield* You(__sl87));
-        (yield* You_feel(__sl88));
-        (yield* pline_The(__sl89));
+            (yield* You(__s_vomit));
+        (yield* You_feel(__s_much_better));
+        (yield* pline_The(__s_medallion_crumbles_to_dust));
         if (uamul.v)
             (yield* useup(uamul.v));
         void (yield* adjattrib(NHC.A_CON, -1, 1));
         (yield* savelife(how));
         if (how == NHC.GENOCIDED) {
-            (yield* pline(__sl90));
+            (yield* pline(__s_unfortunately_you_are_still_genocided));
         } else {
             let killbuf = new Uint8Array(256);
             (yield* formatkiller(cptr.decay(killbuf), NHM.BUFSZ, how, 0));
-            (yield* livelog_printf(16n, __sl91, cptr.decay(killbuf)));
+            (yield* livelog_printf(16n, __s_averted_death_s, cptr.decay(killbuf)));
             survive = 1;
         }
     }
-    if (!survive && (wizard() || discover()) && how <= NHC.GENOCIDED && !(cptr.ldI32o(program_state, $sinfo_done_hup) && (cptr.stI64o(gd, $instance_globals_d_done_seq, cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n)) - (1n) == cptr.ldI64o(gh, $instance_globals_h_hero_seq)) && !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_DIE) >>> 0) != 0)), __sl92))) {
-        (yield* pline(__sl93, (how == NHC.CHOKING) ? __sl94 : __sl95));
+    if (!survive && (wizard() || discover()) && how <= NHC.GENOCIDED && !(cptr.ldI32o(program_state, $sinfo_done_hup) && (cptr.stI64o(gd, $instance_globals_d_done_seq, cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n)) - (1n) == cptr.ldI64o(gh, $instance_globals_h_hero_seq)) && !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_DIE) >>> 0) != 0)), __s_die__2))) {
+        (yield* pline(__s_ok_so_you_don_t_s, (how == NHC.CHOKING) ? __s_choke : __s_die__3));
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OK_DONT_DIE);
         (yield* savelife(how));
         survive = 1;
@@ -971,7 +971,7 @@ function* really_done(how) {
         (yield* record_achievement(NHC.ACH_UWIN));
     dump_open_log(endtime);
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n && how < NHC.PANICKED && !cptr.ldI32o(program_state, $sinfo_stopprint))
-        (yield* pline(__sl96, (yield* currency(200n))));
+        (yield* pline(__s_do_not_pass_go_do_not_collect_200_s, (yield* currency(200n))));
     if (have_windows)
         (yield* Y.icall(wait_synch()()));
     void signal(2, done_intr);
@@ -993,7 +993,7 @@ function* really_done(how) {
         if (cptr.ldI32o(u, $you_uhp) < 1) {
             how = NHC.DIED;
             (cptr.stI32o(u, $you_umortality, cptr.ldI32o(u, $you_umortality) + 1)) - (1);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl97);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_quit_while_already_on_charon_s_boat);
         }
     }
     if (how == NHC.ESCAPED || how == NHC.PANICKED)
@@ -1026,12 +1026,12 @@ function* really_done(how) {
                     cptr.st1o(obj, $obj_spe, 0);
             }
         }
-        if (strcmp(cptr.add(flags, $flag_end_disclose), __sl98))
+        if (strcmp(cptr.add(flags, $flag_end_disclose), __s_none))
             (yield* disclose(how, taken));
         (yield* formatkiller(cptr.decay(pbuf), 256, how, 1));
         if (!cptr.ld1s(cptr.decay(pbuf)))
             void cptr.strcpy(cptr.decay(pbuf), cptr.ldPtro(deaths, how, 8));
-        (yield* livelog_printf(16384n, __sl65, cptr.decay(pbuf)));
+        (yield* livelog_printf(16384n, __s_pct_s, cptr.decay(pbuf)));
         dump_everything(how, endtime);
     }
     if (how == NHC.ESCAPED || how == NHC.ASCENDED)
@@ -1042,8 +1042,8 @@ function* really_done(how) {
         let mnum = !Upolyd() ? cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) : cptr.ldI32o(u, $you_umonnum);
         let was_already_grave = ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE);
         corpse = (yield* mk_named_object(NHC.CORPSE, cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp));
-        void cptr.sprintf(cptr.decay(pbuf), __sl99, svp);
-        (yield* formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(pbuf), __sl100, 1317)) >>> 0)))), how, 1));
+        void cptr.sprintf(cptr.decay(pbuf), __s_pct_s_comma_sp, svp);
+        (yield* formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(pbuf), __s_really_done, 1317)) >>> 0)))), how, 1));
         (yield* make_grave(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(pbuf)));
         if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE) && !was_already_grave)
             cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, 1);
@@ -1069,11 +1069,11 @@ function* really_done(how) {
         }
     }
     if (ismnum(cptr.ldI32o(u, $you_ugrave_arise)) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
-        (yield* Your(__sl101, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __sl102 : __sl103, (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), Ugender())))));
+        (yield* Your(__s_s_as_s, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __s_body_rises_from_the_dead : __s_revenant_persists, (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), Ugender())))));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     }
     if (bones_ok) {
-        if (!wizard() || (yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_BONES) >>> 0) != 0)), __sl104)))
+        if (!wizard() || (yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_BONES) >>> 0) != 0)), __s_save_bones)))
             (yield* savebones(how, endtime, corpse));
         corpse = null;
     }
@@ -1097,16 +1097,16 @@ function* really_done(how) {
     } else
         cptr.stI32o(program_state, $sinfo_stopprint, 1);
     if ((cptr.ldI32o(u, $you_uhave) & 1)) {
-        void cptr.strcat(cptr.add(svk, $kinfo_name), __sl105);
+        void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_the_amulet);
     } else if (how == NHC.ESCAPED) {
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-            void cptr.strcat(cptr.add(svk, $kinfo_name), __sl106);
+            void cptr.strcat(cptr.add(svk, $kinfo_name), __s_in_celestial_disgrace);
         else if (carrying(NHC.FAKE_AMULET_OF_YENDOR))
-            void cptr.strcat(cptr.add(svk, $kinfo_name), __sl107);
+            void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_a_fake_amulet);
     }
-    void cptr.sprintf(cptr.decay(pbuf), __sl108, Goodbye(), svp, (how != NHC.ASCENDED) ? ((cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole)) : (cptr.ld1so(flags, $flag_female) ? __sl109 : __sl110));
+    void cptr.sprintf(cptr.decay(pbuf), __s_s_s_the_s, Goodbye(), svp, (how != NHC.ASCENDED) ? ((cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole)) : (cptr.ld1so(flags, $flag_female) ? __s_demigoddess : __s_demigod));
     (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
-    (yield* dump_forward_putstr(endwin, 0, __sl44, cptr.ldI32o(program_state, $sinfo_stopprint)));
+    (yield* dump_forward_putstr(endwin, 0, __s_empty, cptr.ldI32o(program_state, $sinfo_stopprint)));
     if (how == NHC.ESCAPED || how == NHC.ASCENDED) {
         let mtmp;
         let otmp;
@@ -1126,10 +1126,10 @@ function* really_done(how) {
         (yield* artifact_score(cptr.ldPtro(gi, $instance_globals_i_invent), 1, endwin));
         cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8), 0, cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8), 0) | NHM.IN_SIGHT);
         mtmp = cptr.ldPtro(gm, $instance_globals_m_mydogs);
-        void cptr.strcpy(cptr.decay(pbuf), __sl111);
+        void cptr.strcpy(cptr.decay(pbuf), __s_you);
         if (mtmp || Schroedingers_cat) {
             while (mtmp) {
-                void cptr.sprintf(eos(cptr.decay(pbuf)), __sl112, (yield* mon_nam(mtmp)));
+                void cptr.sprintf(eos(cptr.decay(pbuf)), __s_and_s, (yield* mon_nam(mtmp)));
                 if (cptr.ld1so(mtmp, $monst_mtame))
                     cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((cptr.ldI32o(mtmp, $monst_mhp))))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((cptr.ldI32o(mtmp, $monst_mhp))))) : 9223372036854775807n));
                 mtmp = cptr.ldPtr(mtmp);
@@ -1137,16 +1137,16 @@ function* really_done(how) {
             if (Schroedingers_cat) {
                 let mhp;
                 let m_lev = (yield* adj_lev(cptr.add(mons, NHC.PM_HOUSECAT, 96)));
-                mhp = (rng_log_enabled() ? (rng_log_set_caller(__sl81, 1468, __sl100), d((m_lev), 8)) : d((m_lev), 8));
+                mhp = (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 1468, __s_really_done), d((m_lev), 8)) : d((m_lev), 8));
                 cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp)))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((mhp)))) : 9223372036854775807n));
-                void cptr.strcat(eos(cptr.decay(pbuf)), __sl113);
+                void cptr.strcat(eos(cptr.decay(pbuf)), __s_and_schroedinger_s_cat);
             }
             (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
             cptr.st1o(cptr.decay(pbuf), 0, 0, 1);
         } else {
-            void cptr.strcat(cptr.decay(pbuf), __sl114);
+            void cptr.strcat(cptr.decay(pbuf), __s_sp);
         }
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __sl115, (how == NHC.ASCENDED) ? __sl116 : __sl117, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __sl44 : __sl118));
+        void cptr.sprintf(eos(cptr.decay(pbuf)), __s_s_with_ld_point_s, (how == NHC.ASCENDED) ? __s_went_to_your_reward : __s_escaped_from_the_dungeon, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s));
         (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
         if (!cptr.ldI32o(program_state, $sinfo_stopprint))
             (yield* artifact_score(cptr.ldPtro(gi, $instance_globals_i_invent), 0, endwin));
@@ -1165,48 +1165,48 @@ function* really_done(how) {
                     if (has_oname(otmp))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
-                    void cptr.sprintf(cptr.decay(pbuf), __sl119, count, (yield* xname(otmp)), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, 120, $objclass_oc_cost))), (yield* currency(2n)));
+                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_s_worth_ld_s, count, (yield* xname(otmp)), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, 120, $objclass_oc_cost))), (yield* currency(2n)));
                     (yield* obfree(otmp, null));
                 } else {
-                    void cptr.sprintf(cptr.decay(pbuf), __sl120, count, (((count) == 1n) ? __sl44 : __sl118));
+                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_worthless_piece_s_of_colored_glass, count, (((count) == 1n) ? __s_empty : __s_s));
                 }
                 (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), 0));
             }
         }
     } else {
         if (cptr.ldI16o(u, $you_uz) == 0 && cptr.ldI16o(u, $you_uz + $d_level_dlevel) <= 0) {
-            void cptr.sprintf(cptr.decay(pbuf), __sl121, (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0) ? __sl122 : cptr.ldPtro(ends, how, 8));
+            void cptr.sprintf(cptr.decay(pbuf), __s_you_s_beyond_the_confines_of_the_dungeon, (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0) ? __s_passed_away : cptr.ldPtro(ends, how, 8));
         } else {
             let where = cptr.add(svd, cptr.ldI16o(u, $you_uz), 112);
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-                where = __sl123;
-            void cptr.sprintf(cptr.decay(pbuf), __sl124, cptr.ldPtro(ends, how, 8), where);
+                where = __s_the_astral_plane;
+            void cptr.sprintf(cptr.decay(pbuf), __s_you_s_in_s, cptr.ldPtro(ends, how, 8), where);
             if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !single_level_branch(cptr.add(u, $you_uz)))
-                void cptr.sprintf(eos(cptr.decay(pbuf)), __sl125, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
+                void cptr.sprintf(eos(cptr.decay(pbuf)), __s_on_dungeon_level_d, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
         }
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __sl126, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __sl44 : __sl118));
+        void cptr.sprintf(eos(cptr.decay(pbuf)), __s_with_ld_point_s, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s));
         (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
     }
-    void cptr.sprintf(cptr.decay(pbuf), __sl127, umoney, (((umoney) == 1n) ? __sl44 : __sl118), cptr.ldI64o(svm, $instance_globals_saved_m_moves), (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __sl44 : __sl118));
+    void cptr.sprintf(cptr.decay(pbuf), __s_and_ld_piece_s_of_gold_after_ld_move_s, umoney, (((umoney) == 1n) ? __s_empty : __s_s), cptr.ldI64o(svm, $instance_globals_saved_m_moves), (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s));
     (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
-    void cptr.sprintf(cptr.decay(pbuf), __sl128, cptr.ldI32o(u, $you_ulevel), cptr.ldI32o(u, $you_uhpmax), (((cptr.ldI32o(u, $you_uhpmax)) == 1) ? __sl44 : __sl118), cptr.ldPtro(ends, how, 8));
+    void cptr.sprintf(cptr.decay(pbuf), __s_you_were_level_d_with_a_maximum_of_d, cptr.ldI32o(u, $you_ulevel), cptr.ldI32o(u, $you_uhpmax), (((cptr.ldI32o(u, $you_uhpmax)) == 1) ? __s_empty : __s_s), cptr.ldPtro(ends, how, 8));
     (yield* dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint)));
-    (yield* dump_forward_putstr(endwin, 0, __sl44, cptr.ldI32o(program_state, $sinfo_stopprint)));
+    (yield* dump_forward_putstr(endwin, 0, __s_empty, cptr.ldI32o(program_state, $sinfo_stopprint)));
     if (!cptr.ldI32o(program_state, $sinfo_stopprint))
         (yield* Y.icall(display_nhwindow()(endwin, 1)));
     if (endwin != -1)
         (yield* Y.icall(destroy_nhwindow()(endwin)));
     dump_close_log();
     if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
-        (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__sl100)));
+        (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_really_done)));
     if (have_windows && !cptr.ld1so(iflags, $instance_flags_toptenwin))
         (yield* Y.icall(exit_nhwindows()(null))), have_windows = 0;
     (yield* topten(how, endtime));
     if (have_windows)
         (yield* Y.icall(exit_nhwindows()(null)));
     if (cptr.ldI32o(program_state, $sinfo_stopprint)) {
-        (yield* Y.icall(raw_print()(__sl44)));
-        (yield* Y.icall(raw_print()(__sl44)));
+        (yield* Y.icall(raw_print()(__s_empty)));
+        (yield* Y.icall(raw_print()(__s_empty)));
     }
     (yield* nh_terminate(0));
 }
@@ -1234,10 +1234,10 @@ export function* container_contents(list, identified, all_containers, reportempt
                 let srtc;
                 let sortflags;
                 cat = schar(SchroedingersBox(box));
-                void cptr.sprintf(cptr.decay(buf), __sl129, (yield* the((yield* xname(box)))));
+                void cptr.sprintf(cptr.decay(buf), __s_contents_of_s, (yield* the((yield* xname(box)))));
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 if (!dumping)
-                    (yield* Y.icall(putstr()(tmpwin, 0, __sl44)));
+                    (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
                 cptr.st1o(cptr.decay(buf), 0, cptr.st1o(cptr.decay(buf), 1, 32, 1), 1);
                 if (cptr.ldPtro(box, $obj_cobj) && !cat) {
                     sortflags = (((cptr.ld1so(flags, $flag_sortloot) == 108 || cptr.ld1so(flags, $flag_sortloot) == 102) ? NHM.SORTLOOT_LOOT : 0) | (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0)) >>> 0;
@@ -1255,17 +1255,17 @@ export function* container_contents(list, identified, all_containers, reportempt
                     }
                     unsortloot(sortedcobj);
                 } else if (cat) {
-                    void cptr.strcpy(cptr.add(cptr.decay(buf), 2, 1), __sl130);
+                    void cptr.strcpy(cptr.add(cptr.decay(buf), 2, 1), __s_schroedinger_s_cat);
                     (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
                 }
                 if (dumping)
-                    (yield* Y.icall(putstr()(0, 0, __sl44)));
+                    (yield* Y.icall(putstr()(0, 0, __s_empty)));
                 (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
                 (yield* Y.icall(destroy_nhwindow()(tmpwin)));
                 if (all_containers)
                     (yield* container_contents(cptr.ldPtro(box, $obj_cobj), identified, 1, reportempty));
             } else if (reportempty) {
-                (yield* pline(__sl131, upstart((yield* thesimpleoname(box)))));
+                (yield* pline(__s_s_is_empty, upstart((yield* thesimpleoname(box)))));
                 (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
             }
         }
@@ -1299,7 +1299,7 @@ export function* delayed_killer(id, format, killername) {
         cptr.stPtr(svk, k);
     }
     cptr.stI32o(k, $kinfo_format, format);
-    void cptr.strcpy(cptr.add(k, $kinfo_name), killername ? killername : __sl44);
+    void cptr.strcpy(cptr.add(k, $kinfo_name), killername ? killername : __s_empty);
     cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
 }
 
@@ -1325,14 +1325,14 @@ export function* dealloc_killer(kptr) {
         prev = k;
     }
     if (k === null) {
-        (yield* impossible(__sl132, cptr.ldI32o(kptr, $kinfo_id)));
+        (yield* impossible(__s_dealloc_killer_d_not_on_list, cptr.ldI32o(kptr, $kinfo_id)));
     } else {
         cptr.stPtr(prev, cptr.ldPtr(k));
         cptr.free(k);
         {
-            if ((yield* debugcore(__sl81, 1))) {
+            if ((yield* debugcore(__s_end_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl133, cptr.ldI32o(kptr, $kinfo_id)));
+                (yield* pline(__s_freed_delayed_killer_d, cptr.ldI32o(kptr, $kinfo_id)));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
@@ -1344,7 +1344,7 @@ export function* save_killers(nhfp) {
     let kptr;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         for (kptr = svk; kptr; kptr = cptr.ldPtr(kptr)) {
-            (yield* sfo_kinfo(nhfp, kptr, __sl134));
+            (yield* sfo_kinfo(nhfp, kptr, __s_kinfo));
         }
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
@@ -1360,7 +1360,7 @@ export function* save_killers(nhfp) {
 export function* restore_killers(nhfp) {
     let kptr;
     for (kptr = svk; kptr !== null; kptr = cptr.ldPtr(kptr)) {
-        (yield* sfi_kinfo(nhfp, kptr, __sl134));
+        (yield* sfi_kinfo(nhfp, kptr, __s_kinfo));
         if (cptr.ldPtr(kptr)) {
             cptr.stPtr(kptr, (yield* alloc(272)));
         }
@@ -1405,7 +1405,7 @@ export function* build_english_list(in$) {
     cptr.st1(out, 0);
     switch (words) {
         case 0:
-        (yield* impossible(__sl135));
+        (yield* impossible(__s_no_words_in_list));
         break;
         case 1:
         (yield* bel_copy1(p, out));
@@ -1413,14 +1413,14 @@ export function* build_english_list(in$) {
         default:
         if (words == 2) {
             (yield* bel_copy1(p, out));
-            void cptr.strcat(out, __sl114);
+            void cptr.strcat(out, __s_sp);
         } else {
             do {
                 (yield* bel_copy1(p, out));
-                void cptr.strcat(out, __sl136);
+                void cptr.strcat(out, __s_comma_sp);
             } while (--words > 1);
         }
-        void cptr.strcat(out, __sl137);
+        void cptr.strcat(out, __s_or);
         (yield* bel_copy1(p, out));
         break;
     }
@@ -1436,7 +1436,7 @@ export function* NH_abort(why) {
     if (__static_NH_abort_aborting)
         return;
     __static_NH_abort_aborting = 1;
-    if (!(yield* submit_web_report(1, __sl138, why))) {
+    if (!(yield* submit_web_report(1, __s_panic__2, why))) {
         if (gdb_prio == libc_prio && gdb_prio > 0)
             gdb_prio++;
         if (gdb_prio > libc_prio) {

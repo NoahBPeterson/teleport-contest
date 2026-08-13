@@ -62,9 +62,9 @@ const $CClosure_f = FLD.CClosure_f, $CClosure_marked = FLD.CClosure_marked,
     $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("");
-const __sl1 = cptr.lit("?");
-const __sl2 = cptr.lit("(no name)");
+const __s_empty = cptr.lit("");
+const __s_query = cptr.lit("?");
+const __s_no_name = cptr.lit("(no name)");
 
 /** C ref: lapi.c:35 — char[129] */
 export const lua_ident = cptr.bytes("$LuaVersion: Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. H. de Figueiredo, W. Celes $");
@@ -604,7 +604,7 @@ export function* lua_pushinteger(L, n) {
 export function* lua_pushlstring(L, s, len) {
     let ts;
     (void 0);
-    ts = (len == 0n) ? (yield* luaS_new(L, __sl0)) : (yield* luaS_newlstr(L, s, len));
+    ts = (len == 0n) ? (yield* luaS_new(L, __s_empty)) : (yield* luaS_newlstr(L, s, len));
     {
         let io = (((cptr.ldPtro(L, $lua_State_top))));
         let x_ = (ts);
@@ -1409,7 +1409,7 @@ export function* lua_load(L, reader, data, chunkname, mode) {
     let status;
     (void 0);
     if (!chunkname)
-        chunkname = __sl1;
+        chunkname = __s_query;
     luaZ_init(L, z, reader, data);
     status = (yield* luaD_protectedparser(L, z, chunkname, mode));
     if (status == 0) {
@@ -1627,7 +1627,7 @@ export function* lua_concat(L, n) {
     else {
         {
             let io = (((cptr.ldPtro(L, $lua_State_top))));
-            let x_ = ((yield* luaS_newlstr(L, __sl0, 0n)));
+            let x_ = ((yield* luaS_newlstr(L, __s_empty, 0n)));
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
             (void L, (void 0));
@@ -1744,7 +1744,7 @@ function aux_upvalue(fi, n, val, owner) {
             cptr.stPtr(val, cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, 16));
             if (owner)
                 cptr.stPtr(owner, ((((f)))));
-            return __sl0;
+            return __s_empty;
         }
         case 6:
         {
@@ -1757,7 +1757,7 @@ function aux_upvalue(fi, n, val, owner) {
             if (owner)
                 cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
             name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, 16);
-            return (cptr.eq(name, (null))) ? __sl2 : (cptr.add((name), $TString_contents));
+            return (cptr.eq(name, (null))) ? __s_no_name : (cptr.add((name), $TString_contents));
         }
         default:
         return null;

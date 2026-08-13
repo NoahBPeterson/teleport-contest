@@ -68,11 +68,11 @@ const $CallInfo_callstatus = FLD.CallInfo_callstatus, $CallInfo_next = FLD.CallI
     $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("C stack overflow");
-const __sl1 = cptr.lit("error object is not a string");
-const __sl2 = cptr.lit("error in ");
-const __sl3 = cptr.lit(" (");
-const __sl4 = cptr.lit(")");
+const __s_c_stack_overflow = cptr.lit("C stack overflow");
+const __s_error_object_is_not_a_string = cptr.lit("error object is not a string");
+const __s_error_in = cptr.lit("error in ");
+const __s_sp_lparen = cptr.lit(" (");
+const __s_rparen = cptr.lit(")");
 
 /** C ref: lstate.c:35 — struct LX { extra_, l } (memory model v0.5) */
 
@@ -175,7 +175,7 @@ export function* luaE_shrinkCI(L) {
 /** C ref: lstate.c:165 — @param {CPtr<lua_State>} L */
 export function* luaE_checkcstack(L) {
     if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) == 200)
-        (yield* luaG_runerror(L, __sl0));
+        (yield* luaG_runerror(L, __s_c_stack_overflow));
     else if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 220)
         (yield* luaD_errerr(L));
 }
@@ -469,10 +469,10 @@ export function* luaE_warning(L, msg, tocont) {
 /** C ref: lstate.c:436 — @param {CPtr<lua_State>} L @param {CPtr<char>} where */
 export function* luaE_warnerror(L, where) {
     let errobj = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));
-    let msg = ((((((cptr.ld1uo(((errobj)), $TValue_tt_))) & 15)) == 4)) ? (cptr.add((((((((cptr.ldPtr(((errobj)))))))))), $TString_contents)) : __sl1;
-    (yield* luaE_warning(L, __sl2, 1));
+    let msg = ((((((cptr.ld1uo(((errobj)), $TValue_tt_))) & 15)) == 4)) ? (cptr.add((((((((cptr.ldPtr(((errobj)))))))))), $TString_contents)) : __s_error_object_is_not_a_string;
+    (yield* luaE_warning(L, __s_error_in, 1));
     (yield* luaE_warning(L, where, 1));
-    (yield* luaE_warning(L, __sl3, 1));
+    (yield* luaE_warning(L, __s_sp_lparen, 1));
     (yield* luaE_warning(L, msg, 1));
-    (yield* luaE_warning(L, __sl4, 0));
+    (yield* luaE_warning(L, __s_rparen, 0));
 }

@@ -60,17 +60,17 @@ const $NHFILE_eof = FLD.NHFILE_eof, $restore_info_mread_flags = FLD.restore_info
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("");
-const __sl1 = cptr.lit("externalcomp");
-const __sl2 = cptr.lit("buffering already enabled");
-const __sl3 = cptr.lit("w");
-const __sl4 = cptr.lit("buffering of file %d failed");
-const __sl5 = cptr.lit("flush of savefile failed!");
-const __sl6 = cptr.lit("cannot write %u bytes to file #%d");
-const __sl7 = cptr.lit("fd not in list (%d)?");
-const __sl8 = cptr.lit("Read %d instead of %u bytes.");
-const __sl9 = cptr.lit("Error restoring old game.");
-const __sl10 = cptr.lit("Error reading level file.");
+const __s_empty = cptr.lit("");
+const __s_externalcomp = cptr.lit("externalcomp");
+const __s_buffering_already_enabled = cptr.lit("buffering already enabled");
+const __s_w = cptr.lit("w");
+const __s_buffering_of_file_d_failed = cptr.lit("buffering of file %d failed");
+const __s_flush_of_savefile_failed = cptr.lit("flush of savefile failed!");
+const __s_cannot_write_u_bytes_to_file_d = cptr.lit("cannot write %u bytes to file #%d");
+const __s_fd_not_in_list_d = cptr.lit("fd not in list (%d)?");
+const __s_read_d_instead_of_u_bytes = cptr.lit("Read %d instead of %u bytes.");
+const __s_error_restoring_old_game = cptr.lit("Error restoring old game.");
+const __s_error_reading_level_file = cptr.lit("Error reading level file.");
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct arti_info>} d_arti_info @param {CPtr<char>} myname */
 export function historical_sfo_arti_info(nhfp, d_arti_info, myname) {
@@ -1179,7 +1179,7 @@ export function historical_sfi_bitfield(nhfp, d_bitfield, myname, bflen) {
 
 /** C ref: sfstruct.c:149 — struct sf_structlevel_procs */
 export let historical_sfo_procs = cptr.alloc(552);
-cptr.stPtr(historical_sfo_procs, __sl0);
+cptr.stPtr(historical_sfo_procs, __s_empty);
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn, historical_sfo_arti_info);
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_nhrect, historical_sfo_nhrect);
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_branch, historical_sfo_branch);
@@ -1251,7 +1251,7 @@ cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_bitfie
 
 /** C ref: sfstruct.c:225 — struct sf_structlevel_procs */
 export let historical_sfi_procs = cptr.alloc(552);
-cptr.stPtr(historical_sfi_procs, __sl0);
+cptr.stPtr(historical_sfi_procs, __s_empty);
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn, historical_sfi_arti_info);
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_nhrect, historical_sfi_nhrect);
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_branch, historical_sfi_branch);
@@ -1323,7 +1323,7 @@ cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_bitfie
 
 /** C ref: sfstruct.c:320 — struct restore_info */
 export let restoreinfo = cptr.alloc(16);
-cptr.stPtr(restoreinfo, __sl1);
+cptr.stPtr(restoreinfo, __s_externalcomp);
 cptr.stI32o(restoreinfo, $restore_info_mread_flags, 0);
 
 /** C ref: sfstruct.c:325 — enum */
@@ -1387,10 +1387,10 @@ export function bufon(fd) {
     if (idx >= 0) {
         cptr.stI32o(bw_sticky, idx, fd, 4);
         if (cptr.ldI32o(bw_buffered, idx, 4))
-            panic(__sl2);
+            panic(__s_buffering_already_enabled);
         if (!cptr.ldPtro(bw_FILE, idx, 8)) {
-            if ((cptr.stPtro(bw_FILE, idx, fdopen(fd, __sl3), 8)) === null)
-                panic(__sl4, fd);
+            if ((cptr.stPtro(bw_FILE, idx, fdopen(fd, __s_w), 8)) === null)
+                panic(__s_buffering_of_file_d_failed, fd);
         }
         cptr.stI32o(bw_buffered, idx, (cptr.ldPtro(bw_FILE, idx, 8) !== null), 4);
     }
@@ -1426,7 +1426,7 @@ export function bflush(fd) {
     if (idx >= 0) {
         if (cptr.ldPtro(bw_FILE, idx, 8)) {
             if (fflush(cptr.ldPtro(bw_FILE, idx, 8)) == -1)
-                panic(__sl5);
+                panic(__s_flush_of_savefile_failed);
         }
     }
     return;
@@ -1449,10 +1449,10 @@ export function bwrite(fd, loc, num) {
             if (cptr.ldI32o(program_state, $sinfo_done_hup))
                 nh_terminate(1);
             else
-                panic(__sl6, num, fd);
+                panic(__s_cannot_write_u_bytes_to_file_d, num, fd);
         }
     } else
-        impossible(__sl7, fd);
+        impossible(__s_fd_not_in_list_d, fd);
 }
 
 /** C ref: sfstruct.c:549 — @param {CInt} fd @param {CPtr} buf @param {CUInt} len */
@@ -1464,14 +1464,14 @@ export function mread(fd, buf, len) {
             cptr.stI32o(restoreinfo, $restore_info_mread_flags, -1);
             return;
         } else {
-            pline(__sl8, rlen | 0, len);
+            pline(__s_read_d_instead_of_u_bytes, rlen | 0, len);
             display_nhwindow()(WIN_MESSAGE.v, 1);
             if (cptr.ldI32o(program_state, $sinfo_restoring)) {
                 void nhclose(fd);
                 void delete_savefile();
-                error(__sl9);
+                error(__s_error_restoring_old_game);
             }
-            panic(__sl10);
+            panic(__s_error_reading_level_file);
         }
     }
 }

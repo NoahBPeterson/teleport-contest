@@ -103,118 +103,118 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $window_procs_wp_id = FLD.window_procs_wp_id, $you_ualign = FLD.you_ualign;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%c%02X");
-const __sl1 = cptr.lit("Warning - Unclosed structlevel file being reinitialized");
-const __sl2 = cptr.lit("Warning - Unclosed fieldlevel file being reinitialized");
-const __sl3 = cptr.lit("# closing\n");
-const __sl4 = cptr.lit("# closing, not viable\n");
-const __sl5 = cptr.lit(".%d");
-const __sl6 = cptr.lit("Cannot create file \"%s\" for level %d (errno %d).");
-const __sl7 = cptr.lit("Cannot open file \"%s\" for level %d (errno %d).");
-const __sl8 = cptr.lit("bon");
-const __sl9 = cptr.lit("%u");
-const __sl10 = cptr.lit("%c%s");
-const __sl11 = cptr.lit("0");
-const __sl12 = cptr.lit(".%c");
-const __sl13 = cptr.lit(".bn");
-const __sl14 = cptr.lit("Cannot create bones \"%s\", id %s (errno %d).");
-const __sl15 = cptr.lit("couldn't rename %s to %s.");
-const __sl16 = cptr.lit("save/%d%s");
-const __sl17 = cptr.lit("");
-const __sl18 = cptr.lit("savefile_name");
-const __sl19 = cptr.lit(".e");
-const __sl20 = cptr.lit(".Z");
-const __sl21 = cptr.lit("r");
-const __sl22 = cptr.lit("save");
-const __sl23 = cptr.lit("%d%63s");
-const __sl24 = cptr.lit("freopen of %s for %scompress failed; (%d) %s\n");
-const __sl25 = cptr.lit("un");
-const __sl26 = cptr.lit("/usr/bin/compress");
-const __sl27 = cptr.lit("-d");
-const __sl28 = cptr.lit("w+");
-const __sl29 = cptr.lit("Exec to %scompress %s failed.\n");
-const __sl30 = cptr.lit("Fork to %scompress %s failed.");
-const __sl31 = cptr.lit("(%d)");
-const __sl32 = cptr.lit("Wait when %scompressing %s failed; %s.");
-const __sl33 = cptr.lit("Unable to uncompress %s");
-const __sl34 = cptr.lit("everything matches");
-const __sl35 = cptr.lit("outdated savefile");
-const __sl36 = cptr.lit("savefile critical byte-count mismatch");
-const __sl37 = cptr.lit("Windows x64 savefile on x86");
-const __sl38 = cptr.lit("Unix 64 savefile on x86");
-const __sl39 = cptr.lit("x86 savefile on Unix 64");
-const __sl40 = cptr.lit("x86 savefile on Windows x64");
-const __sl41 = cptr.lit("Unix 64 savefile on Windows x64");
-const __sl42 = cptr.lit("Windows x64 savefile on Unix 64");
-const __sl43 = cptr.lit("generic savefile mismatch");
-const __sl44 = cptr.lit("\n%s is %s %s\n");
-const __sl45 = cptr.lit("an");
-const __sl46 = cptr.lit("a");
-const __sl47 = cptr.lit("NETHACKDIR");
-const __sl48 = cptr.lit("HACKDIR");
-const __sl49 = cptr.lit("/usr/games/lib/nethackdir");
-const __sl50 = cptr.lit("make_converted_name");
-const __sl51 = cptr.lit("%s%s%s");
-const __sl52 = cptr.lit("/");
-const __sl53 = cptr.lit(".exportascii");
-const __sl54 = cptr.lit("TRIED TO NEST LOCKS");
-const __sl55 = cptr.lit("Cannot open file %s.  Is NetHack installed correctly?");
-const __sl56 = cptr.lit("Waiting for release of fcntl lock on %s.  (%d retries left.)");
-const __sl57 = cptr.lit("I give up.  Sorry.");
-const __sl58 = cptr.lit("Some other process has an unnatural grip on %s.");
-const __sl59 = cptr.lit("Can't remove fcntl lock on %s.");
-const __sl60 = cptr.lit("WIZKIT");
-const __sl61 = cptr.lit("Access to %s denied (%d).");
-const __sl62 = cptr.lit("Couldn't open requested wizkit file %s (%d).");
-const __sl63 = cptr.lit("HOME");
-const __sl64 = cptr.lit("%s/%s");
-const __sl65 = cptr.lit("Couldn't open default gw.wizkit file %s (%d).");
-const __sl66 = cptr.lit("Bad wizkit item: \"%.60s\"");
-const __sl67 = cptr.lit("symbols");
-const __sl68 = cptr.lit("Default symbols");
-const __sl69 = cptr.lit(" -_");
-const __sl70 = cptr.lit("default");
-const __sl71 = cptr.lit("Missing finish for symset \"%s\"");
-const __sl72 = cptr.lit("unknown");
-const __sl73 = cptr.lit("record");
-const __sl74 = cptr.lit("Warning: cannot write scoreboard file '%s'");
-const __sl75 = cptr.lit("paniclog");
-const __sl76 = cptr.lit("%s %08ld %06ld %d %c: %s %s\n");
-const __sl77 = cptr.lit(".log");
-const __sl78 = cptr.lit("%s\n%s\n");
-const __sl79 = cptr.lit("NetHack");
-const __sl80 = cptr.lit("%s %s%s:");
-const __sl81 = cptr.lit("system configuration file");
-const __sl82 = cptr.lit("sysconf");
-const __sl83 = cptr.lit("    \"%s\"");
-const __sl84 = cptr.lit("NOTE: The %s above is missing or inaccessible!");
-const __sl85 = cptr.lit("The loadable symbols file:");
-const __sl86 = cptr.lit("    \"%s/%s\"");
-const __sl87 = cptr.lit("Basic data files%s are in many separate files.");
-const __sl88 = cptr.lit("not supported");
-const __sl89 = cptr.lit("Your personal configuration file%s:");
-const __sl90 = cptr.lit("Library/Preferences/NetHack Defaults");
-const __sl91 = cptr.lit(".txt");
-const __sl92 = cptr.lit("files.c");
-const __sl93 = cptr.lit("choose_passage");
-const __sl94 = cptr.lit("an incomprehensible foreign translation");
-const __sl95 = cptr.lit("It's %s of \"%s\"!");
-const __sl96 = cptr.lit("read_tribute %s, %s, %d.");
-const __sl97 = cptr.lit("tribute");
-const __sl98 = cptr.lit("too overwhelmed to continue!");
-const __sl99 = cptr.lit("section ");
-const __sl100 = cptr.lit("title ");
-const __sl101 = cptr.lit("passage ");
-const __sl102 = cptr.lit("e ");
-const __sl103 = cptr.lit("tribute file error: bad %% command, line %d.");
-const __sl104 = cptr.lit("[%s, by Terry Pratchett]");
-const __sl105 = cptr.lit("; passage #%d]");
-const __sl106 = cptr.lit("It seems to be %s of \"%s\"!");
-const __sl107 = cptr.lit("Death");
-const __sl108 = cptr.lit("Death Quotes");
-const __sl109 = cptr.lit("livelog");
-const __sl110 = cptr.lit("Cannot open live log file!");
-const __sl111 = cptr.lit("lltype=%ld\tname=%s\trole=%s\trace=%s\tgender=%s\talign=%s\tturns=%ld\tstarttime=%ld\tcurtime=%ld\tmessage=%s\n");
+const __s_c_02x = cptr.lit("%c%02X");
+const __s_warning_unclosed_structlevel_file_being = cptr.lit("Warning - Unclosed structlevel file being reinitialized");
+const __s_warning_unclosed_fieldlevel_file_being = cptr.lit("Warning - Unclosed fieldlevel file being reinitialized");
+const __s_closing = cptr.lit("# closing\n");
+const __s_closing_not_viable = cptr.lit("# closing, not viable\n");
+const __s_dot_pct_d = cptr.lit(".%d");
+const __s_cannot_create_file_s_for_level_d_errno_d = cptr.lit("Cannot create file \"%s\" for level %d (errno %d).");
+const __s_cannot_open_file_s_for_level_d_errno_d = cptr.lit("Cannot open file \"%s\" for level %d (errno %d).");
+const __s_bon = cptr.lit("bon");
+const __s_pct_u = cptr.lit("%u");
+const __s_c_s = cptr.lit("%c%s");
+const __s_0 = cptr.lit("0");
+const __s_dot_pct_c = cptr.lit(".%c");
+const __s_bn = cptr.lit(".bn");
+const __s_cannot_create_bones_s_id_s_errno_d = cptr.lit("Cannot create bones \"%s\", id %s (errno %d).");
+const __s_couldn_t_rename_s_to_s = cptr.lit("couldn't rename %s to %s.");
+const __s_save_d_s = cptr.lit("save/%d%s");
+const __s_empty = cptr.lit("");
+const __s_savefile_name = cptr.lit("savefile_name");
+const __s_dot_e = cptr.lit(".e");
+const __s_dot_z = cptr.lit(".Z");
+const __s_r = cptr.lit("r");
+const __s_save = cptr.lit("save");
+const __s_d_63s = cptr.lit("%d%63s");
+const __s_freopen_of_s_for_scompress_failed_d_s = cptr.lit("freopen of %s for %scompress failed; (%d) %s\n");
+const __s_un = cptr.lit("un");
+const __s_usr_bin_compress = cptr.lit("/usr/bin/compress");
+const __s_dash_d = cptr.lit("-d");
+const __s_w_plus = cptr.lit("w+");
+const __s_exec_to_scompress_s_failed = cptr.lit("Exec to %scompress %s failed.\n");
+const __s_fork_to_scompress_s_failed = cptr.lit("Fork to %scompress %s failed.");
+const __s_lparen_pct_d_rparen = cptr.lit("(%d)");
+const __s_wait_when_scompressing_s_failed_s = cptr.lit("Wait when %scompressing %s failed; %s.");
+const __s_unable_to_uncompress_s = cptr.lit("Unable to uncompress %s");
+const __s_everything_matches = cptr.lit("everything matches");
+const __s_outdated_savefile = cptr.lit("outdated savefile");
+const __s_savefile_critical_byte_count_mismatch = cptr.lit("savefile critical byte-count mismatch");
+const __s_windows_x64_savefile_on_x86 = cptr.lit("Windows x64 savefile on x86");
+const __s_unix_64_savefile_on_x86 = cptr.lit("Unix 64 savefile on x86");
+const __s_x86_savefile_on_unix_64 = cptr.lit("x86 savefile on Unix 64");
+const __s_x86_savefile_on_windows_x64 = cptr.lit("x86 savefile on Windows x64");
+const __s_unix_64_savefile_on_windows_x64 = cptr.lit("Unix 64 savefile on Windows x64");
+const __s_windows_x64_savefile_on_unix_64 = cptr.lit("Windows x64 savefile on Unix 64");
+const __s_generic_savefile_mismatch = cptr.lit("generic savefile mismatch");
+const __s_s_is_s_s = cptr.lit("\n%s is %s %s\n");
+const __s_an = cptr.lit("an");
+const __s_a = cptr.lit("a");
+const __s_nethackdir = cptr.lit("NETHACKDIR");
+const __s_hackdir = cptr.lit("HACKDIR");
+const __s_usr_games_lib_nethackdir = cptr.lit("/usr/games/lib/nethackdir");
+const __s_make_converted_name = cptr.lit("make_converted_name");
+const __s_s_s_s = cptr.lit("%s%s%s");
+const __s_slash = cptr.lit("/");
+const __s_exportascii = cptr.lit(".exportascii");
+const __s_tried_to_nest_locks = cptr.lit("TRIED TO NEST LOCKS");
+const __s_cannot_open_file_s_is_nethack_installed = cptr.lit("Cannot open file %s.  Is NetHack installed correctly?");
+const __s_waiting_for_release_of_fcntl_lock_on_s = cptr.lit("Waiting for release of fcntl lock on %s.  (%d retries left.)");
+const __s_i_give_up_sorry = cptr.lit("I give up.  Sorry.");
+const __s_some_other_process_has_an_unnatural = cptr.lit("Some other process has an unnatural grip on %s.");
+const __s_can_t_remove_fcntl_lock_on_s = cptr.lit("Can't remove fcntl lock on %s.");
+const __s_wizkit = cptr.lit("WIZKIT");
+const __s_access_to_s_denied_d = cptr.lit("Access to %s denied (%d).");
+const __s_couldn_t_open_requested_wizkit_file_s_d = cptr.lit("Couldn't open requested wizkit file %s (%d).");
+const __s_home = cptr.lit("HOME");
+const __s_s_s = cptr.lit("%s/%s");
+const __s_couldn_t_open_default_gw_wizkit_file_s_d = cptr.lit("Couldn't open default gw.wizkit file %s (%d).");
+const __s_bad_wizkit_item_60s = cptr.lit("Bad wizkit item: \"%.60s\"");
+const __s_symbols = cptr.lit("symbols");
+const __s_default_symbols = cptr.lit("Default symbols");
+const __s_sp_dash_us = cptr.lit(" -_");
+const __s_default = cptr.lit("default");
+const __s_missing_finish_for_symset_s = cptr.lit("Missing finish for symset \"%s\"");
+const __s_unknown = cptr.lit("unknown");
+const __s_record = cptr.lit("record");
+const __s_warning_cannot_write_scoreboard_file_s = cptr.lit("Warning: cannot write scoreboard file '%s'");
+const __s_paniclog = cptr.lit("paniclog");
+const __s_s_08ld_06ld_d_c_s_s = cptr.lit("%s %08ld %06ld %d %c: %s %s\n");
+const __s_log = cptr.lit(".log");
+const __s_s_s__2 = cptr.lit("%s\n%s\n");
+const __s_nethack = cptr.lit("NetHack");
+const __s_s_s_s__2 = cptr.lit("%s %s%s:");
+const __s_system_configuration_file = cptr.lit("system configuration file");
+const __s_sysconf = cptr.lit("sysconf");
+const __s_sp4_quot_pct_s_quot = cptr.lit("    \"%s\"");
+const __s_note_the_s_above_is_missing_or = cptr.lit("NOTE: The %s above is missing or inaccessible!");
+const __s_the_loadable_symbols_file = cptr.lit("The loadable symbols file:");
+const __s_s_s__3 = cptr.lit("    \"%s/%s\"");
+const __s_basic_data_files_s_are_in_many_separate = cptr.lit("Basic data files%s are in many separate files.");
+const __s_not_supported = cptr.lit("not supported");
+const __s_your_personal_configuration_file_s = cptr.lit("Your personal configuration file%s:");
+const __s_library_preferences_nethack_defaults = cptr.lit("Library/Preferences/NetHack Defaults");
+const __s_txt = cptr.lit(".txt");
+const __s_files_c = cptr.lit("files.c");
+const __s_choose_passage = cptr.lit("choose_passage");
+const __s_an_incomprehensible_foreign_translation = cptr.lit("an incomprehensible foreign translation");
+const __s_it_s_s_of_s = cptr.lit("It's %s of \"%s\"!");
+const __s_read_tribute_s_s_d = cptr.lit("read_tribute %s, %s, %d.");
+const __s_tribute = cptr.lit("tribute");
+const __s_too_overwhelmed_to_continue = cptr.lit("too overwhelmed to continue!");
+const __s_section = cptr.lit("section ");
+const __s_title = cptr.lit("title ");
+const __s_passage = cptr.lit("passage ");
+const __s_e_sp = cptr.lit("e ");
+const __s_tribute_file_error_bad_command_line_d = cptr.lit("tribute file error: bad %% command, line %d.");
+const __s_s_by_terry_pratchett = cptr.lit("[%s, by Terry Pratchett]");
+const __s_passage_d = cptr.lit("; passage #%d]");
+const __s_it_seems_to_be_s_of_s = cptr.lit("It seems to be %s of \"%s\"!");
+const __s_death = cptr.lit("Death");
+const __s_death_quotes = cptr.lit("Death Quotes");
+const __s_livelog = cptr.lit("livelog");
+const __s_cannot_open_live_log_file = cptr.lit("Cannot open live log file!");
+const __s_lltype_ld_name_s_role_s_race_s_gender_s = cptr.lit("lltype=%ld\tname=%s\trole=%s\trace=%s\tgender=%s\talign=%s\tturns=%ld\tstarttime=%ld\tcurtime=%ld\tmessage=%s\n");
 
 const __static_nh_basename_basebuf = new Uint8Array(80); /** C ref: files.c:202 — char[80] (function-static) */
 
@@ -248,7 +248,7 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
         if (((bufsz - cnt) | 0) <= 4)
             return callerbuf;
         if (cptr.ld1s(sp) == quotechar) {
-            void cptr.sprintf(op, __sl0, quotechar, cptr.ld1s(sp));
+            void cptr.sprintf(op, __s_c_02x, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
         } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null)) {
@@ -256,7 +256,7 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
             cptr.st1(op, 0);
             cnt++;
         } else {
-            void cptr.sprintf(op, __sl0, quotechar, cptr.ld1s(sp));
+            void cptr.sprintf(op, __s_c_02x, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
         }
@@ -334,12 +334,12 @@ let bei = cptr.box(1);
 export function* init_nhfile(nhfp) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         if (cptr.ldI32(nhfp) != -1) {
-            (yield* impossible(__sl1));
+            (yield* impossible(__s_warning_unclosed_structlevel_file_being));
             void (yield* nhclose(cptr.ldI32(nhfp)));
         }
     } else if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
         if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
-            (yield* impossible(__sl2));
+            (yield* impossible(__s_warning_unclosed_fieldlevel_file_being));
             void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef));
         }
     }
@@ -383,7 +383,7 @@ export function* close_nhfile(nhfp) {
     else if (cptr.ldPtro(nhfp, $NHFILE_fpdef))
         void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef)), cptr.stPtro(nhfp, $NHFILE_fpdef, null);
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
-        void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __sl3);
+        void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __s_closing);
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         void fclose(cptr.ldPtro(nhfp, $NHFILE_fplog));
     if (cptr.ldPtro(nhfp, $NHFILE_fpdebug))
@@ -410,7 +410,7 @@ function* viable_nhfile(nhfp) {
                     cptr.stPtro(nhfp, $NHFILE_fpdef, null);
                 }
                 if (cptr.ldPtro(nhfp, $NHFILE_fplog)) {
-                    void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __sl4);
+                    void fprintf(cptr.ldPtro(nhfp, $NHFILE_fplog), __s_closing_not_viable);
                     void fclose(cptr.ldPtro(nhfp, $NHFILE_fplog));
                 }
                 if (cptr.ldPtro(nhfp, $NHFILE_fpdebug))
@@ -441,7 +441,7 @@ export function set_levelfile_name(file, lev) {
     tf = cptr.strrchr(file, 46);
     if (!tf)
         tf = eos(file);
-    void cptr.sprintf(tf, __sl5, lev);
+    void cptr.sprintf(tf, __s_dot_pct_d, lev);
     return;
 }
 
@@ -469,7 +469,7 @@ export function* create_levelfile(lev, errbuf) {
         if (cptr.ldI32(nhfp) >= 0)
             cptr.st1o2(svl, lev, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
         else if (errbuf)
-            void cptr.sprintf(errbuf, __sl6, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
+            void cptr.sprintf(errbuf, __s_cannot_create_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
     nhfp = (yield* viable_nhfile(nhfp));
     return nhfp;
@@ -499,7 +499,7 @@ export function* open_levelfile(lev, errbuf) {
     if (nhfp && cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         cptr.stI32(nhfp, open(fq_lock, 0, 0));
         if (cptr.ldI32(nhfp) < 0 && errbuf)
-            void cptr.sprintf(errbuf, __sl7, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
+            void cptr.sprintf(errbuf, __s_cannot_open_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
     nhfp = (yield* viable_nhfile(nhfp));
     return nhfp;
@@ -534,18 +534,18 @@ function strcmp_wrap(p, q) {
 function set_bonesfile_name(file, lev) {
     let sptr;
     let dptr;
-    void cptr.strcpy(file, __sl8);
+    void cptr.strcpy(file, __s_bon);
     if (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) > 1) {
         let poolnum = ((cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) < 10 ? (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) : 10);
         poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);
-        void cptr.sprintf(eos(file), __sl9, poolnum);
+        void cptr.sprintf(eos(file), __s_pct_u, poolnum);
     }
     dptr = eos(file);
-    void cptr.sprintf(dptr, __sl10, cptr.ld1so2(svd, cptr.ldI16(lev), 112, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __sl11);
+    void cptr.sprintf(dptr, __s_c_s, cptr.ld1so2(svd, cptr.ldI16(lev), 112, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0);
     if ((sptr = Is_special(lev)) !== null)
-        void cptr.sprintf(eos(dptr), __sl12, cptr.ld1so(sptr, $s_level_boneid));
+        void cptr.sprintf(eos(dptr), __s_dot_pct_c, cptr.ld1so(sptr, $s_level_boneid));
     else
-        void cptr.sprintf(eos(dptr), __sl5, cptr.ldI16o(lev, $d_level_dlevel));
+        void cptr.sprintf(eos(dptr), __s_dot_pct_d, cptr.ldI16o(lev, $d_level_dlevel));
     return dptr;
 }
 
@@ -555,7 +555,7 @@ function set_bonestemp_name() {
     tf = cptr.strrchr(cptr.add(gl, $instance_globals_l_lock), 46);
     if (!tf)
         tf = eos(cptr.add(gl, $instance_globals_l_lock));
-    void cptr.sprintf(tf, __sl13);
+    void cptr.sprintf(tf, __s_bn);
     return cptr.add(gl, $instance_globals_l_lock);
 }
 
@@ -591,7 +591,7 @@ export function* create_bonesfile(lev, bonesid, errbuf) {
                 failed = (cptr.ldI32(__error()));
         }
         if (failed && errbuf)
-            void cptr.sprintf(errbuf, __sl14, cptr.add(gl, $instance_globals_l_lock), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
+            void cptr.sprintf(errbuf, __s_cannot_create_bones_s_id_s_errno_d, cptr.add(gl, $instance_globals_l_lock), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
     }
     nhfp = (yield* viable_nhfile(nhfp));
     return nhfp;
@@ -608,7 +608,7 @@ export function* commit_bonesfile(lev) {
     tempname = fqname(tempname, NHM.BONESPREFIX, 1);
     ret = rename(tempname, fq_bones);
     if (wizard() && ret != 0)
-        (yield* pline(__sl15, tempname, fq_bones));
+        (yield* pline(__s_couldn_t_rename_s_to_s, tempname, fq_bones));
 }
 
 /** C ref: files.c:940 — @param {CPtr<d_level>} lev @param {CPtr<char *>} bonesid @returns {CPtr<NHFILE>} */
@@ -662,7 +662,7 @@ export function set_savefile_name(regularize_it) {
     let indicator_spot = 0;
     let postappend = null;
     let sfindicator = null;
-    void cptr.sprintf(cptr.add(gs, $instance_globals_s_SAVEF), __sl16, getuid() | 0, svp);
+    void cptr.sprintf(cptr.add(gs, $instance_globals_s_SAVEF), __s_save_d_s, getuid() | 0, svp);
     regoffset = 5;
     indicator_spot = 2;
     if (regularize_it)
@@ -673,9 +673,9 @@ export function set_savefile_name(regularize_it) {
         else
             overflow = 2;
     }
-    if (cptr.strlen(__sl17) > 0n && !overflow) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__sl17)) < 53n) {
-            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __sl17);
+    if (cptr.strlen(__s_empty) > 0n && !overflow) {
+        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__s_empty)) < 53n) {
+            void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_empty);
         } else
             overflow = 3;
     }
@@ -695,12 +695,12 @@ export function set_savefile_name(regularize_it) {
 
 /** C ref: files.c:1128 — @param {CPtr<NHFILE>} nhfp */
 export function* save_savefile_name(nhfp) {
-    (yield* sfo_char(nhfp, cptr.add(gs, $instance_globals_s_SAVEF), __sl18, 54));
+    (yield* sfo_char(nhfp, cptr.add(gs, $instance_globals_s_SAVEF), __s_savefile_name, 54));
 }
 
 /** C ref: files.c:1137 */
 export function set_error_savefile() {
-    void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __sl19);
+    void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_dot_e);
 }
 
 /** C ref: files.c:1159 @returns {CPtr<NHFILE>} */
@@ -800,17 +800,17 @@ export function* check_panic_save() {
     let savef;
     set_error_savefile();
     savef = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
-    let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__sl20)))));
+    let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__s_dot_z)))));
     let cfn = (yield* alloc((ln + 1) >>> 0));
     void cptr.strcpy(cfn, savef);
-    void cptr.strcat(cfn, __sl20);
-    if (!cptr.eq((cf = fopen(cfn, __sl21)), (null))) {
+    void cptr.strcat(cfn, __s_dot_z);
+    if (!cptr.eq((cf = fopen(cfn, __s_r)), (null))) {
         void fclose(cf);
         result = 1;
     }
     cptr.free(cfn);
     if (!result) {
-        if (!cptr.eq((cf = fopen(savef, __sl21)), (null))) {
+        if (!cptr.eq((cf = fopen(savef, __s_r)), (null))) {
             void fclose(cf);
             result = 1;
         }
@@ -828,8 +828,8 @@ export function* plname_from_file(filename, without_wait_synch_per_file) {
     void cptr.strcpy(cptr.add(gs, $instance_globals_s_SAVEF), filename);
     {
         let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF))));
-        let xln = Number(BigInt.asIntN(32, cptr.strlen(__sl20)));
-        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1), __sl20))
+        let xln = Number(BigInt.asIntN(32, cptr.strlen(__s_dot_z)));
+        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1), __s_dot_z))
             cptr.st1o2(gs, (sln - xln) | 0, 1, $instance_globals_s_SAVEF, 0);
     }
     (yield* nh_uncompress(cptr.add(gs, $instance_globals_s_SAVEF)));
@@ -852,13 +852,13 @@ export function* get_saved_games() {
     let j = 0;
     let myuid = getuid() | 0;
     let dir;
-    if ((dir = opendir(fqname(__sl22, NHM.SAVEPREFIX, 0)))) {
+    if ((dir = opendir(fqname(__s_save, NHM.SAVEPREFIX, 0)))) {
         for (n = 0; readdir(dir); n++)
             ;
         closedir(dir);
         if (n > 0) {
             let i;
-            if (!(dir = opendir(fqname(__sl22, NHM.SAVEPREFIX, 0))))
+            if (!(dir = opendir(fqname(__s_save, NHM.SAVEPREFIX, 0))))
                 return null;
             result = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n)))));
             void __builtin___memset_chk(result, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n), __builtin_object_size(result, 0));
@@ -868,11 +868,11 @@ export function* get_saved_games() {
                 let entry = readdir(dir);
                 if (!entry)
                     break;
-                if (sscanf(cptr.add(entry, $dirent_d_name), __sl23, uid, cptr.decay(name)) == 2) {
+                if (sscanf(cptr.add(entry, $dirent_d_name), __s_d_63s, uid, cptr.decay(name)) == 2) {
                     if (uid.v == myuid) {
                         let filename = new Uint8Array(256);
                         let r;
-                        void cptr.sprintf(cptr.decay(filename), __sl16, uid.v, cptr.decay(name));
+                        void cptr.sprintf(cptr.decay(filename), __s_save_d_s, uid.v, cptr.decay(name));
                         r = (yield* plname_from_file(cptr.decay(filename), 0));
                         if (r)
                             cptr.stPtro(result, j++, r, 8);
@@ -908,8 +908,8 @@ function* redirect(filename, mode, stream, uncomp) {
     if (freopen(filename, mode, stream) === null) {
         let details;
         if ((details = strerror((cptr.ldI32(__error())))) === null)
-            details = __sl17;
-        void fprintf(__stderrp, __sl24, filename, uncomp ? __sl25 : __sl17, (cptr.ldI32(__error())), details);
+            details = __s_empty;
+        void fprintf(__stderrp, __s_freopen_of_s_for_scompress_failed_d_s, filename, uncomp ? __s_un : __s_empty, (cptr.ldI32(__error())), details);
         (yield* nh_terminate(1));
     }
 }
@@ -925,21 +925,21 @@ function* docompress_file(filename, uncomp) {
     let childstatus = cptr.box(0);
     let ln;
     let istty = schar((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty));
-    xtra = __sl20;
+    xtra = __s_dot_z;
     ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))));
     cfn = (yield* alloc((ln + 1) >>> 0));
     void cptr.strcpy(cfn, filename);
     void cptr.strcat(cfn, xtra);
     if (uncomp) {
-        if ((cf = fopen(cfn, __sl21)) === null) {
+        if ((cf = fopen(cfn, __s_r)) === null) {
             cptr.free(cfn);
             return;
         }
         void fclose(cf);
     }
-    cptr.stPtro(args, 0, __sl26, 8);
+    cptr.stPtro(args, 0, __s_usr_bin_compress, 8);
     if (uncomp)
-        cptr.stPtro(args, ++i, __sl27, 8);
+        cptr.stPtro(args, ++i, __s_dash_d, 8);
     cptr.stPtro(args, ++i, null, 8);
     if (istty) {
         (yield* Y.icall(mark_synch()()));
@@ -947,25 +947,25 @@ function* docompress_file(filename, uncomp) {
     f = fork();
     if (f == 0) {
         if (istty) {
-            (yield* Y.icall(raw_print()(__sl17)));
+            (yield* Y.icall(raw_print()(__s_empty)));
         }
         if (uncomp) {
-            (yield* redirect(cfn, __sl21, __stdinp, uncomp));
-            (yield* redirect(filename, __sl28, __stdoutp, uncomp));
+            (yield* redirect(cfn, __s_r, __stdinp, uncomp));
+            (yield* redirect(filename, __s_w_plus, __stdoutp, uncomp));
         } else {
-            (yield* redirect(filename, __sl21, __stdinp, uncomp));
-            (yield* redirect(cfn, __sl28, __stdoutp, uncomp));
+            (yield* redirect(filename, __s_r, __stdinp, uncomp));
+            (yield* redirect(cfn, __s_w_plus, __stdoutp, uncomp));
         }
         void setgid(getgid());
         void setuid(getuid());
         void execv(cptr.ldPtro(args, 0, 8), args);
         perror(null);
-        void fprintf(__stderrp, __sl29, uncomp ? __sl25 : __sl17, filename);
+        void fprintf(__stderrp, __s_exec_to_scompress_s_failed, uncomp ? __s_un : __s_empty, filename);
         cptr.free(cfn);
         (yield* nh_terminate(1));
     } else if (f == -1) {
         perror(null);
-        (yield* pline(__sl30, uncomp ? __sl25 : __sl17, filename));
+        (yield* pline(__s_fork_to_scompress_s_failed, uncomp ? __s_un : __s_empty, filename));
         cptr.free(cfn);
         return;
     }
@@ -977,10 +977,10 @@ function* docompress_file(filename, uncomp) {
         let numbuf = new Uint8Array(40);
         let details = strerror((cptr.ldI32(__error())));
         if (!details) {
-            void cptr.sprintf(cptr.decay(numbuf), __sl31, (cptr.ldI32(__error())));
+            void cptr.sprintf(cptr.decay(numbuf), __s_lparen_pct_d_rparen, (cptr.ldI32(__error())));
             details = cptr.decay(numbuf);
         }
-        (yield* raw_printf(__sl32, uncomp ? __sl25 : __sl17, filename, details));
+        (yield* raw_printf(__s_wait_when_scompressing_s_failed_s, uncomp ? __s_un : __s_empty, filename, details));
     }
     void signal(2, done1);
     if (wizard())
@@ -992,7 +992,7 @@ function* docompress_file(filename, uncomp) {
             void unlink(filename);
     } else {
         if (uncomp) {
-            (yield* raw_printf(__sl33, filename));
+            (yield* raw_printf(__s_unable_to_uncompress_s, filename));
             void unlink(filename);
         } else {
             void unlink(cfn);
@@ -1021,25 +1021,25 @@ export function* nh_uncompress(filename) {
 /** C ref: files.c:2000 — struct sfstatus_to_msg[10] */
 const sf2msg = cptr.alloc(10 * 16);
 cptr.stI32o(sf2msg, 0, NHM.SF_UPTODATE);
-cptr.stPtro(sf2msg, 0 + $sfstatus_to_msg_msg, __sl34);
+cptr.stPtro(sf2msg, 0 + $sfstatus_to_msg_msg, __s_everything_matches);
 cptr.stI32o(sf2msg, 16, NHM.SF_OUTDATED);
-cptr.stPtro(sf2msg, 16 + $sfstatus_to_msg_msg, __sl35);
+cptr.stPtro(sf2msg, 16 + $sfstatus_to_msg_msg, __s_outdated_savefile);
 cptr.stI32o(sf2msg, 32, NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH);
-cptr.stPtro(sf2msg, 32 + $sfstatus_to_msg_msg, __sl36);
+cptr.stPtro(sf2msg, 32 + $sfstatus_to_msg_msg, __s_savefile_critical_byte_count_mismatch);
 cptr.stI32o(sf2msg, 48, NHM.SF_DM_IL32LLP64_ON_ILP32LL64);
-cptr.stPtro(sf2msg, 48 + $sfstatus_to_msg_msg, __sl37);
+cptr.stPtro(sf2msg, 48 + $sfstatus_to_msg_msg, __s_windows_x64_savefile_on_x86);
 cptr.stI32o(sf2msg, 64, NHM.SF_DM_I32LP64_ON_ILP32LL64);
-cptr.stPtro(sf2msg, 64 + $sfstatus_to_msg_msg, __sl38);
+cptr.stPtro(sf2msg, 64 + $sfstatus_to_msg_msg, __s_unix_64_savefile_on_x86);
 cptr.stI32o(sf2msg, 80, NHM.SF_DM_ILP32LL64_ON_I32LP64);
-cptr.stPtro(sf2msg, 80 + $sfstatus_to_msg_msg, __sl39);
+cptr.stPtro(sf2msg, 80 + $sfstatus_to_msg_msg, __s_x86_savefile_on_unix_64);
 cptr.stI32o(sf2msg, 96, NHM.SF_DM_ILP32LL64_ON_IL32LLP64);
-cptr.stPtro(sf2msg, 96 + $sfstatus_to_msg_msg, __sl40);
+cptr.stPtro(sf2msg, 96 + $sfstatus_to_msg_msg, __s_x86_savefile_on_windows_x64);
 cptr.stI32o(sf2msg, 112, NHM.SF_DM_I32LP64_ON_IL32LLP64);
-cptr.stPtro(sf2msg, 112 + $sfstatus_to_msg_msg, __sl41);
+cptr.stPtro(sf2msg, 112 + $sfstatus_to_msg_msg, __s_unix_64_savefile_on_windows_x64);
 cptr.stI32o(sf2msg, 128, NHM.SF_DM_IL32LLP64_ON_I32LP64);
-cptr.stPtro(sf2msg, 128 + $sfstatus_to_msg_msg, __sl42);
+cptr.stPtro(sf2msg, 128 + $sfstatus_to_msg_msg, __s_windows_x64_savefile_on_unix_64);
 cptr.stI32o(sf2msg, 144, NHM.SF_DM_MISMATCH);
-cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __sl43);
+cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __s_generic_savefile_mismatch);
 
 /** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr<char>} savefilenm @returns {CPtr<NHFILE>} */
 function* problematic_savefile(sfstatus, savefilenm) {
@@ -1062,7 +1062,7 @@ function* problematic_savefile(sfstatus, savefilenm) {
         default:
         for (i = 0; i < 10; ++i) {
             if (cptr.ldI32o(sf2msg, i, 16) == sfstatus) {
-                (yield* raw_printf(__sl44, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __sl45 : __sl46, cptr.ldPtro2(sf2msg, i, 16, $sfstatus_to_msg_msg)));
+                (yield* raw_printf(__s_s_is_s_s, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a, cptr.ldPtro2(sf2msg, i, 16, $sfstatus_to_msg_msg)));
                 break;
             }
         }
@@ -1112,11 +1112,11 @@ function* make_converted_name(filename) {
         cptr.free(converted_filename), converted_filename = null;
     ln = Number(BigInt.asUintN(32, cptr.strlen(filename)));
     if (!contains_directory(filename)) {
-        dir = nh_getenv(__sl47);
+        dir = nh_getenv(__s_nethackdir);
         if (!dir)
-            dir = nh_getenv(__sl48);
+            dir = nh_getenv(__s_hackdir);
         if (!dir)
-            dir = __sl49;
+            dir = __s_usr_games_lib_nethackdir;
         if (dir) {
             finaldirchar = c_eos(dir);
             finaldirchar = cptr.add(finaldirchar, -1);
@@ -1128,8 +1128,8 @@ function* make_converted_name(filename) {
         }
     }
     unconverted_filename = (yield* alloc((ln + 1) >>> 0));
-    nh_snprintf(__sl50, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __sl51, dir ? dir : __sl17, (dir && needsep) ? __sl52 : __sl17, filename);
-    xtra = __sl53;
+    nh_snprintf(__s_make_converted_name, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __s_s_s_s, dir ? dir : __s_empty, (dir && needsep) ? __s_slash : __s_empty, filename);
+    xtra = __s_exportascii;
     ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) | 0;
     converted_filename = (yield* alloc((ln + 1) >>> 0));
     void cptr.strcpy(converted_filename, unconverted_filename);
@@ -1179,14 +1179,14 @@ let sflock = cptr.alloc(24);
 export function* lock_file(filename, whichprefix, retryct) {
     (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + 1)) - (1);
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
-        (yield* impossible(__sl54));
+        (yield* impossible(__s_tried_to_nest_locks));
         return 1;
     }
     filename = fqname(filename, whichprefix, 0);
     lockfd = open(filename, 2);
     if (lockfd == -1) {
         if (!cptr.ldI32o(program_state, $sinfo_done_hup))
-            (yield* raw_printf(__sl55, filename));
+            (yield* raw_printf(__s_cannot_open_file_s_is_nethack_installed, filename));
         (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
         return 0;
     }
@@ -1197,13 +1197,13 @@ export function* lock_file(filename, whichprefix, retryct) {
     while (fcntl(lockfd, 8, sflock) == -1) {
         if (retryct--) {
             if (!cptr.ldI32o(program_state, $sinfo_done_hup))
-                (yield* raw_printf(__sl56, filename, retryct));
+                (yield* raw_printf(__s_waiting_for_release_of_fcntl_lock_on_s, filename, retryct));
             sleep(1);
         } else {
             if (!cptr.ldI32o(program_state, $sinfo_done_hup))
-                (yield* Y.icall(raw_print()(__sl57)));
+                (yield* Y.icall(raw_print()(__s_i_give_up_sorry)));
             if (!cptr.ldI32o(program_state, $sinfo_done_hup))
-                (yield* raw_printf(__sl58, filename));
+                (yield* raw_printf(__s_some_other_process_has_an_unnatural, filename));
             (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
             return 0;
         }
@@ -1218,7 +1218,7 @@ export function* unlock_file(filename) {
         if (lockfd >= 0) {
             if (fcntl(lockfd, 8, sflock) == -1)
                 if (!cptr.ldI32o(program_state, $sinfo_done_hup))
-                    (yield* raw_printf(__sl59, filename));
+                    (yield* raw_printf(__s_can_t_remove_fcntl_lock_on_s, filename));
             void close(lockfd), lockfd = -1;
         }
     }
@@ -1230,29 +1230,29 @@ function* fopen_wizkit_file() {
     let fp;
     let tmp_wizkit = new Uint8Array(256);
     let envp;
-    envp = nh_getenv(__sl60);
+    envp = nh_getenv(__s_wizkit);
     if (envp && cptr.ld1s(envp))
         void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), envp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
     if (!cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit))
         return null;
     if (access(cptr.add(gw, $instance_globals_w_wizkit), 4) == -1) {
-        (yield* raw_printf(__sl61, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
+        (yield* raw_printf(__s_access_to_s_denied_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
-    } else if ((fp = fopen(cptr.add(gw, $instance_globals_w_wizkit), __sl21)) !== null) {
+    } else if ((fp = fopen(cptr.add(gw, $instance_globals_w_wizkit), __s_r)) !== null) {
         return fp;
     } else {
-        (yield* raw_printf(__sl62, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
+        (yield* raw_printf(__s_couldn_t_open_requested_wizkit_file_s_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
     }
-    envp = nh_getenv(__sl63);
+    envp = nh_getenv(__s_home);
     if (envp)
-        void cptr.sprintf(cptr.decay(tmp_wizkit), __sl64, envp, cptr.add(gw, $instance_globals_w_wizkit));
+        void cptr.sprintf(cptr.decay(tmp_wizkit), __s_s_s, envp, cptr.add(gw, $instance_globals_w_wizkit));
     else
         void cptr.strcpy(cptr.decay(tmp_wizkit), cptr.add(gw, $instance_globals_w_wizkit));
-    if ((fp = fopen(cptr.decay(tmp_wizkit), __sl21)) !== null)
+    if ((fp = fopen(cptr.decay(tmp_wizkit), __s_r)) !== null)
         return fp;
     else if ((cptr.ldI32(__error())) != 2) {
-        (yield* raw_printf(__sl65, cptr.decay(tmp_wizkit), (cptr.ldI32(__error()))));
+        (yield* raw_printf(__s_couldn_t_open_default_gw_wizkit_file_s_d, cptr.decay(tmp_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
     }
     return null;
@@ -1287,7 +1287,7 @@ export function* proc_wizkit_line(buf) {
             (yield* wizkit_addinv(otmp));
         }
     } else {
-        (yield* config_error_add(__sl66, buf));
+        (yield* config_error_add(__s_bad_wizkit_item_60s, buf));
         return 0;
     }
     return 1;
@@ -1299,7 +1299,7 @@ export function* read_wizkit() {
     if (!wizard() || !(fp = (yield* fopen_wizkit_file())))
         return;
     cptr.stI32o(program_state, $sinfo_wizkit_wishing, 1);
-    (yield* config_error_init(1, __sl60, 0));
+    (yield* config_error_init(1, __s_wizkit, 0));
     (yield* parse_conf_file(fp, proc_wizkit_line));
     void fclose(fp);
     (yield* config_error_done());
@@ -1310,7 +1310,7 @@ export function* read_wizkit() {
 /** C ref: files.c:2611 @returns {CPtr<FILE>} */
 function fopen_sym_file() {
     let fp;
-    fp = fopen_datafile(__sl67, __sl21, NHM.HACKPREFIX);
+    fp = fopen_datafile(__s_symbols, __s_r, NHM.HACKPREFIX);
     return fp;
 }
 
@@ -1324,11 +1324,11 @@ export function* read_sym_file(which_set) {
     cptr.st1o(gc, $instance_globals_c_chosen_symset_start, cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0));
     cptr.stI32o(gs, $instance_globals_s_symset_which_set, which_set);
     cptr.stI32o(gs, $instance_globals_s_symset_count, 0);
-    (yield* config_error_init(1, __sl67, 0));
+    (yield* config_error_init(1, __s_symbols, 0));
     (yield* parse_conf_file(fp, proc_symset_line));
     void fclose(fp);
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) && !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
-        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name), __sl68, __sl69, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)), (__sl70), -1))))
+        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name), __s_default_symbols, __s_sp_dash_us, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)), (__s_default), -1))))
             clear_symsetentry(which_set, 1);
         (yield* config_error_done());
         if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)) {
@@ -1338,7 +1338,7 @@ export function* read_sym_file(which_set) {
         return 1;
     }
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_end))
-        (yield* config_error_add(__sl71, cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) : __sl72));
+        (yield* config_error_add(__s_missing_finish_for_symset_s, cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) : __s_unknown));
     (yield* config_error_done());
     return 1;
 }
@@ -1347,14 +1347,14 @@ export function* read_sym_file(which_set) {
 export function* check_recordfile(dir) {
     let fq_record;
     let fd;
-    fq_record = fqname(__sl73, NHM.SCOREPREFIX, 0);
+    fq_record = fqname(__s_record, NHM.SCOREPREFIX, 0);
     fd = open(fq_record, 2, 0);
     if (fd >= 0) {
         void (yield* nhclose(fd));
     } else if ((fd = open(fq_record, 514, NHM.FCMASK)) >= 0) {
         void (yield* nhclose(fd));
     } else {
-        (yield* raw_printf(__sl74, fq_record));
+        (yield* raw_printf(__s_warning_cannot_write_scoreboard_file_s, fq_record));
         (yield* Y.icall(wait_synch()()));
     }
 }
@@ -1364,13 +1364,13 @@ export function* paniclog(type, reason) {
     let lfile;
     if (!cptr.ldI32o(program_state, $sinfo_in_paniclog)) {
         cptr.stI32o(program_state, $sinfo_in_paniclog, 1);
-        lfile = fopen_datafile(__sl75, __sl46, NHM.TROUBLEPREFIX);
+        lfile = fopen_datafile(__s_paniclog, __s_a, NHM.TROUBLEPREFIX);
         if (lfile) {
             let buf = new Uint8Array(256);
             let now = (yield* getnow());
             let uid = getuid() | 0;
             let playmode = schar((wizard() ? 68 : (discover() ? 88 : 45)));
-            void fprintf(lfile, __sl76, version_string(cptr.decay(buf), 256n), (yield* yyyymmdd(now)), (yield* hhmmss(now)), uid, playmode, type, reason);
+            void fprintf(lfile, __s_s_08ld_06ld_d_c_s_s, version_string(cptr.decay(buf), 256n), (yield* yyyymmdd(now)), (yield* hhmmss(now)), uid, playmode, type, reason);
             void fclose(lfile);
         }
         cptr.stI32o(program_state, $sinfo_in_paniclog, 0);
@@ -1386,10 +1386,10 @@ export function testinglog(filenm, type, reason) {
         return;
     void cptr.strcpy(cptr.decay(fnbuf), filenm);
     if (cptr.strchr(cptr.decay(fnbuf), 46) === null)
-        void cptr.strcat(cptr.decay(fnbuf), __sl77);
-    lfile = fopen_datafile(cptr.decay(fnbuf), __sl46, NHM.TROUBLEPREFIX);
+        void cptr.strcat(cptr.decay(fnbuf), __s_log);
+    lfile = fopen_datafile(cptr.decay(fnbuf), __s_a, NHM.TROUBLEPREFIX);
     if (lfile) {
-        void fprintf(lfile, __sl78, type, reason);
+        void fprintf(lfile, __s_s_s__2, type, reason);
         void fclose(lfile);
     }
     return;
@@ -1434,55 +1434,55 @@ export function* reveal_paths(code) {
     let nodumpreason;
     let buf = new Uint8Array(256);
     let filep;
-    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh))) ? cptr.ldPtr(gh) : __sl79;
+    let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh))) ? cptr.ldPtr(gh) : __s_nethack;
     let endp;
     let envp;
     let cwdbuf = new Uint8Array(1024);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    (yield* raw_printf(__sl80, (yield* s_suffix(gamename)), __sl81, cptr.decay(buf)));
-    filep = __sl82;
+    (yield* raw_printf(__s_s_s_s__2, (yield* s_suffix(gamename)), __s_system_configuration_file, cptr.decay(buf)));
+    filep = __s_sysconf;
     fqn = fqname(filep, NHM.SYSCONFPREFIX, 0);
     if (fqn) {
         set_configfile_name(fqn);
         filep = get_configfile();
     }
-    (yield* raw_printf(__sl83, filep));
+    (yield* raw_printf(__s_sp4_quot_pct_s_quot, filep));
     if (code == 1) {
-        (yield* raw_printf(__sl84, __sl81));
+        (yield* raw_printf(__s_note_the_s_above_is_missing_or, __s_system_configuration_file));
         skip_sysopt = 1;
     }
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     envp = getcwd(cptr.decay(cwdbuf), 1024n);
     if (envp) {
-        (yield* Y.icall(raw_print()(__sl85)));
-        (yield* raw_printf(__sl86, envp, __sl67));
+        (yield* Y.icall(raw_print()(__s_the_loadable_symbols_file)));
+        (yield* raw_printf(__s_s_s__3, envp, __s_symbols));
     }
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    (yield* raw_printf(__sl87, cptr.decay(buf)));
+    (yield* raw_printf(__s_basic_data_files_s_are_in_many_separate, cptr.decay(buf)));
     fqn = null;
-    nodumpreason = __sl88;
+    nodumpreason = __s_not_supported;
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    (yield* raw_printf(__sl89, cptr.decay(buf)));
+    (yield* raw_printf(__s_your_personal_configuration_file_s, cptr.decay(buf)));
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    if ((envp = nh_getenv(__sl63)) !== null) {
+    if ((envp = nh_getenv(__s_home)) !== null) {
         (yield* copynchars(cptr.decay(buf), envp, 254));
-        void cptr.strcat(cptr.decay(buf), __sl52);
+        void cptr.strcat(cptr.decay(buf), __s_slash);
     }
     endp = eos(cptr.decay(buf));
     (yield* copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
     if (envp) {
         if (access(cptr.decay(buf), 4) == -1) {
-            (yield* copynchars(endp, __sl90, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
+            (yield* copynchars(endp, __s_library_preferences_nethack_defaults, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
             if (access(cptr.decay(buf), 4) == -1) {
-                (yield* copynchars(eos(cptr.decay(buf)), __sl91, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
+                (yield* copynchars(eos(cptr.decay(buf)), __s_txt, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                 if (access(cptr.decay(buf), 4) == -1) {
                     (yield* copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                 }
             }
         }
     }
-    (yield* raw_printf(__sl83, cptr.decay(buf)));
-    (yield* Y.icall(raw_print()(__sl17)));
+    (yield* raw_printf(__s_sp4_quot_pct_s_quot, cptr.decay(buf)));
+    (yield* Y.icall(raw_print()(__s_empty)));
     (void (skip_sysopt));
     (void (nodumpreason));
 }
@@ -1505,13 +1505,13 @@ function choose_passage(passagecnt, oid) {
         } else {
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
-                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3456, __sl93), rn2(range)) : rn2(range)) < limit) {
+                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_files_c, 3456, __s_choose_passage), rn2(range)) : rn2(range)) < limit) {
                     cptr.st1o2(svc, idx++, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
         }
     }
-    idx = (rng_log_enabled() ? (rng_log_set_caller(__sl92, 3463, __sl93), rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count))) : rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count)));
+    idx = (rng_log_enabled() ? (rng_log_set_caller(__s_files_c, 3463, __s_choose_passage), rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count))) : rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count)));
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
     cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, cptr.ld1so2(svc, cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1), 1, $context_info_novel + $novel_tracking_pasg));
     return res;
@@ -1526,7 +1526,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
     let linect = 0;
     let passagecnt = 0;
     let targetpassage = 0;
-    let badtranslation = __sl94;
+    let badtranslation = __s_an_incomprehensible_foreign_translation;
     let matchedsection = 0;
     let matchedtitle = 0;
     let tribwin = -1;
@@ -1537,20 +1537,20 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
             cptr.st1(nowin_buf, 0);
         if (!tribsection || !tribtitle) {
             if (!nowin_buf)
-                (yield* pline(__sl95, badtranslation, tribtitle));
+                (yield* pline(__s_it_s_s_of_s, badtranslation, tribtitle));
             return grasped;
         }
         {
-            if ((yield* debugcore(__sl92, 1))) {
+            if ((yield* debugcore(__s_files_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(__sl96, tribsection, tribtitle, tribpassage));
+                (yield* pline(__s_read_tribute_s_s_d, tribsection, tribtitle, tribpassage));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
-        fp = fopen(__sl97, __sl21);
+        fp = fopen(__s_tribute, __s_r);
         if (!fp) {
             if (!nowin_buf)
-                (yield* You_feel(__sl98));
+                (yield* You_feel(__s_too_overwhelmed_to_continue));
             return grasped;
         }
         cptr.st1(cptr.decay(line), cptr.st1(cptr.decay(lastline), 0));
@@ -1559,11 +1559,11 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
             void strip_newline(cptr.decay(line));
             switch (cptr.ld1so(cptr.decay(line), 0, 1)) {
                 case 37:
-                if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __sl99, 8))) {
+                if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_section, 8))) {
                     let st = cptr.add(cptr.decay(line), 9, 1);
                     scope = 1;
                     matchedsection = schar((!(yield* strncmpi((st), (tribsection), -1)) ? 1 : 0));
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __sl100, 6))) {
+                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_title, 6))) {
                     let st = cptr.add(cptr.decay(line), 7, 1);
                     let p1;
                     let p2;
@@ -1582,7 +1582,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                             }
                         }
                     }
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __sl101, 8))) {
+                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_passage, 8))) {
                     let passagenum = 0;
                     let st = cptr.add(cptr.decay(line), 9, 1);
                     (yield* mungspaces(st));
@@ -1598,7 +1598,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                             }
                         }
                     }
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __sl102, 2))) {
+                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_e_sp, 2))) {
                     if (foundpassage)
                         break __lbl_cleanup;
                     if (scope == 2)
@@ -1609,9 +1609,9 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                         --scope;
                 } else {
                     {
-                        if ((yield* debugcore(__sl92, 1))) {
+                        if ((yield* debugcore(__s_files_c, 1))) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                            (yield* pline(__sl103, linect));
+                            (yield* pline(__s_tribute_file_error_bad_command_line_d, linect));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
                     }
@@ -1644,16 +1644,16 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                 if (cptr.strchr(cptr.decay(lastline), 91))
                     (yield* mungspaces(cptr.decay(lastline)));
                 else
-                    void cptr.sprintf(cptr.decay(lastline), __sl104, tribtitle);
+                    void cptr.sprintf(cptr.decay(lastline), __s_s_by_terry_pratchett, tribtitle);
                 if ((p = cptr.strrchr(cptr.decay(lastline), 93)) !== null)
-                    void cptr.sprintf(p, __sl105, targetpassage);
+                    void cptr.sprintf(p, __s_passage_d, targetpassage);
                 (yield* Y.icall(putmsghistory()(cptr.decay(lastline), 0)));
                 grasped = 1;
             }
             (yield* Y.icall(destroy_nhwindow()(tribwin)));
         }
         if (!grasped)
-            (yield* pline(__sl106, badtranslation, tribtitle));
+            (yield* pline(__s_it_seems_to_be_s_of_s, badtranslation, tribtitle));
     }
     return grasped;
 }
@@ -1661,7 +1661,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
 /** C ref: files.c:3648 — @param {CPtr<char>} buf @param {CInt} bufsz @returns {CInt} */
 export function* Death_quote(buf, bufsz) {
     let death_oid = 1;
-    return (yield* read_tribute(__sl107, __sl108, 0, buf, bufsz, death_oid));
+    return (yield* read_tribute(__s_death, __s_death_quotes, 0, buf, bufsz, death_oid));
 }
 
 /** C ref: files.c:3667 — @param {CLongLong} ll_type @param {CPtr<char>} str */
@@ -1672,18 +1672,18 @@ export function* livelog_add(ll_type, str) {
     let aindx;
     if (!(ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)))
         return;
-    if ((yield* lock_file(__sl109, NHM.SCOREPREFIX, 10))) {
-        if (!(livelogfile = fopen_datafile(__sl109, __sl46, NHM.SCOREPREFIX))) {
-            (yield* pline(__sl110));
-            (yield* unlock_file(__sl109));
+    if ((yield* lock_file(__s_livelog, NHM.SCOREPREFIX, 10))) {
+        if (!(livelogfile = fopen_datafile(__s_livelog, __s_a, NHM.SCOREPREFIX))) {
+            (yield* pline(__s_cannot_open_live_log_file));
+            (yield* unlock_file(__s_livelog));
             return;
         }
         now = (yield* getnow());
         gindx = cptr.ld1so(flags, $flag_female) ? 1 : 0;
         aindx = (1 - cptr.ld1so(u, $you_ualign)) | 0;
-        void fprintf(livelogfile, __sl111, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, 48, $Gender_filecode), cptr.ldPtro2(aligns, aindx, 32, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
+        void fprintf(livelogfile, __s_lltype_ld_name_s_role_s_race_s_gender_s, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, 48, $Gender_filecode), cptr.ldPtro2(aligns, aindx, 32, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
-        (yield* unlock_file(__sl109));
+        (yield* unlock_file(__s_livelog));
     }
 }
 

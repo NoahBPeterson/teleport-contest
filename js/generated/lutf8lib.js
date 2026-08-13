@@ -14,22 +14,22 @@ import { lua_createtable, lua_gettop, lua_pushcclosure, lua_pushfstring, lua_pus
 const $luaL_Reg_func = FLD.luaL_Reg_func;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("initial position out of bounds");
-const __sl1 = cptr.lit("final position out of bounds");
-const __sl2 = cptr.lit("out of bounds");
-const __sl3 = cptr.lit("string slice too long");
-const __sl4 = cptr.lit("invalid UTF-8 code");
-const __sl5 = cptr.lit("value out of range");
-const __sl6 = cptr.lit("%U");
-const __sl7 = cptr.lit("position out of bounds");
-const __sl8 = cptr.lit("initial position is a continuation byte");
-const __sl9 = cptr.lit("offset");
-const __sl10 = cptr.lit("codepoint");
-const __sl11 = cptr.lit("char");
-const __sl12 = cptr.lit("len");
-const __sl13 = cptr.lit("codes");
-const __sl14 = cptr.lit("charpattern");
-const __sl15 = cptr.lit("[\x00-\x7f\xc2-\xfd][\x80-\xbf]*");
+const __s_initial_position_out_of_bounds = cptr.lit("initial position out of bounds");
+const __s_final_position_out_of_bounds = cptr.lit("final position out of bounds");
+const __s_out_of_bounds = cptr.lit("out of bounds");
+const __s_string_slice_too_long = cptr.lit("string slice too long");
+const __s_invalid_utf_8_code = cptr.lit("invalid UTF-8 code");
+const __s_value_out_of_range = cptr.lit("value out of range");
+const __s_pct_u = cptr.lit("%U");
+const __s_position_out_of_bounds = cptr.lit("position out of bounds");
+const __s_initial_position_is_a_continuation_byte = cptr.lit("initial position is a continuation byte");
+const __s_offset = cptr.lit("offset");
+const __s_codepoint = cptr.lit("codepoint");
+const __s_char = cptr.lit("char");
+const __s_len = cptr.lit("len");
+const __s_codes = cptr.lit("codes");
+const __s_charpattern = cptr.lit("charpattern");
+const __s_lbrack_nul_dash_x7f_xc2_dash_xfd_rbrack = cptr.lit("[\x00-\x7f\xc2-\xfd][\x80-\xbf]*");
 
 /** C ref: lutf8lib.c:35 — typedef utfint (type alias only, no runtime output) */
 
@@ -87,8 +87,8 @@ function utflen(L) {
     let posi = u_posrelat(luaL_optinteger(L, 2, 1n), len.v);
     let posj = u_posrelat(luaL_optinteger(L, 3, -1n), len.v);
     let lax = lua_toboolean(L, 4);
-    (void ((__builtin_expect(BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 2, (__sl0)) ? 1 : 0));
-    (void ((__builtin_expect(BigInt(((--posj < BigInt.asIntN(64, len.v)) != 0)), 1n)) || luaL_argerror(L, 3, (__sl1)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 2, (__s_initial_position_out_of_bounds)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((--posj < BigInt.asIntN(64, len.v)) != 0)), 1n)) || luaL_argerror(L, 3, (__s_final_position_out_of_bounds)) ? 1 : 0));
     while (posi <= posj) {
         let s1 = utf8_decode(cptr.add(s, posi), null, !lax);
         if (cptr.eq(s1, (null))) {
@@ -112,21 +112,21 @@ function codepoint(L) {
     let lax = lua_toboolean(L, 4);
     let n;
     let se;
-    (void ((__builtin_expect(BigInt(((posi >= 1n) != 0)), 1n)) || luaL_argerror(L, 2, (__sl2)) ? 1 : 0));
-    (void ((__builtin_expect(BigInt(((pose <= BigInt.asIntN(64, len.v)) != 0)), 1n)) || luaL_argerror(L, 3, (__sl2)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((posi >= 1n) != 0)), 1n)) || luaL_argerror(L, 2, (__s_out_of_bounds)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((pose <= BigInt.asIntN(64, len.v)) != 0)), 1n)) || luaL_argerror(L, 3, (__s_out_of_bounds)) ? 1 : 0));
     if (posi > pose)
         return 0;
     if (BigInt.asIntN(64, pose - posi) >= 2147483647n)
-        return luaL_error(L, __sl3);
+        return luaL_error(L, __s_string_slice_too_long);
     n = (Number(BigInt.asIntN(32, (BigInt.asIntN(64, pose - posi)))) + 1) | 0;
-    luaL_checkstack(L, n, __sl3);
+    luaL_checkstack(L, n, __s_string_slice_too_long);
     n = 0;
     se = cptr.add(s, pose);
     for (s = cptr.add(s, BigInt.asIntN(64, posi - 1n)); cptr.cmp(s, se) < 0; ) {
         let code = cptr.box(0);
         s = utf8_decode(s, code, !lax);
         if (cptr.eq(s, (null)))
-            return luaL_error(L, __sl4);
+            return luaL_error(L, __s_invalid_utf_8_code);
         lua_pushinteger(L, BigInt(code.v >>> 0));
         n++;
     }
@@ -136,8 +136,8 @@ function codepoint(L) {
 /** C ref: lutf8lib.c:155 — @param {CPtr<lua_State>} L @param {CInt} arg */
 function pushutfchar(L, arg) {
     let code = BigInt.asUintN(64, luaL_checkinteger(L, arg));
-    (void ((__builtin_expect(BigInt(((code <= 2147483647n) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl5)) ? 1 : 0));
-    lua_pushfstring(L, __sl6, BigInt.asIntN(64, code));
+    (void ((__builtin_expect(BigInt(((code <= 2147483647n) != 0)), 1n)) || luaL_argerror(L, (arg), (__s_value_out_of_range)) ? 1 : 0));
+    lua_pushfstring(L, __s_pct_u, BigInt.asIntN(64, code));
 }
 
 /** C ref: lutf8lib.c:165 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -165,13 +165,13 @@ function byteoffset(L) {
     let n = luaL_checkinteger(L, 2);
     let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : BigInt.asUintN(64, len.v + 1n)));
     posi = u_posrelat(luaL_optinteger(L, 3, posi), len.v);
-    (void ((__builtin_expect(BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 3, (__sl7)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 3, (__s_position_out_of_bounds)) ? 1 : 0));
     if (n == 0n) {
         while (posi > 0n && (((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128))
             posi--;
     } else {
         if ((((cptr.ld1s((cptr.add(s, posi)))) & 192) == 128))
-            return luaL_error(L, __sl8);
+            return luaL_error(L, __s_initial_position_is_a_continuation_byte);
         if (n < 0n) {
             while (n < 0n && posi > 0n) {
                 do {
@@ -211,7 +211,7 @@ function iter_aux(L, strict) {
         let code = cptr.box(0);
         let next = utf8_decode(cptr.add(s, n), code, strict);
         if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128))
-            return luaL_error(L, __sl4);
+            return luaL_error(L, __s_invalid_utf_8_code);
         lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, n + 1n)));
         lua_pushinteger(L, BigInt(code.v >>> 0));
         return 2;
@@ -232,7 +232,7 @@ function iter_auxlax(L) {
 function iter_codes(L) {
     let lax = lua_toboolean(L, 2);
     let s = (luaL_checklstring(L, 1, null));
-    (void ((__builtin_expect(BigInt(((!(((cptr.ld1s((s))) & 192) == 128)) != 0)), 1n)) || luaL_argerror(L, 1, (__sl4)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((!(((cptr.ld1s((s))) & 192) == 128)) != 0)), 1n)) || luaL_argerror(L, 1, (__s_invalid_utf_8_code)) ? 1 : 0));
     lua_pushcclosure(L, (lax ? iter_auxlax : iter_auxstrict), 0);
     lua_pushvalue(L, 1);
     lua_pushinteger(L, 0n);
@@ -241,17 +241,17 @@ function iter_codes(L) {
 
 /** C ref: lutf8lib.c:273 — luaL_Reg[7] */
 const funcs = cptr.alloc(7 * 16);
-cptr.stPtro(funcs, 0, __sl9);
+cptr.stPtro(funcs, 0, __s_offset);
 cptr.stPtro(funcs, 0 + $luaL_Reg_func, byteoffset);
-cptr.stPtro(funcs, 16, __sl10);
+cptr.stPtro(funcs, 16, __s_codepoint);
 cptr.stPtro(funcs, 16 + $luaL_Reg_func, codepoint);
-cptr.stPtro(funcs, 32, __sl11);
+cptr.stPtro(funcs, 32, __s_char);
 cptr.stPtro(funcs, 32 + $luaL_Reg_func, utfchar);
-cptr.stPtro(funcs, 48, __sl12);
+cptr.stPtro(funcs, 48, __s_len);
 cptr.stPtro(funcs, 48 + $luaL_Reg_func, utflen);
-cptr.stPtro(funcs, 64, __sl13);
+cptr.stPtro(funcs, 64, __s_codes);
 cptr.stPtro(funcs, 64 + $luaL_Reg_func, iter_codes);
-cptr.stPtro(funcs, 80, __sl14);
+cptr.stPtro(funcs, 80, __s_charpattern);
 cptr.stPtro(funcs, 80 + $luaL_Reg_func, null);
 cptr.stPtro(funcs, 96, null);
 cptr.stPtro(funcs, 96 + $luaL_Reg_func, null);
@@ -259,8 +259,8 @@ cptr.stPtro(funcs, 96 + $luaL_Reg_func, null);
 /** C ref: lutf8lib.c:285 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_utf8(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 112n / 16n - 1n)))), luaL_setfuncs(L, funcs, 0));
-    lua_pushlstring(L, __sl15, BigInt.asUintN(64, 15n / 1n - 1n));
-    lua_setfield(L, -2, __sl14);
+    lua_pushlstring(L, __s_lbrack_nul_dash_x7f_xc2_dash_xfd_rbrack, BigInt.asUintN(64, 15n / 1n - 1n));
+    lua_setfield(L, -2, __s_charpattern);
     return 1;
 }
 

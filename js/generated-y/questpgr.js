@@ -68,59 +68,59 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
     $you_ualignbase = FLD.you_ualignbase, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("quest_info(%d)");
-const __sl1 = cptr.lit("%s%s");
-const __sl2 = cptr.lit("");
-const __sl3 = cptr.lit("the ");
-const __sl4 = cptr.lit("killed_nemesis");
-const __sl5 = cptr.lit("\n");
-const __sl6 = cptr.lit(" ");
-const __sl7 = cptr.lit("noxious");
-const __sl8 = cptr.lit("poisonous");
-const __sl9 = cptr.lit("toxic");
-const __sl10 = cptr.lit(" gas");
-const __sl11 = cptr.lit(" fumes");
-const __sl12 = cptr.lit("Eyes ");
-const __sl13 = cptr.lit("they");
-const __sl14 = cptr.lit("them");
-const __sl15 = cptr.lit("their");
-const __sl16 = cptr.lit("?");
-const __sl17 = cptr.lit("sister");
-const __sl18 = cptr.lit("brother");
-const __sl19 = cptr.lit("daughter");
-const __sl20 = cptr.lit("son");
-const __sl21 = cptr.lit(" of ");
-const __sl22 = cptr.lit("chaotic");
-const __sl23 = cptr.lit("neutral");
-const __sl24 = cptr.lit("lawful");
-const __sl25 = cptr.lit("sense");
-const __sl26 = cptr.lit("see");
-const __sl27 = cptr.lit("%");
-const __sl28 = cptr.lit("dlno");
-const __sl29 = cptr.lit("convert_line: overflow");
-const __sl30 = cptr.lit("%s");
-const __sl31 = cptr.lit("com_pager: nhl_init() failed");
-const __sl32 = cptr.lit("quest.lua");
-const __sl33 = cptr.lit("com_pager: %s not found.");
-const __sl34 = cptr.lit("questtext");
-const __sl35 = cptr.lit("com_pager: questtext in %s is not a lua table");
-const __sl36 = cptr.lit("com_pager: questtext[%s] in %s is not a lua table");
-const __sl37 = cptr.lit("msg_fallbacks");
-const __sl38 = cptr.lit("com_pager: questtext[%s][%s] in %s is not a lua table");
-const __sl39 = cptr.lit("com_pager: questtext[%s][%s] and [][%s] in %s are not lua tables");
-const __sl40 = cptr.lit("text");
-const __sl41 = cptr.lit("synopsis");
-const __sl42 = cptr.lit("output");
-const __sl43 = cptr.lit("default");
-const __sl44 = cptr.lit("com_pager: questtext[%s][%s] in %s is not an array of strings");
-const __sl45 = cptr.lit("questpgr.c");
-const __sl46 = cptr.lit("com_pager_core");
-const __sl47 = cptr.lit("[%.*s]");
-const __sl48 = cptr.lit("pline");
-const __sl49 = cptr.lit("window");
-const __sl50 = cptr.lit("menu");
-const __sl51 = cptr.lit("common");
-const __sl52 = cptr.lit("qt_montype");
+const __s_quest_info_d = cptr.lit("quest_info(%d)");
+const __s_s_s = cptr.lit("%s%s");
+const __s_empty = cptr.lit("");
+const __s_the = cptr.lit("the ");
+const __s_killed_nemesis = cptr.lit("killed_nemesis");
+const __s_nl = cptr.lit("\n");
+const __s_sp = cptr.lit(" ");
+const __s_noxious = cptr.lit("noxious");
+const __s_poisonous = cptr.lit("poisonous");
+const __s_toxic = cptr.lit("toxic");
+const __s_gas = cptr.lit(" gas");
+const __s_fumes = cptr.lit(" fumes");
+const __s_eyes = cptr.lit("Eyes ");
+const __s_they = cptr.lit("they");
+const __s_them = cptr.lit("them");
+const __s_their = cptr.lit("their");
+const __s_query = cptr.lit("?");
+const __s_sister = cptr.lit("sister");
+const __s_brother = cptr.lit("brother");
+const __s_daughter = cptr.lit("daughter");
+const __s_son = cptr.lit("son");
+const __s_of = cptr.lit(" of ");
+const __s_chaotic = cptr.lit("chaotic");
+const __s_neutral = cptr.lit("neutral");
+const __s_lawful = cptr.lit("lawful");
+const __s_sense = cptr.lit("sense");
+const __s_see = cptr.lit("see");
+const __s_pct = cptr.lit("%");
+const __s_dlno = cptr.lit("dlno");
+const __s_convert_line_overflow = cptr.lit("convert_line: overflow");
+const __s_pct_s = cptr.lit("%s");
+const __s_com_pager_nhl_init_failed = cptr.lit("com_pager: nhl_init() failed");
+const __s_quest_lua = cptr.lit("quest.lua");
+const __s_com_pager_s_not_found = cptr.lit("com_pager: %s not found.");
+const __s_questtext = cptr.lit("questtext");
+const __s_com_pager_questtext_in_s_is_not_a_lua = cptr.lit("com_pager: questtext in %s is not a lua table");
+const __s_com_pager_questtext_s_in_s_is_not_a_lua = cptr.lit("com_pager: questtext[%s] in %s is not a lua table");
+const __s_msg_fallbacks = cptr.lit("msg_fallbacks");
+const __s_com_pager_questtext_s_s_in_s_is_not_a = cptr.lit("com_pager: questtext[%s][%s] in %s is not a lua table");
+const __s_com_pager_questtext_s_s_and_s_in_s_are = cptr.lit("com_pager: questtext[%s][%s] and [][%s] in %s are not lua tables");
+const __s_text = cptr.lit("text");
+const __s_synopsis = cptr.lit("synopsis");
+const __s_output = cptr.lit("output");
+const __s_default = cptr.lit("default");
+const __s_com_pager_questtext_s_s_in_s_is_not_an = cptr.lit("com_pager: questtext[%s][%s] in %s is not an array of strings");
+const __s_questpgr_c = cptr.lit("questpgr.c");
+const __s_com_pager_core = cptr.lit("com_pager_core");
+const __s_lbrack_pct_dot_star_s_rbrack = cptr.lit("[%.*s]");
+const __s_pline = cptr.lit("pline");
+const __s_window = cptr.lit("window");
+const __s_menu = cptr.lit("menu");
+const __s_common = cptr.lit("common");
+const __s_qt_montype = cptr.lit("qt_montype");
 
 /** C ref: questpgr.c:31 — @param {CInt} typ @returns {CInt} */
 export function* quest_info(typ) {
@@ -134,7 +134,7 @@ export function* quest_info(typ) {
         case NHC.MS_GUARDIAN:
         return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
         default:
-        (yield* impossible(__sl0, typ));
+        (yield* impossible(__s_quest_info_d, typ));
     }
     return 0;
 }
@@ -142,7 +142,7 @@ export function* quest_info(typ) {
 /** C ref: questpgr.c:50 @returns {CPtr<char>} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
@@ -202,7 +202,7 @@ export function find_quest_artifact(whichchains) {
 /** C ref: questpgr.c:124 @returns {CPtr<char>} */
 function neminame() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
@@ -222,11 +222,11 @@ export function* stinky_nemesis(mon) {
     let mesg = cptr.box(null);
     let res = 0;
     (void (mon));
-    void (yield* com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), __sl4, 0, mesg));
+    void (yield* com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), __s_killed_nemesis, 0, mesg));
     if (mesg.v) {
         let p;
-        void (yield* strNsubst(mesg.v, __sl5, __sl6, 0));
-        if (((p = (yield* strstri(mesg.v, __sl7))) !== null || (p = (yield* strstri(mesg.v, __sl8))) !== null || (p = (yield* strstri(mesg.v, __sl9))) !== null) && ((yield* strstri(p, __sl10)) || (yield* strstri(p, __sl11))))
+        void (yield* strNsubst(mesg.v, __s_nl, __s_sp, 0));
+        if (((p = (yield* strstri(mesg.v, __s_noxious))) !== null || (p = (yield* strstri(mesg.v, __s_poisonous))) !== null || (p = (yield* strstri(mesg.v, __s_toxic))) !== null) && ((yield* strstri(p, __s_gas)) || (yield* strstri(p, __s_fumes))))
             res = 1;
         cptr.free(mesg.v);
     }
@@ -238,11 +238,11 @@ function* qtext_pronoun(who, which) {
     let pnoun;
     let godgend;
     let lwhich = lowc(which);
-    if (who == 111 && ((yield* strstri(cptr.add(gc, $instance_globals_c_cvt_buf), __sl12)) || (yield* strncmpi((cptr.add(gc, $instance_globals_c_cvt_buf)), ((yield* makesingular(cptr.add(gc, $instance_globals_c_cvt_buf)))), -1)))) {
-        pnoun = (lwhich == 104) ? __sl13 : ((lwhich == 105) ? __sl14 : ((lwhich == 106) ? __sl15 : __sl16));
+    if (who == 111 && ((yield* strstri(cptr.add(gc, $instance_globals_c_cvt_buf), __s_eyes)) || (yield* strncmpi((cptr.add(gc, $instance_globals_c_cvt_buf)), ((yield* makesingular(cptr.add(gc, $instance_globals_c_cvt_buf)))), -1)))) {
+        pnoun = (lwhich == 104) ? __s_they : ((lwhich == 105) ? __s_them : ((lwhich == 106) ? __s_their : __s_query));
     } else {
         godgend = (who == 100) ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));
-        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, $Gender_his) : __sl16));
+        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, $Gender_his) : __s_query));
     }
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), pnoun);
     if (lwhich != which)
@@ -267,10 +267,10 @@ function* convert_arg(c) {
         str = rank_of(NHM.MIN_QUEST_LEVEL, Role_switch(), cptr.ld1so(flags, $flag_female));
         break;
         case 115:
-        str = (cptr.ld1so(flags, $flag_female)) ? __sl17 : __sl18;
+        str = (cptr.ld1so(flags, $flag_female)) ? __s_sister : __s_brother;
         break;
         case 83:
-        str = (cptr.ld1so(flags, $flag_female)) ? __sl19 : __sl20;
+        str = (cptr.ld1so(flags, $flag_female)) ? __s_daughter : __s_son;
         break;
         case 108:
         str = ldrname();
@@ -282,7 +282,7 @@ function* convert_arg(c) {
         case 111:
         str = (yield* the(artiname(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti))));
         if (c == 79) {
-            let p = (yield* strstri(str, __sl21));
+            let p = (yield* strstri(str, __s_of));
             if (p)
                 cptr.st1(p, 0);
         }
@@ -312,25 +312,25 @@ function* convert_arg(c) {
         str = (yield* align_gname(NHM.A_LAWFUL));
         break;
         case 67:
-        str = __sl22;
+        str = __s_chaotic;
         break;
         case 78:
-        str = __sl23;
+        str = __s_neutral;
         break;
         case 76:
-        str = __sl24;
+        str = __s_lawful;
         break;
         case 120:
-        str = Blind() ? __sl25 : __sl26;
+        str = Blind() ? __s_sense : __s_see;
         break;
         case 90:
         str = cptr.add(svd, 0, 112);
         break;
         case 37:
-        str = __sl27;
+        str = __s_pct;
         break;
         default:
-        str = __sl2;
+        str = __s_empty;
         break;
     }
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), str);
@@ -369,7 +369,7 @@ function* convert_line(in_line, out_line) {
                     case 73:
                     case 106:
                     case 74:
-                    if (cptr.strchr(__sl28, lowc(cptr.ld1s((cptr.add(c, -(1)))))))
+                    if (cptr.strchr(__s_dlno, lowc(cptr.ld1s((cptr.add(c, -(1)))))))
                         (yield* qtext_pronoun(cptr.ld1s((cptr.add(c, -(1)))), cptr.ld1s(c)));
                     else
                         c = cptr.add(c, -1);
@@ -389,7 +389,7 @@ function* convert_line(in_line, out_line) {
                     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), (yield* s_suffix(cptr.add(gc, $instance_globals_c_cvt_buf))));
                     break;
                     case 116:
-                    if (!(yield* strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __sl3, 4))) {
+                    if (!(yield* strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __s_the, 4))) {
                         void cptr.strcat(cc, cptr.add(cptr.add(gc, $instance_globals_c_cvt_buf), 4, 1));
                         cc = cptr.add(cc, cptr.strlen(cc));
                         continue;
@@ -410,7 +410,7 @@ function* convert_line(in_line, out_line) {
             break;
         }
         if (cptr.cmp(cc, cptr.add(out_line, 255)) > 0)
-            (yield* panic(__sl29));
+            (yield* panic(__s_convert_line_overflow));
     }
     cptr.st1(cc, 0);
     return;
@@ -426,7 +426,7 @@ function* deliver_by_pline(str) {
         (yield* copynchars(cptr.decay(in_line), msgp, 255));
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
         (yield* convert_line(cptr.decay(in_line), cptr.decay(out_line)));
-        (yield* pline(__sl30, cptr.decay(out_line)));
+        (yield* pline(__s_pct_s, cptr.decay(out_line)));
     }
 }
 
@@ -455,11 +455,11 @@ function skip_pager(common) {
 }
 
 const __static_com_pager_core_howtoput = cptr.alloc(6 * 8);
-cptr.stPtro(__static_com_pager_core_howtoput, 0, __sl48);
-cptr.stPtro(__static_com_pager_core_howtoput, 8, __sl49);
-cptr.stPtro(__static_com_pager_core_howtoput, 16, __sl40);
-cptr.stPtro(__static_com_pager_core_howtoput, 24, __sl50);
-cptr.stPtro(__static_com_pager_core_howtoput, 32, __sl43);
+cptr.stPtro(__static_com_pager_core_howtoput, 0, __s_pline);
+cptr.stPtro(__static_com_pager_core_howtoput, 8, __s_window);
+cptr.stPtro(__static_com_pager_core_howtoput, 16, __s_text);
+cptr.stPtro(__static_com_pager_core_howtoput, 24, __s_menu);
+cptr.stPtro(__static_com_pager_core_howtoput, 32, __s_default);
 cptr.stPtro(__static_com_pager_core_howtoput, 40, null); /** C ref: questpgr.c:474 — char *[6] (function-static) */
 const __static_com_pager_core_howtoput2i = cptr.alloc(6 * 4);
 cptr.stI32o(__static_com_pager_core_howtoput2i, 0, 1);
@@ -483,7 +483,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
     L = (yield* nhl_init(sbi));
     if (!L) {
         if (showerror)
-            (yield* impossible(__sl31));
+            (yield* impossible(__s_com_pager_nhl_init_failed));
         {
             if (text)
                 cptr.free(text);
@@ -495,9 +495,9 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             return res;
         }
     }
-    if (!(yield* nhl_loadlua(L, __sl32))) {
+    if (!(yield* nhl_loadlua(L, __s_quest_lua))) {
         if (showerror)
-            (yield* impossible(__sl33, __sl32));
+            (yield* impossible(__s_com_pager_s_not_found, __s_quest_lua));
         {
             if (text)
                 cptr.free(text);
@@ -510,10 +510,10 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
         }
     }
     (yield* lua_settop(L, 0));
-    (yield* lua_getglobal(L, __sl34));
+    (yield* lua_getglobal(L, __s_questtext));
     if (!(lua_type(L, -1) == 5)) {
         if (showerror)
-            (yield* impossible(__sl35, __sl32));
+            (yield* impossible(__s_com_pager_questtext_in_s_is_not_a_lua, __s_quest_lua));
         {
             if (text)
                 cptr.free(text);
@@ -528,7 +528,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
     (yield* lua_getfield(L, -1, section));
     if (!(lua_type(L, -1) == 5)) {
         if (showerror)
-            (yield* impossible(__sl36, section, __sl32));
+            (yield* impossible(__s_com_pager_questtext_s_in_s_is_not_a_lua, section, __s_quest_lua));
         {
             if (text)
                 cptr.free(text);
@@ -544,7 +544,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
         (yield* lua_getfield(L, -1, fallback_msgid ? fallback_msgid : msgid));
         if (!(lua_type(L, -1) == 5)) {
             if (!fallback_msgid) {
-                (yield* lua_getfield(L, -3, __sl37));
+                (yield* lua_getfield(L, -3, __s_msg_fallbacks));
                 if ((lua_type(L, -1) == 5)) {
                     fallback_msgid = (yield* get_table_str_opt(L, msgid, null));
                     (yield* lua_settop(L, -3));
@@ -554,9 +554,9 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             }
             if (showerror) {
                 if (!fallback_msgid)
-                    (yield* impossible(__sl38, section, msgid, __sl32));
+                    (yield* impossible(__s_com_pager_questtext_s_s_in_s_is_not_a, section, msgid, __s_quest_lua));
                 else
-                    (yield* impossible(__sl39, section, msgid, fallback_msgid, __sl32));
+                    (yield* impossible(__s_com_pager_questtext_s_s_and_s_in_s_are, section, msgid, fallback_msgid, __s_quest_lua));
             }
             {
                 if (text)
@@ -569,7 +569,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                 return res;
             }
         }
-        text = (yield* get_table_str_opt(L, __sl40, null));
+        text = (yield* get_table_str_opt(L, __s_text, null));
         if (rawtext) {
             cptr.stPtr(rawtext, (yield* dupstr(text)));
             res = 1;
@@ -584,8 +584,8 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                 return res;
             }
         }
-        synopsis = (yield* get_table_str_opt(L, __sl41, null));
-        output = cptr.ldI32o(__static_com_pager_core_howtoput2i, (yield* get_table_option(L, __sl42, __sl43, __static_com_pager_core_howtoput)), 4);
+        synopsis = (yield* get_table_str_opt(L, __s_synopsis, null));
+        output = cptr.ldI32o(__static_com_pager_core_howtoput2i, (yield* get_table_option(L, __s_output, __s_default, __static_com_pager_core_howtoput)), 4);
         if (!text) {
             let nelems;
             (yield* lua_len(L, -1));
@@ -593,7 +593,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             (yield* lua_settop(L, -2));
             if (nelems < 2) {
                 if (showerror)
-                    (yield* impossible(__sl44, section, fallback_msgid ? fallback_msgid : msgid, __sl32));
+                    (yield* impossible(__s_com_pager_questtext_s_s_in_s_is_not_an, section, fallback_msgid ? fallback_msgid : msgid, __s_quest_lua));
                 {
                     if (text)
                         cptr.free(text);
@@ -605,7 +605,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                     return res;
                 }
             }
-            nelems = ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 566, __sl46), rn2(nelems)) : rn2(nelems)) + 1) | 0;
+            nelems = ((rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 566, __s_com_pager_core), rn2(nelems)) : rn2(nelems)) + 1) | 0;
             (yield* lua_pushinteger(L, BigInt(nelems)));
             (yield* lua_gettable(L, -2));
             text = (yield* dupstr(((yield* luaL_checklstring(L, -1, null)))));
@@ -614,8 +614,8 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
             output = 2;
             if (!synopsis) {
                 let tmpbuf = new Uint8Array(256);
-                void cptr.sprintf(cptr.decay(tmpbuf), __sl47, 253, text);
-                void (yield* strNsubst(cptr.decay(tmpbuf), __sl5, __sl6, 0));
+                void cptr.sprintf(cptr.decay(tmpbuf), __s_lbrack_pct_dot_star_s_rbrack, 253, text);
+                void (yield* strNsubst(cptr.decay(tmpbuf), __s_nl, __s_sp, 0));
                 synopsis = (yield* dupstr(cptr.decay(tmpbuf)));
             }
         }
@@ -644,26 +644,26 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
 
 /** C ref: questpgr.c:624 — @param {CPtr<char>} msgid */
 export function* com_pager(msgid) {
-    void (yield* com_pager_core(__sl51, msgid, 1, null));
+    void (yield* com_pager_core(__s_common, msgid, 1, null));
 }
 
 /** C ref: questpgr.c:630 — @param {CPtr<char>} msgid */
 export function* qt_pager(msgid) {
     if (!(yield* com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), msgid, 0, null)))
-        void (yield* com_pager_core(__sl51, msgid, 1, null));
+        void (yield* com_pager_core(__s_common, msgid, 1, null));
 }
 
 /** C ref: questpgr.c:637 @returns {CPtr<struct permonst>} */
 export function* qt_montype() {
     let qpm;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {
+    if ((rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 641, __s_qt_montype), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
-        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 643, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 643, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
             return cptr.add(mons, qpm, 96);
         return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy1sym), 0));
     }
     qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy2num);
-    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__sl45, 648, __sl52), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 648, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         return cptr.add(mons, qpm, 96);
     return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0));
 }

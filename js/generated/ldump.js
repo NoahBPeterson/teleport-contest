@@ -27,8 +27,8 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $DumpState_data = FLD.DumpState_
     $Upvaldesc_instack = FLD.Upvaldesc_instack, $Upvaldesc_kind = FLD.Upvaldesc_kind;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("\x1bLua");
-const __sl1 = cptr.lit("\x19\x93\r\n\x1a\n");
+const __s_lua = cptr.lit("\x1bLua");
+const __s_x19_x93_cr_nl_x1a_nl = cptr.lit("\x19\x93\r\n\x1a\n");
 
 /** C ref: ldump.c:23 — struct undefined {  } (memory model v0.5) */
 
@@ -189,10 +189,10 @@ function dumpFunction(D, f, psource) {
 
 /** C ref: ldump.c:201 — @param {CPtr<DumpState>} D */
 function dumpHeader(D) {
-    dumpBlock(D, __sl0, 4n);
+    dumpBlock(D, __s_lua, 4n);
     dumpByte(D, 84);
     dumpByte(D, 0);
-    dumpBlock(D, __sl1, 6n);
+    dumpBlock(D, __s_x19_x93_cr_nl_x1a_nl, 6n);
     dumpByte(D, 4);
     dumpByte(D, 8);
     dumpByte(D, 8);

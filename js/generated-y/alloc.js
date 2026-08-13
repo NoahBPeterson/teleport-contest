@@ -11,11 +11,11 @@ import * as cptr from '../cptr.js';
 import { panic } from './end.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("Memory allocation failure; cannot get %u bytes");
-const __sl1 = cptr.lit("Memory allocation failure; cannot extend to %u bytes");
-const __sl2 = cptr.lit("%p");
-const __sl3 = cptr.lit("dupstr: string length overflow");
-const __sl4 = cptr.lit("Overflow at %s:%d");
+const __s_memory_allocation_failure_cannot_get_u = cptr.lit("Memory allocation failure; cannot get %u bytes");
+const __s_memory_allocation_failure_cannot_extend = cptr.lit("Memory allocation failure; cannot extend to %u bytes");
+const __s_pct_p = cptr.lit("%p");
+const __s_dupstr_string_length_overflow = cptr.lit("dupstr: string length overflow");
+const __s_overflow_at_s_d = cptr.lit("Overflow at %s:%d");
 
 /** C ref: alloc.c:68 — @param {CUInt} lth @returns {CPtr<long>} */
 export function* alloc(lth) {
@@ -26,7 +26,7 @@ export function* alloc(lth) {
     }
     ptr = cptr.malloc(BigInt(lth >>> 0));
     if (!ptr)
-        (yield* panic(__sl0, lth));
+        (yield* panic(__s_memory_allocation_failure_cannot_get_u, lth));
     return ptr;
 }
 
@@ -39,7 +39,7 @@ export function* re_alloc(oldptr, newlth) {
     }
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
     if (newlth && !newptr)
-        (yield* panic(__sl1, newlth));
+        (yield* panic(__s_memory_allocation_failure_cannot_extend, newlth));
     return newptr;
 }
 
@@ -55,7 +55,7 @@ export function fmt_ptr(ptr) {
     buf = cptr.decay(ptrbuf[ptrbufidx]);
     if (++ptrbufidx >= 4)
         ptrbufidx = 0;
-    void cptr.sprintf(buf, __sl2, ptr);
+    void cptr.sprintf(buf, __s_pct_p, ptr);
     return buf;
 }
 
@@ -63,7 +63,7 @@ export function fmt_ptr(ptr) {
 export function* dupstr(string) {
     let len = cptr.strlen(string);
     if (len > BigInt(((~0 - 1) >>> 0) >>> 0))
-        (yield* panic(__sl3));
+        (yield* panic(__s_dupstr_string_length_overflow));
     return cptr.strcpy((yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n))))), string);
 }
 
@@ -71,7 +71,7 @@ export function* dupstr(string) {
 export function* FITSint_(i, file, line) {
     let iret = Number(BigInt.asIntN(32, i));
     if (BigInt(iret) != i)
-        (yield* panic(__sl4, file, line));
+        (yield* panic(__s_overflow_at_s_d, file, line));
     return iret;
 }
 
@@ -79,7 +79,7 @@ export function* FITSint_(i, file, line) {
 export function* FITSuint_(ull, file, line) {
     let uret = Number(BigInt.asUintN(32, ull));
     if (BigInt(uret >>> 0) != ull)
-        (yield* panic(__sl4, file, line));
+        (yield* panic(__s_overflow_at_s_d, file, line));
     return uret;
 }
 

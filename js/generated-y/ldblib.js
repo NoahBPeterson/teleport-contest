@@ -26,70 +26,70 @@ const $luaL_Reg_func = FLD.luaL_Reg_func, $lua_Debug_currentline = FLD.lua_Debug
     $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("_HOOKKEY");
-const __sl1 = cptr.lit("stack overflow");
-const __sl2 = cptr.lit("nil or table");
-const __sl3 = cptr.lit("flnSrtu");
-const __sl4 = cptr.lit("invalid option '>'");
-const __sl5 = cptr.lit(">%s");
-const __sl6 = cptr.lit("invalid option");
-const __sl7 = cptr.lit("source");
-const __sl8 = cptr.lit("short_src");
-const __sl9 = cptr.lit("linedefined");
-const __sl10 = cptr.lit("lastlinedefined");
-const __sl11 = cptr.lit("what");
-const __sl12 = cptr.lit("currentline");
-const __sl13 = cptr.lit("nups");
-const __sl14 = cptr.lit("nparams");
-const __sl15 = cptr.lit("isvararg");
-const __sl16 = cptr.lit("name");
-const __sl17 = cptr.lit("namewhat");
-const __sl18 = cptr.lit("ftransfer");
-const __sl19 = cptr.lit("ntransfer");
-const __sl20 = cptr.lit("istailcall");
-const __sl21 = cptr.lit("activelines");
-const __sl22 = cptr.lit("func");
-const __sl23 = cptr.lit("level out of range");
-const __sl24 = cptr.lit("invalid upvalue index");
-const __sl25 = cptr.lit("Lua function expected");
-const __sl26 = cptr.lit("call");
-const __sl27 = cptr.lit("return");
-const __sl28 = cptr.lit("line");
-const __sl29 = cptr.lit("count");
-const __sl30 = cptr.lit("tail call");
-const __sl31 = cptr.lit("k");
-const __sl32 = cptr.lit("__mode");
-const __sl33 = cptr.lit("external hook");
-const __sl34 = cptr.lit("%s");
-const __sl35 = cptr.lit("lua_debug> ");
-const __sl36 = cptr.lit("cont\n");
-const __sl37 = cptr.lit("=(debug command)");
-const __sl38 = cptr.lit("%s\n");
-const __sl39 = cptr.lit("debug");
-const __sl40 = cptr.lit("getuservalue");
-const __sl41 = cptr.lit("gethook");
-const __sl42 = cptr.lit("getinfo");
-const __sl43 = cptr.lit("getlocal");
-const __sl44 = cptr.lit("getregistry");
-const __sl45 = cptr.lit("getmetatable");
-const __sl46 = cptr.lit("getupvalue");
-const __sl47 = cptr.lit("upvaluejoin");
-const __sl48 = cptr.lit("upvalueid");
-const __sl49 = cptr.lit("setuservalue");
-const __sl50 = cptr.lit("sethook");
-const __sl51 = cptr.lit("setlocal");
-const __sl52 = cptr.lit("setmetatable");
-const __sl53 = cptr.lit("setupvalue");
-const __sl54 = cptr.lit("traceback");
-const __sl55 = cptr.lit("setcstacklimit");
+const __s_hookkey = cptr.lit("_HOOKKEY");
+const __s_stack_overflow = cptr.lit("stack overflow");
+const __s_nil_or_table = cptr.lit("nil or table");
+const __s_flnsrtu = cptr.lit("flnSrtu");
+const __s_invalid_option = cptr.lit("invalid option '>'");
+const __s_gt_pct_s = cptr.lit(">%s");
+const __s_invalid_option__2 = cptr.lit("invalid option");
+const __s_source = cptr.lit("source");
+const __s_short_src = cptr.lit("short_src");
+const __s_linedefined = cptr.lit("linedefined");
+const __s_lastlinedefined = cptr.lit("lastlinedefined");
+const __s_what = cptr.lit("what");
+const __s_currentline = cptr.lit("currentline");
+const __s_nups = cptr.lit("nups");
+const __s_nparams = cptr.lit("nparams");
+const __s_isvararg = cptr.lit("isvararg");
+const __s_name = cptr.lit("name");
+const __s_namewhat = cptr.lit("namewhat");
+const __s_ftransfer = cptr.lit("ftransfer");
+const __s_ntransfer = cptr.lit("ntransfer");
+const __s_istailcall = cptr.lit("istailcall");
+const __s_activelines = cptr.lit("activelines");
+const __s_func = cptr.lit("func");
+const __s_level_out_of_range = cptr.lit("level out of range");
+const __s_invalid_upvalue_index = cptr.lit("invalid upvalue index");
+const __s_lua_function_expected = cptr.lit("Lua function expected");
+const __s_call = cptr.lit("call");
+const __s_return = cptr.lit("return");
+const __s_line = cptr.lit("line");
+const __s_count = cptr.lit("count");
+const __s_tail_call = cptr.lit("tail call");
+const __s_k = cptr.lit("k");
+const __s_mode = cptr.lit("__mode");
+const __s_external_hook = cptr.lit("external hook");
+const __s_pct_s = cptr.lit("%s");
+const __s_lua_debug = cptr.lit("lua_debug> ");
+const __s_cont = cptr.lit("cont\n");
+const __s_debug_command = cptr.lit("=(debug command)");
+const __s_pct_s_nl = cptr.lit("%s\n");
+const __s_debug = cptr.lit("debug");
+const __s_getuservalue = cptr.lit("getuservalue");
+const __s_gethook = cptr.lit("gethook");
+const __s_getinfo = cptr.lit("getinfo");
+const __s_getlocal = cptr.lit("getlocal");
+const __s_getregistry = cptr.lit("getregistry");
+const __s_getmetatable = cptr.lit("getmetatable");
+const __s_getupvalue = cptr.lit("getupvalue");
+const __s_upvaluejoin = cptr.lit("upvaluejoin");
+const __s_upvalueid = cptr.lit("upvalueid");
+const __s_setuservalue = cptr.lit("setuservalue");
+const __s_sethook = cptr.lit("sethook");
+const __s_setlocal = cptr.lit("setlocal");
+const __s_setmetatable = cptr.lit("setmetatable");
+const __s_setupvalue = cptr.lit("setupvalue");
+const __s_traceback = cptr.lit("traceback");
+const __s_setcstacklimit = cptr.lit("setcstacklimit");
 
 /** C ref: ldblib.c:27 — char * */
-let HOOKKEY = __sl0;
+let HOOKKEY = __s_hookkey;
 
 /** C ref: ldblib.c:35 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CInt} n */
 function* checkstack(L, L1, n) {
     if ((__builtin_expect(BigInt(((!cptr.eq(L, L1) && !(yield* lua_checkstack(L1, n)) ? 1 : 0) != 0)), 0n)))
-        (yield* luaL_error(L, __sl1));
+        (yield* luaL_error(L, __s_stack_overflow));
 }
 
 /** C ref: ldblib.c:41 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -110,7 +110,7 @@ function* db_getmetatable(L) {
 /** C ref: ldblib.c:56 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* db_setmetatable(L) {
     let t = lua_type(L, 2);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || (yield* luaL_typeerror(L, 2, (__sl2))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || (yield* luaL_typeerror(L, 2, (__s_nil_or_table))) ? 1 : 0));
     (yield* lua_settop(L, 2));
     (yield* lua_setmetatable(L, 1));
     return 1;
@@ -182,11 +182,11 @@ function* db_getinfo(L) {
     let ar = cptr.alloc(136);
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
-    let options = ((yield* luaL_optlstring(L, ((arg.v + 2) | 0), (__sl3), null)));
+    let options = ((yield* luaL_optlstring(L, ((arg.v + 2) | 0), (__s_flnsrtu), null)));
     (yield* checkstack(L, L1, 3));
-    (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) || (yield* luaL_argerror(L, ((arg.v + 2) | 0), (__sl4))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) || (yield* luaL_argerror(L, ((arg.v + 2) | 0), (__s_invalid_option))) ? 1 : 0));
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
-        options = (yield* lua_pushfstring(L, __sl5, options));
+        options = (yield* lua_pushfstring(L, __s_gt_pct_s, options));
         (yield* lua_pushvalue(L, (arg.v + 1) | 0));
         (yield* lua_xmove(L, L1, 1));
     } else {
@@ -196,37 +196,37 @@ function* db_getinfo(L) {
         }
     }
     if (!(yield* lua_getinfo(L1, options, ar)))
-        return (yield* luaL_argerror(L, (arg.v + 2) | 0, __sl6));
+        return (yield* luaL_argerror(L, (arg.v + 2) | 0, __s_invalid_option__2));
     (yield* lua_createtable(L, 0, 0));
     if (cptr.strchr(options, 83)) {
         (yield* lua_pushlstring(L, cptr.ldPtro(ar, $lua_Debug_source), cptr.ldU64o(ar, $lua_Debug_srclen)));
-        (yield* lua_setfield(L, -2, __sl7));
-        (yield* settabss(L, __sl8, cptr.add(ar, $lua_Debug_short_src)));
-        (yield* settabsi(L, __sl9, cptr.ldI32o(ar, $lua_Debug_linedefined)));
-        (yield* settabsi(L, __sl10, cptr.ldI32o(ar, $lua_Debug_lastlinedefined)));
-        (yield* settabss(L, __sl11, cptr.ldPtro(ar, $lua_Debug_what)));
+        (yield* lua_setfield(L, -2, __s_source));
+        (yield* settabss(L, __s_short_src, cptr.add(ar, $lua_Debug_short_src)));
+        (yield* settabsi(L, __s_linedefined, cptr.ldI32o(ar, $lua_Debug_linedefined)));
+        (yield* settabsi(L, __s_lastlinedefined, cptr.ldI32o(ar, $lua_Debug_lastlinedefined)));
+        (yield* settabss(L, __s_what, cptr.ldPtro(ar, $lua_Debug_what)));
     }
     if (cptr.strchr(options, 108))
-        (yield* settabsi(L, __sl12, cptr.ldI32o(ar, $lua_Debug_currentline)));
+        (yield* settabsi(L, __s_currentline, cptr.ldI32o(ar, $lua_Debug_currentline)));
     if (cptr.strchr(options, 117)) {
-        (yield* settabsi(L, __sl13, cptr.ld1uo(ar, $lua_Debug_nups)));
-        (yield* settabsi(L, __sl14, cptr.ld1uo(ar, $lua_Debug_nparams)));
-        (yield* settabsb(L, __sl15, cptr.ld1so(ar, $lua_Debug_isvararg)));
+        (yield* settabsi(L, __s_nups, cptr.ld1uo(ar, $lua_Debug_nups)));
+        (yield* settabsi(L, __s_nparams, cptr.ld1uo(ar, $lua_Debug_nparams)));
+        (yield* settabsb(L, __s_isvararg, cptr.ld1so(ar, $lua_Debug_isvararg)));
     }
     if (cptr.strchr(options, 110)) {
-        (yield* settabss(L, __sl16, cptr.ldPtro(ar, $lua_Debug_name)));
-        (yield* settabss(L, __sl17, cptr.ldPtro(ar, $lua_Debug_namewhat)));
+        (yield* settabss(L, __s_name, cptr.ldPtro(ar, $lua_Debug_name)));
+        (yield* settabss(L, __s_namewhat, cptr.ldPtro(ar, $lua_Debug_namewhat)));
     }
     if (cptr.strchr(options, 114)) {
-        (yield* settabsi(L, __sl18, cptr.ldU16o(ar, $lua_Debug_ftransfer)));
-        (yield* settabsi(L, __sl19, cptr.ldU16o(ar, $lua_Debug_ntransfer)));
+        (yield* settabsi(L, __s_ftransfer, cptr.ldU16o(ar, $lua_Debug_ftransfer)));
+        (yield* settabsi(L, __s_ntransfer, cptr.ldU16o(ar, $lua_Debug_ntransfer)));
     }
     if (cptr.strchr(options, 116))
-        (yield* settabsb(L, __sl20, cptr.ld1so(ar, $lua_Debug_istailcall)));
+        (yield* settabsb(L, __s_istailcall, cptr.ld1so(ar, $lua_Debug_istailcall)));
     if (cptr.strchr(options, 76))
-        (yield* treatstackoption(L, L1, __sl21));
+        (yield* treatstackoption(L, L1, __s_activelines));
     if (cptr.strchr(options, 102))
-        (yield* treatstackoption(L, L1, __sl22));
+        (yield* treatstackoption(L, L1, __s_func));
     return 1;
 }
 
@@ -244,7 +244,7 @@ function* db_getlocal(L) {
         let name;
         let level = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 1) | 0))));
         if ((__builtin_expect(BigInt(((!lua_getstack(L1, level, ar)) != 0)), 0n)))
-            return (yield* luaL_argerror(L, (arg.v + 1) | 0, __sl23));
+            return (yield* luaL_argerror(L, (arg.v + 1) | 0, __s_level_out_of_range));
         (yield* checkstack(L, L1, 1));
         name = (yield* lua_getlocal(L1, ar, nvar));
         if (name) {
@@ -268,7 +268,7 @@ function* db_setlocal(L) {
     let level = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 1) | 0))));
     let nvar = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 2) | 0))));
     if ((__builtin_expect(BigInt(((!lua_getstack(L1, level, ar)) != 0)), 0n)))
-        return (yield* luaL_argerror(L, (arg.v + 1) | 0, __sl23));
+        return (yield* luaL_argerror(L, (arg.v + 1) | 0, __s_level_out_of_range));
     (yield* luaL_checkany(L, (arg.v + 3) | 0));
     (yield* lua_settop(L, (arg.v + 3) | 0));
     (yield* checkstack(L, L1, 1));
@@ -311,7 +311,7 @@ function* checkupval(L, argf, argnup, pnup) {
     (yield* luaL_checktype(L, argf, 6));
     id = lua_upvalueid(L, argf, nup);
     if (pnup) {
-        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || (yield* luaL_argerror(L, (argnup), (__sl24))) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || (yield* luaL_argerror(L, (argnup), (__s_invalid_upvalue_index))) ? 1 : 0));
         cptr.stI32(pnup, nup);
     }
     return id;
@@ -333,18 +333,18 @@ function* db_upvaluejoin(L) {
     let n2 = cptr.box(0);
     (yield* checkupval(L, 1, 2, n1));
     (yield* checkupval(L, 3, 4, n2));
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) || (yield* luaL_argerror(L, 1, (__sl25))) ? 1 : 0));
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__sl25))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) || (yield* luaL_argerror(L, 1, (__s_lua_function_expected))) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__s_lua_function_expected))) ? 1 : 0));
     lua_upvaluejoin(L, 1, n1.v, 3, n2.v);
     return 0;
 }
 
 const __static_hookf_hooknames = cptr.alloc(5 * 8);
-cptr.stPtro(__static_hookf_hooknames, 0, __sl26);
-cptr.stPtro(__static_hookf_hooknames, 8, __sl27);
-cptr.stPtro(__static_hookf_hooknames, 16, __sl28);
-cptr.stPtro(__static_hookf_hooknames, 24, __sl29);
-cptr.stPtro(__static_hookf_hooknames, 32, __sl30); /** C ref: ldblib.c:324 — char *[5] (function-static) */
+cptr.stPtro(__static_hookf_hooknames, 0, __s_call);
+cptr.stPtro(__static_hookf_hooknames, 8, __s_return);
+cptr.stPtro(__static_hookf_hooknames, 16, __s_line);
+cptr.stPtro(__static_hookf_hooknames, 24, __s_count);
+cptr.stPtro(__static_hookf_hooknames, 32, __s_tail_call); /** C ref: ldblib.c:324 — char *[5] (function-static) */
 
 /** C ref: ldblib.c:323 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar */
 function* hookf(L, ar) {
@@ -408,8 +408,8 @@ function* db_sethook(L) {
         mask = makemask(smask, count);
     }
     if (!(yield* luaL_getsubtable(L, -1001000, HOOKKEY))) {
-        (yield* lua_pushstring(L, __sl31));
-        (yield* lua_setfield(L, -2, __sl32));
+        (yield* lua_pushstring(L, __s_k));
+        (yield* lua_setfield(L, -2, __s_mode));
         (yield* lua_pushvalue(L, -1));
         (yield* lua_setmetatable(L, -2));
     }
@@ -433,7 +433,7 @@ function* db_gethook(L) {
         (yield* lua_pushnil(L));
         return 1;
     } else if (hook !== hookf)
-        (yield* lua_pushstring(L, __sl33));
+        (yield* lua_pushstring(L, __s_external_hook));
     else {
         (yield* lua_getfield(L, -1001000, HOOKKEY));
         (yield* checkstack(L, L1, 1));
@@ -451,11 +451,11 @@ function* db_gethook(L) {
 function* db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
-        (fprintf(__stderrp, (__sl34), (__sl35)), fflush(__stderrp));
-        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __sl36) == 0)
+        (fprintf(__stderrp, (__s_pct_s), (__s_lua_debug)), fflush(__stderrp));
+        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __s_cont) == 0)
             return 0;
-        if ((yield* luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __sl37, null)) || (yield* lua_pcallk(L, 0, 0, 0, 0n, null)))
-            (fprintf(__stderrp, (__sl38), ((yield* luaL_tolstring(L, -1, null)))), fflush(__stderrp));
+        if ((yield* luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __s_debug_command, null)) || (yield* lua_pcallk(L, 0, 0, 0, 0n, null)))
+            (fprintf(__stderrp, (__s_pct_s_nl), ((yield* luaL_tolstring(L, -1, null)))), fflush(__stderrp));
         (yield* lua_settop(L, 0));
     }
 }
@@ -484,39 +484,39 @@ function* db_setcstacklimit(L) {
 
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
 const dblib = cptr.alloc(18 * 16);
-cptr.stPtro(dblib, 0, __sl39);
+cptr.stPtro(dblib, 0, __s_debug);
 cptr.stPtro(dblib, 0 + $luaL_Reg_func, db_debug);
-cptr.stPtro(dblib, 16, __sl40);
+cptr.stPtro(dblib, 16, __s_getuservalue);
 cptr.stPtro(dblib, 16 + $luaL_Reg_func, db_getuservalue);
-cptr.stPtro(dblib, 32, __sl41);
+cptr.stPtro(dblib, 32, __s_gethook);
 cptr.stPtro(dblib, 32 + $luaL_Reg_func, db_gethook);
-cptr.stPtro(dblib, 48, __sl42);
+cptr.stPtro(dblib, 48, __s_getinfo);
 cptr.stPtro(dblib, 48 + $luaL_Reg_func, db_getinfo);
-cptr.stPtro(dblib, 64, __sl43);
+cptr.stPtro(dblib, 64, __s_getlocal);
 cptr.stPtro(dblib, 64 + $luaL_Reg_func, db_getlocal);
-cptr.stPtro(dblib, 80, __sl44);
+cptr.stPtro(dblib, 80, __s_getregistry);
 cptr.stPtro(dblib, 80 + $luaL_Reg_func, db_getregistry);
-cptr.stPtro(dblib, 96, __sl45);
+cptr.stPtro(dblib, 96, __s_getmetatable);
 cptr.stPtro(dblib, 96 + $luaL_Reg_func, db_getmetatable);
-cptr.stPtro(dblib, 112, __sl46);
+cptr.stPtro(dblib, 112, __s_getupvalue);
 cptr.stPtro(dblib, 112 + $luaL_Reg_func, db_getupvalue);
-cptr.stPtro(dblib, 128, __sl47);
+cptr.stPtro(dblib, 128, __s_upvaluejoin);
 cptr.stPtro(dblib, 128 + $luaL_Reg_func, db_upvaluejoin);
-cptr.stPtro(dblib, 144, __sl48);
+cptr.stPtro(dblib, 144, __s_upvalueid);
 cptr.stPtro(dblib, 144 + $luaL_Reg_func, db_upvalueid);
-cptr.stPtro(dblib, 160, __sl49);
+cptr.stPtro(dblib, 160, __s_setuservalue);
 cptr.stPtro(dblib, 160 + $luaL_Reg_func, db_setuservalue);
-cptr.stPtro(dblib, 176, __sl50);
+cptr.stPtro(dblib, 176, __s_sethook);
 cptr.stPtro(dblib, 176 + $luaL_Reg_func, db_sethook);
-cptr.stPtro(dblib, 192, __sl51);
+cptr.stPtro(dblib, 192, __s_setlocal);
 cptr.stPtro(dblib, 192 + $luaL_Reg_func, db_setlocal);
-cptr.stPtro(dblib, 208, __sl52);
+cptr.stPtro(dblib, 208, __s_setmetatable);
 cptr.stPtro(dblib, 208 + $luaL_Reg_func, db_setmetatable);
-cptr.stPtro(dblib, 224, __sl53);
+cptr.stPtro(dblib, 224, __s_setupvalue);
 cptr.stPtro(dblib, 224 + $luaL_Reg_func, db_setupvalue);
-cptr.stPtro(dblib, 240, __sl54);
+cptr.stPtro(dblib, 240, __s_traceback);
 cptr.stPtro(dblib, 240 + $luaL_Reg_func, db_traceback);
-cptr.stPtro(dblib, 256, __sl55);
+cptr.stPtro(dblib, 256, __s_setcstacklimit);
 cptr.stPtro(dblib, 256 + $luaL_Reg_func, db_setcstacklimit);
 cptr.stPtro(dblib, 272, null);
 cptr.stPtro(dblib, 272 + $luaL_Reg_func, null);

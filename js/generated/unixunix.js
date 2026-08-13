@@ -33,32 +33,32 @@ const $flag_debug = FLD.flag_debug, $instance_flags_window_inited = FLD.instance
     $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("tty");
-const __sl1 = cptr.lit("NOMUX_MARKERS");
-const __sl2 = cptr.lit("You must play from a terminal.");
-const __sl3 = cptr.lit("perm");
-const __sl4 = cptr.lit("%s");
-const __sl5 = cptr.lit("");
-const __sl6 = cptr.lit("%u%s");
-const __sl7 = cptr.lit("Cannot open %s");
-const __sl8 = cptr.lit("Too many hacks running now.");
-const __sl9 = cptr.lit("\n%s [yn] ");
-const __sl10 = cptr.lit("Couldn't destroy old game.");
-const __sl11 = cptr.lit("cannot creat lock file (%s).");
-const __sl12 = cptr.lit("cannot write lock (%s)");
-const __sl13 = cptr.lit("cannot close lock (%s)");
-const __sl14 = cptr.lit("There is no regular save file but there is a panic one.");
-const __sl15 = cptr.lit("It might be recoverable with demi-divine intervention.");
-const __sl16 = cptr.lit("yn\x1bq");
-const __sl17 = cptr.lit("%s [yn] (n) ");
-const __sl18 = cptr.lit("ynq\n");
-const __sl19 = cptr.lit("Unavailable command '!'.");
-const __sl20 = cptr.lit("SHELL");
-const __sl21 = cptr.lit("/bin/sh");
-const __sl22 = cptr.lit("sh");
-const __sl23 = cptr.lit("sh: cannot execute.");
-const __sl24 = cptr.lit("HOME");
-const __sl25 = cptr.lit("Fork failed.  Try again.");
+const __s_tty = cptr.lit("tty");
+const __s_nomux_markers = cptr.lit("NOMUX_MARKERS");
+const __s_you_must_play_from_a_terminal = cptr.lit("You must play from a terminal.");
+const __s_perm = cptr.lit("perm");
+const __s_pct_s = cptr.lit("%s");
+const __s_empty = cptr.lit("");
+const __s_u_s = cptr.lit("%u%s");
+const __s_cannot_open_s = cptr.lit("Cannot open %s");
+const __s_too_many_hacks_running_now = cptr.lit("Too many hacks running now.");
+const __s_s_yn = cptr.lit("\n%s [yn] ");
+const __s_couldn_t_destroy_old_game = cptr.lit("Couldn't destroy old game.");
+const __s_cannot_creat_lock_file_s = cptr.lit("cannot creat lock file (%s).");
+const __s_cannot_write_lock_s = cptr.lit("cannot write lock (%s)");
+const __s_cannot_close_lock_s = cptr.lit("cannot close lock (%s)");
+const __s_there_is_no_regular_save_file_but_there = cptr.lit("There is no regular save file but there is a panic one.");
+const __s_it_might_be_recoverable_with_demi = cptr.lit("It might be recoverable with demi-divine intervention.");
+const __s_yn_q = cptr.lit("yn\x1bq");
+const __s_s_yn_n = cptr.lit("%s [yn] (n) ");
+const __s_ynq = cptr.lit("ynq\n");
+const __s_unavailable_command = cptr.lit("Unavailable command '!'.");
+const __s_shell = cptr.lit("SHELL");
+const __s_bin_sh = cptr.lit("/bin/sh");
+const __s_sh = cptr.lit("sh");
+const __s_sh_cannot_execute = cptr.lit("sh: cannot execute.");
+const __s_home = cptr.lit("HOME");
+const __s_fork_failed_try_again = cptr.lit("Fork failed.  Try again.");
 
 /** C ref: unixunix.c:33 — struct stat */
 let buf = cptr.alloc(144);
@@ -102,15 +102,15 @@ export function getlock() {
     let too_old;
     let fq_lock;
     __lbl_gotlock: {
-        if (!strcmp(cptr.ldPtr(windowprocs), __sl0))
-            if (!isatty(0) && !getenv(__sl1))
-                error(__sl2);
-        if (!lock_file(__sl3, NHM.LOCKPREFIX, 10)) {
+        if (!strcmp(cptr.ldPtr(windowprocs), __s_tty))
+            if (!isatty(0) && !getenv(__s_nomux_markers))
+                error(__s_you_must_play_from_a_terminal);
+        if (!lock_file(__s_perm, NHM.LOCKPREFIX, 10)) {
             wait_synch()();
-            error(__sl4, __sl5);
+            error(__s_pct_s, __s_empty);
         }
         if (!cptr.ldI32o(gl, $instance_globals_l_locknum))
-            void cptr.sprintf(cptr.add(gl, $instance_globals_l_lock), __sl6, getuid(), svp);
+            void cptr.sprintf(cptr.add(gl, $instance_globals_l_lock), __s_u_s, getuid(), svp);
         regularize(cptr.add(gl, $instance_globals_l_lock));
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
         if (cptr.ldI32o(gl, $instance_globals_l_locknum)) {
@@ -123,34 +123,34 @@ export function getlock() {
                     if ((cptr.ldI32(__error())) == 2)
                         break __lbl_gotlock;
                     perror(fq_lock);
-                    unlock_file(__sl3);
-                    error(__sl7, fq_lock);
+                    unlock_file(__s_perm);
+                    error(__s_cannot_open_s, fq_lock);
                 }
                 too_old = veryold(fd);
                 void close(fd);
                 if (too_old && eraseoldlocks())
                     break __lbl_gotlock;
             } while (i < cptr.ldI32o(gl, $instance_globals_l_locknum));
-            unlock_file(__sl3);
-            error(__sl8);
+            unlock_file(__s_perm);
+            error(__s_too_many_hacks_running_now);
         } else {
             fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
             if ((fd = open(fq_lock, 0)) == -1) {
                 if ((cptr.ldI32(__error())) == 2)
                     break __lbl_gotlock;
                 perror(fq_lock);
-                unlock_file(__sl3);
-                error(__sl7, fq_lock);
+                unlock_file(__s_perm);
+                error(__s_cannot_open_s, fq_lock);
             }
             too_old = veryold(fd);
             void close(fd);
             if (too_old && eraseoldlocks())
                 break __lbl_gotlock;
-            unlock_file(__sl3);
+            unlock_file(__s_perm);
             if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
                 c = yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1);
             } else {
-                void raw_printf(__sl9, cptr.decay(__static_getlock_destroy_old_game_prompt));
+                void raw_printf(__s_s_yn, cptr.decay(__static_getlock_destroy_old_game_prompt));
                 void fflush(__stdoutp);
                 if ((c = getchar()) != -1) {
                     let tmp;
@@ -164,25 +164,25 @@ export function getlock() {
                 if (eraseoldlocks()) {
                     break __lbl_gotlock;
                 } else {
-                    unlock_file(__sl3);
-                    error(__sl10);
+                    unlock_file(__s_perm);
+                    error(__s_couldn_t_destroy_old_game);
                 }
             } else {
-                unlock_file(__sl3);
-                error(__sl4, __sl5);
+                unlock_file(__s_perm);
+                error(__s_pct_s, __s_empty);
             }
         }
     }
     fd = creat(fq_lock, NHM.FCMASK);
-    unlock_file(__sl3);
+    unlock_file(__s_perm);
     if (fd == -1) {
-        error(__sl11, fq_lock);
+        error(__s_cannot_creat_lock_file_s, fq_lock);
     } else {
         if (BigInt.asUintN(64, cptr.write(fd, svh, 4n)) != 4n) {
-            error(__sl12, fq_lock);
+            error(__s_cannot_write_lock_s, fq_lock);
         }
         if (close(fd) == -1) {
-            error(__sl13, fq_lock);
+            error(__s_cannot_close_lock_s, fq_lock);
         }
     }
 }
@@ -192,23 +192,23 @@ const __static_ask_about_panic_save_Instead_prompt = cptr.bytes("Start a new gam
 /** C ref: unixunix.c:263 */
 export function ask_about_panic_save() {
     let c = 0;
-    pline(__sl14);
-    pline(__sl15);
+    pline(__s_there_is_no_regular_save_file_but_there);
+    pline(__s_it_might_be_recoverable_with_demi);
     if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
-        c = yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __sl16, 110, 0);
+        c = yn_function(cptr.decay(__static_ask_about_panic_save_Instead_prompt), __s_yn_q, 110, 0);
     } else {
-        raw_printf(__sl17, cptr.decay(__static_ask_about_panic_save_Instead_prompt));
+        raw_printf(__s_s_yn_n, cptr.decay(__static_ask_about_panic_save_Instead_prompt));
         void fflush(__stdoutp);
         do {
             c = getchar();
             if (c == -1 || c == 27 || c == 0)
                 break;
             c = lowc(schar(c));
-        } while (!cptr.strchr(__sl18, c));
+        } while (!cptr.strchr(__s_ynq, c));
     }
     if (c != 121) {
         delete_levelfile(0);
-        unlock_file(__sl3);
+        unlock_file(__s_perm);
         if (cptr.ld1so(iflags, $instance_flags_window_inited))
             exit_nhwindows()(null);
         nh_terminate(0);
@@ -227,15 +227,15 @@ export function regularize(s) {
 export function dosh() {
     let str;
     if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
-        Norep(__sl19);
+        Norep(__s_unavailable_command);
         return 0;
     }
     if (child(0)) {
-        if ((str = getenv(__sl20)) !== null)
+        if ((str = getenv(__s_shell)) !== null)
             void execl(str, str, null);
         else
-            void execl(__sl21, __sl22, null);
-        raw_print()(__sl23);
+            void execl(__s_bin_sh, __s_sh, null);
+        raw_print()(__s_sh_cannot_execute);
         exit(1);
     }
     return 0;
@@ -248,11 +248,11 @@ export function child(wt) {
     if ((f = fork()) == 0) {
         void setgid(getgid());
         void setuid(getuid());
-        void chdir(getenv(__sl24));
+        void chdir(getenv(__s_home));
         return 1;
     }
     if (f == -1) {
-        pline(__sl25);
+        pline(__s_fork_failed_try_again);
         return 0;
     }
     void signal(2, 1);
@@ -262,7 +262,7 @@ export function child(wt) {
     if (wizard())
         void signal(3, null);
     if (wt) {
-        raw_print()(__sl5);
+        raw_print()(__s_empty);
         wait_synch()();
     }
     resume_nhwindows()();

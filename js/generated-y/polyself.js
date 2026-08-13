@@ -129,361 +129,361 @@ const $Race_adj = FLD.Race_adj, $Race_attrmax = FLD.Race_attrmax, $Race_individu
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("%s %s your %s!");
-const __sl1 = cptr.lit("still constricts");
-const __sl2 = cptr.lit("begins constricting");
-const __sl3 = cptr.lit("are no longer being strangled.");
-const __sl4 = cptr.lit("");
-const __sl5 = cptr.lit("self-genocide");
-const __sl6 = cptr.lit("polyself.c");
-const __sl7 = cptr.lit("polyman");
-const __sl8 = cptr.lit("%.10s %.30s");
-const __sl9 = cptr.lit("%s into %s");
-const __sl10 = cptr.lit("polymorphed");
-const __sl11 = cptr.lit("transformed");
-const __sl12 = cptr.lit("newman");
-const __sl13 = cptr.lit("Your new form doesn't seem healthy enough to survive.");
-const __sl14 = cptr.lit("unsuccessful polymorph");
-const __sl15 = cptr.lit("You feel like a new %s!");
-const __sl16 = cptr.lit("became experience level %d as a new %s");
-const __sl17 = cptr.lit("body transforms, but there is still slime on you.");
-const __sl18 = cptr.lit("fail to transform!");
-const __sl19 = cptr.lit("polyself");
-const __sl20 = cptr.lit("%s");
-const __sl21 = cptr.lit("system shock");
-const __sl22 = cptr.lit("Become what kind of monster? [type the name]");
-const __sl23 = cptr.lit("*");
-const __sl24 = cptr.lit("random");
-const __sl25 = cptr.lit("I've never heard of such monsters.");
-const __sl26 = cptr.lit("polymorph into any of those.");
-const __sl27 = cptr.lit("aligned");
-const __sl28 = cptr.lit("polymorph into %s.");
-const __sl29 = cptr.lit("merge with your scaly armor.");
-const __sl30 = cptr.lit(" dragon ");
-const __sl31 = cptr.lit(" ");
-const __sl32 = cptr.lit("%s reverts to scales as you merge with them.");
-const __sl33 = cptr.lit("Become %s?");
-const __sl34 = cptr.lit("rather %s-ish.");
-const __sl35 = cptr.lit("changed form for the first time, becoming %s");
-const __sl36 = cptr.lit("polymon");
-const __sl37 = cptr.lit("new ");
-const __sl38 = cptr.lit("female ");
-const __sl39 = cptr.lit("male ");
-const __sl40 = cptr.lit("%s %s!");
-const __sl41 = cptr.lit("turn into");
-const __sl42 = cptr.lit("feel like");
-const __sl43 = cptr.lit("You turn to stone!");
-const __sl44 = cptr.lit("You no longer seem to be petrifying.");
-const __sl45 = cptr.lit("no longer feel sick.");
-const __sl46 = cptr.lit("The slime burns away!");
-const __sl47 = cptr.lit("%s can no longer contain you.");
-const __sl48 = cptr.lit("%s loses its grip on you.");
-const __sl49 = cptr.lit("%s touch %s.");
-const __sl50 = cptr.lit("riding %s");
-const __sl51 = cptr.lit("rock seems to no longer trap you.");
-const __sl52 = cptr.lit("buried ball is no longer bound to you.");
-const __sl53 = cptr.lit("%s now feels soothing.");
-const __sl54 = cptr.lit("lava");
-const __sl55 = cptr.lit("slip out of the iron chain.");
-const __sl56 = cptr.lit("slip free of the buried ball and chain.");
-const __sl57 = cptr.lit("are no longer stuck in the %s.");
-const __sl58 = cptr.lit("web");
-const __sl59 = cptr.lit("bear trap");
-const __sl60 = cptr.lit("orient yourself on the web.");
-const __sl61 = cptr.lit("use your breath weapon");
-const __sl62 = cptr.lit("spit venom");
-const __sl63 = cptr.lit("remove an iron ball");
-const __sl64 = cptr.lit("gaze at monsters");
-const __sl65 = cptr.lit("hide or to spin a web");
-const __sl66 = cptr.lit("hide");
-const __sl67 = cptr.lit("spin a web");
-const __sl68 = cptr.lit("summon help");
-const __sl69 = cptr.lit("multiply in a fountain");
-const __sl70 = cptr.lit("use your horn");
-const __sl71 = cptr.lit("emit a mental blast");
-const __sl72 = cptr.lit("shriek");
-const __sl73 = cptr.lit("change shape");
-const __sl74 = cptr.lit("sit");
-const __sl75 = cptr.lit("spawn in the water");
-const __sl76 = cptr.lit("lay an egg");
-const __sl77 = cptr.lit("break out of your armor!");
-const __sl78 = cptr.lit("%s tears apart!");
-const __sl79 = cptr.lit("knot on your %s is pulled apart!");
-const __sl80 = cptr.lit("clasp on your %s breaks open!");
-const __sl81 = cptr.lit("shirt rips to shreds!");
-const __sl82 = cptr.lit("armor falls around you!");
-const __sl83 = cptr.lit("%s falls, unsupported!");
-const __sl84 = cptr.lit("shrink out of your %s!");
-const __sl85 = cptr.lit("seep right through your shirt!");
-const __sl86 = cptr.lit("become much too small for your shirt!");
-const __sl87 = cptr.lit("horn%s");
-const __sl88 = cptr.lit("s");
-const __sl89 = cptr.lit("%s %s through %s.");
-const __sl90 = cptr.lit("pierce");
-const __sl91 = cptr.lit("%s falls to the %s!");
-const __sl92 = cptr.lit("drop your gloves%s!");
-const __sl93 = cptr.lit(" and weapon");
-const __sl94 = cptr.lit("can no longer hold your shield!");
-const __sl95 = cptr.lit("boots fall away!");
-const __sl96 = cptr.lit("boots %s off your feet!");
-const __sl97 = cptr.lit("slide");
-const __sl98 = cptr.lit("are pushed");
-const __sl99 = cptr.lit("pair of ");
-const __sl100 = cptr.lit("%s %s off!");
-const __sl101 = cptr.lit("fall");
-const __sl102 = cptr.lit("drop");
-const __sl103 = cptr.lit("release");
-const __sl104 = cptr.lit("sword");
-const __sl105 = cptr.lit("weapon");
-const __sl106 = cptr.lit("find you must %s %s %s!");
-const __sl107 = cptr.lit("corpse");
-const __sl108 = cptr.lit("killed while stuck in creature form");
-const __sl109 = cptr.lit("fail");
-const __sl110 = cptr.lit("You return to %s form!");
-const __sl111 = cptr.lit("old form was not healthy enough to survive.");
-const __sl112 = cptr.lit("reverting to unhealthy %s form");
-const __sl113 = cptr.lit("and %s return gently to the %s.");
-const __sl114 = cptr.lit("breathe.  Sorry.");
-const __sl115 = cptr.lit("don't have enough energy to breathe!");
-const __sl116 = cptr.lit("bad breath attack?");
-const __sl117 = cptr.lit("bad spit attack?");
-const __sl118 = cptr.lit("bad attack type in dospit");
-const __sl119 = cptr.lit("ball and chain are buried firmly in the %s.");
-const __sl120 = cptr.lit("are not chained to anything!");
-const __sl121 = cptr.lit("must be on %s ground to spin a web.");
-const __sl122 = cptr.lit("solid");
-const __sl123 = cptr.lit("the");
-const __sl124 = cptr.lit("release web fluid inside %s.");
-const __sl125 = cptr.lit("Swallower has no engulfing attack?");
-const __sl126 = cptr.lit("ignites and ");
-const __sl127 = cptr.lit("fries and ");
-const __sl128 = cptr.lit("freezes, shatters and ");
-const __sl129 = cptr.lit("web %sis swept away!");
-const __sl130 = cptr.lit("web dissolves into %s.");
-const __sl131 = cptr.lit("cannot spin webs while stuck in a trap.");
-const __sl132 = cptr.lit("spin a web, covering up the pit.");
-const __sl133 = cptr.lit("squeaky board is muffled.");
-const __sl134 = cptr.lit("webbing vanishes!");
-const __sl135 = cptr.lit("make the web thicker.");
-const __sl136 = cptr.lit("web over the %s.");
-const __sl137 = cptr.lit("trap door");
-const __sl138 = cptr.lit("hole");
-const __sl139 = cptr.lit("spin a web, jamming the trigger.");
-const __sl140 = cptr.lit("have triggered a trap!");
-const __sl141 = cptr.lit("Webbing over trap type %d?");
-const __sl142 = cptr.lit("web fails to impede access to the %s.");
-const __sl143 = cptr.lit("stairs");
-const __sl144 = cptr.lit("ladder");
-const __sl145 = cptr.lit("spin a web.");
-const __sl146 = cptr.lit("lack the energy to send forth a call for help!");
-const __sl147 = cptr.lit("call upon your brethren for help!");
-const __sl148 = cptr.lit("But none arrive.");
-const __sl149 = cptr.lit("gaze attack %d?");
-const __sl150 = cptr.lit("see anything to gaze at.");
-const __sl151 = cptr.lit("gaze at anything you can see.");
-const __sl152 = cptr.lit("lack the energy to use your special gaze!");
-const __sl153 = cptr.lit("%s seems not to notice your gaze.");
-const __sl154 = cptr.lit("see where to gaze at %s.");
-const __sl155 = cptr.lit("avoid gazing at %s.");
-const __sl156 = cptr.lit("Really %s %s?");
-const __sl157 = cptr.lit("confuse");
-const __sl158 = cptr.lit("attack");
-const __sl159 = cptr.lit("gaze confuses %s!");
-const __sl160 = cptr.lit("%s is getting more and more confused.");
-const __sl161 = cptr.lit("dogaze");
-const __sl162 = cptr.lit("attack %s with a fiery gaze!");
-const __sl163 = cptr.lit("fire doesn't burn %s!");
-const __sl164 = cptr.lit("are frozen by %s gaze!");
-const __sl165 = cptr.lit("frozen by a monster's gaze");
-const __sl166 = cptr.lit("stiffen momentarily under %s gaze.");
-const __sl167 = cptr.lit("Gazing at the awake %s is not a very good idea.");
-const __sl168 = cptr.lit("You turn to stone...");
-const __sl169 = cptr.lit("deliberately meeting Medusa's gaze");
-const __sl170 = cptr.lit("gaze at no place in particular.");
-const __sl171 = cptr.lit("hide while you're %s.");
-const __sl172 = cptr.lit("trapped");
-const __sl173 = cptr.lit("swallowed");
-const __sl174 = cptr.lit("engulfed");
-const __sl175 = cptr.lit("being held");
-const __sl176 = cptr.lit("holding someone");
-const __sl177 = cptr.lit("holding that creature");
-const __sl178 = cptr.lit("fountain is not deep enough to hide in.");
-const __sl179 = cptr.lit("is no %s to hide in here.");
-const __sl180 = cptr.lit("water");
-const __sl181 = cptr.lit("is nothing to hide under here.");
-const __sl182 = cptr.lit("Hiding under %s%s is a fatal mistake...");
-const __sl183 = cptr.lit("hiding under %s%s");
-const __sl184 = cptr.lit("is nowhere to hide above you.");
-const __sl185 = cptr.lit("is nowhere to hide beneath you.");
-const __sl186 = cptr.lit("transform into %s.");
-const __sl187 = cptr.lit("concentrate but lack the energy to maintain doing so.");
-const __sl188 = cptr.lit("concentrate.");
-const __sl189 = cptr.lit("A wave of psychic energy pours out.");
-const __sl190 = cptr.lit("domindblast");
-const __sl191 = cptr.lit("lock in on %s %s.");
-const __sl192 = cptr.lit("telepathy");
-const __sl193 = cptr.lit("latent telepathy");
-const __sl194 = cptr.lit("mind");
-const __sl195 = cptr.lit("uunstick: no ustuck?");
-const __sl196 = cptr.lit("%s is no longer in your clutches.");
-const __sl197 = cptr.lit("skin returns to its original form.");
-const __sl198 = cptr.lit("mbodypart: bad part %d");
-const __sl199 = cptr.lit("mystery part");
-const __sl200 = cptr.lit("paw");
-const __sl201 = cptr.lit("pawed");
-const __sl202 = cptr.lit("rear paw");
-const __sl203 = cptr.lit("claw");
-const __sl204 = cptr.lit("clawed");
-const __sl205 = cptr.lit("trunk");
-const __sl206 = cptr.lit("skin");
-const __sl207 = cptr.lit("tentacle");
-const __sl208 = cptr.lit("cornea");
-const __sl209 = cptr.lit("rayed");
-const __sl210 = cptr.lit("ray");
-const __sl211 = cptr.lit("beam");
-const __sl212 = cptr.lit("head");
-const __sl213 = cptr.lit("arm");
-const __sl214 = cptr.lit("eye");
-const __sl215 = cptr.lit("face");
-const __sl216 = cptr.lit("finger");
-const __sl217 = cptr.lit("fingertip");
-const __sl218 = cptr.lit("foot");
-const __sl219 = cptr.lit("hand");
-const __sl220 = cptr.lit("handed");
-const __sl221 = cptr.lit("leg");
-const __sl222 = cptr.lit("light headed");
-const __sl223 = cptr.lit("neck");
-const __sl224 = cptr.lit("spine");
-const __sl225 = cptr.lit("toe");
-const __sl226 = cptr.lit("hair");
-const __sl227 = cptr.lit("blood");
-const __sl228 = cptr.lit("lung");
-const __sl229 = cptr.lit("nose");
-const __sl230 = cptr.lit("stomach");
-const __sl231 = cptr.lit("pseudopod");
-const __sl232 = cptr.lit("dark spot");
-const __sl233 = cptr.lit("front");
-const __sl234 = cptr.lit("pseudopod extension");
-const __sl235 = cptr.lit("pseudopod extremity");
-const __sl236 = cptr.lit("pseudopod root");
-const __sl237 = cptr.lit("grasp");
-const __sl238 = cptr.lit("grasped");
-const __sl239 = cptr.lit("cerebral area");
-const __sl240 = cptr.lit("lower pseudopod");
-const __sl241 = cptr.lit("viscous");
-const __sl242 = cptr.lit("middle");
-const __sl243 = cptr.lit("surface");
-const __sl244 = cptr.lit("ripples");
-const __sl245 = cptr.lit("juices");
-const __sl246 = cptr.lit("sensor");
-const __sl247 = cptr.lit("forelimb");
-const __sl248 = cptr.lit("foreclaw");
-const __sl249 = cptr.lit("claw tip");
-const __sl250 = cptr.lit("rear claw");
-const __sl251 = cptr.lit("rear limb");
-const __sl252 = cptr.lit("rear claw tip");
-const __sl253 = cptr.lit("fur");
-const __sl254 = cptr.lit("wing");
-const __sl255 = cptr.lit("wing tip");
-const __sl256 = cptr.lit("winged");
-const __sl257 = cptr.lit("feathers");
-const __sl258 = cptr.lit("bill");
-const __sl259 = cptr.lit("foreleg");
-const __sl260 = cptr.lit("forehoof");
-const __sl261 = cptr.lit("hoof tip");
-const __sl262 = cptr.lit("rear hoof");
-const __sl263 = cptr.lit("hooved");
-const __sl264 = cptr.lit("rear leg");
-const __sl265 = cptr.lit("backbone");
-const __sl266 = cptr.lit("rear hoof tip");
-const __sl267 = cptr.lit("mane");
-const __sl268 = cptr.lit("appendage");
-const __sl269 = cptr.lit("optic nerve");
-const __sl270 = cptr.lit("body");
-const __sl271 = cptr.lit("tentacle tip");
-const __sl272 = cptr.lit("lower appendage");
-const __sl273 = cptr.lit("tentacled");
-const __sl274 = cptr.lit("lower tentacle");
-const __sl275 = cptr.lit("rotational");
-const __sl276 = cptr.lit("equator");
-const __sl277 = cptr.lit("lower tentacle tip");
-const __sl278 = cptr.lit("cilia");
-const __sl279 = cptr.lit("life force");
-const __sl280 = cptr.lit("retina");
-const __sl281 = cptr.lit("olfactory nerve");
-const __sl282 = cptr.lit("interior");
-const __sl283 = cptr.lit("mycelium");
-const __sl284 = cptr.lit("visual area");
-const __sl285 = cptr.lit("hypha");
-const __sl286 = cptr.lit("root");
-const __sl287 = cptr.lit("strand");
-const __sl288 = cptr.lit("stranded");
-const __sl289 = cptr.lit("cap area");
-const __sl290 = cptr.lit("rhizome");
-const __sl291 = cptr.lit("sporulated");
-const __sl292 = cptr.lit("stalk");
-const __sl293 = cptr.lit("rhizome tip");
-const __sl294 = cptr.lit("spores");
-const __sl295 = cptr.lit("gill");
-const __sl296 = cptr.lit("region");
-const __sl297 = cptr.lit("minor current");
-const __sl298 = cptr.lit("lower current");
-const __sl299 = cptr.lit("swirl");
-const __sl300 = cptr.lit("swirled");
-const __sl301 = cptr.lit("central core");
-const __sl302 = cptr.lit("addled");
-const __sl303 = cptr.lit("center");
-const __sl304 = cptr.lit("currents");
-const __sl305 = cptr.lit("edge");
-const __sl306 = cptr.lit("leading edge");
-const __sl307 = cptr.lit("vestigial limb");
-const __sl308 = cptr.lit("large scale");
-const __sl309 = cptr.lit("large scale tip");
-const __sl310 = cptr.lit("rear region");
-const __sl311 = cptr.lit("scale gap");
-const __sl312 = cptr.lit("scale gapped");
-const __sl313 = cptr.lit("length");
-const __sl314 = cptr.lit("rear scale");
-const __sl315 = cptr.lit("scales");
-const __sl316 = cptr.lit("forked tongue");
-const __sl317 = cptr.lit("anterior segment");
-const __sl318 = cptr.lit("light sensitive cell");
-const __sl319 = cptr.lit("clitellum");
-const __sl320 = cptr.lit("setae");
-const __sl321 = cptr.lit("posterior segment");
-const __sl322 = cptr.lit("segment");
-const __sl323 = cptr.lit("segmented");
-const __sl324 = cptr.lit("posterior");
-const __sl325 = cptr.lit("over stretched");
-const __sl326 = cptr.lit("posterior setae");
-const __sl327 = cptr.lit("prostomium");
-const __sl328 = cptr.lit("pedipalp");
-const __sl329 = cptr.lit("tarsus");
-const __sl330 = cptr.lit("palped");
-const __sl331 = cptr.lit("cephalothorax");
-const __sl332 = cptr.lit("spun out");
-const __sl333 = cptr.lit("abdomen");
-const __sl334 = cptr.lit("hemolymph");
-const __sl335 = cptr.lit("book lung");
-const __sl336 = cptr.lit("labrum");
-const __sl337 = cptr.lit("digestive tract");
-const __sl338 = cptr.lit("fin");
-const __sl339 = cptr.lit("premaxillary");
-const __sl340 = cptr.lit("pelvic axillary");
-const __sl341 = cptr.lit("pelvic fin");
-const __sl342 = cptr.lit("anal fin");
-const __sl343 = cptr.lit("pectoral fin");
-const __sl344 = cptr.lit("finned");
-const __sl345 = cptr.lit("peduncle");
-const __sl346 = cptr.lit("played out");
-const __sl347 = cptr.lit("gills");
-const __sl348 = cptr.lit("dorsal fin");
-const __sl349 = cptr.lit("caudal fin");
-const __sl350 = cptr.lit("nostril");
-const __sl351 = cptr.lit("Strangely, you feel better than before.");
-const __sl352 = cptr.lit("dead");
-const __sl353 = cptr.lit("condemned");
-const __sl354 = cptr.lit("empty");
+const __s_s_s_your_s = cptr.lit("%s %s your %s!");
+const __s_still_constricts = cptr.lit("still constricts");
+const __s_begins_constricting = cptr.lit("begins constricting");
+const __s_are_no_longer_being_strangled = cptr.lit("are no longer being strangled.");
+const __s_empty = cptr.lit("");
+const __s_self_genocide = cptr.lit("self-genocide");
+const __s_polyself_c = cptr.lit("polyself.c");
+const __s_polyman = cptr.lit("polyman");
+const __s_10s_30s = cptr.lit("%.10s %.30s");
+const __s_s_into_s = cptr.lit("%s into %s");
+const __s_polymorphed = cptr.lit("polymorphed");
+const __s_transformed = cptr.lit("transformed");
+const __s_newman = cptr.lit("newman");
+const __s_your_new_form_doesn_t_seem_healthy = cptr.lit("Your new form doesn't seem healthy enough to survive.");
+const __s_unsuccessful_polymorph = cptr.lit("unsuccessful polymorph");
+const __s_you_feel_like_a_new_s = cptr.lit("You feel like a new %s!");
+const __s_became_experience_level_d_as_a_new_s = cptr.lit("became experience level %d as a new %s");
+const __s_body_transforms_but_there_is_still = cptr.lit("body transforms, but there is still slime on you.");
+const __s_fail_to_transform = cptr.lit("fail to transform!");
+const __s_polyself = cptr.lit("polyself");
+const __s_pct_s = cptr.lit("%s");
+const __s_system_shock = cptr.lit("system shock");
+const __s_become_what_kind_of_monster_type_the = cptr.lit("Become what kind of monster? [type the name]");
+const __s_star = cptr.lit("*");
+const __s_random = cptr.lit("random");
+const __s_i_ve_never_heard_of_such_monsters = cptr.lit("I've never heard of such monsters.");
+const __s_polymorph_into_any_of_those = cptr.lit("polymorph into any of those.");
+const __s_aligned = cptr.lit("aligned");
+const __s_polymorph_into_s = cptr.lit("polymorph into %s.");
+const __s_merge_with_your_scaly_armor = cptr.lit("merge with your scaly armor.");
+const __s_dragon = cptr.lit(" dragon ");
+const __s_sp = cptr.lit(" ");
+const __s_s_reverts_to_scales_as_you_merge_with = cptr.lit("%s reverts to scales as you merge with them.");
+const __s_become_s = cptr.lit("Become %s?");
+const __s_rather_s_ish = cptr.lit("rather %s-ish.");
+const __s_changed_form_for_the_first_time = cptr.lit("changed form for the first time, becoming %s");
+const __s_polymon = cptr.lit("polymon");
+const __s_new = cptr.lit("new ");
+const __s_female = cptr.lit("female ");
+const __s_male = cptr.lit("male ");
+const __s_s_s = cptr.lit("%s %s!");
+const __s_turn_into = cptr.lit("turn into");
+const __s_feel_like = cptr.lit("feel like");
+const __s_you_turn_to_stone = cptr.lit("You turn to stone!");
+const __s_you_no_longer_seem_to_be_petrifying = cptr.lit("You no longer seem to be petrifying.");
+const __s_no_longer_feel_sick = cptr.lit("no longer feel sick.");
+const __s_the_slime_burns_away = cptr.lit("The slime burns away!");
+const __s_s_can_no_longer_contain_you = cptr.lit("%s can no longer contain you.");
+const __s_s_loses_its_grip_on_you = cptr.lit("%s loses its grip on you.");
+const __s_s_touch_s = cptr.lit("%s touch %s.");
+const __s_riding_s = cptr.lit("riding %s");
+const __s_rock_seems_to_no_longer_trap_you = cptr.lit("rock seems to no longer trap you.");
+const __s_buried_ball_is_no_longer_bound_to_you = cptr.lit("buried ball is no longer bound to you.");
+const __s_s_now_feels_soothing = cptr.lit("%s now feels soothing.");
+const __s_lava = cptr.lit("lava");
+const __s_slip_out_of_the_iron_chain = cptr.lit("slip out of the iron chain.");
+const __s_slip_free_of_the_buried_ball_and_chain = cptr.lit("slip free of the buried ball and chain.");
+const __s_are_no_longer_stuck_in_the_s = cptr.lit("are no longer stuck in the %s.");
+const __s_web = cptr.lit("web");
+const __s_bear_trap = cptr.lit("bear trap");
+const __s_orient_yourself_on_the_web = cptr.lit("orient yourself on the web.");
+const __s_use_your_breath_weapon = cptr.lit("use your breath weapon");
+const __s_spit_venom = cptr.lit("spit venom");
+const __s_remove_an_iron_ball = cptr.lit("remove an iron ball");
+const __s_gaze_at_monsters = cptr.lit("gaze at monsters");
+const __s_hide_or_to_spin_a_web = cptr.lit("hide or to spin a web");
+const __s_hide = cptr.lit("hide");
+const __s_spin_a_web = cptr.lit("spin a web");
+const __s_summon_help = cptr.lit("summon help");
+const __s_multiply_in_a_fountain = cptr.lit("multiply in a fountain");
+const __s_use_your_horn = cptr.lit("use your horn");
+const __s_emit_a_mental_blast = cptr.lit("emit a mental blast");
+const __s_shriek = cptr.lit("shriek");
+const __s_change_shape = cptr.lit("change shape");
+const __s_sit = cptr.lit("sit");
+const __s_spawn_in_the_water = cptr.lit("spawn in the water");
+const __s_lay_an_egg = cptr.lit("lay an egg");
+const __s_break_out_of_your_armor = cptr.lit("break out of your armor!");
+const __s_s_tears_apart = cptr.lit("%s tears apart!");
+const __s_knot_on_your_s_is_pulled_apart = cptr.lit("knot on your %s is pulled apart!");
+const __s_clasp_on_your_s_breaks_open = cptr.lit("clasp on your %s breaks open!");
+const __s_shirt_rips_to_shreds = cptr.lit("shirt rips to shreds!");
+const __s_armor_falls_around_you = cptr.lit("armor falls around you!");
+const __s_s_falls_unsupported = cptr.lit("%s falls, unsupported!");
+const __s_shrink_out_of_your_s = cptr.lit("shrink out of your %s!");
+const __s_seep_right_through_your_shirt = cptr.lit("seep right through your shirt!");
+const __s_become_much_too_small_for_your_shirt = cptr.lit("become much too small for your shirt!");
+const __s_horn_s = cptr.lit("horn%s");
+const __s_s = cptr.lit("s");
+const __s_s_s_through_s = cptr.lit("%s %s through %s.");
+const __s_pierce = cptr.lit("pierce");
+const __s_s_falls_to_the_s = cptr.lit("%s falls to the %s!");
+const __s_drop_your_gloves_s = cptr.lit("drop your gloves%s!");
+const __s_and_weapon = cptr.lit(" and weapon");
+const __s_can_no_longer_hold_your_shield = cptr.lit("can no longer hold your shield!");
+const __s_boots_fall_away = cptr.lit("boots fall away!");
+const __s_boots_s_off_your_feet = cptr.lit("boots %s off your feet!");
+const __s_slide = cptr.lit("slide");
+const __s_are_pushed = cptr.lit("are pushed");
+const __s_pair_of = cptr.lit("pair of ");
+const __s_s_s_off = cptr.lit("%s %s off!");
+const __s_fall = cptr.lit("fall");
+const __s_drop = cptr.lit("drop");
+const __s_release = cptr.lit("release");
+const __s_sword = cptr.lit("sword");
+const __s_weapon = cptr.lit("weapon");
+const __s_find_you_must_s_s_s = cptr.lit("find you must %s %s %s!");
+const __s_corpse = cptr.lit("corpse");
+const __s_killed_while_stuck_in_creature_form = cptr.lit("killed while stuck in creature form");
+const __s_fail = cptr.lit("fail");
+const __s_you_return_to_s_form = cptr.lit("You return to %s form!");
+const __s_old_form_was_not_healthy_enough_to = cptr.lit("old form was not healthy enough to survive.");
+const __s_reverting_to_unhealthy_s_form = cptr.lit("reverting to unhealthy %s form");
+const __s_and_s_return_gently_to_the_s = cptr.lit("and %s return gently to the %s.");
+const __s_breathe_sorry = cptr.lit("breathe.  Sorry.");
+const __s_don_t_have_enough_energy_to_breathe = cptr.lit("don't have enough energy to breathe!");
+const __s_bad_breath_attack = cptr.lit("bad breath attack?");
+const __s_bad_spit_attack = cptr.lit("bad spit attack?");
+const __s_bad_attack_type_in_dospit = cptr.lit("bad attack type in dospit");
+const __s_ball_and_chain_are_buried_firmly_in_the = cptr.lit("ball and chain are buried firmly in the %s.");
+const __s_are_not_chained_to_anything = cptr.lit("are not chained to anything!");
+const __s_must_be_on_s_ground_to_spin_a_web = cptr.lit("must be on %s ground to spin a web.");
+const __s_solid = cptr.lit("solid");
+const __s_the = cptr.lit("the");
+const __s_release_web_fluid_inside_s = cptr.lit("release web fluid inside %s.");
+const __s_swallower_has_no_engulfing_attack = cptr.lit("Swallower has no engulfing attack?");
+const __s_ignites_and = cptr.lit("ignites and ");
+const __s_fries_and = cptr.lit("fries and ");
+const __s_freezes_shatters_and = cptr.lit("freezes, shatters and ");
+const __s_web_sis_swept_away = cptr.lit("web %sis swept away!");
+const __s_web_dissolves_into_s = cptr.lit("web dissolves into %s.");
+const __s_cannot_spin_webs_while_stuck_in_a_trap = cptr.lit("cannot spin webs while stuck in a trap.");
+const __s_spin_a_web_covering_up_the_pit = cptr.lit("spin a web, covering up the pit.");
+const __s_squeaky_board_is_muffled = cptr.lit("squeaky board is muffled.");
+const __s_webbing_vanishes = cptr.lit("webbing vanishes!");
+const __s_make_the_web_thicker = cptr.lit("make the web thicker.");
+const __s_web_over_the_s = cptr.lit("web over the %s.");
+const __s_trap_door = cptr.lit("trap door");
+const __s_hole = cptr.lit("hole");
+const __s_spin_a_web_jamming_the_trigger = cptr.lit("spin a web, jamming the trigger.");
+const __s_have_triggered_a_trap = cptr.lit("have triggered a trap!");
+const __s_webbing_over_trap_type_d = cptr.lit("Webbing over trap type %d?");
+const __s_web_fails_to_impede_access_to_the_s = cptr.lit("web fails to impede access to the %s.");
+const __s_stairs = cptr.lit("stairs");
+const __s_ladder = cptr.lit("ladder");
+const __s_spin_a_web__2 = cptr.lit("spin a web.");
+const __s_lack_the_energy_to_send_forth_a_call = cptr.lit("lack the energy to send forth a call for help!");
+const __s_call_upon_your_brethren_for_help = cptr.lit("call upon your brethren for help!");
+const __s_but_none_arrive = cptr.lit("But none arrive.");
+const __s_gaze_attack_d = cptr.lit("gaze attack %d?");
+const __s_see_anything_to_gaze_at = cptr.lit("see anything to gaze at.");
+const __s_gaze_at_anything_you_can_see = cptr.lit("gaze at anything you can see.");
+const __s_lack_the_energy_to_use_your_special_gaze = cptr.lit("lack the energy to use your special gaze!");
+const __s_s_seems_not_to_notice_your_gaze = cptr.lit("%s seems not to notice your gaze.");
+const __s_see_where_to_gaze_at_s = cptr.lit("see where to gaze at %s.");
+const __s_avoid_gazing_at_s = cptr.lit("avoid gazing at %s.");
+const __s_really_s_s = cptr.lit("Really %s %s?");
+const __s_confuse = cptr.lit("confuse");
+const __s_attack = cptr.lit("attack");
+const __s_gaze_confuses_s = cptr.lit("gaze confuses %s!");
+const __s_s_is_getting_more_and_more_confused = cptr.lit("%s is getting more and more confused.");
+const __s_dogaze = cptr.lit("dogaze");
+const __s_attack_s_with_a_fiery_gaze = cptr.lit("attack %s with a fiery gaze!");
+const __s_fire_doesn_t_burn_s = cptr.lit("fire doesn't burn %s!");
+const __s_are_frozen_by_s_gaze = cptr.lit("are frozen by %s gaze!");
+const __s_frozen_by_a_monster_s_gaze = cptr.lit("frozen by a monster's gaze");
+const __s_stiffen_momentarily_under_s_gaze = cptr.lit("stiffen momentarily under %s gaze.");
+const __s_gazing_at_the_awake_s_is_not_a_very = cptr.lit("Gazing at the awake %s is not a very good idea.");
+const __s_you_turn_to_stone__2 = cptr.lit("You turn to stone...");
+const __s_deliberately_meeting_medusa_s_gaze = cptr.lit("deliberately meeting Medusa's gaze");
+const __s_gaze_at_no_place_in_particular = cptr.lit("gaze at no place in particular.");
+const __s_hide_while_you_re_s = cptr.lit("hide while you're %s.");
+const __s_trapped = cptr.lit("trapped");
+const __s_swallowed = cptr.lit("swallowed");
+const __s_engulfed = cptr.lit("engulfed");
+const __s_being_held = cptr.lit("being held");
+const __s_holding_someone = cptr.lit("holding someone");
+const __s_holding_that_creature = cptr.lit("holding that creature");
+const __s_fountain_is_not_deep_enough_to_hide_in = cptr.lit("fountain is not deep enough to hide in.");
+const __s_is_no_s_to_hide_in_here = cptr.lit("is no %s to hide in here.");
+const __s_water = cptr.lit("water");
+const __s_is_nothing_to_hide_under_here = cptr.lit("is nothing to hide under here.");
+const __s_hiding_under_s_s_is_a_fatal_mistake = cptr.lit("Hiding under %s%s is a fatal mistake...");
+const __s_hiding_under_s_s = cptr.lit("hiding under %s%s");
+const __s_is_nowhere_to_hide_above_you = cptr.lit("is nowhere to hide above you.");
+const __s_is_nowhere_to_hide_beneath_you = cptr.lit("is nowhere to hide beneath you.");
+const __s_transform_into_s = cptr.lit("transform into %s.");
+const __s_concentrate_but_lack_the_energy_to = cptr.lit("concentrate but lack the energy to maintain doing so.");
+const __s_concentrate = cptr.lit("concentrate.");
+const __s_a_wave_of_psychic_energy_pours_out = cptr.lit("A wave of psychic energy pours out.");
+const __s_domindblast = cptr.lit("domindblast");
+const __s_lock_in_on_s_s = cptr.lit("lock in on %s %s.");
+const __s_telepathy = cptr.lit("telepathy");
+const __s_latent_telepathy = cptr.lit("latent telepathy");
+const __s_mind = cptr.lit("mind");
+const __s_uunstick_no_ustuck = cptr.lit("uunstick: no ustuck?");
+const __s_s_is_no_longer_in_your_clutches = cptr.lit("%s is no longer in your clutches.");
+const __s_skin_returns_to_its_original_form = cptr.lit("skin returns to its original form.");
+const __s_mbodypart_bad_part_d = cptr.lit("mbodypart: bad part %d");
+const __s_mystery_part = cptr.lit("mystery part");
+const __s_paw = cptr.lit("paw");
+const __s_pawed = cptr.lit("pawed");
+const __s_rear_paw = cptr.lit("rear paw");
+const __s_claw = cptr.lit("claw");
+const __s_clawed = cptr.lit("clawed");
+const __s_trunk = cptr.lit("trunk");
+const __s_skin = cptr.lit("skin");
+const __s_tentacle = cptr.lit("tentacle");
+const __s_cornea = cptr.lit("cornea");
+const __s_rayed = cptr.lit("rayed");
+const __s_ray = cptr.lit("ray");
+const __s_beam = cptr.lit("beam");
+const __s_head = cptr.lit("head");
+const __s_arm = cptr.lit("arm");
+const __s_eye = cptr.lit("eye");
+const __s_face = cptr.lit("face");
+const __s_finger = cptr.lit("finger");
+const __s_fingertip = cptr.lit("fingertip");
+const __s_foot = cptr.lit("foot");
+const __s_hand = cptr.lit("hand");
+const __s_handed = cptr.lit("handed");
+const __s_leg = cptr.lit("leg");
+const __s_light_headed = cptr.lit("light headed");
+const __s_neck = cptr.lit("neck");
+const __s_spine = cptr.lit("spine");
+const __s_toe = cptr.lit("toe");
+const __s_hair = cptr.lit("hair");
+const __s_blood = cptr.lit("blood");
+const __s_lung = cptr.lit("lung");
+const __s_nose = cptr.lit("nose");
+const __s_stomach = cptr.lit("stomach");
+const __s_pseudopod = cptr.lit("pseudopod");
+const __s_dark_spot = cptr.lit("dark spot");
+const __s_front = cptr.lit("front");
+const __s_pseudopod_extension = cptr.lit("pseudopod extension");
+const __s_pseudopod_extremity = cptr.lit("pseudopod extremity");
+const __s_pseudopod_root = cptr.lit("pseudopod root");
+const __s_grasp = cptr.lit("grasp");
+const __s_grasped = cptr.lit("grasped");
+const __s_cerebral_area = cptr.lit("cerebral area");
+const __s_lower_pseudopod = cptr.lit("lower pseudopod");
+const __s_viscous = cptr.lit("viscous");
+const __s_middle = cptr.lit("middle");
+const __s_surface = cptr.lit("surface");
+const __s_ripples = cptr.lit("ripples");
+const __s_juices = cptr.lit("juices");
+const __s_sensor = cptr.lit("sensor");
+const __s_forelimb = cptr.lit("forelimb");
+const __s_foreclaw = cptr.lit("foreclaw");
+const __s_claw_tip = cptr.lit("claw tip");
+const __s_rear_claw = cptr.lit("rear claw");
+const __s_rear_limb = cptr.lit("rear limb");
+const __s_rear_claw_tip = cptr.lit("rear claw tip");
+const __s_fur = cptr.lit("fur");
+const __s_wing = cptr.lit("wing");
+const __s_wing_tip = cptr.lit("wing tip");
+const __s_winged = cptr.lit("winged");
+const __s_feathers = cptr.lit("feathers");
+const __s_bill = cptr.lit("bill");
+const __s_foreleg = cptr.lit("foreleg");
+const __s_forehoof = cptr.lit("forehoof");
+const __s_hoof_tip = cptr.lit("hoof tip");
+const __s_rear_hoof = cptr.lit("rear hoof");
+const __s_hooved = cptr.lit("hooved");
+const __s_rear_leg = cptr.lit("rear leg");
+const __s_backbone = cptr.lit("backbone");
+const __s_rear_hoof_tip = cptr.lit("rear hoof tip");
+const __s_mane = cptr.lit("mane");
+const __s_appendage = cptr.lit("appendage");
+const __s_optic_nerve = cptr.lit("optic nerve");
+const __s_body = cptr.lit("body");
+const __s_tentacle_tip = cptr.lit("tentacle tip");
+const __s_lower_appendage = cptr.lit("lower appendage");
+const __s_tentacled = cptr.lit("tentacled");
+const __s_lower_tentacle = cptr.lit("lower tentacle");
+const __s_rotational = cptr.lit("rotational");
+const __s_equator = cptr.lit("equator");
+const __s_lower_tentacle_tip = cptr.lit("lower tentacle tip");
+const __s_cilia = cptr.lit("cilia");
+const __s_life_force = cptr.lit("life force");
+const __s_retina = cptr.lit("retina");
+const __s_olfactory_nerve = cptr.lit("olfactory nerve");
+const __s_interior = cptr.lit("interior");
+const __s_mycelium = cptr.lit("mycelium");
+const __s_visual_area = cptr.lit("visual area");
+const __s_hypha = cptr.lit("hypha");
+const __s_root = cptr.lit("root");
+const __s_strand = cptr.lit("strand");
+const __s_stranded = cptr.lit("stranded");
+const __s_cap_area = cptr.lit("cap area");
+const __s_rhizome = cptr.lit("rhizome");
+const __s_sporulated = cptr.lit("sporulated");
+const __s_stalk = cptr.lit("stalk");
+const __s_rhizome_tip = cptr.lit("rhizome tip");
+const __s_spores = cptr.lit("spores");
+const __s_gill = cptr.lit("gill");
+const __s_region = cptr.lit("region");
+const __s_minor_current = cptr.lit("minor current");
+const __s_lower_current = cptr.lit("lower current");
+const __s_swirl = cptr.lit("swirl");
+const __s_swirled = cptr.lit("swirled");
+const __s_central_core = cptr.lit("central core");
+const __s_addled = cptr.lit("addled");
+const __s_center = cptr.lit("center");
+const __s_currents = cptr.lit("currents");
+const __s_edge = cptr.lit("edge");
+const __s_leading_edge = cptr.lit("leading edge");
+const __s_vestigial_limb = cptr.lit("vestigial limb");
+const __s_large_scale = cptr.lit("large scale");
+const __s_large_scale_tip = cptr.lit("large scale tip");
+const __s_rear_region = cptr.lit("rear region");
+const __s_scale_gap = cptr.lit("scale gap");
+const __s_scale_gapped = cptr.lit("scale gapped");
+const __s_length = cptr.lit("length");
+const __s_rear_scale = cptr.lit("rear scale");
+const __s_scales = cptr.lit("scales");
+const __s_forked_tongue = cptr.lit("forked tongue");
+const __s_anterior_segment = cptr.lit("anterior segment");
+const __s_light_sensitive_cell = cptr.lit("light sensitive cell");
+const __s_clitellum = cptr.lit("clitellum");
+const __s_setae = cptr.lit("setae");
+const __s_posterior_segment = cptr.lit("posterior segment");
+const __s_segment = cptr.lit("segment");
+const __s_segmented = cptr.lit("segmented");
+const __s_posterior = cptr.lit("posterior");
+const __s_over_stretched = cptr.lit("over stretched");
+const __s_posterior_setae = cptr.lit("posterior setae");
+const __s_prostomium = cptr.lit("prostomium");
+const __s_pedipalp = cptr.lit("pedipalp");
+const __s_tarsus = cptr.lit("tarsus");
+const __s_palped = cptr.lit("palped");
+const __s_cephalothorax = cptr.lit("cephalothorax");
+const __s_spun_out = cptr.lit("spun out");
+const __s_abdomen = cptr.lit("abdomen");
+const __s_hemolymph = cptr.lit("hemolymph");
+const __s_book_lung = cptr.lit("book lung");
+const __s_labrum = cptr.lit("labrum");
+const __s_digestive_tract = cptr.lit("digestive tract");
+const __s_fin = cptr.lit("fin");
+const __s_premaxillary = cptr.lit("premaxillary");
+const __s_pelvic_axillary = cptr.lit("pelvic axillary");
+const __s_pelvic_fin = cptr.lit("pelvic fin");
+const __s_anal_fin = cptr.lit("anal fin");
+const __s_pectoral_fin = cptr.lit("pectoral fin");
+const __s_finned = cptr.lit("finned");
+const __s_peduncle = cptr.lit("peduncle");
+const __s_played_out = cptr.lit("played out");
+const __s_gills = cptr.lit("gills");
+const __s_dorsal_fin = cptr.lit("dorsal fin");
+const __s_caudal_fin = cptr.lit("caudal fin");
+const __s_nostril = cptr.lit("nostril");
+const __s_strangely_you_feel_better_than_before = cptr.lit("Strangely, you feel better than before.");
+const __s_dead = cptr.lit("dead");
+const __s_condemned = cptr.lit("condemned");
+const __s_empty__2 = cptr.lit("empty");
 
 /** C ref: polyself.c:33 — char[33] */
 const no_longer_petrify_resistant = cptr.bytes("No longer petrify-resistant, you");
@@ -706,14 +706,14 @@ function* check_strangling(on) {
         if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION && (yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)))) {
             cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 6n);
             cptr.st1(disp, 1);
-            (yield* Your(__sl0, (yield* simpleonames(uamul.v)), was_strangled ? __sl1 : __sl2, (yield* body_part(NHC.NECK))));
+            (yield* Your(__s_s_s_your_s, (yield* simpleonames(uamul.v)), was_strangled ? __s_still_constricts : __s_begins_constricting, (yield* body_part(NHC.NECK))));
             (yield* discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1));
         }
     } else {
         if (Strangled() && !(yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)))) {
             cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 0n);
             cptr.st1(disp, 1);
-            (yield* You(__sl3));
+            (yield* You(__s_are_no_longer_being_strangled));
         }
     }
 }
@@ -740,7 +740,7 @@ function* polyman(fmt, arg) {
     find_ac();
     if (was_mimicking) {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
-            (yield* unmul(__sl4));
+            (yield* unmul(__s_empty));
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
     }
@@ -753,7 +753,7 @@ function* polyman(fmt, arg) {
             void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
         } else {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl5);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_self_genocide);
         }
         (yield* dealloc_killer(kptr));
         (yield* done(NHC.GENOCIDED));
@@ -763,7 +763,7 @@ function* polyman(fmt, arg) {
     if (cptr.ld1so(u, $you_twoweap) && !could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         (yield* untwoweapon());
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 256, __sl7), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 256, __s_polyman), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
     }
     if (was_blind && !Blind()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), 1n);
@@ -807,8 +807,8 @@ export function* livelog_newform(viapoly, oldgend, newgend) {
             newrole = (newgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
             oldrank = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(oldgend));
             newrank = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(newgend));
-            void cptr.sprintf(cptr.decay(buf), __sl8, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female), 48), newrank);
-            (yield* livelog_printf(4096n, __sl9, viapoly ? __sl10 : __sl11, (yield* an(strcmp(newrole, oldrole) ? newrole : (strcmp(newrank, oldrank) ? newrank : cptr.decay(buf))))));
+            void cptr.sprintf(cptr.decay(buf), __s_10s_30s, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female), 48), newrank);
+            (yield* livelog_printf(4096n, __s_s_into_s, viapoly ? __s_polymorphed : __s_transformed, (yield* an(strcmp(newrole, oldrole) ? newrole : (strcmp(newrank, oldrank) ? newrank : cptr.decay(buf))))));
         }
     }
 }
@@ -824,12 +824,12 @@ function* newman() {
     let hpmax;
     let enmax;
     oldlvl = cptr.ldI32o(u, $you_ulevel);
-    newlvl = (oldlvl + (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 342, __sl12), rn2(5)) : rn2(5)) + -2) | 0)) | 0;
+    newlvl = (oldlvl + (((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 342, __s_newman), rn2(5)) : rn2(5)) + -2) | 0)) | 0;
     if (newlvl > 127 || newlvl < 1) {
         {
-            (yield* urgent_pline(__sl13));
+            (yield* urgent_pline(__s_your_new_form_doesn_t_seem_healthy));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl14);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_unsuccessful_polymorph);
             (yield* done(NHC.DIED));
             (yield* newuhs(0));
             (yield* encumber_msg());
@@ -844,7 +844,7 @@ function* newman() {
         cptr.stI32o(u, $you_ulevelmax, newlvl);
     cptr.stI32o(u, $you_ulevel, newlvl);
     oldgend = poly_gender();
-    if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 361, __sl12), rn2(10)) : rn2(10)))
+    if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 361, __s_newman), rn2(10)) : rn2(10)))
         (yield* change_sex());
     (yield* adjabil(oldlvl, cptr.ldI32o(u, $you_ulevel)));
     cptr.stI64o(u, $you_uexp, rndexp(0));
@@ -852,7 +852,7 @@ function* newman() {
     hpmax = cptr.ldI32o(u, $you_uhpmax);
     for (i = 0; i < oldlvl; i++)
         hpmax = (hpmax - cptr.ldI16o2(u, i, 2, $you_uhpinc)) | 0;
-    hpmax = (yield* rounddiv(BigInt.asIntN(64, BigInt(hpmax) * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 390, __sl12), rn2(4)) : rn2(4)) + 8) | 0))), 10));
+    hpmax = (yield* rounddiv(BigInt.asIntN(64, BigInt(hpmax) * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 390, __s_newman), rn2(4)) : rn2(4)) + 8) | 0))), 10));
     for (i = 0; (cptr.stI32o(u, $you_ulevel, i)) < newlvl; i++)
         hpmax = (hpmax + newhp()) | 0;
     if (hpmax < cptr.ldI32o(u, $you_ulevel))
@@ -862,14 +862,14 @@ function* newman() {
     enmax = cptr.ldI32o(u, $you_uenmax);
     for (i = 0; i < oldlvl; i++)
         enmax = (enmax - cptr.ldI16o2(u, i, 2, $you_ueninc)) | 0;
-    enmax = (yield* rounddiv(BigInt.asIntN(64, BigInt(enmax) * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 404, __sl12), rn2(4)) : rn2(4)) + 8) | 0))), 10));
+    enmax = (yield* rounddiv(BigInt.asIntN(64, BigInt(enmax) * BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 404, __s_newman), rn2(4)) : rn2(4)) + 8) | 0))), 10));
     for (i = 0; (cptr.stI32o(u, $you_ulevel, i)) < newlvl; i++)
         enmax = (enmax + newpw()) | 0;
     if (enmax < cptr.ldI32o(u, $you_ulevel))
         enmax = cptr.ldI32o(u, $you_ulevel);
     cptr.stI32o(u, $you_uen, (yield* rounddiv(BigInt.asIntN(64, BigInt(cptr.ldI32o(u, $you_uen)) * BigInt(enmax)), ((cptr.ldI32o(u, $you_uenmax) < 1) ? 1 : cptr.ldI32o(u, $you_uenmax)))));
     cptr.stI32o(u, $you_uenmax, enmax);
-    cptr.stI32o(u, $you_uhunger, (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 414, __sl12), rn2(500)) : rn2(500)) + 500) | 0));
+    cptr.stI32o(u, $you_uhunger, (((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 414, __s_newman), rn2(500)) : rn2(500)) + 500) | 0));
     if (Sick())
         (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
     if (Stoned())
@@ -879,9 +879,9 @@ function* newman() {
             if (cptr.ldI32o(u, $you_uhp) <= 0)
                 cptr.stI32o(u, $you_uhp, 1);
         } else {
-            (yield* urgent_pline(__sl13));
+            (yield* urgent_pline(__s_your_new_form_doesn_t_seem_healthy));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl14);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_unsuccessful_polymorph);
             (yield* done(NHC.DIED));
             (yield* newuhs(0));
             (yield* encumber_msg());
@@ -890,14 +890,14 @@ function* newman() {
     }
     (yield* newuhs(0));
     newform = ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) && cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f) : ((cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual) : cptr.ldPtro(gu, $instance_globals_u_urace));
-    (yield* polyman(__sl15, newform));
+    (yield* polyman(__s_you_feel_like_a_new_s, newform));
     newgend = poly_gender();
     if (newlvl != oldlvl)
-        (yield* livelog_printf(4096n, __sl16, newlvl, newform));
+        (yield* livelog_printf(4096n, __s_became_experience_level_d_as_a_new_s, newlvl, newform));
     else
         (yield* livelog_newform(1, oldgend, newgend));
     if (Slimed()) {
-        (yield* Your(__sl17));
+        (yield* Your(__s_body_transforms_but_there_is_still));
         (yield* make_slimed(10n, null));
     }
     cptr.st1(disp, 1);
@@ -926,13 +926,13 @@ export function* polyself(psflags) {
         isvamp = schar(((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)) ? 1 : 0));
         controllable_poly = schar((Polymorph_control() && !(HStun() || (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
         if (Unchanging()) {
-            (yield* You(__sl18));
+            (yield* You(__s_fail_to_transform));
             return;
         }
         if (!Polymorph_control() && !forcecontrol && !draconian && !iswere && !isvamp) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 490, __sl19), rn2(20)) : rn2(20)) > (acurr(NHC.A_CON))) {
-                (yield* You(__sl20, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
-                (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__sl6, 492, __sl19), rnd(30)) : rnd(30)), __sl21, NHM.KILLED_BY_AN));
+            if ((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 490, __s_polyself), rn2(20)) : rn2(20)) > (acurr(NHC.A_CON))) {
+                (yield* You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
+                (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 492, __s_polyself), rnd(30)) : rnd(30)), __s_system_shock, NHM.KILLED_BY_AN));
                 (yield* exercise(NHC.A_CON, 0));
                 return;
             }
@@ -966,16 +966,16 @@ export function* polyself(psflags) {
         }
         case 13: {
         mntmp.v = NHC.NON_PM;
-        (yield* getlin(__sl22, cptr.decay(buf)));
+        (yield* getlin(__s_become_what_kind_of_monster_type_the, cptr.decay(buf)));
         void (yield* mungspaces(cptr.decay(buf)));
         if (cptr.ld1s(cptr.decay(buf)) == 27) {
             if (forcecontrol) {
-                (yield* pline(__sl20, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
+                (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
                 return;
             }
-            void cptr.strcpy(cptr.decay(buf), __sl23);
+            void cptr.strcpy(cptr.decay(buf), __s_star);
         }
-        if (!strcmp(cptr.decay(buf), __sl23) || !strcmp(cptr.decay(buf), __sl24)) { __pc = 15; continue; }
+        if (!strcmp(cptr.decay(buf), __s_star) || !strcmp(cptr.decay(buf), __s_random)) { __pc = 15; continue; }
         __pc = 14; continue;
         }
         case 15: {
@@ -1002,11 +1002,11 @@ export function* polyself(psflags) {
         case 18: {
         if (is_placeholder(cptr.add(mons, mntmp.v, 96)) && !((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && mntmp.v != NHC.PM_HUMAN) {
             if (mntmp.v == NHC.PM_ORC)
-                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 554, __sl19), rn2(3)) : rn2(3)) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
+                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 554, __s_polyself), rn2(3)) : rn2(3)) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
             else if (mntmp.v == NHC.PM_ELF)
-                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 556, __sl19), rn2(3)) : rn2(3)) ? NHC.PM_GREEN_ELF : NHC.PM_GREY_ELF;
+                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 556, __s_polyself), rn2(3)) : rn2(3)) ? NHC.PM_GREEN_ELF : NHC.PM_GREY_ELF;
             else if (mntmp.v == NHC.PM_GIANT)
-                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 558, __sl19), rn2(3)) : rn2(3)) ? NHC.PM_STONE_GIANT : NHC.PM_HILL_GIANT;
+                mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 558, __s_polyself), rn2(3)) : rn2(3)) ? NHC.PM_STONE_GIANT : NHC.PM_HILL_GIANT;
         }
         __pc = 16;
         continue;
@@ -1017,14 +1017,14 @@ export function* polyself(psflags) {
         }
         case 20: {
         if (!class$)
-            (yield* pline(__sl25));
+            (yield* pline(__s_i_ve_never_heard_of_such_monsters));
         else
-            (yield* You_cant(__sl26));
+            (yield* You_cant(__s_polymorph_into_any_of_those));
         __pc = 19;
         continue;
         }
         case 21: {
-        if (wizard() && Upolyd() && (mntmp.v == cptr.ldI32o(u, $you_umonster) || (cptr.ldI32o(u, $you_umonster) == NHC.PM_CLERIC && mntmp.v == NHC.PM_ALIGNED_CLERIC && !(yield* strstri(cptr.decay(buf), __sl27))))) { __pc = 23; continue; }
+        if (wizard() && Upolyd() && (mntmp.v == cptr.ldI32o(u, $you_umonster) || (cptr.ldI32o(u, $you_umonster) == NHC.PM_CLERIC && mntmp.v == NHC.PM_ALIGNED_CLERIC && !(yield* strstri(cptr.decay(buf), __s_aligned))))) { __pc = 23; continue; }
         __pc = 24; continue;
         }
         case 23: {
@@ -1048,7 +1048,7 @@ export function* polyself(psflags) {
         __pc = 31; continue;
         }
         case 32: {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__sl6, 601, __sl19), rn2(3)) : rn2(3)) || --tryct > 0) { __pc = 34; continue; }
+        if ((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 601, __s_polyself), rn2(3)) : rn2(3)) || --tryct > 0) { __pc = 34; continue; }
         __pc = 33; continue;
         }
         case 34: {
@@ -1065,7 +1065,7 @@ export function* polyself(psflags) {
             pm_name = (yield* the(pm_name));
         else if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 524288n) != 0n))
             pm_name = (yield* an(pm_name));
-        (yield* You_cant(__sl28, pm_name));
+        (yield* You_cant(__s_polymorph_into_s, pm_name));
         __pc = 28;
         continue;
         }
@@ -1091,7 +1091,7 @@ export function* polyself(psflags) {
         }
         case 11: {
         if (!tryct)
-            (yield* pline(__sl20, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries)));
+            (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries)));
         if (draconian && (tryct <= 0 || mntmp.v == armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp)))) { __pc = 36; continue; }
         __pc = 35; continue;
         }
@@ -1127,11 +1127,11 @@ export function* polyself(psflags) {
             was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
             arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
             if (Is_dragon_scales(uarm.v)) {
-                (yield* You(__sl29));
+                (yield* You(__s_merge_with_your_scaly_armor));
             } else {
                 void cptr.strcpy(cptr.decay(buf), (yield* simpleonames(uarm.v)));
-                strsubst(cptr.decay(buf), __sl30, __sl31);
-                (yield* Your(__sl32, cptr.decay(buf)));
+                strsubst(cptr.decay(buf), __s_dragon, __s_sp);
+                (yield* Your(__s_s_reverts_to_scales_as_you_merge_with, cptr.decay(buf)));
                 cptr.stI16o(uarm.v, $obj_otyp, cptr.ldI16o(uarm.v, $obj_otyp) + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0));
                 (yield* observe_object(uarm.v));
                 cptr.st1(disp, 1);
@@ -1172,12 +1172,12 @@ export function* polyself(psflags) {
         }
         case 4 /* do_vampyr: */: {
         if (mntmp.v < NHC.LOW_PM || (cptr.ldU16o2(mons, mntmp.v, 96, $permonst_geno) & NHM.G_UNIQ)) {
-            mntmp.v = (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_VAMPIRE_LEADER, 96)) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 674, __sl19), rn2(10)) : rn2(10))) ? NHC.PM_WOLF : (!(rng_log_enabled() ? (rng_log_set_caller(__sl6, 675, __sl19), rn2(4)) : rn2(4)) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
-            if (ismnum(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)) && !(cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 678, __sl19), rn2(2)) : rn2(2)))
+            mntmp.v = (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_VAMPIRE_LEADER, 96)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 674, __s_polyself), rn2(10)) : rn2(10))) ? NHC.PM_WOLF : (!(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 675, __s_polyself), rn2(4)) : rn2(4)) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
+            if (ismnum(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)) && !(cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 678, __s_polyself), rn2(2)) : rn2(2)))
                 mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
         }
         if (controllable_poly) {
-            void cptr.sprintf(cptr.decay(buf), __sl33, (yield* an(pmname(cptr.add(mons, mntmp.v, 96), gvariant.v))));
+            void cptr.sprintf(cptr.decay(buf), __s_become_s, (yield* an(pmname(cptr.add(mons, mntmp.v, 96), gvariant.v))));
             if ((yield* yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1)) != 121)
                 return;
         }
@@ -1207,13 +1207,13 @@ export function* polyself(psflags) {
         if (mntmp.v < NHC.LOW_PM) {
             tryct = 200;
             do {
-                mntmp.v = (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 702, __sl19), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
+                mntmp.v = (((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 702, __s_polyself), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
                 if (((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) && !is_placeholder(cptr.add(mons, mntmp.v, 96)))
                     break;
             } while (--tryct > 0);
         }
         (cptr.stI32o(gs, $instance_globals_s_sex_change_ok, cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + 1)) - (1);
-        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) || (!forcecontrol && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 712, __sl19), rn2(5)) : rn2(5))) || ((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
+        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) || (!forcecontrol && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 712, __s_polyself), rn2(5)) : rn2(5))) || ((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
             (yield* newman());
         } else {
             void (yield* polymon(mntmp.v));
@@ -1255,12 +1255,12 @@ export function* polymon(mntmp) {
     let mlvl;
     let newMaxStr;
     if (cptr.ld1uo2(svm, mntmp, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
-        (yield* You_feel(__sl34, pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
+        (yield* You_feel(__s_rather_s_ish, pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
         (yield* exercise(NHC.A_WIS, 1));
         return 0;
     }
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polyselfs, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n)) - (1n)))
-        (yield* livelog_printf(32n, __sl35, (yield* an(pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)))));
+        (yield* livelog_printf(32n, __s_changed_form_for_the_first_time, (yield* an(pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)))));
     (yield* exercise(NHC.A_CON, 0));
     (yield* exercise(NHC.A_WIS, 1));
     if (!Upolyd()) {
@@ -1273,7 +1273,7 @@ export function* polymon(mntmp) {
         cptr.st1o(flags, $flag_female, schar((cptr.ldI32o(u, $you_mfemale) & 1)));
     }
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && U_AP_TYPE() == NHC.M_AP_OBJECT && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_MIMIC)
-        (yield* unmul(__sl4));
+        (yield* unmul(__s_empty));
     if (cptr.ld1so2(mons, mntmp, 96, $permonst_mlet) != NHC.S_MIMIC) {
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
@@ -1285,22 +1285,22 @@ export function* polymon(mntmp) {
         if (!cptr.ld1so(flags, $flag_female))
             dochange = 1;
     } else if (!((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 262144n) != 0n) && mntmp != cptr.ldI32o(u, $you_ulycn)) {
-        if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 792, __sl36), rn2(10)) : rn2(10)))
+        if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 792, __s_polymon), rn2(10)) : rn2(10)))
             dochange = 1;
     }
-    void cptr.strcpy(cptr.decay(ustuckNam), cptr.ldPtro(u, $you_ustuck) ? (yield* Some_Monnam(cptr.ldPtro(u, $you_ustuck))) : __sl4);
-    void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __sl4 : __sl37);
+    void cptr.strcpy(cptr.decay(ustuckNam), cptr.ldPtro(u, $you_ustuck) ? (yield* Some_Monnam(cptr.ldPtro(u, $you_ustuck))) : __s_empty);
+    void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_empty : __s_new);
     if (dochange) {
         cptr.st1o(flags, $flag_female, schar((!cptr.ld1so(flags, $flag_female))));
-        void cptr.strcat(cptr.decay(buf), (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 131072n) != 0n)) ? __sl4 : (cptr.ld1so(flags, $flag_female) ? __sl38 : __sl39));
+        void cptr.strcat(cptr.decay(buf), (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 131072n) != 0n)) ? __s_empty : (cptr.ld1so(flags, $flag_female) ? __s_female : __s_male));
     }
     void cptr.strcat(cptr.decay(buf), pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
-    (yield* You(__sl40, (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __sl41 : __sl42, (yield* an(cptr.decay(buf)))));
+    (yield* You(__s_s_s, (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_turn_into : __s_feel_like, (yield* an(cptr.decay(buf)))));
     if (Stoned() && poly_when_stoned(cptr.add(mons, mntmp, 96))) {
         mntmp = NHC.PM_STONE_GOLEM;
-        (yield* make_stoned(0n, __sl43, 0, null));
+        (yield* make_stoned(0n, __s_you_turn_to_stone, 0, null));
     }
-    cptr.stI32o(u, $you_mtimedone, (((rng_log_enabled() ? (rng_log_set_caller(__sl6, 813, __sl36), rn2(500)) : rn2(500)) + 500) | 0));
+    cptr.stI32o(u, $you_mtimedone, (((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 813, __s_polymon), rn2(500)) : rn2(500)) + 500) | 0));
     cptr.stI32o(u, $you_umonnum, mntmp);
     (yield* set_uasmon());
     newMaxStr = uasmon_maxStr();
@@ -1312,15 +1312,15 @@ export function* polymon(mntmp) {
             cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)));
     }
     if (Stone_resistance() && Stoned()) {
-        (yield* make_stoned(0n, __sl44, 0, null));
+        (yield* make_stoned(0n, __s_you_no_longer_seem_to_be_petrifying, 0, null));
     }
     if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))) && Sick()) {
         (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
-        (yield* You(__sl45));
+        (yield* You(__s_no_longer_feel_sick));
     }
     if (Slimed()) {
         if (flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            (yield* make_slimed(0n, __sl46));
+            (yield* make_slimed(0n, __s_the_slime_burns_away));
         } else if (mntmp == NHC.PM_GREEN_SLIME) {
             (yield* make_slimed(0n, null));
         }
@@ -1330,14 +1330,14 @@ export function* polymon(mntmp) {
         (yield* make_glib(0));
     mlvl = cptr.ld1so2(mons, mntmp, 96, $permonst_mlevel);
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DRAGON && mntmp >= NHC.PM_GRAY_DRAGON) {
-        cptr.stI32o(u, $you_mhmax, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, mlvl)) : ((Math.imul(4, mlvl) + (rng_log_enabled() ? (rng_log_set_caller(__sl6, 861, __sl36), d((mlvl), 4)) : d((mlvl), 4))) | 0));
+        cptr.stI32o(u, $you_mhmax, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, mlvl)) : ((Math.imul(4, mlvl) + (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 861, __s_polymon), d((mlvl), 4)) : d((mlvl), 4))) | 0));
     } else if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM)) {
         cptr.stI32o(u, $you_mhmax, golemhp(mntmp));
     } else {
         if (!mlvl)
-            cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 866, __sl36), rnd(4)) : rnd(4)));
+            cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 866, __s_polymon), rnd(4)) : rnd(4)));
         else
-            cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 868, __sl36), d((mlvl), 8)) : d((mlvl), 8)));
+            cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 868, __s_polymon), d((mlvl), 8)) : d((mlvl), 8)));
         if (is_home_elemental(cptr.add(mons, mntmp, 96)))
             cptr.stI32o(u, $you_mhmax, Math.imul(cptr.ldI32o(u, $you_mhmax), 3));
     }
@@ -1353,7 +1353,7 @@ export function* polymon(mntmp) {
     if (was_hiding_under)
         void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__sl6, 897, __sl36), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 897, __s_polymon), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
     }
     if (was_blind && !Blind()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), 1n);
@@ -1371,7 +1371,7 @@ export function* polymon(mntmp) {
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
                 if (canspotmon(cptr.ldPtro(u, $you_ustuck)))
                     void cptr.strcpy(cptr.decay(ustuckNam), (yield* Monnam(cptr.ldPtro(u, $you_ustuck))));
-                (yield* pline(__sl47, cptr.decay(ustuckNam)));
+                (yield* pline(__s_s_can_no_longer_contain_you, cptr.decay(ustuckNam)));
                 expels_mesg = 0;
             }
             (yield* expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), expels_mesg));
@@ -1381,14 +1381,14 @@ export function* polymon(mntmp) {
         if (canspotmon(cptr.ldPtro(u, $you_ustuck)))
             void cptr.strcpy(cptr.decay(ustuckNam), (yield* Monnam(cptr.ldPtro(u, $you_ustuck))));
         (yield* set_ustuck(null));
-        (yield* pline(__sl48, cptr.decay(ustuckNam)));
+        (yield* pline(__s_s_loses_its_grip_on_you, cptr.decay(ustuckNam)));
     } else if (sticking && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         (yield* uunstick());
     }
     if (cptr.ldPtro(u, $you_usteed)) {
-        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 956, __sl36), rnl(3)) : rnl(3))) {
-            (yield* pline(__sl49, cptr.decay(no_longer_petrify_resistant), (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
-            void cptr.sprintf(cptr.decay(buf), __sl50, (yield* an(pmname(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), Mgender(cptr.ldPtro(u, $you_usteed))))));
+        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 956, __s_polymon), rnl(3)) : rnl(3))) {
+            (yield* pline(__s_s_touch_s, cptr.decay(no_longer_petrify_resistant), (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
+            void cptr.sprintf(cptr.decay(buf), __s_riding_s, (yield* an(pmname(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), Mgender(cptr.ldPtro(u, $you_usteed))))));
             (yield* instapetrify(cptr.decay(buf)));
         }
         if (!can_ride(cptr.ldPtro(u, $you_usteed)))
@@ -1400,31 +1400,31 @@ export function* polymon(mntmp) {
     }
     if (Passes_walls() && cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)) {
         if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) {
-            (yield* pline_The(__sl51));
+            (yield* pline_The(__s_rock_seems_to_no_longer_trap_you));
         } else {
-            (yield* pline_The(__sl52));
+            (yield* pline_The(__s_buried_ball_is_no_longer_bound_to_you));
             (yield* buried_ball_to_freedom());
         }
         (yield* reset_utrap(1));
     } else if (likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
-        (yield* pline_The(__sl53, hliquid(__sl54)));
+        (yield* pline_The(__s_s_now_feels_soothing, hliquid(__s_lava)));
         (yield* reset_utrap(1));
     }
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n) || is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
         if (Punished()) {
-            (yield* You(__sl55));
+            (yield* You(__s_slip_out_of_the_iron_chain));
             (yield* unpunish());
         } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
-            (yield* You(__sl56));
+            (yield* You(__s_slip_free_of_the_buried_ball_and_chain));
             (yield* buried_ball_to_freedom());
         }
     }
     if (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n) || is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n) || (cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) <= NHM.MZ_SMALL && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP))) {
-        (yield* You(__sl57, cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB ? __sl58 : __sl59));
+        (yield* You(__s_are_no_longer_stuck_in_the_s, cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB ? __s_web : __s_bear_trap));
         (yield* reset_utrap(1));
     }
     if (webmaker(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
-        (yield* You(__sl60));
+        (yield* You(__s_orient_yourself_on_the_web));
         (yield* reset_utrap(1));
     }
     (yield* check_strangling(1));
@@ -1439,33 +1439,33 @@ export function* polymon(mntmp) {
         let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
         let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
         if (attacktype(uptr, NHM.AT_BREA))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl61));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_use_your_breath_weapon));
         if (attacktype(uptr, NHM.AT_SPIT))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl62));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_spit_venom));
         if (cptr.ld1so(uptr, $permonst_mlet) == NHC.S_NYMPH)
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl63));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_remove_an_iron_ball));
         if (attacktype(uptr, NHM.AT_GAZE))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl64));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_gaze_at_monsters));
         if (might_hide && webmaker(uptr))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl65));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_hide_or_to_spin_a_web));
         else if (might_hide)
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl66));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_hide));
         else if (webmaker(uptr))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl67));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_spin_a_web));
         if (((cptr.ldU64o((uptr), $permonst_mflags2) & 4n) != 0n))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl68));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_summon_help));
         if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN)
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl69));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_multiply_in_a_fountain));
         if (is_unicorn(uptr))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl70));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_use_your_horn));
         if (is_mind_flayer(uptr))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl71));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_emit_a_mental_blast));
         if (cptr.ld1uo(uptr, $permonst_msound) == NHC.MS_SHRIEK)
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl72));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_shriek));
         if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __sl73));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_change_shape));
         if (((cptr.ldU64o((uptr), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female) && !(cptr.eq(uptr, cptr.add(mons, NHC.PM_GIANT_EEL, 96)) || cptr.eq(uptr, cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96))))
-            (yield* pline(cptr.decay(__static_polymon_use_thec), __sl74, eggs_in_water(uptr) ? __sl75 : __sl76));
+            (yield* pline(cptr.decay(__static_polymon_use_thec), __s_sit, eggs_in_water(uptr) ? __s_spawn_in_the_water : __s_lay_an_egg));
     }
     return 1;
 }
@@ -1517,51 +1517,51 @@ function* break_armor() {
                 cancel_don();
             if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                 (yield* end_burn(otmp, 0));
-            (yield* You(__sl77));
+            (yield* You(__s_break_out_of_your_armor));
             (yield* exercise(NHC.A_STR, 0));
             void (yield* Armor_gone());
             (yield* useup(otmp));
         }
         if ((otmp = uarmc.v) !== null && (cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING || !WrappingAllowed(uptr))) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MUMMY_WRAPPING) {
-                (yield* Your(__sl78, cloak_simple_name(otmp)));
+                (yield* Your(__s_s_tears_apart, cloak_simple_name(otmp)));
                 void (yield* Cloak_off());
                 (yield* useup(otmp));
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ALCHEMY_SMOCK) {
-                (yield* pline_The(__sl79, cloak_simple_name(otmp)));
+                (yield* pline_The(__s_knot_on_your_s_is_pulled_apart, cloak_simple_name(otmp)));
                 void (yield* Cloak_off());
                 (yield* dropp(otmp));
             } else {
-                (yield* pline_The(__sl80, cloak_simple_name(otmp)));
+                (yield* pline_The(__s_clasp_on_your_s_breaks_open, cloak_simple_name(otmp)));
                 void (yield* Cloak_off());
                 (yield* dropp(otmp));
             }
         }
         if (uarmu.v) {
-            (yield* Your(__sl81));
+            (yield* Your(__s_shirt_rips_to_shreds));
             (yield* useup(uarmu.v));
         }
     } else if (sliparm(uptr)) {
         if ((otmp = uarm.v) !== null && racial_exception(cptr.add(gy, $instance_globals_y_youmonst), otmp) < 1) {
             if (donning(otmp))
                 cancel_don();
-            (yield* Your(__sl82));
+            (yield* Your(__s_armor_falls_around_you));
             void (yield* Armor_gone());
             (yield* dropp(otmp));
         }
         if ((otmp = uarmc.v) !== null && (cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING || !WrappingAllowed(uptr))) {
             if (is_whirly(uptr))
-                (yield* Your(__sl83, cloak_simple_name(otmp)));
+                (yield* Your(__s_s_falls_unsupported, cloak_simple_name(otmp)));
             else
-                (yield* You(__sl84, cloak_simple_name(otmp)));
+                (yield* You(__s_shrink_out_of_your_s, cloak_simple_name(otmp)));
             void (yield* Cloak_off());
             (yield* dropp(otmp));
         }
         if ((otmp = uarmu.v) !== null) {
             if (is_whirly(uptr))
-                (yield* You(__sl85));
+                (yield* You(__s_seep_right_through_your_shirt));
             else
-                (yield* You(__sl86));
+                (yield* You(__s_become_much_too_small_for_your_shirt));
             (yield* setworn(null, cptr.ldI64o(otmp, $obj_owornmask) & 64n));
             (yield* dropp(otmp));
         }
@@ -1570,12 +1570,12 @@ function* break_armor() {
         if ((otmp = uarmh.v) !== null) {
             if (is_flimsy(otmp) && !donning(otmp)) {
                 let hornbuf = new Uint8Array(256);
-                void cptr.sprintf(cptr.decay(hornbuf), __sl87, (((num_horns(uptr)) == 1) ? __sl4 : __sl88));
-                (yield* Your(__sl89, cptr.decay(hornbuf), (yield* vtense(cptr.decay(hornbuf), __sl90)), (yield* yname(otmp))));
+                void cptr.sprintf(cptr.decay(hornbuf), __s_horn_s, (((num_horns(uptr)) == 1) ? __s_empty : __s_s));
+                (yield* Your(__s_s_s_through_s, cptr.decay(hornbuf), (yield* vtense(cptr.decay(hornbuf), __s_pierce)), (yield* yname(otmp))));
             } else {
                 if (donning(otmp))
                     cancel_don();
-                (yield* Your(__sl91, helm_simple_name(otmp), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+                (yield* Your(__s_s_falls_to_the_s, helm_simple_name(otmp), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
                 void (yield* Helmet_off());
                 (yield* dropp(otmp));
             }
@@ -1585,20 +1585,20 @@ function* break_armor() {
         if ((otmp = uarmg.v) !== null) {
             if (donning(otmp))
                 cancel_don();
-            (yield* You(__sl92, uwep.v ? __sl93 : __sl4));
+            (yield* You(__s_drop_your_gloves_s, uwep.v ? __s_and_weapon : __s_empty));
             (yield* drop_weapon(0));
             void (yield* Gloves_off());
             (yield* dropp(otmp));
         }
         if ((otmp = uarms.v) !== null) {
-            (yield* You(__sl94));
+            (yield* You(__s_can_no_longer_hold_your_shield));
             void (yield* Shield_off());
             (yield* dropp(otmp));
         }
         if ((otmp = uarmh.v) !== null) {
             if (donning(otmp))
                 cancel_don();
-            (yield* Your(__sl91, helm_simple_name(otmp), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+            (yield* Your(__s_s_falls_to_the_s, helm_simple_name(otmp), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
             void (yield* Helmet_off());
             (yield* dropp(otmp));
         }
@@ -1608,9 +1608,9 @@ function* break_armor() {
             if (donning(otmp))
                 cancel_don();
             if (is_whirly(uptr))
-                (yield* Your(__sl95));
+                (yield* Your(__s_boots_fall_away));
             else
-                (yield* Your(__sl96, (cptr.ld1uo((uptr), $permonst_msize) < NHM.MZ_SMALL) ? __sl97 : __sl98));
+                (yield* Your(__s_boots_s_off_your_feet, (cptr.ld1uo((uptr), $permonst_msize) < NHM.MZ_SMALL) ? __s_slide : __s_are_pushed));
             void (yield* Boots_off());
             (yield* dropp(otmp));
         }
@@ -1618,9 +1618,9 @@ function* break_armor() {
     if ((otmp = ublindf.v) !== null && !((cptr.ldU64o((uptr), $permonst_mflags1) & 32768n) == 0n)) {
         let l;
         let eyewear = (yield* simpleonames(otmp));
-        if (!cptr.strncmp(eyewear, __sl99, BigInt.asUintN(64, BigInt((l = 8)))))
+        if (!cptr.strncmp(eyewear, __s_pair_of, BigInt.asUintN(64, BigInt((l = 8)))))
             eyewear = cptr.add(eyewear, l);
-        (yield* Your(__sl100, eyewear, (yield* vtense(eyewear, __sl101))));
+        (yield* Your(__s_s_s_off, eyewear, (yield* vtense(eyewear, __s_fall))));
         void (yield* Blindf_off(null));
         (yield* dropp(otmp));
     }
@@ -1637,19 +1637,19 @@ function* drop_weapon(alone) {
     let updateinv = 1;
     if (uwep.v) {
         if (!alone || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            candropwep = (yield* canletgo(uwep.v, __sl4));
-            candropswapwep = schar((!cptr.ld1so(u, $you_twoweap) || (yield* canletgo(uswapwep.v, __sl4)) ? 1 : 0));
+            candropwep = (yield* canletgo(uwep.v, __s_empty));
+            candropswapwep = schar((!cptr.ld1so(u, $you_twoweap) || (yield* canletgo(uswapwep.v, __s_empty)) ? 1 : 0));
             if (alone) {
-                what = (candropwep && candropswapwep) ? __sl102 : __sl103;
-                which = is_sword(uwep.v) ? __sl104 : (yield* weapon_descr(uwep.v));
+                what = (candropwep && candropswapwep) ? __s_drop : __s_release;
+                which = is_sword(uwep.v) ? __s_sword : (yield* weapon_descr(uwep.v));
                 if (cptr.ld1so(u, $you_twoweap)) {
-                    whichtoo = is_sword(uswapwep.v) ? __sl104 : (yield* weapon_descr(uswapwep.v));
+                    whichtoo = is_sword(uswapwep.v) ? __s_sword : (yield* weapon_descr(uswapwep.v));
                     if (strcmp(which, whichtoo))
-                        which = __sl105;
+                        which = __s_weapon;
                 }
                 if (cptr.ldI64o(uwep.v, $obj_quan) != 1n || cptr.ld1so(u, $you_twoweap))
                     which = (yield* makeplural(which));
-                (yield* You(__sl106, what, cptr.ldPtro2(c_common_strings, !!cptr.strncmp(which, __sl107, 6n), 8, $c_common_strings_c_the_your), which));
+                (yield* You(__s_find_you_must_s_s_s, what, cptr.ldPtro2(c_common_strings, !!cptr.strncmp(which, __s_corpse, 6n), 8, $c_common_strings_c_the_your), which));
             }
             if (cptr.ld1so(u, $you_twoweap)) {
                 otmp = uswapwep.v;
@@ -1679,21 +1679,21 @@ export function* rehumanize() {
     if (Unchanging()) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl108);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_killed_while_stuck_in_creature_form);
             (yield* done(NHC.DIED));
             return;
         } else if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING) {
-            (yield* Your(__sl40, (yield* simpleonames(uamul.v)), (yield* otense(uamul.v, __sl109))));
+            (yield* Your(__s_s_s, (yield* simpleonames(uamul.v)), (yield* otense(uamul.v, __s_fail))));
             (yield* observe_object(uamul.v));
             (yield* discover_object(NHC.AMULET_OF_UNCHANGING, 1, 1, 1));
         }
     }
     if (emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         (yield* del_light_source(NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))));
-    (yield* polyman(__sl110, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)));
+    (yield* polyman(__s_you_return_to_s_form, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)));
     if (cptr.ldI32o(u, $you_uhp) < 1) {
-        (yield* Your(__sl111));
-        void cptr.sprintf(cptr.add(svk, $kinfo_name), __sl112, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj));
+        (yield* Your(__s_old_form_was_not_healthy_enough_to));
+        void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_reverting_to_unhealthy_s_form, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj));
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
         (yield* done(NHC.DIED));
     }
@@ -1703,7 +1703,7 @@ export function* rehumanize() {
     (yield* encumber_msg());
     (yield* update_inventory());
     if (was_flying && !Flying() && cptr.ldPtro(u, $you_usteed))
-        (yield* You(__sl113, (yield* mon_nam(cptr.ldPtro(u, $you_usteed))), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+        (yield* You(__s_and_s_return_gently_to_the_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed))), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
     (yield* retouch_equipment(2));
     if (!uarmg.v)
         (yield* selftouch(cptr.decay(no_longer_petrify_resistant)));
@@ -1713,11 +1713,11 @@ export function* rehumanize() {
 export function* dobreathe() {
     let mattk;
     if (Strangled()) {
-        (yield* You_cant(__sl114));
+        (yield* You_cant(__s_breathe_sorry));
         return NHM.ECMD_OK;
     }
     if (cptr.ldI32o(u, $you_uen) < 15) {
-        (yield* You(__sl115));
+        (yield* You(__s_don_t_have_enough_energy_to_breathe));
         return NHM.ECMD_OK;
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 15) | 0);
@@ -1726,7 +1726,7 @@ export function* dobreathe() {
         return NHM.ECMD_CANCEL;
     mattk = attacktype_fordmg(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_BREA, -1);
     if (!mattk)
-        (yield* impossible(__sl116));
+        (yield* impossible(__s_bad_breath_attack));
     else if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz))
         (yield* ubreatheu(mattk));
     else
@@ -1742,7 +1742,7 @@ export function* dospit() {
         return NHM.ECMD_CANCEL;
     mattk = attacktype_fordmg(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_SPIT, -1);
     if (!mattk) {
-        (yield* impossible(__sl117));
+        (yield* impossible(__s_bad_spit_attack));
     } else {
         switch (cptr.ld1uo(mattk, $attack_adtyp)) {
             case NHM.AD_BLND:
@@ -1750,7 +1750,7 @@ export function* dospit() {
             otmp = (yield* mksobj(NHC.BLINDING_VENOM, 1, 0));
             break;
             default:
-            (yield* impossible(__sl118));
+            (yield* impossible(__s_bad_attack_type_in_dospit));
             // @FallThrough
             ;
             case NHM.AD_ACID:
@@ -1767,10 +1767,10 @@ export function* dospit() {
 export function* doremove() {
     if (!Punished()) {
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
-            (yield* pline_The(__sl119, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+            (yield* pline_The(__s_ball_and_chain_are_buried_firmly_in_the, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
             return NHM.ECMD_OK;
         }
-        (yield* You(__sl120));
+        (yield* You(__s_are_not_chained_to_anything));
         return NHM.ECMD_OK;
     }
     (yield* unpunish());
@@ -1784,11 +1784,11 @@ export function* dospinweb() {
     let ttmp = t_at(x, y);
     let reject_terrain = schar((is_pool_or_lava(x, y) || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD) ? 1 : 0));
     if (Levitation() || reject_terrain) {
-        (yield* You(__sl121, reject_terrain ? __sl122 : __sl123));
+        (yield* You(__s_must_be_on_s_ground_to_spin_a_web, reject_terrain ? __s_solid : __s_the));
         return NHM.ECMD_OK;
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        (yield* You(__sl124, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
+        (yield* You(__s_release_web_fluid_inside_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n)) {
             (yield* expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), 1));
             return NHM.ECMD_OK;
@@ -1799,30 +1799,30 @@ export function* dospinweb() {
                 if (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, 4, $permonst_mattk) == NHM.AT_ENGL)
                     break;
             if (i == NHM.NATTK)
-                (yield* impossible(__sl125));
+                (yield* impossible(__s_swallower_has_no_engulfing_attack));
             else {
                 let sweep = new Uint8Array(30);
                 cptr.st1o(cptr.decay(sweep), 0, 0, 1);
                 switch (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, 4, $permonst_mattk + $attack_adtyp)) {
                     case NHM.AD_FIRE:
-                    void cptr.strcpy(cptr.decay(sweep), __sl126);
+                    void cptr.strcpy(cptr.decay(sweep), __s_ignites_and);
                     break;
                     case NHM.AD_ELEC:
-                    void cptr.strcpy(cptr.decay(sweep), __sl127);
+                    void cptr.strcpy(cptr.decay(sweep), __s_fries_and);
                     break;
                     case NHM.AD_COLD:
-                    void cptr.strcpy(cptr.decay(sweep), __sl128);
+                    void cptr.strcpy(cptr.decay(sweep), __s_freezes_shatters_and);
                     break;
                 }
-                (yield* pline_The(__sl129, cptr.decay(sweep)));
+                (yield* pline_The(__s_web_sis_swept_away, cptr.decay(sweep)));
             }
             return NHM.ECMD_OK;
         }
-        (yield* pline_The(__sl130, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
+        (yield* pline_The(__s_web_dissolves_into_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         return NHM.ECMD_OK;
     }
     if (cptr.ldI32o(u, $you_utrap)) {
-        (yield* You(__sl131));
+        (yield* You(__s_cannot_spin_webs_while_stuck_in_a_trap));
         return NHM.ECMD_OK;
     }
     (yield* exercise(NHC.A_DEX, 1));
@@ -1830,13 +1830,13 @@ export function* dospinweb() {
         switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
-            (yield* You(__sl132));
+            (yield* You(__s_spin_a_web_covering_up_the_pit));
             (yield* deltrap(ttmp));
             (yield* bury_objs(x, y));
             (yield* newsym(x, y));
             return NHM.ECMD_TIME;
             case NHC.SQKY_BOARD:
-            (yield* pline_The(__sl133));
+            (yield* pline_The(__s_squeaky_board_is_muffled));
             (yield* deltrap(ttmp));
             (yield* newsym(x, y));
             return NHM.ECMD_TIME;
@@ -1844,19 +1844,19 @@ export function* dospinweb() {
             case NHC.LEVEL_TELEP:
             case NHC.MAGIC_PORTAL:
             case NHC.VIBRATING_SQUARE:
-            (yield* Your(__sl134));
+            (yield* Your(__s_webbing_vanishes));
             return NHM.ECMD_OK;
             case NHC.WEB:
-            (yield* You(__sl135));
+            (yield* You(__s_make_the_web_thicker));
             return NHM.ECMD_TIME;
             case NHC.HOLE:
             case NHC.TRAPDOOR:
-            (yield* You(__sl136, (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR) ? __sl137 : __sl138));
+            (yield* You(__s_web_over_the_s, (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR) ? __s_trap_door : __s_hole));
             (yield* deltrap(ttmp));
             (yield* newsym(x, y));
             return NHM.ECMD_TIME;
             case NHC.ROLLING_BOULDER_TRAP:
-            (yield* You(__sl139));
+            (yield* You(__s_spin_a_web_jamming_the_trigger));
             (yield* deltrap(ttmp));
             (yield* newsym(x, y));
             return NHM.ECMD_TIME;
@@ -1871,20 +1871,20 @@ export function* dospinweb() {
             case NHC.MAGIC_TRAP:
             case NHC.ANTI_MAGIC:
             case NHC.POLY_TRAP:
-            (yield* You(__sl140));
+            (yield* You(__s_have_triggered_a_trap));
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
             return NHM.ECMD_TIME;
             default:
-            (yield* impossible(__sl141, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
+            (yield* impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
             return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
-        (yield* Your(__sl142, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS) ? __sl143 : __sl144));
+        (yield* Your(__s_web_fails_to_impede_access_to_the_s, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS) ? __s_stairs : __s_ladder));
         return NHM.ECMD_TIME;
     }
     ttmp = (yield* maketrap(x, y, NHC.WEB));
     if (ttmp) {
-        (yield* You(__sl145));
+        (yield* You(__s_spin_a_web__2));
         cptr.stI32o(ttmp, $trap_madeby_u, 1);
         (yield* feeltrap(ttmp));
         if (cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))))
@@ -1897,15 +1897,15 @@ export function* dospinweb() {
 export function* dosummon() {
     let placeholder = cptr.box(0);
     if (cptr.ldI32o(u, $you_uen) < 10) {
-        (yield* You(__sl146));
+        (yield* You(__s_lack_the_energy_to_send_forth_a_call));
         return NHM.ECMD_OK;
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 10) | 0);
     cptr.st1(disp, 1);
-    (yield* You(__sl147));
+    (yield* You(__s_call_upon_your_brethren_for_help));
     (yield* exercise(NHC.A_WIS, 1));
     if (!(yield* were_summon(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), 1, placeholder, null)))
-        (yield* pline(__sl148));
+        (yield* pline(__s_but_none_arrive));
     return NHM.ECMD_TIME;
 }
 
@@ -1923,18 +1923,18 @@ export function* dogaze() {
         }
     }
     if (adtyp != NHM.AD_CONF && adtyp != NHM.AD_FIRE) {
-        (yield* impossible(__sl149, adtyp));
+        (yield* impossible(__s_gaze_attack_d, adtyp));
         return NHM.ECMD_OK;
     }
     if (Blind()) {
-        (yield* You_cant(__sl150));
+        (yield* You_cant(__s_see_anything_to_gaze_at));
         return NHM.ECMD_OK;
     } else if (Hallucination()) {
-        (yield* You_cant(__sl151));
+        (yield* You_cant(__s_gaze_at_anything_you_can_see));
         return NHM.ECMD_OK;
     }
     if (cptr.ldI32o(u, $you_uen) < 15) {
-        (yield* You(__sl152));
+        (yield* You(__s_lack_the_energy_to_use_your_special_gaze));
         return NHM.ECMD_OK;
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 15) | 0);
@@ -1945,17 +1945,17 @@ export function* dogaze() {
         if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
             looked++;
             if (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) {
-                (yield* pline(__sl153, (yield* Monnam(mtmp))));
+                (yield* pline(__s_s_seems_not_to_notice_your_gaze, (yield* Monnam(mtmp))));
             } else if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()) {
-                (yield* You_cant(__sl154, (yield* Monnam(mtmp))));
+                (yield* You_cant(__s_see_where_to_gaze_at_s, (yield* Monnam(mtmp))));
             } else if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
                 looked--;
                 continue;
             } else if (cptr.ld1so(flags, $flag_safe_dog) && cptr.ld1so(mtmp, $monst_mtame) && !HConfusion()) {
-                (yield* You(__sl155, (yield* y_monnam(mtmp))));
+                (yield* You(__s_avoid_gazing_at_s, (yield* y_monnam(mtmp))));
             } else {
                 if (cptr.ld1so(flags, $flag_confirm) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !HConfusion()) {
-                    void cptr.sprintf(cptr.decay(qbuf), __sl156, (adtyp == NHM.AD_CONF) ? __sl157 : __sl158, (yield* mon_nam(mtmp)));
+                    void cptr.sprintf(cptr.decay(qbuf), __s_really_s_s, (adtyp == NHM.AD_CONF) ? __s_confuse : __s_attack, (yield* mon_nam(mtmp)));
                     if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121)
                         continue;
                 }
@@ -1966,20 +1966,20 @@ export function* dogaze() {
                 }
                 if (adtyp == NHM.AD_CONF) {
                     if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1))
-                        (yield* Your(__sl159, (yield* mon_nam(mtmp))));
+                        (yield* Your(__s_gaze_confuses_s, (yield* mon_nam(mtmp))));
                     else
-                        (yield* pline(__sl160, (yield* Monnam(mtmp))));
+                        (yield* pline(__s_s_is_getting_more_and_more_confused, (yield* Monnam(mtmp))));
                     cptr.stI32o(mtmp, $monst_mconf, 1);
                 } else if (adtyp == NHM.AD_FIRE) {
-                    let dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1715, __sl161), d(2, 6)) : d(2, 6));
+                    let dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1715, __s_dogaze), d(2, 6)) : d(2, 6));
                     let orig_dmg = dmg;
                     let lev = cptr.ldI32o(u, $you_ulevel);
-                    (yield* You(__sl162, (yield* mon_nam(mtmp))));
+                    (yield* You(__s_attack_s_with_a_fiery_gaze, (yield* mon_nam(mtmp))));
                     if ((yield* Resists_Elem(mtmp, NHC.FIRE_RES))) {
-                        (yield* pline_The(__sl163, (yield* mon_nam(mtmp))));
+                        (yield* pline_The(__s_fire_doesn_t_burn_s, (yield* mon_nam(mtmp))));
                         dmg = 0;
                     }
-                    if (lev > (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1722, __sl161), rn2(20)) : rn2(20))) {
+                    if (lev > (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1722, __s_dogaze), rn2(20)) : rn2(20))) {
                         dmg = (dmg + (yield* destroy_items(mtmp, NHM.AD_FIRE, orig_dmg))) | 0;
                         (yield* ignite_items(cptr.ldPtro(mtmp, $monst_minvent)));
                     }
@@ -1992,26 +1992,26 @@ export function* dogaze() {
                     continue;
                 if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     if (!Free_action()) {
-                        (yield* You(__sl164, (yield* s_suffix((yield* mon_nam(mtmp))))));
-                        nomul((cptr.ldI32o(u, $you_ulevel) > 6 || (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1741, __sl161), rn2(4)) : rn2(4))) ? -(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1743, __sl161), d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : -200);
-                        cptr.stPtro(gm, $instance_globals_m_multi_reason, __sl165);
+                        (yield* You(__s_are_frozen_by_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
+                        nomul((cptr.ldI32o(u, $you_ulevel) > 6 || (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1741, __s_dogaze), rn2(4)) : rn2(4))) ? -(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1743, __s_dogaze), d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : -200);
+                        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_frozen_by_a_monster_s_gaze);
                         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
                         return NHM.ECMD_TIME;
                     } else
-                        (yield* You(__sl166, (yield* s_suffix((yield* mon_nam(mtmp))))));
+                        (yield* You(__s_stiffen_momentarily_under_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
                 }
                 if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, 96)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
-                    (yield* pline(__sl167, (yield* l_monnam(mtmp))));
-                    (yield* urgent_pline(__sl168));
+                    (yield* pline(__s_gazing_at_the_awake_s_is_not_a_very, (yield* l_monnam(mtmp))));
+                    (yield* urgent_pline(__s_you_turn_to_stone__2));
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __sl169);
+                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_deliberately_meeting_medusa_s_gaze);
                     (yield* done(NHC.STONING));
                 }
             }
         }
     }
     if (!looked)
-        (yield* You(__sl170));
+        (yield* You(__s_gaze_at_no_place_in_particular));
     return NHM.ECMD_TIME;
 }
 
@@ -2020,7 +2020,7 @@ export function* dohide() {
     let ismimic = schar((cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_MIMIC));
     let on_ceiling = schar((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || Flying() ? 1 : 0));
     if (cptr.ldPtro(u, $you_ustuck) || (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT || on_ceiling))) {
-        (yield* You_cant(__sl171, !cptr.ldPtro(u, $you_ustuck) ? __sl172 : ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __sl173 : __sl174) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl175 : (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl176 : __sl177)))));
+        (yield* You_cant(__s_hide_while_you_re_s, !cptr.ldPtro(u, $you_ustuck) ? __s_trapped : ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowed : __s_engulfed) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_being_held : (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_holding_someone : __s_holding_that_creature)))));
         if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (ismimic && U_AP_TYPE() != NHC.M_AP_NOTHING)) {
             cptr.stI32o(u, $you_uundetected, 0);
             cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
@@ -2030,9 +2030,9 @@ export function* dohide() {
     }
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN))
-            (yield* pline_The(__sl178));
+            (yield* pline_The(__s_fountain_is_not_deep_enough_to_hide_in));
         else
-            (yield* There(__sl179, hliquid(__sl180)));
+            (yield* There(__s_is_no_s_to_hide_in_here, hliquid(__s_water)));
         cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
@@ -2041,7 +2041,7 @@ export function* dohide() {
         let otmp;
         let otop = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
         if (!otop) {
-            (yield* There(__sl181));
+            (yield* There(__s_is_nothing_to_hide_under_here));
             cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_OK;
         }
@@ -2052,20 +2052,20 @@ export function* dohide() {
             let corpse_name = (yield* cxname(otop));
             if (ct == 1n)
                 corpse_name = (yield* an(corpse_name));
-            (yield* pline(__sl182, corpse_name, (((ct) == 1n) ? __sl4 : __sl88)));
-            void cptr.sprintf(cptr.decay(kbuf), __sl183, corpse_name, (((ct) == 1n) ? __sl4 : __sl88));
+            (yield* pline(__s_hiding_under_s_s_is_a_fatal_mistake, corpse_name, (((ct) == 1n) ? __s_empty : __s_s)));
+            void cptr.sprintf(cptr.decay(kbuf), __s_hiding_under_s_s, corpse_name, (((ct) == 1n) ? __s_empty : __s_s));
             (yield* instapetrify(cptr.decay(kbuf)));
             cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_TIME;
         }
     }
     if (on_ceiling && !has_ceiling(cptr.add(u, $you_uz))) {
-        (yield* There(__sl184));
+        (yield* There(__s_is_nowhere_to_hide_above_you));
         cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
     if ((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && !Flying()) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) {
-        (yield* There(__sl185));
+        (yield* There(__s_is_nowhere_to_hide_beneath_you));
         cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
@@ -2089,7 +2089,7 @@ export function* dopoly() {
     if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
         (yield* polyself(NHC.POLY_MONSTER));
         if (!cptr.eq(savedat, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            (yield* You(__sl186, (yield* an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), Ugender())))));
+            (yield* You(__s_transform_into_s, (yield* an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), Ugender())))));
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
     }
@@ -2102,13 +2102,13 @@ export function* domindblast() {
     let nmon;
     let dmg;
     if (cptr.ldI32o(u, $you_uen) < 10) {
-        (yield* You(__sl187));
+        (yield* You(__s_concentrate_but_lack_the_energy_to));
         return NHM.ECMD_OK;
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 10) | 0);
     cptr.st1(disp, 1);
-    (yield* You(__sl188));
-    (yield* pline(__sl189));
+    (yield* You(__s_concentrate));
+    (yield* pline(__s_a_wave_of_psychic_energy_pours_out));
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = nmon) {
         let u_sen;
         nmon = cptr.ldPtr(mtmp);
@@ -2121,10 +2121,10 @@ export function* domindblast() {
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n))
             continue;
         u_sen = telepathic(cptr.ldPtro(mtmp, $monst_data)) && !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ? 1 : 0;
-        if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1921, __sl190), rn2(2)) : rn2(2))) || !(rng_log_enabled() ? (rng_log_set_caller(__sl6, 1921, __sl190), rn2(10)) : rn2(10))) {
-            dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl6, 1922, __sl190), rnd(15)) : rnd(15));
+        if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1921, __s_domindblast), rn2(2)) : rn2(2))) || !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1921, __s_domindblast), rn2(10)) : rn2(10))) {
+            dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1922, __s_domindblast), rnd(15)) : rnd(15));
             (yield* wakeup(mtmp, schar(((dmg > cptr.ldI32o(mtmp, $monst_mhp)) ? 1 : 0))));
-            (yield* You(__sl191, (yield* s_suffix((yield* mon_nam(mtmp)))), u_sen ? __sl192 : (telepathic(cptr.ldPtro(mtmp, $monst_data)) ? __sl193 : __sl194)));
+            (yield* You(__s_lock_in_on_s_s, (yield* s_suffix((yield* mon_nam(mtmp)))), u_sen ? __s_telepathy : (telepathic(cptr.ldPtro(mtmp, $monst_data)) ? __s_latent_telepathy : __s_mind)));
             cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - dmg) | 0);
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 (yield* killed(mtmp));
@@ -2137,11 +2137,11 @@ export function* domindblast() {
 export function* uunstick() {
     let mtmp = cptr.ldPtro(u, $you_ustuck);
     if (!mtmp) {
-        (yield* impossible(__sl195));
+        (yield* impossible(__s_uunstick_no_ustuck));
         return;
     }
     (yield* set_ustuck(null));
-    (yield* pline(__sl196, (yield* Monnam(mtmp))));
+    (yield* pline(__s_s_is_no_longer_in_your_clutches, (yield* Monnam(mtmp))));
 }
 
 /** C ref: polyself.c:1954 — @param {CInt} silently */
@@ -2149,7 +2149,7 @@ export function* skinback(silently) {
     if (uskin.v) {
         let old_light = arti_light_radius(uskin.v);
         if (!silently)
-            (yield* Your(__sl197));
+            (yield* Your(__s_skin_returns_to_its_original_form));
         uarm.v = uskin.v;
         uskin.v = null;
         cptr.stI64o(uarm.v, $obj_owornmask, cptr.ldI64o(uarm.v, $obj_owornmask) & (-536870913n));
@@ -2159,262 +2159,262 @@ export function* skinback(silently) {
 }
 
 const __static_mbodypart_humanoid_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 0, __sl213);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 24, __sl216);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 32, __sl217);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 40, __sl218);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 48, __sl219);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 56, __sl220);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 72, __sl221);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 80, __sl222);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 88, __sl223);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 96, __sl224);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 104, __sl225);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 112, __sl226);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 128, __sl228);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 136, __sl229);
-cptr.stPtro(__static_mbodypart_humanoid_parts, 144, __sl230); /** C ref: polyself.c:1975 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_humanoid_parts, 0, __s_arm);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 24, __s_finger);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 32, __s_fingertip);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 40, __s_foot);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 48, __s_hand);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 56, __s_handed);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 72, __s_leg);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 80, __s_light_headed);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 88, __s_neck);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 96, __s_spine);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 104, __s_toe);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 112, __s_hair);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 128, __s_lung);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 136, __s_nose);
+cptr.stPtro(__static_mbodypart_humanoid_parts, 144, __s_stomach); /** C ref: polyself.c:1975 — char *[19] (function-static) */
 const __static_mbodypart_jelly_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_jelly_parts, 0, __sl231);
-cptr.stPtro(__static_mbodypart_jelly_parts, 8, __sl232);
-cptr.stPtro(__static_mbodypart_jelly_parts, 16, __sl233);
-cptr.stPtro(__static_mbodypart_jelly_parts, 24, __sl234);
-cptr.stPtro(__static_mbodypart_jelly_parts, 32, __sl235);
-cptr.stPtro(__static_mbodypart_jelly_parts, 40, __sl236);
-cptr.stPtro(__static_mbodypart_jelly_parts, 48, __sl237);
-cptr.stPtro(__static_mbodypart_jelly_parts, 56, __sl238);
-cptr.stPtro(__static_mbodypart_jelly_parts, 64, __sl239);
-cptr.stPtro(__static_mbodypart_jelly_parts, 72, __sl240);
-cptr.stPtro(__static_mbodypart_jelly_parts, 80, __sl241);
-cptr.stPtro(__static_mbodypart_jelly_parts, 88, __sl242);
-cptr.stPtro(__static_mbodypart_jelly_parts, 96, __sl243);
-cptr.stPtro(__static_mbodypart_jelly_parts, 104, __sl235);
-cptr.stPtro(__static_mbodypart_jelly_parts, 112, __sl244);
-cptr.stPtro(__static_mbodypart_jelly_parts, 120, __sl245);
-cptr.stPtro(__static_mbodypart_jelly_parts, 128, __sl243);
-cptr.stPtro(__static_mbodypart_jelly_parts, 136, __sl246);
-cptr.stPtro(__static_mbodypart_jelly_parts, 144, __sl230); /** C ref: polyself.c:1980 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_jelly_parts, 0, __s_pseudopod);
+cptr.stPtro(__static_mbodypart_jelly_parts, 8, __s_dark_spot);
+cptr.stPtro(__static_mbodypart_jelly_parts, 16, __s_front);
+cptr.stPtro(__static_mbodypart_jelly_parts, 24, __s_pseudopod_extension);
+cptr.stPtro(__static_mbodypart_jelly_parts, 32, __s_pseudopod_extremity);
+cptr.stPtro(__static_mbodypart_jelly_parts, 40, __s_pseudopod_root);
+cptr.stPtro(__static_mbodypart_jelly_parts, 48, __s_grasp);
+cptr.stPtro(__static_mbodypart_jelly_parts, 56, __s_grasped);
+cptr.stPtro(__static_mbodypart_jelly_parts, 64, __s_cerebral_area);
+cptr.stPtro(__static_mbodypart_jelly_parts, 72, __s_lower_pseudopod);
+cptr.stPtro(__static_mbodypart_jelly_parts, 80, __s_viscous);
+cptr.stPtro(__static_mbodypart_jelly_parts, 88, __s_middle);
+cptr.stPtro(__static_mbodypart_jelly_parts, 96, __s_surface);
+cptr.stPtro(__static_mbodypart_jelly_parts, 104, __s_pseudopod_extremity);
+cptr.stPtro(__static_mbodypart_jelly_parts, 112, __s_ripples);
+cptr.stPtro(__static_mbodypart_jelly_parts, 120, __s_juices);
+cptr.stPtro(__static_mbodypart_jelly_parts, 128, __s_surface);
+cptr.stPtro(__static_mbodypart_jelly_parts, 136, __s_sensor);
+cptr.stPtro(__static_mbodypart_jelly_parts, 144, __s_stomach); /** C ref: polyself.c:1980 — char *[19] (function-static) */
 const __static_mbodypart_animal_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_animal_parts, 0, __sl247);
-cptr.stPtro(__static_mbodypart_animal_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_animal_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_animal_parts, 24, __sl248);
-cptr.stPtro(__static_mbodypart_animal_parts, 32, __sl249);
-cptr.stPtro(__static_mbodypart_animal_parts, 40, __sl250);
-cptr.stPtro(__static_mbodypart_animal_parts, 48, __sl248);
-cptr.stPtro(__static_mbodypart_animal_parts, 56, __sl204);
-cptr.stPtro(__static_mbodypart_animal_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_animal_parts, 72, __sl251);
-cptr.stPtro(__static_mbodypart_animal_parts, 80, __sl222);
-cptr.stPtro(__static_mbodypart_animal_parts, 88, __sl223);
-cptr.stPtro(__static_mbodypart_animal_parts, 96, __sl224);
-cptr.stPtro(__static_mbodypart_animal_parts, 104, __sl252);
-cptr.stPtro(__static_mbodypart_animal_parts, 112, __sl253);
-cptr.stPtro(__static_mbodypart_animal_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_animal_parts, 128, __sl228);
-cptr.stPtro(__static_mbodypart_animal_parts, 136, __sl229);
-cptr.stPtro(__static_mbodypart_animal_parts, 144, __sl230); /** C ref: polyself.c:1987 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_animal_parts, 0, __s_forelimb);
+cptr.stPtro(__static_mbodypart_animal_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_animal_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_animal_parts, 24, __s_foreclaw);
+cptr.stPtro(__static_mbodypart_animal_parts, 32, __s_claw_tip);
+cptr.stPtro(__static_mbodypart_animal_parts, 40, __s_rear_claw);
+cptr.stPtro(__static_mbodypart_animal_parts, 48, __s_foreclaw);
+cptr.stPtro(__static_mbodypart_animal_parts, 56, __s_clawed);
+cptr.stPtro(__static_mbodypart_animal_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_animal_parts, 72, __s_rear_limb);
+cptr.stPtro(__static_mbodypart_animal_parts, 80, __s_light_headed);
+cptr.stPtro(__static_mbodypart_animal_parts, 88, __s_neck);
+cptr.stPtro(__static_mbodypart_animal_parts, 96, __s_spine);
+cptr.stPtro(__static_mbodypart_animal_parts, 104, __s_rear_claw_tip);
+cptr.stPtro(__static_mbodypart_animal_parts, 112, __s_fur);
+cptr.stPtro(__static_mbodypart_animal_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_animal_parts, 128, __s_lung);
+cptr.stPtro(__static_mbodypart_animal_parts, 136, __s_nose);
+cptr.stPtro(__static_mbodypart_animal_parts, 144, __s_stomach); /** C ref: polyself.c:1987 — char *[19] (function-static) */
 const __static_mbodypart_bird_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_bird_parts, 0, __sl254);
-cptr.stPtro(__static_mbodypart_bird_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_bird_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_bird_parts, 24, __sl254);
-cptr.stPtro(__static_mbodypart_bird_parts, 32, __sl255);
-cptr.stPtro(__static_mbodypart_bird_parts, 40, __sl218);
-cptr.stPtro(__static_mbodypart_bird_parts, 48, __sl254);
-cptr.stPtro(__static_mbodypart_bird_parts, 56, __sl256);
-cptr.stPtro(__static_mbodypart_bird_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_bird_parts, 72, __sl221);
-cptr.stPtro(__static_mbodypart_bird_parts, 80, __sl222);
-cptr.stPtro(__static_mbodypart_bird_parts, 88, __sl223);
-cptr.stPtro(__static_mbodypart_bird_parts, 96, __sl224);
-cptr.stPtro(__static_mbodypart_bird_parts, 104, __sl225);
-cptr.stPtro(__static_mbodypart_bird_parts, 112, __sl257);
-cptr.stPtro(__static_mbodypart_bird_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_bird_parts, 128, __sl228);
-cptr.stPtro(__static_mbodypart_bird_parts, 136, __sl258);
-cptr.stPtro(__static_mbodypart_bird_parts, 144, __sl230); /** C ref: polyself.c:1994 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_bird_parts, 0, __s_wing);
+cptr.stPtro(__static_mbodypart_bird_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_bird_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_bird_parts, 24, __s_wing);
+cptr.stPtro(__static_mbodypart_bird_parts, 32, __s_wing_tip);
+cptr.stPtro(__static_mbodypart_bird_parts, 40, __s_foot);
+cptr.stPtro(__static_mbodypart_bird_parts, 48, __s_wing);
+cptr.stPtro(__static_mbodypart_bird_parts, 56, __s_winged);
+cptr.stPtro(__static_mbodypart_bird_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_bird_parts, 72, __s_leg);
+cptr.stPtro(__static_mbodypart_bird_parts, 80, __s_light_headed);
+cptr.stPtro(__static_mbodypart_bird_parts, 88, __s_neck);
+cptr.stPtro(__static_mbodypart_bird_parts, 96, __s_spine);
+cptr.stPtro(__static_mbodypart_bird_parts, 104, __s_toe);
+cptr.stPtro(__static_mbodypart_bird_parts, 112, __s_feathers);
+cptr.stPtro(__static_mbodypart_bird_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_bird_parts, 128, __s_lung);
+cptr.stPtro(__static_mbodypart_bird_parts, 136, __s_bill);
+cptr.stPtro(__static_mbodypart_bird_parts, 144, __s_stomach); /** C ref: polyself.c:1994 — char *[19] (function-static) */
 const __static_mbodypart_horse_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_horse_parts, 0, __sl259);
-cptr.stPtro(__static_mbodypart_horse_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_horse_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_horse_parts, 24, __sl260);
-cptr.stPtro(__static_mbodypart_horse_parts, 32, __sl261);
-cptr.stPtro(__static_mbodypart_horse_parts, 40, __sl262);
-cptr.stPtro(__static_mbodypart_horse_parts, 48, __sl260);
-cptr.stPtro(__static_mbodypart_horse_parts, 56, __sl263);
-cptr.stPtro(__static_mbodypart_horse_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_horse_parts, 72, __sl264);
-cptr.stPtro(__static_mbodypart_horse_parts, 80, __sl222);
-cptr.stPtro(__static_mbodypart_horse_parts, 88, __sl223);
-cptr.stPtro(__static_mbodypart_horse_parts, 96, __sl265);
-cptr.stPtro(__static_mbodypart_horse_parts, 104, __sl266);
-cptr.stPtro(__static_mbodypart_horse_parts, 112, __sl267);
-cptr.stPtro(__static_mbodypart_horse_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_horse_parts, 128, __sl228);
-cptr.stPtro(__static_mbodypart_horse_parts, 136, __sl229);
-cptr.stPtro(__static_mbodypart_horse_parts, 144, __sl230); /** C ref: polyself.c:1999 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_horse_parts, 0, __s_foreleg);
+cptr.stPtro(__static_mbodypart_horse_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_horse_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_horse_parts, 24, __s_forehoof);
+cptr.stPtro(__static_mbodypart_horse_parts, 32, __s_hoof_tip);
+cptr.stPtro(__static_mbodypart_horse_parts, 40, __s_rear_hoof);
+cptr.stPtro(__static_mbodypart_horse_parts, 48, __s_forehoof);
+cptr.stPtro(__static_mbodypart_horse_parts, 56, __s_hooved);
+cptr.stPtro(__static_mbodypart_horse_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_horse_parts, 72, __s_rear_leg);
+cptr.stPtro(__static_mbodypart_horse_parts, 80, __s_light_headed);
+cptr.stPtro(__static_mbodypart_horse_parts, 88, __s_neck);
+cptr.stPtro(__static_mbodypart_horse_parts, 96, __s_backbone);
+cptr.stPtro(__static_mbodypart_horse_parts, 104, __s_rear_hoof_tip);
+cptr.stPtro(__static_mbodypart_horse_parts, 112, __s_mane);
+cptr.stPtro(__static_mbodypart_horse_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_horse_parts, 128, __s_lung);
+cptr.stPtro(__static_mbodypart_horse_parts, 136, __s_nose);
+cptr.stPtro(__static_mbodypart_horse_parts, 144, __s_stomach); /** C ref: polyself.c:1999 — char *[19] (function-static) */
 const __static_mbodypart_sphere_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_sphere_parts, 0, __sl268);
-cptr.stPtro(__static_mbodypart_sphere_parts, 8, __sl269);
-cptr.stPtro(__static_mbodypart_sphere_parts, 16, __sl270);
-cptr.stPtro(__static_mbodypart_sphere_parts, 24, __sl207);
-cptr.stPtro(__static_mbodypart_sphere_parts, 32, __sl271);
-cptr.stPtro(__static_mbodypart_sphere_parts, 40, __sl272);
-cptr.stPtro(__static_mbodypart_sphere_parts, 48, __sl207);
-cptr.stPtro(__static_mbodypart_sphere_parts, 56, __sl273);
-cptr.stPtro(__static_mbodypart_sphere_parts, 64, __sl270);
-cptr.stPtro(__static_mbodypart_sphere_parts, 72, __sl274);
-cptr.stPtro(__static_mbodypart_sphere_parts, 80, __sl275);
-cptr.stPtro(__static_mbodypart_sphere_parts, 88, __sl276);
-cptr.stPtro(__static_mbodypart_sphere_parts, 96, __sl270);
-cptr.stPtro(__static_mbodypart_sphere_parts, 104, __sl277);
-cptr.stPtro(__static_mbodypart_sphere_parts, 112, __sl278);
-cptr.stPtro(__static_mbodypart_sphere_parts, 120, __sl279);
-cptr.stPtro(__static_mbodypart_sphere_parts, 128, __sl280);
-cptr.stPtro(__static_mbodypart_sphere_parts, 136, __sl281);
-cptr.stPtro(__static_mbodypart_sphere_parts, 144, __sl282); /** C ref: polyself.c:2006 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_sphere_parts, 0, __s_appendage);
+cptr.stPtro(__static_mbodypart_sphere_parts, 8, __s_optic_nerve);
+cptr.stPtro(__static_mbodypart_sphere_parts, 16, __s_body);
+cptr.stPtro(__static_mbodypart_sphere_parts, 24, __s_tentacle);
+cptr.stPtro(__static_mbodypart_sphere_parts, 32, __s_tentacle_tip);
+cptr.stPtro(__static_mbodypart_sphere_parts, 40, __s_lower_appendage);
+cptr.stPtro(__static_mbodypart_sphere_parts, 48, __s_tentacle);
+cptr.stPtro(__static_mbodypart_sphere_parts, 56, __s_tentacled);
+cptr.stPtro(__static_mbodypart_sphere_parts, 64, __s_body);
+cptr.stPtro(__static_mbodypart_sphere_parts, 72, __s_lower_tentacle);
+cptr.stPtro(__static_mbodypart_sphere_parts, 80, __s_rotational);
+cptr.stPtro(__static_mbodypart_sphere_parts, 88, __s_equator);
+cptr.stPtro(__static_mbodypart_sphere_parts, 96, __s_body);
+cptr.stPtro(__static_mbodypart_sphere_parts, 104, __s_lower_tentacle_tip);
+cptr.stPtro(__static_mbodypart_sphere_parts, 112, __s_cilia);
+cptr.stPtro(__static_mbodypart_sphere_parts, 120, __s_life_force);
+cptr.stPtro(__static_mbodypart_sphere_parts, 128, __s_retina);
+cptr.stPtro(__static_mbodypart_sphere_parts, 136, __s_olfactory_nerve);
+cptr.stPtro(__static_mbodypart_sphere_parts, 144, __s_interior); /** C ref: polyself.c:2006 — char *[19] (function-static) */
 const __static_mbodypart_fungus_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_fungus_parts, 0, __sl283);
-cptr.stPtro(__static_mbodypart_fungus_parts, 8, __sl284);
-cptr.stPtro(__static_mbodypart_fungus_parts, 16, __sl233);
-cptr.stPtro(__static_mbodypart_fungus_parts, 24, __sl285);
-cptr.stPtro(__static_mbodypart_fungus_parts, 32, __sl285);
-cptr.stPtro(__static_mbodypart_fungus_parts, 40, __sl286);
-cptr.stPtro(__static_mbodypart_fungus_parts, 48, __sl287);
-cptr.stPtro(__static_mbodypart_fungus_parts, 56, __sl288);
-cptr.stPtro(__static_mbodypart_fungus_parts, 64, __sl289);
-cptr.stPtro(__static_mbodypart_fungus_parts, 72, __sl290);
-cptr.stPtro(__static_mbodypart_fungus_parts, 80, __sl291);
-cptr.stPtro(__static_mbodypart_fungus_parts, 88, __sl292);
-cptr.stPtro(__static_mbodypart_fungus_parts, 96, __sl286);
-cptr.stPtro(__static_mbodypart_fungus_parts, 104, __sl293);
-cptr.stPtro(__static_mbodypart_fungus_parts, 112, __sl294);
-cptr.stPtro(__static_mbodypart_fungus_parts, 120, __sl245);
-cptr.stPtro(__static_mbodypart_fungus_parts, 128, __sl295);
-cptr.stPtro(__static_mbodypart_fungus_parts, 136, __sl295);
-cptr.stPtro(__static_mbodypart_fungus_parts, 144, __sl282); /** C ref: polyself.c:2012 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_fungus_parts, 0, __s_mycelium);
+cptr.stPtro(__static_mbodypart_fungus_parts, 8, __s_visual_area);
+cptr.stPtro(__static_mbodypart_fungus_parts, 16, __s_front);
+cptr.stPtro(__static_mbodypart_fungus_parts, 24, __s_hypha);
+cptr.stPtro(__static_mbodypart_fungus_parts, 32, __s_hypha);
+cptr.stPtro(__static_mbodypart_fungus_parts, 40, __s_root);
+cptr.stPtro(__static_mbodypart_fungus_parts, 48, __s_strand);
+cptr.stPtro(__static_mbodypart_fungus_parts, 56, __s_stranded);
+cptr.stPtro(__static_mbodypart_fungus_parts, 64, __s_cap_area);
+cptr.stPtro(__static_mbodypart_fungus_parts, 72, __s_rhizome);
+cptr.stPtro(__static_mbodypart_fungus_parts, 80, __s_sporulated);
+cptr.stPtro(__static_mbodypart_fungus_parts, 88, __s_stalk);
+cptr.stPtro(__static_mbodypart_fungus_parts, 96, __s_root);
+cptr.stPtro(__static_mbodypart_fungus_parts, 104, __s_rhizome_tip);
+cptr.stPtro(__static_mbodypart_fungus_parts, 112, __s_spores);
+cptr.stPtro(__static_mbodypart_fungus_parts, 120, __s_juices);
+cptr.stPtro(__static_mbodypart_fungus_parts, 128, __s_gill);
+cptr.stPtro(__static_mbodypart_fungus_parts, 136, __s_gill);
+cptr.stPtro(__static_mbodypart_fungus_parts, 144, __s_interior); /** C ref: polyself.c:2012 — char *[19] (function-static) */
 const __static_mbodypart_vortex_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_vortex_parts, 0, __sl296);
-cptr.stPtro(__static_mbodypart_vortex_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_vortex_parts, 16, __sl233);
-cptr.stPtro(__static_mbodypart_vortex_parts, 24, __sl297);
-cptr.stPtro(__static_mbodypart_vortex_parts, 32, __sl297);
-cptr.stPtro(__static_mbodypart_vortex_parts, 40, __sl298);
-cptr.stPtro(__static_mbodypart_vortex_parts, 48, __sl299);
-cptr.stPtro(__static_mbodypart_vortex_parts, 56, __sl300);
-cptr.stPtro(__static_mbodypart_vortex_parts, 64, __sl301);
-cptr.stPtro(__static_mbodypart_vortex_parts, 72, __sl298);
-cptr.stPtro(__static_mbodypart_vortex_parts, 80, __sl302);
-cptr.stPtro(__static_mbodypart_vortex_parts, 88, __sl303);
-cptr.stPtro(__static_mbodypart_vortex_parts, 96, __sl304);
-cptr.stPtro(__static_mbodypart_vortex_parts, 104, __sl305);
-cptr.stPtro(__static_mbodypart_vortex_parts, 112, __sl304);
-cptr.stPtro(__static_mbodypart_vortex_parts, 120, __sl279);
-cptr.stPtro(__static_mbodypart_vortex_parts, 128, __sl303);
-cptr.stPtro(__static_mbodypart_vortex_parts, 136, __sl306);
-cptr.stPtro(__static_mbodypart_vortex_parts, 144, __sl282); /** C ref: polyself.c:2019 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_vortex_parts, 0, __s_region);
+cptr.stPtro(__static_mbodypart_vortex_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_vortex_parts, 16, __s_front);
+cptr.stPtro(__static_mbodypart_vortex_parts, 24, __s_minor_current);
+cptr.stPtro(__static_mbodypart_vortex_parts, 32, __s_minor_current);
+cptr.stPtro(__static_mbodypart_vortex_parts, 40, __s_lower_current);
+cptr.stPtro(__static_mbodypart_vortex_parts, 48, __s_swirl);
+cptr.stPtro(__static_mbodypart_vortex_parts, 56, __s_swirled);
+cptr.stPtro(__static_mbodypart_vortex_parts, 64, __s_central_core);
+cptr.stPtro(__static_mbodypart_vortex_parts, 72, __s_lower_current);
+cptr.stPtro(__static_mbodypart_vortex_parts, 80, __s_addled);
+cptr.stPtro(__static_mbodypart_vortex_parts, 88, __s_center);
+cptr.stPtro(__static_mbodypart_vortex_parts, 96, __s_currents);
+cptr.stPtro(__static_mbodypart_vortex_parts, 104, __s_edge);
+cptr.stPtro(__static_mbodypart_vortex_parts, 112, __s_currents);
+cptr.stPtro(__static_mbodypart_vortex_parts, 120, __s_life_force);
+cptr.stPtro(__static_mbodypart_vortex_parts, 128, __s_center);
+cptr.stPtro(__static_mbodypart_vortex_parts, 136, __s_leading_edge);
+cptr.stPtro(__static_mbodypart_vortex_parts, 144, __s_interior); /** C ref: polyself.c:2019 — char *[19] (function-static) */
 const __static_mbodypart_snake_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_snake_parts, 0, __sl307);
-cptr.stPtro(__static_mbodypart_snake_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_snake_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_snake_parts, 24, __sl308);
-cptr.stPtro(__static_mbodypart_snake_parts, 32, __sl309);
-cptr.stPtro(__static_mbodypart_snake_parts, 40, __sl310);
-cptr.stPtro(__static_mbodypart_snake_parts, 48, __sl311);
-cptr.stPtro(__static_mbodypart_snake_parts, 56, __sl312);
-cptr.stPtro(__static_mbodypart_snake_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_snake_parts, 72, __sl310);
-cptr.stPtro(__static_mbodypart_snake_parts, 80, __sl222);
-cptr.stPtro(__static_mbodypart_snake_parts, 88, __sl223);
-cptr.stPtro(__static_mbodypart_snake_parts, 96, __sl313);
-cptr.stPtro(__static_mbodypart_snake_parts, 104, __sl314);
-cptr.stPtro(__static_mbodypart_snake_parts, 112, __sl315);
-cptr.stPtro(__static_mbodypart_snake_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_snake_parts, 128, __sl228);
-cptr.stPtro(__static_mbodypart_snake_parts, 136, __sl316);
-cptr.stPtro(__static_mbodypart_snake_parts, 144, __sl230); /** C ref: polyself.c:2026 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_snake_parts, 0, __s_vestigial_limb);
+cptr.stPtro(__static_mbodypart_snake_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_snake_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_snake_parts, 24, __s_large_scale);
+cptr.stPtro(__static_mbodypart_snake_parts, 32, __s_large_scale_tip);
+cptr.stPtro(__static_mbodypart_snake_parts, 40, __s_rear_region);
+cptr.stPtro(__static_mbodypart_snake_parts, 48, __s_scale_gap);
+cptr.stPtro(__static_mbodypart_snake_parts, 56, __s_scale_gapped);
+cptr.stPtro(__static_mbodypart_snake_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_snake_parts, 72, __s_rear_region);
+cptr.stPtro(__static_mbodypart_snake_parts, 80, __s_light_headed);
+cptr.stPtro(__static_mbodypart_snake_parts, 88, __s_neck);
+cptr.stPtro(__static_mbodypart_snake_parts, 96, __s_length);
+cptr.stPtro(__static_mbodypart_snake_parts, 104, __s_rear_scale);
+cptr.stPtro(__static_mbodypart_snake_parts, 112, __s_scales);
+cptr.stPtro(__static_mbodypart_snake_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_snake_parts, 128, __s_lung);
+cptr.stPtro(__static_mbodypart_snake_parts, 136, __s_forked_tongue);
+cptr.stPtro(__static_mbodypart_snake_parts, 144, __s_stomach); /** C ref: polyself.c:2026 — char *[19] (function-static) */
 const __static_mbodypart_worm_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_worm_parts, 0, __sl317);
-cptr.stPtro(__static_mbodypart_worm_parts, 8, __sl318);
-cptr.stPtro(__static_mbodypart_worm_parts, 16, __sl319);
-cptr.stPtro(__static_mbodypart_worm_parts, 24, __sl320);
-cptr.stPtro(__static_mbodypart_worm_parts, 32, __sl320);
-cptr.stPtro(__static_mbodypart_worm_parts, 40, __sl321);
-cptr.stPtro(__static_mbodypart_worm_parts, 48, __sl322);
-cptr.stPtro(__static_mbodypart_worm_parts, 56, __sl323);
-cptr.stPtro(__static_mbodypart_worm_parts, 64, __sl317);
-cptr.stPtro(__static_mbodypart_worm_parts, 72, __sl324);
-cptr.stPtro(__static_mbodypart_worm_parts, 80, __sl325);
-cptr.stPtro(__static_mbodypart_worm_parts, 88, __sl319);
-cptr.stPtro(__static_mbodypart_worm_parts, 96, __sl313);
-cptr.stPtro(__static_mbodypart_worm_parts, 104, __sl326);
-cptr.stPtro(__static_mbodypart_worm_parts, 112, __sl320);
-cptr.stPtro(__static_mbodypart_worm_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_worm_parts, 128, __sl206);
-cptr.stPtro(__static_mbodypart_worm_parts, 136, __sl327);
-cptr.stPtro(__static_mbodypart_worm_parts, 144, __sl230); /** C ref: polyself.c:2032 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_worm_parts, 0, __s_anterior_segment);
+cptr.stPtro(__static_mbodypart_worm_parts, 8, __s_light_sensitive_cell);
+cptr.stPtro(__static_mbodypart_worm_parts, 16, __s_clitellum);
+cptr.stPtro(__static_mbodypart_worm_parts, 24, __s_setae);
+cptr.stPtro(__static_mbodypart_worm_parts, 32, __s_setae);
+cptr.stPtro(__static_mbodypart_worm_parts, 40, __s_posterior_segment);
+cptr.stPtro(__static_mbodypart_worm_parts, 48, __s_segment);
+cptr.stPtro(__static_mbodypart_worm_parts, 56, __s_segmented);
+cptr.stPtro(__static_mbodypart_worm_parts, 64, __s_anterior_segment);
+cptr.stPtro(__static_mbodypart_worm_parts, 72, __s_posterior);
+cptr.stPtro(__static_mbodypart_worm_parts, 80, __s_over_stretched);
+cptr.stPtro(__static_mbodypart_worm_parts, 88, __s_clitellum);
+cptr.stPtro(__static_mbodypart_worm_parts, 96, __s_length);
+cptr.stPtro(__static_mbodypart_worm_parts, 104, __s_posterior_setae);
+cptr.stPtro(__static_mbodypart_worm_parts, 112, __s_setae);
+cptr.stPtro(__static_mbodypart_worm_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_worm_parts, 128, __s_skin);
+cptr.stPtro(__static_mbodypart_worm_parts, 136, __s_prostomium);
+cptr.stPtro(__static_mbodypart_worm_parts, 144, __s_stomach); /** C ref: polyself.c:2032 — char *[19] (function-static) */
 const __static_mbodypart_spider_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_spider_parts, 0, __sl328);
-cptr.stPtro(__static_mbodypart_spider_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_spider_parts, 16, __sl215);
-cptr.stPtro(__static_mbodypart_spider_parts, 24, __sl328);
-cptr.stPtro(__static_mbodypart_spider_parts, 32, __sl329);
-cptr.stPtro(__static_mbodypart_spider_parts, 40, __sl203);
-cptr.stPtro(__static_mbodypart_spider_parts, 48, __sl328);
-cptr.stPtro(__static_mbodypart_spider_parts, 56, __sl330);
-cptr.stPtro(__static_mbodypart_spider_parts, 64, __sl331);
-cptr.stPtro(__static_mbodypart_spider_parts, 72, __sl221);
-cptr.stPtro(__static_mbodypart_spider_parts, 80, __sl332);
-cptr.stPtro(__static_mbodypart_spider_parts, 88, __sl331);
-cptr.stPtro(__static_mbodypart_spider_parts, 96, __sl333);
-cptr.stPtro(__static_mbodypart_spider_parts, 104, __sl203);
-cptr.stPtro(__static_mbodypart_spider_parts, 112, __sl226);
-cptr.stPtro(__static_mbodypart_spider_parts, 120, __sl334);
-cptr.stPtro(__static_mbodypart_spider_parts, 128, __sl335);
-cptr.stPtro(__static_mbodypart_spider_parts, 136, __sl336);
-cptr.stPtro(__static_mbodypart_spider_parts, 144, __sl337); /** C ref: polyself.c:2038 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_spider_parts, 0, __s_pedipalp);
+cptr.stPtro(__static_mbodypart_spider_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_spider_parts, 16, __s_face);
+cptr.stPtro(__static_mbodypart_spider_parts, 24, __s_pedipalp);
+cptr.stPtro(__static_mbodypart_spider_parts, 32, __s_tarsus);
+cptr.stPtro(__static_mbodypart_spider_parts, 40, __s_claw);
+cptr.stPtro(__static_mbodypart_spider_parts, 48, __s_pedipalp);
+cptr.stPtro(__static_mbodypart_spider_parts, 56, __s_palped);
+cptr.stPtro(__static_mbodypart_spider_parts, 64, __s_cephalothorax);
+cptr.stPtro(__static_mbodypart_spider_parts, 72, __s_leg);
+cptr.stPtro(__static_mbodypart_spider_parts, 80, __s_spun_out);
+cptr.stPtro(__static_mbodypart_spider_parts, 88, __s_cephalothorax);
+cptr.stPtro(__static_mbodypart_spider_parts, 96, __s_abdomen);
+cptr.stPtro(__static_mbodypart_spider_parts, 104, __s_claw);
+cptr.stPtro(__static_mbodypart_spider_parts, 112, __s_hair);
+cptr.stPtro(__static_mbodypart_spider_parts, 120, __s_hemolymph);
+cptr.stPtro(__static_mbodypart_spider_parts, 128, __s_book_lung);
+cptr.stPtro(__static_mbodypart_spider_parts, 136, __s_labrum);
+cptr.stPtro(__static_mbodypart_spider_parts, 144, __s_digestive_tract); /** C ref: polyself.c:2038 — char *[19] (function-static) */
 const __static_mbodypart_fish_parts = cptr.alloc(19 * 8);
-cptr.stPtro(__static_mbodypart_fish_parts, 0, __sl338);
-cptr.stPtro(__static_mbodypart_fish_parts, 8, __sl214);
-cptr.stPtro(__static_mbodypart_fish_parts, 16, __sl339);
-cptr.stPtro(__static_mbodypart_fish_parts, 24, __sl340);
-cptr.stPtro(__static_mbodypart_fish_parts, 32, __sl341);
-cptr.stPtro(__static_mbodypart_fish_parts, 40, __sl342);
-cptr.stPtro(__static_mbodypart_fish_parts, 48, __sl343);
-cptr.stPtro(__static_mbodypart_fish_parts, 56, __sl344);
-cptr.stPtro(__static_mbodypart_fish_parts, 64, __sl212);
-cptr.stPtro(__static_mbodypart_fish_parts, 72, __sl345);
-cptr.stPtro(__static_mbodypart_fish_parts, 80, __sl346);
-cptr.stPtro(__static_mbodypart_fish_parts, 88, __sl347);
-cptr.stPtro(__static_mbodypart_fish_parts, 96, __sl348);
-cptr.stPtro(__static_mbodypart_fish_parts, 104, __sl349);
-cptr.stPtro(__static_mbodypart_fish_parts, 112, __sl315);
-cptr.stPtro(__static_mbodypart_fish_parts, 120, __sl227);
-cptr.stPtro(__static_mbodypart_fish_parts, 128, __sl295);
-cptr.stPtro(__static_mbodypart_fish_parts, 136, __sl350);
-cptr.stPtro(__static_mbodypart_fish_parts, 144, __sl230); /** C ref: polyself.c:2043 — char *[19] (function-static) */
+cptr.stPtro(__static_mbodypart_fish_parts, 0, __s_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 8, __s_eye);
+cptr.stPtro(__static_mbodypart_fish_parts, 16, __s_premaxillary);
+cptr.stPtro(__static_mbodypart_fish_parts, 24, __s_pelvic_axillary);
+cptr.stPtro(__static_mbodypart_fish_parts, 32, __s_pelvic_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 40, __s_anal_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 48, __s_pectoral_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 56, __s_finned);
+cptr.stPtro(__static_mbodypart_fish_parts, 64, __s_head);
+cptr.stPtro(__static_mbodypart_fish_parts, 72, __s_peduncle);
+cptr.stPtro(__static_mbodypart_fish_parts, 80, __s_played_out);
+cptr.stPtro(__static_mbodypart_fish_parts, 88, __s_gills);
+cptr.stPtro(__static_mbodypart_fish_parts, 96, __s_dorsal_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 104, __s_caudal_fin);
+cptr.stPtro(__static_mbodypart_fish_parts, 112, __s_scales);
+cptr.stPtro(__static_mbodypart_fish_parts, 120, __s_blood);
+cptr.stPtro(__static_mbodypart_fish_parts, 128, __s_gill);
+cptr.stPtro(__static_mbodypart_fish_parts, 136, __s_nostril);
+cptr.stPtro(__static_mbodypart_fish_parts, 144, __s_stomach); /** C ref: polyself.c:2043 — char *[19] (function-static) */
 const __static_mbodypart_not_claws = [NHC.S_HUMAN, NHC.S_MUMMY, NHC.S_ZOMBIE, NHC.S_ANGEL, NHC.S_NYMPH, NHC.S_LEPRECHAUN, NHC.S_QUANTMECH, NHC.S_VAMPIRE, NHC.S_ORC, NHC.S_GIANT, 0]; /** C ref: polyself.c:2050 — char[11] (function-static) */
 
 /** C ref: polyself.c:1972 — @param {CPtr<struct monst>} mon @param {CInt} part @returns {CPtr<char>} */
 export function* mbodypart(mon, part) {
     let mptr = cptr.ldPtro(mon, $monst_data);
     if (part <= NHC.NO_PART) {
-        (yield* impossible(__sl198, part));
-        return __sl199;
+        (yield* impossible(__s_mbodypart_bad_part_d, part));
+        return __s_mystery_part;
     }
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_DOG || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_FELINE || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_RODENT || cptr.eq(mptr, cptr.add(mons, NHC.PM_OWLBEAR, 96))) {
         switch (part) {
             case NHC.HAND:
-            return __sl200;
+            return __s_paw;
             case NHC.HANDED:
-            return __sl201;
+            return __s_pawed;
             case NHC.FOOT:
-            return __sl202;
+            return __s_rear_paw;
             case NHC.ARM:
             case NHC.LEG:
             return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);
@@ -2425,15 +2425,15 @@ export function* mbodypart(mon, part) {
         return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);
     }
     if ((part == NHC.HAND || part == NHC.HANDED) && (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && attacktype(mptr, NHM.AT_CLAW) && !cptr.strchr(cptr.decay(__static_mbodypart_not_claws), cptr.ld1so(mptr, $permonst_mlet)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_STONE_GOLEM, 96)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, 96))))
-        return (part == NHC.HAND) ? __sl203 : __sl204;
+        return (part == NHC.HAND) ? __s_claw : __s_clawed;
     if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_MUMAK, 96)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_MASTODON, 96))) && part == NHC.NOSE)
-        return __sl205;
+        return __s_trunk;
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_SHARK, 96)) && part == NHC.HAIR)
-        return __sl206;
+        return __s_skin;
     if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, 96)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_KRAKEN, 96))) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.HAND || part == NHC.FOOT || part == NHC.TOE))
-        return __sl207;
+        return __s_tentacle;
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) && part == NHC.EYE)
-        return __sl208;
+        return __s_cornea;
     if (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.FINGERTIP || part == NHC.HAND || part == NHC.HANDED))
         return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_COCKATRICE)
@@ -2444,14 +2444,14 @@ export function* mbodypart(mon, part) {
         return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_LIGHT) {
         if (part == NHC.HANDED)
-            return __sl209;
+            return __s_rayed;
         else if (part == NHC.ARM || part == NHC.FINGER || part == NHC.FINGERTIP || part == NHC.HAND)
-            return __sl210;
+            return __s_ray;
         else
-            return __sl211;
+            return __s_beam;
     }
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_STALKER, 96)) && part == NHC.HEAD)
-        return __sl212;
+        return __s_head;
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_EEL && !cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, 96)))
         return cptr.ldPtro(__static_mbodypart_fish_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_WORM)
@@ -2505,7 +2505,7 @@ export function* ugolemeffects(damtype, dam) {
         if (cptr.ldI32o(u, $you_mh) > cptr.ldI32o(u, $you_mhmax))
             cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
         cptr.st1(disp, 1);
-        (yield* pline(__sl351));
+        (yield* pline(__s_strangely_you_feel_better_than_before));
         (yield* exercise(NHC.A_STR, 1));
     }
 }
@@ -2580,7 +2580,7 @@ export function ugenocided() {
 
 /** C ref: polyself.c:2273 @returns {CPtr<char>} */
 export function udeadinside() {
-    return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl352 : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl353 : __sl354);
+    return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_dead : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_condemned : __s_empty__2);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

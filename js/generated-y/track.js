@@ -22,10 +22,10 @@ const $NHFILE_mode = FLD.NHFILE_mode, $coord_y = FLD.coord_y, $nhcoord_y = FLD.n
     $obj_otyp = FLD.obj_otyp, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("track-utcnt");
-const __sl1 = cptr.lit("track-utpnt");
-const __sl2 = cptr.lit("utrack");
-const __sl3 = cptr.lit("rest_track: impossible pt counts");
+const __s_track_utcnt = cptr.lit("track-utcnt");
+const __s_track_utpnt = cptr.lit("track-utpnt");
+const __s_utrack = cptr.lit("utrack");
+const __s_rest_track_impossible_pt_counts = cptr.lit("rest_track: impossible pt counts");
 
 /** C ref: track.c:11 — int */
 let utcnt = cptr.box(0);
@@ -86,10 +86,10 @@ export function hastrack(x, y) {
 export function* save_track(nhfp) {
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         let i;
-        (yield* sfo_int(nhfp, utcnt, __sl0));
-        (yield* sfo_int(nhfp, utpnt, __sl1));
+        (yield* sfo_int(nhfp, utcnt, __s_track_utcnt));
+        (yield* sfo_int(nhfp, utpnt, __s_track_utpnt));
         for (i = 0; i < utcnt.v; i++) {
-            (yield* sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2));
+            (yield* sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __s_utrack));
         }
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
@@ -99,14 +99,14 @@ export function* save_track(nhfp) {
 /** C ref: track.c:93 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_track(nhfp) {
     let i;
-    (yield* sfi_int(nhfp, utcnt, __sl0));
+    (yield* sfi_int(nhfp, utcnt, __s_track_utcnt));
     ;
-    (yield* sfi_int(nhfp, utpnt, __sl1));
+    (yield* sfi_int(nhfp, utpnt, __s_track_utpnt));
     ;
     if (utcnt.v > 100 || utpnt.v > 100)
-        (yield* panic(__sl3));
+        (yield* panic(__s_rest_track_impossible_pt_counts));
     for (i = 0; i < utcnt.v; i++) {
-        (yield* sfi_nhcoord(nhfp, cptr.add(utrack, i, 4), __sl2));
+        (yield* sfi_nhcoord(nhfp, cptr.add(utrack, i, 4), __s_utrack));
     }
 }
 
