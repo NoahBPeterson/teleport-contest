@@ -1957,3 +1957,417 @@ the flag-on tree hashes equal to `main`'s (so the Phase 2 debugging build is
 provably untouched), and the 271,936 raw lines that moved are exactly the
 lines that carried a stale annotation, all of them inside the suffix
 `normalizeRng` strips.
+
+---
+
+# Readability, leg 5 — the wrap-mask fold (roadmap 1.11)
+
+Branch `wrapmask`, off `main` at `ba916de`. One change, one flag:
+
+| flag | default | what the other setting does |
+|---|---|---|
+| `C2JS_WRAPFOLD=0` | on | restores a mask at every arithmetic node (the A/B baseline) |
+| `C2JS_WRAPFOLD_VERIFY=1` | off | puts every fold through a static differential before committing it (§31) |
+| `C2JS_WRAPFOLD_CHECK=1` | off | builds a tree that asserts the fold's one precondition at run time (§31) |
+
+With `C2JS_WRAPFOLD=0` the build reproduces `main` byte-for-byte across
+`js/generated`, `js/generated-y`, both reset barrels, `__bundle.js` and
+`js/boot/**`.
+
+---
+
+## 29. The staircase, and why it is not needed
+
+C requires every arithmetic operation on a fixed-width integer type to wrap, so
+the type-directed emission wraps every one of them. `botl.c:227` is one flat C
+condition:
+
+```c
+if ((dln - dx) + 1 + hln + 1 + xln + 1 + tln + 1 + cln + vrn <= COLNO) {
+```
+
+`dln`, `dx`, `hln`, `xln`, `tln`, `cln` and `vrn` are all `size_t`, so every one
+of those nine additions and subtractions is a 64-bit unsigned wrap, and the
+emitter wrote nine of them — 26 lines of staircase after `jsfmt` was done with
+it:
+
+```js
+    if (BigInt.asUintN(
+        64,
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(
+                64,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(
+                            64,
+                            BigInt.asUintN(
+                                64,
+                                BigInt.asUintN(
+                                    64,
+                                    BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln
+                                ) + 1n
+                            ) + xln
+                        ) + 1n
+                    ) + tln
+                ) + 1n
+            ) + cln
+        ) + vrn
+    ) <= 80n) {
+```
+
+It now reads as the C reads:
+
+```js
+    if (BigInt.asUintN(64, dln - dx + 1n + hln + 1n + xln + 1n + tln + 1n + cln + vrn) <= 80n) {
+```
+
+### the argument, which is a proof and not a heuristic
+
+Reduction modulo 2^w is a **ring homomorphism** over `+`, `-` and `*`:
+
+    (x mod 2^w) + (y mod 2^w)  ≡  x + y   (mod 2^w)
+    (x mod 2^w) − (y mod 2^w)  ≡  x − y   (mod 2^w)
+    (x mod 2^w) · (y mod 2^w)  ≡  x · y   (mod 2^w)
+
+`BigInt.asIntN(w, ·)` and `BigInt.asUintN(w, ·)` both return a representative of
+their argument's residue class mod 2^w, and `| 0` / `>>> 0` are the same
+reduction at w = 32. So for an expression built only from those three operators
+at one width, masking at every node and masking once at the root compute the
+same residue — and the root mask is what picks the representative, so they
+compute the same *value*, not merely the same residue. Collapse the chain; keep
+the root mask.
+
+**64-bit is exact by construction.** BigInt is arbitrary precision, so the
+un-masked intermediate *is* the exact integer and no range reasoning enters:
+
+    asUintN(64, asUintN(64, a + b) + c)  ===  asUintN(64, a + b + c)
+
+**32-bit needs one bound, stated rather than waved at.** The intermediates are
+float64, so the identity needs each one to be exactly representable. Every leaf
+of a chain is a canonical 32-bit value — a load, a literal, `Math.imul`, a `| 0`,
+a `>>> 0`, a comparison's 0/1 — or a JS unary `-` of one, which does not wrap
+(`-(-2147483648)` is 2147483648). So |leaf| ≤ 2^32, and a `+`/`-` chain over k
+leaves is bounded by k·2^32, which float64 holds exactly for
+
+    k < 2^53 / 2^32 = 2^21 = 2,097,152
+
+The longest chain this codebase produces is **11 terms**. The margin is five
+orders of magnitude, and it is checked twice over (§31) rather than trusted.
+
+`Math.imul` is not a bound risk in either direction: it *returns* a canonical
+int32, so it terminates a chain rather than compounding it, and it reduces each
+argument with ToInt32 — exact modular reduction on an exactly-represented
+integer — so an un-masked chain may be handed to it as it stands. A plain `*` at
+32 bits is never emitted, so nothing else widens the bound.
+
+### the barriers, which are structural rather than a list
+
+A chain extends through `+`, `-` and `*` at one width and one signedness. It
+stops at division, modulo, shifts, bitwise and/or/xor, comparisons, casts to
+another width or signedness, function calls, `?:`, array subscripts, `cptr`
+offsets, and every other context — anywhere the intermediate's exact width is
+what the operation reads.
+
+That list is not enforced by checking it. Only `coerceArith()` attaches a
+`wrapRaw` offer to a descriptor, and only the `+`/`-`/`*` path of
+`expr_BinaryOperator()` and the 32-bit compound-assign path ever look at one, so
+**an operator this note forgot to mention refuses by default**. Three further
+guards:
+
+* the key — width *and* signedness — of the operand's mask must equal the key of
+  the consuming operation. A `>>> 0` chain flowing into a `| 0` root is sound by
+  the same congruence, and is refused anyway: 49 sites, all of them an unsigned
+  RHS of a compound assignment.
+* `wrapRaw.code` is compared against the descriptor's current `.code` before the
+  swap, exactly as `boolRaw` does, so a descriptor some later pass spread into
+  different text is inert rather than wrong. C parens are the one place the code
+  legitimately changes, and `expr_ParenExpr` re-stamps the offer as it adds
+  them — `(a - b) + 1` is one chain, and the C author's parentheses say nothing
+  about where masks belong.
+* an operand descriptor is consumed exactly once, by the operator it was emitted
+  for, so "the value is used elsewhere" cannot arise.
+
+### what was deliberately left alone
+
+* **Unary minus.** `-x` at 32 bits is emitted un-masked already, so `-((a+b)|0)`
+  could drop its inner mask *if* a parent masks — but several of the 17 sites are
+  `cptr.add` arguments, where nothing masks and the inner `| 0` is the semantics.
+  A parent-gated offer would be sound; 17 sites did not earn the machinery.
+* **`?:`.** Both arms un-masked under a masking parent is sound and rare.
+* **Reassociation.** `a + 1 + 2` is left as it stands; the fold moves masks, it
+  does not move operands.
+
+---
+
+## 30. What it did
+
+Counted over the shipped trees, not over emitter calls. The emitter's own
+counter is an upper bound rather than a count: the function-like-macro tier
+attempts a helper body for 16,723 expansions and refuses most of them, and each
+attempt emits the expression (and folds it) before it is thrown away. Where an
+expression is emitted once, the two agree exactly — the 64-bit signed column
+below is 98 in both.
+
+| mask | `js/generated` before | after | Δ |
+|---|---|---|---|
+| `BigInt.asUintN(64, …)` | 1,114 | 1,010 | **−104** |
+| `BigInt.asIntN(64, …)` | 790 | 692 | **−98** |
+| `… \| 0` | 11,588 | 10,204 | **−1,384** |
+| `… >>> 0` | 3,412 | 3,362 | **−50** |
+| `Math.imul(…)` | 517 | 517 | 0 |
+| **total masks removed** | | | **1,636** |
+
+In `js/generated-y`, which carries the generator variant beside the plain one,
+the same fold removes **3,239** (`asUintN(64)` 2,202 → 1,994, `asIntN(64)`
+1,579 → 1,383, `| 0` 23,069 → 20,302, `>>> 0` 6,377 → 6,309).
+
+The emitter's own ledger, for the shape of the thing rather than its size:
+**2,498 maximal chains** collapsed, longest **11 terms**, and of the
+ring-operation masks it considered it removed **3,440 of 15,794 (21.8%)**.
+
+Refusals, by reason, from the same ledger:
+
+| reason | count | what it is |
+|---|---|---|
+| `op:/` | 373 | a masked operand under a division |
+| `op:%` | 116 | …under a modulo |
+| `key:u32->i32` | 49 | an unsigned chain into a compound assignment's `\| 0` root |
+| `op:&` | 29 | …under a bitwise and |
+| `op:<<` | 19 | …under a left shift |
+| `op:\|` | 9 | …under a bitwise or |
+| `op:>>` | 4 | …under a right shift |
+
+Every other mask in the tree is at a chain *root*, where it is the semantics, or
+under a cast, call, subscript or `?:`, where the transform never looks. There
+were **zero** `stale` refusals and **zero** refusals forced by the differential.
+
+### the acceptance demo — a glyph expression in `display.js`
+
+```js
+-        if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
+-                glyph == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
++        if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
++                glyph == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
+```
+
+and the same shape inside the big glyph ternary, where the chain runs through a
+conditional's arms:
+
+```js
+-                            ? (((((((((cptr.ldI16o(
++                            ? (((((((cptr.ldI16o(
+                                 ...
+                                 ? NHC.S_stone
+                                 : NHC.S_darkroom)) -
+-                                NHC.S_vwall) | 0) +
++                                NHC.S_vwall +
+                                 (In_mines(cptr.add(u, $you_uz))
+                                     ? NHC.GLYPH_CMAP_MINES_OFF
+                                     : ...
+```
+
+---
+
+## 31. Verification: two checks, neither of them the corpus
+
+The corpus is necessary and not sufficient — a rarely-executed expression can be
+wrong and still pass 69/69. So the fold is checked twice more, both off by
+default, both run as gates.
+
+### the static differential (`C2JS_WRAPFOLD_VERIFY=1`)
+
+Each fold carries a **symbolic tree** of the chain it is about to collapse:
+interior nodes are `{op, key}`, leaves are the operands. Before the fold is
+committed the tree is evaluated twice in exact BigInt arithmetic —
+
+* `wrapEvalOld`: mask at **every** node (what the emitter used to print),
+* `wrapEvalNew`: mask at the **root only** (what it is about to print),
+
+— and the fold is refused unless every case is bit-identical. The 32-bit arm
+also asserts the float64 bound directly: any vector that drives an un-masked
+intermediate to |x| ≥ 2^53 refuses the fold rather than passing it, so the check
+covers the bound and not only the algebra.
+
+The vectors per fold: every leaf set to each boundary value in turn while the
+rest stay ordinary; every leaf set to the same boundary value, so the whole
+chain overflows together; a sweep walking the boundary list across leaves out of
+step; and 64 draws from a seeded xorshift32. The boundary lists are per kind and
+reach one bit *past* canonical range on both sides —
+
+    i32  0, ±1, ±2, 2^31−1, −2^31, 2^31, −2^31−1, ±65536, ±0x55555555
+    u32  0, 1, 2, 2^32−1, 2^32−2, 2^31, 2^31−1, 65536, 0xCCCCCCCC
+    i64  0, ±1, ±2, 2^63−1, −2^63, 2^63, ±2^32, 2^31−1, −2^31
+    u64  0, 1, 2, 2^64−1, 2^64−2, 2^63, 2^63−1, 2^32, 2^32−1
+
+so the cases that force a wrap are the majority of them, not a corner of them.
+
+> **3,394 fold decisions, 450,726 differential cases, 0 refusals** — and the
+> `C2JS_WRAPFOLD_VERIFY=1` build is **byte-identical** to the shipped build
+> across all 378 files, which is the same statement checked by hashing rather
+> than by reading a counter.
+
+### the dynamic completeness check (`C2JS_WRAPFOLD_CHECK=1`)
+
+The static argument has exactly one precondition: that every 32-bit intermediate
+the fold now defers is an exactly-represented integer. That precondition is also
+the *only* way the fold can change a value, and it covers a case no randomized
+operand vector would ever propose — an **uninitialized local**. `js/generated`
+declares locals as bare `let x;`, C's uninitialized read is UB, and JS's answer
+is `undefined`. Masking at every node normalises `undefined` to 0 early;
+deferring the mask lets `NaN` propagate to the root instead. Both are wrong in
+C's terms and they are wrong *differently*, so this is the one place where a
+provable algebraic identity could still move a shipped number.
+
+`Number.isSafeInteger` decides it: it is false for `NaN`, for `undefined + 1`,
+for `±Infinity`, for a non-integer, and for anything at or past 2^53. So a build
+with this flag routes every deferred 32-bit intermediate through
+`wfchk()` (js/cmachine.js), and a clean run is not a sample — it is a statement
+about **every folded chain that run executed**.
+
+| | |
+|---|---|
+| corpus (`sessions/` + `sessions-extra/`) on the check tree | **69/69**, zero `wfchk` throws |
+| `wfchk` calls, `seed4500-knight-coverage` | **369,159**, all exact |
+| `wfchk` calls, `gen9996-marathon-dlvl10` | **396,666**, all exact |
+| liveness probe — `wfchk` throwing on its first call | `seed8000` **FAILs** with `RNG 0/3130, Screen 0/23` and the message surfaced in the runner's JSON |
+
+The last row is the row that makes the other three mean something: it proves the
+detector is wired into the scored path and that a throw is a hard, visible
+failure rather than something the harness swallows.
+
+The check build is **not** byte-comparable to the shipped build, and should not
+be read as if it were: `wfchk` is an identifier the function-like-macro tier's
+purity scan does not know, so 207 more macro bodies stay inline there. That
+makes its folded set a **superset** of the shipped tree's — inlining a body
+preserves the expression at every site and adds sites — which is the direction
+that matters, and its ledger agrees (3,562 folds over 2,552 chains, against
+3,440 over 2,498).
+
+---
+
+## 32. Gates
+
+Run on the shipped tree, built with `C2JS_YIELD=1 C2JS_RESET=1 node
+tools/c2js/build.mjs --all --force`.
+
+| gate | result |
+|---|---|
+| batch build | 169 transpiled, 1 failed (isaac64, expected), 2 skipped; **0 parse failures**; 10,513/10,627 decls, 6,508/6,586 functions |
+| **flags-off (`C2JS_WRAPFOLD=0`) reproduces `main`** | **byte-identical** — `git diff` over `js/generated`, `js/generated-y`, `js/boot` is empty |
+| full rebuild reproduces the committed trees | **byte-identical** over 378 files, verified across four independent `--force` builds |
+| `C2JS_WRAPFOLD_VERIFY=1`, as its own build | **3,394 folds, 450,726 differential cases, 0 refusals**; tree byte-identical to the shipped build |
+| `C2JS_WRAPFOLD_CHECK=1`, corpus on the check tree | **69/69, 0 non-exact intermediates**; 369,159 + 396,666 `wfchk` calls on two sessions; liveness probe fails the session, so a throw is visible |
+| `C2JS_FOLD_VERIFY=1`, as its own build | **320,612 folds, 0 mismatched, 0 unevaluable** (the 25 files whose text this audit build perturbs are perturbed identically with `C2JS_WRAPFOLD=0`, i.e. it is `verifyFold`'s own pre-existing re-emission, not this leg's) |
+| no-absolute-path assertion | **362 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` | all 4 exist |
+| `reset-census` | 180 modules, 46,231 declarations, plan **1,416**, **0 unclassified** (23,274 + 14,440 + 7,236 + 717 + 239 + 101 + 75 + 48 + 42 + 36 + 11 + 10 + 1 + 1 = 46,231) |
+| corpus (`sessions/` + `sessions-extra/`), reset scoring path, Lua ports live, **twice** | **69/69** and **69/69** (766+0.54/turn R²=0.864; 771+0.54/turn R²=0.866) |
+| yield + bundle corpus (`yieldtest/ps_test_runner.mjs`) | **69/69** (1001+0.85/turn) |
+| ...and 8 more full-corpus runs inside the A/B (§33) | **69/69 every time** |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `tools/c2js/test-rnd.mjs` | PASS (3,130/3,130 and 2,983/2,983 RNG calls) |
+| `tools/c2js/test-hacklib.mjs` | PASS — 870 cases, 0 failures |
+| `test-setjmp.mjs` / `test-union.mjs` | PASS; both regenerate their fixture **byte-identically** |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/c2js/purity-audit.mjs` | 15 functions `nhmacrofn.js` calls, **0 disagree** |
+| `tools/strict-score.mjs` | 344 files reachable from 2 roots, **0 violations**; sandbox parity OK on 3 sessions |
+| `judge-sim/run.mjs seed8000` | **PASS**, 0 segment mismatches, 0 out-of-scope (340 requests) |
+| `judge-sim/run.mjs seed0013` | **PASS**, 2/2 segments, 0 mismatches, 0 out-of-scope |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 352 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 534 ms |
+
+---
+
+## 33. Perf
+
+Two trees, **eight interleaved corpus runs**, `js/generated` and `js/generated-y`
+both swapped before every run, order `A B B A / B A A B` so that a monotonic
+drift in the box cancels within each round.
+
+* (A) `main` `ba916de`
+* (B) `wrapmask` — **shipped**
+
+**All eight runs passed 69/69.**
+
+| run | tree | slope | fit intercept | corpus engine total |
+|---|---|---|---|---|
+| 1 | A | 0.5372 | 772.5 ms | 86,551 ms |
+| 2 | B | 0.5400 | 765.8 ms | 86,261 ms |
+| 3 | B | 0.5405 | 759.3 ms | 85,846 ms |
+| 4 | A | 0.5413 | 761.9 ms | 86,075 ms |
+| 5 | B | 0.5416 | 758.5 ms | 85,856 ms |
+| 6 | A | 0.5418 | 763.1 ms | 86,186 ms |
+| 7 | A | 0.5617 | 762.0 ms | 87,346 ms |
+| 8 | B | 0.5563 | 759.6 ms | 86,839 ms |
+
+The box drifts upward across the eight runs (86.6 s -> 87.3 s for the same work
+on the A tree), which is what the ABBA ordering is for: within a round,
+`(B2+B3)/2` against `(A1+A4)/2` cancels a linear drift term.
+
+| statistic | round 1 | round 2 | mean | median over the 4+4 runs |
+|---|---|---|---|---|
+| **corpus engine total** | −0.30% | −0.48% | **−0.39%** | −0.36% |
+| fit intercept | −0.61% | −0.46% | **−0.53%** | −0.41% |
+| slope | +0.19% | −0.51% | −0.16% | −0.09% |
+
+**Total corpus engine time is the measurement rather than the fit, and it moves
+−0.39% in B's favour, in both rounds.** The fit intercept agrees at −0.53%, also
+in both rounds. The slope straddles zero (+0.19% / −0.51%) and should be read as
+unresolved, not as a cost — which is the expected shape: the fold's saving is
+spread over every expression rather than concentrated per move, and at this
+box's resolution (§26 measured the run-to-run spread at several percent for a
+direct startup timing) a sub-half-percent effect is only visible because all 69
+sessions are averaged and the design is balanced.
+
+Fewer operations should be a small win and nothing more: the fold removes 1,636
+`| 0`/`asUintN` calls from the *source*, but a mask that JIT-compiles to a single
+machine instruction on an already-int32 value is close to free, and the 64-bit
+ones — where an `asUintN` call really does cost something — are only 202 of the
+1,636. The measurement is reported for what it is.
+
+### size
+
+| | `main` | shipped | Δ |
+|---|---|---|---|
+| `js/generated` | 20,453,413 | 20,420,595 | **−32,818 (−0.160%)** |
+| `js/generated-y` | 40,515,658 | 40,451,052 | −64,606 (−0.159%) |
+| `js/generated-y/__bundle.js` | 19,680,425 | 19,648,637 | −31,788 (−0.162%) |
+| `js/generated` lines | 489,947 | 489,137 | −810 |
+
+---
+
+## 34. Commits
+
+* the emitter commit — `tools/c2js/emit.mjs` (the fold, the two verifications,
+  the `C2JS_READ_STATS` line) and `js/cmachine.js` (`wfchk`, used only by a
+  `C2JS_WRAPFOLD_CHECK=1` build).
+* the regenerated trees.
+* the docs commit that carries this section.
+
+On `wrapmask`, off `main` at `ba916de`. Nothing pushed, nothing merged.
+
+## 35. Merge readiness
+
+**Ready.** The change is one identity — reduction mod 2^w is a ring
+homomorphism — applied where the emitter can see that it holds, and refused
+everywhere else by construction rather than by a list. Three things a reviewer
+should check rather than take on trust, all above:
+
+1. **`C2JS_WRAPFOLD=0` reproduces `main` byte-for-byte**, so the whole leg is
+   one flag away from not existing.
+2. **The `C2JS_WRAPFOLD_VERIFY=1` tree hashes equal to the shipped tree**, which
+   says 450,726 differential cases forced zero refusals — checked by hashing,
+   not by reading a counter.
+3. **The `C2JS_WRAPFOLD_CHECK=1` corpus run is clean, and the liveness probe
+   proves a dirty one would fail loudly.** That is the row that covers the
+   uninitialized-local case, which no amount of randomized operand testing would
+   have proposed and which the corpus alone could only have caught by luck.
+
+The one refusal worth revisiting later is `key:u32->i32` (49 sites): a compound
+assignment to an `unsigned int` masks its result with `| 0` rather than
+`>>> 0` — pre-existing, orthogonal to this leg, and sound either way, but it is
+why an unsigned chain will not fold into one.
